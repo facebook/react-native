@@ -235,6 +235,11 @@ class TouchableOpacity extends React.Component<Props, State> {
           }
         : _accessibilityState;
 
+    const accessibilityLiveRegion =
+      this.props['aria-live'] === 'off'
+        ? 'none'
+        : this.props['aria-live'] ?? this.props.accessibilityLiveRegion;
+
     return (
       <Animated.View
         accessible={this.props.accessible !== false}
@@ -251,12 +256,12 @@ class TouchableOpacity extends React.Component<Props, State> {
             ? 'no-hide-descendants'
             : this.props.importantForAccessibility
         }
-        accessibilityLiveRegion={this.props.accessibilityLiveRegion}
         accessibilityViewIsModal={
           this.props['aria-modal'] !== null
             ? this.props['aria-modal']
             : this.props.accessibilityViewIsModal
         }
+        accessibilityLiveRegion={accessibilityLiveRegion}
         accessibilityElementsHidden={
           this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden
         }

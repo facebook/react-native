@@ -282,7 +282,7 @@ module.exports = {
     return require('./Libraries/Animated/Easing');
   },
   get findNodeHandle(): $PropertyType<ReactNative, 'findNodeHandle'> {
-    return require('./Libraries/Renderer/shims/ReactNative').findNodeHandle;
+    return require('./Libraries/ReactNative/RendererProxy').findNodeHandle;
   },
   get I18nManager(): I18nManager {
     return require('./Libraries/ReactNative/I18nManager');
@@ -366,7 +366,7 @@ module.exports = {
     ReactNative,
     'unstable_batchedUpdates',
   > {
-    return require('./Libraries/Renderer/shims/ReactNative')
+    return require('./Libraries/ReactNative/RendererProxy')
       .unstable_batchedUpdates;
   },
   get useColorScheme(): useColorScheme {

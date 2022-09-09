@@ -438,6 +438,35 @@ exports.examples = ([
     },
   },
   {
+    title: 'Text Auto Complete',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            autoComplete="country"
+            placeholder="country"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="postal-address-country"
+            placeholder="postal-address-country"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="one-time-code"
+            placeholder="one-time-code"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="sms-otp"
+            placeholder="sms-otp"
+            style={styles.default}
+          />
+        </View>
+      );
+    },
+  },
+  {
     title: 'Return key',
     render: function (): React.Node {
       const returnKeyTypes = [

@@ -54,6 +54,7 @@ type Props = $ReadOnly<{|
   'aria-expanded'?: ?boolean,
   'aria-selected'?: ?boolean,
   'aria-hidden'?: ?boolean,
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -83,6 +84,7 @@ type State = $ReadOnly<{|
 
 const PASSTHROUGH_PROPS = [
   'accessibilityActions',
+  'accessibilityElementsHidden',
   'accessibilityHint',
   'accessibilityLanguage',
   'accessibilityIgnoresInvertColors',
@@ -93,6 +95,7 @@ const PASSTHROUGH_PROPS = [
   'accessibilityViewIsModal',
   'aria-modal',
   'hitSlop',
+  'importantForAccessibility',
   'nativeID',
   'onAccessibilityAction',
   'onBlur',
@@ -109,6 +112,8 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
   render(): React.Node {
     const element = React.Children.only(this.props.children);
     const children = [element.props.children];
+    const ariaLive = this.props['aria-live'];
+
     if (__DEV__) {
       if (element.type === View) {
         children.push(
@@ -153,6 +158,10 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
         this.props['aria-hidden'] === true
           ? 'no-hide-descendants'
           : this.props.importantForAccessibility,
+      accessibilityLiveRegion:
+        ariaLive === 'off'
+          ? 'none'
+          : ariaLive ?? this.props.accessibilityLiveRegion,
     };
     for (const prop of PASSTHROUGH_PROPS) {
       if (this.props[prop] !== undefined) {

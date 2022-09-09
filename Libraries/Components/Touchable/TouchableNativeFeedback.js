@@ -14,7 +14,7 @@ import Pressability, {
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 import {Commands} from 'react-native/Libraries/Components/View/ViewNativeComponent';
-import ReactNative from 'react-native/Libraries/Renderer/shims/ReactNative';
+import {findHostInstance_DEPRECATED} from '../../ReactNative/RendererProxy';
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 import Platform from '../../Utilities/Platform';
 import View from '../../Components/View/View';
@@ -206,7 +206,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
 
   _dispatchPressedStateChange(pressed: boolean): void {
     if (Platform.OS === 'android') {
-      const hostComponentRef = ReactNative.findHostInstance_DEPRECATED(this);
+      const hostComponentRef = findHostInstance_DEPRECATED(this);
       if (hostComponentRef == null) {
         console.warn(
           'Touchable: Unable to find HostComponent instance. ' +
@@ -221,7 +221,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
   _dispatchHotspotUpdate(event: PressEvent): void {
     if (Platform.OS === 'android') {
       const {locationX, locationY} = event.nativeEvent;
-      const hostComponentRef = ReactNative.findHostInstance_DEPRECATED(this);
+      const hostComponentRef = findHostInstance_DEPRECATED(this);
       if (hostComponentRef == null) {
         console.warn(
           'Touchable: Unable to find HostComponent instance. ' +
@@ -273,6 +273,11 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
           }
         : _accessibilityState;
 
+    const accessibilityLiveRegion =
+      this.props['aria-live'] === 'off'
+        ? 'none'
+        : this.props['aria-live'] ?? this.props.accessibilityLiveRegion;
+
     return React.cloneElement(
       element,
       {
@@ -296,11 +301,11 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
           this.props['aria-hidden'] === true
             ? 'no-hide-descendants'
             : this.props.importantForAccessibility,
-        accessibilityLiveRegion: this.props.accessibilityLiveRegion,
         accessibilityViewIsModal:
           this.props['aria-modal'] !== null
             ? this.props['aria-modal']
             : this.props.accessibilityViewIsModal,
+        accessibilityLiveRegion: accessibilityLiveRegion,
         accessibilityElementsHidden:
           this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden,
         hasTVPreferredFocus: this.props.hasTVPreferredFocus,

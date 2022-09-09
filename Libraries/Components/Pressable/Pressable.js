@@ -69,6 +69,7 @@ type Props = $ReadOnly<{|
    * this accessibility element are hidden.
    */
   'aria-hidden'?: ?boolean,
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
   focusable?: ?boolean,
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
@@ -191,10 +192,11 @@ type Props = $ReadOnly<{|
  * LTI update could not be added via codemod */
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
+    accessible,
     accessibilityState,
+    'aria-live': ariaLive,
     android_disableSound,
     android_ripple,
-    accessible,
     'aria-busy': ariaBusy,
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
@@ -239,6 +241,9 @@ function Pressable(props: Props, forwardedRef): React.Node {
   _accessibilityState =
     disabled != null ? {..._accessibilityState, disabled} : _accessibilityState;
 
+  const accessibilityLiveRegion =
+    ariaLive === 'off' ? 'none' : ariaLive ?? props.accessibilityLiveRegion;
+
   const restPropsWithDefaults: React.ElementConfig<typeof View> = {
     ...restProps,
     ...android_rippleConfig?.viewProps,
@@ -247,6 +252,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       restProps['aria-modal'] !== null
         ? restProps['aria-modal']
         : restProps.accessibilityViewIsModal,
+    accessibilityLiveRegion,
     accessibilityState: _accessibilityState,
     focusable: focusable !== false,
     hitSlop,

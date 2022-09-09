@@ -20,8 +20,8 @@ jest
   }))
   .mock('../NativeAnimatedModule')
   .mock('../../EventEmitter/NativeEventEmitter')
-  // findNodeHandle is imported from ReactNative so mock that whole module.
-  .setMock('../../Renderer/shims/ReactNative', {findNodeHandle: () => 1});
+  // findNodeHandle is imported from RendererProxy so mock that whole module.
+  .setMock('../../ReactNative/RendererProxy', {findNodeHandle: () => 1});
 
 import TestRenderer from 'react-test-renderer';
 import * as React from 'react';

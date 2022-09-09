@@ -169,7 +169,7 @@ Map {
 'use strict';
 
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
-const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
+const {dispatchCommand} = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
 
 let nativeComponentName = 'CommandNativeComponent';
 
@@ -211,7 +211,7 @@ Map {
 'use strict';
 
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
-const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
+const {dispatchCommand} = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
 
 let nativeComponentName = 'CommandNativeComponent';
 
