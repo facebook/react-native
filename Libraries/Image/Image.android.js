@@ -170,10 +170,6 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   style = flattenStyle(style);
 
-  if (style) {
-    style = processLayoutProps(style);
-  }
-
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {
     ...restProps,

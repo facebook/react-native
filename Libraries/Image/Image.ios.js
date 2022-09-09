@@ -143,10 +143,6 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   let flattendStyle = flattenStyle(style);
 
-  if (flattendStyle) {
-    flattendStyle = processLayoutProps(flattendStyle);
-  }
-
   if (props.children != null) {
     throw new Error(
       'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
