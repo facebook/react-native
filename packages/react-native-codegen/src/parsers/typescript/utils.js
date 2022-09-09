@@ -19,26 +19,26 @@ export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
-    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
-      if (
-        node.declaration.type === 'TSTypeAliasDeclaration' ||
-        node.declaration.type === 'TSInterfaceDeclaration'
-      ) {
-        types[node.declaration.id.name] = node.declaration;
+    switch (node.type) {
+      case 'ExportNamedDeclaration': {
+        if (node.declaration) {
+          switch (node.declaration.type) {
+            case 'TSTypeAliasDeclaration':
+            case 'TSInterfaceDeclaration':
+            case 'TSEnumDeclaration': {
+              types[node.declaration.id.name] = node.declaration;
+              break;
+            }
+          }
+        }
+        break;
       }
-    } else if (
-      node.type === 'ExportNamedDeclaration' &&
-      node.exportKind === 'value' &&
-      node.declaration &&
-      node.declaration.type === 'TSEnumDeclaration'
-    ) {
-      types[node.declaration.id.name] = node.declaration;
-    } else if (
-      node.type === 'TSTypeAliasDeclaration' ||
-      node.type === 'TSInterfaceDeclaration' ||
-      node.type === 'TSEnumDeclaration'
-    ) {
-      types[node.id.name] = node;
+      case 'TSTypeAliasDeclaration':
+      case 'TSInterfaceDeclaration':
+      case 'TSEnumDeclaration': {
+        types[node.id.name] = node;
+        break;
+      }
     }
     return types;
   }, {});
