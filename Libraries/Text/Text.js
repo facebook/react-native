@@ -21,6 +21,8 @@ import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
 import flattenStyle from '../StyleSheet/flattenStyle';
+import type {TypeForStyleKey} from '../StyleSheet/StyleSheet';
+import processTextShadow from '../StyleSheet/processTextShadow';
 
 /**
  * Text is the fundamental component for displaying text.
@@ -188,6 +190,21 @@ const Text: React.AbstractComponent<
       `'numberOfLines' in <Text> must be a non-negative number, received: ${numberOfLines}. The value will be set to 0.`,
     );
     numberOfLines = 0;
+  }
+
+  if (typeof style?.textShadow === 'string') {
+    const {xOffset, yOffset, blurRadius, color} = processTextShadow(
+      style.textShadow,
+    );
+
+    style = StyleSheet.compose(style, {
+      textShadowRadius: blurRadius,
+      textShadowColor: color,
+      textShadowOffset: ({
+        width: xOffset ?? 0,
+        height: yOffset ?? 0,
+      }: TypeForStyleKey<'textShadowOffset'>),
+    });
   }
 
   const hasTextAncestor = useContext(TextAncestor);

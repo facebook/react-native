@@ -732,6 +732,15 @@ class TextExample extends React.Component<{...}> {
             Demo text shadow
           </Text>
         </RNTesterBlock>
+        <RNTesterBlock title="Text shadow with `textShadow` property">
+          <Text
+            style={{
+              fontSize: 20,
+              textShadow: '2 2 1 red',
+            }}>
+            Demo text shadow
+          </Text>
+        </RNTesterBlock>
         <RNTesterBlock title="Ellipsize mode">
           <Text numberOfLines={1}>
             This very long text should be truncated with dots in the end.

@@ -1078,6 +1078,22 @@ exports.examples = [
     },
   },
   {
+    title: 'Text shadow with `textShadow` property',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text
+            style={{
+              fontSize: 20,
+              textShadow: '3 3 2 red',
+            }}>
+            Demo text shadow
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
     title: 'Ellipsize mode',
     render: function (): React.Node {
       return (

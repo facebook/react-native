@@ -613,6 +613,7 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
     | 'stylistic-nineteen'
     | 'stylistic-twenty',
   >,
+  textShadow?: string,
   textShadowOffset?: $ReadOnly<{
     width: number,
     height: number,
