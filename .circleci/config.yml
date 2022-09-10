@@ -555,7 +555,7 @@ jobs:
   # -------------------------
   #    JOBS: Test Buck
   # -------------------------
-    test_buck:
+  test_buck:
     executor: reactnativeandroid
     environment:
       KOTLIN_HOME=third-party/kotlin
