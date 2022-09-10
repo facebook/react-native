@@ -60,14 +60,21 @@ if (__DEV__) {
 
       const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 
-      reactDevTools.connectToDevTools({
+      let connectToDevToolsParams = {
         isAppActive,
         resolveRNStyle: require('../StyleSheet/flattenStyle'),
         nativeStyleEditorValidAttributes: Object.keys(
           ReactNativeStyleAttributes,
         ),
         websocket: ws,
-      });
+      };
+
+      if (__DEV__) {
+        // $FlowFixMe[prop-missing]
+        connectToDevToolsParams.deviceStorageMethods = require('./deviceStorageMethods');
+      }
+
+      reactDevTools.connectToDevTools(connectToDevToolsParams);
     }
   };
 
