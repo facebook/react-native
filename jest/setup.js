@@ -21,7 +21,6 @@ global.performance = {
   now: jest.fn(Date.now),
 };
 
-global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
 global.window = global;
 
