@@ -25,6 +25,7 @@ type Props = $ReadOnly<{|
   showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
   internal_excludeLogBox?: ?boolean,
+  internal_excludeInspector?: ?boolean,
 |}>;
 
 type State = {|
@@ -48,7 +49,10 @@ class AppContainer extends React.Component<Props, State> {
 
   componentDidMount(): void {
     if (__DEV__) {
-      if (!global.__RCTProfileIsProfiling) {
+      if (
+        !global.__RCTProfileIsProfiling &&
+        !this.props.internal_excludeInspector
+      ) {
         this._subscription = RCTDeviceEventEmitter.addListener(
           'toggleElementInspector',
           () => {

@@ -27,7 +27,8 @@ using namespace facebook::flexlayout::utils;
 
 class FLEX_LAYOUT_EXPORT FlexItemStyleBase {
  public:
-  Float flex = NAN;
+  // TODO(T131519658): add support for `flex` prop
+  Float flex = NAN; // currently this value is not used anywhere
   Float flexGrow = 0;
   Float flexShrink = 1;
   // TODO T68413071 Use Aggregate initialization Dimension flexBasis{NAN,

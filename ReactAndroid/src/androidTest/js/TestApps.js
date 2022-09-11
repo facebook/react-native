@@ -49,6 +49,10 @@ const apps = [
       require('./ScrollViewTestModule').HorizontalScrollViewTestApp,
   },
   {
+    appKey: 'IdTestApp',
+    component: () => require('./IdTestModule').IdTestApp,
+  },
+  {
     appKey: 'ImageOverlayColorTestApp',
     component: () => require('./ImageOverlayColorTestApp'),
   },

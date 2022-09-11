@@ -154,6 +154,16 @@ function translateTypeAnnotation(
     resolveTypeAnnotation(typeScriptTypeAnnotation, types);
 
   switch (typeAnnotation.type) {
+    case 'TSParenthesizedType': {
+      return translateTypeAnnotation(
+        hasteModuleName,
+        typeAnnotation.typeAnnotation,
+        types,
+        aliasMap,
+        tryParse,
+        cxxOnly,
+      );
+    }
     case 'TSArrayType': {
       return translateArrayTypeAnnotation(
         hasteModuleName,

@@ -58,6 +58,7 @@ type Props = $ReadOnly<{|
   'aria-selected'?: ?boolean,
   'aria-hidden'?: ?boolean,
   'aria-live'?: ?('polite' | 'assertive' | 'off'),
+  'aria-label'?: ?Stringish,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -65,6 +66,7 @@ type Props = $ReadOnly<{|
   disabled?: ?boolean,
   focusable?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
+  id?: string,
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   nativeID?: ?string,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
@@ -168,6 +170,7 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
         ariaLive === 'off'
           ? 'none'
           : ariaLive ?? this.props.accessibilityLiveRegion,
+      nativeID: this.props.id ?? this.props.nativeID,
     };
     for (const prop of PASSTHROUGH_PROPS) {
       if (this.props[prop] !== undefined) {

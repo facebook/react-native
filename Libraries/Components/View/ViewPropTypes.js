@@ -464,6 +464,12 @@ export type ViewProps = $ReadOnly<{|
   accessibilityHint?: ?Stringish,
 
   /**
+   * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
+   * https://github.com/facebook/react-native/issues/34424
+   */
+  'aria-label'?: ?Stringish,
+
+  /**
    * Indicates to the accessibility services that the UI component is in
    * a specific language. The provided string should be formatted following
    * the BCP 47 specification (https://www.rfc-editor.org/info/bcp47).
@@ -539,6 +545,15 @@ export type ViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#collapsable
    */
   collapsable?: ?boolean,
+
+  /**
+   * Used to locate this view from native classes.
+   *
+   * > This disables the 'layout-only view removal' optimization for this view!
+   *
+   * See https://reactnative.dev/docs/view#id
+   */
+  id?: string,
 
   /**
    * Used to locate this view in end-to-end tests.

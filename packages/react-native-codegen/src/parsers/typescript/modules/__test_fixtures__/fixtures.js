@@ -315,8 +315,8 @@ import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly getArray: (arg: Array<string>) => Array<string>;
-  readonly getArray: (arg: ReadonlyArray<string>) => ReadonlyArray<string>;
+  readonly getArray: (arg: Array<string>) => (Array<(string)>);
+  readonly getArray: (arg: ReadonlyArray<string>) => (ReadonlyArray<(string)>);
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -336,8 +336,8 @@ import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly getArray: (arg: string[]) => string[];
-  readonly getArray: (arg: readonly string[]) => readonly string[];
+  readonly getArray: (arg: string[]) => ((string)[]);
+  readonly getArray: (arg: readonly string[]) => (readonly (string)[]);
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');

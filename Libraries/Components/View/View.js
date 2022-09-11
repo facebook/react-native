@@ -34,10 +34,14 @@ const View: React.AbstractComponent<
       accessibilityElementsHidden,
       accessibilityLiveRegion,
       'aria-live': ariaLive,
+      accessibilityLabel,
       accessibilityRole,
+      'aria-label': ariaLabel,
       'aria-hidden': ariaHidden,
       focusable,
+      id,
       importantForAccessibility,
+      nativeID,
       pointerEvents,
       role,
       style,
@@ -154,6 +158,7 @@ const View: React.AbstractComponent<
           accessibilityLiveRegion={
             ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
           }
+          accessibilityLabel={ariaLabel ?? accessibilityLabel}
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
           accessibilityState={_accessibilityState}
           accessibilityRole={
@@ -167,6 +172,7 @@ const View: React.AbstractComponent<
               ? 'no-hide-descendants'
               : importantForAccessibility
           }
+          nativeID={id ?? nativeID}
           style={flattendStyle}
           {...restWithDefaultProps}
           pointerEvents={newPointerEvents}
