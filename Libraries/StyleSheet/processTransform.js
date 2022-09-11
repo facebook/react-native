@@ -22,8 +22,31 @@ const stringifySafe = require('../Utilities/stringifySafe').default;
  * interface to native code.
  */
 function processTransform(
-  transform: Array<Object>,
+  transform: Array<Object> | string,
 ): Array<Object> | Array<number> {
+  if (typeof transform === 'string') {
+    const regex = new RegExp(/(\w+)\(([^)]+)\)/g);
+    let transformArray: Array<Object> = [];
+    let matches;
+
+    while ((matches = regex.exec(transform))) {
+      const key = matches[1];
+      const args = matches[2];
+      let value;
+
+      if (multivalueTransforms.includes(key)) {
+        value = args.match(/[+-]?\d+(\.\d+)?/g)?.map(Number);
+      } else {
+        value = !isNaN(args) ? Number(args) : args;
+      }
+
+      if (value !== undefined) {
+        transformArray.push({[key]: value});
+      }
+    }
+    transform = transformArray;
+  }
+
   if (__DEV__) {
     _validateTransforms(transform);
   }
@@ -44,6 +67,8 @@ function _validateTransforms(transform: Array<Object>): void {
     _validateTransform(key, value, transformation);
   });
 }
+
+const multivalueTransforms = ['matrix', 'translate'];
 
 function _validateTransform(
   key:
@@ -72,7 +97,6 @@ function _validateTransform(
       'replace <View /> by <Animated.View />.',
   );
 
-  const multivalueTransforms = ['matrix', 'translate'];
   if (multivalueTransforms.indexOf(key) !== -1) {
     invariant(
       Array.isArray(value),
