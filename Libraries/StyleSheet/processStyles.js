@@ -10,12 +10,11 @@
 'use strict';
 
 import type {____FlattenStyleProp_Internal} from './StyleSheetTypes';
-import type {ViewStyleProp} from './StyleSheet';
 
-export default function processLayoutProps(
-  flattendStyle: ____FlattenStyleProp_Internal<ViewStyleProp>,
-): ____FlattenStyleProp_Internal<ViewStyleProp> {
-  const flattend_Style = {...flattendStyle};
+export default function processLayoutProps<T>(
+  flattenedStyle: ____FlattenStyleProp_Internal<T>,
+): ____FlattenStyleProp_Internal<T> {
+  const _flattenedStyle = {...flattenedStyle};
   const layoutPropMap = {
     marginInlineStart: 'marginStart',
     marginInlineEnd: 'marginEnd',
@@ -30,14 +29,14 @@ export default function processLayoutProps(
     paddingBlock: 'paddingVertical',
     paddingInline: 'paddingHorizontal',
   };
-  if (flattend_Style) {
+  if (_flattenedStyle) {
     Object.keys(layoutPropMap).forEach(key => {
-      if (flattend_Style && flattend_Style[key] !== undefined) {
-        flattend_Style[layoutPropMap[key]] = flattend_Style[key];
-        delete flattend_Style[key];
+      if (_flattenedStyle && _flattenedStyle[key] !== undefined) {
+        _flattenedStyle[layoutPropMap[key]] = _flattenedStyle[key];
+        delete _flattenedStyle[key];
       }
     });
   }
 
-  return flattend_Style;
+  return _flattenedStyle;
 }

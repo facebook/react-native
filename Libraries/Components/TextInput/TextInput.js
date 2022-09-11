@@ -32,6 +32,8 @@ import type {
   PressEvent,
 } from '../../Types/CoreEventTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import processLayoutProps from '../../StyleSheet/processStyles';
+import flattenStyle from '../../StyleSheet/flattenStyle';
 
 const {useLayoutEffect, useRef, useState} = React;
 
@@ -1400,10 +1402,13 @@ function InternalTextInput(props: Props): React.Node {
         ? RCTMultilineTextInputView
         : RCTSinglelineTextInputView;
 
-    const style =
+    let style =
       props.multiline === true
         ? StyleSheet.flatten([styles.multilineInput, props.style])
         : props.style;
+
+    // style = flattenStyle(style);
+    // style = processLayoutProps(style);
 
     const useOnChangeSync =
       (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
@@ -1436,7 +1441,8 @@ function InternalTextInput(props: Props): React.Node {
       />
     );
   } else if (Platform.OS === 'android') {
-    const style = [props.style];
+    let style = [props.style];
+
     const autoCapitalize = props.autoCapitalize || 'sentences';
     const placeholder = props.placeholder ?? '';
     let children = props.children;

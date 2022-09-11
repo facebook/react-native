@@ -169,6 +169,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   const {height, width, ...restProps} = props;
 
   style = flattenStyle(style);
+  style = processLayoutProps(style);
 
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {

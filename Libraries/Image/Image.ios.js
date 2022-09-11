@@ -141,7 +141,8 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   // $FlowFixMe[prop-missing]
   const tintColor = props.tintColor || style.tintColor;
 
-  let flattendStyle = flattenStyle(style);
+  let flattenedStyle = flattenStyle(style);
+  flattenedStyle = processLayoutProps(flattenedStyle);
 
   if (props.children != null) {
     throw new Error(
@@ -178,7 +179,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
             {...restProps}
             accessibilityLabel={accessibilityLabel}
             ref={forwardedRef}
-            style={flattendStyle}
+            style={flattenedStyle}
             resizeMode={resizeMode}
             tintColor={tintColor}
             source={sources}

@@ -21,6 +21,7 @@ import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
 import flattenStyle from '../StyleSheet/flattenStyle';
+import processLayoutProps from '../StyleSheet/processStyles';
 
 /**
  * Text is the fundamental component for displaying text.
@@ -172,18 +173,11 @@ const Text: React.AbstractComponent<
       : processColor(restProps.selectionColor);
 
   let style = flattenStyle(restProps.style);
-
+  style = processLayoutProps(style);
   let _selectable = restProps.selectable;
   if (style?.userSelect != null) {
     _selectable = userSelectToSelectableMap[style.userSelect];
   }
-
-  Object.keys(layoutPropMap).forEach(key => {
-    if (style && style[key] !== undefined) {
-      style[layoutPropMap[key]] = style[key];
-      delete style[key];
-    }
-  });
 
   if (__DEV__) {
     if (PressabilityDebug.isEnabled() && onPress != null) {
@@ -245,21 +239,6 @@ const Text: React.AbstractComponent<
     </TextAncestor.Provider>
   );
 });
-
-const layoutPropMap = {
-  marginInlineStart: 'marginStart',
-  marginInlineEnd: 'marginEnd',
-  marginBlockStart: 'marginTop',
-  marginBlockEnd: 'marginBottom',
-  marginBlock: 'marginVertical',
-  marginInline: 'marginHorizontal',
-  paddingInlineStart: 'paddingStart',
-  paddingInlineEnd: 'paddingEnd',
-  paddingBlockStart: 'paddingTop',
-  paddingBlockEnd: 'paddingBottom',
-  paddingBlock: 'paddingVertical',
-  paddingInline: 'paddingHorizontal',
-};
 
 Text.displayName = 'Text';
 
