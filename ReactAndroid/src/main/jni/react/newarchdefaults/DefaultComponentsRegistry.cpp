@@ -5,33 +5,34 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "RNTesterComponentsRegistry.h"
+#include "DefaultComponentsRegistry.h"
 
 #include <CoreComponentsRegistry.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
-#include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
 
 namespace facebook {
 namespace react {
 
-RNTesterComponentsRegistry::RNTesterComponentsRegistry(
-    ComponentFactory *delegate)
+std::function<void(std::shared_ptr<ComponentDescriptorProviderRegistry const>)>
+    DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint{};
+
+DefaultComponentsRegistry::DefaultComponentsRegistry(ComponentFactory *delegate)
     : delegate_(delegate) {}
 
 std::shared_ptr<ComponentDescriptorProviderRegistry const>
-RNTesterComponentsRegistry::sharedProviderRegistry() {
+DefaultComponentsRegistry::sharedProviderRegistry() {
   auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
 
-  providerRegistry->add(concreteComponentDescriptorProvider<
-                        RNTMyNativeViewComponentDescriptor>());
+  (DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint)(
+      providerRegistry);
 
   return providerRegistry;
 }
 
-jni::local_ref<RNTesterComponentsRegistry::jhybriddata>
-RNTesterComponentsRegistry::initHybrid(
+jni::local_ref<DefaultComponentsRegistry::jhybriddata>
+DefaultComponentsRegistry::initHybrid(
     jni::alias_ref<jclass>,
     ComponentFactory *delegate) {
   auto instance = makeCxxInstance(delegate);
@@ -40,7 +41,7 @@ RNTesterComponentsRegistry::initHybrid(
       [](EventDispatcher::Weak const &eventDispatcher,
          ContextContainer::Shared const &contextContainer)
       -> ComponentDescriptorRegistry::Shared {
-    auto registry = RNTesterComponentsRegistry::sharedProviderRegistry()
+    auto registry = DefaultComponentsRegistry::sharedProviderRegistry()
                         ->createComponentDescriptorRegistry(
                             {eventDispatcher, contextContainer});
 
@@ -59,9 +60,9 @@ RNTesterComponentsRegistry::initHybrid(
   return instance;
 }
 
-void RNTesterComponentsRegistry::registerNatives() {
+void DefaultComponentsRegistry::registerNatives() {
   registerHybrid({
-      makeNativeMethod("initHybrid", RNTesterComponentsRegistry::initHybrid),
+      makeNativeMethod("initHybrid", DefaultComponentsRegistry::initHybrid),
   });
 }
 
