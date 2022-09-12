@@ -10,7 +10,7 @@
 
 'use strict';
 
-const AnimatedNode = require('../Animated/nodes/AnimatedNode');
+import type AnimatedNode from '../Animated/nodes/AnimatedNode';
 
 import type {NativeColorValue} from './PlatformColorValueTypes';
 
@@ -558,6 +558,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderTopWidth?: number | AnimatedNode,
   opacity?: number | AnimatedNode,
   elevation?: number,
+  pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{
@@ -590,7 +591,27 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
     | 'oldstyle-nums'
     | 'lining-nums'
     | 'tabular-nums'
-    | 'proportional-nums',
+    | 'proportional-nums'
+    | 'stylistic-one'
+    | 'stylistic-two'
+    | 'stylistic-three'
+    | 'stylistic-four'
+    | 'stylistic-five'
+    | 'stylistic-six'
+    | 'stylistic-seven'
+    | 'stylistic-eight'
+    | 'stylistic-nine'
+    | 'stylistic-ten'
+    | 'stylistic-eleven'
+    | 'stylistic-twelve'
+    | 'stylistic-thirteen'
+    | 'stylistic-fourteen'
+    | 'stylistic-fifteen'
+    | 'stylistic-sixteen'
+    | 'stylistic-seventeen'
+    | 'stylistic-eighteen'
+    | 'stylistic-nineteen'
+    | 'stylistic-twenty',
   >,
   textShadowOffset?: $ReadOnly<{
     width: number,
@@ -611,6 +632,7 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
   textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed',
   textDecorationColor?: ____ColorValue_Internal,
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
+  userSelect?: 'auto' | 'text' | 'none' | 'contain' | 'all',
   writingDirection?: 'auto' | 'ltr' | 'rtl',
 }>;
 
@@ -622,6 +644,7 @@ export type ____TextStyle_Internal = $ReadOnly<{
 export type ____ImageStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
@@ -634,6 +657,7 @@ export type ____ImageStyle_Internal = $ReadOnly<{
 export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   ...$Exact<____TextStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;

@@ -58,6 +58,10 @@ object ReactMapBufferPropSetter {
   private const val VP_POINTER_ENTER_CAPTURE = 38
   private const val VP_POINTER_LEAVE_CAPTURE = 39
   private const val VP_POINTER_MOVE_CAPTURE = 40
+  private const val VP_POINTER_OUT = 41
+  private const val VP_POINTER_OUT_CAPTURE = 42
+  private const val VP_POINTER_OVER = 43
+  private const val VP_POINTER_OVER_CAPTURE = 44
 
   // Yoga values
   private const val YG_BORDER_WIDTH = 100
@@ -196,6 +200,18 @@ object ReactMapBufferPropSetter {
         }
         VP_POINTER_MOVE_CAPTURE -> {
           viewManager.setPointerMoveCapture(view, entry.booleanValue)
+        }
+        VP_POINTER_OUT -> {
+          viewManager.setPointerOut(view, entry.booleanValue)
+        }
+        VP_POINTER_OUT_CAPTURE -> {
+          viewManager.setPointerOutCapture(view, entry.booleanValue)
+        }
+        VP_POINTER_OVER -> {
+          viewManager.setPointerOver(view, entry.booleanValue)
+        }
+        VP_POINTER_OVER_CAPTURE -> {
+          viewManager.setPointerOverCapture(view, entry.booleanValue)
         }
         VP_REMOVE_CLIPPED_SUBVIEW -> {
           viewManager.setRemoveClippedSubviews(view, entry.booleanValue)

@@ -17,6 +17,8 @@ import PointerEventAttributesHoverablePointers from './W3CPointerEventPlatformTe
 import PointerEventPointerMove from './W3CPointerEventPlatformTests/PointerEventPointerMove';
 import CompatibilityAnimatedPointerMove from './Compatibility/CompatibilityAnimatedPointerMove';
 import PointerEventPrimaryTouchPointer from './W3CPointerEventPlatformTests/PointerEventPrimaryTouchPointer';
+import PointerEventAttributesNoHoverPointers from './W3CPointerEventPlatformTests/PointerEventAttributesNoHoverPointers';
+import PointerEventPointerMoveOnChordedMouseButton from './W3CPointerEventPlatformTests/PointerEventPointerMoveOnChordedMouseButton';
 
 function EventfulView(props: {|
   name: string,
@@ -28,6 +30,10 @@ function EventfulView(props: {|
   onDown?: boolean,
   onDownCapture?: boolean,
   onUp?: boolean,
+  onOver?: boolean,
+  onOverCapture?: boolean,
+  onOut?: boolean,
+  onOutCapture?: boolean,
   onUpCapture?: boolean,
   onMove?: boolean,
   onMoveCapture?: boolean,
@@ -55,6 +61,10 @@ function EventfulView(props: {|
     onUpCapture,
     onMove,
     onMoveCapture,
+    onOut,
+    onOutCapture,
+    onOver,
+    onOverCapture,
     ...restProps
   } = props;
   const [tag, setTag] = React.useState('');
@@ -78,6 +88,10 @@ function EventfulView(props: {|
     onPointerEnterCapture: onEnterCapture ? eventLog('enter capture') : null,
     onPointerMove: onMove ? eventLog('move') : null,
     onPointerMoveCapture: onMoveCapture ? eventLog('move capture') : null,
+    onPointerOut: onOut ? eventLog('out') : null,
+    onPointerOutCapture: onOutCapture ? eventLog('out capture') : null,
+    onPointerOver: onOver ? eventLog('over') : null,
+    onPointerOverCapture: onOverCapture ? eventLog('over capture') : null,
   };
 
   const listeningTo = Object.keys(listeners)
@@ -129,6 +143,8 @@ function RelativeChildExample({log}: {log: string => void}) {
         log={log}
         style={StyleSheet.compose(styles.eventfulView, styles.parent)}
         onUp
+        onOver
+        onOut
         onDown
         onEnter
         onLeave
@@ -136,6 +152,8 @@ function RelativeChildExample({log}: {log: string => void}) {
         <EventfulView
           log={log}
           onUp
+          onOver
+          onOut
           onDown
           onEnter
           onLeave
@@ -144,6 +162,8 @@ function RelativeChildExample({log}: {log: string => void}) {
           <EventfulView
             log={log}
             onUp
+            onOver
+            onOut
             onDown
             onEnter
             onLeave
@@ -241,6 +261,14 @@ export default {
       },
     },
     {
+      name: 'pointerevent_attributes_nohover_pointers',
+      description: '',
+      title: 'Pointer Events no-hover pointer attributes test',
+      render(): React.Node {
+        return <PointerEventAttributesNoHoverPointers />;
+      },
+    },
+    {
       name: 'pointerevent_pointermove',
       description: '',
       title: 'PointerMove test',
@@ -254,6 +282,14 @@ export default {
       title: 'Pointer Event primary touch pointer test',
       render(): React.Node {
         return <PointerEventPrimaryTouchPointer />;
+      },
+    },
+    {
+      name: 'pointerevent_pointermove_on_chorded_mouse_button',
+      description: '',
+      title: 'PointerEvents pointermove on button state changes',
+      render(): React.Node {
+        return <PointerEventPointerMoveOnChordedMouseButton />;
       },
     },
     CompatibilityAnimatedPointerMove,

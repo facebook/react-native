@@ -150,19 +150,11 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   }
 }
 
-- (void)reportJsException:(NSString *)errorStr
+- (void)reportJsException:(nullable NSString *)message
+                    stack:(nullable NSArray<NSDictionary *> *)stack
+              exceptionId:(double)exceptionId
+                  isFatal:(bool)isFatal
 {
-  NSData *jsonData = [errorStr dataUsingEncoding:NSUTF8StringEncoding];
-  NSError *jsonError;
-  NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
-                                                       options:NSJSONWritingPrettyPrinted
-                                                         error:&jsonError];
-
-  NSString *message = [dict objectForKey:@"message"];
-  double exceptionId = [[dict objectForKey:@"id"] doubleValue];
-  NSArray *stack = [dict objectForKey:@"stack"];
-  BOOL isFatal = [[dict objectForKey:@"isFatal"] boolValue];
-
   if (isFatal) {
     [self reportFatalException:message stack:stack exceptionId:exceptionId];
   } else {

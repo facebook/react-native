@@ -12,6 +12,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "ReactCommon",
     ),
+    compiler_flags_pedantic = True,
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
         FBJNI_TARGET,

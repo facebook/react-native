@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <folly/hash/Hash.h>
+#include <folly/Hash.h>
 #include <limits>
 
 namespace facebook {

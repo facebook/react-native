@@ -6,7 +6,14 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions -frtti -std=c++17 -Wall -DLOG_TAG=\"Fabric\")
+add_compile_options(
+        -fexceptions
+        -frtti
+        -std=c++17
+        -Wall
+        -Wpedantic
+        -Wno-gnu-zero-variadic-macro-arguments
+        -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_slider_SRC CONFIGURE_DEPENDS *.cpp platform/android/react/renderer/components/slider/*.cpp)
 add_library(rrc_slider STATIC ${rrc_slider_SRC})
@@ -31,7 +38,7 @@ target_link_libraries(rrc_slider
         react_render_imagemanager
         react_render_mapbuffer
         react_render_uimanager
-        reactnativeutilsjni
+        reactnativejni
         rrc_image
         rrc_view
         yoga

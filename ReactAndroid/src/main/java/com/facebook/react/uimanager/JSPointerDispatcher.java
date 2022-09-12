@@ -22,7 +22,9 @@ import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JSPointerDispatcher handles dispatching pointer events to JS from RootViews. If you implement
@@ -31,20 +33,22 @@ import java.util.List;
  * and also dispatch the appropriate event to JS
  */
 public class JSPointerDispatcher {
+  private static final int UNSET_POINTER_ID = -1;
+  private static final float ONMOVE_EPSILON = 0.1f;
+  private static final String TAG = "POINTER EVENTS";
 
-  private final float[] mTargetCoordinates = new float[2];
-  private int mChildHandlingNativeGesture = -1;
-  private long mDownStartTime = TouchEvent.UNSET;
-  private final ViewGroup mRootViewGroup;
   private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
       new TouchEventCoalescingKeyHelper();
+  private final Map<Integer, List<ViewTarget>> mLastHitPathByPointerId = new HashMap<>();
+  private final Map<Integer, float[]> mLastEventCoodinatesByPointerId = new HashMap<>();
 
-  private static final float ONMOVE_EPSILON = 0.1f;
+  private int mChildHandlingNativeGesture = -1;
+  private int mPrimaryPointerId = UNSET_POINTER_ID;
+  private long mDownStartTime = TouchEvent.UNSET;
+  private long mHoverInteractionKey = TouchEvent.UNSET;
+  private final ViewGroup mRootViewGroup;
 
   // Set globally for hover interactions, referenced for coalescing hover events
-  private long mHoverInteractionKey = TouchEvent.UNSET;
-  private List<ViewTarget> mLastHitPath = Collections.emptyList();
-  private final float[] mLastEventCoordinates = new float[2];
 
   public JSPointerDispatcher(ViewGroup viewGroup) {
     mRootViewGroup = viewGroup;
@@ -59,10 +63,11 @@ public class JSPointerDispatcher {
       return;
     }
 
+    float[] targetCoordinates = new float[2];
     List<ViewTarget> hitPath =
         TouchTargetHelper.findTargetPathAndCoordinatesForTouch(
-            motionEvent.getX(), motionEvent.getY(), mRootViewGroup, mTargetCoordinates);
-    dispatchCancelEvent(hitPath, motionEvent, eventDispatcher);
+            motionEvent.getX(), motionEvent.getY(), mRootViewGroup, targetCoordinates);
+    dispatchCancelEvent(hitPath, motionEvent, eventDispatcher, targetCoordinates);
     mChildHandlingNativeGesture = childView.getId();
   }
 
@@ -71,14 +76,150 @@ public class JSPointerDispatcher {
     mChildHandlingNativeGesture = -1;
   }
 
-  public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
+  private void onUp(
+      int activeTargetTag,
+      List<ViewTarget> hitPath,
+      int surfaceId,
+      MotionEvent motionEvent,
+      EventDispatcher eventDispatcher,
+      float[] targetCoordinates) {
+    if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
+      // End of a "down" coalescing key
+      mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
+      mDownStartTime = TouchEvent.UNSET;
+    } else {
+      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
+    }
+
     boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
+    boolean listeningForUp = isAnyoneListeningForBubblingEvent(hitPath, EVENT.UP, EVENT.UP_CAPTURE);
+    if (listeningForUp) {
+      eventDispatcher.dispatchEvent(
+          PointerEvent.obtain(
+              PointerEventHelper.POINTER_UP,
+              surfaceId,
+              activeTargetTag,
+              motionEvent,
+              targetCoordinates,
+              mPrimaryPointerId));
+    }
+
+    if (!supportsHover) {
+      boolean listeningForOut =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.OUT, EVENT.OUT_CAPTURE);
+      if (listeningForOut) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_OUT,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                targetCoordinates,
+                mPrimaryPointerId));
+      }
+
+      List<ViewTarget> leaveViewTargets =
+          filterByShouldDispatch(hitPath, EVENT.LEAVE, EVENT.LEAVE_CAPTURE, false);
+
+      // target -> root
+      dispatchEventForViewTargets(
+          PointerEventHelper.POINTER_LEAVE,
+          leaveViewTargets,
+          eventDispatcher,
+          surfaceId,
+          motionEvent,
+          targetCoordinates);
+
+      int activePointerId = motionEvent.getPointerId(motionEvent.getActionIndex());
+      mLastHitPathByPointerId.remove(activePointerId);
+      mLastEventCoodinatesByPointerId.remove(activePointerId);
+    }
+
+    if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
+      mPrimaryPointerId = UNSET_POINTER_ID;
+    }
+  }
+
+  private void onDown(
+      int activeTargetTag,
+      List<ViewTarget> hitPath,
+      int surfaceId,
+      MotionEvent motionEvent,
+      EventDispatcher eventDispatcher,
+      float[] targetCoordinates) {
+
+    if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN) {
+      mPrimaryPointerId = motionEvent.getPointerId(0);
+      mDownStartTime = motionEvent.getEventTime();
+      mTouchEventCoalescingKeyHelper.addCoalescingKey(mDownStartTime);
+    } else {
+      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
+    }
+
+    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
+    if (!supportsHover) {
+      // Indirect OVER event dispatches before ENTER
+      boolean listeningForOver =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.OVER, EVENT.OVER_CAPTURE);
+      if (listeningForOver) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_OVER,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                targetCoordinates,
+                mPrimaryPointerId));
+      }
+
+      List<ViewTarget> enterViewTargets =
+          filterByShouldDispatch(hitPath, EVENT.ENTER, EVENT.ENTER_CAPTURE, false);
+
+      // Dispatch root -> target, we need to reverse order of enterViewTargets
+      Collections.reverse(enterViewTargets);
+      dispatchEventForViewTargets(
+          PointerEventHelper.POINTER_ENTER,
+          enterViewTargets,
+          eventDispatcher,
+          surfaceId,
+          motionEvent,
+          targetCoordinates);
+    }
+
+    boolean listeningForDown =
+        isAnyoneListeningForBubblingEvent(hitPath, EVENT.DOWN, EVENT.DOWN_CAPTURE);
+    if (listeningForDown) {
+      eventDispatcher.dispatchEvent(
+          PointerEvent.obtain(
+              PointerEventHelper.POINTER_DOWN,
+              surfaceId,
+              activeTargetTag,
+              motionEvent,
+              targetCoordinates,
+              mPrimaryPointerId));
+    }
+  }
+
+  public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
+    int action = motionEvent.getActionMasked();
+
+    // Ignore hover enter/exit because we determine this ourselves
+    if (action == MotionEvent.ACTION_HOVER_EXIT || action == MotionEvent.ACTION_HOVER_ENTER) {
+      return;
+    }
 
     int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
-    int action = motionEvent.getActionMasked();
+
+    // Only relevant for POINTER_UP/POINTER_DOWN actions, otherwise 0
+    int actionIndex = motionEvent.getActionIndex();
+
+    float[] targetCoordinates = new float[2];
     List<ViewTarget> hitPath =
         TouchTargetHelper.findTargetPathAndCoordinatesForTouch(
-            motionEvent.getX(), motionEvent.getY(), mRootViewGroup, mTargetCoordinates);
+            motionEvent.getX(actionIndex),
+            motionEvent.getY(actionIndex),
+            mRootViewGroup,
+            targetCoordinates);
 
     if (hitPath.isEmpty()) {
       return;
@@ -87,167 +228,55 @@ public class JSPointerDispatcher {
     TouchTargetHelper.ViewTarget activeViewTarget = hitPath.get(0);
     int activeTargetTag = activeViewTarget.getViewId();
 
-    if (supportsHover) {
-      if (action == MotionEvent.ACTION_HOVER_MOVE) {
-        handleHoverEvent(motionEvent, eventDispatcher, surfaceId, hitPath);
-        return;
-      }
-
-      // Ignore hover enter/exit because it's handled in `handleHoverEvent`
-      if (action == MotionEvent.ACTION_HOVER_EXIT || action == MotionEvent.ACTION_HOVER_ENTER) {
-        return;
-      }
-    }
-
-    // First down pointer
-    if (action == MotionEvent.ACTION_DOWN) {
-
-      // Reset mChildHandlingNativeGesture like JSTouchDispatcher does
-      mChildHandlingNativeGesture = -1;
-
-      // Start a "down" coalescing key
-      mDownStartTime = motionEvent.getEventTime();
-      mTouchEventCoalescingKeyHelper.addCoalescingKey(mDownStartTime);
-
-      if (!supportsHover) {
-        List<ViewTarget> enterViewTargets =
-            filterByShouldDispatch(hitPath, EVENT.ENTER, EVENT.ENTER_CAPTURE, false);
-
-        // Dispatch root -> target, we need to reverse order of enterViewTargets
-        Collections.reverse(enterViewTargets);
-        dispatchEventForViewTargets(
-            PointerEventHelper.POINTER_ENTER,
-            enterViewTargets,
-            eventDispatcher,
-            surfaceId,
-            motionEvent);
-      }
-
-      boolean listeningForDown =
-          isAnyoneListeningForBubblingEvent(hitPath, EVENT.DOWN, EVENT.DOWN_CAPTURE);
-      if (listeningForDown) {
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_DOWN,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                mTargetCoordinates));
-      }
-
+    if (action == MotionEvent.ACTION_HOVER_MOVE) {
+      onMove(motionEvent, eventDispatcher, surfaceId, hitPath, targetCoordinates);
       return;
     }
 
+    // TODO(luwe) - Update this to properly handle native gesture handling for non-hover move events
     // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
     // gesture, so we shouldn't send any more pointer events related to it.
     if (mChildHandlingNativeGesture != -1) {
       return;
     }
 
-    // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
-    if (action == MotionEvent.ACTION_POINTER_DOWN) {
-      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
+    switch (action) {
+      case MotionEvent.ACTION_DOWN:
+      case MotionEvent.ACTION_POINTER_DOWN:
+        onDown(
+            activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
+        break;
+      case MotionEvent.ACTION_MOVE:
+        // TODO(luwe) - converge this with ACTION_HOVER_MOVE
+        int coalescingKey = mTouchEventCoalescingKeyHelper.getCoalescingKey(mDownStartTime);
 
-      boolean listeningForDown =
-          isAnyoneListeningForBubblingEvent(hitPath, EVENT.DOWN, EVENT.DOWN_CAPTURE);
-      if (listeningForDown) {
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_DOWN,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                mTargetCoordinates));
-      }
-
-      return;
+        boolean listeningForMove =
+            isAnyoneListeningForBubblingEvent(hitPath, EVENT.MOVE, EVENT.MOVE_CAPTURE);
+        if (listeningForMove) {
+          eventDispatcher.dispatchEvent(
+              PointerEvent.obtain(
+                  PointerEventHelper.POINTER_MOVE,
+                  surfaceId,
+                  activeTargetTag,
+                  motionEvent,
+                  targetCoordinates,
+                  coalescingKey,
+                  mPrimaryPointerId));
+        }
+        break;
+      case MotionEvent.ACTION_UP:
+      case MotionEvent.ACTION_POINTER_UP:
+        onUp(activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
+        break;
+      case MotionEvent.ACTION_CANCEL:
+        dispatchCancelEvent(hitPath, motionEvent, eventDispatcher, targetCoordinates);
+        break;
+      default:
+        FLog.w(
+            ReactConstants.TAG,
+            "Warning : Motion Event was ignored. Action=" + action + " Target=" + activeTargetTag);
+        return;
     }
-
-    if (action == MotionEvent.ACTION_MOVE) {
-      int coalescingKey = mTouchEventCoalescingKeyHelper.getCoalescingKey(mDownStartTime);
-
-      boolean listeningForMove =
-          isAnyoneListeningForBubblingEvent(hitPath, EVENT.MOVE, EVENT.MOVE_CAPTURE);
-      if (listeningForMove) {
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_MOVE,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                mTargetCoordinates,
-                coalescingKey));
-      }
-
-      return;
-    }
-
-    // Exactly one of the pointers goes up, not the last one
-    if (action == MotionEvent.ACTION_POINTER_UP) {
-      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
-
-      boolean listeningForUp =
-          isAnyoneListeningForBubblingEvent(hitPath, EVENT.UP, EVENT.UP_CAPTURE);
-      if (listeningForUp) {
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_UP,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                mTargetCoordinates));
-      }
-
-      return;
-    }
-
-    // Last pointer comes up
-    if (action == MotionEvent.ACTION_UP) {
-
-      // End of a "down" coalescing key
-      mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
-      mDownStartTime = TouchEvent.UNSET;
-
-      boolean listeningForUp =
-          isAnyoneListeningForBubblingEvent(hitPath, EVENT.UP, EVENT.UP_CAPTURE);
-      if (listeningForUp) {
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_UP,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                mTargetCoordinates));
-      }
-
-      if (!supportsHover) {
-        List<ViewTarget> leaveViewTargets =
-            filterByShouldDispatch(hitPath, EVENT.LEAVE, EVENT.LEAVE_CAPTURE, false);
-
-        // target -> root
-        dispatchEventForViewTargets(
-            PointerEventHelper.POINTER_LEAVE,
-            leaveViewTargets,
-            eventDispatcher,
-            surfaceId,
-            motionEvent);
-      }
-      return;
-    }
-
-    if (action == MotionEvent.ACTION_CANCEL) {
-      dispatchCancelEvent(hitPath, motionEvent, eventDispatcher);
-      return;
-    }
-
-    FLog.w(
-        ReactConstants.TAG,
-        "Warning : Motion Event was ignored. Action="
-            + action
-            + " Target="
-            + activeTargetTag
-            + " Supports Hover="
-            + supportsHover);
   }
 
   private static boolean isAnyoneListeningForBubblingEvent(
@@ -301,33 +330,47 @@ public class JSPointerDispatcher {
       List<ViewTarget> viewTargets,
       EventDispatcher dispatcher,
       int surfaceId,
-      MotionEvent motionEvent) {
+      MotionEvent motionEvent,
+      float[] targetCoordinates) {
 
     for (ViewTarget viewTarget : viewTargets) {
       int viewId = viewTarget.getViewId();
       dispatcher.dispatchEvent(
-          PointerEvent.obtain(eventName, surfaceId, viewId, motionEvent, mTargetCoordinates));
+          PointerEvent.obtain(
+              eventName, surfaceId, viewId, motionEvent, targetCoordinates, mPrimaryPointerId));
     }
   }
 
   // called on hover_move motion events only
-  private void handleHoverEvent(
+  private void onMove(
       MotionEvent motionEvent,
       EventDispatcher eventDispatcher,
       int surfaceId,
-      List<ViewTarget> hitPath) {
+      List<ViewTarget> hitPath,
+      float[] targetCoordinates) {
 
     int action = motionEvent.getActionMasked();
     if (action != MotionEvent.ACTION_HOVER_MOVE) {
       return;
     }
 
+    int actionIndex = motionEvent.getActionIndex();
+    int activePointerId = motionEvent.getPointerId(actionIndex);
     float x = motionEvent.getX();
     float y = motionEvent.getY();
+    List<ViewTarget> lastHitPath =
+        mLastHitPathByPointerId.containsKey(activePointerId)
+            ? mLastHitPathByPointerId.get(activePointerId)
+            : new ArrayList<ViewTarget>();
+
+    float[] lastEventCoordinates =
+        mLastEventCoodinatesByPointerId.containsKey(activePointerId)
+            ? mLastEventCoodinatesByPointerId.get(activePointerId)
+            : new float[] {0, 0};
 
     boolean qualifiedMove =
-        (Math.abs(mLastEventCoordinates[0] - x) > ONMOVE_EPSILON
-            || Math.abs(mLastEventCoordinates[1] - y) > ONMOVE_EPSILON);
+        (Math.abs(lastEventCoordinates[0] - x) > ONMOVE_EPSILON
+            || Math.abs(lastEventCoordinates[1] - y) > ONMOVE_EPSILON);
 
     // Early exit
     if (!qualifiedMove) {
@@ -359,15 +402,15 @@ public class JSPointerDispatcher {
     }
 
     // hitState is list ordered from inner child -> parent tag
-    // Traverse hitState back-to-front to find the first divergence with mLastHitState
+    // Traverse hitState back-to-front to find the first divergence with lastHitPath
     // FIXME: this may generate incorrect events when view collapsing changes the hierarchy
     boolean nonDivergentListeningToEnter = false;
     boolean nonDivergentListeningToLeave = false;
     int firstDivergentIndexFromBack = 0;
-    while (firstDivergentIndexFromBack < Math.min(hitPath.size(), mLastHitPath.size())
+    while (firstDivergentIndexFromBack < Math.min(hitPath.size(), lastHitPath.size())
         && hitPath
             .get(hitPath.size() - 1 - firstDivergentIndexFromBack)
-            .equals(mLastHitPath.get(mLastHitPath.size() - 1 - firstDivergentIndexFromBack))) {
+            .equals(lastHitPath.get(lastHitPath.size() - 1 - firstDivergentIndexFromBack))) {
 
       // Track if any non-diverging views are listening to enter/leave
       View nonDivergentViewTargetView =
@@ -385,11 +428,59 @@ public class JSPointerDispatcher {
     }
 
     boolean hasDiverged =
-        firstDivergentIndexFromBack < Math.max(hitPath.size(), mLastHitPath.size());
+        firstDivergentIndexFromBack < Math.max(hitPath.size(), lastHitPath.size());
 
     if (hasDiverged) {
       // If something has changed in either enter/exit, let's start a new coalescing key
       mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mHoverInteractionKey);
+
+      // Out, Leave events
+      if (lastHitPath.size() > 0) {
+        int lastTargetTag = lastHitPath.get(0).getViewId();
+        boolean listeningForOut =
+            isAnyoneListeningForBubblingEvent(lastHitPath, EVENT.OUT, EVENT.OUT_CAPTURE);
+        if (listeningForOut) {
+          eventDispatcher.dispatchEvent(
+              PointerEvent.obtain(
+                  PointerEventHelper.POINTER_OUT,
+                  surfaceId,
+                  lastTargetTag,
+                  motionEvent,
+                  targetCoordinates,
+                  mPrimaryPointerId));
+        }
+
+        // target -> root
+        List<ViewTarget> leaveViewTargets =
+            filterByShouldDispatch(
+                lastHitPath.subList(0, lastHitPath.size() - firstDivergentIndexFromBack),
+                EVENT.LEAVE,
+                EVENT.LEAVE_CAPTURE,
+                nonDivergentListeningToLeave);
+        if (leaveViewTargets.size() > 0) {
+          // We want to dispatch from target -> root, so no need to reverse
+          dispatchEventForViewTargets(
+              PointerEventHelper.POINTER_LEAVE,
+              leaveViewTargets,
+              eventDispatcher,
+              surfaceId,
+              motionEvent,
+              targetCoordinates);
+        }
+      }
+
+      boolean listeningForOver =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.OVER, EVENT.OVER_CAPTURE);
+      if (listeningForOver) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_OVER,
+                surfaceId,
+                targetTag,
+                motionEvent,
+                targetCoordinates,
+                mPrimaryPointerId));
+      }
 
       // target -> root
       List<ViewTarget> enterViewTargets =
@@ -407,24 +498,8 @@ public class JSPointerDispatcher {
             enterViewTargets,
             eventDispatcher,
             surfaceId,
-            motionEvent);
-      }
-
-      // target -> root
-      List<ViewTarget> leaveViewTargets =
-          filterByShouldDispatch(
-              mLastHitPath.subList(0, mLastHitPath.size() - firstDivergentIndexFromBack),
-              EVENT.LEAVE,
-              EVENT.LEAVE_CAPTURE,
-              nonDivergentListeningToLeave);
-      if (leaveViewTargets.size() > 0) {
-        // We want to dispatch from target -> root, so no need to reverse
-        dispatchEventForViewTargets(
-            PointerEventHelper.POINTER_LEAVE,
-            leaveViewTargets,
-            eventDispatcher,
-            surfaceId,
-            motionEvent);
+            motionEvent,
+            targetCoordinates);
       }
     }
 
@@ -438,17 +513,20 @@ public class JSPointerDispatcher {
               surfaceId,
               targetTag,
               motionEvent,
-              mTargetCoordinates,
-              coalescingKey));
+              targetCoordinates,
+              coalescingKey,
+              mPrimaryPointerId));
     }
 
-    mLastHitPath = hitPath;
-    mLastEventCoordinates[0] = x;
-    mLastEventCoordinates[1] = y;
+    mLastHitPathByPointerId.put(activePointerId, hitPath);
+    mLastEventCoodinatesByPointerId.put(activePointerId, new float[] {x, y});
   }
 
   private void dispatchCancelEvent(
-      List<ViewTarget> hitPath, MotionEvent motionEvent, EventDispatcher eventDispatcher) {
+      List<ViewTarget> hitPath,
+      MotionEvent motionEvent,
+      EventDispatcher eventDispatcher,
+      float[] targetCoordinates) {
     // This means the gesture has already ended, via some other CANCEL or UP event. This is not
     // expected to happen very often as it would mean some child View has decided to intercept the
     // touch stream and start a native gesture only upon receiving the UP/CANCEL event.
@@ -470,7 +548,8 @@ public class JSPointerDispatcher {
                     surfaceId,
                     targetTag,
                     motionEvent,
-                    mTargetCoordinates));
+                    targetCoordinates,
+                    mPrimaryPointerId));
       }
 
       List<ViewTarget> leaveViewTargets =
@@ -482,10 +561,21 @@ public class JSPointerDispatcher {
           leaveViewTargets,
           eventDispatcher,
           surfaceId,
-          motionEvent);
+          motionEvent,
+          targetCoordinates);
 
       mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
       mDownStartTime = TouchEvent.UNSET;
+      mPrimaryPointerId = UNSET_POINTER_ID;
     }
+  }
+
+  private void debugPrintHitPath(List<ViewTarget> hitPath) {
+    StringBuilder builder = new StringBuilder("hitPath: ");
+    for (ViewTarget viewTarget : hitPath) {
+      builder.append(String.format("%d, ", viewTarget.getViewId()));
+    }
+
+    FLog.d(TAG, builder.toString());
   }
 }

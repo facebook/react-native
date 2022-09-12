@@ -22,7 +22,6 @@ if (useExperimentalList) {
   VirtualizedListInjection.inject(VirtualizedList_EXPERIMENTAL);
 }
 
-const View = require('../../Components/View/View');
 const VirtualizedList = require('../VirtualizedList');
 
 describe('VirtualizedList', () => {
@@ -737,6 +736,213 @@ it('renders offset cells in initial render when initialScrollIndex set', () => {
   expect(component).toMatchSnapshot();
 });
 
+it('scrolls after content sizing with integer initialScrollIndex', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  const listRef = React.createRef(null);
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialScrollIndex={1}
+      initialNumToRender={4}
+      ref={listRef}
+      {...baseItemProps(items)}
+      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+    />,
+  );
+
+  const {scrollTo} = listRef.current.getScrollRef();
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performAllBatches();
+  });
+
+  expect(scrollTo).toHaveBeenLastCalledWith({y: 10, animated: false});
+});
+
+it('scrolls after content sizing with near-zero initialScrollIndex', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  const listRef = React.createRef(null);
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialScrollIndex={0.0001}
+      initialNumToRender={4}
+      ref={listRef}
+      {...baseItemProps(items)}
+      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+    />,
+  );
+
+  const {scrollTo} = listRef.current.getScrollRef();
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performAllBatches();
+  });
+
+  expect(scrollTo).toHaveBeenLastCalledWith({y: 0.001, animated: false});
+});
+
+it('scrolls after content sizing with near-end initialScrollIndex', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  const listRef = React.createRef(null);
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialScrollIndex={9.9999}
+      initialNumToRender={4}
+      ref={listRef}
+      {...baseItemProps(items)}
+      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+    />,
+  );
+
+  const {scrollTo} = listRef.current.getScrollRef();
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performAllBatches();
+  });
+
+  expect(scrollTo).toHaveBeenLastCalledWith({y: 99.999, animated: false});
+});
+
+it('scrolls after content sizing with fractional initialScrollIndex (getItemLayout())', () => {
+  const items = generateItems(10);
+  const itemHeights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const getItemLayout = (_, index) => ({
+    length: itemHeights[index],
+    offset: itemHeights.slice(0, index).reduce((a, b) => a + b, 0),
+    index,
+  });
+
+  const listRef = React.createRef(null);
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialScrollIndex={1.5}
+      initialNumToRender={4}
+      ref={listRef}
+      getItemLayout={getItemLayout}
+      {...baseItemProps(items)}
+    />,
+  );
+
+  const {scrollTo} = listRef.current.getScrollRef();
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performAllBatches();
+  });
+
+  if (useExperimentalList) {
+    expect(scrollTo).toHaveBeenLastCalledWith({y: 2.0, animated: false});
+  } else {
+    // Legacy incorrect results
+    expect(scrollTo).toHaveBeenLastCalledWith({y: Number.NaN, animated: false});
+  }
+});
+
+it('scrolls after content sizing with fractional initialScrollIndex (cached layout)', () => {
+  const items = generateItems(10);
+  const listRef = React.createRef(null);
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialScrollIndex={1.5}
+      initialNumToRender={4}
+      ref={listRef}
+      {...baseItemProps(items)}
+    />,
+  );
+
+  const {scrollTo} = listRef.current.getScrollRef();
+
+  ReactTestRenderer.act(() => {
+    let y = 0;
+    for (let i = 0; i < 10; ++i) {
+      const height = i + 1;
+      simulateCellLayout(component, items, i, {
+        width: 10,
+        height,
+        x: 0,
+        y,
+      });
+      y += height;
+    }
+
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performAllBatches();
+  });
+
+  if (useExperimentalList) {
+    expect(scrollTo).toHaveBeenLastCalledWith({y: 2.0, animated: false});
+  } else {
+    // Legacy incorrect results
+    expect(scrollTo).toHaveBeenLastCalledWith({y: 8.25, animated: false});
+  }
+});
+
+it('scrolls after content sizing with fractional initialScrollIndex (layout estimation)', () => {
+  const items = generateItems(10);
+  const listRef = React.createRef(null);
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialScrollIndex={1.5}
+      initialNumToRender={4}
+      ref={listRef}
+      {...baseItemProps(items)}
+    />,
+  );
+
+  const {scrollTo} = listRef.current.getScrollRef();
+
+  ReactTestRenderer.act(() => {
+    let y = 0;
+    for (let i = 5; i < 10; ++i) {
+      const height = i + 1;
+      simulateCellLayout(component, items, i, {
+        width: 10,
+        height,
+        x: 0,
+        y,
+      });
+      y += height;
+    }
+
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performAllBatches();
+  });
+
+  expect(scrollTo).toHaveBeenLastCalledWith({y: 12, animated: false});
+});
+
 it('initially renders nothing when initialNumToRender is 0', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
@@ -904,6 +1110,80 @@ it('does not adjust render area until content area layed out', () => {
   // We should not start layout-based logic to expand rendered area until
   // content is layed out. Expect only the 5 initial items to be rendered after
   // processing all batch work, even though the windowSize allows for more.
+  expect(component).toMatchSnapshot();
+});
+
+it('does not move render area when initialScrollIndex is > 0 and offset not yet known', () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
+  // 5 cells should be present starting at index 1, since we have not seen a
+  // scroll event yet for current position.
+  expect(component).toMatchSnapshot();
+});
+
+it('clamps render area when items removed for initialScrollIndex > 0 and scroller position not yet known', () => {
+  const items = generateItems(20);
+  const lessItems = generateItems(15);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={14}
+        windowSize={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    component.update(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={14}
+        windowSize={10}
+        {...baseItemProps(lessItems)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
+  // The initial render range should be adjusted to not overflow the list
   expect(component).toMatchSnapshot();
 });
 
@@ -1541,38 +1821,6 @@ it('calls _onCellLayout properly', () => {
   cell._onLayout(event);
   expect(mock).toHaveBeenCalledWith(event, 'i4', 3);
   expect(mock).not.toHaveBeenCalledWith(event, 'i3', 2);
-});
-
-it('renders list with custom column count', () => {
-  const numColumns = 3;
-  const component = ReactTestRenderer.create(
-    <VirtualizedList
-      data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}, {key: 'i4'}, {key: 'i5'}]}
-      renderItem={({item}) => {
-        return (
-          <View key={item.key}>
-            {item.items.map((subitem, index) => (
-              <item value={subitem.key} key={index} />
-            ))}
-          </View>
-        );
-      }}
-      getItem={(data, index) => {
-        const ret = {key: index, items: []};
-        for (let i = 0; i < numColumns; i++) {
-          const item = data[index * numColumns + i];
-          if (item != null) {
-            ret.items.push(item);
-          }
-        }
-        return ret;
-      }}
-      numColumns={numColumns}
-      getItemCount={data => Math.ceil(data.length / numColumns)}
-      getCellsInItemCount={data => data.length}
-    />,
-  );
-  expect(component).toMatchSnapshot();
 });
 
 if (useExperimentalList) {

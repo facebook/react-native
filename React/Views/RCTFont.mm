@@ -248,6 +248,86 @@ typedef NSDictionary RCTFontVariantDescriptor;
         UIFontFeatureTypeIdentifierKey : @(kNumberSpacingType),
         UIFontFeatureSelectorIdentifierKey : @(kProportionalNumbersSelector),
       },
+      @"stylistic-one" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltOneOnSelector),
+      },
+      @"stylistic-two" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTwoOnSelector),
+      },
+      @"stylistic-three" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltThreeOnSelector),
+      },
+      @"stylistic-four" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFourOnSelector),
+      },
+      @"stylistic-five" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFiveOnSelector),
+      },
+      @"stylistic-six" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSixOnSelector),
+      },
+      @"stylistic-seven" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSevenOnSelector),
+      },
+      @"stylistic-eight" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltEightOnSelector),
+      },
+      @"stylistic-nine" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltNineOnSelector),
+      },
+      @"stylistic-ten" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTenOnSelector),
+      },
+      @"stylistic-eleven" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltElevenOnSelector),
+      },
+      @"stylistic-twelve" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTwelveOnSelector),
+      },
+      @"stylistic-thirteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltThirteenOnSelector),
+      },
+      @"stylistic-fourteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFourteenOnSelector),
+      },
+      @"stylistic-fifteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFifteenOnSelector),
+      },
+      @"stylistic-sixteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSixteenOnSelector),
+      },
+      @"stylistic-seventeen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSeventeenOnSelector),
+      },
+      @"stylistic-eighteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltEighteenOnSelector),
+      },
+      @"stylistic-nineteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltNineteenOnSelector),
+      },
+      @"stylistic-twenty" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTwentyOnSelector),
+      }
     };
   });
   RCTFontVariantDescriptor *value = mapping[json];

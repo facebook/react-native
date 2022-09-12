@@ -148,6 +148,13 @@ const styles = StyleSheet.create({
   singleLineWithHeightTextInput: {
     height: 30,
   },
+  default: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#0f0f0f',
+    flex: 1,
+    fontSize: 13,
+    padding: 4,
+  },
 });
 
 exports.title = 'TextInput';
@@ -348,6 +355,35 @@ exports.examples = ([
     },
   },
   {
+    title: 'Editable and Read only',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            placeholder="editable text input using editable prop"
+            style={styles.default}
+            editable
+          />
+          <TextInput
+            placeholder="uneditable text input using editable prop"
+            style={styles.default}
+            editable={false}
+          />
+          <TextInput
+            placeholder="editable text input using readOnly prop"
+            style={styles.default}
+            readOnly={false}
+          />
+          <TextInput
+            placeholder="uneditable text input using readOnly prop"
+            style={styles.default}
+            readOnly
+          />
+        </View>
+      );
+    },
+  },
+  {
     title: 'Fixed number of lines',
     platform: 'android',
     render: function (): React.Node {
@@ -356,12 +392,22 @@ exports.examples = ([
           <TextInput
             numberOfLines={2}
             multiline={true}
-            placeholder="Two line input"
+            placeholder="Two line input using numberOfLines prop"
           />
           <TextInput
             numberOfLines={5}
             multiline={true}
-            placeholder="Five line input"
+            placeholder="Five line input using numberOfLines prop"
+          />
+          <TextInput
+            rows={2}
+            multiline={true}
+            placeholder="Two line input using rows prop"
+          />
+          <TextInput
+            rows={5}
+            multiline={true}
+            placeholder="Five line input using rows prop"
           />
         </View>
       );
@@ -387,6 +433,35 @@ exports.examples = ([
             </Text>
             generic generic generic
           </AutogrowingTextInputExample>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Text Auto Complete',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            autoComplete="country"
+            placeholder="country"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="postal-address-country"
+            placeholder="postal-address-country"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="one-time-code"
+            placeholder="one-time-code"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="sms-otp"
+            placeholder="sms-otp"
+            style={styles.default}
+          />
         </View>
       );
     },

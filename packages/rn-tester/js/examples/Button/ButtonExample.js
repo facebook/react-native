@@ -177,6 +177,28 @@ exports.examples = [
     },
   },
   {
+    title: 'Button with aria-label="label"',
+    description: ('Note: This prop changes the text that a screen ' +
+      'reader announces (there are no visual differences).': string),
+    render: function (): React.Node {
+      return (
+        <RNTesterThemeContext.Consumer>
+          {theme => {
+            return (
+              <Button
+                onPress={() => onButtonPress('submitted')}
+                testID="aria_label_button"
+                color={theme.LinkColor}
+                title="Submit Application"
+                aria-label="Press to submit your application!"
+              />
+            );
+          }}
+        </RNTesterThemeContext.Consumer>
+      );
+    },
+  },
+  {
     title: 'Button with accessibilityState={{disabled: true}}',
     description:
       ('Note: This prop will announce on TalkBack that the button is disabled. ' +

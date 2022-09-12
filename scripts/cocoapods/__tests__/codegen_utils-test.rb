@@ -13,6 +13,7 @@ require_relative "./test_utils/PathnameMock.rb"
 require_relative "./test_utils/FinderMock.rb"
 require_relative "./test_utils/CodegenUtilsMock.rb"
 require_relative "./test_utils/CodegenScriptPhaseExtractorMock.rb"
+require_relative "./test_utils/FileUtilsMock.rb"
 
 class CodegenUtilsTests < Test::Unit::TestCase
     :base_path
@@ -29,6 +30,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
     end
 
     def teardown
+        FileUtils::FileUtilsStorage.reset()
         Finder.reset()
         Pathname.reset()
         Pod::UI.reset()
@@ -125,7 +127,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         codegen = CodegenUtils.new().get_codegen_config_from_file('package.json', 'codegenConfig')
 
         # Assert
-        assert_equal(codegen, {'libraries' => []})
+        assert_equal(codegen, {})
     end
 
     def testGetCodegenConfigFromFile_whenFileExistsButHasNoKey_returnEmpty
@@ -137,7 +139,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         codegen = CodegenUtils.new().get_codegen_config_from_file('package.json', 'codegen')
 
         # Assert
-        assert_equal(codegen, {'libraries' => []})
+        assert_equal(codegen, {})
     end
 
     def testGetCodegenConfigFromFile_whenFileExistsAndHasKey_returnObject
@@ -211,19 +213,6 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "${PODS_ROOT}/../MyFabricComponent1NativeComponent.js",
             "${PODS_ROOT}/../NativeModule1.js",
         ])
-    end
-
-    def testGetListOfJSSpecs_whenMisconfigured_aborts
-        # Arrange
-        app_codegen_config = {}
-        app_path = "~/MyApp/"
-        # Act
-        assert_raises() {
-           files = CodegenUtils.new().get_list_of_js_specs(app_codegen_config, app_path)
-        }
-        # Assert
-        assert_equal(Pod::UI.collected_warns , ["[Error] Codegen not properly configured. Please add the `codegenConfig` entry to your `package.json`"])
-
     end
 
     # ================================== #
@@ -379,6 +368,65 @@ class CodegenUtilsTests < Test::Unit::TestCase
                     "-c", ""]
             }
         ])
+    end
+
+    # ============================= #
+    # Test - CleanUpCodegenFolder #
+    # ============================= #
+
+    def testCleanUpCodegenFolder_whenCleanupDone_doNothing
+        # Arrange
+        CodegenUtils.set_cleanup_done(true)
+        codegen_dir = "build/generated/ios"
+
+        # Act
+        CodegenUtils.clean_up_build_folder(@base_path, codegen_dir)
+
+        # Assert
+        assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)
+        assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [])
+        assert_equal(CodegenUtils.cleanup_done(), true)
+    end
+
+    def testCleanUpCodegenFolder_whenFolderDoesNotExists_markAsCleanupDone
+        # Arrange
+        CodegenUtils.set_cleanup_done(false)
+        codegen_dir = "build/generated/ios"
+
+        # Act
+        CodegenUtils.clean_up_build_folder(@base_path, codegen_dir)
+
+        # Assert
+        assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)
+        assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [])
+        assert_equal(Dir.glob_invocation, [])
+        assert_equal(CodegenUtils.cleanup_done(), true)
+    end
+
+    def testCleanUpCodegenFolder_whenFolderExists_deleteItAndSetCleanupDone
+        # Arrange
+        CodegenUtils.set_cleanup_done(false)
+        codegen_dir = "build/generated/ios"
+        codegen_path = "#{@base_path}/#{codegen_dir}"
+        globs = [
+            "/MyModuleSpecs/MyModule.h",
+            "#{codegen_path}/MyModuleSpecs/MyModule.mm",
+            "#{codegen_path}/react/components/MyComponent/ShadowNode.h",
+            "#{codegen_path}/react/components/MyComponent/ShadowNode.mm",
+        ]
+        Dir.mocked_existing_dirs(codegen_path)
+        Dir.mocked_existing_globs(globs, "#{codegen_path}/*")
+
+        # Act
+        CodegenUtils.clean_up_build_folder(@base_path, codegen_dir)
+
+        # Assert
+        assert_equal(Dir.exist_invocation_params, [codegen_path])
+        assert_equal(Dir.glob_invocation, ["#{codegen_path}/*"])
+        assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 1)
+        assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [globs])
+        assert_equal(CodegenUtils.cleanup_done(), true)
+
     end
 
     private

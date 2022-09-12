@@ -6,6 +6,7 @@
  */
 
 #include <memory>
+#include <vector>
 
 #include <gtest/gtest.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
@@ -148,6 +149,30 @@ TEST(MapBufferTest, testMapEntries) {
   EXPECT_EQ(readMap2.count(), 2);
   EXPECT_EQ(readMap2.getString(0), "This is a test");
   EXPECT_EQ(readMap2.getInt(1), 1234);
+}
+
+TEST(MapBufferTest, testMapListEntries) {
+  std::vector<MapBuffer> mapBufferList;
+  auto builder = MapBufferBuilder();
+  builder.putString(0, "This is a test");
+  builder.putInt(1, 1234);
+  mapBufferList.push_back(builder.build());
+
+  auto builder2 = MapBufferBuilder();
+  builder2.putInt(2, 4321);
+  builder2.putDouble(3, 908.1);
+  mapBufferList.push_back(builder2.build());
+
+  auto builder3 = MapBufferBuilder();
+  builder3.putMapBufferList(5, mapBufferList);
+  auto map = builder3.build();
+
+  std::vector<MapBuffer> mapBufferList2 = map.getMapBufferList(5);
+
+  EXPECT_EQ(mapBufferList2.size(), 2);
+  EXPECT_EQ(mapBufferList2[0].getString(0), "This is a test");
+  EXPECT_EQ(mapBufferList2[0].getInt(1), 1234);
+  EXPECT_EQ(mapBufferList2[1].getDouble(3), 908.1);
 }
 
 TEST(MapBufferTest, testMapRandomAccess) {

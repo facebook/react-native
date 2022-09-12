@@ -13,10 +13,15 @@
 import type {SyntheticEvent, LayoutEvent} from '../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../StyleSheet/EdgeInsetsPropType';
 import type {ImageSource} from './ImageSource';
-import type {ViewStyleProp, ImageStyleProp} from '../StyleSheet/StyleSheet';
+import type {
+  ColorValue,
+  ViewStyleProp,
+  ImageStyleProp,
+} from '../StyleSheet/StyleSheet';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {Node, Ref} from 'react';
 import typeof Image from './Image';
+import type {DimensionValue} from '../StyleSheet/StyleSheetTypes';
 
 export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -83,6 +88,12 @@ export type ImageProps = {|
   accessibilityLabel?: ?Stringish,
 
   /**
+   * Alias for accessibilityLabel
+   * See https://reactnative.dev/docs/image#accessibilitylabel
+   */
+  'aria-label'?: ?Stringish,
+
+  /**
    * blurRadius: the blur radius of the blur filter added to the image
    *
    * See https://reactnative.dev/docs/image#blurradius
@@ -93,6 +104,28 @@ export type ImageProps = {|
    * See https://reactnative.dev/docs/image#capinsets
    */
   capInsets?: ?EdgeInsetsProp,
+
+  /**
+   * Adds the CORS related header to the request.
+   * Similar to crossorigin from HTML.
+   *
+   * See https://reactnative.dev/docs/image#crossorigin
+   */
+  crossOrigin?: ?('anonymous' | 'use-credentials'),
+
+  /**
+   * Height of the image component.
+   *
+   * See https://reactnative.dev/docs/image#height
+   */
+  height?: number,
+
+  /**
+   * Width of the image component.
+   *
+   * See https://reactnative.dev/docs/image#width
+   */
+  width?: number,
 
   /**
    * Invoked on load error with `{nativeEvent: {error}}`.
@@ -155,6 +188,23 @@ export type ImageProps = {|
   style?: ?ImageStyleProp,
 
   /**
+   * A string indicating which referrer to use when fetching the resource.
+   * Similar to referrerpolicy from HTML.
+   *
+   * See https://reactnative.dev/docs/image#referrerpolicy
+   */
+  referrerPolicy?: ?(
+    | 'no-referrer'
+    | 'no-referrer-when-downgrade'
+    | 'origin'
+    | 'origin-when-cross-origin'
+    | 'same-origin'
+    | 'strict-origin'
+    | 'strict-origin-when-cross-origin'
+    | 'unsafe-url'
+  ),
+
+  /**
    * Determines how to resize the image when the frame doesn't match the raw
    * image dimensions.
    *
@@ -170,7 +220,27 @@ export type ImageProps = {|
    */
   testID?: ?string,
 
-  src?: empty,
+  /**
+   * Changes the color of all the non-transparent pixels to the tintColor.
+   *
+   * See https://reactnative.dev/docs/image#tintcolor
+   */
+  tintColor?: ColorValue,
+
+  /**
+   * A string representing the resource identifier for the image. Similar to
+   * src from HTML.
+   *
+   * See https://reactnative.dev/docs/image#src
+   */
+  src?: ?string,
+
+  /**
+   * Similar to srcset from HTML.
+   *
+   * See https://reactnative.dev/docs/image#srcset
+   */
+  srcSet?: ?string,
   children?: empty,
 |};
 

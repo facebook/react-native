@@ -22,7 +22,7 @@ void AndroidSwitchShadowNode::setAndroidSwitchMeasurementsManager(
 #pragma mark - LayoutableShadowNode
 
 Size AndroidSwitchShadowNode::measureContent(
-    LayoutContext const &layoutContext,
+    LayoutContext const & /*layoutContext*/,
     LayoutConstraints const &layoutConstraints) const {
   return measurementsManager_->measure(getSurfaceId(), layoutConstraints);
 }

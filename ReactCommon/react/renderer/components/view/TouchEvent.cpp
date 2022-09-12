@@ -12,7 +12,7 @@ namespace react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(TouchEvent const &touchEvent) {
+std::string getDebugName(TouchEvent const & /*touchEvent*/) {
   return "TouchEvent";
 }
 

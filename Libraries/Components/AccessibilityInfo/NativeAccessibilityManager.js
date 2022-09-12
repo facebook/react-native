@@ -28,6 +28,10 @@ export interface Spec extends TurboModule {
     onSuccess: (isReduceMotionEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
+  +getCurrentPrefersCrossFadeTransitionsState?: (
+    onSuccess: (prefersCrossFadeTransitions: boolean) => void,
+    onError: (error: Object) => void,
+  ) => void;
   +getCurrentReduceTransparencyState: (
     onSuccess: (isReduceTransparencyEnabled: boolean) => void,
     onError: (error: Object) => void,

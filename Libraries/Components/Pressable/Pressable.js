@@ -50,8 +50,29 @@ type Props = $ReadOnly<{|
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
+  'aria-valuemax'?: AccessibilityValue['max'],
+  'aria-valuemin'?: AccessibilityValue['min'],
+  'aria-valuenow'?: AccessibilityValue['now'],
+  'aria-valuetext'?: AccessibilityValue['text'],
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
+  /**
+   * A value indicating whether the accessibility elements contained within
+   * this accessibility element are hidden.
+   */
+  'aria-hidden'?: ?boolean,
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
   focusable?: ?boolean,
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
@@ -164,6 +185,11 @@ type Props = $ReadOnly<{|
    * Duration to wait after press down before calling `onPressIn`.
    */
   unstable_pressDelay?: ?number,
+  /**
+   * Web to Native Accessibilty props
+   * https://github.com/facebook/react-native/issues/34424
+   */
+  'aria-label'?: ?string,
 |}>;
 
 /**
@@ -175,8 +201,16 @@ type Props = $ReadOnly<{|
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
     accessible,
+    accessibilityState,
+    'aria-live': ariaLive,
     android_disableSound,
     android_ripple,
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-label': ariaLabel,
+    'aria-selected': ariaSelected,
     cancelable,
     children,
     delayHoverIn,
@@ -205,17 +239,37 @@ function Pressable(props: Props, forwardedRef): React.Node {
 
   const [pressed, setPressed] = usePressState(testOnly_pressed === true);
 
-  const accessibilityState =
-    disabled != null
-      ? {...props.accessibilityState, disabled}
-      : props.accessibilityState;
+  let _accessibilityState = {
+    busy: ariaBusy ?? accessibilityState?.busy,
+    checked: ariaChecked ?? accessibilityState?.checked,
+    disabled: ariaDisabled ?? accessibilityState?.disabled,
+    expanded: ariaExpanded ?? accessibilityState?.expanded,
+    selected: ariaSelected ?? accessibilityState?.selected,
+  };
 
+  _accessibilityState =
+    disabled != null ? {..._accessibilityState, disabled} : _accessibilityState;
+
+  const accessibilityValue = {
+    max: props['aria-valuemax'] ?? props.accessibilityValue?.max,
+    min: props['aria-valuemin'] ?? props.accessibilityValue?.min,
+    now: props['aria-valuenow'] ?? props.accessibilityValue?.now,
+    text: props['aria-valuetext'] ?? props.accessibilityValue?.text,
+  };
+
+  const accessibilityLiveRegion =
+    ariaLive === 'off' ? 'none' : ariaLive ?? props.accessibilityLiveRegion;
+
+  const accessibilityLabel = ariaLabel ?? props.accessibilityLabel;
   const restPropsWithDefaults: React.ElementConfig<typeof View> = {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
-    accessibilityState,
+    accessibilityLiveRegion,
+    accessibilityLabel,
+    accessibilityState: _accessibilityState,
     focusable: focusable !== false,
+    accessibilityValue,
     hitSlop,
   };
 

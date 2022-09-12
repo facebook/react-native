@@ -19,7 +19,7 @@ const getPolyfills = require('./rn-get-polyfills');
 module.exports = {
   resolver: {
     // $FlowFixMe[signature-verification-failure] Can't infer RegExp type.
-    blockList: /buck-out/,
+    blockList: [/buck-out/, /sdks\/hermes/],
     extraNodeModules: {
       'react-native': __dirname,
     },

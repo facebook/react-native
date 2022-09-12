@@ -57,6 +57,7 @@ export type TextProps = $ReadOnly<{|
   accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
+  'aria-label'?: ?string,
 
   /**
    * Whether font should be scaled down automatically.
@@ -77,6 +78,17 @@ export type TextProps = $ReadOnly<{|
    *
    */
   android_hyphenationFrequency?: ?('normal' | 'none' | 'full'),
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
   children?: ?Node,
 
   /**
@@ -86,6 +98,13 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text#ellipsizemode
    */
   ellipsizeMode?: ?('clip' | 'head' | 'middle' | 'tail'),
+
+  /**
+   * Used to locate this view from native code.
+   *
+   * See https://reactnative.dev/docs/text#nativeid
+   */
+  id?: string,
 
   /**
    * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.

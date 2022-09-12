@@ -14,9 +14,19 @@ const {compareSnaps, compareTsArraySnaps} = require('../compareSnaps.js');
 
 const flowFixtures = require('../../flow/components/__test_fixtures__/fixtures.js');
 const flowSnaps = require('../../../../src/parsers/flow/components/__tests__/__snapshots__/component-parser-test.js.snap');
+const flowExtraCases = [];
 const tsFixtures = require('../../typescript/components/__test_fixtures__/fixtures.js');
 const tsSnaps = require('../../../../src/parsers/typescript/components/__tests__/__snapshots__/typescript-component-parser-test.js.snap');
 const tsExtraCases = ['ARRAY2_PROP_TYPES_NO_EVENTS'];
+const ignoredCases = ['ARRAY_PROP_TYPES_NO_EVENTS'];
 
-compareSnaps(flowFixtures, flowSnaps, [], tsFixtures, tsSnaps, tsExtraCases);
+compareSnaps(
+  flowFixtures,
+  flowSnaps,
+  flowExtraCases,
+  tsFixtures,
+  tsSnaps,
+  tsExtraCases,
+  ignoredCases,
+);
 compareTsArraySnaps(tsSnaps, tsExtraCases);

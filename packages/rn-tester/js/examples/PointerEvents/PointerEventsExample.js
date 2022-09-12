@@ -95,6 +95,36 @@ class NoneExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
+class NoneStyleExample extends React.Component<$FlowFixMeProps> {
+  render(): React.Node {
+    return (
+      <View
+        onTouchStart={() => this.props.onLog('A unspecified touched')}
+        style={styles.box}>
+        <DemoText style={styles.text}>A: unspecified</DemoText>
+        <View
+          onTouchStart={() => this.props.onLog('B none touched')}
+          style={[
+            styles.box,
+            styles.boxPassedThrough,
+            styles.pointerEventNone,
+          ]}>
+          <DemoText style={[styles.text, styles.textPassedThrough]}>
+            B: none
+          </DemoText>
+          <View
+            onTouchStart={() => this.props.onLog('C unspecified touched')}
+            style={[styles.box, styles.boxPassedThrough]}>
+            <DemoText style={[styles.text, styles.textPassedThrough]}>
+              C: unspecified
+            </DemoText>
+          </View>
+        </View>
+      </View>
+    );
+  }
+}
+
 /**
  * Special demo text that makes itself untouchable so that it doesn't destroy
  * the experiment and confuse the output.
@@ -142,6 +172,41 @@ class BoxNoneExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
+class BoxNoneStyleExample extends React.Component<$FlowFixMeProps> {
+  render(): React.Node {
+    return (
+      <View
+        onTouchStart={() => this.props.onLog('A unspecified touched')}
+        style={styles.box}>
+        <DemoText style={styles.text}>A: unspecified</DemoText>
+        <View
+          onTouchStart={() => this.props.onLog('B box-none touched')}
+          style={[
+            styles.box,
+            styles.boxPassedThrough,
+            styles.pointerEventBoxNone,
+          ]}>
+          <DemoText style={[styles.text, styles.textPassedThrough]}>
+            B: box-none
+          </DemoText>
+          <View
+            onTouchStart={() => this.props.onLog('C unspecified touched')}
+            style={styles.box}>
+            <DemoText style={styles.text}>C: unspecified</DemoText>
+          </View>
+          <View
+            onTouchStart={() =>
+              this.props.onLog('C explicitly unspecified touched')
+            }
+            style={[styles.box, styles.pointerEventAuto]}>
+            <DemoText style={[styles.text]}>C: explicitly unspecified</DemoText>
+          </View>
+        </View>
+      </View>
+    );
+  }
+}
+
 class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
     return (
@@ -167,6 +232,43 @@ class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
               this.props.onLog('C explicitly unspecified touched')
             }
             style={[styles.box, styles.boxPassedThrough]}>
+            <DemoText style={[styles.text, styles.textPassedThrough]}>
+              C: explicitly unspecified
+            </DemoText>
+          </View>
+        </View>
+      </View>
+    );
+  }
+}
+
+class BoxOnlyStyleExample extends React.Component<$FlowFixMeProps> {
+  render(): React.Node {
+    return (
+      <View
+        onTouchStart={() => this.props.onLog('A unspecified touched')}
+        style={styles.box}>
+        <DemoText style={styles.text}>A: unspecified</DemoText>
+        <View
+          onTouchStart={() => this.props.onLog('B box-only touched')}
+          style={[styles.box, styles.pointerEventBoxOnly]}>
+          <DemoText style={styles.text}>B: box-only</DemoText>
+          <View
+            onTouchStart={() => this.props.onLog('C unspecified touched')}
+            style={[styles.box, styles.boxPassedThrough]}>
+            <DemoText style={[styles.text, styles.textPassedThrough]}>
+              C: unspecified
+            </DemoText>
+          </View>
+          <View
+            onTouchStart={() =>
+              this.props.onLog('C explicitly unspecified touched')
+            }
+            style={[
+              styles.box,
+              styles.boxPassedThrough,
+              styles.pointerEventAuto,
+            ]}>
             <DemoText style={[styles.text, styles.textPassedThrough]}>
               C: explicitly unspecified
             </DemoText>
@@ -243,14 +345,32 @@ const exampleClasses: Array<ExampleClass> = [
       '`none` causes touch events on the container and its child components to pass through to the parent container.',
   },
   {
+    Component: NoneStyleExample,
+    title: '`none` style',
+    description:
+      '`none` causes touch events on the container and its child components to pass through to the parent container.',
+  },
+  {
     Component: BoxNoneExample,
     title: '`box-none`',
     description:
       '`box-none` causes touch events on the container to pass through and will only detect touch events on its child components.',
   },
   {
+    Component: BoxNoneStyleExample,
+    title: '`box-none` style',
+    description:
+      '`box-none` causes touch events on the container to pass through and will only detect touch events on its child components.',
+  },
+  {
     Component: BoxOnlyExample,
     title: '`box-only`',
+    description:
+      "`box-only` causes touch events on the container's child components to pass through and will only detect touch events on the container itself.",
+  },
+  {
+    Component: BoxOnlyStyleExample,
+    title: '`box-only` style',
     description:
       "`box-only` causes touch events on the container's child components to pass through and will only detect touch events on the container itself.",
   },
@@ -325,6 +445,18 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#f0f0f0',
     backgroundColor: '#f9f9f9',
+  },
+  pointerEventBoxNone: {
+    pointerEvents: 'box-none',
+  },
+  pointerEventBoxOnly: {
+    pointerEvents: 'box-only',
+  },
+  pointerEventNone: {
+    pointerEvents: 'none',
+  },
+  pointerEventAuto: {
+    pointerEvents: 'auto',
   },
 });
 

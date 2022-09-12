@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager.events;
 
+import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import androidx.annotation.Nullable;
@@ -22,8 +23,6 @@ public class PointerEventHelper {
   public static final String POINTER_TYPE_MOUSE = "mouse";
   public static final String POINTER_TYPE_UNKNOWN = "";
 
-  private static final int X_FLAG_SUPPORTS_HOVER = 0x01000000;
-
   public static enum EVENT {
     CANCEL,
     CANCEL_CAPTURE,
@@ -37,6 +36,10 @@ public class PointerEventHelper {
     MOVE_CAPTURE,
     UP,
     UP_CAPTURE,
+    OUT,
+    OUT_CAPTURE,
+    OVER,
+    OVER_CAPTURE,
   };
 
   public static final String POINTER_CANCEL = "topPointerCancel";
@@ -45,6 +48,8 @@ public class PointerEventHelper {
   public static final String POINTER_LEAVE = "topPointerLeave";
   public static final String POINTER_MOVE = "topPointerMove";
   public static final String POINTER_UP = "topPointerUp";
+  public static final String POINTER_OVER = "topPointerOver";
+  public static final String POINTER_OUT = "topPointerOut";
 
   /** We don't dispatch capture events from native; that's currently handled by JS. */
   public static @Nullable String getDispatchableEventName(EVENT event) {
@@ -61,10 +66,22 @@ public class PointerEventHelper {
         return PointerEventHelper.POINTER_CANCEL;
       case UP:
         return PointerEventHelper.POINTER_UP;
+      case OVER:
+        return PointerEventHelper.POINTER_OVER;
+      case OUT:
+        return PointerEventHelper.POINTER_OUT;
       default:
         FLog.e(ReactConstants.TAG, "No dispatchable event name for type: " + event);
         return null;
     }
+  }
+
+  public static boolean isPrimary(int pointerId, int primaryPointerId, MotionEvent event) {
+    if (supportsHover(event)) {
+      return true;
+    }
+
+    return pointerId == primaryPointerId;
   }
 
   public static String getW3CPointerType(final int toolType) {
@@ -114,6 +131,18 @@ public class PointerEventHelper {
       case MOVE_CAPTURE:
         value = view.getTag(R.id.pointer_move_capture);
         break;
+      case OVER:
+        value = view.getTag(R.id.pointer_over);
+        break;
+      case OVER_CAPTURE:
+        value = view.getTag(R.id.pointer_over_capture);
+        break;
+      case OUT:
+        value = view.getTag(R.id.pointer_out);
+        break;
+      case OUT_CAPTURE:
+        value = view.getTag(R.id.pointer_out_capture);
+        break;
     }
 
     if (value == null) {
@@ -140,6 +169,8 @@ public class PointerEventHelper {
       case POINTER_MOVE:
       case POINTER_ENTER:
       case POINTER_LEAVE:
+      case POINTER_OVER:
+      case POINTER_OUT:
         return EventCategoryDef.CONTINUOUS;
     }
 
@@ -147,26 +178,7 @@ public class PointerEventHelper {
   }
 
   public static boolean supportsHover(MotionEvent motionEvent) {
-    // A flag has been set on the MotionEvent to indicate it supports hover
-    // See D36958947 on justifications for this.
-    // TODO(luwe): Leverage previous events to determine if MotionEvent
-    //  is from an input device that supports hover
-    boolean supportsHoverFlag = (motionEvent.getFlags() & X_FLAG_SUPPORTS_HOVER) != 0;
-    if (supportsHoverFlag) {
-      return true;
-    }
-
-    int toolType = motionEvent.getToolType(motionEvent.getActionIndex());
-    String pointerType = getW3CPointerType(toolType);
-
-    if (pointerType.equals(POINTER_TYPE_MOUSE)) {
-      return true;
-    } else if (pointerType.equals(POINTER_TYPE_PEN)) {
-      return true; // true?
-    } else if (pointerType.equals(POINTER_TYPE_TOUCH)) {
-      return false;
-    }
-
-    return false;
+    int source = motionEvent.getSource();
+    return source == InputDevice.SOURCE_MOUSE || source == InputDevice.SOURCE_CLASS_POINTER;
   }
 }

@@ -19,6 +19,7 @@ require_relative './cocoapods/local_podspec_patch.rb'
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
+$FOLLY_VERSION = '2021.07.22.00'
 
 $START_TIME = Time.now.to_i
 
@@ -38,15 +39,16 @@ def use_react_native! (
   fabric_enabled: false,
   new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == '1',
   production: ENV['PRODUCTION'] == '1',
-  hermes_enabled: true,
+  hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '')
 
-  prefix = path
+  CodegenUtils.clean_up_build_folder(app_path, $CODEGEN_OUTPUT_DIR)
 
-  # The version of folly that must be used
-  folly_version = '2021.07.22.00'
+  fabric_enabled = fabric_enabled || new_arch_enabled
+
+  prefix = path
 
   ReactNativePodsUtils.warn_if_not_on_arm64()
 
@@ -58,6 +60,7 @@ def use_react_native! (
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/"
   pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
+  pod 'React-RCTAppDelegate', :path => "#{prefix}/Libraries/AppDelegate"
   pod 'React-RCTActionSheet', :path => "#{prefix}/Libraries/ActionSheetIOS"
   pod 'React-RCTAnimation', :path => "#{prefix}/Libraries/NativeAnimation"
   pod 'React-RCTBlob', :path => "#{prefix}/Libraries/Blob"
@@ -95,7 +98,7 @@ def use_react_native! (
     :fabric_enabled => fabric_enabled,
     :codegen_output_dir => $CODEGEN_OUTPUT_DIR,
     :package_json_file => File.join(__dir__, "..", "package.json"),
-    :folly_version => folly_version
+    :folly_version => $FOLLY_VERSION
   )
 
   pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
@@ -124,6 +127,23 @@ def use_react_native! (
       Pod::UI.warn "Automatically updating #{pods_to_update.join(", ")} has failed, please run `pod update #{pods_to_update.join(" ")} --no-repo-update` manually to fix the issue."
     end
   end
+end
+
+# Getter to retrieve the folly flags in case contributors need to apply them manually.
+#
+# Returns: the folly compiler flags
+def folly_flags()
+  return NewArchitectureHelper.folly_compiler_flags
+end
+
+# This function can be used by library developer to prepare their modules for the New Architecture.
+# It passes the Folly Flags to the module, it configures the search path and installs some New Architecture specific dependencies.
+#
+# Parameters:
+# - spec: The spec that has to be configured with the New Architecture code
+# - new_arch_enabled: Whether the module should install dependencies for the new architecture
+def install_modules_dependencies(spec, new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == "1")
+  NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, $FOLLY_VERSION)
 end
 
 # It returns the default flags.
@@ -290,5 +310,5 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # We need to make a patch to RCT-Folly - remove the `__IPHONE_OS_VERSION_MIN_REQUIRED` check.
   # See https://github.com/facebook/flipper/issues/834 for more details.
   time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
-  `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' #{time_header}`
+  `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' '#{time_header}'`
 end

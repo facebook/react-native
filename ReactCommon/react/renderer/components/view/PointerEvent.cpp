@@ -12,7 +12,7 @@ namespace react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(PointerEvent const &pointerEvent) {
+std::string getDebugName(PointerEvent const & /*pointerEvent*/) {
   return "PointerEvent";
 }
 
@@ -40,6 +40,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"altKey", getDebugDescription(pointerEvent.altKey, options)},
       {"metaKey", getDebugDescription(pointerEvent.metaKey, options)},
       {"isPrimary", getDebugDescription(pointerEvent.isPrimary, options)},
+      {"button", getDebugDescription(pointerEvent.button, options)},
   };
 }
 

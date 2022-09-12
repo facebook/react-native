@@ -13,7 +13,7 @@
 const AnimatedValue = require('./nodes/AnimatedValue');
 const AnimatedValueXY = require('./nodes/AnimatedValueXY');
 const NativeAnimatedHelper = require('./NativeAnimatedHelper');
-const ReactNative = require('../Renderer/shims/ReactNative');
+const {findNodeHandle} = require('../ReactNative/RendererProxy');
 
 const invariant = require('invariant');
 
@@ -67,7 +67,7 @@ function attachNativeEvent(
   // Assume that the event containing `nativeEvent` is always the first argument.
   traverse(argMapping[0].nativeEvent, []);
 
-  const viewTag = ReactNative.findNodeHandle(viewRef);
+  const viewTag = findNodeHandle(viewRef);
   if (viewTag != null) {
     eventMappings.forEach(mapping => {
       NativeAnimatedHelper.API.addAnimatedEventToView(

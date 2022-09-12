@@ -72,8 +72,6 @@ public class ReactFeatureFlags {
 
   public static boolean enableRuntimeScheduler = false;
 
-  public static boolean enableRuntimeSchedulerInTurboModule = false;
-
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 

@@ -635,11 +635,37 @@ exports.description =
 
 exports.examples = [
   {
-    title: 'Plain Network Image',
+    title: 'Plain Network Image with `source` prop.',
     description: ('If the `source` prop `uri` property is prefixed with ' +
       '"http", then it will be downloaded from the network.': string),
     render: function (): React.Node {
       return <Image source={fullImage} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Plain Network Image with `src` prop.',
+    description: ('If the `src` prop is defined with ' +
+      '"http", then it will be downloaded from the network.': string),
+    render: function (): React.Node {
+      return <Image src={fullImage.uri} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Multiple Image Source using the `srcSet` prop.',
+    description:
+      ('A list of comma seperated uris along with scale are provided in `srcSet`.' +
+        'An appropriate value will be used based on the scale of the device.': string),
+    render: function (): React.Node {
+      return (
+        <Image
+          width={64}
+          height={64}
+          srcSet={
+            'https://www.facebook.com/ads/pics/successstories.png 4x, https://www.facebook.com/favicon.ico 2x'
+          }
+          style={styles.base}
+        />
+      );
     },
   },
   {
@@ -937,11 +963,36 @@ exports.examples = [
   },
   {
     title: 'Tint Color',
-    description: ('The `tintColor` style prop changes all the non-alpha ' +
+    description: ('The `tintColor` prop changes all the non-alpha ' +
       'pixels to the tint color.': string),
     render: function (): React.Node {
       return (
         <View>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#ff2d55'}]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5}]}
+              tintColor={'#4cd964'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5}]}
+              tintColor={'#ff2d55'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5}]}
+              tintColor={'#8e8e93'}
+            />
+          </View>
+          <Text style={styles.sectionText}>
+            It also works using the `tintColor` style prop
+          </Text>
           <View style={styles.horizontal}>
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
@@ -958,6 +1009,31 @@ exports.examples = [
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
               style={[styles.icon, {borderRadius: 5, tintColor: '#8e8e93'}]}
+            />
+          </View>
+          <Text style={styles.sectionText}>
+            The `tintColor` prop has precedence over the `tintColor` style prop
+          </Text>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#5ac8fa'}]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#4cd964'}]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#ff2d55'}]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#8e8e93'}]}
+              tintColor={'#5ac8fa'}
             />
           </View>
           <Text style={styles.sectionText}>
@@ -981,6 +1057,55 @@ exports.examples = [
               style={[styles.base, {borderRadius: 5, tintColor: '#8e8e93'}]}
             />
           </View>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Object Fit',
+    description: ('The `objectFit` style prop controls how the image is ' +
+      'rendered within the frame.': string),
+    render: function (): React.Node {
+      return (
+        <View>
+          {[smallImage, fullImage].map((image, index) => {
+            return (
+              <View key={index}>
+                <View style={styles.horizontal}>
+                  <View>
+                    <Text style={styles.resizeModeText}>Contain</Text>
+                    <Image
+                      style={[styles.resizeMode, {objectFit: 'contain'}]}
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <Text style={styles.resizeModeText}>Cover</Text>
+                    <Image
+                      style={[styles.resizeMode, {objectFit: 'cover'}]}
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <Text style={styles.resizeModeText}>Fill</Text>
+                    <Image
+                      style={[styles.resizeMode, {objectFit: 'fill'}]}
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <Text style={styles.resizeModeText}>Scale Down</Text>
+                    <Image
+                      style={[styles.resizeMode, {objectFit: 'scale-down'}]}
+                      source={image}
+                    />
+                  </View>
+                </View>
+              </View>
+            );
+          })}
         </View>
       );
     },

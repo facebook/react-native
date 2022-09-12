@@ -27,20 +27,10 @@ export type Separators = {
   ...
 };
 
-export type AccessibilityCollectionItem = {
-  itemIndex: number,
-  rowIndex: number,
-  rowSpan: number,
-  columnIndex: number,
-  columnSpan: number,
-  heading: boolean,
-};
-
 export type RenderItemProps<ItemT> = {
   item: ItemT,
   index: number,
   separators: Separators,
-  accessibilityCollectionItem: AccessibilityCollectionItem,
   ...
 };
 
@@ -59,19 +49,9 @@ type RequiredProps = {|
    */
   getItem: (data: any, index: number) => ?Item,
   /**
-   * Determines how many items (rows) are in the data blob.
+   * Determines how many items are in the data blob.
    */
   getItemCount: (data: any) => number,
-  /**
-   * Determines how many cells are in the data blob
-   * see https://bit.ly/35RKX7H
-   */
-  getCellsInItemCount?: (data: any) => number,
-  /**
-   * The number of columns used in FlatList.
-   * The default of 1 is used in other components to calculate the accessibilityCollection prop.
-   */
-  numColumns?: ?number,
 |};
 type OptionalProps = {|
   renderItem?: ?RenderItemType<Item>,

@@ -43,13 +43,13 @@ import * as React from 'react';
 
 import {CellRenderMask} from './CellRenderMask';
 import clamp from '../Utilities/clamp';
+import StateSafePureComponent from './StateSafePureComponent';
 
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const View = require('../Components/View/View');
 const Batchinator = require('../Interaction/Batchinator');
-const ReactNative = require('../Renderer/shims/ReactNative');
-const Platform = require('../Utilities/Platform');
+const {findNodeHandle} = require('../ReactNative/RendererProxy');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const infoLog = require('../Utilities/infoLog');
@@ -81,11 +81,6 @@ type State = {
  * Default Props Helper Functions
  * Use the following helper functions for default values
  */
-
-// numColumnsOrDefault(this.props.numColumns)
-function numColumnsOrDefault(numColumns: ?number) {
-  return numColumns ?? 1;
-}
 
 // horizontalOrDefault(this.props.horizontal)
 function horizontalOrDefault(horizontal: ?boolean) {
@@ -159,7 +154,7 @@ function findLastWhere<T>(
  * - As an effort to remove defaultProps, use helper functions when referencing certain props
  *
  */
-class VirtualizedList extends React.PureComponent<Props, State> {
+class VirtualizedList extends StateSafePureComponent<Props, State> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
 
   // scrollToEnd may be janky without getItemLayout prop
@@ -240,11 +235,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       });
       return;
     }
-    const frame = this.__getFrameMetricsApprox(index, this.props);
+    const frame = this.__getFrameMetricsApprox(Math.floor(index), this.props);
     const offset =
       Math.max(
         0,
-        frame.offset -
+        this._getOffsetApprox(index, this.props) -
           (viewPosition || 0) *
             (this._scrollMetrics.visibleLength - frame.length),
       ) - (viewOffset || 0);
@@ -352,7 +347,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();
     } else {
-      return ReactNative.findNodeHandle(this._scrollRef);
+      return findNodeHandle(this._scrollRef);
     }
   }
 
@@ -569,7 +564,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   static _initialRenderRegion(props: Props): {first: number, last: number} {
     const itemCount = props.getItemCount(props.data);
-    const scrollIndex = Math.max(0, props.initialScrollIndex ?? 0);
+    const scrollIndex = Math.floor(Math.max(0, props.initialScrollIndex ?? 0));
 
     return {
       first: scrollIndex,
@@ -613,7 +608,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Wait until the scroll view metrics have been set up. And until then,
     // we will trust the initialNumToRender suggestion
     if (visibleLength <= 0 || contentLength <= 0) {
-      return cellsAroundViewport;
+      return cellsAroundViewport.last >= getItemCount(data)
+        ? VirtualizedList._constrainToItemCount(cellsAroundViewport, props)
+        : cellsAroundViewport;
     }
 
     let newCellsAroundViewport: {first: number, last: number};
@@ -646,7 +643,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         !this._scrollMetrics.offset &&
         Math.abs(distanceFromEnd) >= Number.EPSILON
       ) {
-        return cellsAroundViewport;
+        return cellsAroundViewport.last >= getItemCount(data)
+          ? VirtualizedList._constrainToItemCount(cellsAroundViewport, props)
+          : cellsAroundViewport;
       }
 
       newCellsAroundViewport = computeWindowedRenderLimits(
@@ -656,6 +655,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         cellsAroundViewport,
         this.__getFrameMetricsApprox,
         this._scrollMetrics,
+      );
+      invariant(
+        newCellsAroundViewport.last < getItemCount(data),
+        'computeWindowedRenderLimits() should return range in-bounds',
       );
     }
 
@@ -1098,7 +1101,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               !scrollContext.horizontal ===
                 !horizontalOrDefault(this.props.horizontal) &&
               !this._hasWarned.nesting &&
-              this.context == null
+              this.context == null &&
+              this.props.scrollEnabled !== false
             ) {
               // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
               console.error(
@@ -1215,36 +1219,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
-  // $FlowFixMe[missing-local-annot]
-  _getCellsInItemCount = (props: Props) => {
-    const {getCellsInItemCount, data} = props;
-    if (getCellsInItemCount) {
-      return getCellsInItemCount(data);
-    }
-    if (Array.isArray(data)) {
-      return data.length;
-    }
-    return 0;
-  };
-
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
   _defaultRenderScrollComponent = props => {
-    const {getItemCount, data} = props;
     const onRefresh = props.onRefresh;
-    const numColumns = numColumnsOrDefault(props.numColumns);
-    const accessibilityRole = Platform.select({
-      android: numColumns > 1 ? 'grid' : 'list',
-    });
-    const rowCount = getItemCount(data);
-    const accessibilityCollection = {
-      // over-ride _getCellsInItemCount to handle Objects or other data formats
-      // see https://bit.ly/35RKX7H
-      itemCount: this._getCellsInItemCount(props),
-      rowCount,
-      columnCount: numColumns,
-      hierarchical: false,
-    };
     if (this._isNestedWithSameOrientation()) {
       // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
       return <View {...props} />;
@@ -1257,10 +1235,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       return (
         // $FlowFixMe[prop-missing] Invalid prop usage
+        // $FlowFixMe[incompatible-use]
         <ScrollView
           {...props}
-          accessibilityRole={accessibilityRole}
-          accessibilityCollection={accessibilityCollection}
           refreshControl={
             props.refreshControl == null ? (
               <RefreshControl
@@ -1276,14 +1253,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />
       );
     } else {
-      return (
-        // $FlowFixMe[prop-missing] Invalid prop usage
-        <ScrollView
-          {...props}
-          accessibilityRole={accessibilityRole}
-          accessibilityCollection={accessibilityCollection}
-        />
-      );
+      // $FlowFixMe[prop-missing] Invalid prop usage
+      // $FlowFixMe[incompatible-use]
+      return <ScrollView {...props} />;
     }
   };
 
@@ -1815,6 +1787,23 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     };
   };
 
+  /**
+   * Gets an approximate offset to an item at a given index. Supports
+   * fractional indices.
+   */
+  _getOffsetApprox = (index: number, props: FrameMetricProps): number => {
+    if (Number.isInteger(index)) {
+      return this.__getFrameMetricsApprox(index, props).offset;
+    } else {
+      const frameMetrics = this.__getFrameMetricsApprox(
+        Math.floor(index),
+        props,
+      );
+      const remainder = index - Math.floor(index);
+      return frameMetrics.offset + remainder * frameMetrics.length;
+    }
+  };
+
   __getFrameMetricsApprox: (
     index: number,
     props: FrameMetricProps,
@@ -2086,19 +2075,10 @@ class CellRenderer extends React.Component<
     }
 
     if (renderItem) {
-      const accessibilityCollectionItem = {
-        itemIndex: index,
-        rowIndex: index,
-        rowSpan: 1,
-        columnIndex: 0,
-        columnSpan: 1,
-        heading: false,
-      };
       return renderItem({
         item,
         index,
         separators: this._separators,
-        accessibilityCollectionItem,
       });
     }
 
@@ -2252,4 +2232,5 @@ const styles = StyleSheet.create({
   },
 });
 
+VirtualizedList.displayName = 'VirtualizedList_EXPERIMENTAL';
 module.exports = VirtualizedList;
