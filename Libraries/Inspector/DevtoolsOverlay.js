@@ -121,8 +121,12 @@ export default function DevtoolsOverlay({
         locationX,
         locationY,
         viewData => {
-          const {touchedViewTag} = viewData;
-          if (touchedViewTag != null) {
+          const {touchedViewTag, closestInstance} = viewData;
+          if (closestInstance != null) {
+            // Fabric
+            agent.selectNode(closestInstance);
+            return true;
+          } else if (touchedViewTag != null) {
             agent.selectNode(findNodeHandle(touchedViewTag));
             return true;
           }
