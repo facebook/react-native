@@ -12,6 +12,7 @@
 'use strict';
 
 import type {StackFrame} from '../../../Core/NativeExceptionsManager';
+import type {SymbolicatedStackTrace} from '../../../Core/Devtools/symbolicateStackTrace';
 
 jest.mock('../../../Core/Devtools/symbolicateStackTrace');
 
@@ -19,7 +20,7 @@ const LogBoxSymbolication = require('../LogBoxSymbolication');
 
 const symbolicateStackTrace: JestMockFn<
   $ReadOnlyArray<Array<StackFrame>>,
-  Promise<Array<StackFrame>>,
+  Promise<SymbolicatedStackTrace>,
 > = (require('../../../Core/Devtools/symbolicateStackTrace'): any);
 
 const createStack = (methodNames: Array<string>) =>
@@ -33,7 +34,10 @@ const createStack = (methodNames: Array<string>) =>
 describe('LogBoxSymbolication', () => {
   beforeEach(() => {
     jest.resetModules();
-    symbolicateStackTrace.mockImplementation(async stack => stack);
+    symbolicateStackTrace.mockImplementation(async stack => ({
+      stack,
+      codeFrame: null,
+    }));
   });
 
   it('symbolicates different stacks', () => {
