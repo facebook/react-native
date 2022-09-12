@@ -298,6 +298,7 @@ android {
                     "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
+                    "react_newarchdefaults",
                     "turbomodulejsijni",
                     "fabricjni"
             }

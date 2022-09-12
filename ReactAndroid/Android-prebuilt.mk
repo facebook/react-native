@@ -175,6 +175,14 @@ LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_COMMON_DIR)/react/renderer/componentregistry
 include $(PREBUILT_SHARED_LIBRARY)
 
+# react_newarchdefaults
+include $(CLEAR_VARS)
+LOCAL_MODULE := react_newarchdefaults
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_newarchdefaults.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_ANDROID_SRC_DIR)/jni/react/newarchdefaults
+include $(PREBUILT_SHARED_LIBRARY)
+
 # jsi
 include $(CLEAR_VARS)
 LOCAL_MODULE := jsi

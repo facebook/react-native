@@ -8,16 +8,17 @@
 #include <memory>
 #include <string>
 
+#include <ReactCommon/JavaTurboModule.h>
+#include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModuleManagerDelegate.h>
 #include <fbjni/fbjni.h>
 
 namespace facebook {
 namespace react {
 
-class RNTesterTurboModuleManagerDelegate
-    : public jni::HybridClass<
-          RNTesterTurboModuleManagerDelegate,
-          TurboModuleManagerDelegate> {
+class DefaultTurboModuleManagerDelegate : public jni::HybridClass<
+                                              DefaultTurboModuleManagerDelegate,
+                                              TurboModuleManagerDelegate> {
  public:
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate;";
@@ -25,6 +26,11 @@ class RNTesterTurboModuleManagerDelegate
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>);
 
   static void registerNatives();
+
+  static std::function<std::shared_ptr<TurboModule>(
+      const std::string &,
+      const JavaTurboModule::InitParams &)>
+      moduleProvidersFromEntryPoint;
 
   std::shared_ptr<TurboModule> getTurboModule(
       const std::string &name,
