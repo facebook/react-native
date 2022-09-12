@@ -18,6 +18,7 @@ import CompatibilityNativeGestureHandling from './Compatibility/CompatibilityNat
 import PointerEventPrimaryTouchPointer from './W3CPointerEventPlatformTests/PointerEventPrimaryTouchPointer';
 import PointerEventAttributesNoHoverPointers from './W3CPointerEventPlatformTests/PointerEventAttributesNoHoverPointers';
 import PointerEventPointerMoveOnChordedMouseButton from './W3CPointerEventPlatformTests/PointerEventPointerMoveOnChordedMouseButton';
+import PointerEventPointerMoveAcross from './W3CPointerEventPlatformTests/PointerEventPointerMoveAcross';
 import EventfulView from './W3CPointerEventsEventfulView';
 
 function AbsoluteChildExample({log}: {log: string => void}) {
@@ -200,6 +201,14 @@ export default {
       title: 'PointerEvents pointermove on button state changes',
       render(): React.Node {
         return <PointerEventPointerMoveOnChordedMouseButton />;
+      },
+    },
+    {
+      name: 'pointerevent_pointermove_across',
+      description: '',
+      title: 'Pointermove handling across elements',
+      render(): React.Node {
+        return <PointerEventPointerMoveAcross />;
       },
     },
     CompatibilityAnimatedPointerMove,
