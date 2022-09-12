@@ -691,7 +691,7 @@ jobs:
             - run:
                 name: Set enableHermes in buld.gradle to false
                 command: |
-                  gsed -i "/enableHermes:/ s/:.*/: false/" template/android/app/build.gradle
+                  node ./scripts/set-rn-engine.js -e jsc
                   echo "Hermes disabled."
                   grep enableHermes: template/android/app/build.gradle
 
