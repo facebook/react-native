@@ -12,7 +12,6 @@
 /**
  * This script updates the engine used by React Native
  */
-const fs = require('fs');
 const {echo, exec, exit, sed} = require('shelljs');
 const yargs = require('yargs');
 
@@ -36,7 +35,7 @@ sed(
   /enableHermes:.*/,
   engine === 'jsc' ? 'enableHermes: false' : 'enableHermes: true',
   'template/android/app/build.gradle',
-)
+);
 
 //Validate the hermes flag has been changed properly
 const hermes = exec(
