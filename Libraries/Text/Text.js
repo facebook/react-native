@@ -14,13 +14,13 @@ import Platform from '../Utilities/Platform';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import StyleSheet from '../StyleSheet/StyleSheet';
+import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
 import TextAncestor from './TextAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
-import flattenStyle from '../StyleSheet/flattenStyle';
 
 /**
  * Text is the fundamental component for displaying text.
@@ -201,6 +201,12 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
+  let flattenedStyle = flattenStyle(style);
+
+  if (typeof flattenedStyle?.fontWeight === 'number') {
+    flattenedStyle.fontWeight = flattenedStyle?.fontWeight.toString();
+  }
+
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
@@ -213,7 +219,7 @@ const Text: React.AbstractComponent<
       nativeID={id ?? nativeID}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
-      style={style}
+      style={flattenedStyle}
       ref={forwardedRef}
     />
   ) : (
@@ -232,7 +238,7 @@ const Text: React.AbstractComponent<
         nativeID={id ?? nativeID}
         numberOfLines={numberOfLines}
         selectionColor={selectionColor}
-        style={style}
+        style={flattenedStyle}
         ref={forwardedRef}
       />
     </TextAncestor.Provider>
