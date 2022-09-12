@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
     ss.source_files        = "WinRT/*.{h,cpp,mm}"
     ss.library             = "stdc++"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\"",
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
     ss.header_dir          = "winrt"
 

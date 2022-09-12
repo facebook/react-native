@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
                              "vnext/Microsoft.ReactNative.Cxx/NativeModules.h"
   s.library                = "stdc++"
   s.pod_target_xcconfig    = { "USE_HEADERMAP" => "YES",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\"",
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
 
   s.dependency "RCT-Folly", folly_version
