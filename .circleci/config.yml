@@ -674,6 +674,9 @@ jobs:
       newarchitecture:
         type: boolean
         default: false
+      jsengine:
+        type: string
+        default: "Hermes"
     environment:
       - PROJECT_NAME: "AndroidTemplateProject"
     steps:
@@ -681,6 +684,16 @@ jobs:
       - run_yarn
       - attach_workspace:
           at: .
+      - when:
+          condition:
+            equal: ["JSC", << parameters.jsengine >>]
+          steps:
+            - run:
+                name: Set enableHermes in buld.gradle to false
+                command: |
+                  node ./scripts/set-rn-engine.js -e jsc
+                  echo "Hermes disabled."
+                  grep enableHermes: template/android/app/build.gradle
 
       - run:
           name: Create Android template project
@@ -692,7 +705,7 @@ jobs:
             yarn
 
       - run:
-          name: Build the template application for << parameters.flavor >> with New Architecture set << parameters.newarchitecture >>
+          name: Build the template application for << parameters.flavor >> with New Architecture set to << parameters.newarchitecture >>, and using the << parameters.jsengine>> JS engine.
           command: cd /tmp/$PROJECT_NAME/android/ && ./gradlew assemble<< parameters.flavor >> -PnewArchEnabled=<< parameters.newarchitecture >>
 
   # -------------------------
@@ -1376,6 +1389,7 @@ workflows:
           matrix:
             parameters:
               newarchitecture: [true, false]
+              jsengine: ["Hermes", "JSC"]
               flavor: ["Debug", "Release"]
       - test_buck
       - test_ios_template:
