@@ -122,12 +122,15 @@ export default function DevtoolsOverlay({
         locationY,
         viewData => {
           const {touchedViewTag, closestInstance} = viewData;
-          if (closestInstance != null) {
-            // Fabric
-            agent.selectNode(closestInstance);
-            return true;
-          } else if (touchedViewTag != null) {
-            agent.selectNode(findNodeHandle(touchedViewTag));
+          if (closestInstance != null || touchedViewTag != null) {
+            if (closestInstance != null) {
+              // Fabric
+              agent.selectNode(closestInstance);
+            } else {
+              agent.selectNode(findNodeHandle(touchedViewTag));
+            }
+            agent.stopInspectingNative(true);
+            setIsInspecting(false);
             return true;
           }
           return false;
