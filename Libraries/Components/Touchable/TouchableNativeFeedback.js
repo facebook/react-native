@@ -310,8 +310,9 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
           this.props['aria-hidden'] === true
             ? 'no-hide-descendants'
             : this.props.importantForAccessibility,
+        accessibilityViewIsModal:
+          this.props['aria-modal'] ?? this.props.accessibilityViewIsModal,
         accessibilityLiveRegion: accessibilityLiveRegion,
-        accessibilityViewIsModal: this.props.accessibilityViewIsModal,
         accessibilityElementsHidden:
           this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden,
         hasTVPreferredFocus: this.props.hasTVPreferredFocus,

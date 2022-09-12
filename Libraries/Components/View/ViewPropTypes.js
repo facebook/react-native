@@ -404,6 +404,15 @@ type IOSViewProps = $ReadOnly<{|
   accessibilityViewIsModal?: ?boolean,
 
   /**
+   * The aria-modal attribute indicates content contained within a modal with aria-modal="true"
+   * should be accessible to the user.
+   * Default is `false`.
+   *
+   *  @platform ios
+   */
+  'aria-modal'?: ?boolean,
+
+  /**
    * A value indicating whether the accessibility elements contained within
    * this accessibility element are hidden.
    *
