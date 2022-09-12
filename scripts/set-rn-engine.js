@@ -37,14 +37,15 @@ sed(
   'template/android/app/build.gradle',
 );
 
-//Validate the hermes flag has been changed properly
-const hermes = exec(
-  `grep enableHermes: template/android/app/build.gradle | awk '{split($0,a,"[:,]"); print a[2]}'`,
-  {silent: true},
-).stdout.trim() === 'true';
+// Validate the hermes flag has been changed properly
+const hermes =
+  exec(
+    'grep enableHermes: template/android/app/build.gradle | awk \'{split($0,a,"[:,]"); print a[2]}\'',
+    {silent: true},
+  ).stdout.trim() === 'true';
 
-if (engine === 'jsc' && hermes || engine === 'hermes' && !hermes) {
-  echo(`Failed to update the engine in template/android/app/build.gradle`);
+if ((engine === 'jsc' && hermes) || (engine === 'hermes' && !hermes)) {
+  echo('Failed to update the engine in template/android/app/build.gradle');
   echo('Fix the issue and try again');
   exit(1);
 }
