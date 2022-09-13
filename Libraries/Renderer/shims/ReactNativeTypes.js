@@ -6,7 +6,7 @@
  *
  * @noformat
  * @flow strict
- * @generated SignedSource<<fb8a7e52d219403fad0cf916954e5185>>
+ * @generated SignedSource<<eea119fd0786bbbd30861721a92f3fa7>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -153,6 +153,7 @@ export type InspectorData = $ReadOnly<{|
 export type TouchedViewDataAtPoint = $ReadOnly<{|
   pointerY: number,
   touchedViewTag?: number,
+  closestInstance?: mixed,
   frame: $ReadOnly<{|
     top: number,
     left: number,

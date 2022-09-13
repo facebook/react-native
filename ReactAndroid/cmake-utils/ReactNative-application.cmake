@@ -40,6 +40,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_codegen_rncore
         react_debug
         react_nativemodule_core
+        react_newarchdefaults
         react_render_componentregistry
         react_render_core
         react_render_debug

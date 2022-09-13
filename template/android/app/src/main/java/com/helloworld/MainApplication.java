@@ -6,6 +6,7 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.defaults.DefaultNativeEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
@@ -57,9 +58,9 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we enable the TurboModule system
-      // and load the native dynamic library for this app.
+      // and load the native entry point for this app.
       ReactFeatureFlags.useTurboModules = true;
-      SoLoader.loadLibrary(BuildConfig.DYNAMIC_LIBRARY_NAME);
+      DefaultNativeEntryPoint.load(BuildConfig.DYNAMIC_LIBRARY_NAME);
     }
     ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }

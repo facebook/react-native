@@ -1,33 +1,38 @@
-#include "MainComponentsRegistry.h"
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include "DefaultComponentsRegistry.h"
 
 #include <CoreComponentsRegistry.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
-#include <rncli.h>
 
 namespace facebook {
 namespace react {
 
-MainComponentsRegistry::MainComponentsRegistry(ComponentFactory *delegate) {}
+std::function<void(std::shared_ptr<ComponentDescriptorProviderRegistry const>)>
+    DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint{};
+
+DefaultComponentsRegistry::DefaultComponentsRegistry(ComponentFactory *delegate)
+    : delegate_(delegate) {}
 
 std::shared_ptr<ComponentDescriptorProviderRegistry const>
-MainComponentsRegistry::sharedProviderRegistry() {
+DefaultComponentsRegistry::sharedProviderRegistry() {
   auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
 
-  // Autolinked providers registered by RN CLI
-  rncli_registerProviders(providerRegistry);
+  (DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint)(
+      providerRegistry);
 
-  // Custom Fabric Components go here. You can register custom
-  // components coming from your App or from 3rd party libraries here.
-  //
-  // providerRegistry->add(concreteComponentDescriptorProvider<
-  //        AocViewerComponentDescriptor>());
   return providerRegistry;
 }
 
-jni::local_ref<MainComponentsRegistry::jhybriddata>
-MainComponentsRegistry::initHybrid(
+jni::local_ref<DefaultComponentsRegistry::jhybriddata>
+DefaultComponentsRegistry::initHybrid(
     jni::alias_ref<jclass>,
     ComponentFactory *delegate) {
   auto instance = makeCxxInstance(delegate);
@@ -36,7 +41,7 @@ MainComponentsRegistry::initHybrid(
       [](EventDispatcher::Weak const &eventDispatcher,
          ContextContainer::Shared const &contextContainer)
       -> ComponentDescriptorRegistry::Shared {
-    auto registry = MainComponentsRegistry::sharedProviderRegistry()
+    auto registry = DefaultComponentsRegistry::sharedProviderRegistry()
                         ->createComponentDescriptorRegistry(
                             {eventDispatcher, contextContainer});
 
@@ -55,9 +60,9 @@ MainComponentsRegistry::initHybrid(
   return instance;
 }
 
-void MainComponentsRegistry::registerNatives() {
+void DefaultComponentsRegistry::registerNatives() {
   registerHybrid({
-      makeNativeMethod("initHybrid", MainComponentsRegistry::initHybrid),
+      makeNativeMethod("initHybrid", DefaultComponentsRegistry::initHybrid),
   });
 }
 

@@ -228,14 +228,6 @@ public class JSPointerDispatcher {
     TouchTargetHelper.ViewTarget activeViewTarget = hitPath.get(0);
     int activeTargetTag = activeViewTarget.getViewId();
 
-    if (action == MotionEvent.ACTION_HOVER_MOVE) {
-      onMove(motionEvent, eventDispatcher, surfaceId, hitPath, targetCoordinates);
-      return;
-    }
-
-    // TODO(luwe) - Update this to properly handle native gesture handling for non-hover move events
-    // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
-    // gesture, so we shouldn't send any more pointer events related to it.
     if (mChildHandlingNativeGesture != -1) {
       return;
     }
@@ -245,6 +237,11 @@ public class JSPointerDispatcher {
       case MotionEvent.ACTION_POINTER_DOWN:
         onDown(
             activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
+        break;
+      case MotionEvent.ACTION_HOVER_MOVE:
+        // TODO(luwe) - converge this with ACTION_MOVE
+        onMove(
+            activeTargetTag, motionEvent, eventDispatcher, surfaceId, hitPath, targetCoordinates);
         break;
       case MotionEvent.ACTION_MOVE:
         // TODO(luwe) - converge this with ACTION_HOVER_MOVE
@@ -343,6 +340,7 @@ public class JSPointerDispatcher {
 
   // called on hover_move motion events only
   private void onMove(
+      int targetTag,
       MotionEvent motionEvent,
       EventDispatcher eventDispatcher,
       int surfaceId,
@@ -381,24 +379,6 @@ public class JSPointerDispatcher {
     if (mHoverInteractionKey < 0) {
       mHoverInteractionKey = motionEvent.getEventTime();
       mTouchEventCoalescingKeyHelper.addCoalescingKey(mHoverInteractionKey);
-    }
-
-    // If child is handling, eliminate target tags under handling child
-    if (mChildHandlingNativeGesture > 0) {
-      int index = 0;
-      for (ViewTarget viewTarget : hitPath) {
-        if (viewTarget.getViewId() == mChildHandlingNativeGesture) {
-          hitPath.subList(0, index).clear();
-          break;
-        }
-        index++;
-      }
-    }
-
-    int targetTag = hitPath.isEmpty() ? -1 : hitPath.get(0).getViewId();
-    // If targetTag is empty, we should bail?
-    if (targetTag == -1) {
-      return;
     }
 
     // hitState is list ordered from inner child -> parent tag
@@ -552,6 +532,8 @@ public class JSPointerDispatcher {
                     mPrimaryPointerId));
       }
 
+      // TODO(luwe) - Need to fire pointer out here as well:
+      // https://w3c.github.io/pointerevents/#dfn-suppress-a-pointer-event-stream
       List<ViewTarget> leaveViewTargets =
           filterByShouldDispatch(hitPath, EVENT.LEAVE, EVENT.LEAVE_CAPTURE, false);
 
