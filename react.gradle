@@ -172,7 +172,10 @@ def bundleForVariant = config.bundleForVariant ?: {
 // Set deleteDebugFilesForVariant to a function to configure per variant,
 // defaults to True for Release variants and False for debug variants
 def deleteDebugFilesForVariant = config.deleteDebugFilesForVariant ?: {
-    def variant -> variant.name.toLowerCase().contains("release")
+    def variant -> 
+      config."deleteDebugFilesIn${variant.name.capitalize()}" ||
+      config."deleteDebugFilesIn${variant.buildType.name.capitalize()}" ||
+      variant.name.toLowerCase().contains("release")
 }
 
 android {
