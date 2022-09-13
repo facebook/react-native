@@ -445,8 +445,10 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       }
     }
 
+    // Convert Map to array
+    const unsortedHeadersArray = Array.from(unsortedHeaders.values());
     // Sort in ascending order, with a being less than b if a's name is legacy-uppercased-byte less than b's name.
-    const sortedHeaders = [...unsortedHeaders.values()].sort((a, b) => {
+    const sortedHeaders = unsortedHeadersArray.sort((a, b) => {
       if (a.upperHeaderName < b.upperHeaderName) {
         return -1;
       }
