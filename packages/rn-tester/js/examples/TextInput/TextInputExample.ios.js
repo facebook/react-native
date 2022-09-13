@@ -412,7 +412,9 @@ function OnPaste(): React.Node {
     newLog.unshift(line);
     setLog(newLog);
   };
-  const [imageUri, setImageUri] = React.useState('');
+  const [imageUri, setImageUri] = React.useState(
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==',
+  );
   return (
     <>
       <TextInput
