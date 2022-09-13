@@ -112,8 +112,8 @@ public class RNTesterApplication extends Application implements ReactApplication
         }
 
         @Override
-        public String getDynamicLibraryName() {
-          return BuildConfig.DYNAMIC_LIBRARY_NAME;
+        protected boolean isNewArchEnabled() {
+          return true;
         }
       };
 
@@ -123,7 +123,7 @@ public class RNTesterApplication extends Application implements ReactApplication
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    DefaultNativeEntryPoint.load(BuildConfig.DYNAMIC_LIBRARY_NAME);
+    DefaultNativeEntryPoint.load();
     ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
 

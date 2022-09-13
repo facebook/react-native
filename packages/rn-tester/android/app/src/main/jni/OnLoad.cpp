@@ -14,18 +14,16 @@
 #include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
 #include <rncore.h>
 
-namespace facebook {
-namespace react {
-
 void registerComponents(
-    std::shared_ptr<ComponentDescriptorProviderRegistry const> registry) {
-  registry->add(concreteComponentDescriptorProvider<
-                RNTMyNativeViewComponentDescriptor>());
+    std::shared_ptr<facebook::react::ComponentDescriptorProviderRegistry const>
+        registry) {
+  registry->add(facebook::react::concreteComponentDescriptorProvider<
+                facebook::react::RNTMyNativeViewComponentDescriptor>());
 }
 
-std::shared_ptr<TurboModule> provideModules(
+std::shared_ptr<facebook::react::TurboModule> provideModules(
     const std::string &name,
-    const JavaTurboModule::InitParams &params) {
+    const facebook::react::JavaTurboModule::InitParams &params) {
   auto module = AppSpecs_ModuleProvider(name, params);
   if (module != nullptr) {
     return module;
@@ -37,35 +35,11 @@ std::shared_ptr<TurboModule> provideModules(
   return rncore_ModuleProvider(name, params);
 }
 
-class RNTesterNativeEntryPoint
-    : public facebook::jni::HybridClass<RNTesterNativeEntryPoint> {
- public:
-  constexpr static auto kJavaDescriptor =
-      "Lcom/facebook/react/defaults/DefaultNativeEntryPoint;";
-
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>) {
-    DefaultTurboModuleManagerDelegate::moduleProvidersFromEntryPoint =
-        &provideModules;
-    DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint =
-        &registerComponents;
-    return makeCxxInstance();
-  }
-
-  static void registerNatives() {
-    registerHybrid({
-        makeNativeMethod("initHybrid", RNTesterNativeEntryPoint::initHybrid),
-    });
-  }
-
- private:
-  friend HybridBase;
-  using HybridBase::HybridBase;
-};
-
-} // namespace react
-} // namespace facebook
-
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
-  return facebook::jni::initialize(
-      vm, [] { facebook::react::RNTesterNativeEntryPoint::registerNatives(); });
+  return facebook::jni::initialize(vm, [] {
+    facebook::react::DefaultTurboModuleManagerDelegate::
+        moduleProvidersFromEntryPoint = &provideModules;
+    facebook::react::DefaultComponentsRegistry::
+        registerComponentDescriptorsFromEntryPoint = &registerComponents;
+  });
 }

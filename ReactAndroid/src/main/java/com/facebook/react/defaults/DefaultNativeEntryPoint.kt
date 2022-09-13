@@ -7,8 +7,6 @@
 
 package com.facebook.react.defaults
 
-import com.facebook.jni.HybridData
-import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.soloader.SoLoader
 
 /**
@@ -18,22 +16,14 @@ import com.facebook.soloader.SoLoader
  * This class needs to be invoked as `DefaultNativeEntryPoint.load("...")` by passing the name of
  * the dynamic library to load.
  *
- * This class works together with the [DefaultNativeEntryPoint] and it's C++ implementation is
- * hosted inside the React Native framework
+ * By default it loads a library called `appmodules`. `appmodules` is a convention used to refer to
+ * the application dynamic library. If changed here should be updated also inside the template.
  */
-@DoNotStrip
-class DefaultNativeEntryPoint @DoNotStrip private constructor() {
-
-  @DoNotStrip private val hybridData: HybridData = initHybrid()
-
-  @DoNotStrip private external fun initHybrid(): HybridData
-
-  companion object {
-    @JvmStatic
-    fun load(dynamicLibraryName: String) {
-      SoLoader.loadLibrary("react_newarchdefaults")
-      SoLoader.loadLibrary(dynamicLibraryName)
-      DefaultNativeEntryPoint()
-    }
+object DefaultNativeEntryPoint {
+  @JvmStatic
+  @JvmOverloads
+  fun load(dynamicLibraryName: String = "appmodules") {
+    SoLoader.loadLibrary("react_newarchdefaults")
+    SoLoader.loadLibrary(dynamicLibraryName)
   }
 }

@@ -35,15 +35,8 @@ public class MainApplication extends Application implements ReactApplication {
         }
 
         @Override
-        public String getDynamicLibraryName() {
-          // If you enabled the New Architecture, you need to return the name of the
-          // dynamic library to load (usually 'appmodule'). This is configured
-          // in your build.gradle file.
-          if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-            return BuildConfig.DYNAMIC_LIBRARY_NAME;
-          } else {
-            return null;
-          }
+        protected boolean isNewArchEnabled() {
+          return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
         }
       };
 
@@ -60,7 +53,7 @@ public class MainApplication extends Application implements ReactApplication {
       // If you opted-in for the New Architecture, we enable the TurboModule system
       // and load the native entry point for this app.
       ReactFeatureFlags.useTurboModules = true;
-      DefaultNativeEntryPoint.load(BuildConfig.DYNAMIC_LIBRARY_NAME);
+      DefaultNativeEntryPoint.load();
     }
     ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
