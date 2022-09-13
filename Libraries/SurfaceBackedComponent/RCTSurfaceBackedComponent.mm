@@ -70,7 +70,8 @@
     component = surfaceHostingComponent;
   } else {
     component = [[CKOverlayLayoutComponent alloc] initWithComponent:surfaceHostingComponent
-                                                            overlay:options.activityIndicatorComponentFactory()];
+                                                            overlay:options.activityIndicatorComponentFactory()
+                                               accessibilityContext:{}];
   }
 
   return [super newWithComponent:component];
