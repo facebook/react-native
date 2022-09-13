@@ -18,7 +18,7 @@ import com.facebook.react.bridge.ReactApplicationContext
  * [ReactPackageTurboModuleManagerDelegate] for new apps in Open Source.
  *
  * This class works together with the [DefaultNativeEntryPoint] and it's C++ implementation is
- * hosted inside the React Native framwork
+ * hosted inside the React Native framework
  */
 class DefaultTurboModuleManagerDelegate
 private constructor(context: ReactApplicationContext, packages: List<ReactPackage>) :

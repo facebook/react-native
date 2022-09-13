@@ -16,7 +16,7 @@ import com.facebook.react.fabric.ComponentFactory
  * implementation of its native methods.
  *
  * This class works together with the [DefaultNativeEntryPoint] and it's C++ implementation is
- * hosted inside the React Native framwork
+ * hosted inside the React Native framework
  */
 @DoNotStrip
 class DefaultComponentsRegistry
