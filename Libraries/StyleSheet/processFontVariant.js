@@ -20,9 +20,9 @@ function processFontVariant(
   }
 
   // $FlowFixMe[incompatible-type]
-  const match: ?____FontVariantArray_Internal = fontVariant.match(
-    new RegExp(/([a-zA-Z'-]+)/gm),
-  );
+  const match: ?____FontVariantArray_Internal = fontVariant
+    .split(' ')
+    .filter(Boolean);
 
   if (!match) {
     return;

@@ -47,11 +47,4 @@ describe('processFontVariant', () => {
       'lining-nums',
     ]);
   });
-
-  it('should not accept invalid formats', () => {
-    expect(processFontVariant('1')).toBe(undefined);
-    expect(processFontVariant('/ 0')).toBe(undefined);
-    expect(processFontVariant('[]')).toBe(undefined);
-    expect(processFontVariant('{ ; }')).toBe(undefined);
-  });
 });
