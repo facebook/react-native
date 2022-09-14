@@ -19,9 +19,9 @@ const EVENT_DEFINITION = `
   boolean_optional_both?: boolean | null | undefined;
 
   string_required: string;
-  string_optional_key?: string;
-  string_optional_value: string | null | undefined;
-  string_optional_both?: string | null | undefined;
+  string_optional_key?: (string);
+  string_optional_value: (string) | null | undefined;
+  string_optional_both?: (string | null | undefined);
 
   double_required: Double;
   double_optional_key?: Double;
@@ -764,23 +764,23 @@ export interface ModuleProps extends ViewProps {
     }>
   >;
 
-  onDirectEventDefinedInlineOptionalKey?: DirectEventHandler<
+  onDirectEventDefinedInlineOptionalKey?: (DirectEventHandler<
     Readonly<{
       ${EVENT_DEFINITION}
     }>
-  >;
+  >);
 
-  onDirectEventDefinedInlineOptionalValue: DirectEventHandler<
+  onDirectEventDefinedInlineOptionalValue: (DirectEventHandler<
     Readonly<{
       ${EVENT_DEFINITION}
     }>
-  > | null | undefined;
+  >) | null | undefined;
 
-  onDirectEventDefinedInlineOptionalBoth?: DirectEventHandler<
+  onDirectEventDefinedInlineOptionalBoth?: (DirectEventHandler<
     Readonly<{
       ${EVENT_DEFINITION}
     }>
-  > | null | undefined;
+  > | null | undefined);
 
   onDirectEventDefinedInlineWithPaperName?: DirectEventHandler<
     Readonly<{
@@ -857,12 +857,12 @@ export interface ModuleProps extends ViewProps {
     'paperDirectEventDefinedInlineNullWithPaperName'
   > | null | undefined;
 
-  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>;
-  onBubblingEventDefinedInlineNullOptionalKey?: BubblingEventHandler<null>;
-  onBubblingEventDefinedInlineNullOptionalValue: BubblingEventHandler<null> | null | undefined;
-  onBubblingEventDefinedInlineNullOptionalBoth?: BubblingEventHandler<null> | null | undefined;
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<undefined>;
+  onBubblingEventDefinedInlineNullOptionalKey?: BubblingEventHandler<undefined>;
+  onBubblingEventDefinedInlineNullOptionalValue: BubblingEventHandler<undefined> | null | undefined;
+  onBubblingEventDefinedInlineNullOptionalBoth?: BubblingEventHandler<undefined> | null | undefined;
   onBubblingEventDefinedInlineNullWithPaperName?: BubblingEventHandler<
-    null,
+  undefined,
     'paperBubblingEventDefinedInlineNullWithPaperName'
   > | null | undefined;
 }
