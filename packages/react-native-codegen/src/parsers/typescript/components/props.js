@@ -505,7 +505,7 @@ function findProp(
 
     case 'TSTypeReference':
       // Check against optional type inside `WithDefault`
-      if (typeAnnotation.typeName.name == 'WithDefault' && optionalType) {
+      if (typeAnnotation.typeName.name === 'WithDefault' && optionalType) {
         throw new Error(
           'WithDefault<> is optional and does not need to be marked as optional. Please remove the union of undefined and/or null',
         );
