@@ -67,6 +67,10 @@ const DATA_LONG = [
   {title: 'last item'},
 ];
 
+// For this example we mock this value
+// Test the example with talkback enabled, otherwise se this value to false
+const TALKBACK_ENABLED = true;
+
 export function FlatList_inverted(): React.Node {
   const [flatlistHeight, setFlatlistHeight] = React.useState(null);
   const [contentHeight, setContentHeight] = React.useState(null);
@@ -79,7 +83,7 @@ export function FlatList_inverted(): React.Node {
   };
   const diff = flatlistHeight - contentHeight;
   let contentContainerStyle = null;
-  if (diff > 0) {
+  if (diff > 0 && TALKBACK_ENABLED) {
     contentContainerStyle = {position: 'relative', top: diff};
   }
   return (
