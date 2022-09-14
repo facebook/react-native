@@ -11,19 +11,6 @@
 import * as React from 'react';
 import {useMemo, useContext} from 'react';
 
-type Frame = $ReadOnly<{
-  offset: number,
-  length: number,
-  index: number,
-  inLayout: boolean,
-}>;
-
-export type ChildListState = $ReadOnly<{
-  first: number,
-  last: number,
-  frames: {[key: number]: Frame},
-}>;
-
 // Data propagated through nested lists (regardless of orientation) that is
 // useful for producing diagnostics for usage errors involving nesting (e.g
 // missing/duplicate keys).
@@ -50,16 +37,14 @@ type Context = $ReadOnly<{
   },
   horizontal: ?boolean,
   getOutermostParentListRef: () => React.ElementRef<typeof React.Component>,
-  getNestedChildState: string => ?ChildListState,
   registerAsNestedChild: ({
     cellKey: string,
     key: string,
     ref: React.ElementRef<typeof React.Component>,
     parentDebugInfo: ListDebugInfo,
-  }) => ?ChildListState,
+  }) => void,
   unregisterAsNestedChild: ({
     key: string,
-    state: ChildListState,
   }) => void,
   debugInfo: ListDebugInfo,
 }>;
@@ -102,7 +87,6 @@ export function VirtualizedListContextProvider({
       getScrollMetrics: value.getScrollMetrics,
       horizontal: value.horizontal,
       getOutermostParentListRef: value.getOutermostParentListRef,
-      getNestedChildState: value.getNestedChildState,
       registerAsNestedChild: value.registerAsNestedChild,
       unregisterAsNestedChild: value.unregisterAsNestedChild,
       debugInfo: {
@@ -116,7 +100,6 @@ export function VirtualizedListContextProvider({
       value.getScrollMetrics,
       value.horizontal,
       value.getOutermostParentListRef,
-      value.getNestedChildState,
       value.registerAsNestedChild,
       value.unregisterAsNestedChild,
       value.debugInfo.cellKey,

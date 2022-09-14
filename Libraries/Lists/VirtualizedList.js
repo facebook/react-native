@@ -24,7 +24,6 @@ import type {
 export type {RenderItemProps, RenderItemType, Separators};
 
 import {
-  type ChildListState,
   type ListDebugInfo,
   VirtualizedListCellContextProvider,
   VirtualizedListContext,
@@ -295,7 +294,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   recordInteraction() {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref.recordInteraction();
+      childList && childList.recordInteraction();
     });
     this._viewabilityTuples.forEach(t => {
       t.viewabilityHelper.recordInteraction();
@@ -381,18 +380,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
-  _getNestedChildState = (key: string): ?ChildListState => {
-    const existingChildData = this._nestedChildLists.get(key);
-    return existingChildData && existingChildData.state;
-  };
-
   _registerAsNestedChild = (childList: {
     cellKey: string,
     key: string,
     ref: React.ElementRef<typeof React.Component>,
     parentDebugInfo: ListDebugInfo,
     ...
-  }): ?ChildListState => {
+  }): void => {
     const specificRef = ((childList.ref: any): VirtualizedList);
     // Register the mapping between this child key and the cellKey for its cell
     const childListsInCell =
@@ -400,7 +394,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     childListsInCell.add(childList.key);
     this._cellKeysToChildListKeys.set(childList.cellKey, childListsInCell);
     const existingChildData = this._nestedChildLists.get(childList.key);
-    if (existingChildData && existingChildData.ref !== null) {
+    if (existingChildData) {
       console.error(
         'A VirtualizedList contains a cell which itself contains ' +
           'more than one VirtualizedList of the same orientation as the parent ' +
@@ -414,25 +408,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           }),
       );
     }
-    this._nestedChildLists.set(childList.key, {
-      ref: specificRef,
-      state: null,
-    });
+    this._nestedChildLists.set(childList.key, specificRef);
 
     if (this._hasInteracted) {
       specificRef.recordInteraction();
     }
   };
 
-  _unregisterAsNestedChild = (childList: {
-    key: string,
-    state: ChildListState,
-    ...
-  }): void => {
-    this._nestedChildLists.set(childList.key, {
-      ref: null,
-      state: childList.state,
-    });
+  _unregisterAsNestedChild = (childList: {key: string, ...}): void => {
+    this._nestedChildLists.delete(childList.key);
   };
 
   state: State;
@@ -473,7 +457,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
     }
 
-    let initialState = {
+    invariant(
+      !this.context,
+      'Unexpectedly saw VirtualizedListContext available in ctor',
+    );
+
+    this.state = {
       first: this.props.initialScrollIndex || 0,
       last:
         Math.min(
@@ -482,17 +471,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
     };
-
-    if (this._isNestedWithSameOrientation()) {
-      const storedState = this.context.getNestedChildState(this._getListKey());
-      if (storedState) {
-        initialState = storedState;
-        this.state = storedState;
-        this._frames = storedState.frames;
-      }
-    }
-
-    this.state = initialState;
   }
 
   componentDidMount() {
@@ -871,7 +849,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           getScrollMetrics: this._getScrollMetrics,
           horizontal: horizontalOrDefault(this.props.horizontal),
           getOutermostParentListRef: this._getOutermostParentListRef,
-          getNestedChildState: this._getNestedChildState,
           registerAsNestedChild: this._registerAsNestedChild,
           unregisterAsNestedChild: this._unregisterAsNestedChild,
           debugInfo: this._getDebugInfo(),
@@ -972,14 +949,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _hiPriInProgress: boolean = false; // flag to prevent infinite hiPri cell limit update
   _highestMeasuredFrameIndex = 0;
   _indicesToKeys: Map<number, string> = new Map();
-  _nestedChildLists: Map<
-    string,
-    {
-      ref: ?VirtualizedList,
-      state: ?ChildListState,
-      ...
-    },
-  > = new Map();
+  _nestedChildLists: Map<string, VirtualizedList> = new Map();
   _offsetFromParentVirtualizedList: number = 0;
   _prevParentOffset: number = 0;
   // $FlowFixMe[missing-local-annot]
@@ -1101,9 +1071,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (childListKeys) {
       for (let childKey of childListKeys) {
         const childList = this._nestedChildLists.get(childKey);
-        childList &&
-          childList.ref &&
-          childList.ref.measureLayoutRelativeToContainingList();
+        childList && childList.measureLayoutRelativeToContainingList();
       }
     }
   }
@@ -1144,8 +1112,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
                 for (let childKey of childListKeys) {
                   const childList = this._nestedChildLists.get(childKey);
                   childList &&
-                    childList.ref &&
-                    childList.ref.measureLayoutRelativeToContainingList();
+                    childList.measureLayoutRelativeToContainingList();
                 }
               }
             });
@@ -1362,7 +1329,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onScroll = (e: Object) => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onScroll(e);
+      childList._onScroll(e);
     });
     if (this.props.onScroll) {
       this.props.onScroll(e);
@@ -1481,7 +1448,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onScrollBeginDrag = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onScrollBeginDrag(e);
+      childList._onScrollBeginDrag(e);
     });
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.recordInteraction();
@@ -1492,7 +1459,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onScrollEndDrag = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onScrollEndDrag(e);
+      childList._onScrollEndDrag(e);
     });
     const {velocity} = e.nativeEvent;
     if (velocity) {
@@ -1504,14 +1471,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onMomentumScrollBegin = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onMomentumScrollBegin(e);
+      childList._onMomentumScrollBegin(e);
     });
     this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
   };
 
   _onMomentumScrollEnd = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onMomentumScrollEnd(e);
+      childList._onMomentumScrollEnd(e);
     });
     this._scrollMetrics.velocity = 0;
     this._computeBlankness();
@@ -1599,7 +1566,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           // For each cell, need to check whether any child list in it has more elements to render
           for (let childKey of childListKeys) {
             const childList = this._nestedChildLists.get(childKey);
-            if (childList && childList.ref && childList.ref.hasMore()) {
+            if (childList && childList.hasMore()) {
               someChildHasMore = true;
               break;
             }
