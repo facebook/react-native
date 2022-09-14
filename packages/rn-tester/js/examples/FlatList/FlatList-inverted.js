@@ -10,27 +10,92 @@
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import BaseFlatListExample from './BaseFlatListExample';
+import {
+  FlatList,
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
 import * as React from 'react';
 
+const DATA_SHORT = [
+  {title: 'first item'},
+  {title: 'second item'},
+  {title: 'third item'},
+];
+
+const DATA_LONG = [
+  {title: 'first item'},
+  {title: 'second item'},
+  {title: 'third item'},
+  {title: 'fourth item'},
+  {title: 'sixth item'},
+  {title: 'eight item'},
+  {title: 'ninth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'tenth item'},
+  {title: 'before last item'},
+  {title: 'last item'},
+];
+
 export function FlatList_inverted(): React.Node {
-  const [output, setOutput] = React.useState('inverted false');
-  const [exampleProps, setExampleProps] = React.useState({
-    inverted: false,
-  });
-
-  const onTest = () => {
-    setExampleProps({
-      inverted: !exampleProps.inverted,
-    });
-    setOutput(`Is inverted: ${(!exampleProps.inverted).toString()}`);
+  const [flatlistHeight, setFlatlistHeight] = React.useState(null);
+  const [contentHeight, setContentHeight] = React.useState(null);
+  const renderItem = ({item}) => {
+    return (
+      <View style={{backgroundColor: 'yellow', height: 50}}>
+        <Text>{item.title}</Text>
+      </View>
+    );
   };
-
+  const diff = flatlistHeight - contentHeight;
+  let contentContainerStyle = null;
+  if (diff > 0) {
+    contentContainerStyle = {position: 'relative', top: diff};
+  }
   return (
-    <BaseFlatListExample
-      exampleProps={exampleProps}
-      testOutput={output}
-      onTest={onTest}
-      testLabel={exampleProps.inverted ? 'Toggle false' : 'Toggle true'}
+    <FlatList
+      onLayout={event => {
+        const height = event.nativeEvent.layout.height;
+        setFlatlistHeight(height);
+      }}
+      onContentSizeChange={(width, height) => {
+        setContentHeight(height);
+      }}
+      inverted
+      enabledTalkbackCompatibleInvertedList={true}
+      renderItem={renderItem}
+      data={DATA_SHORT}
+      contentContainerStyle={contentContainerStyle}
     />
   );
 }
