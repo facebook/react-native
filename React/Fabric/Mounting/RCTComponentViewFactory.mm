@@ -71,6 +71,8 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   dispatch_once(&onceToken, ^{
     componentViewFactory = [RCTComponentViewFactory new];
     [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
+    [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
+
     componentViewFactory->_providerRegistry.setComponentDescriptorProviderRequest(
         [](ComponentName requestedComponentName) {
           [componentViewFactory registerComponentIfPossible:requestedComponentName];
