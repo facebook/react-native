@@ -14,16 +14,18 @@
 #include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
 #include <rncore.h>
 
+namespace facebook {
+namespace react {
+
 void registerComponents(
-    std::shared_ptr<facebook::react::ComponentDescriptorProviderRegistry const>
-        registry) {
-  registry->add(facebook::react::concreteComponentDescriptorProvider<
-                facebook::react::RNTMyNativeViewComponentDescriptor>());
+    std::shared_ptr<ComponentDescriptorProviderRegistry const> registry) {
+  registry->add(concreteComponentDescriptorProvider<
+                RNTMyNativeViewComponentDescriptor>());
 }
 
-std::shared_ptr<facebook::react::TurboModule> provideModules(
+std::shared_ptr<TurboModule> provideModules(
     const std::string &name,
-    const facebook::react::JavaTurboModule::InitParams &params) {
+    const JavaTurboModule::InitParams &params) {
   auto module = AppSpecs_ModuleProvider(name, params);
   if (module != nullptr) {
     return module;
@@ -35,11 +37,15 @@ std::shared_ptr<facebook::react::TurboModule> provideModules(
   return rncore_ModuleProvider(name, params);
 }
 
+} // namespace react
+} // namespace facebook
+
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
   return facebook::jni::initialize(vm, [] {
     facebook::react::DefaultTurboModuleManagerDelegate::
-        moduleProvidersFromEntryPoint = &provideModules;
+        moduleProvidersFromEntryPoint = &facebook::react::provideModules;
     facebook::react::DefaultComponentsRegistry::
-        registerComponentDescriptorsFromEntryPoint = &registerComponents;
+        registerComponentDescriptorsFromEntryPoint =
+            &facebook::react::registerComponents;
   });
 }

@@ -4,9 +4,11 @@
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <rncli.h>
 
+namespace facebook {
+namespace react {
+
 void registerComponents(
-    std::shared_ptr<facebook::react::ComponentDescriptorProviderRegistry const>
-        registry) {
+    std::shared_ptr<ComponentDescriptorProviderRegistry const> registry) {
   // Custom Fabric Components go here. You can register custom
   // components coming from your App or from 3rd party libraries here.
   //
@@ -14,12 +16,12 @@ void registerComponents(
   //        AocViewerComponentDescriptor>());
 
   // By default we just use the components autolinked by RN CLI
-  facebook::react::rncli_registerProviders(registry);
+  rncli_registerProviders(registry);
 }
 
-std::shared_ptr<facebook::react::TurboModule> provideModules(
+std::shared_ptr<TurboModule> provideModules(
     const std::string &name,
-    const facebook::react::JavaTurboModule::InitParams &params) {
+    const JavaTurboModule::InitParams &params) {
   // Here you can provide your own module provider for TurboModules coming from
   // either your application or from external libraries. The approach to follow
   // is similar to the following (for a library called `samplelibrary`):
@@ -31,14 +33,18 @@ std::shared_ptr<facebook::react::TurboModule> provideModules(
   // return rncore_ModuleProvider(moduleName, params);
 
   // By default we just use the module providers autolinked by RN CLI
-  return facebook::react::rncli_ModuleProvider(name, params);
+  return rncli_ModuleProvider(name, params);
 }
+
+} // namespace react
+} // namespace facebook
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
   return facebook::jni::initialize(vm, [] {
     facebook::react::DefaultTurboModuleManagerDelegate::
-        moduleProvidersFromEntryPoint = &provideModules;
+        moduleProvidersFromEntryPoint = &facebook::react::provideModules;
     facebook::react::DefaultComponentsRegistry::
-        registerComponentDescriptorsFromEntryPoint = &registerComponents;
+        registerComponentDescriptorsFromEntryPoint =
+            &facebook::react::registerComponents;
   });
 }
