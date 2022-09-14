@@ -519,7 +519,7 @@ function findProp(
       }
       if (
         name === 'style' &&
-        type === 'GenericTypeAnnotation' &&
+        typeAnnotation.type === 'GenericTypeAnnotation' &&
         typeAnnotation.typeName.name === 'ViewStyleProp'
       ) {
         return null;
