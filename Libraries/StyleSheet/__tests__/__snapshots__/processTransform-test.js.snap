@@ -10,8 +10,6 @@ exports[`processTransform validation should throw when not passing an array to a
 
 exports[`processTransform validation should throw when not passing an array to an array prop 2`] = `"Transform with key of translate must have an array as the value: {\\"translate\\":10}"`;
 
-exports[`processTransform validation should throw when not passing an array to an array prop 3`] = `"Transform with key translate must be an array of length 2 or 3, found 1: {\\"translate\\":[10]}"`;
-
 exports[`processTransform validation should throw when passing a matrix of the wrong size 1`] = `"Matrix transform must have a length of 9 (2d) or 16 (3d). Provided matrix has a length of 4: {\\"matrix\\":[1,1,1,1]}"`;
 
 exports[`processTransform validation should throw when passing a matrix of the wrong size 2`] = `"Matrix transform must have a length of 9 (2d) or 16 (3d). Provided matrix has a length of 4: {\\"matrix\\":[1,1,1,1]}"`;
@@ -22,11 +20,9 @@ exports[`processTransform validation should throw when passing a perspective of 
 
 exports[`processTransform validation should throw when passing a translate of the wrong size 1`] = `"Transform with key translate must be an array of length 2 or 3, found 1: {\\"translate\\":[1]}"`;
 
-exports[`processTransform validation should throw when passing a translate of the wrong size 2`] = `"Transform with key translate must be an array of length 2 or 3, found 1: {\\"translate\\":[1]}"`;
+exports[`processTransform validation should throw when passing a translate of the wrong size 2`] = `"Transform with key translate must be an array of length 2 or 3, found 4: {\\"translate\\":[1,1,1,1]}"`;
 
-exports[`processTransform validation should throw when passing a translate of the wrong size 3`] = `"Transform with key translate must be an array of length 2 or 3, found 4: {\\"translate\\":[1,1,1,1]}"`;
-
-exports[`processTransform validation should throw when passing a translate of the wrong size 4`] = `"Transform with key translate must be an array of length 2 or 3, found 4: {\\"translate\\":[1,1,1,1]}"`;
+exports[`processTransform validation should throw when passing a translate of the wrong size 3`] = `"Transform with key translate must be an string with 1 or 2 two parameters, found 4: translate(1, 1, 1, 1)"`;
 
 exports[`processTransform validation should throw when passing an Animated.Value 1`] = `"You passed an Animated.Value to a normal component. You need to wrap that component in an Animated. For example, replace <View /> by <Animated.View />."`;
 

@@ -32,13 +32,7 @@ function processTransform(
     while ((matches = regex.exec(transform))) {
       const key = matches[1];
       const args = matches[2];
-      let value;
-
-      if (multivalueTransforms.includes(key)) {
-        value = args.match(/[+-]?\d+(\.\d+)?/g)?.map(Number);
-      } else {
-        value = !isNaN(args) ? Number(args) : args;
-      }
+      const value = _getValueFromCSSTransform(key, args);
 
       if (value !== undefined) {
         transformArray.push({[key]: value});
@@ -54,6 +48,50 @@ function processTransform(
   return transform;
 }
 
+const _getValueFromCSSTransform = (
+  key:
+    | string
+    | $TEMPORARY$string<'matrix'>
+    | $TEMPORARY$string<'perspective'>
+    | $TEMPORARY$string<'rotate'>
+    | $TEMPORARY$string<'rotateX'>
+    | $TEMPORARY$string<'rotateY'>
+    | $TEMPORARY$string<'rotateZ'>
+    | $TEMPORARY$string<'scale'>
+    | $TEMPORARY$string<'scaleX'>
+    | $TEMPORARY$string<'scaleY'>
+    | $TEMPORARY$string<'skewX'>
+    | $TEMPORARY$string<'skewY'>
+    | $TEMPORARY$string<'translate'>
+    | $TEMPORARY$string<'translateX'>
+    | $TEMPORARY$string<'translateY'>,
+  args: string,
+) => {
+  switch (key) {
+    case 'matrix':
+      return args.match(/[+-]?\d+(\.\d+)?/g)?.map(Number);
+    case 'translate':
+      const parsedArgs = args.match(/[+-]?\d+(\.\d+)?/g)?.map(Number);
+
+      if (__DEV__) {
+        invariant(
+          parsedArgs?.length === 1 || parsedArgs?.length === 2,
+          'Transform with key translate must be an string with 1 or 2 two parameters, found %s: %s',
+          parsedArgs?.length,
+          `${key}(${args})`,
+        );
+      }
+
+      if (parsedArgs?.length === 1) {
+        parsedArgs.push(0);
+      }
+      return parsedArgs;
+
+    default:
+      return !isNaN(args) ? Number(args) : args;
+  }
+};
+
 function _validateTransforms(transform: Array<Object>): void {
   transform.forEach(transformation => {
     const keys = Object.keys(transformation);
@@ -67,8 +105,6 @@ function _validateTransforms(transform: Array<Object>): void {
     _validateTransform(key, value, transformation);
   });
 }
-
-const multivalueTransforms = ['matrix', 'translate'];
 
 function _validateTransform(
   key:
@@ -97,6 +133,7 @@ function _validateTransform(
       'replace <View /> by <Animated.View />.',
   );
 
+  const multivalueTransforms = ['matrix', 'translate'];
   if (multivalueTransforms.indexOf(key) !== -1) {
     invariant(
       Array.isArray(value),

@@ -56,9 +56,6 @@ describe('processTransform', () => {
       expect(() =>
         processTransform([{translate: 10}]),
       ).toThrowErrorMatchingSnapshot();
-      expect(() =>
-        processTransform('translate(10)'),
-      ).toThrowErrorMatchingSnapshot();
     });
 
     it('should accept a valid matrix', () => {
@@ -83,17 +80,14 @@ describe('processTransform', () => {
 
     it('should accept a valid translate', () => {
       processTransform([{translate: [1, 1]}]);
+      processTransform('translate(1)');
       processTransform('translate(1, 1)');
       processTransform([{translate: [1, 1, 1]}]);
-      processTransform('translate(1, 1, 1)');
     });
 
     it('should throw when passing a translate of the wrong size', () => {
       expect(() =>
         processTransform([{translate: [1]}]),
-      ).toThrowErrorMatchingSnapshot();
-      expect(() =>
-        processTransform('translate(1)'),
       ).toThrowErrorMatchingSnapshot();
       expect(() =>
         processTransform([{translate: [1, 1, 1, 1]}]),
