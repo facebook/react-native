@@ -95,7 +95,7 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-  runtimeExecutor_([uiManager](jsi::Runtime &runtime) {
+  schedulerToolbox.bindingsInstallExecutor([uiManager](jsi::Runtime &runtime) {
     UIManagerBinding::createAndInstallIfNeeded(runtime, uiManager);
   });
 

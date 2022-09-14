@@ -462,7 +462,12 @@ void Binding::installFabricUIManager(
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
+
+  // TODO: (T130208323) runtimeExecutor should execute lambdas after
+  // main bundle eval, and bindingsInstallExecutor should execute before.
+  toolbox.bindingsInstallExecutor = runtimeExecutor;
   toolbox.runtimeExecutor = runtimeExecutor;
+
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
