@@ -23,6 +23,23 @@ $FOLLY_VERSION = '2021.07.22.00'
 
 $START_TIME = Time.now.to_i
 
+# This function returns the min iOS version supported by React Native
+# By using this function, you won't have to manualy change your Podfile
+# when we change the minimum version supported by the framework.
+def min_ios_version_supported
+  return '12.4'
+end
+
+# This function prepares the project for React Native, before processing
+# all the target exposed by the framework.
+def prepare_react_native_project!
+  # Temporary solution to suppress duplicated GUID error.
+  # Can be removed once we move to generate files outside pod install.
+  install! 'cocoapods', :deterministic_uuids => false
+
+  ReactNativePodsUtils.create_xcode_env_if_missing
+end
+
 # Function that setup all the react native dependencies
 # 
 # Parameters

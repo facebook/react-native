@@ -1,8 +1,8 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/react-native/scripts/native_modules'
 
-platform :ios, '12.4'
-install! 'cocoapods', :deterministic_uuids => false
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
 
 flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 
