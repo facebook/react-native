@@ -22,7 +22,9 @@ function getPropProperties(
 ): $FlowFixMe {
   const alias = types[propsTypeName];
   if (!alias) {
-    throw new Error(`Failed to find definition for "${ propsTypeName }", please check that you have a valid codegen typescript file`);
+    throw new Error(
+      `Failed to find definition for "${propsTypeName}", please check that you have a valid codegen typescript file`,
+    );
   }
   const aliasKind =
     alias.type === 'TSInterfaceDeclaration' ? 'interface' : 'type';
@@ -493,11 +495,12 @@ function findProp(
       return findProp(
         name,
         typeAnnotation.types.filter(
-        t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
+          t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
         )[0],
-        optionalType || typeAnnotation.types.some(
-          t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-        )
+        optionalType ||
+          typeAnnotation.types.some(
+            t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
+          ),
       );
 
     case 'TSTypeReference':
@@ -508,8 +511,10 @@ function findProp(
         );
       }
       // Remove unwanted types
-      if (typeAnnotation.typeName.name === 'DirectEventHandler' ||
-      typeAnnotation.typeName.name === 'BubblingEventHandler') {
+      if (
+        typeAnnotation.typeName.name === 'DirectEventHandler' ||
+        typeAnnotation.typeName.name === 'BubblingEventHandler'
+      ) {
         return null;
       }
       if (

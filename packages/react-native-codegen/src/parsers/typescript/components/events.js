@@ -194,10 +194,7 @@ function getEventArgument(argumentProps, name: $FlowFixMe) {
   };
 }
 
-function findEvent(
-  typeAnnotation: $FlowFixMe,
-  optional: Boolean,
-) {
+function findEvent(typeAnnotation: $FlowFixMe, optional: Boolean) {
   switch (typeAnnotation.type) {
     // Check for T | null | undefined
     case 'TSUnionType':
@@ -205,18 +202,22 @@ function findEvent(
         typeAnnotation.types.filter(
           t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
         )[0],
-        optional || typeAnnotation.types.some(
-          t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-        )
+        optional ||
+          typeAnnotation.types.some(
+            t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
+          ),
       );
     // Check for (T)
     case 'TSParenthesizedType':
       return findEvent(typeAnnotation.typeAnnotation, optional);
     case 'TSTypeReference':
-      if(typeAnnotation.typeName.name !== 'BubblingEventHandler' && typeAnnotation.typeName.name !== 'DirectEventHandler') {
+      if (
+        typeAnnotation.typeName.name !== 'BubblingEventHandler' &&
+        typeAnnotation.typeName.name !== 'DirectEventHandler'
+      ) {
         return null;
-      }else{
-        return {typeAnnotation,optional};
+      } else {
+        return {typeAnnotation, optional};
       }
     default:
       return null;
@@ -228,11 +229,14 @@ function buildEventSchema(
   property: EventTypeAST,
 ): ?EventTypeShape {
   const name = property.key.name;
-  const foundEvent = findEvent(property.typeAnnotation.typeAnnotation, property.optional || false);
-  if(!foundEvent) {
+  const foundEvent = findEvent(
+    property.typeAnnotation.typeAnnotation,
+    property.optional || false,
+  );
+  if (!foundEvent) {
     return null;
   }
-  const {typeAnnotation,optional}=foundEvent;
+  const {typeAnnotation, optional} = foundEvent;
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(typeAnnotation, types);
 
