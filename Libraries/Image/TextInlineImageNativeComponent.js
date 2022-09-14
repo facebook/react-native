@@ -22,7 +22,7 @@ import type {ColorValue} from '../StyleSheet/StyleSheet';
 type NativeProps = $ReadOnly<{
   ...ViewProps,
   resizeMode?: ?ImageResizeMode,
-  src?: ?$ReadOnlyArray<?$ReadOnly<{uri: string, ...}>>,
+  src?: ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
   tintColor?: ?ColorValue,
   headers?: ?{[string]: string},
 }>;

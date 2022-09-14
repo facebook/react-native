@@ -44,6 +44,7 @@ public class JSPointerDispatcher {
 
   private int mChildHandlingNativeGesture = -1;
   private int mPrimaryPointerId = UNSET_POINTER_ID;
+  private int mLastButtonState = 0;
   private long mDownStartTime = TouchEvent.UNSET;
   private long mHoverInteractionKey = TouchEvent.UNSET;
   private final ViewGroup mRootViewGroup;
@@ -101,7 +102,8 @@ public class JSPointerDispatcher {
               activeTargetTag,
               motionEvent,
               targetCoordinates,
-              mPrimaryPointerId));
+              mPrimaryPointerId,
+              mLastButtonState));
     }
 
     if (!supportsHover) {
@@ -115,7 +117,8 @@ public class JSPointerDispatcher {
                 activeTargetTag,
                 motionEvent,
                 targetCoordinates,
-                mPrimaryPointerId));
+                mPrimaryPointerId,
+                mLastButtonState));
       }
 
       List<ViewTarget> leaveViewTargets =
@@ -169,7 +172,8 @@ public class JSPointerDispatcher {
                 activeTargetTag,
                 motionEvent,
                 targetCoordinates,
-                mPrimaryPointerId));
+                mPrimaryPointerId,
+                mLastButtonState));
       }
 
       List<ViewTarget> enterViewTargets =
@@ -196,23 +200,19 @@ public class JSPointerDispatcher {
               activeTargetTag,
               motionEvent,
               targetCoordinates,
-              mPrimaryPointerId));
+              mPrimaryPointerId,
+              mLastButtonState));
     }
   }
 
   public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
-    int action = motionEvent.getActionMasked();
-
-    // Ignore hover enter/exit because we determine this ourselves
-    if (action == MotionEvent.ACTION_HOVER_EXIT || action == MotionEvent.ACTION_HOVER_ENTER) {
+    // Don't fire any pointer events if child view is handling native gesture
+    if (mChildHandlingNativeGesture != -1) {
       return;
     }
 
-    int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
-
     // Only relevant for POINTER_UP/POINTER_DOWN actions, otherwise 0
     int actionIndex = motionEvent.getActionIndex();
-
     float[] targetCoordinates = new float[2];
     List<ViewTarget> hitPath =
         TouchTargetHelper.findTargetPathAndCoordinatesForTouch(
@@ -225,26 +225,22 @@ public class JSPointerDispatcher {
       return;
     }
 
+    int action = motionEvent.getActionMasked();
+    int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
+
     TouchTargetHelper.ViewTarget activeViewTarget = hitPath.get(0);
     int activeTargetTag = activeViewTarget.getViewId();
-
-    if (action == MotionEvent.ACTION_HOVER_MOVE) {
-      onMove(motionEvent, eventDispatcher, surfaceId, hitPath, targetCoordinates);
-      return;
-    }
-
-    // TODO(luwe) - Update this to properly handle native gesture handling for non-hover move events
-    // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
-    // gesture, so we shouldn't send any more pointer events related to it.
-    if (mChildHandlingNativeGesture != -1) {
-      return;
-    }
 
     switch (action) {
       case MotionEvent.ACTION_DOWN:
       case MotionEvent.ACTION_POINTER_DOWN:
         onDown(
             activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
+        break;
+      case MotionEvent.ACTION_HOVER_MOVE:
+        // TODO(luwe) - converge this with ACTION_MOVE
+        onMove(
+            activeTargetTag, motionEvent, eventDispatcher, surfaceId, hitPath, targetCoordinates);
         break;
       case MotionEvent.ACTION_MOVE:
         // TODO(luwe) - converge this with ACTION_HOVER_MOVE
@@ -261,7 +257,8 @@ public class JSPointerDispatcher {
                   motionEvent,
                   targetCoordinates,
                   coalescingKey,
-                  mPrimaryPointerId));
+                  mPrimaryPointerId,
+                  mLastButtonState));
         }
         break;
       case MotionEvent.ACTION_UP:
@@ -277,6 +274,8 @@ public class JSPointerDispatcher {
             "Warning : Motion Event was ignored. Action=" + action + " Target=" + activeTargetTag);
         return;
     }
+
+    mLastButtonState = motionEvent.getButtonState();
   }
 
   private static boolean isAnyoneListeningForBubblingEvent(
@@ -337,12 +336,19 @@ public class JSPointerDispatcher {
       int viewId = viewTarget.getViewId();
       dispatcher.dispatchEvent(
           PointerEvent.obtain(
-              eventName, surfaceId, viewId, motionEvent, targetCoordinates, mPrimaryPointerId));
+              eventName,
+              surfaceId,
+              viewId,
+              motionEvent,
+              targetCoordinates,
+              mPrimaryPointerId,
+              mLastButtonState));
     }
   }
 
   // called on hover_move motion events only
   private void onMove(
+      int targetTag,
       MotionEvent motionEvent,
       EventDispatcher eventDispatcher,
       int surfaceId,
@@ -381,24 +387,6 @@ public class JSPointerDispatcher {
     if (mHoverInteractionKey < 0) {
       mHoverInteractionKey = motionEvent.getEventTime();
       mTouchEventCoalescingKeyHelper.addCoalescingKey(mHoverInteractionKey);
-    }
-
-    // If child is handling, eliminate target tags under handling child
-    if (mChildHandlingNativeGesture > 0) {
-      int index = 0;
-      for (ViewTarget viewTarget : hitPath) {
-        if (viewTarget.getViewId() == mChildHandlingNativeGesture) {
-          hitPath.subList(0, index).clear();
-          break;
-        }
-        index++;
-      }
-    }
-
-    int targetTag = hitPath.isEmpty() ? -1 : hitPath.get(0).getViewId();
-    // If targetTag is empty, we should bail?
-    if (targetTag == -1) {
-      return;
     }
 
     // hitState is list ordered from inner child -> parent tag
@@ -447,7 +435,8 @@ public class JSPointerDispatcher {
                   lastTargetTag,
                   motionEvent,
                   targetCoordinates,
-                  mPrimaryPointerId));
+                  mPrimaryPointerId,
+                  mLastButtonState));
         }
 
         // target -> root
@@ -479,7 +468,8 @@ public class JSPointerDispatcher {
                 targetTag,
                 motionEvent,
                 targetCoordinates,
-                mPrimaryPointerId));
+                mPrimaryPointerId,
+                mLastButtonState));
       }
 
       // target -> root
@@ -549,9 +539,12 @@ public class JSPointerDispatcher {
                     targetTag,
                     motionEvent,
                     targetCoordinates,
-                    mPrimaryPointerId));
+                    mPrimaryPointerId,
+                    mLastButtonState));
       }
 
+      // TODO(luwe) - Need to fire pointer out here as well:
+      // https://w3c.github.io/pointerevents/#dfn-suppress-a-pointer-event-stream
       List<ViewTarget> leaveViewTargets =
           filterByShouldDispatch(hitPath, EVENT.LEAVE, EVENT.LEAVE_CAPTURE, false);
 

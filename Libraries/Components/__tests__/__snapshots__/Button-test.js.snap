@@ -12,6 +12,14 @@ exports[`<Button /> should be disabled and it should set accessibilityState to d
       "selected": undefined,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -68,6 +76,14 @@ exports[`<Button /> should be disabled when disabled is empty and accessibilityS
       "disabled": true,
       "expanded": undefined,
       "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -128,6 +144,14 @@ exports[`<Button /> should be disabled when disabled={true} and accessibilitySta
       "selected": undefined,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -186,6 +210,14 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
       "selected": undefined,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -238,6 +270,14 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
       "disabled": undefined,
       "expanded": undefined,
       "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -294,6 +334,14 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
       "selected": undefined,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -348,6 +396,14 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
       "selected": undefined,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -400,6 +456,14 @@ exports[`<Button /> should overwrite accessibilityState with value of disabled p
       "disabled": true,
       "expanded": undefined,
       "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -458,6 +522,14 @@ exports[`<Button /> should render as expected 1`] = `
       "disabled": undefined,
       "expanded": undefined,
       "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}

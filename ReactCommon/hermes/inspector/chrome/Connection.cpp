@@ -55,7 +55,7 @@ class Connection::Impl : public inspector::InspectorObserver,
       bool waitForDebugger);
   ~Impl();
 
-  jsi::Runtime &getRuntime();
+  HermesRuntime &getRuntime();
   std::string getTitle() const;
 
   bool connect(std::unique_ptr<IRemoteConnection> remoteConn);
@@ -209,7 +209,7 @@ Connection::Impl::Impl(
 
 Connection::Impl::~Impl() = default;
 
-jsi::Runtime &Connection::Impl::getRuntime() {
+HermesRuntime &Connection::Impl::getRuntime() {
   return runtimeAdapter_->getRuntime();
 }
 
@@ -390,8 +390,7 @@ void Connection::Impl::onScriptParsed(
   m::debugger::ScriptParsedNotification note;
   note.scriptId = folly::to<std::string>(info.fileId);
   note.url = info.fileName;
-  // TODO(jpporto): fix test cases sending invalid context id.
-  // note.executionContextId = kHermesExecutionContextId;
+  note.executionContextId = kHermesExecutionContextId;
 
   if (!info.sourceMappingUrl.empty()) {
     note.sourceMapURL = info.sourceMappingUrl;
@@ -736,14 +735,6 @@ void Connection::Impl::handle(
 }
 
 void Connection::Impl::handle(const m::profiler::StartRequest &req) {
-  auto *hermesRT = dynamic_cast<HermesRuntime *>(&getRuntime());
-
-  if (!hermesRT) {
-    sendResponseToClientViaExecutor(m::makeErrorResponse(
-        req.id, m::ErrorCode::ServerError, "Unhandled Runtime kind."));
-    return;
-  }
-
   runInExecutor(req.id, [this, id = req.id]() {
     HermesRuntime::enableSamplingProfiler();
     sendResponseToClient(m::makeOkResponse(id));
@@ -751,13 +742,7 @@ void Connection::Impl::handle(const m::profiler::StartRequest &req) {
 }
 
 void Connection::Impl::handle(const m::profiler::StopRequest &req) {
-  auto *hermesRT = dynamic_cast<HermesRuntime *>(&getRuntime());
-
-  if (!hermesRT) {
-    sendResponseToClientViaExecutor(m::makeErrorResponse(
-        req.id, m::ErrorCode::ServerError, "Unhandled Runtime kind."));
-    return;
-  }
+  HermesRuntime *hermesRT = &getRuntime();
 
   runInExecutor(req.id, [this, id = req.id, hermesRT]() {
     HermesRuntime::disableSamplingProfiler();
@@ -1615,7 +1600,7 @@ Connection::Connection(
 
 Connection::~Connection() = default;
 
-jsi::Runtime &Connection::getRuntime() {
+HermesRuntime &Connection::getRuntime() {
   return impl_->getRuntime();
 }
 

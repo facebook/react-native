@@ -29,6 +29,7 @@
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTReloadCommand.h>
+#import <React/RCTTurboModuleRegistry.h>
 #import <React/RCTUtils.h>
 #import <cxxreact/CxxNativeModule.h>
 #import <cxxreact/Instance.h>

@@ -566,6 +566,23 @@ export type ____ViewStyle_Internal = $ReadOnly<{
   ...____ViewStyle_InternalOverrides,
 }>;
 
+export type FontStyleType = {
+  fontFamily: string,
+  fontWeight: ____FontWeight_Internal,
+};
+
+export type FontStyleMap = {
+  ultraLight: FontStyleType,
+  thin: FontStyleType,
+  light: FontStyleType,
+  regular: FontStyleType,
+  medium: FontStyleType,
+  semibold: FontStyleType,
+  bold: FontStyleType,
+  heavy: FontStyleType,
+  black: FontStyleType,
+};
+
 export type ____FontWeight_Internal =
   | 'normal'
   | 'bold'
@@ -577,7 +594,26 @@ export type ____FontWeight_Internal =
   | '600'
   | '700'
   | '800'
-  | '900';
+  | '900'
+  | 100
+  | 200
+  | 300
+  | 400
+  | 500
+  | 600
+  | 700
+  | 800
+  | 900
+  | 'ultralight'
+  | 'thin'
+  | 'light'
+  | 'medium'
+  | 'regular'
+  | 'semibold'
+  | 'condensedBold'
+  | 'condensed'
+  | 'heavy'
+  | 'black';
 
 export type ____TextStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,

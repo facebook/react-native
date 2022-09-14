@@ -32,7 +32,8 @@ public class PointerEvent extends Event<PointerEvent> {
       int viewTag,
       MotionEvent motionEventToCopy,
       float[] offsetCoords,
-      int primaryPointerId) {
+      int primaryPointerId,
+      int lastButtonState) {
     PointerEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new PointerEvent();
@@ -44,7 +45,8 @@ public class PointerEvent extends Event<PointerEvent> {
         Assertions.assertNotNull(motionEventToCopy),
         offsetCoords,
         0,
-        primaryPointerId);
+        primaryPointerId,
+        lastButtonState);
     return event;
   }
 
@@ -55,7 +57,8 @@ public class PointerEvent extends Event<PointerEvent> {
       MotionEvent motionEventToCopy,
       float[] offsetCoords,
       int coalescingKey,
-      int primaryPointerId) {
+      int primaryPointerId,
+      int lastButtonState) {
     PointerEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new PointerEvent();
@@ -67,7 +70,8 @@ public class PointerEvent extends Event<PointerEvent> {
         Assertions.assertNotNull(motionEventToCopy),
         offsetCoords,
         coalescingKey,
-        primaryPointerId);
+        primaryPointerId,
+        lastButtonState);
     return event;
   }
 
@@ -78,6 +82,7 @@ public class PointerEvent extends Event<PointerEvent> {
   private float mOffsetY;
   private @Nullable List<WritableMap> mPointersEventData;
   private int mPrimaryPointerId;
+  private int mLastButtonState;
 
   private void init(
       String eventName,
@@ -86,7 +91,8 @@ public class PointerEvent extends Event<PointerEvent> {
       MotionEvent motionEventToCopy,
       float[] offsetCoords,
       int coalescingKey,
-      int primaryPointerId) {
+      int primaryPointerId,
+      int lastButtonState) {
 
     super.init(surfaceId, viewTag, motionEventToCopy.getEventTime());
     mEventName = eventName;
@@ -95,6 +101,7 @@ public class PointerEvent extends Event<PointerEvent> {
     mOffsetX = offsetCoords[0];
     mOffsetY = offsetCoords[1];
     mPrimaryPointerId = primaryPointerId;
+    mLastButtonState = lastButtonState;
   }
 
   private PointerEvent() {}
@@ -208,6 +215,11 @@ public class PointerEvent extends Event<PointerEvent> {
       pointerEvent.putDouble("tiltX", 0);
       pointerEvent.putDouble("tiltY", 0);
     }
+
+    int buttonState = mMotionEvent.getButtonState();
+    pointerEvent.putInt("buttons", buttonState);
+    pointerEvent.putInt(
+        "button", PointerEventHelper.getButtonChange(mLastButtonState, buttonState));
 
     return pointerEvent;
   }

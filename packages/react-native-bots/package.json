@@ -1,8 +1,7 @@
 {
+  "name": "@react-native/bots",
+  "version": "0.0.0",
   "private": true,
-  "scripts": {
-    "danger": "node ./node_modules/.bin/danger"
-  },
   "devDependencies": {
     "@seadub/danger-plugin-eslint": "^3.0.2",
     "danger": "^11.0.2",

@@ -339,6 +339,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTSurfaceView.h": RCTBASE_PATH + "Surface/RCTSurfaceView.h",
     "React/RCTTextDecorationLineType.h": RCTVIEWS_PATH + "RCTTextDecorationLineType.h",
     "React/RCTTouchHandler.h": RCTBASE_PATH + "RCTTouchHandler.h",
+    "React/RCTTurboModuleRegistry.h": RCTBASE_PATH + "RCTTurboModuleRegistry.h",
     "React/RCTUIManager.h": RCTMODULES_PATH + "RCTUIManager.h",
     "React/RCTUIManagerObserverCoordinator.h": RCTMODULES_PATH + "RCTUIManagerObserverCoordinator.h",
     "React/RCTUIManagerUtils.h": RCTMODULES_PATH + "RCTUIManagerUtils.h",

@@ -290,19 +290,30 @@ class TouchableHighlight extends React.Component<Props, State> {
             disabled: this.props.disabled,
           }
         : this.props.accessibilityState;
+
+    const accessibilityValue = {
+      max: this.props['aria-valuemax'] ?? this.props.accessibilityValue?.max,
+      min: this.props['aria-valuemin'] ?? this.props.accessibilityValue?.min,
+      now: this.props['aria-valuenow'] ?? this.props.accessibilityValue?.now,
+      text: this.props['aria-valuetext'] ?? this.props.accessibilityValue?.text,
+    };
+
     const accessibilityLiveRegion =
       this.props['aria-live'] === 'off'
         ? 'none'
         : this.props['aria-live'] ?? this.props.accessibilityLiveRegion;
+
+    const accessibilityLabel =
+      this.props['aria-label'] ?? this.props.accessibilityLabel;
     return (
       <View
         accessible={this.props.accessible !== false}
-        accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityLabel={accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
         accessibilityLanguage={this.props.accessibilityLanguage}
         accessibilityRole={this.props.accessibilityRole}
         accessibilityState={accessibilityState}
-        accessibilityValue={this.props.accessibilityValue}
+        accessibilityValue={accessibilityValue}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
         importantForAccessibility={
@@ -310,8 +321,10 @@ class TouchableHighlight extends React.Component<Props, State> {
             ? 'no-hide-descendants'
             : this.props.importantForAccessibility
         }
+        accessibilityViewIsModal={
+          this.props['aria-modal'] ?? this.props.accessibilityViewIsModal
+        }
         accessibilityLiveRegion={accessibilityLiveRegion}
-        accessibilityViewIsModal={this.props.accessibilityViewIsModal}
         accessibilityElementsHidden={
           this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden
         }

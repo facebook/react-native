@@ -14,6 +14,7 @@ import Platform from '../Utilities/Platform';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import StyleSheet from '../StyleSheet/StyleSheet';
+import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
 import TextAncestor from './TextAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
@@ -35,13 +36,17 @@ const Text: React.AbstractComponent<
 > = React.forwardRef((props: TextProps, forwardedRef) => {
   const {
     accessible,
+    accessibilityLabel,
     allowFontScaling,
     'aria-busy': ariaBusy,
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-label': ariaLabel,
     'aria-selected': ariaSelected,
     ellipsizeMode,
+    id,
+    nativeID,
     onLongPress,
     onPress,
     onPressIn,
@@ -214,17 +219,25 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
+  let flattenedStyle = flattenStyle(style);
+
+  if (typeof flattenedStyle?.fontWeight === 'number') {
+    flattenedStyle.fontWeight = flattenedStyle?.fontWeight.toString();
+  }
+
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
       accessibilityState={_accessibilityState}
       {...eventHandlersForText}
+      accessibilityLabel={ariaLabel ?? accessibilityLabel}
       isHighlighted={isHighlighted}
       isPressable={isPressable}
       selectable={_selectable}
+      nativeID={id ?? nativeID}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
-      style={style}
+      style={flattenedStyle}
       ref={forwardedRef}
     />
   ) : (
@@ -235,13 +248,15 @@ const Text: React.AbstractComponent<
         disabled={_disabled}
         selectable={_selectable}
         accessible={_accessible}
+        accessibilityLabel={ariaLabel ?? accessibilityLabel}
         accessibilityState={nativeTextAccessibilityState}
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
+        nativeID={id ?? nativeID}
         numberOfLines={numberOfLines}
         selectionColor={selectionColor}
-        style={style}
+        style={flattenedStyle}
         ref={forwardedRef}
       />
     </TextAncestor.Provider>

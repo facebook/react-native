@@ -16,7 +16,7 @@ module.exports = {
     '.*': './jest/private/preprocessor.js',
   },
   setupFiles: ['./jest/setup.js'],
-  timers: 'fake',
+  timers: 'legacy',
   testRegex: '/__tests__/.*-test\\.js$',
   testPathIgnorePatterns: [
     '/node_modules/',

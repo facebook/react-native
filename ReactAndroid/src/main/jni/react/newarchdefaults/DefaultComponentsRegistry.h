@@ -11,19 +11,24 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
-class RNTesterComponentsRegistry
-    : public facebook::jni::HybridClass<RNTesterComponentsRegistry> {
+class DefaultComponentsRegistry
+    : public facebook::jni::HybridClass<DefaultComponentsRegistry> {
  public:
   constexpr static auto kJavaDescriptor =
       "Lcom/facebook/react/defaults/DefaultComponentsRegistry;";
 
   static void registerNatives();
 
-  RNTesterComponentsRegistry(ComponentFactory *delegate);
+  static std::function<void(
+      std::shared_ptr<ComponentDescriptorProviderRegistry const>)>
+      registerComponentDescriptorsFromEntryPoint;
+
+  DefaultComponentsRegistry(ComponentFactory *delegate);
 
  private:
   friend HybridBase;

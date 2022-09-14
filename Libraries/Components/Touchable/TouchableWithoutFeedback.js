@@ -40,7 +40,12 @@ type Props = $ReadOnly<{|
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
+  'aria-valuemax'?: AccessibilityValue['max'],
+  'aria-valuemin'?: AccessibilityValue['min'],
+  'aria-valuenow'?: AccessibilityValue['now'],
+  'aria-valuetext'?: AccessibilityValue['text'],
   accessibilityViewIsModal?: ?boolean,
+  'aria-modal'?: ?boolean,
   accessible?: ?boolean,
   /**
    * alias for accessibilityState
@@ -54,6 +59,7 @@ type Props = $ReadOnly<{|
   'aria-selected'?: ?boolean,
   'aria-hidden'?: ?boolean,
   'aria-live'?: ?('polite' | 'assertive' | 'off'),
+  'aria-label'?: ?Stringish,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -61,6 +67,7 @@ type Props = $ReadOnly<{|
   disabled?: ?boolean,
   focusable?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
+  id?: string,
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   nativeID?: ?string,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
@@ -91,7 +98,12 @@ const PASSTHROUGH_PROPS = [
   'accessibilityLiveRegion',
   'accessibilityRole',
   'accessibilityValue',
+  'aria-valuemax',
+  'aria-valuemin',
+  'aria-valuenow',
+  'aria-valuetext',
   'accessibilityViewIsModal',
+  'aria-modal',
   'hitSlop',
   'importantForAccessibility',
   'nativeID',
@@ -160,6 +172,7 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
         ariaLive === 'off'
           ? 'none'
           : ariaLive ?? this.props.accessibilityLiveRegion,
+      nativeID: this.props.id ?? this.props.nativeID,
     };
     for (const prop of PASSTHROUGH_PROPS) {
       if (this.props[prop] !== undefined) {

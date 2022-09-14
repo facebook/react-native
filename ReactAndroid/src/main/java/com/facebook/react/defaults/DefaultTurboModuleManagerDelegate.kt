@@ -17,9 +17,8 @@ import com.facebook.react.bridge.ReactApplicationContext
  * A utility class that allows you to simplify the setup of a
  * [ReactPackageTurboModuleManagerDelegate] for new apps in Open Source.
  *
- * Please note that you need to provide a native implementation for the method initHybrid for this
- * class, making sure the Java Descriptor is:
- * Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate;
+ * This class works together with the [DefaultNativeEntryPoint] and it's C++ implementation is
+ * hosted inside the React Native framework
  */
 class DefaultTurboModuleManagerDelegate
 private constructor(context: ReactApplicationContext, packages: List<ReactPackage>) :
