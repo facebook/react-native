@@ -481,9 +481,9 @@ function getTypeAnnotation(
 }
 
 function findProp(
-  name: String,
+  name: string,
   typeAnnotation: $FlowFixMe,
-  optionalType: Boolean,
+  optionalType: boolean,
 ) {
   switch (typeAnnotation.type) {
     // Check for (T)

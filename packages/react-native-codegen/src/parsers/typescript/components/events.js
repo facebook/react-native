@@ -194,7 +194,7 @@ function getEventArgument(argumentProps, name: $FlowFixMe) {
   };
 }
 
-function findEvent(typeAnnotation: $FlowFixMe, optional: Boolean) {
+function findEvent(typeAnnotation: $FlowFixMe, optional: boolean) {
   switch (typeAnnotation.type) {
     // Check for T | null | undefined
     case 'TSUnionType':
