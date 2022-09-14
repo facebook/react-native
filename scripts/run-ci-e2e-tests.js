@@ -75,7 +75,7 @@ try {
   const verdaccioProcess = spawn('npx', [
     'verdaccio@5.15.3',
     '--config',
-    '.circleci/verdaccio/config.yml',
+    '.circleci/verdaccio.yml',
   ]);
   VERDACCIO_PID = verdaccioProcess.pid;
   exec('npx wait-on@6.0.1 http://localhost:4873');
@@ -92,19 +92,6 @@ try {
         packageName !== '@react-native/tester' &&
         packageName !== '@react-native/repo-config',
     )
-    .filter(packageName => {
-      const yarnInfo = exec(`yarn info ${packageName} --json`);
-      if (yarnInfo.stderr !== '') {
-        return true;
-      }
-      const versions = JSON.parse(
-        exec(`yarn info ${packageName} --json`).stdout.trim(),
-      ).data.versions;
-      const currentVersion = require(`${process.cwd()}/${
-        packages[packageName].location
-      }/package.json`).version;
-      return !versions.includes(currentVersion);
-    })
     .forEach(packageName => {
       exec(
         `cd ${packages[packageName].location} && npm publish --registry http://localhost:4873 --yes --access public`,
