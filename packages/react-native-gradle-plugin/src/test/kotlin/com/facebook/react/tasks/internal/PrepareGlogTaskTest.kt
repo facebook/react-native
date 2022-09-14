@@ -37,13 +37,9 @@ class PrepareGlogTaskTest {
           it.glogVersion.set("1.0.0")
           it.outputDir.set(output)
         }
-    File(project.projectDir, "src/main/jni/third-party/glog/Android.mk").apply {
-      parentFile.mkdirs()
-      createNewFile()
-    }
     task.taskAction()
 
-    assertTrue(output.listFiles()!!.any { it.name == "Android.mk" })
+    assertTrue(output.listFiles()!!.any { it.name == "CMakeLists.txt" })
   }
 
   @Test
