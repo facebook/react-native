@@ -38,6 +38,10 @@ export type FeatureFlags = {|
    * traffic.
    */
   animatedShouldUseSingleOp: () => boolean,
+  /**
+   * Enables C++ render system.
+   */
+  enableCppRenderSystem: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -46,6 +50,7 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   shouldPressibilityUseW3CPointerEventsForHover: () => false,
   animatedShouldDebounceQueueFlush: () => false,
   animatedShouldUseSingleOp: () => false,
+  enableCppRenderSystem: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;
