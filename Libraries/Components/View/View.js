@@ -144,10 +144,7 @@ const View: React.AbstractComponent<
     const restWithDefaultProps = {...otherProps, accessibilityValue};
 
     let style = flattenStyle(restProps.style);
-
-    if (style) {
-      style = processLayoutProps(style);
-    }
+    style = processLayoutProps(style);
 
     const newPointerEvents = style?.pointerEvents || pointerEvents;
 
