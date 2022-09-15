@@ -100,6 +100,10 @@ class PrepareJSCTaskTest {
   fun prepareJSCTask_copiesMakefile() {
     val project = createProject()
     prepareInputFolder()
+    File(project.projectDir, "src/main/jni/third-party/jsc/CMakeLists.txt").apply {
+      parentFile.mkdirs()
+      createNewFile()
+    }
     val output = tempFolder.newFolder("output")
 
     val task =

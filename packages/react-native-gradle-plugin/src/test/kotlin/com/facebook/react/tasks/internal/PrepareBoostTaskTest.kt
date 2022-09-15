@@ -37,6 +37,10 @@ class PrepareBoostTaskTest {
           it.boostVersion.set("1.0.0")
           it.outputDir.set(output)
         }
+    File(project.projectDir, "src/main/jni/third-party/boost/CMakeLists.txt").apply {
+      parentFile.mkdirs()
+      createNewFile()
+    }
     task.taskAction()
 
     assertTrue(output.listFiles()!!.any { it.name == "CMakeLists.txt" })

@@ -37,6 +37,10 @@ class PrepareLibeventTaskTest {
           it.libeventVersion.set("1.0.0")
           it.outputDir.set(output)
         }
+    File(project.projectDir, "src/main/jni/third-party/libevent/CMakeLists.txt").apply {
+      parentFile.mkdirs()
+      createNewFile()
+    }
     task.taskAction()
 
     assertTrue(File(output, "CMakeLists.txt").exists())
