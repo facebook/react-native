@@ -97,7 +97,7 @@ class PrepareJSCTaskTest {
   }
 
   @Test
-  fun prepareJSCTask_copiesMakefile() {
+  fun prepareJSCTask_copiesCMakefile() {
     val project = createProject()
     prepareInputFolder()
     File(project.projectDir, "src/main/jni/third-party/jsc/CMakeLists.txt").apply {

@@ -27,7 +27,7 @@ class PrepareLibeventTaskTest {
   }
 
   @Test
-  fun prepareBoostTask_copiesMakefile() {
+  fun prepareBoostTask_copiesCMakefile() {
     val libeventPath = tempFolder.newFolder("libeventPath")
     val output = tempFolder.newFolder("output")
     val project = createProject()

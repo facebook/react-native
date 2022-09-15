@@ -27,7 +27,7 @@ class PrepareGlogTaskTest {
   }
 
   @Test
-  fun prepareGlogTask_copiesMakefile() {
+  fun prepareGlogTask_copiesCMakefile() {
     val glogpath = tempFolder.newFolder("glogpath")
     val output = tempFolder.newFolder("output")
     val project = createProject()

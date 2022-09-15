@@ -27,7 +27,7 @@ class PrepareBoostTaskTest {
   }
 
   @Test
-  fun prepareBoostTask_copiesMakefile() {
+  fun prepareBoostTask_copiesCMakefile() {
     val boostpath = tempFolder.newFolder("boostpath")
     val output = tempFolder.newFolder("output")
     val project = createProject()
