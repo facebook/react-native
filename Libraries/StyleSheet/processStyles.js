@@ -11,7 +11,7 @@
 
 import type {____FlattenStyleProp_Internal} from './StyleSheetTypes';
 
-export default function processLayoutProps<T>(
+function processLayoutProps<T>(
   flattenedStyle: ____FlattenStyleProp_Internal<T>,
 ): ____FlattenStyleProp_Internal<T> {
   const _flattenedStyle = {...flattenedStyle};
@@ -40,3 +40,5 @@ export default function processLayoutProps<T>(
 
   return _flattenedStyle;
 }
+
+module.exports = processLayoutProps;

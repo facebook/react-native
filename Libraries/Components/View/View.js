@@ -44,7 +44,6 @@ const View: React.AbstractComponent<
       nativeID,
       pointerEvents,
       role,
-      style,
       tabIndex,
       ...otherProps
     }: ViewProps,
@@ -144,13 +143,13 @@ const View: React.AbstractComponent<
     };
     const restWithDefaultProps = {...otherProps, accessibilityValue};
 
-    let flattendStyle = flattenStyle(style);
+    let style = flattenStyle(restProps.style);
 
-    if (flattendStyle) {
-      flattendStyle = processLayoutProps(flattendStyle);
+    if (style) {
+      style = processLayoutProps(style);
     }
 
-    const newPointerEvents = flattendStyle?.pointerEvents || pointerEvents;
+    const newPointerEvents = style?.pointerEvents || pointerEvents;
 
     return (
       <TextAncestor.Provider value={false}>
@@ -173,7 +172,7 @@ const View: React.AbstractComponent<
               : importantForAccessibility
           }
           nativeID={id ?? nativeID}
-          style={flattendStyle}
+          style={style}
           {...restWithDefaultProps}
           pointerEvents={newPointerEvents}
           ref={forwardedRef}

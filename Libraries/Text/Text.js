@@ -172,13 +172,7 @@ const Text: React.AbstractComponent<
       ? null
       : processColor(restProps.selectionColor);
 
-  let style = flattenStyle(restProps.style);
-  style = processLayoutProps(style);
-  let _selectable = restProps.selectable;
-  if (style?.userSelect != null) {
-    _selectable = userSelectToSelectableMap[style.userSelect];
-  }
-
+  let style;
   if (__DEV__) {
     if (PressabilityDebug.isEnabled() && onPress != null) {
       style = StyleSheet.compose(restProps.style, {
@@ -202,10 +196,16 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
-  let flattenedStyle = flattenStyle(style);
+  style = flattenStyle(restProps.style);
+  style = processLayoutProps(style);
 
-  if (typeof flattenedStyle?.fontWeight === 'number') {
-    flattenedStyle.fontWeight = flattenedStyle?.fontWeight.toString();
+  if (typeof style?.fontWeight === 'number') {
+    style.fontWeight = style?.fontWeight.toString();
+  }
+
+  let _selectable = restProps.selectable;
+  if (style?.userSelect != null) {
+    _selectable = userSelectToSelectableMap[style.userSelect];
   }
 
   return hasTextAncestor ? (
@@ -220,7 +220,7 @@ const Text: React.AbstractComponent<
       nativeID={id ?? nativeID}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
-      style={flattenedStyle}
+      style={style}
       ref={forwardedRef}
     />
   ) : (
@@ -239,7 +239,7 @@ const Text: React.AbstractComponent<
         nativeID={id ?? nativeID}
         numberOfLines={numberOfLines}
         selectionColor={selectionColor}
-        style={flattenedStyle}
+        style={style}
         ref={forwardedRef}
       />
     </TextAncestor.Provider>

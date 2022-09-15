@@ -1407,8 +1407,8 @@ function InternalTextInput(props: Props): React.Node {
         ? StyleSheet.flatten([styles.multilineInput, props.style])
         : props.style;
 
-    // style = flattenStyle(style);
-    // style = processLayoutProps(style);
+    style = flattenStyle(style);
+    style = processLayoutProps(style);
 
     const useOnChangeSync =
       (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
@@ -1442,6 +1442,10 @@ function InternalTextInput(props: Props): React.Node {
     );
   } else if (Platform.OS === 'android') {
     let style = [props.style];
+
+    // $FlowFixMe
+    style = flattenStyle(style);
+    style = processLayoutProps(style);
 
     const autoCapitalize = props.autoCapitalize || 'sentences';
     const placeholder = props.placeholder ?? '';
