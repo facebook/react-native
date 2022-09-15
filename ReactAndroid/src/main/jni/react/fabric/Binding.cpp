@@ -8,6 +8,7 @@
 #include "Binding.h"
 
 #include "AsyncEventBeat.h"
+#include "CppComponentRegistry.h"
 #include "EventEmitterWrapper.h"
 #include "JBackgroundExecutor.h"
 #include "ReactNativeConfigHolder.h"
@@ -360,7 +361,8 @@ void Binding::installFabricUIManager(
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     ComponentFactory *componentsRegistry,
-    jni::alias_ref<jobject> reactNativeConfig) {
+    jni::alias_ref<jobject> reactNativeConfig,
+    CppComponentRegistry *cppComponentRegistry) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
   std::shared_ptr<const ReactNativeConfig> config =
@@ -491,6 +493,7 @@ void Binding::uninstallFabricUIManager() {
   scheduler_ = nullptr;
   mountingManager_ = nullptr;
   reactNativeConfig_ = nullptr;
+  sharedCppComponentRegistry_ = nullptr;
 }
 
 std::shared_ptr<FabricMountingManager> Binding::verifyMountingManager(
@@ -561,6 +564,17 @@ void Binding::schedulerDidCloneShadowNode(
 void Binding::preallocateView(
     SurfaceId surfaceId,
     ShadowNode const &shadowNode) {
+  auto name = std::string(shadowNode.getComponentName());
+
+  // Disable preallocation in java for C++ view managers
+  // RootComponents that are implmented as C++ view managers are still
+  // preallocated (this could be avoided by using Portals)
+  if (sharedCppComponentRegistry_ && sharedCppComponentRegistry_.get() &&
+      sharedCppComponentRegistry_->containsComponentManager(name) &&
+      !sharedCppComponentRegistry_->isRootComponent(name)) {
+    return;
+  }
+
   auto shadowView = ShadowView(shadowNode);
   auto preallocationFunction = [this,
                                 surfaceId,
