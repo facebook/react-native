@@ -20,6 +20,7 @@ const fs = require('fs');
 const {cat, echo, exec, exit, sed} = require('shelljs');
 const yargs = require('yargs');
 const {parseVersion} = require('./version-utils');
+const {saveFiles} = require('./scm-utils');
 
 let argv = yargs.option('v', {
   alias: 'to-version',
@@ -43,6 +44,8 @@ try {
   echo(e.message);
   exit(1);
 }
+
+saveFiles('package.json', 'template/package.json');
 
 fs.writeFileSync(
   'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
@@ -116,6 +119,7 @@ packageJson.dependencies = {
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
 // Change ReactAndroid/gradle.properties
+saveFiles('ReactAndroid/gradle.properties');
 if (
   sed(
     '-i',
@@ -143,10 +147,9 @@ const filesToValidate = [
   'ReactAndroid/gradle.properties',
   'template/package.json',
 ];
+
 const numberOfChangedLinesWithNewVersion = exec(
-  `git diff -U0 ${filesToValidate.join(
-    ' ',
-  )}| grep '^[+]' | grep -c ${version} `,
+  `diff -r ${process.env.TMP_PUBLISH_DIR} . | grep '^[>]' | grep -c ${version} `,
   {silent: true},
 ).stdout.trim();
 
