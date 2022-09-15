@@ -65,6 +65,8 @@ Pod::Spec.new do |spec|
 
   spec.xcconfig            = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17", "CLANG_CXX_LIBRARY" => "compiler-default", "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
 
+  fix_script = "#{Dir.getwd}-engine/utils/fix-hermes.js"
+
   if source[:git] then
     spec.prepare_command = <<-EOS
       # When true, debug build will be used.
@@ -74,6 +76,9 @@ Pod::Spec.new do |spec|
       # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
       #{File.exist?(import_hermesc_file) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_file}" : ""}
       #{File.exist?(import_hermesc_file) ? "echo \"Overriding HermesC path...\"" : ""}
+
+      # Remove this when Hermes properly support multi core builds
+      "$NODE_BINARY" #{fix_script} $(pwd)/utils/build-apple-framework.sh
 
       # Build iOS framework
       ./utils/build-ios-framework.sh
