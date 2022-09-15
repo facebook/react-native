@@ -651,7 +651,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const end = getItemCount(data) - 1;
     let prevCellKey;
     last = Math.min(end, last);
-    const pushCell = ii => {
+    for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
       const key = this._keyExtractor(item, ii);
       this._indicesToKeys.set(ii, key);
@@ -683,16 +683,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />,
       );
       prevCellKey = key;
-    };
-    // avoid using scaleY and scaleX with talkback
-    if (talkbackCompatibility) {
-      for (let ii = last; ii >= first; ii--) {
-        pushCell(ii);
-      }
-    } else {
-      for (let ii = first; ii <= last; ii++) {
-        pushCell(ii);
-      }
     }
   }
 
@@ -753,13 +743,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       inverted,
       enabledTalkbackCompatibleInvertedList,
     } = this.props;
-    const {first, last, screenreaderEnabled} = this.state;
+    const {first, last, screenreaderEnabled, contentLength, visibleLength} =
+      this.state;
     const talkbackCompatibility =
       screenreaderEnabled &&
       initialScrollIndex == null &&
       inverted &&
       Platform.OS === 'android' &&
       enabledTalkbackCompatibleInvertedList;
+    const scrollEnabled = contentLength > visibleLength;
+    const normalStyle = inversionStyle
+      ? [inversionStyle, this.props.style]
+      : this.props.style;
+    const talkbackStyle = scrollEnabled
+      ? [{flexDirection: 'column'}, this.props.style]
+      : [{flexDirection: 'column-reverse'}, this.props.style];
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle =
       this.props.inverted && !talkbackCompatibility
@@ -808,16 +806,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         ? -1
         : initialNumToRenderOrDefault(this.props.initialNumToRender) - 1;
       // scroll to top optimization. The first page is always rendered.
-      if (!talkbackCompatibility) {
-        this._pushCells(
-          cells,
-          stickyHeaderIndices,
-          stickyIndicesFromProps,
-          0,
-          lastInitialIndex,
-          inversionStyle,
-        );
-      }
+      this._pushCells(
+        cells,
+        stickyHeaderIndices,
+        stickyIndicesFromProps,
+        0,
+        lastInitialIndex,
+        inversionStyle,
+      );
       const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
       if (!isVirtualizationDisabled && first > lastInitialIndex + 1) {
         let insertedStickySpacer = false;
@@ -872,18 +868,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         last,
         inversionStyle,
       );
-      // TalkBack scroll to bottom optimization.
-      // The first page is always rendered at the bottom of the inverted flatlist.
-      if (talkbackCompatibility) {
-        this._pushCells(
-          cells,
-          stickyHeaderIndices,
-          stickyIndicesFromProps,
-          0,
-          lastInitialIndex,
-          null,
-        );
-      }
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
           'VirtualizedList: missing keys for items, make sure to specify a key or id property on each ' +
@@ -958,6 +942,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         </VirtualizedListCellContextProvider>,
       );
     }
+
     const scrollProps = {
       ...this.props,
       onContentSizeChange: this._onContentSizeChange,
@@ -975,9 +960,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           ? this.props.invertStickyHeaders
           : this.props.inverted,
       stickyHeaderIndices,
-      style: inversionStyle
-        ? [inversionStyle, this.props.style]
-        : this.props.style,
+      contentContainerStyle: talkbackCompatibility
+        ? [{flexDirection: 'column-reverse'}, this.props.contentContainerStyle]
+        : this.props.contentContainerStyle,
+      style: talkbackCompatibility ? talkbackStyle : normalStyle,
     };
 
     this._hasMore =
@@ -1286,6 +1272,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onLayout = (e: LayoutEvent) => {
+    const {screenreaderEnabled} = this.state;
+    const {inverted, enabledTalkbackCompatibleInvertedList} = this.props;
+    const talkbackCompatibility =
+      screenreaderEnabled &&
+      inverted &&
+      Platform.OS === 'android' &&
+      enabledTalkbackCompatibleInvertedList;
     if (this._isNestedWithSameOrientation()) {
       // Need to adjust our scroll metrics to be relative to our containing
       // VirtualizedList before we can make claims about list item viewability
@@ -1294,6 +1287,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._scrollMetrics.visibleLength = this._selectLength(
         e.nativeEvent.layout,
       );
+      if (talkbackCompatibility) {
+        this.setState({visibleLength: this._scrollMetrics.visibleLength});
+      }
     }
     this.props.onLayout && this.props.onLayout(e);
     this._scheduleCellsToRenderUpdate();
@@ -1479,7 +1475,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
-    const {screenreaderEnabled} = this.state;
+    const {screenreaderEnabled, contentLength} = this.state;
     const {
       initialScrollIndex,
       inverted,
@@ -1522,6 +1518,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
+    const contentLengthChanged =
+      this._scrollMetrics.contentLength !== contentLength;
+    if (contentLengthChanged && talkbackCompatibility) {
+      this.setState({contentLength: this._scrollMetrics.contentLength});
+    }
     // talkback inverted flatlist, scroll to bottom when first rendered
     if (
       width > 0 &&
