@@ -17,6 +17,7 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
+  Button,
 } from 'react-native';
 import * as React from 'react';
 
@@ -74,6 +75,7 @@ const TALKBACK_ENABLED = true;
 export function FlatList_inverted(): React.Node {
   const [flatlistHeight, setFlatlistHeight] = React.useState(null);
   const [contentHeight, setContentHeight] = React.useState(null);
+  const [items, setItems] = React.useState(DATA_SHORT);
   const renderItem = ({item}) => {
     return (
       <View style={{backgroundColor: 'yellow', height: 50}}>
@@ -81,28 +83,49 @@ export function FlatList_inverted(): React.Node {
       </View>
     );
   };
-  const diff = flatlistHeight - contentHeight;
-  let contentContainerStyle = null;
-  if (diff > 0 && TALKBACK_ENABLED) {
-    contentContainerStyle = {position: 'relative', top: diff};
+  let flatlistStyle = {};
+  if (flatlistHeight !== null && contentHeight !== null && TALKBACK_ENABLED) {
+    const diff = flatlistHeight - contentHeight;
+    if (diff > 0) {
+      // flatlistStyle = {position: 'relative', top: diff};
+      flatlistStyle = {flexDirection: 'column-reverse'};
+    }
   }
+  console.log('TESTING:: ' + 'flatlistStyle', flatlistStyle);
   return (
-    <FlatList
-      onLayout={event => {
-        const height = event.nativeEvent.layout.height;
-        setFlatlistHeight(height);
-      }}
-      onContentSizeChange={(width, height) => {
-        setContentHeight(height);
-      }}
-      inverted
-      enabledTalkbackCompatibleInvertedList={true}
-      renderItem={renderItem}
-      data={DATA_SHORT}
-      contentContainerStyle={contentContainerStyle}
-    />
+    <>
+      <Button
+        onPress={() => setItems(items => [...items, {title: 'new item'}])}
+        title="add item"
+      />
+      <Button
+        onPress={() => setItems(items => items.slice(0, -1))}
+        title="remove item"
+      />
+      <FlatList
+        onLayout={event => {
+          const height = event.nativeEvent.layout.height;
+          setFlatlistHeight(height);
+        }}
+        onContentSizeChange={(width, height) => {
+          setContentHeight(height);
+        }}
+        // inverted
+        // enabledTalkbackCompatibleInvertedList={true}
+        renderItem={renderItem}
+        data={items}
+        style={flatlistStyle}
+        contentContainerStyle={styles.contentContainerStyle}
+      />
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  contentContainerStyle: {
+    flexDirection: 'column-reverse',
+  },
+});
 
 export default ({
   title: 'Inverted',
