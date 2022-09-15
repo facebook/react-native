@@ -382,13 +382,17 @@ void Binding::installFabricUIManager(
                  << this << ").";
   }
 
+  sharedCppComponentRegistry_ =
+      std::shared_ptr<const facebook::react::CppComponentRegistry>(
+          cppComponentRegistry ? cppComponentRegistry : nullptr);
+
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
   // at the same time
   std::unique_lock<butter::shared_mutex> lock(installMutex_);
 
   auto globalJavaUiManager = make_global(javaUIManager);
-  mountingManager_ =
-      std::make_shared<FabricMountingManager>(config, globalJavaUiManager);
+  mountingManager_ = std::make_shared<FabricMountingManager>(
+      config, sharedCppComponentRegistry_, globalJavaUiManager);
 
   ContextContainer::Shared contextContainer =
       std::make_shared<ContextContainer>();
