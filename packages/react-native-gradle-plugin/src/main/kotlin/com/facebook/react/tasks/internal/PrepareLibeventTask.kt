@@ -37,8 +37,7 @@ abstract class PrepareLibeventTask : DefaultTask() {
           "libevent-${libeventVersion.get()}-stable/include/**/*",
           "evconfig-private.h",
           "event-config.h",
-          "CMakeLists.txt",
-          "Android.mk")
+          "CMakeLists.txt")
       it.eachFile { it.path = it.path.removePrefix("libevent-${libeventVersion.get()}-stable/") }
       it.includeEmptyDirs = false
       it.into(outputDir)
