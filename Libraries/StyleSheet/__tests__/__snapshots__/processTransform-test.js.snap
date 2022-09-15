@@ -22,7 +22,7 @@ exports[`processTransform validation should throw when passing a translate of th
 
 exports[`processTransform validation should throw when passing a translate of the wrong size 2`] = `"Transform with key translate must be an array of length 2 or 3, found 4: {\\"translate\\":[1,1,1,1]}"`;
 
-exports[`processTransform validation should throw when passing a translate of the wrong size 3`] = `"Transform with key translate must be an string with 1 or 2 two parameters, found 4: translate(1, 1, 1, 1)"`;
+exports[`processTransform validation should throw when passing a translate of the wrong size 3`] = `"Transform with key translate must be an string with 1 or 2 two parameters, found 4: translate(1px, 1px, 1px, 1px)"`;
 
 exports[`processTransform validation should throw when passing an Animated.Value 1`] = `"You passed an Animated.Value to a normal component. You need to wrap that component in an Animated. For example, replace <View /> by <Animated.View />."`;
 

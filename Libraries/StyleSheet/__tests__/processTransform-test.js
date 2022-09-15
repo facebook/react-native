@@ -80,8 +80,8 @@ describe('processTransform', () => {
 
     it('should accept a valid translate', () => {
       processTransform([{translate: [1, 1]}]);
-      processTransform('translate(1)');
-      processTransform('translate(1, 1)');
+      processTransform('translate(1px)');
+      processTransform('translate(1px, 1px)');
       processTransform([{translate: [1, 1, 1]}]);
     });
 
@@ -93,7 +93,7 @@ describe('processTransform', () => {
         processTransform([{translate: [1, 1, 1, 1]}]),
       ).toThrowErrorMatchingSnapshot();
       expect(() =>
-        processTransform('translate(1, 1, 1, 1)'),
+        processTransform('translate(1px, 1px, 1px, 1px)'),
       ).toThrowErrorMatchingSnapshot();
     });
 

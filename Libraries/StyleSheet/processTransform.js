@@ -67,13 +67,34 @@ const _getValueFromCSSTransform = (
     | $TEMPORARY$string<'translateY'>,
   args: string,
 ) => {
+  const argsWithUnitsRegex = new RegExp(/([+-]?\d+(\.\d+)?)([a-zA-Z]+)?/g);
+
   switch (key) {
     case 'matrix':
       return args.match(/[+-]?\d+(\.\d+)?/g)?.map(Number);
     case 'translate':
-      const parsedArgs = args.match(/[+-]?\d+(\.\d+)?/g)?.map(Number);
+      const parsedArgs = [];
+      let missingUnitOfMeasurement = false;
+
+      let matches;
+      while ((matches = argsWithUnitsRegex.exec(args))) {
+        const value = Number(matches[1]);
+        const unitOfMeasurement = matches[3];
+
+        if (value !== 0 && !unitOfMeasurement) {
+          missingUnitOfMeasurement = true;
+        }
+
+        parsedArgs.push(value);
+      }
 
       if (__DEV__) {
+        invariant(
+          !missingUnitOfMeasurement,
+          'Transform with key translate must have units unless the provided value is 0, found %s',
+          `${key}(${args})`,
+        );
+
         invariant(
           parsedArgs?.length === 1 || parsedArgs?.length === 2,
           'Transform with key translate must be an string with 1 or 2 two parameters, found %s: %s',
