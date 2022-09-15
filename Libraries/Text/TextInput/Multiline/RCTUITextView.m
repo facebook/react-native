@@ -418,6 +418,10 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
   // UI/NSTextField do NOT have textContainerInset properties
   _textContainerInsets = textContainerInsets;
   super.textContainerInset = NSMakeSize(MIN(textContainerInsets.left, textContainerInsets.right), MIN(textContainerInsets.top, textContainerInsets.bottom));
+
+  if (self.shouldDrawInsertionPoint) {
+    [self updateInsertionPointStateAndRestartTimer:NO];
+  }
 }
 
 #endif // ]TODO(macOS GH#774)

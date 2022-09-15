@@ -151,11 +151,27 @@
 
 - (void)setTextContainerInset:(UIEdgeInsets)textContainerInset
 {
+  if (UIEdgeInsetsEqualToEdgeInsets(textContainerInset, _textContainerInset)) {
+    return;
+  }
+
   _textContainerInset = textContainerInset;
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
   [self setNeedsLayout];
 #else // [TODO(macOS GH#774)
   ((RCTUITextFieldCell*)self.cell).textContainerInset = _textContainerInset;
+
+  if (self.currentEditor) {
+    NSRange selectedRange = self.currentEditor.selectedRange;
+
+    // Relocate the NSTextView without changing the selection.
+    [self.cell selectWithFrame:self.bounds
+                        inView:self
+                        editor:self.currentEditor
+                      delegate:self
+                         start:selectedRange.location
+                        length:selectedRange.length];
+  }
 #endif // ]TODO(macOS GH#774)
 }
 

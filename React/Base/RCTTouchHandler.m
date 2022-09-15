@@ -10,6 +10,7 @@
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
 #import <UIKit/UIGestureRecognizerSubclass.h>
 #endif // ]TODO(macOS GH#774)
+#import <React/RCTUITextField.h> // TODO(macOS GH#774)
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
@@ -138,6 +139,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       _shouldSendMouseUpOnSystemBehalf = [(NSControl*)targetView isEnabled];
     } else if ([targetView isKindOfClass:[NSText class]]) {
       _shouldSendMouseUpOnSystemBehalf = [(NSText*)targetView isSelectable];
+    }
+    else if ([targetView.superview isKindOfClass:[RCTUITextField class]]) {
+      _shouldSendMouseUpOnSystemBehalf = [(RCTUITextField*)targetView.superview isSelectable];
     } else {
       _shouldSendMouseUpOnSystemBehalf = NO;
     }
