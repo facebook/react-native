@@ -34,7 +34,7 @@
     "@types/semver": "^7.1.0",
     "@types/valid-url": "^1.0.2",
     "@types/yargs": "^15.0.3",
-    "beachball": "^2.25.0",
+    "beachball": "^2.30.1",
     "just-scripts": "^1.8.0",
     "typescript": "4.5.4"
   },
