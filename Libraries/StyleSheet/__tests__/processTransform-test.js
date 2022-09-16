@@ -30,7 +30,7 @@ describe('processTransform', () => {
         {rotate: '10deg'},
       ]);
       processTransform(
-        'scale(0.5) translateX(10) translateY(20) rotate(10deg)',
+        'scale(0.5) translateX(10px) translateY(20px) rotate(10deg)',
       );
     });
 
@@ -112,9 +112,6 @@ describe('processTransform', () => {
     it('should throw when passing a perspective of 0', () => {
       expect(() =>
         processTransform([{perspective: 0}]),
-      ).toThrowErrorMatchingSnapshot();
-      expect(() =>
-        processTransform('perspective(0)'),
       ).toThrowErrorMatchingSnapshot();
     });
 
