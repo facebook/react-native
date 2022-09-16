@@ -9,7 +9,7 @@
 
 # GitHub Settings, Bots
 /.github/ @hramos
-/bots @hramos
+/packages/react-native-bots @hramos
 
 # Continuous Integration
 /.circleci/ @hramos
