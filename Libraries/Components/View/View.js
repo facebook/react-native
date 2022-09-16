@@ -169,8 +169,8 @@ const View: React.AbstractComponent<
               : importantForAccessibility
           }
           nativeID={id ?? nativeID}
-          style={style}
           {...restWithDefaultProps}
+          style={style}
           pointerEvents={newPointerEvents}
           ref={forwardedRef}
         />

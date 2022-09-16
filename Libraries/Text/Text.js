@@ -179,6 +179,8 @@ const Text: React.AbstractComponent<
         color: 'magenta',
       });
     }
+  } else {
+    style = restProps.style;
   }
 
   let numberOfLines = restProps.numberOfLines;
@@ -196,7 +198,7 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
-  style = flattenStyle(restProps.style);
+  style = flattenStyle(style);
   style = processLayoutProps(style);
 
   if (typeof style?.fontWeight === 'number') {

@@ -141,7 +141,6 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   // $FlowFixMe[prop-missing]
   const tintColor = props.tintColor || style.tintColor;
 
-  style = flattenStyle(style);
   style = processLayoutProps(style);
 
   if (props.children != null) {

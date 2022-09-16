@@ -1404,7 +1404,7 @@ function InternalTextInput(props: Props): React.Node {
 
     let style =
       props.multiline === true
-        ? StyleSheet.flatten([styles.multilineInput, props.style])
+        ? [styles.multilineInput, props.style]
         : props.style;
 
     style = flattenStyle(style);
@@ -1441,10 +1441,7 @@ function InternalTextInput(props: Props): React.Node {
       />
     );
   } else if (Platform.OS === 'android') {
-    let style = [props.style];
-
-    // $FlowFixMe
-    style = flattenStyle(style);
+    let style = flattenStyle(props.style);
     style = processLayoutProps(style);
 
     const autoCapitalize = props.autoCapitalize || 'sentences';
