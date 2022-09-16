@@ -1,6 +1,5 @@
 **/main.js
 **/staticBundle.js
-bots/node_modules
 docs/generatedComponentApiDocs.js
 flow/
 flow-typed/
