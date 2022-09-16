@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "devtools-protocol": "0.0.959523",
-    "yargs": "^14.2.0"
+    "yargs": "^17.5.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.0",

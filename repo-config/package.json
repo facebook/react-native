@@ -47,7 +47,7 @@
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
     "ws": "^6.1.4",
-    "yargs": "^15.3.1"
+    "yargs": "^17.5.1"
   },
   "devDependencies": {
     "mock-fs": "^5.1.4"
