@@ -39,7 +39,8 @@ export type FeatureFlags = {|
    */
   animatedShouldUseSingleOp: () => boolean,
   /**
-   * Enables C++ render system.
+   * This feature flag enables an experimental render system that allows
+   * to render react components driven by classes written in C++.
    */
   enableCppRenderSystem: () => boolean,
 |};
