@@ -135,6 +135,10 @@ jest
       getRecommendedTimeoutMillis: jest.fn(),
     },
   }))
+  .mock('../Libraries/Components/Clipboard/Clipboard', () => ({
+    getString: jest.fn(() => ''),
+    setString: jest.fn(),
+  }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
     jest.requireActual(
       '../Libraries/Components/RefreshControl/__mocks__/RefreshControlMock',
@@ -200,10 +204,6 @@ jest
       getAllKeys: jest.fn(callback =>
         process.nextTick(() => callback(null, [])),
       ),
-    },
-    Clipboard: {
-      getString: jest.fn(() => ''),
-      setString: jest.fn(),
     },
     DeviceInfo: {
       getConstants() {
