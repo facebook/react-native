@@ -26,7 +26,6 @@ CFLAGS_BY_MODE = {
 }
 
 CHROME_EXPORTED_HEADERS = [
-    "chrome/AutoAttachUtils.h",
     "chrome/Connection.h",
     "chrome/ConnectionDemux.h",
     "chrome/MessageConverters.h",

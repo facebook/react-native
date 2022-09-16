@@ -59,6 +59,9 @@ tasks.register("buildAll") {
   dependsOn(":ReactAndroid:installArchives")
   // This builds RN Tester for Hermes/JSC for debug only
   dependsOn(":packages:rn-tester:android:app:assembleDebug")
+  // This compiles the Unit Test sources (without running them as they're partially broken)
+  dependsOn(":ReactAndroid:compileDebugUnitTestSources")
+  dependsOn(":ReactAndroid:compileReleaseUnitTestSources")
 }
 
 tasks.register("downloadAll") {

@@ -103,7 +103,7 @@
     "react": "18.2.0"
   },
   "dependencies": {
-    "@jest/create-cache-key-function": "^27.0.1",
+    "@jest/create-cache-key-function": "^27.5.1",
     "@react-native-community/cli": "^9.0.0",
     "@react-native-community/cli-platform-android": "^9.0.0",
     "@react-native-community/cli-platform-ios": "^9.0.0",
@@ -136,7 +136,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.186.0",
+    "flow-bin": "^0.187.0",
     "hermes-eslint": "0.8.0",
     "react": "18.2.0",
     "react-test-renderer": "^18.2.0"

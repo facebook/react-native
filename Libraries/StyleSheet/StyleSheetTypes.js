@@ -613,7 +613,46 @@ export type ____FontWeight_Internal =
   | 'condensedBold'
   | 'condensed'
   | 'heavy'
-  | 'black';
+  | 'black'
+  | 'Ultralight'
+  | 'Thin'
+  | 'Light'
+  | 'Normal'
+  | 'Medium'
+  | 'Semibold'
+  | 'Bold'
+  | 'Condensed'
+  | 'CondensedBold'
+  | 'Heavy'
+  | 'Black';
+
+export type ____FontVariantArray_Internal = $ReadOnlyArray<
+  | 'small-caps'
+  | 'oldstyle-nums'
+  | 'lining-nums'
+  | 'tabular-nums'
+  | 'proportional-nums'
+  | 'stylistic-one'
+  | 'stylistic-two'
+  | 'stylistic-three'
+  | 'stylistic-four'
+  | 'stylistic-five'
+  | 'stylistic-six'
+  | 'stylistic-seven'
+  | 'stylistic-eight'
+  | 'stylistic-nine'
+  | 'stylistic-ten'
+  | 'stylistic-eleven'
+  | 'stylistic-twelve'
+  | 'stylistic-thirteen'
+  | 'stylistic-fourteen'
+  | 'stylistic-fifteen'
+  | 'stylistic-sixteen'
+  | 'stylistic-seventeen'
+  | 'stylistic-eighteen'
+  | 'stylistic-nineteen'
+  | 'stylistic-twenty',
+>;
 
 export type ____TextStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
@@ -622,33 +661,7 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
   fontSize?: number,
   fontStyle?: 'normal' | 'italic',
   fontWeight?: ____FontWeight_Internal,
-  fontVariant?: $ReadOnlyArray<
-    | 'small-caps'
-    | 'oldstyle-nums'
-    | 'lining-nums'
-    | 'tabular-nums'
-    | 'proportional-nums'
-    | 'stylistic-one'
-    | 'stylistic-two'
-    | 'stylistic-three'
-    | 'stylistic-four'
-    | 'stylistic-five'
-    | 'stylistic-six'
-    | 'stylistic-seven'
-    | 'stylistic-eight'
-    | 'stylistic-nine'
-    | 'stylistic-ten'
-    | 'stylistic-eleven'
-    | 'stylistic-twelve'
-    | 'stylistic-thirteen'
-    | 'stylistic-fourteen'
-    | 'stylistic-fifteen'
-    | 'stylistic-sixteen'
-    | 'stylistic-seventeen'
-    | 'stylistic-eighteen'
-    | 'stylistic-nineteen'
-    | 'stylistic-twenty',
-  >,
+  fontVariant?: ____FontVariantArray_Internal | string,
   textShadow?: string,
   textShadowOffset?: $ReadOnly<{
     width: number,

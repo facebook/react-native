@@ -32,12 +32,12 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
+    soname = "libfabriccomponentsjni.$(ext)",
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
         "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        # "//xplat/folly:headers_only",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
         react_native_xplat_target("react/renderer/core:core"),

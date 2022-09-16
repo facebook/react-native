@@ -23,7 +23,6 @@ namespace facebook::react {
 
 void UIManagerBinding::createAndInstallIfNeeded(
     jsi::Runtime &runtime,
-    RuntimeExecutor const &runtimeExecutor,
     std::shared_ptr<UIManager> const &uiManager) {
   auto uiManagerModuleName = "nativeFabricUIManager";
 
@@ -32,8 +31,7 @@ void UIManagerBinding::createAndInstallIfNeeded(
   if (uiManagerValue.isUndefined()) {
     // The global namespace does not have an instance of the binding;
     // we need to create, install and return it.
-    auto uiManagerBinding =
-        std::make_shared<UIManagerBinding>(uiManager, runtimeExecutor);
+    auto uiManagerBinding = std::make_shared<UIManagerBinding>(uiManager);
     auto object = jsi::Object::createFromHostObject(runtime, uiManagerBinding);
     runtime.global().setProperty(
         runtime, uiManagerModuleName, std::move(object));
@@ -54,11 +52,8 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
   return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
 }
 
-UIManagerBinding::UIManagerBinding(
-    std::shared_ptr<UIManager> uiManager,
-    RuntimeExecutor runtimeExecutor)
-    : uiManager_(std::move(uiManager)),
-      runtimeExecutor_(std::move(runtimeExecutor)) {}
+UIManagerBinding::UIManagerBinding(std::shared_ptr<UIManager> uiManager)
+    : uiManager_(std::move(uiManager)) {}
 
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "

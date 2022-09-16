@@ -89,8 +89,10 @@ RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
 {
   if (self = [super init]) {
     contextContainer->update(*RCTContextContainerFromBridge(bridge));
+    auto runtimeExecuter = RCTRuntimeExecutorFromBridge(bridge);
     _surfacePresenter = [[RCTSurfacePresenter alloc] initWithContextContainer:contextContainer
-                                                              runtimeExecutor:RCTRuntimeExecutorFromBridge(bridge)];
+                                                              runtimeExecutor:runtimeExecuter
+                                                      bindingsInstallExecutor:runtimeExecuter];
 
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;

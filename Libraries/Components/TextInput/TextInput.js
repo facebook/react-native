@@ -22,6 +22,7 @@ import TextInputState from './TextInputState';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import setAndForwardRef from '../../Utilities/setAndForwardRef';
+import type {TextInputType} from './TextInput.flow';
 
 import usePressability from '../../Pressability/usePressability';
 
@@ -1661,11 +1662,4 @@ const styles = StyleSheet.create({
 });
 
 // $FlowFixMe[unclear-type] Unclear type. Using `any` type is not safe.
-module.exports = ((ExportedForwardRef: any): React.AbstractComponent<
-  React.ElementConfig<typeof InternalTextInput>,
-  $ReadOnly<{|
-    ...React.ElementRef<HostComponent<mixed>>,
-    ...ImperativeMethods,
-  |}>,
-> &
-  TextInputComponentStatics);
+module.exports = ((ExportedForwardRef: any): TextInputType);

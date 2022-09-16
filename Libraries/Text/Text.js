@@ -21,7 +21,6 @@ import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
-import flattenStyle from '../StyleSheet/flattenStyle';
 import type {TypeForStyleKey} from '../StyleSheet/StyleSheet';
 import processTextShadow from '../StyleSheet/processTextShadow';
 

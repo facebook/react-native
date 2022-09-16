@@ -155,6 +155,7 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
       }
     };
   }
+  // $FlowFixMe[prop-missing]
   fn.type = type;
   return fn;
 }

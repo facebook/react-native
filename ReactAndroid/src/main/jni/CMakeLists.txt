@@ -104,4 +104,3 @@ add_react_android_subdir(src/main/jni/react/fabric)
 add_react_android_subdir(src/main/jni/react/newarchdefaults)
 add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
-
