@@ -34,7 +34,6 @@ rn_xplat_cxx_library(
         "-DWITH_FBSYSTRACE=1",
     ],
     soname = "libcxxcomponents.$(ext)",
-    tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
         "//third-party/glog:glog",
