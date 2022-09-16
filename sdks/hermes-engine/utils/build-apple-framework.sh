@@ -10,15 +10,15 @@ REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$PWD/../..}
 JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
 
 function get_release_version {
-  ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').version"
+  echo ${RELEASE_VERSION}
 }
 
 function get_ios_deployment_target {
-  ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').deployment_target('ios')"
+  echo ${IOS_DEPLOYMENT_TARGET}
 }
 
 function get_mac_deployment_target {
-  ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').deployment_target('osx')"
+  echo ${MAC_DEPLOYMENT_TARGET}
 }
 
 # Build host hermes compiler for internal bytecode
