@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/fabric/Component.h>
+#include <react/cxxcomponents/Component.h>
 #include <react/renderer/core/Props.h>
 
 namespace facebook::react {

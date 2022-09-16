@@ -14,8 +14,8 @@
 #include <mutex>
 #include <unordered_set>
 
-#include <react/fabric/Component.h>
-#include <react/fabric/ComponentManager.h>
+#include <react/cxxcomponents/Component.h>
+#include <react/cxxcomponents/ComponentManager.h>
 #include <react/fabric/ComponentRegistryResolver.h>
 
 namespace facebook {
