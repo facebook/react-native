@@ -1447,14 +1447,16 @@ exports.examples = [
     },
   },
   {
-    title:
-      'Test aria-labelledby',
-    render(): React.Element<typeof TextInput> {
+    title: 'TextInput with aria-labelledby attribute"',
+    render(): React.Element<typeof View> {
       return (
-        <TextInput
-          aria-labelledby={'aria-labelledBy textInput'}
-          style={styles.default}
-        />
+        <View>
+          <Text nativeID="testAriaLabelledBy">Phone Number</Text>
+          <TextInput
+            aria-labelledby={'testAriaLabelledBy'}
+            style={styles.default}
+          />
+        </View>
       );
     },
   },
