@@ -8,128 +8,190 @@
  * @format
  */
 
+import * as React from 'react';
+import {useState} from 'react';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import BaseFlatListExample from './BaseFlatListExample';
 import {
-  FlatList,
-  Text,
+  SafeAreaView,
   View,
+  FlatList,
   StyleSheet,
-  ScrollView,
-  Dimensions,
+  Text,
+  StatusBar,
   Button,
 } from 'react-native';
-import * as React from 'react';
 
-const DATA_SHORT = [
-  {title: 'first item'},
-  {title: 'second item'},
-  {title: 'third item'},
+const DATA = [
+  {
+    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+    title: 'First Item',
+  },
+  {
+    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+    title: 'Second Item',
+  },
+  {
+    id: '58694a0f-3da1-471f-bd96-145571e29d72',
+    title: 'Third Item',
+  },
+  {
+    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb8bbb',
+    title: 'Fourth Item',
+  },
+  {
+    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97676',
+    title: 'Fifth Item',
+  },
+  {
+    id: '58694a0f-3da1-471f-bd96-145571e27234',
+    title: 'Sixth Item',
+  },
+  {
+    id: '58694a0f-3da1-471f-bd96-145571e29234',
+    title: 'Seven Item',
+  },
+  {
+    id: '58694a0f-3da1-471f-bd96-145571429234',
+    title: 'Eight Item',
+  },
+  {
+    id: '58694a0f-3da1-471f-bd96-115571429234',
+    title: 'Nine Item',
+  },
+  {
+    id: '58694a0f-3da1-471f-bd96-1155h1429234',
+    title: 'Ten Item',
+  },
 ];
 
-const DATA_LONG = [
-  {title: 'first item'},
-  {title: 'second item'},
-  {title: 'third item'},
-  {title: 'fourth item'},
-  {title: 'sixth item'},
-  {title: 'eight item'},
-  {title: 'ninth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'tenth item'},
-  {title: 'before last item'},
-  {title: 'last item'},
-];
-
-// For this example we mock this value
-// Test the example with talkback enabled, otherwise se this value to false
-const TALKBACK_ENABLED = true;
-
-export function FlatList_inverted(): React.Node {
-  const [flatlistHeight, setFlatlistHeight] = React.useState(null);
-  const [contentHeight, setContentHeight] = React.useState(null);
-  const [items, setItems] = React.useState(DATA_SHORT);
-  const renderItem = ({item}) => {
-    return (
-      <View style={{backgroundColor: 'yellow', height: 50}}>
-        <Text>{item.title}</Text>
-      </View>
-    );
-  };
-  let flatlistStyle = {};
-  if (flatlistHeight !== null && contentHeight !== null && TALKBACK_ENABLED) {
-    const diff = flatlistHeight - contentHeight;
-    if (diff > 0) {
-      // flatlistStyle = {position: 'relative', top: diff};
-      flatlistStyle = {flexDirection: 'column-reverse'};
-    }
-  }
-  console.log('TESTING:: ' + 'flatlistStyle', flatlistStyle);
+function Item({title}) {
+  const [pressed, setPressed] = useState(false);
   return (
-    <>
-      <Button
-        onPress={() => setItems(items => [...items, {title: 'new item'}])}
-        title="add item"
-      />
-      <Button
-        onPress={() => setItems(items => items.slice(0, -1))}
-        title="remove item"
-      />
-      <FlatList
-        onLayout={event => {
-          const height = event.nativeEvent.layout.height;
-          setFlatlistHeight(height);
-        }}
-        onContentSizeChange={(width, height) => {
-          setContentHeight(height);
-        }}
-        // inverted
-        // enabledTalkbackCompatibleInvertedList={true}
-        renderItem={renderItem}
-        data={items}
-        style={flatlistStyle}
-        contentContainerStyle={styles.contentContainerStyle}
-      />
-    </>
+    <Text
+      onPress={() => setPressed(pressed => !pressed)}
+      style={[styles.item, styles.title]}>
+      {title}
+      {` ${pressed ? 'pressed' : ''}`}
+    </Text>
   );
 }
 
+const renderItem = ({item}) => <Item title={item.title} />;
+const ITEM_HEIGHT = 50;
+
+const renderFlatList = ({item}) => <NestedFlatList item={item} />;
+
+const NEW_ITEMS = [
+  {title: '11 Item'},
+  {title: '12 Item'},
+  {title: '13 Item'},
+  {title: '14 Item'},
+  {title: '15 Item'},
+  {title: '16 Item'},
+  {title: '17 Item'},
+  {title: '18 Item'},
+];
+function NestedFlatList(props) {
+  TAG = 'Example ';
+  const [items, setItems] = useState(DATA);
+  const [disabled, setDisabled] = useState(false);
+  const [index, setIndex] = useState(DATA.length + 1);
+  const [counter, setCounter] = useState(0);
+  const getNewItems = startIndex => {
+    let newItems = [];
+    for (let i = startIndex; i < startIndex + 11; i++) {
+      newItems.push({title: `${i} Item`});
+    }
+    return newItems;
+  };
+  let flatlist = React.useRef(null);
+  console.log(TAG + 'items:', JSON.stringify(items));
+  return (
+    <View style={{flex: 1}}>
+      <Button
+        title="add an item"
+        onPress={() => {
+          setItems([...items, {title: `new item ${index}`}]);
+          setIndex(index + 1);
+        }}
+      />
+      <Button
+        title="prepend an item"
+        onPress={() => {
+          setItems([{title: `new item ${index}`}, ...items]);
+          setIndex(index + 1);
+        }}
+      />
+      <Button
+        title="remove an item"
+        onPress={() => {
+          const newItems = [...items];
+          newItems.splice(items.length - 1, 1);
+          setItems(newItems);
+        }}
+      />
+      <Button
+        title={`scroll to index of value: ${counter}`}
+        onPress={() => {
+          // $FlowFixMe
+          if (flatlist) flatlist.scrollToIndex({index: counter});
+        }}
+      />
+      <Button
+        title="increase index"
+        onPress={() => setCounter(counter => counter + 1)}
+      />
+      <Text>Flatlist</Text>
+      <FlatList
+        onScrollToIndexFailed={e => console.log(e)}
+        // initialScrollIndex is not supported with enableTalkbackCompatibleInvertedList
+        // initialScrollIndex={5}
+        ref={ref => {
+          // $FlowFixMe
+          flatlist = ref;
+        }}
+        enabledTalkbackCompatibleInvertedList
+        accessibilityRole="list"
+        ListFooterComponent={
+          <Text style={{height: 50, width: 100, backgroundColor: 'yellow'}}>
+            Footer Component
+          </Text>
+        }
+        ListHeaderComponent={
+          <Text style={{height: 100, width: 100, backgroundColor: 'yellow'}}>
+            Header Component
+          </Text>
+        }
+        inverted
+        contentContainerStyle={{
+          flexDirection: 'column-reverse',
+        }}
+        renderItem={renderItem}
+        data={DATA}
+      />
+    </View>
+  );
+}
+
+const FlatList_nested = (): React.Node => {
+  return <NestedFlatList />;
+};
+
 const styles = StyleSheet.create({
-  contentContainerStyle: {
-    flexDirection: 'column-reverse',
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  title: {
+    fontSize: 16,
   },
 });
 
 export default ({
-  title: 'Inverted',
-  name: 'inverted',
+  title: 'Inverted (Talkback)',
+  name: 'inverted (Talkback)',
   description: 'Test inverted prop on FlatList',
-  render: () => <FlatList_inverted />,
+  render: () => <FlatList_nested />,
 }: RNTesterModuleExample);
