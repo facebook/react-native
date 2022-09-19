@@ -346,6 +346,11 @@ jobs:
           when: always
 
       - run:
+          name: Run TypeScript tests
+          command: yarn test-typescript
+          when: always
+
+      - run:
           name: Sanity checks
           command: |
             ./scripts/circleci/check_license.sh

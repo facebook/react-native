@@ -71,5 +71,17 @@ module.exports = {
         jest: true,
       },
     },
+    {
+      files: ['types/**/*.{ts,tsx}'],
+      parser: '@typescript-eslint/parser',
+      plugins: ['@typescript-eslint/eslint-plugin'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+        'react-native/no-inline-styles': 'off',
+        '@typescript-eslint/no-shadow': 'off',
+        'no-self-compare': 'off',
+        'react/self-closing-comp': 'off',
+      },
+    },
   ],
 };
