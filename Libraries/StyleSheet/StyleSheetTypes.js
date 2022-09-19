@@ -613,18 +613,7 @@ export type ____FontWeight_Internal =
   | 'condensedBold'
   | 'condensed'
   | 'heavy'
-  | 'black'
-  | 'Ultralight'
-  | 'Thin'
-  | 'Light'
-  | 'Normal'
-  | 'Medium'
-  | 'Semibold'
-  | 'Bold'
-  | 'Condensed'
-  | 'CondensedBold'
-  | 'Heavy'
-  | 'Black';
+  | 'black';
 
 export type ____FontVariantArray_Internal = $ReadOnlyArray<
   | 'small-caps'
