@@ -1446,4 +1446,16 @@ exports.examples = [
       );
     },
   },
+  {
+    title:
+      'Test aria-labelledby',
+    render(): React.Element<typeof TextInput> {
+      return (
+        <TextInput
+          aria-labelledby={'aria-labelledBy textInput'}
+          style={styles.default}
+        />
+      );
+    },
+  },
 ];

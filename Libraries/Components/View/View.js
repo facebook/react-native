@@ -59,6 +59,8 @@ const View: React.AbstractComponent<
       ...restProps
     } = otherProps;
 
+    const _accessibilityLabelledBy = restProps["aria-labelledby"] ?? restProps.accessibilityLabelledBy
+
     const _accessibilityState = {
       busy: ariaBusy ?? accessibilityState?.busy,
       checked: ariaChecked ?? accessibilityState?.checked,
@@ -161,6 +163,7 @@ const View: React.AbstractComponent<
           accessibilityElementsHidden={
             ariaHidden ?? accessibilityElementsHidden
           }
+          accessibilityLabelledBy={_accessibilityLabelledBy}
           importantForAccessibility={
             ariaHidden === true
               ? 'no-hide-descendants'
