@@ -59,7 +59,8 @@ const View: React.AbstractComponent<
       ...restProps
     } = otherProps;
 
-    const _accessibilityLabelledBy = restProps["aria-labelledby"] ?? restProps.accessibilityLabelledBy
+    const _accessibilityLabelledBy =
+      restProps['aria-labelledby'] ?? restProps.accessibilityLabelledBy;
 
     const _accessibilityState = {
       busy: ariaBusy ?? accessibilityState?.busy,
