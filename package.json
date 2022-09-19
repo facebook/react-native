@@ -67,7 +67,8 @@
     "!template/node_modules",
     "!template/package-lock.json",
     "!template/yarn.lock",
-    "third-party-podspecs"
+    "third-party-podspecs",
+    "types"
   ],
   "scripts": {
     "start": "react-native start",
