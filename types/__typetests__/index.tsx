@@ -1066,6 +1066,7 @@ Alert.prompt(
     },
     {
       text: 'OK',
+      isPreferred: true,
       onPress: password => console.log('OK Pressed, password: ' + password),
     },
   ],
@@ -1661,6 +1662,9 @@ const KeyboardTest = () => {
     startCoordinates: {screenX: 0, screenY: 0, width: 0, height: 0},
     isEventFromThisApp: true,
   });
+  if (Keyboard.isVisible()) {
+    Keyboard.metrics();
+  }
 };
 
 const PermissionsAndroidTest = () => {

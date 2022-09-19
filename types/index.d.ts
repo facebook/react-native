@@ -7799,6 +7799,7 @@ export interface AccessibilityInfoStatic {
 export interface AlertButton {
   text?: string | undefined;
   onPress?: ((value?: string) => void) | undefined;
+  isPreferred?: boolean;
   style?: 'default' | 'cancel' | 'destructive' | undefined;
 }
 
@@ -10194,7 +10195,7 @@ export type KeyboardEventEasing =
   | 'linear'
   | 'keyboard';
 
-type ScreenRect = {
+type KeyboardMetrics = {
   screenX: number;
   screenY: number;
   width: number;
@@ -10205,7 +10206,7 @@ interface KeyboardEventIOS {
   /**
    * @platform ios
    */
-  startCoordinates: ScreenRect;
+  startCoordinates: KeyboardMetrics;
   /**
    * @platform ios
    */
@@ -10221,7 +10222,7 @@ export interface KeyboardEvent extends Partial<KeyboardEventIOS> {
    * Always set to "keyboard" on Android.
    */
   easing: KeyboardEventEasing;
-  endCoordinates: ScreenRect;
+  endCoordinates: KeyboardMetrics;
 }
 
 type KeyboardEventListener = (event: KeyboardEvent) => void;
@@ -10263,6 +10264,16 @@ export interface KeyboardStatic extends NativeEventEmitter {
    * position changes with keyboard movements.
    */
   scheduleLayoutAnimation: (event: KeyboardEvent) => void;
+
+  /**
+   * Whether the keyboard is last known to be visible.
+   */
+  isVisible(): boolean;
+
+  /**
+   * Return the metrics of the soft-keyboard if visible.
+   */
+  metrics(): KeyboardMetrics | undefined;
 }
 
 /**
