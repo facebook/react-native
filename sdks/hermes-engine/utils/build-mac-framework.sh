@@ -6,7 +6,7 @@
 
 # shellcheck source=xplat/js/react-native-github/sdks/hermes-engine/utils/build-apple-framework.sh
 CURR_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-. ${CURR_SCRIPT_DIR}/build-apple-framework.sh
+. "${CURR_SCRIPT_DIR}/build-apple-framework.sh"
 
 if [ ! -d destroot/Library/Frameworks/macosx/hermes.framework ]; then
     mac_deployment_target=$(get_mac_deployment_target)
