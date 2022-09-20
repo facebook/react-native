@@ -155,7 +155,6 @@ export default class VirtualizedList extends StateSafePureComponent<
   State,
 > {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
-  displayName: 'VirtualizedList_EXPERIMENTAL';
 
   // scrollToEnd may be janky without getItemLayout prop
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
@@ -1843,6 +1842,8 @@ export default class VirtualizedList extends StateSafePureComponent<
     });
   }
 }
+
+VirtualizedList.displayName = 'VirtualizedList_EXPERIMENTAL';
 
 const styles = StyleSheet.create({
   verticallyInverted: {
