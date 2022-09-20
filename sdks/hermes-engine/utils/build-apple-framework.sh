@@ -10,7 +10,7 @@ REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$PWD/../..}
 JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
 
 function get_release_version {
-  echo ${RELEASE_VERSION}
+  echo "${RELEASE_VERSION}"
 }
 
 function get_ios_deployment_target {
