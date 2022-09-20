@@ -268,20 +268,8 @@ def packageReactReleaseNdkLibs = tasks.register("packageReactReleaseNdkLibs", Co
 }
 
 afterEvaluate {
-    reactNativeArchitectures().each { architecture ->
-        tasks.findByName("configureCMakeDebug[${architecture}]")?.configure {
-            dependsOn("preHermesDebugBuild")
-            dependsOn("preJscDebugBuild")
-        }
-        tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure {
-            dependsOn("preHermesReleaseBuild")
-            dependsOn("preJscReleaseBuild")
-        }
-    }
-    configureCMakeRelWithDebInfo.dependsOn(packageReactReleaseNdkLibs)
     preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
     preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
-    configureCMakeDebug.dependsOn(packageReactDebugNdkLibs)
     preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
     preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
 
