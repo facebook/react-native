@@ -59,11 +59,7 @@ public class JSPointerDispatcher {
       return;
     }
 
-    float[] targetCoordinates = new float[2];
-    List<ViewTarget> hitPath =
-        TouchTargetHelper.findTargetPathAndCoordinatesForTouch(
-            motionEvent.getX(), motionEvent.getY(), mRootViewGroup, targetCoordinates);
-    dispatchCancelEvent(hitPath, motionEvent, eventDispatcher, targetCoordinates);
+    dispatchCancelEvent(motionEvent, eventDispatcher);
     mChildHandlingNativeGesture = childView.getId();
   }
 
@@ -74,24 +70,17 @@ public class JSPointerDispatcher {
 
   private void onUp(
       int activeTargetTag,
-      List<ViewTarget> hitPath,
-      int surfaceId,
+      PointerEventState eventState,
       MotionEvent motionEvent,
-      EventDispatcher eventDispatcher,
-      float[] targetCoordinates) {
+      List<ViewTarget> hitPath,
+      EventDispatcher eventDispatcher) {
 
     boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
     boolean listeningForUp = isAnyoneListeningForBubblingEvent(hitPath, EVENT.UP, EVENT.UP_CAPTURE);
     if (listeningForUp) {
       eventDispatcher.dispatchEvent(
           PointerEvent.obtain(
-              PointerEventHelper.POINTER_UP,
-              surfaceId,
-              activeTargetTag,
-              motionEvent,
-              targetCoordinates,
-              mPrimaryPointerId,
-              mLastButtonState));
+              PointerEventHelper.POINTER_UP, activeTargetTag, eventState, motionEvent));
     }
 
     if (!supportsHover) {
@@ -100,13 +89,7 @@ public class JSPointerDispatcher {
       if (listeningForOut) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_OUT,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                targetCoordinates,
-                mPrimaryPointerId,
-                mLastButtonState));
+                PointerEventHelper.POINTER_OUT, activeTargetTag, eventState, motionEvent));
       }
 
       List<ViewTarget> leaveViewTargets =
@@ -115,11 +98,10 @@ public class JSPointerDispatcher {
       // target -> root
       dispatchEventForViewTargets(
           PointerEventHelper.POINTER_LEAVE,
-          leaveViewTargets,
-          eventDispatcher,
-          surfaceId,
+          eventState,
           motionEvent,
-          targetCoordinates);
+          leaveViewTargets,
+          eventDispatcher);
 
       int activePointerId = motionEvent.getPointerId(motionEvent.getActionIndex());
       mLastHitPathByPointerId.remove(activePointerId);
@@ -141,11 +123,10 @@ public class JSPointerDispatcher {
 
   private void onDown(
       int activeTargetTag,
-      List<ViewTarget> hitPath,
-      int surfaceId,
+      PointerEventState eventState,
       MotionEvent motionEvent,
-      EventDispatcher eventDispatcher,
-      float[] targetCoordinates) {
+      List<ViewTarget> hitPath,
+      EventDispatcher eventDispatcher) {
 
     incrementCoalescingKey();
     boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
@@ -156,13 +137,7 @@ public class JSPointerDispatcher {
       if (listeningForOver) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_OVER,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                targetCoordinates,
-                mPrimaryPointerId,
-                mLastButtonState));
+                PointerEventHelper.POINTER_OVER, activeTargetTag, eventState, motionEvent));
       }
 
       List<ViewTarget> enterViewTargets =
@@ -172,11 +147,10 @@ public class JSPointerDispatcher {
       Collections.reverse(enterViewTargets);
       dispatchEventForViewTargets(
           PointerEventHelper.POINTER_ENTER,
-          enterViewTargets,
-          eventDispatcher,
-          surfaceId,
+          eventState,
           motionEvent,
-          targetCoordinates);
+          enterViewTargets,
+          eventDispatcher);
     }
 
     boolean listeningForDown =
@@ -184,13 +158,7 @@ public class JSPointerDispatcher {
     if (listeningForDown) {
       eventDispatcher.dispatchEvent(
           PointerEvent.obtain(
-              PointerEventHelper.POINTER_DOWN,
-              surfaceId,
-              activeTargetTag,
-              motionEvent,
-              targetCoordinates,
-              mPrimaryPointerId,
-              mLastButtonState));
+              PointerEventHelper.POINTER_DOWN, activeTargetTag, eventState, motionEvent));
     }
   }
 
@@ -215,26 +183,31 @@ public class JSPointerDispatcher {
     }
 
     int action = motionEvent.getActionMasked();
-    int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
 
     TouchTargetHelper.ViewTarget activeViewTarget = hitPath.get(0);
     int activeTargetTag = activeViewTarget.getViewId();
 
+    if (action == MotionEvent.ACTION_DOWN) {
+      mPrimaryPointerId = motionEvent.getPointerId(0);
+    }
+
+    PointerEventState eventState = new PointerEventState();
+    eventState.primaryPointerId = mPrimaryPointerId;
+    eventState.buttons = motionEvent.getButtonState();
+    eventState.button =
+        PointerEventHelper.getButtonChange(mLastButtonState, motionEvent.getButtonState());
+    eventState.offsetCoords = targetCoordinates;
+    eventState.surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
+
     switch (action) {
       case MotionEvent.ACTION_DOWN:
-        mPrimaryPointerId = motionEvent.getPointerId(0);
-        onDown(
-            activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
-        break;
       case MotionEvent.ACTION_POINTER_DOWN:
-        onDown(
-            activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
+        onDown(activeTargetTag, eventState, motionEvent, hitPath, eventDispatcher);
         break;
       case MotionEvent.ACTION_HOVER_MOVE:
         // TODO(luwe) - converge this with ACTION_MOVE
         // HOVER_MOVE may occur before DOWN. Add its downTime as a coalescing key
-        onMove(
-            activeTargetTag, motionEvent, eventDispatcher, surfaceId, hitPath, targetCoordinates);
+        onMove(activeTargetTag, eventState, motionEvent, hitPath, eventDispatcher);
         break;
       case MotionEvent.ACTION_MOVE:
         // TODO(luwe) - converge this with ACTION_HOVER_MOVE
@@ -244,22 +217,19 @@ public class JSPointerDispatcher {
           eventDispatcher.dispatchEvent(
               PointerEvent.obtain(
                   PointerEventHelper.POINTER_MOVE,
-                  surfaceId,
                   activeTargetTag,
+                  eventState,
                   motionEvent,
-                  targetCoordinates,
-                  getCoalescingKey(),
-                  mPrimaryPointerId,
-                  mLastButtonState));
+                  getCoalescingKey()));
         }
         break;
       case MotionEvent.ACTION_UP:
       case MotionEvent.ACTION_POINTER_UP:
         incrementCoalescingKey();
-        onUp(activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
+        onUp(activeTargetTag, eventState, motionEvent, hitPath, eventDispatcher);
         break;
       case MotionEvent.ACTION_CANCEL:
-        dispatchCancelEvent(hitPath, motionEvent, eventDispatcher, targetCoordinates);
+        dispatchCancelEvent(eventState, hitPath, motionEvent, eventDispatcher);
         break;
       default:
         FLog.w(
@@ -319,34 +289,24 @@ public class JSPointerDispatcher {
 
   private void dispatchEventForViewTargets(
       String eventName,
-      List<ViewTarget> viewTargets,
-      EventDispatcher dispatcher,
-      int surfaceId,
+      PointerEventState eventState,
       MotionEvent motionEvent,
-      float[] targetCoordinates) {
+      List<ViewTarget> viewTargets,
+      EventDispatcher dispatcher) {
 
     for (ViewTarget viewTarget : viewTargets) {
       int viewId = viewTarget.getViewId();
-      dispatcher.dispatchEvent(
-          PointerEvent.obtain(
-              eventName,
-              surfaceId,
-              viewId,
-              motionEvent,
-              targetCoordinates,
-              mPrimaryPointerId,
-              mLastButtonState));
+      dispatcher.dispatchEvent(PointerEvent.obtain(eventName, viewId, eventState, motionEvent));
     }
   }
 
   // called on hover_move motion events only
   private void onMove(
       int targetTag,
+      PointerEventState eventState,
       MotionEvent motionEvent,
-      EventDispatcher eventDispatcher,
-      int surfaceId,
       List<ViewTarget> hitPath,
-      float[] targetCoordinates) {
+      EventDispatcher eventDispatcher) {
 
     int action = motionEvent.getActionMasked();
     if (action != MotionEvent.ACTION_HOVER_MOVE) {
@@ -417,13 +377,7 @@ public class JSPointerDispatcher {
         if (listeningForOut) {
           eventDispatcher.dispatchEvent(
               PointerEvent.obtain(
-                  PointerEventHelper.POINTER_OUT,
-                  surfaceId,
-                  lastTargetTag,
-                  motionEvent,
-                  targetCoordinates,
-                  mPrimaryPointerId,
-                  mLastButtonState));
+                  PointerEventHelper.POINTER_OUT, lastTargetTag, eventState, motionEvent));
         }
 
         // target -> root
@@ -437,11 +391,10 @@ public class JSPointerDispatcher {
           // We want to dispatch from target -> root, so no need to reverse
           dispatchEventForViewTargets(
               PointerEventHelper.POINTER_LEAVE,
-              leaveViewTargets,
-              eventDispatcher,
-              surfaceId,
+              eventState,
               motionEvent,
-              targetCoordinates);
+              leaveViewTargets,
+              eventDispatcher);
         }
       }
 
@@ -450,13 +403,7 @@ public class JSPointerDispatcher {
       if (listeningForOver) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_OVER,
-                surfaceId,
-                targetTag,
-                motionEvent,
-                targetCoordinates,
-                mPrimaryPointerId,
-                mLastButtonState));
+                PointerEventHelper.POINTER_OVER, targetTag, eventState, motionEvent));
       }
 
       // target -> root
@@ -472,11 +419,10 @@ public class JSPointerDispatcher {
         Collections.reverse(enterViewTargets);
         dispatchEventForViewTargets(
             PointerEventHelper.POINTER_ENTER,
-            enterViewTargets,
-            eventDispatcher,
-            surfaceId,
+            eventState,
             motionEvent,
-            targetCoordinates);
+            enterViewTargets,
+            eventDispatcher);
       }
     }
 
@@ -486,32 +432,49 @@ public class JSPointerDispatcher {
       eventDispatcher.dispatchEvent(
           PointerEvent.obtain(
               PointerEventHelper.POINTER_MOVE,
-              surfaceId,
               targetTag,
+              eventState,
               motionEvent,
-              targetCoordinates,
-              getCoalescingKey(),
-              mPrimaryPointerId,
-              mLastButtonState));
+              getCoalescingKey()));
     }
 
     mLastHitPathByPointerId.put(activePointerId, hitPath);
     mLastEventCoodinatesByPointerId.put(activePointerId, new float[] {x, y});
   }
 
-  private void dispatchCancelEvent(
-      List<ViewTarget> hitPath,
-      MotionEvent motionEvent,
-      EventDispatcher eventDispatcher,
-      float[] targetCoordinates) {
-    // This means the gesture has already ended, via some other CANCEL or UP event. This is not
-    // expected to happen very often as it would mean some child View has decided to intercept the
-    // touch stream and start a native gesture only upon receiving the UP/CANCEL event.
-
+  private void dispatchCancelEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
     Assertions.assertCondition(
         mChildHandlingNativeGesture == -1,
         "Expected to not have already sent a cancel for this gesture");
-    int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
+
+    float[] targetCoordinates = new float[2];
+    List<ViewTarget> hitPath =
+        TouchTargetHelper.findTargetPathAndCoordinatesForTouch(
+            motionEvent.getX(), motionEvent.getY(), mRootViewGroup, targetCoordinates);
+
+    PointerEventState eventState = new PointerEventState();
+
+    eventState.primaryPointerId = mPrimaryPointerId;
+    eventState.buttons = motionEvent.getButtonState();
+    eventState.button =
+        PointerEventHelper.getButtonChange(mLastButtonState, motionEvent.getButtonState());
+    eventState.offsetCoords = targetCoordinates;
+    eventState.surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
+
+    dispatchCancelEvent(eventState, hitPath, motionEvent, eventDispatcher);
+  }
+
+  private void dispatchCancelEvent(
+      PointerEventState eventState,
+      List<ViewTarget> hitPath,
+      MotionEvent motionEvent,
+      EventDispatcher eventDispatcher) {
+    // This means the gesture has already ended, via some other CANCEL or UP event. This is not
+    // expected to happen very often as it would mean some child View has decided to intercept the
+    // touch stream and start a native gesture only upon receiving the UP/CANCEL event.
+    Assertions.assertCondition(
+        mChildHandlingNativeGesture == -1,
+        "Expected to not have already sent a cancel for this gesture");
 
     if (!hitPath.isEmpty()) {
       boolean listeningForCancel =
@@ -521,13 +484,7 @@ public class JSPointerDispatcher {
         Assertions.assertNotNull(eventDispatcher)
             .dispatchEvent(
                 PointerEvent.obtain(
-                    PointerEventHelper.POINTER_CANCEL,
-                    surfaceId,
-                    targetTag,
-                    motionEvent,
-                    targetCoordinates,
-                    mPrimaryPointerId,
-                    mLastButtonState));
+                    PointerEventHelper.POINTER_CANCEL, targetTag, eventState, motionEvent));
       }
 
       // TODO(luwe) - Need to fire pointer out here as well:
@@ -538,11 +495,10 @@ public class JSPointerDispatcher {
       // dispatch from target -> root
       dispatchEventForViewTargets(
           PointerEventHelper.POINTER_LEAVE,
-          leaveViewTargets,
-          eventDispatcher,
-          surfaceId,
+          eventState,
           motionEvent,
-          targetCoordinates);
+          leaveViewTargets,
+          eventDispatcher);
 
       incrementCoalescingKey();
       mPrimaryPointerId = UNSET_POINTER_ID;

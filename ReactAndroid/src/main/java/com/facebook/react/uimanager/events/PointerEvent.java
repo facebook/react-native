@@ -15,6 +15,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.PointerEventState;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,80 +29,55 @@ public class PointerEvent extends Event<PointerEvent> {
 
   public static PointerEvent obtain(
       String eventName,
-      int surfaceId,
-      int viewTag,
-      MotionEvent motionEventToCopy,
-      float[] offsetCoords,
-      int primaryPointerId,
-      int lastButtonState) {
+      int targetTag,
+      PointerEventState eventState,
+      MotionEvent motionEventToCopy) {
     PointerEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new PointerEvent();
     }
     event.init(
-        eventName,
-        surfaceId,
-        viewTag,
-        Assertions.assertNotNull(motionEventToCopy),
-        offsetCoords,
-        (short) 0,
-        primaryPointerId,
-        lastButtonState);
+        eventName, targetTag, eventState, Assertions.assertNotNull(motionEventToCopy), (short) 0);
     return event;
   }
 
   public static PointerEvent obtain(
       String eventName,
-      int surfaceId,
-      int viewTag,
+      int targetTag,
+      PointerEventState eventState,
       MotionEvent motionEventToCopy,
-      float[] offsetCoords,
-      short coalescingKey,
-      int primaryPointerId,
-      int lastButtonState) {
+      short coalescingKey) {
     PointerEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new PointerEvent();
     }
     event.init(
         eventName,
-        surfaceId,
-        viewTag,
+        targetTag,
+        eventState,
         Assertions.assertNotNull(motionEventToCopy),
-        offsetCoords,
-        coalescingKey,
-        primaryPointerId,
-        lastButtonState);
+        coalescingKey);
     return event;
   }
 
   private @Nullable MotionEvent mMotionEvent;
   private @Nullable String mEventName;
   private short mCoalescingKey = UNSET_COALESCING_KEY;
-  private float mOffsetX;
-  private float mOffsetY;
   private @Nullable List<WritableMap> mPointersEventData;
-  private int mPrimaryPointerId;
-  private int mLastButtonState;
+  private PointerEventState mEventState;
 
   private void init(
       String eventName,
-      int surfaceId,
-      int viewTag,
+      int targetTag,
+      PointerEventState eventState,
       MotionEvent motionEventToCopy,
-      float[] offsetCoords,
-      short coalescingKey,
-      int primaryPointerId,
-      int lastButtonState) {
+      short coalescingKey) {
 
-    super.init(surfaceId, viewTag, motionEventToCopy.getEventTime());
+    super.init(eventState.surfaceId, targetTag, motionEventToCopy.getEventTime());
     mEventName = eventName;
     mMotionEvent = MotionEvent.obtain(motionEventToCopy);
     mCoalescingKey = coalescingKey;
-    mOffsetX = offsetCoords[0];
-    mOffsetY = offsetCoords[1];
-    mPrimaryPointerId = primaryPointerId;
-    mLastButtonState = lastButtonState;
+    mEventState = eventState;
   }
 
   private PointerEvent() {}
@@ -184,7 +160,8 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putString("pointerType", pointerType);
 
     pointerEvent.putBoolean(
-        "isPrimary", PointerEventHelper.isPrimary(pointerId, mPrimaryPointerId, mMotionEvent));
+        "isPrimary",
+        PointerEventHelper.isPrimary(pointerId, mEventState.primaryPointerId, mMotionEvent));
 
     // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
     // Client refers to upper left edge of the content area (viewport)
@@ -203,8 +180,8 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putDouble("pageY", clientY);
 
     // Offset refers to upper left edge of the target view
-    pointerEvent.putDouble("offsetX", PixelUtil.toDIPFromPixel(mOffsetX));
-    pointerEvent.putDouble("offsetY", PixelUtil.toDIPFromPixel(mOffsetY));
+    pointerEvent.putDouble("offsetX", PixelUtil.toDIPFromPixel(mEventState.offsetCoords[0]));
+    pointerEvent.putDouble("offsetY", PixelUtil.toDIPFromPixel(mEventState.offsetCoords[1]));
 
     pointerEvent.putInt("target", this.getViewTag());
     pointerEvent.putDouble("timestamp", this.getTimestampMs());
@@ -216,10 +193,8 @@ public class PointerEvent extends Event<PointerEvent> {
       pointerEvent.putDouble("tiltY", 0);
     }
 
-    int buttonState = mMotionEvent.getButtonState();
-    pointerEvent.putInt("buttons", buttonState);
-    pointerEvent.putInt(
-        "button", PointerEventHelper.getButtonChange(mLastButtonState, buttonState));
+    pointerEvent.putInt("buttons", mEventState.buttons);
+    pointerEvent.putInt("button", mEventState.button);
 
     return pointerEvent;
   }
