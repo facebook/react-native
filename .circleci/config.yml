@@ -860,16 +860,19 @@ jobs:
       - checkout_code_with_cache
 
       - run:
-          name: Install Node
+          name: Disable NVM
+          # Use choco to manage node versions due to https://github.com/npm/cli/issues/4234
+          command: nvm off
+
+      - run:
+          name: Install Node JS
           # Note: Version set separately for non-Windows builds, see above.
-          command: |
-            nvm install 16
-            nvm use 16
+          command: choco install nodejs-lts
 
       # Setup Dependencies
       - run:
-          name: Install Yarn
-          command: choco install yarn
+          name: Enable Yarn with corepack
+          command: corepack enable
 
       - run:
           name: Display Environment info
