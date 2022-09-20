@@ -49,6 +49,7 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const infoLog = require('../Utilities/infoLog');
 const FillRateHelper = require('./FillRateHelper');
 const ViewabilityHelper = require('./ViewabilityHelper');
+const Platform = require('../Utilities/Platform');
 const invariant = require('invariant');
 
 const ON_END_REACHED_EPSILON = 0.001;
@@ -70,6 +71,8 @@ type State = {
   first: number,
   last: number,
   screenreaderEnabled: ?boolean,
+  contentLength: ?number,
+  visibleLength: ?number,
 };
 
 /**
@@ -591,7 +594,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (Platform.OS === 'android' && this._screenreaderEventListener) {
       this._screenreaderEventListener.remove();
     }
-    this._hasTriggeredInitialScrollToIndex = false;
     this._offsetFromBottomOfScreen = undefined;
     this._lastOffsetFromBottomOfScreen = undefined;
     this._beginningReached = undefined;
@@ -637,16 +639,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getItemLayout,
       horizontal,
       renderItem,
-      initialScrollIndex,
-      inverted,
-      enabledTalkbackCompatibleInvertedList,
     } = this.props;
-    const talkbackCompatibility =
-      this.state.screenreaderEnabled &&
-      initialScrollIndex == null &&
-      inverted &&
-      Platform.OS === 'android' &&
-      enabledTalkbackCompatibleInvertedList;
     const stickyOffset = ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
     let prevCellKey;
@@ -751,20 +744,35 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       inverted &&
       Platform.OS === 'android' &&
       enabledTalkbackCompatibleInvertedList;
-    const scrollEnabled = contentLength > visibleLength;
-    const normalStyle = inversionStyle
+    const isVirtualizationDisabled = this._isVirtualizationDisabled();
+    let inversionStyle = this.props.inverted
+      ? horizontalOrDefault(this.props.horizontal)
+        ? styles.horizontallyInverted
+        : styles.verticallyInverted
+      : null;
+    let style = inversionStyle
       ? [inversionStyle, this.props.style]
       : this.props.style;
-    const talkbackStyle = scrollEnabled
-      ? [{flexDirection: 'column'}, this.props.style]
-      : [{flexDirection: 'column-reverse'}, this.props.style];
-    const isVirtualizationDisabled = this._isVirtualizationDisabled();
-    const inversionStyle =
-      this.props.inverted && !talkbackCompatibility
-        ? horizontalOrDefault(this.props.horizontal)
-          ? styles.horizontallyInverted
-          : styles.verticallyInverted
-        : null;
+    let contentContainerStyle = this.props.contentContainerStyle;
+    if (
+      talkbackCompatibility &&
+      contentLength != null &&
+      visibleLength != null
+    ) {
+      const diff = visibleLength - contentLength;
+      if (diff > 0) {
+        style = {flexDirection: 'column-reverse'};
+      } else {
+        style = {flexDirection: 'column'};
+      }
+    }
+    if (talkbackCompatibility) {
+      contentContainerStyle = {flexDirection: 'column-reverse'};
+      inversionStyle = null;
+      if (contentLength == null || visibleLength == null) {
+        style = {flexDirection: 'column'};
+      }
+    }
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
@@ -960,10 +968,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           ? this.props.invertStickyHeaders
           : this.props.inverted,
       stickyHeaderIndices,
-      contentContainerStyle: talkbackCompatibility
-        ? [{flexDirection: 'column-reverse'}, this.props.contentContainerStyle]
-        : this.props.contentContainerStyle,
-      style: talkbackCompatibility ? talkbackStyle : normalStyle,
+      style: style,
+      contentContainerStyle: contentContainerStyle,
     };
 
     this._hasMore =
@@ -1070,6 +1076,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _footerLength = 0;
   // Used for preventing scrollToIndex from being called multiple times for initialScrollIndex
   _hasTriggeredInitialScrollToIndex = false;
+  _lastScrollPosition = undefined;
+  _lastItem = undefined;
   _hasInteracted = false;
   _hasMore = false;
   _hasWarned: {[string]: boolean} = {};
@@ -1524,17 +1532,45 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.setState({contentLength: this._scrollMetrics.contentLength});
     }
     // talkback inverted flatlist, scroll to bottom when first rendered
+    const {getItem, data, getItemCount} = this.props;
+    const veryLast = getItemCount(data) - 1;
+    const firstItem = getItem(data, 0);
+    const lastItem = getItem(data, veryLast);
+    const lastItemDidNotChange = this._lastItem === lastItem;
+    const scrollPositionChanged =
+      this._lastScrollPosition != this._scrollMetrics.contentLength;
+    const triggerTalkbackScrollToEnd =
+      this._lastScrollPosition === undefined ||
+      this._lastItem === undefined ||
+      (lastItemDidNotChange && scrollPositionChanged);
     if (
       width > 0 &&
       height > 0 &&
-      !this._hasTriggeredInitialScrollToIndex &&
+      triggerTalkbackScrollToEnd &&
       talkbackCompatibility
     ) {
-      this.scrollToOffset({
-        animated: false,
-        offset: this._scrollMetrics.contentLength,
-      });
-      this._hasTriggeredInitialScrollToIndex = true;
+      // onMomentumScrollEnd does not work with TalkBack gestures
+      // estrapolate this to a method talkbackScrollTo compatible with
+      // TalkBack gestures
+      setTimeout(
+        (flatlist, contentLength, lastItem) => {
+          if (
+            contentLength != undefined &&
+            contentLength >= this._lastScrollPosition
+          ) {
+            flatlist.scrollToOffset({
+              offset: contentLength,
+              animated: false,
+            });
+          }
+        },
+        1,
+        this,
+        this._scrollMetrics.contentLength,
+        lastItem,
+      );
+      this._lastItem = lastItem;
+      this._lastScrollPosition = this._scrollMetrics.contentLength;
     }
     this._scheduleCellsToRenderUpdate();
     // talkback inverted flatlist, height is used to compute
