@@ -1340,7 +1340,6 @@ workflows:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
       - prepare_hermes_workspace
-      - test_codegen
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
