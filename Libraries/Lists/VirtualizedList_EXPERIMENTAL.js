@@ -24,34 +24,34 @@ import type {
 
 export type {RenderItemProps, RenderItemType, Separators};
 
+import * as React from 'react';
+import invariant from 'invariant';
+
+import RefreshControl from '../Components/RefreshControl/RefreshControl';
+import ScrollView from '../Components/ScrollView/ScrollView';
+import View from '../Components/View/View';
+import Batchinator from '../Interaction/Batchinator';
+import {findNodeHandle} from '../ReactNative/RendererProxy';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import clamp from '../Utilities/clamp';
+import infoLog from '../Utilities/infoLog';
+
+import {CellRenderMask} from './CellRenderMask';
+import ChildListCollection from './ChildListCollection';
+import StateSafePureComponent from './StateSafePureComponent';
+import FillRateHelper from './FillRateHelper';
+import ViewabilityHelper from './ViewabilityHelper';
+import {
+  computeWindowedRenderLimits,
+  keyExtractor as defaultKeyExtractor,
+} from './VirtualizeUtils';
+import CellRenderer from './VirtualizedListCellRenderer';
 import {
   VirtualizedListCellContextProvider,
   VirtualizedListContext,
   VirtualizedListContextProvider,
 } from './VirtualizedListContext.js';
-import {
-  computeWindowedRenderLimits,
-  keyExtractor as defaultKeyExtractor,
-} from './VirtualizeUtils';
-import * as React from 'react';
-
-import {CellRenderMask} from './CellRenderMask';
-import ChildListCollection from './ChildListCollection';
-import clamp from '../Utilities/clamp';
-import StateSafePureComponent from './StateSafePureComponent';
-import CellRenderer from './VirtualizedListCellRenderer';
-
-const RefreshControl = require('../Components/RefreshControl/RefreshControl');
-const ScrollView = require('../Components/ScrollView/ScrollView');
-const View = require('../Components/View/View');
-const Batchinator = require('../Interaction/Batchinator');
-const {findNodeHandle} = require('../ReactNative/RendererProxy');
-const flattenStyle = require('../StyleSheet/flattenStyle');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const infoLog = require('../Utilities/infoLog');
-const FillRateHelper = require('./FillRateHelper');
-const ViewabilityHelper = require('./ViewabilityHelper');
-const invariant = require('invariant');
 
 const ON_END_REACHED_EPSILON = 0.001;
 
@@ -150,8 +150,12 @@ function findLastWhere<T>(
  * - As an effort to remove defaultProps, use helper functions when referencing certain props
  *
  */
-class VirtualizedList extends StateSafePureComponent<Props, State> {
+export default class VirtualizedList extends StateSafePureComponent<
+  Props,
+  State,
+> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
+  displayName: 'VirtualizedList_EXPERIMENTAL';
 
   // scrollToEnd may be janky without getItemLayout prop
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
@@ -1876,6 +1880,3 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
 });
-
-VirtualizedList.displayName = 'VirtualizedList_EXPERIMENTAL';
-module.exports = VirtualizedList;
