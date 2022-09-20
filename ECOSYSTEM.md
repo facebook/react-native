@@ -20,15 +20,14 @@ Baseline responsibilities of partners include:
 * Engage on the core contributor Discord
 
 Our current partners and other areas of ownership:
-* **[Coinbase](TODO ):** TODO
+* **[Coinbase](https://www.coinbase.com/):** Publishes [posts](https://blog.coinbase.com/tagged/react-native) advocating React Native usage. Supports `@react-native-community/datetimepicker` and other community modules to migrate to the new architecture. Supports releases in testing and feedback.
 * **[Callstack](https://callstack.com/):** Maintains the [React Native CLI](https://github.com/react-native-community/react-native-cli) and [other community libraries](https://github.com/callstack), organizes [React Native EU](https://react-native.eu/) and hosts [The React Native Show podcast](https://www.callstack.com/podcast-react-native-show)
 * **[Expo](https://expo.dev/):** Builds [Expo Go and SDK](https://github.com/expo/expo), [Snack](https://snack.expo.dev/), and [Expo Application Services](https://expo.dev/eas). Maintains [React Native Directory](https://reactnative.directory/), stewards [React Navigation](https://reactnavigation.org/) along with other partners.
 * **[Infinite Red](https://infinite.red/):** Maintains the [ignite cli/boilerplate](https://github.com/infinitered/ignite), organizes [Chain React Conf](https://cr.infinite.red/), hosts the [React Native Radio podcast](https://reactnativeradio.com), publishes the [React Native Newsletter](https://reactnativenewsletter.com)
 * **[Meta](https://opensource.fb.com/):** Oversees the React Native product and maintains the [React Native core repo](https://reactnative.dev/) 
 * **[Microsoft](https://twitter.com/ReactNativeMSFT):** Develops [React Native Windows](https://github.com/Microsoft/react-native-windows) and [React Native macOS](https://github.com/microsoft/react-native-macos) for building apps that target Windows and macOS; maintains [rnx-kit](https://github.com/microsoft/rnx-kit), [react-native-test-app](https://github.com/microsoft/react-native-test-app) and coordinates cross-companies efforts such as the [bundle working group](https://github.com/microsoft/rnx-kit/discussions/categories/bundle-working-group).
-* **[Shopify](TODO):** TODO
+* **[Shopify](https://www.shopify.com/):** Maintains React Native open source libraries such as [flash-list](https://github.com/Shopify/flash-list) or [@shopify/react-native-skia](https://github.com/Shopify/react-native-skia) and sponsors Software Mansion. 
 * **[Software Mansion](https://swmansion.com/):** Maintain core infrastructure including JSC, Animated, and other popular third-party plugins and organizes [App.js Conf](https://appjs.co/)
-* **[Tesla](https://www.tesla.com):** Maintains [React Native Camera Kit](http://github.com/teslamotors/react-native-camera-kit) and contributes to React Native core as well as various community libraries.
 * **[Wix.com](wix.engineering/open-source):** Maintains a variety of React Native open source projects ([see all](https://github.com/orgs/wix/repositories?q=react-native)), including:  [Detox](https://wix.github.io/Detox/) end-to-end testing library for React Native apps, [RN UILib](https://wix.github.io/react-native-ui-lib/), [RN Navigation](https://wix.github.io/react-native-navigation/), [RN Calendars](https://wix.github.io/react-native-calendars/) and [RN Notifications](https://github.com/wix/react-native-notifications).
 
 This list may fluctuate in response to newcomers who meet our partner definition. In terms of open source work, pull requests from partners are commonly prioritized. When you are contributing to React Native, you'll most likely meet somebody who works at one of the partner companies and who is a core contributor:
@@ -50,7 +49,7 @@ These are behaviors we have observed in our existing core contributors. They are
 
 Core contributor status is attained after consistently contributing and taking on the responsibilities outlined above and granted by other core contributors. Similarly, after a long period of inactivity (~6 months or more), a core contributor may be contacted to understand if they’re still interested in being part of the program.
 
-You can use this form <MISSING_LINK_TODO> to either:
+You can use this [form](https://forms.gle/4jpA4QeNUvAUDnNe8) to either:
 * Apply yourself to become a Core Contributor. Make sure to include a list of valuable contributions you did to the React Native repository and ecosystem.
 * Nominate someone to become a Core Contributor.
 
