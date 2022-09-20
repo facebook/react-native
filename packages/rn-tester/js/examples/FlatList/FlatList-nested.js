@@ -187,7 +187,6 @@ function OuterItemRenderer({
           <View style={styles.col}>
             <FlatList
               data={items.map(i => index * items.length * 3 + i)}
-              listKey={`${index}-col1`}
               renderItem={p => (
                 <InnerItemRenderer
                   item={p.item}
@@ -203,7 +202,6 @@ function OuterItemRenderer({
           <View style={styles.col}>
             <FlatList
               data={items.map(i => index * items.length * 3 + i + items.length)}
-              listKey={`${index}-col2`}
               renderItem={p => (
                 <InnerItemRenderer
                   item={p.item}
