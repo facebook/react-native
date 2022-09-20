@@ -74,6 +74,8 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
     {\\"ExcludedAndroidComponent\\", ExcludedAndroidComponentCls}, // EXCLUDE_ANDROID
 
+
+    {\\"MultiFileIncludedNativeComponent\\", MultiFileIncludedNativeComponentCls}, // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
   };
 
   auto p = sFabricComponentsClassMap.find(name);
