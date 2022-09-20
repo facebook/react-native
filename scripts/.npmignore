@@ -1,2 +1,2 @@
 # Make sure we never publish __test__ folders (Gradle output)
-**/__*tests__/
+**/__tests__/
