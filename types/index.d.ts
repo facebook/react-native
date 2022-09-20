@@ -5012,8 +5012,6 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
 
   keyExtractor?: ((item: ItemT, index: number) => string) | undefined;
 
-  listKey?: string | undefined;
-
   /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
    * once, the better the fill rate, but responsiveness my suffer because rendering content may
