@@ -18,8 +18,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.PointerEvent;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.events.PointerEventHelper.EVENT;
-import com.facebook.react.uimanager.events.TouchEvent;
-import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,16 +35,13 @@ public class JSPointerDispatcher {
   private static final float ONMOVE_EPSILON = 0.1f;
   private static final String TAG = "POINTER EVENTS";
 
-  private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
-      new TouchEventCoalescingKeyHelper();
   private final Map<Integer, List<ViewTarget>> mLastHitPathByPointerId = new HashMap<>();
   private final Map<Integer, float[]> mLastEventCoodinatesByPointerId = new HashMap<>();
 
   private int mChildHandlingNativeGesture = -1;
   private int mPrimaryPointerId = UNSET_POINTER_ID;
+  private int mCoalescingKey = 0;
   private int mLastButtonState = 0;
-  private long mDownStartTime = TouchEvent.UNSET;
-  private long mHoverInteractionKey = TouchEvent.UNSET;
   private final ViewGroup mRootViewGroup;
 
   // Set globally for hover interactions, referenced for coalescing hover events
@@ -84,13 +79,6 @@ public class JSPointerDispatcher {
       MotionEvent motionEvent,
       EventDispatcher eventDispatcher,
       float[] targetCoordinates) {
-    if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
-      // End of a "down" coalescing key
-      mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
-      mDownStartTime = TouchEvent.UNSET;
-    } else {
-      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
-    }
 
     boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
     boolean listeningForUp = isAnyoneListeningForBubblingEvent(hitPath, EVENT.UP, EVENT.UP_CAPTURE);
@@ -143,6 +131,14 @@ public class JSPointerDispatcher {
     }
   }
 
+  private void incrementCoalescingKey() {
+    mCoalescingKey = (mCoalescingKey + 1) % Integer.MAX_VALUE;
+  }
+
+  private short getCoalescingKey() {
+    return ((short) (0xffff & mCoalescingKey));
+  }
+
   private void onDown(
       int activeTargetTag,
       List<ViewTarget> hitPath,
@@ -151,14 +147,7 @@ public class JSPointerDispatcher {
       EventDispatcher eventDispatcher,
       float[] targetCoordinates) {
 
-    if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN) {
-      mPrimaryPointerId = motionEvent.getPointerId(0);
-      mDownStartTime = motionEvent.getEventTime();
-      mTouchEventCoalescingKeyHelper.addCoalescingKey(mDownStartTime);
-    } else {
-      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
-    }
-
+    incrementCoalescingKey();
     boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
     if (!supportsHover) {
       // Indirect OVER event dispatches before ENTER
@@ -233,19 +222,22 @@ public class JSPointerDispatcher {
 
     switch (action) {
       case MotionEvent.ACTION_DOWN:
+        mPrimaryPointerId = motionEvent.getPointerId(0);
+        onDown(
+            activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
+        break;
       case MotionEvent.ACTION_POINTER_DOWN:
         onDown(
             activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
         break;
       case MotionEvent.ACTION_HOVER_MOVE:
         // TODO(luwe) - converge this with ACTION_MOVE
+        // HOVER_MOVE may occur before DOWN. Add its downTime as a coalescing key
         onMove(
             activeTargetTag, motionEvent, eventDispatcher, surfaceId, hitPath, targetCoordinates);
         break;
       case MotionEvent.ACTION_MOVE:
         // TODO(luwe) - converge this with ACTION_HOVER_MOVE
-        int coalescingKey = mTouchEventCoalescingKeyHelper.getCoalescingKey(mDownStartTime);
-
         boolean listeningForMove =
             isAnyoneListeningForBubblingEvent(hitPath, EVENT.MOVE, EVENT.MOVE_CAPTURE);
         if (listeningForMove) {
@@ -256,13 +248,14 @@ public class JSPointerDispatcher {
                   activeTargetTag,
                   motionEvent,
                   targetCoordinates,
-                  coalescingKey,
+                  getCoalescingKey(),
                   mPrimaryPointerId,
                   mLastButtonState));
         }
         break;
       case MotionEvent.ACTION_UP:
       case MotionEvent.ACTION_POINTER_UP:
+        incrementCoalescingKey();
         onUp(activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
         break;
       case MotionEvent.ACTION_CANCEL:
@@ -383,12 +376,6 @@ public class JSPointerDispatcher {
       return;
     }
 
-    // Set the interaction key if unset, to be used as a coalescing key for hover interactions
-    if (mHoverInteractionKey < 0) {
-      mHoverInteractionKey = motionEvent.getEventTime();
-      mTouchEventCoalescingKeyHelper.addCoalescingKey(mHoverInteractionKey);
-    }
-
     // hitState is list ordered from inner child -> parent tag
     // Traverse hitState back-to-front to find the first divergence with lastHitPath
     // FIXME: this may generate incorrect events when view collapsing changes the hierarchy
@@ -420,7 +407,7 @@ public class JSPointerDispatcher {
 
     if (hasDiverged) {
       // If something has changed in either enter/exit, let's start a new coalescing key
-      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mHoverInteractionKey);
+      incrementCoalescingKey();
 
       // Out, Leave events
       if (lastHitPath.size() > 0) {
@@ -493,7 +480,6 @@ public class JSPointerDispatcher {
       }
     }
 
-    int coalescingKey = mTouchEventCoalescingKeyHelper.getCoalescingKey(mHoverInteractionKey);
     boolean listeningToMove =
         isAnyoneListeningForBubblingEvent(hitPath, EVENT.MOVE, EVENT.MOVE_CAPTURE);
     if (listeningToMove) {
@@ -504,8 +490,9 @@ public class JSPointerDispatcher {
               targetTag,
               motionEvent,
               targetCoordinates,
-              coalescingKey,
-              mPrimaryPointerId));
+              getCoalescingKey(),
+              mPrimaryPointerId,
+              mLastButtonState));
     }
 
     mLastHitPathByPointerId.put(activePointerId, hitPath);
@@ -557,8 +544,7 @@ public class JSPointerDispatcher {
           motionEvent,
           targetCoordinates);
 
-      mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
-      mDownStartTime = TouchEvent.UNSET;
+      incrementCoalescingKey();
       mPrimaryPointerId = UNSET_POINTER_ID;
     }
   }

@@ -24,7 +24,7 @@ public class PointerEvent extends Event<PointerEvent> {
   private static final int POINTER_EVENTS_POOL_SIZE = 6;
   private static final Pools.SynchronizedPool<PointerEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(POINTER_EVENTS_POOL_SIZE);
-  private static final int UNSET_COALESCING_KEY = -1;
+  private static final short UNSET_COALESCING_KEY = -1;
 
   public static PointerEvent obtain(
       String eventName,
@@ -44,7 +44,7 @@ public class PointerEvent extends Event<PointerEvent> {
         viewTag,
         Assertions.assertNotNull(motionEventToCopy),
         offsetCoords,
-        0,
+        (short) 0,
         primaryPointerId,
         lastButtonState);
     return event;
@@ -56,7 +56,7 @@ public class PointerEvent extends Event<PointerEvent> {
       int viewTag,
       MotionEvent motionEventToCopy,
       float[] offsetCoords,
-      int coalescingKey,
+      short coalescingKey,
       int primaryPointerId,
       int lastButtonState) {
     PointerEvent event = EVENTS_POOL.acquire();
@@ -77,7 +77,7 @@ public class PointerEvent extends Event<PointerEvent> {
 
   private @Nullable MotionEvent mMotionEvent;
   private @Nullable String mEventName;
-  private int mCoalescingKey = UNSET_COALESCING_KEY;
+  private short mCoalescingKey = UNSET_COALESCING_KEY;
   private float mOffsetX;
   private float mOffsetY;
   private @Nullable List<WritableMap> mPointersEventData;
@@ -90,7 +90,7 @@ public class PointerEvent extends Event<PointerEvent> {
       int viewTag,
       MotionEvent motionEventToCopy,
       float[] offsetCoords,
-      int coalescingKey,
+      short coalescingKey,
       int primaryPointerId,
       int lastButtonState) {
 
@@ -245,6 +245,11 @@ public class PointerEvent extends Event<PointerEvent> {
     }
 
     return pointersEventData;
+  }
+
+  @Override
+  public short getCoalescingKey() {
+    return mCoalescingKey;
   }
 
   @Override
