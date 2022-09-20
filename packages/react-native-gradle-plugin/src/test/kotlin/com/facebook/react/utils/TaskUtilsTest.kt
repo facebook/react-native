@@ -31,7 +31,7 @@ class TaskUtilsTest {
   }
 
   @Test
-  @WithOs(OS.UNIX)
+  @WithOs(OS.LINUX)
   fun windowsAwareCommandLine_onLinux_returnsTheList() {
     assertEquals(listOf("a", "b", "c"), windowsAwareCommandLine("a", "b", "c"))
   }
@@ -50,7 +50,7 @@ class TaskUtilsTest {
   }
 
   @Test
-  @WithOs(OS.UNIX)
+  @WithOs(OS.LINUX)
   fun windowsAwareBashCommandLine_onLinux_returnsTheList() {
     assertEquals(listOf("a", "b", "c"), windowsAwareBashCommandLine("a", "b", "c"))
   }
