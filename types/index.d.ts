@@ -2509,6 +2509,12 @@ export interface AccessibilityProps
   accessibilityLabel?: string | undefined;
 
   /**
+   * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
+   * https://github.com/facebook/react-native/issues/34424
+   */
+  'aria-label'?: string | undefined;
+
+  /**
    * Accessibility Role tells a person using either VoiceOver on iOS or TalkBack on Android the type of element that is focused on.
    */
   accessibilityRole?: AccessibilityRole | undefined;
@@ -2516,6 +2522,18 @@ export interface AccessibilityProps
    * Accessibility State tells a person using either VoiceOver on iOS or TalkBack on Android the state of the element currently focused on.
    */
   accessibilityState?: AccessibilityState | undefined;
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: boolean | undefined;
+  'aria-checked'?: boolean | undefined;
+  'aria-disabled'?: boolean | undefined;
+  'aria-expanded'?: boolean | undefined;
+  'aria-selected'?: boolean | undefined;
+
   /**
    * An accessibility hint helps users understand what will happen when they perform an action on the accessibility element when that result is not obvious from the accessibility label.
    */
@@ -2526,12 +2544,32 @@ export interface AccessibilityProps
    */
   accessibilityValue?: AccessibilityValue | undefined;
 
+  'aria-valuemax'?: AccessibilityValue['max'];
+  'aria-valuemin'?: AccessibilityValue['min'];
+  'aria-valuenow'?: AccessibilityValue['now'];
+  'aria-valuetext'?: AccessibilityValue['text'];
   /**
    * When `accessible` is true, the system will try to invoke this function when the user performs an accessibility custom action.
    */
   onAccessibilityAction?:
     | ((event: AccessibilityActionEvent) => void)
     | undefined;
+
+  /**
+   * [Android] Controlling if a view fires accessibility events and if it is reported to accessibility services.
+   */
+  importantForAccessibility?:
+    | ('auto' | 'yes' | 'no' | 'no-hide-descendants')
+    | undefined;
+
+  /**
+   * A value indicating whether the accessibility elements contained within
+   * this accessibility element are hidden.
+   */
+  'aria-hidden'?: boolean | undefined;
+
+  'aria-live'?: ('polite' | 'assertive' | 'off') | undefined;
+  'aria-modal'?: boolean | undefined;
 }
 
 export type AccessibilityActionInfo = Readonly<{
@@ -7712,6 +7750,8 @@ type AccessibilityAnnouncementFinishedEventHandler = (
   event: AccessibilityAnnouncementFinishedEvent,
 ) => void;
 
+type AccessibilityEventTypes = 'click' | 'focus';
+
 /**
  * @see https://reactnative.dev/docs/accessibilityinfo
  */
@@ -7791,6 +7831,10 @@ export interface AccessibilityInfoStatic {
    * @platform android
    */
   getRecommendedTimeoutMillis: (originalTimeout: number) => Promise<number>;
+  sendAccessibilityEvent: (
+    handle: React.ElementRef<HostComponent<unknown>>,
+    eventType: AccessibilityEventTypes,
+  ) => void;
 }
 
 /**

@@ -112,6 +112,7 @@ import {
   TextStyle,
   TimePickerAndroid,
   TouchableNativeFeedback,
+  TouchableOpacity,
   UIManager,
   View,
   ViewPagerAndroid,
@@ -1404,19 +1405,33 @@ const listViewDataSourceTest = new ListView.DataSource({
 class AccessibilityTest extends React.Component {
   render() {
     return (
-      <View
-        accessibilityElementsHidden={true}
-        importantForAccessibility={'no-hide-descendants'}
-        onAccessibilityTap={() => {}}
-        accessibilityRole="header"
-        accessibilityState={{checked: true}}
-        accessibilityHint="Very important header"
-        accessibilityValue={{min: 60, max: 120, now: 80}}
-        onMagicTap={() => {}}
-        onAccessibilityEscape={() => {}}>
-        <Text accessibilityIgnoresInvertColors>Text</Text>
-        <View />
-      </View>
+      <>
+        <View
+          accessibilityElementsHidden={true}
+          importantForAccessibility={'no-hide-descendants'}
+          onAccessibilityTap={() => {}}
+          accessibilityRole="header"
+          accessibilityState={{checked: true}}
+          accessibilityHint="Very important header"
+          accessibilityValue={{min: 60, max: 120, now: 80}}
+          aria-label="Aria Label"
+          onMagicTap={() => {}}
+          onAccessibilityEscape={() => {}}>
+          <Text accessibilityIgnoresInvertColors>Text</Text>
+          <View />
+        </View>
+        <Pressable aria-hidden={false} aria-label="Aria Label" />
+        <TouchableOpacity
+          aria-hidden={true}
+          aria-label="Aria Label"
+          aria-busy
+          aria-valuemax={1}
+        />
+        <TouchableNativeFeedback
+          aria-expanded={false}
+          aria-label="Aria Label"
+        />
+      </>
     );
   }
 }
