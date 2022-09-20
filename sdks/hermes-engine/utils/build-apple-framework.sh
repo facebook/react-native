@@ -18,7 +18,7 @@ function get_ios_deployment_target {
 }
 
 function get_mac_deployment_target {
-  echo ${MAC_DEPLOYMENT_TARGET}
+  echo "${MAC_DEPLOYMENT_TARGET}"
 }
 
 # Build host hermes compiler for internal bytecode
