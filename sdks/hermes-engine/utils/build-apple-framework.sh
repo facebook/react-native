@@ -14,7 +14,7 @@ function get_release_version {
 }
 
 function get_ios_deployment_target {
-  echo ${IOS_DEPLOYMENT_TARGET}
+  echo "${IOS_DEPLOYMENT_TARGET}"
 }
 
 function get_mac_deployment_target {
