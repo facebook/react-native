@@ -113,6 +113,7 @@ import {
   TimePickerAndroid,
   TouchableNativeFeedback,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   UIManager,
   View,
   ViewPagerAndroid,
@@ -1614,6 +1615,20 @@ const NativeIDTest = () => (
       nativeID={'nativeID'}
     />
   </ScrollView>
+);
+
+const IdTest = () => (
+  <View id={'id'}>
+    <TouchableWithoutFeedback id={'id'} onPress={() => {}} />
+    <Text id={'id'}>Text</Text>
+    <TextInput id={'id'} value="text" />
+    <Image
+      source={{
+        uri: 'https://seeklogo.com/images/T/typescript-logo-B29A3F462D-seeklogo.com.png',
+      }}
+      id={'id'}
+    />
+  </View>
 );
 
 const ScrollViewMaintainVisibleContentPositionTest = () => (

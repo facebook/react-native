@@ -1272,6 +1272,11 @@ export interface TextProps
   ellipsizeMode?: 'head' | 'middle' | 'tail' | 'clip' | undefined;
 
   /**
+   * Used to reference react managed views from native code.
+   */
+  id?: string | undefined;
+
+  /**
    * Line Break mode. Works only with numberOfLines.
    * clip is working only for iOS
    */
@@ -2780,6 +2785,11 @@ export interface ViewProps
   hitSlop?: Insets | undefined;
 
   /**
+   * Used to reference react managed views from native code.
+   */
+  id?: string | undefined;
+
+  /**
    * Invoked on mount and layout changes with
    *
    * {nativeEvent: { layout: {x, y, width, height}}}.
@@ -4040,6 +4050,11 @@ export interface ImagePropsBase
   extends ImagePropsIOS,
     ImagePropsAndroid,
     AccessibilityProps {
+  /**
+   * Used to reference react managed images from native code.
+   */
+  id?: string | undefined;
+
   /**
    * onLayout function
    *
@@ -5522,6 +5537,11 @@ export interface TouchableWithoutFeedbackProps
    * two overlapping views.
    */
   hitSlop?: Insets | undefined;
+
+  /**
+   * Used to reference react managed views from native code.
+   */
+  id?: string | undefined;
 
   /**
    * When `accessible` is true (which is the default) this may be called when
