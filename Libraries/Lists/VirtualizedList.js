@@ -24,7 +24,6 @@ import type {
 export type {RenderItemProps, RenderItemType, Separators};
 
 import {
-  type ListDebugInfo,
   VirtualizedListCellContextProvider,
   VirtualizedListContext,
   VirtualizedListContextProvider,
@@ -35,6 +34,7 @@ import {
 } from './VirtualizeUtils';
 import * as VirtualizedListInjection from './VirtualizedListInjection';
 import * as React from 'react';
+import ChildListCollection from './ChildListCollection';
 
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 const ScrollView = require('../Components/ScrollView/ScrollView');
@@ -294,7 +294,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   recordInteraction() {
     this._nestedChildLists.forEach(childList => {
-      childList && childList.recordInteraction();
+      childList.recordInteraction();
     });
     this._viewabilityTuples.forEach(t => {
       t.viewabilityHelper.recordInteraction();
@@ -349,19 +349,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return this.context?.cellKey || 'rootList';
   }
 
-  _getListKey(): string {
-    return this.props.listKey || this._getCellKey();
-  }
-
-  _getDebugInfo(): ListDebugInfo {
-    return {
-      listKey: this._getListKey(),
-      cellKey: this._getCellKey(),
-      horizontal: horizontalOrDefault(this.props.horizontal),
-      parent: this.context?.debugInfo,
-    };
-  }
-
   // $FlowFixMe[missing-local-annot]
   _getScrollMetrics = () => {
     return this._scrollMetrics;
@@ -382,41 +369,20 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _registerAsNestedChild = (childList: {
     cellKey: string,
-    key: string,
     ref: React.ElementRef<typeof React.Component>,
-    parentDebugInfo: ListDebugInfo,
-    ...
   }): void => {
-    const specificRef = ((childList.ref: any): VirtualizedList);
-    // Register the mapping between this child key and the cellKey for its cell
-    const childListsInCell =
-      this._cellKeysToChildListKeys.get(childList.cellKey) || new Set();
-    childListsInCell.add(childList.key);
-    this._cellKeysToChildListKeys.set(childList.cellKey, childListsInCell);
-    const existingChildData = this._nestedChildLists.get(childList.key);
-    if (existingChildData) {
-      console.error(
-        'A VirtualizedList contains a cell which itself contains ' +
-          'more than one VirtualizedList of the same orientation as the parent ' +
-          'list. You must pass a unique listKey prop to each sibling list.\n\n' +
-          describeNestedLists({
-            ...childList,
-            ref: specificRef,
-            // We're called from the child's componentDidMount, so it's safe to
-            // read the child's props here (albeit weird).
-            horizontal: !!specificRef.props.horizontal,
-          }),
-      );
-    }
-    this._nestedChildLists.set(childList.key, specificRef);
-
+    const listRef = ((childList.ref: any): VirtualizedList);
+    this._nestedChildLists.add(listRef, childList.cellKey);
     if (this._hasInteracted) {
-      specificRef.recordInteraction();
+      listRef.recordInteraction();
     }
   };
 
-  _unregisterAsNestedChild = (childList: {key: string, ...}): void => {
-    this._nestedChildLists.delete(childList.key);
+  _unregisterAsNestedChild = (childList: {
+    ref: React.ElementRef<typeof React.Component>,
+  }): void => {
+    const listRef = ((childList.ref: any): VirtualizedList);
+    this._nestedChildLists.remove(listRef);
   };
 
   state: State;
@@ -476,28 +442,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   componentDidMount() {
     if (this._isNestedWithSameOrientation()) {
       this.context.registerAsNestedChild({
-        cellKey: this._getCellKey(),
-        key: this._getListKey(),
         ref: this,
-        // NOTE: When the child mounts (here) it's not necessarily safe to read
-        // the parent's props. This is why we explicitly propagate debugInfo
-        // "down" via context and "up" again via this method call on the
-        // parent.
-        parentDebugInfo: this.context.debugInfo,
+        cellKey: this.context.cellKey,
       });
     }
   }
 
   componentWillUnmount() {
     if (this._isNestedWithSameOrientation()) {
-      this.context.unregisterAsNestedChild({
-        key: this._getListKey(),
-        state: {
-          first: this.state.first,
-          last: this.state.last,
-          frames: this._frames,
-        },
-      });
+      this.context.unregisterAsNestedChild({ref: this});
     }
     this._updateViewableItems(null);
     this._updateCellsToRenderBatcher.dispose({abort: true});
@@ -851,7 +804,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           getOutermostParentListRef: this._getOutermostParentListRef,
           registerAsNestedChild: this._registerAsNestedChild,
           unregisterAsNestedChild: this._unregisterAsNestedChild,
-          debugInfo: this._getDebugInfo(),
         }}>
         {React.cloneElement(
           (
@@ -927,8 +879,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _averageCellLength = 0;
-  // Maps a cell key to the set of keys for all outermost child lists within that cell
-  _cellKeysToChildListKeys: Map<string, Set<string>> = new Map();
   _cellRefs: {[string]: null | CellRenderer} = {};
   _fillRateHelper: FillRateHelper;
   _frames: {
@@ -949,7 +899,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _hiPriInProgress: boolean = false; // flag to prevent infinite hiPri cell limit update
   _highestMeasuredFrameIndex = 0;
   _indicesToKeys: Map<number, string> = new Map();
-  _nestedChildLists: Map<string, VirtualizedList> = new Map();
+  _nestedChildLists: ChildListCollection<VirtualizedList> =
+    new ChildListCollection();
   _offsetFromParentVirtualizedList: number = 0;
   _prevParentOffset: number = 0;
   // $FlowFixMe[missing-local-annot]
@@ -1067,13 +1018,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _triggerRemeasureForChildListsInCell(cellKey: string): void {
-    const childListKeys = this._cellKeysToChildListKeys.get(cellKey);
-    if (childListKeys) {
-      for (let childKey of childListKeys) {
-        const childList = this._nestedChildLists.get(childKey);
-        childList && childList.measureLayoutRelativeToContainingList();
-      }
-    }
+    this._nestedChildLists.forEachInCell(cellKey, childList => {
+      childList.measureLayoutRelativeToContainingList();
+    });
   }
 
   measureLayoutRelativeToContainingList(): void {
@@ -1107,14 +1054,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
             // If metrics of the scrollView changed, then we triggered remeasure for child list
             // to ensure VirtualizedList has the right information.
-            this._cellKeysToChildListKeys.forEach(childListKeys => {
-              if (childListKeys) {
-                for (let childKey of childListKeys) {
-                  const childList = this._nestedChildLists.get(childKey);
-                  childList &&
-                    childList.measureLayoutRelativeToContainingList();
-                }
-              }
+            this._nestedChildLists.forEach(childList => {
+              childList.measureLayoutRelativeToContainingList();
             });
           }
         },
@@ -1547,7 +1488,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           last: Math.min(state.last + renderAhead, getItemCount(data) - 1),
         };
       }
-      if (newState && this._nestedChildLists.size > 0) {
+      if (newState && this._nestedChildLists.size() > 0) {
         const newFirst = newState.first;
         const newLast = newState.last;
         // If some cell in the new state has a child list in it, we should only render
@@ -1556,21 +1497,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // their items.
         for (let ii = newFirst; ii <= newLast; ii++) {
           const cellKeyForIndex = this._indicesToKeys.get(ii);
-          const childListKeys =
-            cellKeyForIndex &&
-            this._cellKeysToChildListKeys.get(cellKeyForIndex);
-          if (!childListKeys) {
+          if (cellKeyForIndex == null) {
             continue;
           }
-          let someChildHasMore = false;
           // For each cell, need to check whether any child list in it has more elements to render
-          for (let childKey of childListKeys) {
-            const childList = this._nestedChildLists.get(childKey);
-            if (childList && childList.hasMore()) {
-              someChildHasMore = true;
-              break;
-            }
-          }
+
+          const someChildHasMore = this._nestedChildLists.anyInCell(
+            cellKeyForIndex,
+            childList => childList.hasMore(),
+          );
+
           if (someChildHasMore) {
             newState.last = ii;
             break;
@@ -1877,31 +1813,6 @@ class CellRenderer extends React.Component<
       </VirtualizedListCellContextProvider>
     );
   }
-}
-
-function describeNestedLists(childList: {
-  +cellKey: string,
-  +key: string,
-  +ref: VirtualizedList,
-  +parentDebugInfo: ListDebugInfo,
-  +horizontal: boolean,
-  ...
-}) {
-  let trace =
-    'VirtualizedList trace:\n' +
-    `  Child (${childList.horizontal ? 'horizontal' : 'vertical'}):\n` +
-    `    listKey: ${childList.key}\n` +
-    `    cellKey: ${childList.cellKey}`;
-
-  let debugInfo: ?ListDebugInfo = childList.parentDebugInfo;
-  while (debugInfo) {
-    trace +=
-      `\n  Parent (${debugInfo.horizontal ? 'horizontal' : 'vertical'}):\n` +
-      `    listKey: ${debugInfo.listKey}\n` +
-      `    cellKey: ${debugInfo.cellKey}`;
-    debugInfo = debugInfo.parent;
-  }
-  return trace;
 }
 
 const styles = StyleSheet.create({

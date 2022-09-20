@@ -167,6 +167,8 @@ type OptionalProps = {|
    * A unique identifier for this list. If there are multiple VirtualizedLists at the same level of
    * nesting within another VirtualizedList, this key is necessary for virtualization to
    * work properly.
+   *
+   * @deprecated no longer used/required
    */
   listKey?: string,
   /**
