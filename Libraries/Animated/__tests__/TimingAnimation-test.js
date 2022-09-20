@@ -10,7 +10,7 @@
 
 'use strict';
 
-const TimingAnimation = require('../animations/TimingAnimation');
+import TimingAnimation from '../animations/TimingAnimation';
 
 describe('Timing Animation', () => {
   it('should return array of 61 items', () => {

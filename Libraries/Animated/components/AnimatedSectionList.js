@@ -11,7 +11,7 @@
 import * as React from 'react';
 
 import SectionList from '../../Lists/SectionList';
-const createAnimatedComponent = require('../createAnimatedComponent');
+import createAnimatedComponent from '../createAnimatedComponent';
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
@@ -22,7 +22,7 @@ const SectionListWithEventThrottle = React.forwardRef((props, ref) => (
   <SectionList scrollEventThrottle={0.0001} {...props} ref={ref} />
 ));
 
-module.exports = (createAnimatedComponent(
+export default (createAnimatedComponent(
   SectionListWithEventThrottle,
 ): AnimatedComponentType<
   React.ElementConfig<typeof SectionList>,
