@@ -185,34 +185,42 @@ void CxxNativeModule::invoke(
   // stack.  I'm told that will be possible in the future.  TODO
   // mhorowitz #7128529: convert C++ exceptions to Java
 
-  messageQueueThread_->runOnQueue(
-      [method, params = std::move(params), first, second, callId]() {
+  const auto &moduleName = name_;
+  SystraceSection s(
+      "CxxMethodCallQueue", "module", moduleName, "method", method.name);
+  messageQueueThread_->runOnQueue([method,
+                                   moduleName,
+                                   params = std::move(params),
+                                   first,
+                                   second,
+                                   callId]() {
 #ifdef WITH_FBSYSTRACE
-        if (callId != -1) {
-          fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
-        }
+    if (callId != -1) {
+      fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
+    }
 #else
-        (void)(callId);
+    (void)(callId);
 #endif
-        SystraceSection s(method.name.c_str());
-        try {
-          method.func(std::move(params), first, second);
-        } catch (const facebook::xplat::JsArgumentException &ex) {
-          throw;
-        } catch (std::exception &e) {
-          LOG(ERROR) << "std::exception. Method call " << method.name.c_str()
-                     << " failed: " << e.what();
-          std::terminate();
-        } catch (std::string &error) {
-          LOG(ERROR) << "std::string. Method call " << method.name.c_str()
-                     << " failed: " << error.c_str();
-          std::terminate();
-        } catch (...) {
-          LOG(ERROR) << "Method call " << method.name.c_str()
-                     << " failed. unknown error";
-          std::terminate();
-        }
-      });
+    SystraceSection s(
+        "CxxMethodCallDispatch", "module", moduleName, "method", method.name);
+    try {
+      method.func(std::move(params), first, second);
+    } catch (const facebook::xplat::JsArgumentException &ex) {
+      throw;
+    } catch (std::exception &e) {
+      LOG(ERROR) << "std::exception. Method call " << method.name.c_str()
+                 << " failed: " << e.what();
+      std::terminate();
+    } catch (std::string &error) {
+      LOG(ERROR) << "std::string. Method call " << method.name.c_str()
+                 << " failed: " << error.c_str();
+      std::terminate();
+    } catch (...) {
+      LOG(ERROR) << "Method call " << method.name.c_str()
+                 << " failed. unknown error";
+      std::terminate();
+    }
+  });
 }
 
 MethodCallResult CxxNativeModule::callSerializableNativeHook(

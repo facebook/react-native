@@ -350,7 +350,7 @@ function buildCommands(
   }
 
   imports.add(
-    'const {dispatchCommand} = require("react-native/Libraries/Renderer/shims/ReactNative");',
+    'const {dispatchCommand} = require("react-native/Libraries/ReactNative/RendererProxy");',
   );
 
   const properties = commands.map(command => {

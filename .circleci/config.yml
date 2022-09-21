@@ -8,12 +8,6 @@ orbs:
   win: circleci/windows@2.4.0
 
 # -------------------------
-#        Single Use Environmental Variables
-# -------------------------
-envs:
-  shallow_checkout_depth: &shallow_checkout_depth 1
-
-# -------------------------
 #        REFERENCES
 # -------------------------
 references:
@@ -40,9 +34,6 @@ references:
   #        Dependency Anchors
   # -------------------------
   dependency_versions:
-    # The Xcode version used on CircleCI OSS tests must be kept in sync with
-    # the Xcode version used on Sandcastle OSS tests. See _XCODE_VERSION in
-    # tools/utd/migrated_nbtd_jobs/react_native_oss.td
     xcode_version: &xcode_version "13.3.1"
     nodelts_image: &nodelts_image "cimg/node:16.14"
     nodeprevlts_image: &nodeprevlts_image "cimg/node:14.19"
@@ -56,10 +47,10 @@ references:
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
-    hermes_cache_key: &hermes_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
-    hermes_tarball_cache_key: &hermes_tarball_cache_key v2-hermes-tarball-{{ checksum "/tmp/hermes/hermesversion" }}
-    pods_cache_key: &pods_cache_key v7-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    hermes_cache_key: &hermes_cache_key v3-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_windows_cache_key: &hermes_windows_cache_key v3-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+    hermes_tarball_cache_key: &hermes_tarball_cache_key v3-hermes-tarball-{{ checksum "/tmp/hermes/hermesversion" }}
+    pods_cache_key: &pods_cache_key v8-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
 
@@ -119,61 +110,19 @@ executors:
 #        COMMANDS
 # -------------------------
 commands:
-  shallow_checkout:
-    parameters:
-      checkout_depth:
-        default: *shallow_checkout_depth
-        type: integer
-    steps:
-      - run:
-          name: Add sshkey for Github
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-      - run:
-          name: Shallow clone repo
-          command: |
-            git clone --branch main --no-checkout "$CIRCLE_REPOSITORY_URL" --single-branch .
-            # Fetch from fork if applicable
-            if [ -z $CIRCLE_PR_NUMBER ] ; then
-              git fetch --force --depth 1 origin +refs/pull/$CIRCLE_PR_NUMBER/head:refs/remotes/origin/pull/$CIRCLE_PR_NUMBER
-            fi
-            if [ -z $CIRCLE_BRANCH ] ; then
-              git checkout --force -B "$CIRCLE_BRANCH" "$CIRCLE_SHA1"
-            else
-              git checkout main
-            fi
-
   # Checkout with cache, on machines that are using Docker the cache is ignored
   checkout_code_with_cache:
     parameters:
       checkout_base_cache_key:
         default: *checkout_cache_key
         type: string
-      shallow_checkout:
-        default: true
-        type: boolean
-      shallow_checkout_depth:
-        default: *shallow_checkout_depth
-        type: integer
     steps:
       - restore_cache:
             keys:
               - << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
               - << parameters.checkout_base_cache_key >>-{{ .Branch }}-
               - << parameters.checkout_base_cache_key >>
-
-      - when:
-          condition: << parameters.shallow_checkout >>
-          steps:
-            - shallow_checkout:
-                checkout_depth: << parameters.shallow_checkout_depth >>
-      - when:
-          condition:
-              not: << parameters.shallow_checkout >>
-          steps:
-            - checkout
-
+      - checkout
       - save_cache:
           key: << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
           paths:
@@ -223,12 +172,6 @@ commands:
           paths:
             - ~/.cache/yarn
           key: << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
-
-  install_github_bot_deps:
-    steps:
-      - run:
-          name: "Yarn: Install dependencies (GitHub bots)"
-          command: cd bots && yarn install --non-interactive --cache-folder ~/.cache/yarn
 
   brew_install:
     parameters:
@@ -298,7 +241,6 @@ commands:
         type: enum
         enum: ["android", "ios"]
     steps:
-      - install_github_bot_deps
       - run:
           name: Report size of RNTester.app (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
@@ -309,7 +251,7 @@ commands:
         type: steps
       set_tarball_path:
         type: boolean
-        default: false
+        default: False
     steps:
       - restore_cache:
           keys:
@@ -352,10 +294,9 @@ jobs:
   analyze_pr:
     executor: reactnativeandroid
     steps:
-      - shallow_checkout
+      - checkout
       - run_yarn
 
-      - install_github_bot_deps
 
       # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
@@ -380,7 +321,7 @@ jobs:
   analyze_code:
     executor: reactnativeandroid
     steps:
-      - shallow_checkout
+      - checkout
       - setup_artifacts
       - run_yarn
 
@@ -402,6 +343,11 @@ jobs:
       - run:
           name: Check for errors in code using Flow (Android)
           command: yarn flow-check-android
+          when: always
+
+      - run:
+          name: Run TypeScript tests
+          command: yarn test-typescript
           when: always
 
       - run:
@@ -432,7 +378,7 @@ jobs:
         default: false
     executor: << parameters.executor >>
     steps:
-      - shallow_checkout
+      - checkout
       - setup_artifacts
       - run_yarn
       - run:
@@ -530,7 +476,7 @@ jobs:
           command: bundle exec pod setup
 
       - with_hermes_tarball_cache_span:
-          set_tarball_path: true
+          set_tarball_path: True
           steps:
             - with_rntester_pods_cache_span:
                 steps:
@@ -649,7 +595,7 @@ jobs:
         type: boolean
         default: false
     steps:
-      - shallow_checkout
+      - checkout
       - setup_artifacts
       - run_yarn
 
@@ -704,6 +650,9 @@ jobs:
       newarchitecture:
         type: boolean
         default: false
+      jsengine:
+        type: string
+        default: "Hermes"
     environment:
       - PROJECT_NAME: "AndroidTemplateProject"
     steps:
@@ -711,6 +660,16 @@ jobs:
       - run_yarn
       - attach_workspace:
           at: .
+      - when:
+          condition:
+            equal: ["JSC", << parameters.jsengine >>]
+          steps:
+            - run:
+                name: Set enableHermes in buld.gradle to false
+                command: |
+                  node ./scripts/set-rn-engine.js -e jsc
+                  echo "Hermes disabled."
+                  grep enableHermes: template/android/app/build.gradle
 
       - run:
           name: Create Android template project
@@ -722,7 +681,7 @@ jobs:
             yarn
 
       - run:
-          name: Build the template application for << parameters.flavor >> with New Architecture set << parameters.newarchitecture >>
+          name: Build the template application for << parameters.flavor >> with New Architecture set to << parameters.newarchitecture >>, and using the << parameters.jsengine>> JS engine.
           command: cd /tmp/$PROJECT_NAME/android/ && ./gradlew assemble<< parameters.flavor >> -PnewArchEnabled=<< parameters.newarchitecture >>
 
   # -------------------------
@@ -730,23 +689,47 @@ jobs:
   # -------------------------
   test_ios_template:
     executor: reactnativeios
+    parameters:
+      flavor:
+        type: string
+        default: "Debug"
+      architecture:
+        type: string
+        default: "OldArch"
+      jsengine:
+        type: string
+        default: "Hermes"
+      flipper:
+        type: string
+        default: "WithFlipper"
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
-
     steps:
+      # Early exit in case of Release and WithFlipper. The two does not make sense together.
+      # Unfortunately, the `exclude` parameter of `matrix` does not work, so we have to do it manually.
+      - when:
+          condition:
+            and:
+              - equal: [ << parameters.flavor >>, "Release"]
+              - equal: [ << parameters.flipper >>, "WithFlipper" ]
+          steps:
+            - run:
+                command: circleci-agent step halt # this interrupts the job successfully.
+      # Valid configuration, we can continue
       - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
           at: .
       - *attach_hermes_workspace
-      - run:
-          name: Set USE_HERMES=1
-          command: echo "export USE_HERMES=1" >> $BASH_ENV
-      - run:
-          name: Set HERMES_ENGINE_TARBALL_PATH
-          command: |
-            echo "export HERMES_ENGINE_TARBALL_PATH=$(ls -AU $HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-*.tar.gz | head -1)" >> $BASH_ENV
+      - when:
+          condition:
+            equal: ["Hermes", << parameters.jsengine >>]
+          steps:
+            - run:
+                name: Set HERMES_ENGINE_TARBALL_PATH
+                command: |
+                  echo "export HERMES_ENGINE_TARBALL_PATH=$(ls -AU $HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-*.tar.gz | head -1)" >> $BASH_ENV
       - run:
           name: Create iOS template project
           command: |
@@ -754,11 +737,38 @@ jobs:
             PACKAGE=$(cat build/react-native-package-version)
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
-            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose
+            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose --skip-install
+      - run:
+          name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
+          command: |
+            cd /tmp/$PROJECT_NAME
+            yarn install
+            cd ios
+
+            bundle install
+
+            if [[ << parameters.flavor >> == "Release" ]]; then
+              export PRODUCTION=1
+            fi
+
+            if [[ << parameters.architecture >> == "NewArch" ]]; then
+              export RCT_NEW_ARCH_ENABLED=1
+            fi
+
+            if [[ << parameters.jsengine >> == "JSC" ]]; then
+              export USE_HERMES=0
+            fi
+
+            if [[ << parameters.flipper >> == "WithoutFlipper" ]]; then
+              export NO_FLIPPER=1
+            fi
+
+            bundle exec pod install
       - run:
           name: Build template project
           command: |
             xcodebuild build \
+              -configuration << parameters.flavor >> \
               -workspace /tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
               -scheme $PROJECT_NAME \
               -sdk iphonesimulator
@@ -793,7 +803,7 @@ jobs:
           package: cmake
 
       - with_hermes_tarball_cache_span:
-          set_tarball_path: true
+          set_tarball_path: True
           steps:
             - run:
                 name: Install CocoaPods dependencies
@@ -826,20 +836,22 @@ jobs:
       - ANDROID_TOOLS_VERSION: 31.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
-      - checkout_code_with_cache:
-          shallow_checkout: false
+      - checkout_code_with_cache
 
       - run:
-          name: Install Node
+          name: Disable NVM
+          # Use choco to manage node versions due to https://github.com/npm/cli/issues/4234
+          command: nvm off
+
+      - run:
+          name: Install Node JS
           # Note: Version set separately for non-Windows builds, see above.
-          command: |
-            nvm install 16
-            nvm use 16
+          command: choco install nodejs-lts
 
       # Setup Dependencies
       - run:
-          name: Install Yarn
-          command: choco install yarn
+          name: Enable Yarn with corepack
+          command: corepack enable
 
       - run:
           name: Display Environment info
@@ -905,7 +917,7 @@ jobs:
       - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
-      - shallow_checkout
+      - checkout
       - setup_artifacts
       - run_yarn
       - run:
@@ -923,7 +935,7 @@ jobs:
   # -------------------------
   prepare_hermes_workspace:
     docker:
-      - image: debian:bullseye
+      - image: debian:11
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_VERSION_FILE: "sdks/.hermesversion"
@@ -936,7 +948,7 @@ jobs:
             curl -sL https://deb.nodesource.com/setup_16.x | bash -
             apt install -y nodejs
             npm install --global yarn
-      - shallow_checkout
+      - checkout
       - run_yarn
       - run:
           name: Set up Hermes workspace and caching
@@ -1193,7 +1205,7 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-      - shallow_checkout
+      - checkout
       - *attach_hermes_workspace
       - run:
           name: Copy HermesC binaries
@@ -1258,7 +1270,6 @@ jobs:
           condition:
             matches: { pattern: '^pull\/.*$', value: << pipeline.git.branch >> }
           steps:
-            - install_github_bot_deps
             - run:
                 name: Post link to PR build artifacts (pull-bot)
                 command: GITHUB_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" scripts/circleci/post-artifacts-link.sh || true
@@ -1355,11 +1366,18 @@ workflows:
           matrix:
             parameters:
               newarchitecture: [true, false]
+              jsengine: ["Hermes", "JSC"]
               flavor: ["Debug", "Release"]
       - test_buck
       - test_ios_template:
           requires:
             - build_npm_package
+          matrix:
+            parameters:
+              architecture: ["NewArch", "OldArch"]
+              flavor: ["Debug", "Release"]
+              jsengine: ["Hermes", "JSC"]
+              flipper: ["WithFlipper", "WithoutFlipper"]
       - test_ios_rntester:
           requires:
             - build_hermes_macos

@@ -12,8 +12,8 @@ namespace react {
 
 #ifdef ANDROID
 TextInputState::TextInputState(
-    TextInputState const &previousState,
-    folly::dynamic const &data){};
+    TextInputState const & /*previousState*/,
+    folly::dynamic const & /*data*/){};
 
 /*
  * Empty implementation for Android because it doesn't use this class.

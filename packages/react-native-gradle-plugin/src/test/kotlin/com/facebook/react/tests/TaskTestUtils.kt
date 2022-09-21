@@ -16,6 +16,7 @@ import org.gradle.testfixtures.ProjectBuilder
 
 internal fun createProject(): Project {
   with(ProjectBuilder.builder().build()) {
+    plugins.apply("com.android.library")
     plugins.apply("com.facebook.react")
     return this
   }

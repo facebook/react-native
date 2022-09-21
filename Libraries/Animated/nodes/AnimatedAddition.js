@@ -12,14 +12,14 @@
 
 import type AnimatedNode from './AnimatedNode';
 
-const AnimatedInterpolation = require('./AnimatedInterpolation');
-const AnimatedValue = require('./AnimatedValue');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
+import AnimatedInterpolation from './AnimatedInterpolation';
+import AnimatedValue from './AnimatedValue';
+import AnimatedWithChildren from './AnimatedWithChildren';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 
-class AnimatedAddition extends AnimatedWithChildren {
+export default class AnimatedAddition extends AnimatedWithChildren {
   _a: AnimatedNode;
   _b: AnimatedNode;
 
@@ -63,5 +63,3 @@ class AnimatedAddition extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedAddition;

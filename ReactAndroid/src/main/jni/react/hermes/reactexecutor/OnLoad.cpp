@@ -69,26 +69,39 @@ class HermesExecutorHolder
       "Lcom/facebook/hermes/reactexecutor/HermesExecutor;";
 
   static jni::local_ref<jhybriddata> initHybridDefaultConfig(
-      jni::alias_ref<jclass>) {
+      jni::alias_ref<jclass>,
+      bool enableDebugger,
+      std::string debuggerName) {
     JReactMarker::setLogPerfMarkerIfNeeded();
 
     std::call_once(flag, []() {
       facebook::hermes::HermesRuntime::setFatalHandler(hermesFatalHandler);
     });
-    return makeCxxInstance(
-        std::make_unique<HermesExecutorFactory>(installBindings));
+    auto factory = std::make_unique<HermesExecutorFactory>(installBindings);
+    factory->setEnableDebugger(enableDebugger);
+    if (!debuggerName.empty()) {
+      factory->setDebuggerName(debuggerName);
+    }
+    return makeCxxInstance(std::move(factory));
   }
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass>,
+      bool enableDebugger,
+      std::string debuggerName,
       jlong heapSizeMB) {
     JReactMarker::setLogPerfMarkerIfNeeded();
     auto runtimeConfig = makeRuntimeConfig(heapSizeMB);
     std::call_once(flag, []() {
       facebook::hermes::HermesRuntime::setFatalHandler(hermesFatalHandler);
     });
-    return makeCxxInstance(std::make_unique<HermesExecutorFactory>(
-        installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
+    auto factory = std::make_unique<HermesExecutorFactory>(
+        installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig);
+    factory->setEnableDebugger(enableDebugger);
+    if (!debuggerName.empty()) {
+      factory->setDebuggerName(debuggerName);
+    }
+    return makeCxxInstance(std::move(factory));
   }
 
   static bool canLoadFile(jni::alias_ref<jclass>, const std::string &path) {

@@ -22,6 +22,7 @@ import TextInputState from './TextInputState';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import setAndForwardRef from '../../Utilities/setAndForwardRef';
+import type {TextInputType} from './TextInput.flow';
 
 import usePressability from '../../Pressability/usePressability';
 
@@ -155,6 +156,16 @@ export type KeyboardType =
   // Android-only
   | 'visible-password';
 
+export type InputMode =
+  | 'none'
+  | 'text'
+  | 'decimal'
+  | 'numeric'
+  | 'tel'
+  | 'search'
+  | 'email'
+  | 'url';
+
 export type ReturnKeyType =
   // Cross Platform
   | 'done'
@@ -207,9 +218,48 @@ export type TextContentType =
   | 'newPassword'
   | 'oneTimeCode';
 
+export type enterKeyHintType =
+  | 'enter'
+  | 'done'
+  | 'go'
+  | 'next'
+  | 'previous'
+  | 'search'
+  | 'send';
+
 type PasswordRules = string;
 
 type IOSProps = $ReadOnly<{|
+  /**
+   * Give the keyboard and the system information about the
+   * expected semantic meaning for the content that users enter.
+   * @platform ios
+   */
+  autoComplete?: ?(
+    | 'address-line1'
+    | 'address-line2'
+    | 'cc-number'
+    | 'current-password'
+    | 'country'
+    | 'email'
+    | 'name'
+    | 'additional-name'
+    | 'family-name'
+    | 'given-name'
+    | 'nickname'
+    | 'honorific-prefix'
+    | 'honorific-suffix'
+    | 'new-password'
+    | 'off'
+    | 'one-time-code'
+    | 'organization'
+    | 'organization-title'
+    | 'postal-code'
+    | 'street-address'
+    | 'tel'
+    | 'url'
+    | 'username'
+  ),
   /**
    * When the clear button should appear on the right side of the text view.
    * This property is supported only for single-line TextInput component.
@@ -392,6 +442,23 @@ type AndroidProps = $ReadOnly<{|
     | 'username'
     | 'username-new'
     | 'off'
+    // additional HTML autocomplete values
+    | 'address-line1'
+    | 'address-line2'
+    | 'bday'
+    | 'bday-day'
+    | 'bday-month'
+    | 'bday-year'
+    | 'country'
+    | 'current-password'
+    | 'honorific-prefix'
+    | 'honorific-suffix'
+    | 'additional-name'
+    | 'family-name'
+    | 'given-name'
+    | 'new-password'
+    | 'one-time-code'
+    | 'sex'
   ),
 
   /**
@@ -451,6 +518,13 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   returnKeyLabel?: ?string,
+
+  /**
+   * Sets the number of rows for a `TextInput`. Use it with multiline set to
+   * `true` to be able to fill the lines.
+   * @platform android
+   */
+  rows?: ?number,
 
   /**
    * When `false`, it will prevent the soft keyboard from showing when the field is focused.
@@ -535,6 +609,38 @@ export type Props = $ReadOnly<{|
   forwardedRef?: ?ReactRefSetter<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
+
+  /**
+   * `enterKeyHint` defines what action label (or icon) to present for the enter key on virtual keyboards.
+   *
+   * The following values is supported:
+   *
+   * - `enter`
+   * - `done`
+   * - `go`
+   * - `next`
+   * - `previous`
+   * - `search`
+   * - `send`
+   */
+  enterKeyHint?: ?enterKeyHintType,
+
+  /**
+   * `inputMode` works like the `inputmode` attribute in HTML, it determines which
+   * keyboard to open, e.g.`numeric` and has precedence over keyboardType
+   *
+   * Support the following values:
+   *
+   * - `none`
+   * - `text`
+   * - `decimal`
+   * - `numeric`
+   * - `tel`
+   * - `search`
+   * - `email`
+   * - `url`
+   */
+  inputMode?: ?InputMode,
 
   /**
    * Determines which keyboard to open, e.g.`numeric`.
@@ -708,6 +814,13 @@ export type Props = $ReadOnly<{|
    * The text color of the placeholder string.
    */
   placeholderTextColor?: ?ColorValue,
+
+  /** `readOnly` works like the `readonly` attribute in HTML.
+   *  If `true`, text is not editable. The default value is `false`.
+   *  See https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/readonly
+   *  for more details.
+   */
+  readOnly?: ?boolean,
 
   /**
    * Determines how the return key should look. On Android you can also use
@@ -1274,6 +1387,14 @@ function InternalTextInput(props: Props): React.Node {
   // so omitting onBlur and onFocus pressability handlers here.
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
 
+  const _accessibilityState = {
+    busy: props['aria-busy'] ?? props.accessibilityState?.busy,
+    checked: props['aria-checked'] ?? props.accessibilityState?.checked,
+    disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
+    expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
+    selected: props['aria-selected'] ?? props.accessibilityState?.selected,
+  };
+
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
       props.multiline === true
@@ -1295,6 +1416,7 @@ function InternalTextInput(props: Props): React.Node {
         {...props}
         {...eventHandlers}
         accessible={accessible}
+        accessibilityState={_accessibilityState}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
@@ -1342,6 +1464,7 @@ function InternalTextInput(props: Props): React.Node {
         {...props}
         {...eventHandlers}
         accessible={accessible}
+        accessibilityState={_accessibilityState}
         autoCapitalize={autoCapitalize}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
@@ -1349,6 +1472,7 @@ function InternalTextInput(props: Props): React.Node {
         disableFullscreenUI={props.disableFullscreenUI}
         focusable={focusable}
         mostRecentEventCount={mostRecentEventCount}
+        numberOfLines={props.rows ?? props.numberOfLines}
         onBlur={_onBlur}
         onChange={_onChange}
         onFocus={_onFocus}
@@ -1373,6 +1497,88 @@ function InternalTextInput(props: Props): React.Node {
   );
 }
 
+const enterKeyHintToReturnTypeMap = {
+  enter: 'default',
+  done: 'done',
+  go: 'go',
+  next: 'next',
+  previous: 'previous',
+  search: 'search',
+  send: 'send',
+};
+
+const inputModeToKeyboardTypeMap = {
+  none: 'default',
+  text: 'default',
+  decimal: 'decimal-pad',
+  numeric: 'number-pad',
+  tel: 'phone-pad',
+  search: Platform.OS === 'ios' ? 'web-search' : 'default',
+  email: 'email-address',
+  url: 'url',
+};
+
+// Map HTML autocomplete values to Android autoComplete values
+const autoCompleteWebToAutoCompleteAndroidMap = {
+  'address-line1': 'postal-address-region',
+  'address-line2': 'postal-address-locality',
+  bday: 'birthdate-full',
+  'bday-day': 'birthdate-day',
+  'bday-month': 'birthdate-month',
+  'bday-year': 'birthdate-year',
+  'cc-csc': 'cc-csc',
+  'cc-exp': 'cc-exp',
+  'cc-exp-month': 'cc-exp-month',
+  'cc-exp-year': 'cc-exp-year',
+  'cc-number': 'cc-number',
+  country: 'postal-address-country',
+  'current-password': 'password',
+  email: 'email',
+  'honorific-prefix': 'name-prefix',
+  'honorific-suffix': 'name-suffix',
+  name: 'name',
+  'additional-name': 'name-middle',
+  'family-name': 'name-family',
+  'given-name': 'name-given',
+  'new-password': 'password-new',
+  off: 'off',
+  'one-time-code': 'sms-otp',
+  'postal-code': 'postal-code',
+  sex: 'gender',
+  'street-address': 'street-address',
+  tel: 'tel',
+  'tel-country-code': 'tel-country-code',
+  'tel-national': 'tel-national',
+  username: 'username',
+};
+
+// Map HTML autocomplete values to iOS textContentType values
+const autoCompleteWebToTextContentTypeMap = {
+  'address-line1': 'streetAddressLine1',
+  'address-line2': 'streetAddressLine2',
+  'cc-number': 'creditCardNumber',
+  'current-password': 'password',
+  country: 'countryName',
+  email: 'emailAddress',
+  name: 'name',
+  'additional-name': 'middleName',
+  'family-name': 'familyName',
+  'given-name': 'givenName',
+  nickname: 'nickname',
+  'honorific-prefix': 'namePrefix',
+  'honorific-suffix': 'nameSuffix',
+  'new-password': 'newPassword',
+  off: 'none',
+  'one-time-code': 'oneTimeCode',
+  organization: 'organizationName',
+  'organization-title': 'jobTitle',
+  'postal-code': 'postalCode',
+  'street-address': 'fullStreetAddress',
+  tel: 'telephoneNumber',
+  url: 'URL',
+  username: 'username',
+};
+
 const ExportedForwardRef: React.AbstractComponent<
   React.ElementConfig<typeof InternalTextInput>,
   React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
@@ -1381,6 +1587,14 @@ const ExportedForwardRef: React.AbstractComponent<
     allowFontScaling = true,
     rejectResponderTermination = true,
     underlineColorAndroid = 'transparent',
+    autoComplete,
+    textContentType,
+    readOnly,
+    editable,
+    enterKeyHint,
+    returnKeyType,
+    inputMode,
+    keyboardType,
     ...restProps
   },
   forwardedRef: ReactRefSetter<
@@ -1392,6 +1606,28 @@ const ExportedForwardRef: React.AbstractComponent<
       allowFontScaling={allowFontScaling}
       rejectResponderTermination={rejectResponderTermination}
       underlineColorAndroid={underlineColorAndroid}
+      editable={readOnly !== undefined ? !readOnly : editable}
+      returnKeyType={
+        enterKeyHint ? enterKeyHintToReturnTypeMap[enterKeyHint] : returnKeyType
+      }
+      keyboardType={
+        inputMode ? inputModeToKeyboardTypeMap[inputMode] : keyboardType
+      }
+      autoComplete={
+        Platform.OS === 'android'
+          ? // $FlowFixMe
+            autoCompleteWebToAutoCompleteAndroidMap[autoComplete] ??
+            autoComplete
+          : undefined
+      }
+      textContentType={
+        Platform.OS === 'ios' &&
+        autoComplete &&
+        autoComplete in autoCompleteWebToTextContentTypeMap
+          ? // $FlowFixMe
+            autoCompleteWebToTextContentTypeMap[autoComplete]
+          : textContentType
+      }
       {...restProps}
       forwardedRef={forwardedRef}
     />
@@ -1426,11 +1662,4 @@ const styles = StyleSheet.create({
 });
 
 // $FlowFixMe[unclear-type] Unclear type. Using `any` type is not safe.
-module.exports = ((ExportedForwardRef: any): React.AbstractComponent<
-  React.ElementConfig<typeof InternalTextInput>,
-  $ReadOnly<{|
-    ...React.ElementRef<HostComponent<mixed>>,
-    ...ImperativeMethods,
-  |}>,
-> &
-  TextInputComponentStatics);
+module.exports = ((ExportedForwardRef: any): TextInputType);

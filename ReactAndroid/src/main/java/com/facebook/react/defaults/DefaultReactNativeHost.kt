@@ -23,31 +23,29 @@ import com.facebook.react.bridge.JSIModulePackage
 abstract class DefaultReactNativeHost protected constructor(application: Application) :
     ReactNativeHost(application) {
 
-  protected override fun getReactPackageTurboModuleManagerDelegateBuilder():
+  override fun getReactPackageTurboModuleManagerDelegateBuilder():
       ReactPackageTurboModuleManagerDelegate.Builder? =
-      dynamicLibraryName?.let {
-        // If the user provided a dynamic library name, we assume they want to load
-        // the default ReactPackageTurboModuleManagerDelegate
-        DefaultTurboModuleManagerDelegate.Builder(it)
+      if (isNewArchEnabled) {
+        DefaultTurboModuleManagerDelegate.Builder()
+      } else {
+        null
       }
 
-  protected override fun getJSIModulePackage(): JSIModulePackage? =
-      dynamicLibraryName?.let {
-        // If the user provided a dynamic library name, we assume they want to load
-        // the default JSIModulePackage
+  override fun getJSIModulePackage(): JSIModulePackage? =
+      if (isNewArchEnabled) {
         DefaultJSIModulePackage(this)
+      } else {
+        null
       }
 
   /**
-   * Returns the name of the dynamic library used by app on the New Architecture. This is generally
-   * "<applicationname>_appmodules" or just "appmodules"
+   * Returns whether the user wants to use the New Architecture or not.
    *
-   * If null, we will assume you're not using the New Architecture and will not attempt to load any
-   * dynamic library at runtime.
+   * If true, we will load the default JSI Module Package and TurboModuleManagerDelegate needed to
+   * enable the New Architecture
    *
-   * If set, we'll take care of create a TurboModuleManagerDelegate that will load the library you
-   * specified.
+   * If false, the app will not attempt to load the New Architecture modules.
    */
-  protected open val dynamicLibraryName: String?
-    get() = null
+  protected open val isNewArchEnabled: Boolean
+    get() = false
 }

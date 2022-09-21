@@ -27,7 +27,8 @@ using namespace facebook::flexlayout::utils;
 
 class FLEX_LAYOUT_EXPORT FlexItemStyleBase {
  public:
-  Float flex = NAN;
+  // TODO(T131519658): add support for `flex` prop
+  Float flex = NAN; // currently this value is not used anywhere
   Float flexGrow = 0;
   Float flexShrink = 1;
   // TODO T68413071 Use Aggregate initialization Dimension flexBasis{NAN,
@@ -132,6 +133,10 @@ class FLEX_LAYOUT_EXPORT FlexItemStyleBase {
     return margin[static_cast<size_t>(edge)];
   }
 
+  void setMargin(Edge edge, Dimension dimension) {
+    margin[static_cast<size_t>(edge)] = dimension;
+  }
+
   void setMargin(Edge edge, Float value) {
     margin[static_cast<size_t>(edge)] = Dimension(value, Unit::Point);
   }
@@ -146,6 +151,10 @@ class FLEX_LAYOUT_EXPORT FlexItemStyleBase {
 
   auto getPosition(Edge edge) const -> Dimension {
     return position[static_cast<size_t>(edge)];
+  }
+
+  void setPosition(Edge edge, Dimension dimension) {
+    position[static_cast<size_t>(edge)] = dimension;
   }
 
   void setPosition(Edge edge, Float value) {

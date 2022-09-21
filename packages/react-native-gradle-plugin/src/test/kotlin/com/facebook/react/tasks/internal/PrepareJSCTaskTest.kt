@@ -97,10 +97,10 @@ class PrepareJSCTaskTest {
   }
 
   @Test
-  fun prepareJSCTask_copiesMakefile() {
+  fun prepareJSCTask_copiesCMakefile() {
     val project = createProject()
     prepareInputFolder()
-    File(project.projectDir, "src/main/jni/third-party/jsc/Android.mk").apply {
+    File(project.projectDir, "src/main/jni/third-party/jsc/CMakeLists.txt").apply {
       parentFile.mkdirs()
       createNewFile()
     }
@@ -114,7 +114,7 @@ class PrepareJSCTaskTest {
 
     task.taskAction()
 
-    assertTrue(File(output, "Android.mk").exists())
+    assertTrue(File(output, "CMakeLists.txt").exists())
   }
 
   private fun prepareInputFolder(aarContent: List<File> = listOf(tempFolder.newFile())) {

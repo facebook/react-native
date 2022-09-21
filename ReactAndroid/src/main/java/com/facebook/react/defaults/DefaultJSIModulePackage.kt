@@ -46,7 +46,7 @@ class DefaultJSIModulePackage(private val reactNativeHost: ReactNativeHost) : JS
       DefaultComponentsRegistry.register(componentFactory)
 
       val viewManagers =
-          reactNativeHost.getReactInstanceManager().getOrCreateViewManagers(reactApplicationContext)
+          reactNativeHost.reactInstanceManager.getOrCreateViewManagers(reactApplicationContext)
       val viewManagerRegistry = ViewManagerRegistry(viewManagers)
       return FabricJSIModuleProvider(
           reactApplicationContext,

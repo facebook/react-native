@@ -68,7 +68,7 @@ Scheduler::Scheduler(
               runtime, eventTarget, type, priority, payloadFactory);
         },
         runtime);
-    if (runtimeScheduler) {
+    if (runtimeScheduler != nullptr) {
       runtimeScheduler->callExpiredTasks(runtime);
     }
   };
@@ -95,11 +95,9 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-  runtimeExecutor_(
-      [uiManager, runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
-        UIManagerBinding::createAndInstallIfNeeded(
-            runtime, runtimeExecutor, uiManager);
-      });
+  schedulerToolbox.bindingsInstallExecutor([uiManager](jsi::Runtime &runtime) {
+    UIManagerBinding::createAndInstallIfNeeded(runtime, uiManager);
+  });
 
   auto componentDescriptorRegistryKey =
       "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE";
@@ -295,14 +293,14 @@ void Scheduler::uiManagerDidFinishTransaction(
     MountingCoordinator::Shared const &mountingCoordinator) {
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
-  if (delegate_) {
+  if (delegate_ != nullptr) {
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
   }
 }
 void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 
-  if (delegate_) {
+  if (delegate_ != nullptr) {
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
         shadowNode.getSurfaceId(), shadowNode);
   }
@@ -313,7 +311,7 @@ void Scheduler::uiManagerDidCloneShadowNode(
     const ShadowNode &newShadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCloneShadowNode");
 
-  if (delegate_) {
+  if (delegate_ != nullptr) {
     delegate_->schedulerDidCloneShadowNode(
         newShadowNode.getSurfaceId(), oldShadowNode, newShadowNode);
   }
@@ -325,7 +323,7 @@ void Scheduler::uiManagerDidDispatchCommand(
     folly::dynamic const &args) {
   SystraceSection s("Scheduler::uiManagerDispatchCommand");
 
-  if (delegate_) {
+  if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
   }
@@ -336,7 +334,7 @@ void Scheduler::uiManagerDidSendAccessibilityEvent(
     std::string const &eventType) {
   SystraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
 
-  if (delegate_) {
+  if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidSendAccessibilityEvent(shadowView, eventType);
   }
@@ -349,7 +347,7 @@ void Scheduler::uiManagerDidSetIsJSResponder(
     ShadowNode::Shared const &shadowNode,
     bool isJSResponder,
     bool blockNativeResponder) {
-  if (delegate_) {
+  if (delegate_ != nullptr) {
     delegate_->schedulerDidSetIsJSResponder(
         ShadowView(*shadowNode), isJSResponder, blockNativeResponder);
   }

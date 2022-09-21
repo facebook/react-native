@@ -93,15 +93,12 @@ class JInstanceCallback : public InstanceCallback {
 } // namespace
 
 jni::local_ref<CatalystInstanceImpl::jhybriddata>
-CatalystInstanceImpl::initHybrid(
-    jni::alias_ref<jclass>,
-    bool enableRuntimeScheduler) {
-  return makeCxxInstance(enableRuntimeScheduler);
+CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
+  return makeCxxInstance();
 }
 
-CatalystInstanceImpl::CatalystInstanceImpl(bool enableRuntimeScheduler)
-    : instance_(std::make_unique<Instance>()),
-      enableRuntimeScheduler_(enableRuntimeScheduler) {}
+CatalystInstanceImpl::CatalystInstanceImpl()
+    : instance_(std::make_unique<Instance>()) {}
 
 void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
   CxxNativeModule::setShouldWarnOnUse(true);
@@ -376,17 +373,12 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
 jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getJSCallInvokerHolder() {
   if (!jsCallInvokerHolder_) {
-    if (enableRuntimeScheduler_) {
-      auto runtimeScheduler = getRuntimeScheduler();
-      auto runtimeSchedulerCallInvoker =
-          std::make_shared<RuntimeSchedulerCallInvoker>(
-              runtimeScheduler->cthis()->get());
-      jsCallInvokerHolder_ = jni::make_global(
-          CallInvokerHolder::newObjectCxxArgs(runtimeSchedulerCallInvoker));
-    } else {
-      jsCallInvokerHolder_ = jni::make_global(
-          CallInvokerHolder::newObjectCxxArgs(instance_->getJSCallInvoker()));
-    }
+    auto runtimeScheduler = getRuntimeScheduler();
+    auto runtimeSchedulerCallInvoker =
+        std::make_shared<RuntimeSchedulerCallInvoker>(
+            runtimeScheduler->cthis()->get());
+    jsCallInvokerHolder_ = jni::make_global(
+        CallInvokerHolder::newObjectCxxArgs(runtimeSchedulerCallInvoker));
   }
   return jsCallInvokerHolder_;
 }
@@ -434,7 +426,7 @@ CatalystInstanceImpl::getRuntimeExecutor() {
 
 jni::alias_ref<JRuntimeScheduler::javaobject>
 CatalystInstanceImpl::getRuntimeScheduler() {
-  if (enableRuntimeScheduler_ && !runtimeScheduler_) {
+  if (!runtimeScheduler_) {
     auto runtimeExecutor = instance_->getRuntimeExecutor();
     auto runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
 

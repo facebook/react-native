@@ -20,6 +20,7 @@ import invariant from 'invariant';
 
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+import type {DatePickerIOSType} from './DatePickerIOS.flow';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -238,4 +239,4 @@ function getHeight(
   return styles.datePickerIOS;
 }
 
-module.exports = DatePickerIOS;
+module.exports = (DatePickerIOS: DatePickerIOSType);

@@ -10,14 +10,27 @@ require_relative "./test_utils/PodMock.rb"
 require_relative "./test_utils/InstallerMock.rb"
 require_relative "./test_utils/EnvironmentMock.rb"
 require_relative "./test_utils/SysctlCheckerMock.rb"
+require_relative "./test_utils/FileMock.rb"
+require_relative "./test_utils/systemUtils.rb"
+require_relative "./test_utils/PathnameMock.rb"
 
 class UtilsTests < Test::Unit::TestCase
+    def setup
+        @base_path = "~/app/ios"
+        Pathname.pwd!(@base_path)
+        File.enable_testing_mode!
+    end
+
     def teardown
+        File.reset()
         Pod::UI.reset()
+        Pathname.reset()
+        Pod::Config.reset()
         SysctlChecker.reset()
         Environment.reset()
         ENV['RCT_NEW_ARCH_ENABLED'] = '0'
         ENV['USE_HERMES'] = '1'
+        system_reset_commands
     end
 
     # ======================= #
@@ -442,6 +455,29 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(user_project_mock.save_invocation_count, 1)
         assert_equal(pods_projects_mock.save_invocation_count, 1)
         assert_equal(Pod::UI.collected_messages, ["Setting REACT_NATIVE build settings"])
+    end
+
+    # =================================== #
+    # Test - Prepare React Native Project #
+    # =================================== #
+    def test_createXcodeEnvIfMissing_whenItIsPresent_doNothing
+        # Arrange
+        File.mocked_existing_files("/.xcode.env")
+        # Act
+        ReactNativePodsUtils.create_xcode_env_if_missing
+        # Assert
+        assert_equal(File.exist_invocation_params, ["/.xcode.env"])
+        assert_equal($collected_commands, [])
+    end
+
+    def test_createXcodeEnvIfMissing_whenItIsNotPresent_createsIt
+        # Arrange
+
+        # Act
+        ReactNativePodsUtils.create_xcode_env_if_missing
+        # Assert
+        assert_equal(File.exist_invocation_params, ["/.xcode.env"])
+        assert_equal($collected_commands, ["echo 'export NODE_BINARY=$(command -v node)' > /.xcode.env"])
     end
 end
 

@@ -142,7 +142,7 @@ class FillRateHelper {
       initialNumToRender?: ?number,
       ...
     },
-    state: {
+    cellsAroundViewport: {
       first: number,
       last: number,
       ...
@@ -158,6 +158,7 @@ class FillRateHelper {
     if (
       !this._enabled ||
       props.getItemCount(props.data) === 0 ||
+      cellsAroundViewport.last < cellsAroundViewport.first ||
       this._samplesStartTime == null
     ) {
       return 0;
@@ -183,9 +184,12 @@ class FillRateHelper {
     this._mostlyBlankStartTime = null;
 
     let blankTop = 0;
-    let first = state.first;
+    let first = cellsAroundViewport.first;
     let firstFrame = this._getFrameMetrics(first, props);
-    while (first <= state.last && (!firstFrame || !firstFrame.inLayout)) {
+    while (
+      first <= cellsAroundViewport.last &&
+      (!firstFrame || !firstFrame.inLayout)
+    ) {
       firstFrame = this._getFrameMetrics(first, props);
       first++;
     }
@@ -198,9 +202,12 @@ class FillRateHelper {
       );
     }
     let blankBottom = 0;
-    let last = state.last;
+    let last = cellsAroundViewport.last;
     let lastFrame = this._getFrameMetrics(last, props);
-    while (last >= state.first && (!lastFrame || !lastFrame.inLayout)) {
+    while (
+      last >= cellsAroundViewport.first &&
+      (!lastFrame || !lastFrame.inLayout)
+    ) {
       lastFrame = this._getFrameMetrics(last, props);
       last--;
     }

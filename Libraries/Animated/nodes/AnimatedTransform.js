@@ -12,11 +12,11 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-const AnimatedNode = require('./AnimatedNode');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedNode from './AnimatedNode';
+import AnimatedWithChildren from './AnimatedWithChildren';
 
-class AnimatedTransform extends AnimatedWithChildren {
+export default class AnimatedTransform extends AnimatedWithChildren {
   _transforms: $ReadOnlyArray<Object>;
 
   constructor(transforms: $ReadOnlyArray<Object>) {
@@ -119,5 +119,3 @@ class AnimatedTransform extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedTransform;

@@ -73,6 +73,7 @@ struct CppMountItem final {
     UpdatePadding = 512,
     UpdateOverflowInset = 1024,
     RemoveDeleteTree = 2048,
+    RunCPPMutations = 4096
   };
 
 #pragma mark - Fields

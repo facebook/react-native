@@ -106,5 +106,7 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
 }
 
 module.exports = resolveAssetSource;
+// $FlowFixMe[prop-missing]
 module.exports.pickScale = pickScale;
+// $FlowFixMe[prop-missing]
 module.exports.setCustomSourceTransformer = setCustomSourceTransformer;

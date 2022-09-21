@@ -12,8 +12,7 @@ import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import Dimensions from '../../Utilities/Dimensions';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
-import ReactNative from '../../Renderer/shims/ReactNative';
-require('../../Renderer/shims/ReactNative'); // Force side effects to prevent T55744311
+import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import ScrollViewStickyHeader from './ScrollViewStickyHeader';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import View from '../View/View';
@@ -50,6 +49,10 @@ import AndroidHorizontalScrollContentViewNativeComponent from './AndroidHorizont
 import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrollViewNativeComponent';
 import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent';
 import ScrollViewNativeComponent from './ScrollViewNativeComponent';
+
+if (Platform.OS === 'ios') {
+  require('../../Renderer/shims/ReactNative'); // Force side effects to prevent T55744311
+}
 
 const {NativeHorizontalScrollViewTuple, NativeVerticalScrollViewTuple} =
   Platform.OS === 'android'
@@ -867,11 +870,11 @@ class ScrollView extends React.Component<Props, State> {
   };
 
   getScrollableNode: () => ?number = () => {
-    return ReactNative.findNodeHandle(this._scrollViewRef);
+    return findNodeHandle(this._scrollViewRef);
   };
 
   getInnerViewNode: () => ?number = () => {
-    return ReactNative.findNodeHandle(this._innerViewRef);
+    return findNodeHandle(this._innerViewRef);
   };
 
   getInnerViewRef: () => ?React.ElementRef<typeof View> = () => {
@@ -996,7 +999,7 @@ class ScrollView extends React.Component<Props, State> {
     if (typeof nodeHandle === 'number') {
       UIManager.measureLayout(
         nodeHandle,
-        ReactNative.findNodeHandle(this),
+        findNodeHandle(this),
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
         this._inputMeasureAndScrollToKeyboard,
@@ -1510,6 +1513,11 @@ class ScrollView extends React.Component<Props, State> {
       return false;
     }
 
+    // Let presses through if the soft keyboard is detached from the viewport
+    if (this._softKeyboardIsDetached()) {
+      return false;
+    }
+
     if (
       keyboardNeverPersistTaps &&
       this._keyboardIsDismissible() &&
@@ -1540,12 +1548,26 @@ class ScrollView extends React.Component<Props, State> {
 
     // Even if an input is focused, we may not have a keyboard to dismiss. E.g
     // when using a physical keyboard. Ensure we have an event for an opened
-    // keyboard, except on Android where setting windowSoftInputMode to
-    // adjustNone leads to missing keyboard events.
+    // keyboard.
     const softKeyboardMayBeOpen =
-      this._keyboardMetrics != null || Platform.OS === 'android';
+      this._keyboardMetrics != null || this._keyboardEventsAreUnreliable();
 
     return hasFocusedTextInput && softKeyboardMayBeOpen;
+  };
+
+  /**
+   * Whether an open soft keyboard is present which does not overlap the
+   * viewport. E.g. for a VR soft-keyboard which is detached from the app
+   * viewport.
+   */
+  _softKeyboardIsDetached: () => boolean = () => {
+    return this._keyboardMetrics != null && this._keyboardMetrics.height === 0;
+  };
+
+  _keyboardEventsAreUnreliable: () => boolean = () => {
+    // Android versions prior to API 30 rely on observing layout changes when
+    // `android:windowSoftInputMode` is set to `adjustResize` or `adjustPan`.
+    return Platform.OS === 'android' && Platform.Version < 30;
   };
 
   /**
@@ -1556,6 +1578,21 @@ class ScrollView extends React.Component<Props, State> {
   _handleTouchEnd: (e: PressEvent) => void = (e: PressEvent) => {
     const nativeEvent = e.nativeEvent;
     this._isTouching = nativeEvent.touches.length !== 0;
+
+    const {keyboardShouldPersistTaps} = this.props;
+    const keyboardNeverPersistsTaps =
+      !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
+
+    // Dismiss the keyboard now if we didn't become responder in capture phase
+    // to eat presses, but still want to dismiss on interaction.
+    if (
+      this._softKeyboardIsDetached() &&
+      this._keyboardIsDismissible() &&
+      keyboardNeverPersistsTaps
+    ) {
+      TextInputState.blurTextInput(TextInputState.currentlyFocusedInput());
+    }
+
     this.props.onTouchEnd && this.props.onTouchEnd(e);
   };
 

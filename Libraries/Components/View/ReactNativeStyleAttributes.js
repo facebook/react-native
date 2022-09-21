@@ -10,6 +10,7 @@
 
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 import processColor from '../../StyleSheet/processColor';
+import processFontVariant from '../../StyleSheet/processFontVariant';
 import processTransform from '../../StyleSheet/processTransform';
 import sizesDiffer from '../../Utilities/differ/sizesDiffer';
 
@@ -111,6 +112,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   borderTopRightRadius: true,
   borderTopStartRadius: true,
   opacity: true,
+  pointerEvents: true,
 
   /**
    * Text
@@ -119,7 +121,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   fontFamily: true,
   fontSize: true,
   fontStyle: true,
-  fontVariant: true,
+  fontVariant: {process: processFontVariant},
   fontWeight: true,
   includeFontPadding: true,
   letterSpacing: true,
@@ -133,6 +135,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   textShadowOffset: true,
   textShadowRadius: true,
   textTransform: true,
+  userSelect: true,
   writingDirection: true,
 
   /**
@@ -141,6 +144,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   overlayColor: colorAttributes,
   resizeMode: true,
   tintColor: colorAttributes,
+  objectFit: true,
 };
 
 module.exports = ReactNativeStyleAttributes;

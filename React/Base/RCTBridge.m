@@ -23,24 +23,6 @@
 #import "RCTReloadCommand.h"
 #import "RCTUtils.h"
 
-NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
-NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
-NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWillStartExecutingNotification";
-NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
-NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
-NSString *const RCTDidSetupModuleNotification = @"RCTDidSetupModuleNotification";
-NSString *const RCTDidSetupModuleNotificationModuleNameKey = @"moduleName";
-NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
-NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
-NSString *const RCTBridgeFastRefreshNotification = @"RCTBridgeFastRefreshNotification";
-NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
-NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
-NSString *const RCTBridgeWillInvalidateModulesNotification = @"RCTBridgeWillInvalidateModulesNotification";
-NSString *const RCTBridgeDidInvalidateModulesNotification = @"RCTBridgeDidInvalidateModulesNotification";
-NSString *const RCTBridgeWillBeInvalidatedNotification = @"RCTBridgeWillBeInvalidatedNotification";
-NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
-NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey = @"bridgeDescription";
-
 static NSMutableArray<Class> *RCTModuleClasses;
 static dispatch_queue_t RCTModuleClassesSyncQueue;
 NSArray<Class> *RCTGetModuleClasses(void)

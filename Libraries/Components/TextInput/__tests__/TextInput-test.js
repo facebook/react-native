@@ -4,15 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
- * @format
  * @flow-strict
+ * @format
+ * @oncall react_native
  */
 
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 const TextInput = require('../TextInput');
-const ReactNative = require('../../../Renderer/shims/ReactNative');
+const ReactNative = require('../../../ReactNative/RendererProxy');
 
 const {
   enter,

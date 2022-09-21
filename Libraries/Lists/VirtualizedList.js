@@ -24,8 +24,6 @@ import type {
 export type {RenderItemProps, RenderItemType, Separators};
 
 import {
-  type ChildListState,
-  type ListDebugInfo,
   VirtualizedListCellContextProvider,
   VirtualizedListContext,
   VirtualizedListContextProvider,
@@ -35,13 +33,15 @@ import {
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
 import * as VirtualizedListInjection from './VirtualizedListInjection';
+import CellRenderer from './VirtualizedListCellRenderer';
 import * as React from 'react';
+import ChildListCollection from './ChildListCollection';
 
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const View = require('../Components/View/View');
 const Batchinator = require('../Interaction/Batchinator');
-const ReactNative = require('../Renderer/shims/ReactNative');
+const {findNodeHandle} = require('../ReactNative/RendererProxy');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const infoLog = require('../Utilities/infoLog');
@@ -295,7 +295,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   recordInteraction() {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref.recordInteraction();
+      childList.recordInteraction();
     });
     this._viewabilityTuples.forEach(t => {
       t.viewabilityHelper.recordInteraction();
@@ -326,7 +326,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();
     } else {
-      return ReactNative.findNodeHandle(this._scrollRef);
+      return findNodeHandle(this._scrollRef);
     }
   }
 
@@ -350,19 +350,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return this.context?.cellKey || 'rootList';
   }
 
-  _getListKey(): string {
-    return this.props.listKey || this._getCellKey();
-  }
-
-  _getDebugInfo(): ListDebugInfo {
-    return {
-      listKey: this._getListKey(),
-      cellKey: this._getCellKey(),
-      horizontal: horizontalOrDefault(this.props.horizontal),
-      parent: this.context?.debugInfo,
-    };
-  }
-
   // $FlowFixMe[missing-local-annot]
   _getScrollMetrics = () => {
     return this._scrollMetrics;
@@ -381,58 +368,22 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
-  _getNestedChildState = (key: string): ?ChildListState => {
-    const existingChildData = this._nestedChildLists.get(key);
-    return existingChildData && existingChildData.state;
-  };
-
   _registerAsNestedChild = (childList: {
     cellKey: string,
-    key: string,
     ref: React.ElementRef<typeof React.Component>,
-    parentDebugInfo: ListDebugInfo,
-    ...
-  }): ?ChildListState => {
-    const specificRef = ((childList.ref: any): VirtualizedList);
-    // Register the mapping between this child key and the cellKey for its cell
-    const childListsInCell =
-      this._cellKeysToChildListKeys.get(childList.cellKey) || new Set();
-    childListsInCell.add(childList.key);
-    this._cellKeysToChildListKeys.set(childList.cellKey, childListsInCell);
-    const existingChildData = this._nestedChildLists.get(childList.key);
-    if (existingChildData && existingChildData.ref !== null) {
-      console.error(
-        'A VirtualizedList contains a cell which itself contains ' +
-          'more than one VirtualizedList of the same orientation as the parent ' +
-          'list. You must pass a unique listKey prop to each sibling list.\n\n' +
-          describeNestedLists({
-            ...childList,
-            ref: specificRef,
-            // We're called from the child's componentDidMount, so it's safe to
-            // read the child's props here (albeit weird).
-            horizontal: !!specificRef.props.horizontal,
-          }),
-      );
-    }
-    this._nestedChildLists.set(childList.key, {
-      ref: specificRef,
-      state: null,
-    });
-
+  }): void => {
+    const listRef = ((childList.ref: any): VirtualizedList);
+    this._nestedChildLists.add(listRef, childList.cellKey);
     if (this._hasInteracted) {
-      specificRef.recordInteraction();
+      listRef.recordInteraction();
     }
   };
 
   _unregisterAsNestedChild = (childList: {
-    key: string,
-    state: ChildListState,
-    ...
+    ref: React.ElementRef<typeof React.Component>,
   }): void => {
-    this._nestedChildLists.set(childList.key, {
-      ref: null,
-      state: childList.state,
-    });
+    const listRef = ((childList.ref: any): VirtualizedList);
+    this._nestedChildLists.remove(listRef);
   };
 
   state: State;
@@ -473,7 +424,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
     }
 
-    let initialState = {
+    invariant(
+      !this.context,
+      'Unexpectedly saw VirtualizedListContext available in ctor',
+    );
+
+    this.state = {
       first: this.props.initialScrollIndex || 0,
       last:
         Math.min(
@@ -482,44 +438,20 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
     };
-
-    if (this._isNestedWithSameOrientation()) {
-      const storedState = this.context.getNestedChildState(this._getListKey());
-      if (storedState) {
-        initialState = storedState;
-        this.state = storedState;
-        this._frames = storedState.frames;
-      }
-    }
-
-    this.state = initialState;
   }
 
   componentDidMount() {
     if (this._isNestedWithSameOrientation()) {
       this.context.registerAsNestedChild({
-        cellKey: this._getCellKey(),
-        key: this._getListKey(),
         ref: this,
-        // NOTE: When the child mounts (here) it's not necessarily safe to read
-        // the parent's props. This is why we explicitly propagate debugInfo
-        // "down" via context and "up" again via this method call on the
-        // parent.
-        parentDebugInfo: this.context.debugInfo,
+        cellKey: this.context.cellKey,
       });
     }
   }
 
   componentWillUnmount() {
     if (this._isNestedWithSameOrientation()) {
-      this.context.unregisterAsNestedChild({
-        key: this._getListKey(),
-        state: {
-          first: this.state.first,
-          last: this.state.last,
-          frames: this._frames,
-        },
-      });
+      this.context.unregisterAsNestedChild({ref: this});
     }
     this._updateViewableItems(null);
     this._updateCellsToRenderBatcher.dispose({abort: true});
@@ -871,10 +803,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           getScrollMetrics: this._getScrollMetrics,
           horizontal: horizontalOrDefault(this.props.horizontal),
           getOutermostParentListRef: this._getOutermostParentListRef,
-          getNestedChildState: this._getNestedChildState,
           registerAsNestedChild: this._registerAsNestedChild,
           unregisterAsNestedChild: this._unregisterAsNestedChild,
-          debugInfo: this._getDebugInfo(),
         }}>
         {React.cloneElement(
           (
@@ -950,9 +880,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _averageCellLength = 0;
-  // Maps a cell key to the set of keys for all outermost child lists within that cell
-  _cellKeysToChildListKeys: Map<string, Set<string>> = new Map();
-  _cellRefs: {[string]: null | CellRenderer} = {};
+  _cellRefs: {[string]: null | CellRenderer<any>} = {};
   _fillRateHelper: FillRateHelper;
   _frames: {
     [string]: {
@@ -972,14 +900,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _hiPriInProgress: boolean = false; // flag to prevent infinite hiPri cell limit update
   _highestMeasuredFrameIndex = 0;
   _indicesToKeys: Map<number, string> = new Map();
-  _nestedChildLists: Map<
-    string,
-    {
-      ref: ?VirtualizedList,
-      state: ?ChildListState,
-      ...
-    },
-  > = new Map();
+  _nestedChildLists: ChildListCollection<VirtualizedList> =
+    new ChildListCollection();
   _offsetFromParentVirtualizedList: number = 0;
   _prevParentOffset: number = 0;
   // $FlowFixMe[missing-local-annot]
@@ -1030,6 +952,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       return (
         // $FlowFixMe[prop-missing] Invalid prop usage
+        // $FlowFixMe[incompatible-use]
         <ScrollView
           {...props}
           refreshControl={
@@ -1048,6 +971,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
     } else {
       // $FlowFixMe[prop-missing] Invalid prop usage
+      // $FlowFixMe[incompatible-use]
       return <ScrollView {...props} />;
     }
   };
@@ -1095,15 +1019,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _triggerRemeasureForChildListsInCell(cellKey: string): void {
-    const childListKeys = this._cellKeysToChildListKeys.get(cellKey);
-    if (childListKeys) {
-      for (let childKey of childListKeys) {
-        const childList = this._nestedChildLists.get(childKey);
-        childList &&
-          childList.ref &&
-          childList.ref.measureLayoutRelativeToContainingList();
-      }
-    }
+    this._nestedChildLists.forEachInCell(cellKey, childList => {
+      childList.measureLayoutRelativeToContainingList();
+    });
   }
 
   measureLayoutRelativeToContainingList(): void {
@@ -1137,15 +1055,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
             // If metrics of the scrollView changed, then we triggered remeasure for child list
             // to ensure VirtualizedList has the right information.
-            this._cellKeysToChildListKeys.forEach(childListKeys => {
-              if (childListKeys) {
-                for (let childKey of childListKeys) {
-                  const childList = this._nestedChildLists.get(childKey);
-                  childList &&
-                    childList.ref &&
-                    childList.ref.measureLayoutRelativeToContainingList();
-                }
-              }
+            this._nestedChildLists.forEach(childList => {
+              childList.measureLayoutRelativeToContainingList();
             });
           }
         },
@@ -1360,7 +1271,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onScroll = (e: Object) => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onScroll(e);
+      childList._onScroll(e);
     });
     if (this.props.onScroll) {
       this.props.onScroll(e);
@@ -1479,7 +1390,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onScrollBeginDrag = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onScrollBeginDrag(e);
+      childList._onScrollBeginDrag(e);
     });
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.recordInteraction();
@@ -1490,7 +1401,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onScrollEndDrag = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onScrollEndDrag(e);
+      childList._onScrollEndDrag(e);
     });
     const {velocity} = e.nativeEvent;
     if (velocity) {
@@ -1502,14 +1413,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onMomentumScrollBegin = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onMomentumScrollBegin(e);
+      childList._onMomentumScrollBegin(e);
     });
     this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
   };
 
   _onMomentumScrollEnd = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onMomentumScrollEnd(e);
+      childList._onMomentumScrollEnd(e);
     });
     this._scrollMetrics.velocity = 0;
     this._computeBlankness();
@@ -1578,7 +1489,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           last: Math.min(state.last + renderAhead, getItemCount(data) - 1),
         };
       }
-      if (newState && this._nestedChildLists.size > 0) {
+      if (newState && this._nestedChildLists.size() > 0) {
         const newFirst = newState.first;
         const newLast = newState.last;
         // If some cell in the new state has a child list in it, we should only render
@@ -1587,21 +1498,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // their items.
         for (let ii = newFirst; ii <= newLast; ii++) {
           const cellKeyForIndex = this._indicesToKeys.get(ii);
-          const childListKeys =
-            cellKeyForIndex &&
-            this._cellKeysToChildListKeys.get(cellKeyForIndex);
-          if (!childListKeys) {
+          if (cellKeyForIndex == null) {
             continue;
           }
-          let someChildHasMore = false;
           // For each cell, need to check whether any child list in it has more elements to render
-          for (let childKey of childListKeys) {
-            const childList = this._nestedChildLists.get(childKey);
-            if (childList && childList.ref && childList.ref.hasMore()) {
-              someChildHasMore = true;
-              break;
-            }
-          }
+
+          const someChildHasMore = this._nestedChildLists.anyInCell(
+            cellKeyForIndex,
+            childList => childList.hasMore(),
+          );
+
           if (someChildHasMore) {
             newState.last = ii;
             break;
@@ -1694,262 +1600,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 }
 
-type CellRendererProps = {
-  CellRendererComponent?: ?React.ComponentType<any>,
-  ItemSeparatorComponent: ?React.ComponentType<
-    any | {highlighted: boolean, leadingItem: ?Item},
-  >,
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  cellKey: string,
-  debug?: ?boolean,
-  fillRateHelper: FillRateHelper,
-  getItemLayout?: (
-    data: any,
-    index: number,
-  ) => {
-    length: number,
-    offset: number,
-    index: number,
-    ...
-  },
-  horizontal: ?boolean,
-  index: number,
-  inversionStyle: ViewStyleProp,
-  item: Item,
-  // This is extracted by ScrollViewStickyHeader
-  onCellLayout: (event: Object, cellKey: string, index: number) => void,
-  onUnmount: (cellKey: string) => void,
-  onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
-  prevCellKey: ?string,
-  renderItem?: ?RenderItemType<Item>,
-  ...
-};
-
-type CellRendererState = {
-  separatorProps: $ReadOnly<{|
-    highlighted: boolean,
-    leadingItem: ?Item,
-  |}>,
-  ...
-};
-
-class CellRenderer extends React.Component<
-  CellRendererProps,
-  CellRendererState,
-> {
-  // $FlowFixMe[missing-local-annot]
-  state = {
-    separatorProps: {
-      highlighted: false,
-      leadingItem: this.props.item,
-    },
-  };
-
-  static getDerivedStateFromProps(
-    props: CellRendererProps,
-    prevState: CellRendererState,
-  ): ?CellRendererState {
-    return {
-      separatorProps: {
-        ...prevState.separatorProps,
-        leadingItem: props.item,
-      },
-    };
-  }
-
-  // TODO: consider factoring separator stuff out of VirtualizedList into FlatList since it's not
-  // reused by SectionList and we can keep VirtualizedList simpler.
-  // $FlowFixMe[missing-local-annot]
-  _separators = {
-    highlight: () => {
-      const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators([cellKey, prevCellKey], {
-        highlighted: true,
-      });
-    },
-    unhighlight: () => {
-      const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators([cellKey, prevCellKey], {
-        highlighted: false,
-      });
-    },
-    updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
-      const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators(
-        [select === 'leading' ? prevCellKey : cellKey],
-        newProps,
-      );
-    },
-  };
-
-  updateSeparatorProps(newProps: Object) {
-    this.setState(state => ({
-      separatorProps: {...state.separatorProps, ...newProps},
-    }));
-  }
-
-  componentWillUnmount() {
-    this.props.onUnmount(this.props.cellKey);
-  }
-
-  _onLayout = (nativeEvent: LayoutEvent): void => {
-    this.props.onCellLayout &&
-      this.props.onCellLayout(
-        nativeEvent,
-        this.props.cellKey,
-        this.props.index,
-      );
-  };
-
-  _renderElement(
-    renderItem: any,
-    ListItemComponent: any,
-    item: any,
-    index: any,
-    // $FlowFixMe[missing-local-annot]
-  ) {
-    if (renderItem && ListItemComponent) {
-      console.warn(
-        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
-          ' precedence over renderItem.',
-      );
-    }
-
-    if (ListItemComponent) {
-      /* $FlowFixMe[not-a-component] (>=0.108.0 site=react_native_fb) This
-       * comment suppresses an error found when Flow v0.108 was deployed. To
-       * see the error, delete this comment and run Flow. */
-      /* $FlowFixMe[incompatible-type-arg] (>=0.108.0 site=react_native_fb)
-       * This comment suppresses an error found when Flow v0.108 was deployed.
-       * To see the error, delete this comment and run Flow. */
-      return React.createElement(ListItemComponent, {
-        item,
-        index,
-        separators: this._separators,
-      });
-    }
-
-    if (renderItem) {
-      return renderItem({
-        item,
-        index,
-        separators: this._separators,
-      });
-    }
-
-    invariant(
-      false,
-      'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
-    );
-  }
-
-  // $FlowFixMe[missing-local-annot]
-  render() {
-    const {
-      CellRendererComponent,
-      ItemSeparatorComponent,
-      ListItemComponent,
-      debug,
-      fillRateHelper,
-      getItemLayout,
-      horizontal,
-      item,
-      index,
-      inversionStyle,
-      renderItem,
-    } = this.props;
-    const element = this._renderElement(
-      renderItem,
-      ListItemComponent,
-      item,
-      index,
-    );
-
-    const onLayout =
-      (getItemLayout && !debug && !fillRateHelper.enabled()) ||
-      !this.props.onCellLayout
-        ? undefined
-        : this._onLayout;
-    // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
-    // called explicitly by `ScrollViewStickyHeader`.
-    const itemSeparator = React.isValidElement(ItemSeparatorComponent)
-      ? ItemSeparatorComponent
-      : ItemSeparatorComponent && (
-          <ItemSeparatorComponent {...this.state.separatorProps} />
-        );
-    const cellStyle = inversionStyle
-      ? horizontal
-        ? [styles.rowReverse, inversionStyle]
-        : [styles.columnReverse, inversionStyle]
-      : horizontal
-      ? [styles.row, inversionStyle]
-      : inversionStyle;
-    const result = !CellRendererComponent ? (
-      /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
-        This comment suppresses an error found when Flow v0.89 was deployed. *
-        To see the error, delete this comment and run Flow. */
-      <View style={cellStyle} onLayout={onLayout}>
-        {element}
-        {itemSeparator}
-      </View>
-    ) : (
-      <CellRendererComponent
-        {...this.props}
-        style={cellStyle}
-        onLayout={onLayout}>
-        {element}
-        {itemSeparator}
-      </CellRendererComponent>
-    );
-
-    return (
-      <VirtualizedListCellContextProvider cellKey={this.props.cellKey}>
-        {result}
-      </VirtualizedListCellContextProvider>
-    );
-  }
-}
-
-function describeNestedLists(childList: {
-  +cellKey: string,
-  +key: string,
-  +ref: VirtualizedList,
-  +parentDebugInfo: ListDebugInfo,
-  +horizontal: boolean,
-  ...
-}) {
-  let trace =
-    'VirtualizedList trace:\n' +
-    `  Child (${childList.horizontal ? 'horizontal' : 'vertical'}):\n` +
-    `    listKey: ${childList.key}\n` +
-    `    cellKey: ${childList.cellKey}`;
-
-  let debugInfo: ?ListDebugInfo = childList.parentDebugInfo;
-  while (debugInfo) {
-    trace +=
-      `\n  Parent (${debugInfo.horizontal ? 'horizontal' : 'vertical'}):\n` +
-      `    listKey: ${debugInfo.listKey}\n` +
-      `    cellKey: ${debugInfo.cellKey}`;
-    debugInfo = debugInfo.parent;
-  }
-  return trace;
-}
-
 const styles = StyleSheet.create({
   verticallyInverted: {
     transform: [{scaleY: -1}],
   },
   horizontallyInverted: {
     transform: [{scaleX: -1}],
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  rowReverse: {
-    flexDirection: 'row-reverse',
-  },
-  columnReverse: {
-    flexDirection: 'column-reverse',
   },
   debug: {
     flex: 1,

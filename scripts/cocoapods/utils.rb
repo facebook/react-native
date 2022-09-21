@@ -139,10 +139,12 @@ class ReactNativePodsUtils
             return
         end
 
-        # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple M1)
-        # since the libraries there are only built for x86_64 and i386.
-        lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
-        lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+        if lib_search_paths.include?("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)") || lib_search_paths.include?("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+            # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple M1)
+            # since the libraries there are only built for x86_64 and i386.
+            lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
+            lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+        end
 
         if !(lib_search_paths.include?("$(SDKROOT)/usr/lib/swift") || lib_search_paths.include?("\"$(SDKROOT)/usr/lib/swift\""))
             # however, $(SDKROOT)/usr/lib/swift is required, at least if user is not running CocoaPods 1.11
@@ -150,5 +152,13 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.create_xcode_env_if_missing
+        relative_path = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+        file_path = File.join(relative_path, '.xcode.env')
+        if File.exist?(file_path)
+            return
+        end
 
+        system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
+    end
 end
