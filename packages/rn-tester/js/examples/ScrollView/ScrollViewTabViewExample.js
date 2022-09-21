@@ -151,16 +151,16 @@ export const TabView = ({
   );
 };
 
-const Spacer = ({ vertical }) => <View style={vertical ? styles.heightTen : styles.widthTen} />
+const Spacer = ({ vertical }) => <View style={vertical ? styles.heightTen : styles.widthTen} />;
 
 const renderScene = ({ route }) => (
-	<View 
+	<View
 		style={[{ backgroundColor: route.key === 'one' ? 'lightblue' : 'lightpink' }, styles.tabViewScene]}
 	>
 		<Text>Hello {route.key}
 		</Text>
 	</View>
-)
+);
 
 const Example = () => {
 	const [tab, setTab] = React.useState(0);
@@ -184,15 +184,15 @@ const Example = () => {
       />
 		</View>
 	);
-}
+};
 
 const styles = StyleSheet.create({
-	row: { flexDirection: "row" },
+	row: { flexDirection: 'row' },
 	heightTen: { height: 10 },
 	widthTen: { width: 10 },
-	tabViewScene: { height: "100%", justifyContent: 'center', alignItems: 'center' },
+	tabViewScene: { height: '100%', justifyContent: 'center', alignItems: 'center' },
 	container: { flex: 1, backgroundColor: 'white', padding: 20, borderColor: 'lightgray' },
-})
+});
 
 exports.title = 'TabView using ScrollView';
 exports.category = 'Advanced';
