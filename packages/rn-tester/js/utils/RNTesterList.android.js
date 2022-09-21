@@ -63,6 +63,11 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/RefreshControl/RefreshControlExample'),
   },
   {
+    key: 'ScrollViewTabViewExample',
+    category: 'Advanced',
+    module: require('../examples/ScrollView/ScrollViewTabViewExample'),
+  },
+  {
     key: 'ScrollViewExample',
     category: 'Basic',
     module: require('../examples/ScrollView/ScrollViewExample'),
