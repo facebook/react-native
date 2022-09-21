@@ -304,6 +304,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Cochin',
     height: 60,
   },
+  singleLine: {
+    fontSize: 16,
+  },
   singlelinePlaceholderStyles: {
     letterSpacing: 10,
     textAlign: 'center',
@@ -945,6 +948,42 @@ if (Platform.OS === 'macos') {
         'AutoCorrect, spellCheck and grammarCheck callbacks - Multiline Textfield',
       render: function (): React.Node {
         return <AutoCorrectSpellCheckGrammarCheckCallbacks />;
+      },
+    },
+    {
+      title: 'Clear text on submit - Multiline Textfield',
+      render: function (): React.Node {
+        return (
+          <View>
+            <Text>Default submit key (Enter):</Text>
+            <TextInput
+              multiline={true}
+              clearTextOnSubmit={true}
+              style={styles.multiline}
+            />
+            <Text>Custom submit key (Enter): - same as above</Text>
+            <TextInput
+              multiline={true}
+              clearTextOnSubmit={true}
+              style={styles.multiline}
+              submitKeyEvents={[{key: 'Enter'}]}
+            />
+            <Text>Custom submit key (CMD + Enter):</Text>
+            <TextInput
+              multiline={true}
+              clearTextOnSubmit={true}
+              style={styles.multiline}
+              submitKeyEvents={[{key: 'Enter', metaKey: true}]}
+            />
+            <Text>Custom submit key (Shift + Enter):</Text>
+            <TextInput
+              multiline={true}
+              clearTextOnSubmit={true}
+              style={styles.multiline}
+              submitKeyEvents={[{key: 'Enter', shiftKey: true}]}
+            />
+          </View>
+        );
       },
     },
     {

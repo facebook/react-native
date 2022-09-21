@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)automaticSpellingCorrectionDidChange:(BOOL)enabled;
 - (void)continuousSpellCheckingDidChange:(BOOL)enabled;
 - (void)grammarCheckingDidChange:(BOOL)enabled;
+- (void)submitOnKeyDownIfNeeded:(NSEvent *)event;
 #endif // ]TODO(macOS GH#774)
 
 /*

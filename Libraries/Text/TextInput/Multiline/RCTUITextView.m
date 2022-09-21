@@ -555,9 +555,18 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 }
 #else
 - (void)keyDown:(NSEvent *)event {
-  // If hasMarkedText is true then an IME is open, so don't send event to JS.
-  if (self.hasMarkedText || [self.textInputDelegate textInputShouldHandleKeyEvent:event]) {
+  // If has marked text, handle by native and return
+  // Do this check before textInputShouldHandleKeyEvent as that one attempts to send the event to JS
+  if (self.hasMarkedText) {
     [super keyDown:event];
+    return;
+  }
+
+  // textInputShouldHandleKeyEvent represents if native should handle the event instead of JS.
+  // textInputShouldHandleKeyEvent also sends keyDown event to JS internally, so we only call this once  
+  if ([self.textInputDelegate textInputShouldHandleKeyEvent:event]) {
+    [super keyDown:event];
+    [self.textInputDelegate submitOnKeyDownIfNeeded:event];
   }
 }
 

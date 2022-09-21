@@ -14,6 +14,7 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
+#import <React/RCTViewKeyboardEvent.h> // TODO(macOS GH#774)
 #import <React/RCTInputAccessoryView.h>
 #import <React/RCTInputAccessoryViewContent.h>
 #import <React/RCTTextAttributes.h>
@@ -426,6 +427,46 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 {
   if (_onGrammarCheckChange) {
     _onGrammarCheckChange(@{@"enabled": [NSNumber numberWithBool:enabled]});
+  }
+}
+
+- (void)submitOnKeyDownIfNeeded:(NSEvent *)event
+{
+  NSDictionary *currentKeyboardEvent = [RCTViewKeyboardEvent bodyFromEvent:event];
+  // Enter is the default clearTextOnSubmit key
+  BOOL shouldSubmit = NO;
+  if (!_submitKeyEvents) {
+    shouldSubmit = [currentKeyboardEvent[@"key"] isEqualToString:@"Enter"]
+      && ![currentKeyboardEvent[@"altKey"] boolValue]
+      && ![currentKeyboardEvent[@"shiftKey"] boolValue]
+      && ![currentKeyboardEvent[@"ctrlKey"] boolValue]
+      && ![currentKeyboardEvent[@"metaKey"] boolValue]
+      && ![currentKeyboardEvent[@"functionKey"] boolValue]; // Default clearTextOnSubmit key
+  } else {
+    for (NSDictionary *submitKeyEvent in _submitKeyEvents) {
+      if (
+        [submitKeyEvent[@"key"] isEqualToString:currentKeyboardEvent[@"key"]] &&
+        [submitKeyEvent[@"altKey"] boolValue] == [currentKeyboardEvent[@"altKey"] boolValue] &&
+        [submitKeyEvent[@"shiftKey"] boolValue] == [currentKeyboardEvent[@"shiftKey"] boolValue] &&
+        [submitKeyEvent[@"ctrlKey"] boolValue]== [currentKeyboardEvent[@"ctrlKey"] boolValue] &&
+        [submitKeyEvent[@"metaKey"] boolValue]== [currentKeyboardEvent[@"metaKey"] boolValue] &&
+        [submitKeyEvent[@"functionKey"] boolValue]== [currentKeyboardEvent[@"functionKey"] boolValue]
+      ) {
+        shouldSubmit = YES;
+        break;
+      }
+    }
+  }
+  
+  if (shouldSubmit) {
+    if (_onSubmitEditing) {
+      _onSubmitEditing(@{});
+    }
+
+    if (_clearTextOnSubmit) {
+      self.backedTextInputView.attributedText = [NSAttributedString new];
+      [self.backedTextInputView.textInputDelegate textInputDidChange];
+    }
   }
 }
 #endif // ]TODO(macOS GH#774)

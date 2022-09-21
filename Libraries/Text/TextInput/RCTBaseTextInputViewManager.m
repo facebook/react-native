@@ -71,6 +71,11 @@ RCT_EXPORT_VIEW_PROPERTY(passwordRules, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onAutoCorrectChange, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onSpellCheckChange, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onGrammarCheckChange, RCTBubblingEventBlock);
+
+// Specifically for clearing text on enter key press
+RCT_EXPORT_VIEW_PROPERTY(clearTextOnSubmit, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(onSubmitEditing, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(submitKeyEvents, NSArray<NSDictionary *>);
 #endif // TODO(macOS GH#774)
 
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)

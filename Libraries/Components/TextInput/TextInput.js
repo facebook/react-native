@@ -353,6 +353,31 @@ type IOSProps = $ReadOnly<{|
   textContentType?: ?TextContentType,
 |}>;
 
+// [TODO(macOS GH#774)
+export type SubmitKeyEvent = $ReadOnly<{|
+  key: string,
+  altKey?: ?boolean,
+  ctrlKey?: ?boolean,
+  metaKey?: ?boolean,
+  shiftKey?: ?boolean,
+  functionKey?: ?boolean,
+|}>;
+
+type MacOSProps = $ReadOnly<{|
+  /**
+   * If `true`, clears the text field synchronously before `onSubmitEditing` is emitted.
+   * @platform macos
+   */
+  clearTextOnSubmit?: ?boolean,
+
+  /**
+   * Configures keys that can be used to submit editing for the TextInput. Defaults to 'Enter' key.
+   * @platform macos
+   */
+  submitKeyEvents?: ?$ReadOnlyArray<SubmitKeyEvent>,
+|}>;
+// ]TODO(macOS GH#774)
+
 type AndroidProps = $ReadOnly<{|
   /**
    * Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
@@ -515,6 +540,7 @@ type AndroidProps = $ReadOnly<{|
 export type Props = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSProps,
+  ...MacOSProps,
   ...AndroidProps,
 
   /**
