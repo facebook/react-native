@@ -1571,6 +1571,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       this._lastItem = lastItem;
       this._lastScrollPosition = this._scrollMetrics.contentLength;
+      this._hasTriggeredInitialScrollToIndex = true;
     }
     this._scheduleCellsToRenderUpdate();
     // talkback inverted flatlist, height is used to compute
