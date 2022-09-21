@@ -23,6 +23,7 @@ const {cd, cp, echo, exec, exit, mv, rm} = require('shelljs');
 const spawn = require('child_process').spawn;
 const argv = require('yargs').argv;
 const path = require('path');
+const {setupVerdaccio} = require('./setup-verdaccio');
 
 const SCRIPTS = __dirname;
 const ROOT = path.normalize(path.join(__dirname, '..'));
@@ -72,31 +73,17 @@ try {
   const REACT_NATIVE_PACKAGE = path.join(ROOT, 'react-native-*.tgz');
 
   describe('Set up Verdaccio');
-  const verdaccioProcess = spawn('npx', [
-    'verdaccio@5.15.3',
-    '--config',
-    '.circleci/verdaccio.yml',
-  ]);
-  VERDACCIO_PID = verdaccioProcess.pid;
-  exec('npx wait-on@6.0.1 http://localhost:4873');
-  exec('npm set registry http://localhost:4873');
-  exec('echo "//localhost:4873/:_authToken=secretToken" > .npmrc');
+  VERDACCIO_PID = setupVerdaccio();
 
   describe('Publish packages');
   const packages = JSON.parse(
     JSON.parse(exec('yarn --json workspaces info').stdout).data,
   );
-  Object.keys(packages)
-    .filter(
-      packageName =>
-        packageName !== '@react-native/tester' &&
-        packageName !== '@react-native/repo-config',
-    )
-    .forEach(packageName => {
-      exec(
-        `cd ${packages[packageName].location} && npm publish --registry http://localhost:4873 --yes --access public`,
-      );
-    });
+  Object.keys(packages).forEach(packageName => {
+    exec(
+      `cd ${packages[packageName].location} && npm publish --registry http://localhost:4873 --yes --access public`,
+    );
+  });
 
   describe('Scaffold a basic React Native app from template');
   exec(`rsync -a ${ROOT}/template ${REACT_NATIVE_TEMP_DIR}`);

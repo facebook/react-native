@@ -4,7 +4,7 @@ auth:
     file: ./htpasswd
 uplinks:
   npmjs:
-    url: https://registry.yarnpkg.com/
+    url: https://registry.npmjs.org/
     max_fails: 40
     maxage: 30m
     timeout: 60s
