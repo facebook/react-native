@@ -432,15 +432,6 @@ react {
 }
 
 afterEvaluate {
-    // Needed as some of the native sources needs to be downloaded
-    // before configureNdkBuildDebug could be executed.
-    reactNativeArchitectures().each { architecture ->
-        tasks.findByName("configureCMakeDebug[${architecture}]")?.configure { dependsOn(preBuild) }
-        tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure { dependsOn(preBuild) }
-    }
-    configureCMakeDebug.dependsOn(preBuild)
-    configureCMakeRelWithDebInfo.dependsOn(preBuild)
-
     publishing {
         publications {
             release(MavenPublication) {
