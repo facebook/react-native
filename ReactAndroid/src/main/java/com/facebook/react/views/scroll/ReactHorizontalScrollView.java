@@ -1086,14 +1086,19 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       // try to manually interact with OverScroller instead
       // if velocity is 0 however, fling() won't work, so we want to use smoothScrollTo
       mActivelyScrolling = true;
-
+      int snapToVelocityX = targetOffset - getScrollX();
+      if (!hasCustomizedFlingAnimator) {
+        // The default animator requires boost on initial velocity as when snapping velocity can
+        // feel sluggish for slow swipes
+        snapToVelocityX = snapToVelocityX * 50;
+      }
       mScroller.fling(
           getScrollX(), // startX
           getScrollY(), // startY
           // velocity = 0 doesn't work with fling() so we pretend there's a reasonable
           // initial velocity going on when a touch is released without any movement
-          velocityX != 0 ? velocityX : targetOffset - getScrollX(), // velocityX
           0, // velocityY
+          velocityX != 0 ? velocityX : snapToVelocityX, // velocityX
           // setting both minX and maxX to the same value will guarantee that we scroll to it
           // but using the standard fling-style easing rather than smoothScrollTo's 250ms animation
           targetOffset, // minX
