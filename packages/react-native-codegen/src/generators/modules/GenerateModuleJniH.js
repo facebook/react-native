@@ -92,6 +92,7 @@ LOCAL_SHARED_LIBRARIES := libfbjni \
   libreact_render_core \
   libreact_render_debug \
   libreact_render_graphics \
+  libreact_render_mapbuffer \
   librrc_view \
   libturbomodulejsijni \
   libyoga
