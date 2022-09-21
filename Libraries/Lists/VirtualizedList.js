@@ -761,16 +761,24 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     ) {
       const diff = visibleLength - contentLength;
       if (diff > 0) {
-        style = {flexDirection: 'column-reverse'};
+        style = horizontalOrDefault(this.props.horizontal)
+          ? {flexDirection: 'row-reverse'}
+          : {flexDirection: 'column-reverse'};
       } else {
-        style = {flexDirection: 'column'};
+        style = horizontalOrDefault(this.props.horizontal)
+          ? {flexDirection: 'row'}
+          : {flexDirection: 'column'};
       }
     }
     if (talkbackCompatibility) {
-      contentContainerStyle = {flexDirection: 'column-reverse'};
+      contentContainerStyle = horizontalOrDefault(this.props.horizontal)
+        ? {flexDirection: 'row-reverse'}
+        : {flexDirection: 'column-reverse'};
       inversionStyle = null;
       if (contentLength == null || visibleLength == null) {
-        style = {flexDirection: 'column'};
+        style = horizontalOrDefault(this.props.horizontal)
+          ? {flexDirection: 'row'}
+          : {flexDirection: 'column'};
       }
     }
     const cells = [];
@@ -1296,6 +1304,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         e.nativeEvent.layout,
       );
       if (talkbackCompatibility) {
+        // may be the reason now we need a setTimeout
+        // onContentSizeChange to start FlatList from the bottom
+        // this additional state update may be the reason we have issues with
+        // the initial scroll position, the solution would be using position
+        // relative which does not break scroll functionalities.
         this.setState({visibleLength: this._scrollMetrics.visibleLength});
       }
     }
@@ -1551,7 +1564,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     ) {
       // onMomentumScrollEnd does not work with TalkBack gestures
       // estrapolate this to a method talkbackScrollTo compatible with
-      // TalkBack gestures
+      // TalkBack gestures.
+      // The root cause of this issue may have been
+      // adding contentLength to state.
+      // Try to move this to another callback, for example componentDidUpdate
       setTimeout(
         (flatlist, contentLength, lastItem) => {
           if (
@@ -1755,6 +1771,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // starving the renderer from actually laying out the objects and computing _averageCellLength.
     // If this is triggered in an `componentDidUpdate` followed by a hiPri cellToRenderUpdate
     // We shouldn't do another hipri cellToRenderUpdate
+    // Try to move this to another callback, for example componentDidUpdate
     if (
       hiPri &&
       (this._averageCellLength || this.props.getItemLayout) &&
