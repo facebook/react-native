@@ -75,8 +75,6 @@ module.exports = {
   ): FilesOutput {
     const fileName = 'ShadowNodes.h';
 
-    let hasAnyEvents = false;
-
     const moduleResults = Object.keys(schema.modules)
       .map(moduleName => {
         const module = schema.modules[moduleName];
@@ -97,15 +95,7 @@ module.exports = {
               return;
             }
 
-            const hasEvents = component.events.length > 0;
-
-            if (hasEvents) {
-              hasAnyEvents = true;
-            }
-
-            const eventEmitter = hasEvents
-              ? `,\n${componentName}EventEmitter`
-              : '';
+            const eventEmitter = `,\n    ${componentName}EventEmitter`;
 
             const replacedTemplate = ComponentTemplate({
               className: componentName,
@@ -124,7 +114,7 @@ module.exports = {
     const replacedTemplate = FileTemplate({
       componentClasses: moduleResults,
       libraryName,
-      imports: hasAnyEvents ? eventEmitterImport : '',
+      imports: eventEmitterImport,
     });
 
     return new Map([[fileName, replacedTemplate]]);
