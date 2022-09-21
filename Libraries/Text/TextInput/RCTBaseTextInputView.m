@@ -19,6 +19,7 @@
 #import <React/RCTInputAccessoryViewContent.h>
 #import <React/RCTTextAttributes.h>
 #import <React/RCTTextSelection.h>
+#import <React/RCTUITextView.h> // TODO(macOS GH#774)
 #import "../RCTTextUIKit.h" // TODO(macOS GH#774)
 
 @implementation RCTBaseTextInputView {
@@ -680,10 +681,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 - (BOOL)textInputShouldHandlePaste:(__unused id)sender
 {
   NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
-  NSPasteboardType fileType = [pasteboard availableTypeFromArray:@[NSFilenamesPboardType, NSPasteboardTypePNG, NSPasteboardTypeTIFF]];
-
+  NSPasteboardType fileType = [pasteboard availableTypeFromArray:@[NSPasteboardTypeFileURL, NSPasteboardTypePNG, NSPasteboardTypeTIFF]];
+  NSArray<NSPasteboardType>* pastedTypes = ((RCTUITextView*) self.backedTextInputView).readablePasteboardTypes;
+      
   // If there's a fileType that is of interest, notify JS. Also blocks notifying JS if it's a text paste
-  if (_onPaste && fileType != nil) {
+  if (_onPaste && fileType != nil && [pastedTypes containsObject:fileType]) {
     _onPaste([self dataTransferInfoFromPasteboard:pasteboard]);
   }
 

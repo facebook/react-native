@@ -99,6 +99,9 @@
   }
 }
 
+- (void)setReadablePasteBoardTypes:(NSArray<NSPasteboardType> *)readablePasteboardTypes {
+  [_backedTextInputView setReadablePasteBoardTypes:readablePasteboardTypes];
+}
 #endif // ]TODO(macOS GH#774)
 
 #pragma mark - UIScrollViewDelegate

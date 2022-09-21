@@ -21,6 +21,9 @@
 #endif // TODO(macOS GH#774)
   RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+  NSArray<NSPasteboardType> *_readablePasteboardTypes;
+#endif // TODO(macOS GH#774)
 }
 
 static UIFont *defaultPlaceholderFont()
@@ -175,6 +178,11 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 - (void)setText:(NSString *)text
 {
   self.string = text;
+}
+
+- (void)setReadablePasteBoardTypes:(NSArray<NSPasteboardType> *)readablePasteboardTypes
+{
+  _readablePasteboardTypes = readablePasteboardTypes;
 }
 
 - (void)setTypingAttributes:(__unused NSDictionary *)typingAttributes
@@ -344,9 +352,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 }
 - (NSArray *)readablePasteboardTypes
 {
-  NSArray *types = [super readablePasteboardTypes];
-  // TODO: Optionally support files/images with a prop
-  return [types arrayByAddingObjectsFromArray:@[NSFilenamesPboardType, NSPasteboardTypePNG, NSPasteboardTypeTIFF]];
+  return _readablePasteboardTypes ? _readablePasteboardTypes : [super readablePasteboardTypes];
 }
 
 #endif // ]TODO(macOS GH#774)

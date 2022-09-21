@@ -53,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSTextAlignment textAlignment;
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 - (NSSize)sizeThatFits:(NSSize)size;
+- (void)setReadablePasteBoardTypes:(NSArray<NSPasteboardType> *)readablePasteboardTypes;
 #endif // ]TODO(macOS GH#774)
 
 @end

@@ -427,7 +427,18 @@ function OnPaste(): React.Node {
           appendLog(JSON.stringify(e.nativeEvent.dataTransfer.types));
           setImageUri(e.nativeEvent.dataTransfer.files[0].uri);
         }}
-        placeholder="MULTI LINE with onPaste() for PNG and TIFF images"
+        pastedTypes={['string']}
+        placeholder="MULTI LINE with onPaste() text from clipboard"
+      />
+      <TextInput
+        multiline={true}
+        style={styles.multiline}
+        onPaste={(e: PasteEvent) => {
+          appendLog(JSON.stringify(e.nativeEvent.dataTransfer.types));
+          setImageUri(e.nativeEvent.dataTransfer.files[0].uri);
+        }}
+        pastedTypes={['fileUrl', 'image', 'string']}
+        placeholder="MULTI LINE with onPaste() for PNG/TIFF images from clipboard or fileUrl (via Finder) and text from clipboard"
       />
       <Text style={{height: 30}}>{log.join('\n')}</Text>
       <Image
