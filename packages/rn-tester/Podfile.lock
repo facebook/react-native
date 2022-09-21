@@ -944,7 +944,7 @@ SPEC CHECKSUMS:
   React-RCTTest: 06c388632dc7b30df17af01c8f9e89e641b4d31c
   React-RCTText: a861fbf2835299d3cc4189697cddd8bd8602afb9
   React-RCTVibration: 0386f50996a153b3f39cecbe7d139763ac9a9fdf
-  React-rncore: 2a6ad37560e94cf7ff32e3f2ae1e708491b4c1f3
+  React-rncore: 665c70690f404bbfa3948148de72689672a906d2
   React-runtimeexecutor: 97dca9247f4d3cfe0733384b189c6930fbd402b7
   ReactCommon: 8e39c4b24da570ea2b631accbf779b5891befe0c
   ScreenshotManager: 3fc534a218e7b8dde632158411d0f15b0ca8893c
