@@ -9,16 +9,24 @@ IMPORT_HERMESC_PATH=${HERMES_OVERRIDE_HERMESC_PATH:-$PWD/build_host_hermesc/Impo
 REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$PWD/../..}
 JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
 
+function use_env_var_or_ruby_prop {
+  if [[ -n "$1" ]]; then
+    echo "$1"
+  else
+    ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').$2"
+  fi
+}
+
 function get_release_version {
-  echo "${RELEASE_VERSION}"
+  use_env_var_or_ruby_prop "${RELEASE_VERSION}" "version"
 }
 
 function get_ios_deployment_target {
-  echo "${IOS_DEPLOYMENT_TARGET}"
+  use_env_var_or_ruby_prop "${IOS_DEPLOYMENT_TARGET}" "deployment_target('ios')"
 }
 
 function get_mac_deployment_target {
-  echo "${MAC_DEPLOYMENT_TARGET}"
+  use_env_var_or_ruby_prop "${MAC_DEPLOYMENT_TARGET}" "deployment_target('osx')"
 }
 
 # Build host hermes compiler for internal bytecode
