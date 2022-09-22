@@ -25,6 +25,9 @@ function getPropertyType(
    * LTI update could not be added via codemod */
   typeAnnotation,
 ): NamedShape<EventTypeAnnotation> {
+  if (typeAnnotation.type === 'TSParenthesizedType') {
+    return getPropertyType(name, optional, typeAnnotation.typeAnnotation);
+  }
   const type =
     typeAnnotation.type === 'TSTypeReference'
       ? typeAnnotation.typeName.name
@@ -100,10 +103,6 @@ function getPropertyType(
         )[0];
 
         // Check for <(T | T2) | null | undefined>
-        if (optionalType.type === 'TSParenthesizedType') {
-          return getPropertyType(name, true, optionalType.typeAnnotation);
-        }
-
         return getPropertyType(name, true, optionalType);
       }
 
@@ -144,19 +143,22 @@ function findEventArgumentsAndType(
         ? typeAnnotation.typeParameters.params[1].literal.value
         : null;
 
-    if (typeAnnotation.typeParameters.params[0].type === 'TSNullKeyword') {
-      return {
-        argumentProps: [],
-        bubblingType: eventType,
-        paperTopLevelNameDeprecated,
-      };
+    switch (typeAnnotation.typeParameters.params[0].type) {
+      case 'TSNullKeyword':
+      case 'TSUndefinedKeyword':
+        return {
+          argumentProps: [],
+          bubblingType: eventType,
+          paperTopLevelNameDeprecated,
+        };
+      default:
+        return findEventArgumentsAndType(
+          typeAnnotation.typeParameters.params[0],
+          types,
+          eventType,
+          paperTopLevelNameDeprecated,
+        );
     }
-    return findEventArgumentsAndType(
-      typeAnnotation.typeParameters.params[0],
-      types,
-      eventType,
-      paperTopLevelNameDeprecated,
-    );
   } else if (types[name]) {
     return findEventArgumentsAndType(
       types[name].typeAnnotation,
@@ -192,36 +194,49 @@ function getEventArgument(argumentProps, name: $FlowFixMe) {
   };
 }
 
+function findEvent(typeAnnotation: $FlowFixMe, optional: boolean) {
+  switch (typeAnnotation.type) {
+    // Check for T | null | undefined
+    case 'TSUnionType':
+      return findEvent(
+        typeAnnotation.types.filter(
+          t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
+        )[0],
+        optional ||
+          typeAnnotation.types.some(
+            t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
+          ),
+      );
+    // Check for (T)
+    case 'TSParenthesizedType':
+      return findEvent(typeAnnotation.typeAnnotation, optional);
+    case 'TSTypeReference':
+      if (
+        typeAnnotation.typeName.name !== 'BubblingEventHandler' &&
+        typeAnnotation.typeName.name !== 'DirectEventHandler'
+      ) {
+        return null;
+      } else {
+        return {typeAnnotation, optional};
+      }
+    default:
+      return null;
+  }
+}
+
 function buildEventSchema(
   types: TypeMap,
   property: EventTypeAST,
 ): ?EventTypeShape {
   const name = property.key.name;
-
-  let optional = property.optional || false;
-  let typeAnnotation = property.typeAnnotation.typeAnnotation;
-
-  // Check for T | null | undefined
-  if (
-    typeAnnotation.type === 'TSUnionType' &&
-    typeAnnotation.types.some(
-      t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-    )
-  ) {
-    typeAnnotation = typeAnnotation.types.filter(
-      t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
-    )[0];
-    optional = true;
-  }
-
-  if (
-    typeAnnotation.type !== 'TSTypeReference' ||
-    (typeAnnotation.typeName.name !== 'BubblingEventHandler' &&
-      typeAnnotation.typeName.name !== 'DirectEventHandler')
-  ) {
+  const foundEvent = findEvent(
+    property.typeAnnotation.typeAnnotation,
+    property.optional || false,
+  );
+  if (!foundEvent) {
     return null;
   }
-
+  const {typeAnnotation, optional} = foundEvent;
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(typeAnnotation, types);
 
