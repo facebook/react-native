@@ -128,6 +128,8 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   // Whether the latest change of props requires the image to be reloaded
   BOOL _needsReload;
 
+  UIImage *_image; // TODO(macOS GH#774)
+
   RCTUIImageViewAnimated *_imageView;
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
@@ -199,10 +201,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   if (_renderingMode != image.renderingMode) {
     image = [image imageWithRenderingMode:_renderingMode];
   }
-#else // [TODO(macOS GH#774)
-  if ((_renderingMode == UIImageRenderingModeAlwaysTemplate) != [image isTemplate]) {
-    [image setTemplate:(_renderingMode == UIImageRenderingModeAlwaysTemplate)];
-  }
 #endif // ]TODO(macOS GH#774)
 
   if (_resizeMode == RCTResizeModeRepeat) {
@@ -211,6 +209,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 #else // [TODO(macOS GH#774)
     image.capInsets = _capInsets;
     image.resizingMode = NSImageResizingModeTile;
+  } else if (_resizeMode == RCTResizeModeCover) {
+    if (!NSEqualSizes(self.bounds.size, NSZeroSize)) {
+      image = RCTFillImagePreservingAspectRatio(image, self.bounds.size, self.window.backingScaleFactor ?: 1.0);
+    }
 #endif // ]TODO(macOS GH#774)
   } else if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, _capInsets)) {
     // Applying capInsets of 0 will switch the "resizingMode" of the image to "tile" which is undesired
@@ -221,6 +223,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     image.resizingMode = NSImageResizingModeStretch;
 #endif // ]TODO(macOS GH#774)
   }
+
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+  if ((_renderingMode == UIImageRenderingModeAlwaysTemplate) != [image isTemplate]) {
+    [image setTemplate:(_renderingMode == UIImageRenderingModeAlwaysTemplate)];
+  }
+#endif // ]TODO(macOS GH#774)
 
   // Apply trilinear filtering to smooth out mis-sized images
   _imageView.layer.minificationFilter = kCAFilterTrilinear;
@@ -233,17 +241,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   image = image ?: _defaultImage;
   if (image != self.image) {
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-    if (image && _resizeMode == RCTResizeModeCover && !NSEqualSizes(self.bounds.size, NSZeroSize)) {
-      image = RCTFillImagePreservingAspectRatio(image, self.bounds.size, self.window.backingScaleFactor ?: 1.0);
-    }
-#endif // ]TODO(macOS GH#774)
+    _image = image; // TODO(macOS GH#774)
     [self updateWithImage:image];
   }
 }
 
 - (UIImage *)image {
-  return _imageView.image;
+  return _image ?: _imageView.image; // TODO(macOS GH#774)
 }
 
 - (void)setBlurRadius:(CGFloat)blurRadius
