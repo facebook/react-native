@@ -79,7 +79,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   RCTScheduler *_Nullable _scheduler; // Thread-safe. Pointer is protected by `_schedulerAccessMutex`.
   ContextContainer::Shared _contextContainer; // Protected by `_schedulerLifeCycleMutex`.
   RuntimeExecutor _runtimeExecutor; // Protected by `_schedulerLifeCycleMutex`.
-  RuntimeExecutor _bindingsInstallExecutor; // Only used for installing bindings.
 
   butter::shared_mutex _observerListMutex;
   std::vector<__weak id<RCTSurfacePresenterObserver>> _observers; // Protected by `_observerListMutex`.
@@ -87,12 +86,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
                          runtimeExecutor:(RuntimeExecutor)runtimeExecutor
-                 bindingsInstallExecutor:(RuntimeExecutor)bindingsInstallExecutor
 {
   if (self = [super init]) {
     assert(contextContainer && "RuntimeExecutor must be not null.");
     _runtimeExecutor = runtimeExecutor;
-    _bindingsInstallExecutor = bindingsInstallExecutor;
     _contextContainer = contextContainer;
 
     _surfaceRegistry = [RCTSurfaceRegistry new];
@@ -298,7 +295,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   }
 
   toolbox.runtimeExecutor = runtimeExecutor;
-  toolbox.bindingsInstallExecutor = _bindingsInstallExecutor;
 
   toolbox.mainRunLoopObserverFactory = [](RunLoopObserver::Activity activities,
                                           RunLoopObserver::WeakOwner const &owner) {

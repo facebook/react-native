@@ -40,13 +40,6 @@ struct SchedulerToolbox final {
 
   /*
    * Represents running JavaScript VM and associated execution queue.
-   * Can execute lambdas before main bundle has loaded.
-   */
-  RuntimeExecutor bindingsInstallExecutor;
-
-  /*
-   * Represents running JavaScript VM and associated execution queue.
-   * Only executes lambdas after main bundle has loaded.
    */
   RuntimeExecutor runtimeExecutor;
 

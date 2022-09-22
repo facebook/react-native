@@ -28,8 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfacePresenter : NSObject
 
 - (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContainer
-                         runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor
-                 bindingsInstallExecutor:(facebook::react::RuntimeExecutor)bindingsInstallExecutor;
+                         runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
 
 @property (nonatomic) facebook::react::ContextContainer::Shared contextContainer;
 @property (nonatomic) facebook::react::RuntimeExecutor runtimeExecutor;
