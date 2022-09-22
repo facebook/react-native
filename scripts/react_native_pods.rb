@@ -243,6 +243,8 @@ def use_react_native_codegen!(spec, options={})
         "EventEmitters.h",
         "Props.cpp",
         "Props.h",
+        "States.cpp",
+        "States.h",
         "RCTComponentViewHelpers.h",
         "ShadowNodes.cpp",
         "ShadowNodes.h"
