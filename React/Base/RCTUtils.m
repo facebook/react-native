@@ -905,9 +905,12 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
       }
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
       image = [UIImage imageWithContentsOfFile:filePath];
-#else // TODO(macOS GH#774)
-      image = [[NSImage alloc] initWithContentsOfFile:filePath]; // TODO(macOS GH#774)
-#endif // TODO(macOS GH#774)
+#else // [TODO(macOS GH#774)
+      // macOS keeps file handles in open state for lifetime of image if "initWithContentsOfFile:" is used with path inside app bundle
+      // Workaround is to load file in data and then convert data to image
+      NSData *data = [NSData dataWithContentsOfFile:filePath];
+      image = [[NSImage alloc] initWithData:data];
+#endif // ]TODO(macOS GH#774)
     }
   }
 
