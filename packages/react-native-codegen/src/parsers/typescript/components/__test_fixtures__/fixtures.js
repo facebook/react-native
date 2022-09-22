@@ -1095,6 +1095,44 @@ export default codegenNativeComponent<ModuleProps>(
 ) as NativeType;
 `;
 
+const PROPS_AND_EVENTS_WITH_INTERFACES = `
+import type {
+  BubblingEventHandler,
+  DirectEventHandler,
+} from 'CodegenTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {HostComponent} from 'react-native';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export interface Base1 {
+  x: string;
+}
+
+export interface Base2 {
+  y: number;
+}
+
+export interface Derived extends Base1, Base2 {
+  z: boolean;
+}
+
+export interface ModuleProps extends ViewProps {
+  // Props
+  ordinary_prop: Readonly<Derived>;
+  array_prop?: readonly Derived[];
+
+  // Events
+  onDirect: DirectEventHandler<Derived>;
+  onBubbling: BubblingEventHandler<Derived>;
+}
+
+export default codegenNativeComponent<ModuleProps>('Module', {
+  interfaceOnly: true,
+  paperComponentName: 'RCTModule',
+}) as HostComponent<ModuleProps>;
+`;
+
 // === STATE ===
 const ALL_STATE_TYPES = `
 /**
@@ -1630,6 +1668,7 @@ module.exports = {
   COMMANDS_DEFINED_WITH_ALL_TYPES,
   PROPS_AS_EXTERNAL_TYPES,
   COMMANDS_WITH_EXTERNAL_TYPES,
+  PROPS_AND_EVENTS_WITH_INTERFACES,
   ALL_STATE_TYPES,
   ARRAY_STATE_TYPES,
   ARRAY2_STATE_TYPES,
