@@ -6,8 +6,7 @@
 require "json"
 
 module HermesHelper
-  BUILD_TYPE = :debug
-  # BUILD_TYPE = :release
+  BUILD_TYPE = ENV['PRODUCTION'] == "1" ? :release : :debug
 end
 
 react_native_path = File.join(__dir__, "..", "..")
@@ -40,7 +39,7 @@ elsif File.exists?(hermestag_file) && isInCI
   source[:git] = git
   source[:tag] = hermestag
 else
-  source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-v#{version}.tar.gz"
+  source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-#{HermesHelper::BUILD_TYPE == :debug ? "debug" : "release"}-v#{version}.tar.gz"
 end
 
 Pod::Spec.new do |spec|
@@ -69,17 +68,17 @@ Pod::Spec.new do |spec|
 
   if source[:git] then
     spec.prepare_command = <<-EOS
-      BUILD_TYPE=#{HermesHelper::BUILD_TYPE == :debug ? "Debug" : "Release"}
+    BUILD_TYPE=#{HermesHelper::BUILD_TYPE == :debug ? "Debug" : "Release"}
 
-      # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
-      #{File.exist?(import_hermesc_file) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_file}" : ""}
-      #{File.exist?(import_hermesc_file) ? "echo \"Overriding HermesC path...\"" : ""}
+    # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
+    #{File.exist?(import_hermesc_file) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_file}" : ""}
+    #{File.exist?(import_hermesc_file) ? "echo \"Overriding HermesC path...\"" : ""}
 
-      # Build iOS framework
-      ./utils/build-ios-framework.sh
+    # Build iOS framework
+    ./utils/build-ios-framework.sh
 
-      # Build Mac framework
-      ./utils/build-mac-framework.sh
+    # Build Mac framework
+    ./utils/build-mac-framework.sh
     EOS
   end
 end
