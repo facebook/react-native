@@ -144,7 +144,7 @@ export default function usePlatformTestHarness(): PlatformTestHarnessHookResult 
     $ReadOnlyArray<PlatformTestResult>,
   >([]);
 
-  // Since updaing the test results array can get expensive at larger sizes
+  // Since updating the test results array can get expensive at larger sizes
   // we use a basic debouncing logic to minimize the number of re-renders
   // caused by adding test results
   const resultQueueRef = useRef<Array<PlatformTestResult>>([]);
@@ -174,7 +174,7 @@ export default function usePlatformTestHarness(): PlatformTestHarnessHookResult 
     [scheduleResultsCommit],
   );
 
-  // When reseting the test results we should also re-mount the
+  // When resetting the test results we should also re-mount the
   // so we apply a key to that component which we can increment
   // to ensure it re-mounts
   const [testElementKey, setTestElementKey] = useState<number>(0);
@@ -220,7 +220,7 @@ export default function usePlatformTestHarness(): PlatformTestHarnessHookResult 
           'assert_true',
           cond,
           desc,
-          "expected 'true' but recieved 'false'",
+          "expected 'true' but received 'false'",
         ),
       assert_equals: (a: any, b: any, desc: string) =>
         baseAssert(

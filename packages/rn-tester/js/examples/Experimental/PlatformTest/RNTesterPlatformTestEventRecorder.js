@@ -30,7 +30,7 @@ class RNTesterPlatformTestEventRecorder {
   allRecords: Array<EventRecord> = [];
   relevantEvents: Array<string> = [];
   rawOrder: number = 1;
-  eventsInScope: Array<EventRecord> = []; // Tracks syncronous event dispatches
+  eventsInScope: Array<EventRecord> = []; // Tracks synchronous event dispatches
   recording: boolean = true;
 
   mergeTypesTruthMap: {[string]: boolean} = {};

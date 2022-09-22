@@ -20,12 +20,12 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {Keyboard, StyleSheet, Text, View} from 'react-native';
 
-type KeybpardEventViewerProps = {
+type KeyboardEventViewerProps = {
   showEvent: 'keyboardWillShow' | 'keyboardDidShow',
   hideEvent: 'keyboardWillHide' | 'keyboardDidHide',
 };
 
-const KeyboardEventViewer = (props: KeybpardEventViewerProps): React.Node => {
+const KeyboardEventViewer = (props: KeyboardEventViewerProps): React.Node => {
   const {showEvent, hideEvent} = props;
   const [isShown, setIsShown] = useState(false);
   const [lastEvent, setLastEvent] = useState<?KeyboardEvent>();

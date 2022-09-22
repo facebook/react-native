@@ -13,7 +13,7 @@ import {Animated, StyleSheet, Text, View} from 'react-native';
 
 import type {Node, Element} from 'react';
 
-function AnimateTansformSingleProp() {
+function AnimateTransformSingleProp() {
   const [theta] = useState(new Animated.Value(45));
   const animate = () => {
     theta.setValue(0);
@@ -318,10 +318,10 @@ exports.examples = [
     },
   },
   {
-    title: 'Amimate Translate single prop',
+    title: 'Animate Translate single prop',
     description: "rotate: '360deg'",
     render(): Node {
-      return <AnimateTansformSingleProp />;
+      return <AnimateTransformSingleProp />;
     },
   },
 ];

@@ -658,7 +658,7 @@ const ScrollIndicatorExample = () => {
   const [scrollIndicatorInsets, setScrollIndicatorInsets] = useState(null);
   const [showsHorizontalScrollIndic, setShowsHorizontalScrollIndic] =
     useState(true);
-  const [showsVerticallScrollIndic, setShowsVerticalScrollIndic] =
+  const [showsVerticalScrollIndic, setShowsVerticalScrollIndic] =
     useState(true);
   return (
     <View>
@@ -667,7 +667,7 @@ const ScrollIndicatorExample = () => {
         contentInset={{top: 10, bottom: 10, left: 10, right: 10}}
         scrollIndicatorInsets={scrollIndicatorInsets}
         showsHorizontalScrollIndicator={showsHorizontalScrollIndic}
-        showsVerticalScrollIndicator={showsVerticallScrollIndic}
+        showsVerticalScrollIndicator={showsVerticalScrollIndic}
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
@@ -699,10 +699,9 @@ const ScrollIndicatorExample = () => {
       />
       <Button
         label={
-          'showsVerticalScrollIndicator: ' +
-          showsVerticallScrollIndic.toString()
+          'showsVerticalScrollIndicator: ' + showsVerticalScrollIndic.toString()
         }
-        onPress={() => setShowsVerticalScrollIndic(!showsVerticallScrollIndic)}
+        onPress={() => setShowsVerticalScrollIndic(!showsVerticalScrollIndic)}
       />
     </View>
   );
