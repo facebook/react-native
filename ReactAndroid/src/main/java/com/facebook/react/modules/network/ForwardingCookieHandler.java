@@ -138,8 +138,10 @@ public class ForwardingCookieHandler extends CookieHandler {
         // https://bugs.chromium.org/p/chromium/issues/detail?id=559720
         return null;
       } catch (Exception exception) {
-        // Fatal exceptions are not good for the user experience, we will return null 
-        // for all the other unhandled conditions when a webview provider is not found.
+        // Fatal exceptions are not good for the user experience, 
+        // a) We will return null for all the other unhandled conditions when a webview provider is not found.
+        // b) We already have null checks in place for `getCookieManager()` calls.
+        // c) We have annotated the method as @Nullable to notify future devs about our return type.
         return null;
       }
     }
