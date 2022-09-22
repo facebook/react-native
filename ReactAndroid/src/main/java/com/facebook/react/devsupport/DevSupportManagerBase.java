@@ -57,12 +57,13 @@ import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import okhttp3.HttpUrl;
 
 public abstract class DevSupportManagerBase implements DevSupportManager {
 
@@ -699,14 +700,14 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
     if (mCurrentContext != null) {
       try {
-        HttpUrl sourceUrl = HttpUrl.get(getSourceUrl());
-        String path = sourceUrl.encodedPath().substring(1); // strip initial slash in path
-        String host = sourceUrl.host();
-        int port = sourceUrl.port();
+        URL sourceUrl = new URL(getSourceUrl());
+        String path = sourceUrl.getPath().substring(1); // strip initial slash in path
+        String host = sourceUrl.getHost();
+        int port = sourceUrl.getPort();
         mCurrentContext
             .getJSModule(HMRClient.class)
             .setup("android", path, host, port, mDevSettings.isHotModuleReplacementEnabled());
-      } catch (IllegalArgumentException e) {
+      } catch (MalformedURLException e) {
         showNewJavaError(e.getMessage(), e);
       }
     }
