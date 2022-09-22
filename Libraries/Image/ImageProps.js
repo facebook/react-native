@@ -21,7 +21,6 @@ import type {
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {Node, Ref} from 'react';
 import typeof Image from './Image';
-import type {DimensionValue} from '../StyleSheet/StyleSheetTypes';
 
 export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|
