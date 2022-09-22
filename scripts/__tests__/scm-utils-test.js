@@ -11,7 +11,6 @@ const {isTaggedLatest, saveFiles, revertFiles} = require('../scm-utils');
 
 let execResult = null;
 const cpMock = jest.fn();
-// const existsSyncMock = jest.fn();
 const mkdirpSyncMock = jest.fn();
 jest
   .mock('shelljs', () => ({
@@ -63,9 +62,9 @@ describe('scm-utils', () => {
 
   describe('saveFiles', () => {
     it('it should save files in the temp folder', () => {
-      process.env.TMP_PUBLISH_DIR = '/tmp';
-      saveFiles('package.json', 'android/package.json');
-      expect(mkdirpSyncMock).toHaveBeenCalledWith(`/tmp/android`);
+      const tmpFolder = '/tmp';
+      saveFiles(['package.json', 'android/package.json'], tmpFolder);
+      expect(mkdirpSyncMock).toHaveBeenCalledWith(`${tmpFolder}/android`);
       expect(cpMock).toHaveBeenNthCalledWith(
         1,
         'package.json',
@@ -74,27 +73,25 @@ describe('scm-utils', () => {
       expect(cpMock).toHaveBeenNthCalledWith(
         2,
         'android/package.json',
-        '/tmp/android/package.json',
+        `${tmpFolder}/android/package.json`,
       );
-      process.env.TMP_PUBLISH_DIR = '';
     });
   });
 
   describe('revertFiles', () => {
     it('it should revert files from the temp folder', () => {
-      process.env.TMP_PUBLISH_DIR = '/tmp';
-      revertFiles('package.json', 'android/package.json');
+      const tmpFolder = '/tmp';
+      revertFiles(['package.json', 'android/package.json'], tmpFolder);
       expect(cpMock).toHaveBeenNthCalledWith(
         1,
-        '/tmp/package.json',
+        `${tmpFolder}/package.json`,
         'package.json',
       );
       expect(cpMock).toHaveBeenNthCalledWith(
         2,
-        '/tmp/android/package.json',
+        `${tmpFolder}/android/package.json`,
         'android/package.json',
       );
-      process.env.TMP_PUBLISH_DIR = '';
     });
   });
 });
