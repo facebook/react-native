@@ -41,8 +41,8 @@ else
 end
 
 module HermesHelper
-  # BUILD_TYPE = :debug
-  BUILD_TYPE = :release
+  BUILD_TYPE = :debug
+  # BUILD_TYPE = :release
 end
 
 Pod::Spec.new do |spec|
@@ -63,13 +63,15 @@ Pod::Spec.new do |spec|
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
   spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
 
-  spec.xcconfig            = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17", "CLANG_CXX_LIBRARY" => "compiler-default", "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
+  spec.xcconfig            = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "CLANG_CXX_LIBRARY" => "compiler-default",
+    "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=#{HermesHelper::BUILD_TYPE == :debug ? "1" : "0"}"
+  }
 
   if source[:git] then
     spec.prepare_command = <<-EOS
-      # When true, debug build will be used.
-      # See `build-apple-framework.sh` for details
-      DEBUG=#{HermesHelper::BUILD_TYPE == :debug}
+      BUILD_TYPE=#{HermesHelper::BUILD_TYPE == :debug ? "Debug" : "Release"}
 
       # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
       #{File.exist?(import_hermesc_file) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_file}" : ""}

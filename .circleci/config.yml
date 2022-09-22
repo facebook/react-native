@@ -47,12 +47,26 @@ references:
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
-    hermes_cache_key: &hermes_cache_key v3-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_workspace_cache_key: &hermes_workspace_cache_key v4-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v3-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
-    hermes_tarball_cache_key: &hermes_tarball_cache_key v3-hermes-tarball-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v2-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v1-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}
     pods_cache_key: &pods_cache_key v8-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
+
+  cache_paths:
+    hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths
+      - ~/react-native/sdks/hermes/build_host_hermesc
+      - ~/react-native/sdks/hermes/build_iphoneos
+      - ~/react-native/sdks/hermes/build_catalyst
+      - ~/react-native/sdks/hermes/build_iphonesimulator
+      - ~/react-native/sdks/hermes/build_macosx
+      - ~/react-native/sdks/hermes/destroot
+    hermes_tarball_cache_paths: &hermes_tarball_cache_paths
+      - /tmp/hermes/hermes-runtime-darwin/
 
   # -------------------------
   #        Filters
@@ -252,34 +266,68 @@ commands:
       set_tarball_path:
         type: boolean
         default: False
+      flavor:
+        type: string
+        default: "Debug"
     steps:
-      - restore_cache:
-          keys:
-            - *hermes_tarball_cache_key
+      - when:
+          condition:
+            equal: [ << parameters.flavor >>, "Debug"]
+          steps:
+            - restore_cache:
+                keys:
+                  - *hermes_tarball_debug_cache_key
+      - when:
+          condition:
+            equal: [ << parameters.flavor >>, "Release"]
+          steps:
+            - restore_cache:
+                keys:
+                  - *hermes_tarball_release_cache_key
       - when:
           condition: << parameters.set_tarball_path >>
           steps:
             - run:
-                name: Set HERMES_TARBALL_PATH if present
+                name: Set HERMES_ENGINE_TARBALL_PATH if present
                 command: |
                   BASE_PATH=/tmp/hermes/hermes-runtime-darwin/
                   if [ ! -d $BASE_PATH ]; then
                     echo "Hermes tarball base path not present ($BASE_PATH). Build it from source."
                     exit 0
                   fi
-                  TARBALL=$(ls /tmp/hermes/hermes-runtime-darwin/)
-                  TARBALL_PATH=$BASE_PATH$TARBALL
+                  if [[ << parameters.flavor >> == "Debug" ]]; then
+                    TARBALL_FILENAME=hermes-runtime-darwin-debug-*.tar.gz
+                  elif [[ << parameters.flavor >> == "Release" ]]; then
+                    TARBALL_FILENAME=hermes-runtime-darwin-release-*.tar.gz
+                  else
+                    echo "Unsupported build type << parameters.flavor >>."
+                    exit 0
+                  fi
+                  # /tmp/hermes/hermes-runtime-darwin/hermes-runtime-darwin-release-v0.70.0.tar.gz
+                  # /tmp/hermes/hermes-runtime-darwin/hermes-runtime-darwin-debug-v0.70.0.tar.gz
+                  TARBALL_PATH=$(ls $BASE_PATH$TARBALL_FILENAME)
                   if [ ! -f $TARBALL_PATH ]; then
                     echo "Hermes tarball not present ($TARBALL_PATH). Build it from source."
                     exit 0
                   fi
 
+                  echo "Found Hermes tarball at $TARBALL_PATH"
                   echo "export HERMES_ENGINE_TARBALL_PATH=$TARBALL_PATH" >> $BASH_ENV
       - steps: << parameters.steps >>
-      - save_cache:
-          key: *hermes_tarball_cache_key
-          paths:
-            - /tmp/hermes/hermes-runtime-darwin/
+      - when:
+          condition:
+            equal: [ << parameters.flavor >>, "Debug"]
+          steps:
+            - save_cache:
+                key: *hermes_tarball_debug_cache_key
+                paths: *hermes_tarball_cache_paths
+      - when:
+          condition:
+            equal: [ << parameters.flavor >>, "Release"]
+          steps:
+            - save_cache:
+                key: *hermes_tarball_release_cache_key
+                paths: *hermes_tarball_cache_paths
 
 # -------------------------
 #          JOBS
@@ -963,7 +1011,7 @@ jobs:
             fi
             cat /tmp/hermes/hermesversion
       - restore_cache:
-          key: *hermes_cache_key
+          key: *hermes_workspace_cache_key
       - run:
           name: Download Hermes tarball
           command: |
@@ -973,7 +1021,7 @@ jobs:
 
             cat /tmp/hermes/hermesversion
       - save_cache:
-          key: *hermes_cache_key
+          key: *hermes_workspace_cache_key
           paths:
             - /tmp/hermes/download/
             - /tmp/hermes/hermes/
@@ -998,7 +1046,7 @@ jobs:
                 libreadline-dev libicu-dev zip python3
       - *attach_hermes_workspace
       - restore_cache:
-          key: *hermes_cache_key
+          key: *hermes_workspace_cache_key
       - run:
           name: Set up workspace
           command: |
@@ -1017,7 +1065,7 @@ jobs:
               cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
             fi
       - save_cache:
-          key: *hermes_cache_key
+          key: *hermes_workspace_cache_key
           paths:
             - /tmp/hermes/linux64-bin/
             - /tmp/hermes/hermes/destroot/
@@ -1029,61 +1077,98 @@ jobs:
             - linux64-bin
 
   build_hermes_macos:
+    parameters:
+      flavor:
+        type: string
+        default: "Debug"
     executor: reactnativeios
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
       - checkout_code_with_cache
       - *attach_hermes_workspace
-      - restore_cache:
-          key: *hermes_cache_key
+      - when:
+          condition:
+            equal: [ << parameters.flavor >>, "Debug"]
+          steps:
+            - restore_cache:
+                keys:
+                  - *hermes_workspace_debug_cache_key
+      - when:
+          condition:
+            equal: [ << parameters.flavor >>, "Release"]
+          steps:
+            - restore_cache:
+                keys:
+                  - *hermes_workspace_release_cache_key
       - run:
           name: Set up workspace
           command: |
             mkdir -p /tmp/hermes/osx-bin
             mkdir -p ~/react-native/sdks/hermes
             cp -r $HERMES_WS_DIR/hermes/* ~/react-native/sdks/hermes/.
-      - run:
-          name: Install dependencies
-          command: |
-            brew install cmake
+      - brew_install:
+          package: cmake
       - with_hermes_tarball_cache_span:
+          flavor: << parameters.flavor >>
           steps:
             - run:
                 name: Build the Hermes iOS frameworks
                 command: |
                   cd ~/react-native/sdks/hermes
-                  ./utils/build-ios-framework.sh
+                  BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh
             - run:
                 name: Build the Hermes Mac frameworks
                 command: |
                   cd ~/react-native/sdks/hermes
-                  ./utils/build-mac-framework.sh
+                  BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
                   cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
             - run:
                 name: Package the Hermes Apple frameworks
                 command: |
+                  echo "Packaging Hermes Apple frameworks for << parameters.flavor >> build type"
+
                   cd ~/react-native/sdks/hermes
-                  . ./utils/build-apple-framework.sh
+                  BUILD_TYPE="<< parameters.flavor >>" source ./utils/build-apple-framework.sh
 
                   mkdir -p /tmp/cocoapods-package-root/destroot
                   mkdir -p /tmp/hermes/output
                   cp -R ./destroot /tmp/cocoapods-package-root
                   cp LICENSE /tmp/cocoapods-package-root
 
-                  tar -C /tmp/cocoapods-package-root/ -czvf /tmp/hermes/output/hermes-runtime-darwin-v$(get_release_version).tar.gz .
+                  if [[ << parameters.flavor >> == "Debug" ]]; then
+                    TARBALL_FILENAME=hermes-runtime-darwin-debug-v$(get_release_version).tar.gz
+                  elif [[ << parameters.flavor >> == "Release" ]]; then
+                    TARBALL_FILENAME=hermes-runtime-darwin-release-v$(get_release_version).tar.gz
+                  else
+                    echo "Unsupported build type << parameters.flavor >>."
+                    exit 0
+                  fi
+
+                  tar -C /tmp/cocoapods-package-root/ -czvf /tmp/hermes/output/$TARBALL_FILENAME .
 
                   mkdir -p /tmp/hermes/hermes-runtime-darwin
-                  cp /tmp/hermes/output/hermes-runtime-darwin-v$(get_release_version).tar.gz /tmp/hermes/hermes-runtime-darwin/.
-            - save_cache:
-                key: *hermes_cache_key
-                paths:
-                  - ~/react-native/sdks/hermes/build_host_hermesc
-                  - ~/react-native/sdks/hermes/build_iphoneos
-                  - ~/react-native/sdks/hermes/build_catalyst
-                  - ~/react-native/sdks/hermes/build_iphonesimulator
-                  - ~/react-native/sdks/hermes/build_macosx
-                  - ~/react-native/sdks/hermes/destroot
+                  cp /tmp/hermes/output/$TARBALL_FILENAME /tmp/hermes/hermes-runtime-darwin/.
+
+                  # TODO: Remove this once the client side is aware of -release and -debug tarballs
+                  if [[ << parameters.flavor >> == "Debug" ]]; then
+                    cp /tmp/hermes/hermes-runtime-darwin/hermes-runtime-darwin-debug-v$(get_release_version).tar.gz /tmp/hermes/hermes-runtime-darwin/hermes-runtime-darwin-v$(get_release_version).tar.gz
+                  fi
+                  ls /tmp/hermes/hermes-runtime-darwin/
+            - when:
+                condition:
+                  equal: [ << parameters.flavor >>, "Debug"]
+                steps:
+                  - save_cache:
+                      key: *hermes_workspace_debug_cache_key
+                      paths: *hermes_workspace_macos_cache_paths
+            - when:
+                condition:
+                  equal: [ << parameters.flavor >>, "Release"]
+                steps:
+                  - save_cache:
+                      key: *hermes_workspace_release_cache_key
+                      paths: *hermes_workspace_macos_cache_paths
             - store_artifacts:
                 path: /tmp/hermes/hermes-runtime-darwin/
             - store_artifacts:
@@ -1421,6 +1506,9 @@ workflows:
           filters: *only_release_tags
           requires:
             - prepare_hermes_workspace
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
       - build_hermesc_windows:
           filters: *only_release_tags
           requires:
