@@ -17,27 +17,37 @@ function processAspectRatio(aspectRatio: number | string): ?number {
     return aspectRatio;
   }
 
-  const match = new RegExp(
-    /(^\s*[+]?\d+([.]\d+)?\s*$)|(^\s*([+]?\d+([.]\d+)?)\s*\/\s*([+]?\d+([.]\d+)?)\s*$)/,
-  ).exec(aspectRatio);
+  const matches = aspectRatio.split('/').map(s => s.trim());
 
+  if (matches.includes('auto')) {
+    if (__DEV__) {
+      invariant(
+        matches.length,
+        'aspectRatio does not support `auto <ratio>`. You passed: %s',
+        aspectRatio,
+      );
+    }
+    return;
+  }
+
+  const hasNonNumericValues = matches.some(n => Number.isNaN(Number(n)));
   if (__DEV__) {
     invariant(
-      Boolean(match),
-      'aspectRatio must either be a number or a ratio. You passed: %s',
+      !hasNonNumericValues && (matches.length === 1 || matches.length === 2),
+      'aspectRatio must either be a number, a ratio or `auto`. You passed: %s',
       aspectRatio,
     );
   }
 
-  if (!match) {
+  if (hasNonNumericValues) {
     return;
   }
 
-  if (match[4] !== undefined) {
-    return Number(match[4]) / Number(match[6]);
+  if (matches.length === 2) {
+    return Number(matches[0]) / Number(matches[1]);
   }
 
-  return Number(match[1]);
+  return Number(matches[0]);
 }
 
 module.exports = processAspectRatio;

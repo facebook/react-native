@@ -28,6 +28,12 @@ describe('processAspectRatio', () => {
     expect(processAspectRatio('   0    ')).toBe(0);
   });
 
+  it('should accept `auto`', () => {
+    expect(processAspectRatio('auto')).toBe(undefined);
+    expect(processAspectRatio(' auto')).toBe(undefined);
+    expect(processAspectRatio(' auto  ')).toBe(undefined);
+  });
+
   it('should accept ratios', () => {
     expect(processAspectRatio('+1/1')).toBe(1);
     expect(processAspectRatio('0 / 10')).toBe(0);
@@ -37,9 +43,8 @@ describe('processAspectRatio', () => {
   });
 
   it('should not accept invalid formats', () => {
-    expect(() => processAspectRatio('-1')).toThrowErrorMatchingSnapshot();
     expect(() => processAspectRatio('0a')).toThrowErrorMatchingSnapshot();
-    expect(() => processAspectRatio('/ 0')).toThrowErrorMatchingSnapshot();
     expect(() => processAspectRatio('1 / 1 1')).toThrowErrorMatchingSnapshot();
+    expect(() => processAspectRatio('auto 1/1')).toThrowErrorMatchingSnapshot();
   });
 });
