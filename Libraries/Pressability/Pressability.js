@@ -549,6 +549,7 @@ export default class Pressability {
 
     if (process.env.NODE_ENV === 'test') {
       // We are setting this in order to find this node in ReactNativeTestTools
+      // $FlowFixMe[prop-missing]
       responderEventHandlers.onStartShouldSetResponder.testOnly_pressabilityConfig =
         () => this._config;
     }

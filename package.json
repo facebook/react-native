@@ -9,6 +9,7 @@
   "engines": {
     "node": ">=14"
   },
+  "types": "types",
   "jest-junit": {
     "outputDirectory": "reports/junit",
     "outputName": "js-test-results.xml"
@@ -66,7 +67,8 @@
     "!template/node_modules",
     "!template/package-lock.json",
     "!template/yarn.lock",
-    "third-party-podspecs"
+    "third-party-podspecs",
+    "types"
   ],
   "scripts": {
     "start": "react-native start",
@@ -81,8 +83,8 @@
     "shellcheck": "./scripts/circleci/analyze_scripts.sh",
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
     "format": "npm run prettier && npm run clang-format",
-    "prettier": "prettier --write \"./**/*.{js,md,yml}\"",
-    "format-check": "prettier --list-different \"./**/*.{js,md,yml}\"",
+    "prettier": "prettier --write \"./**/*.{js,md,yml,ts,tsx}\"",
+    "format-check": "prettier --list-different \"./**/*.{js,md,yml,ts,tsx}\"",
     "update-lock": "npx yarn-deduplicate",
     "docker-setup-android": "docker pull reactnativecommunity/react-native-android:5.2",
     "docker-build-android": "docker build -t reactnativeci/android -f .circleci/Dockerfiles/Dockerfile.android .",
@@ -93,7 +95,8 @@
     "test-android-instrumentation": "yarn run docker-build-android && yarn run test-android-run-instrumentation",
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
-    "test-ios": "./scripts/objc-test.sh test"
+    "test-ios": "./scripts/objc-test.sh test",
+    "test-typescript": "dtslint types"
   },
   "workspaces": [
     "packages/*",
@@ -103,7 +106,7 @@
     "react": "18.2.0"
   },
   "dependencies": {
-    "@jest/create-cache-key-function": "^27.0.1",
+    "@jest/create-cache-key-function": "^29.0.3",
     "@react-native-community/cli": "^9.0.0",
     "@react-native-community/cli-platform-android": "^9.0.0",
     "@react-native-community/cli-platform-ios": "^9.0.0",
@@ -125,7 +128,7 @@
     "pretty-format": "^26.5.2",
     "promise": "^8.2.0",
     "react-devtools-core": "4.24.0",
-    "react-native-gradle-plugin": "^0.71.0",
+    "react-native-gradle-plugin": "^0.71.1",
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "^16.15.0",
     "regenerator-runtime": "^0.13.2",
@@ -136,7 +139,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.186.0",
+    "flow-bin": "^0.187.1",
     "hermes-eslint": "0.8.0",
     "react": "18.2.0",
     "react-test-renderer": "^18.2.0"

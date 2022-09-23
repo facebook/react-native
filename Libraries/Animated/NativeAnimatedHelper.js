@@ -550,7 +550,7 @@ function transformDataType(value: number | string): number | string {
   }
 }
 
-module.exports = {
+export default {
   API,
   isSupportedColorStyleProp,
   isSupportedStyleProp,

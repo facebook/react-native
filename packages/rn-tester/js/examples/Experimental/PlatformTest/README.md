@@ -22,11 +22,11 @@ function ExampleTestCase ({ harness }) { /* ... */ }
 ```
 
 
-As of writting this README there are 2 different types of tests that the `harness` prop provides:
+As of writing this README there are 2 different types of tests that the `harness` prop provides:
 
 ### `test(testcase: (TestContext) => void, testName: string, options?: TestOptions)`
 
-This is a method to create "regular" test reminicent of other frameworks such as Jest. These are meant to be run imperatively, and while that means that they technically could work in a `useEffect` hook as a way to run the test "on mount" — it is instead recommended to try and keep these tests in callbacks instead. A good alternative to running the test on mount would be to instead put the test in a callback and render a "Start Test" button which executes the callback.
+This is a method to create "regular" test reminiscent of other frameworks such as Jest. These are meant to be run imperatively, and while that means that they technically could work in a `useEffect` hook as a way to run the test "on mount" — it is instead recommended to try and keep these tests in callbacks instead. A good alternative to running the test on mount would be to instead put the test in a callback and render a "Start Test" button which executes the callback.
 
 The first argument is the closure in which you will run your test and make assertions. The assertions are contained in the `TestContext` object which is provided in the test closure's first argument and contains the following assertions:
 
@@ -88,7 +88,7 @@ Here's what a basic example would look like for verifying that `pointermove` eve
 
 ```js
 function BasicPointerMoveTestCase({harness}) {
-  const testPointerMove = harness.useAsyncTest('pointermove event recieved');
+  const testPointerMove = harness.useAsyncTest('pointermove event received');
 
   return (
     <View

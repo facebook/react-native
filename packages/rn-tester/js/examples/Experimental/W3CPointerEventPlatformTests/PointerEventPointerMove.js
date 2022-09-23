@@ -8,7 +8,7 @@
  * @flow
  */
 
-// adapated from https://github.com/web-platform-tests/wpt/blob/master/pointerevents/pointerevent_pointermove.html
+// adapted from https://github.com/web-platform-tests/wpt/blob/master/pointerevents/pointerevent_pointermove.html
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
 import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
@@ -25,7 +25,7 @@ function PointerEventPointerMoveTestCase(
   const {harness} = props;
 
   const detectedPointerTypesRef = useRef({});
-  const testPointerMove = harness.useAsyncTest('pointermove event recieved');
+  const testPointerMove = harness.useAsyncTest('pointermove event received');
 
   const handlers = useTestEventHandler(
     ['pointerMove'],

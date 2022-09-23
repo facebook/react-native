@@ -173,7 +173,9 @@ class TouchableBounce extends React.Component<Props, State> {
             ? 'no-hide-descendants'
             : this.props.importantForAccessibility
         }
-        accessibilityViewIsModal={this.props.accessibilityViewIsModal}
+        accessibilityViewIsModal={
+          this.props['aria-modal'] ?? this.props.accessibilityViewIsModal
+        }
         accessibilityElementsHidden={
           this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden
         }

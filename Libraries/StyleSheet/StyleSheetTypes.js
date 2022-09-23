@@ -566,6 +566,23 @@ export type ____ViewStyle_Internal = $ReadOnly<{
   ...____ViewStyle_InternalOverrides,
 }>;
 
+export type FontStyleType = {
+  fontFamily: string,
+  fontWeight: ____FontWeight_Internal,
+};
+
+export type FontStyleMap = {
+  ultraLight: FontStyleType,
+  thin: FontStyleType,
+  light: FontStyleType,
+  regular: FontStyleType,
+  medium: FontStyleType,
+  semibold: FontStyleType,
+  bold: FontStyleType,
+  heavy: FontStyleType,
+  black: FontStyleType,
+};
+
 export type ____FontWeight_Internal =
   | 'normal'
   | 'bold'
@@ -577,7 +594,54 @@ export type ____FontWeight_Internal =
   | '600'
   | '700'
   | '800'
-  | '900';
+  | '900'
+  | 100
+  | 200
+  | 300
+  | 400
+  | 500
+  | 600
+  | 700
+  | 800
+  | 900
+  | 'ultralight'
+  | 'thin'
+  | 'light'
+  | 'medium'
+  | 'regular'
+  | 'semibold'
+  | 'condensedBold'
+  | 'condensed'
+  | 'heavy'
+  | 'black';
+
+export type ____FontVariantArray_Internal = $ReadOnlyArray<
+  | 'small-caps'
+  | 'oldstyle-nums'
+  | 'lining-nums'
+  | 'tabular-nums'
+  | 'proportional-nums'
+  | 'stylistic-one'
+  | 'stylistic-two'
+  | 'stylistic-three'
+  | 'stylistic-four'
+  | 'stylistic-five'
+  | 'stylistic-six'
+  | 'stylistic-seven'
+  | 'stylistic-eight'
+  | 'stylistic-nine'
+  | 'stylistic-ten'
+  | 'stylistic-eleven'
+  | 'stylistic-twelve'
+  | 'stylistic-thirteen'
+  | 'stylistic-fourteen'
+  | 'stylistic-fifteen'
+  | 'stylistic-sixteen'
+  | 'stylistic-seventeen'
+  | 'stylistic-eighteen'
+  | 'stylistic-nineteen'
+  | 'stylistic-twenty',
+>;
 
 export type ____TextStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
@@ -586,33 +650,7 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
   fontSize?: number,
   fontStyle?: 'normal' | 'italic',
   fontWeight?: ____FontWeight_Internal,
-  fontVariant?: $ReadOnlyArray<
-    | 'small-caps'
-    | 'oldstyle-nums'
-    | 'lining-nums'
-    | 'tabular-nums'
-    | 'proportional-nums'
-    | 'stylistic-one'
-    | 'stylistic-two'
-    | 'stylistic-three'
-    | 'stylistic-four'
-    | 'stylistic-five'
-    | 'stylistic-six'
-    | 'stylistic-seven'
-    | 'stylistic-eight'
-    | 'stylistic-nine'
-    | 'stylistic-ten'
-    | 'stylistic-eleven'
-    | 'stylistic-twelve'
-    | 'stylistic-thirteen'
-    | 'stylistic-fourteen'
-    | 'stylistic-fifteen'
-    | 'stylistic-sixteen'
-    | 'stylistic-seventeen'
-    | 'stylistic-eighteen'
-    | 'stylistic-nineteen'
-    | 'stylistic-twenty',
-  >,
+  fontVariant?: ____FontVariantArray_Internal | string,
   textShadowOffset?: $ReadOnly<{
     width: number,
     height: number,

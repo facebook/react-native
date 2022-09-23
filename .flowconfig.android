@@ -6,7 +6,7 @@
 <PROJECT_ROOT>/template/.*
 
 ; Ignore the Dangerfile
-<PROJECT_ROOT>/bots/dangerfile.js
+<PROJECT_ROOT>/packages/react-native-bots/dangerfile.js
 
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
@@ -74,4 +74,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.186.0
+^0.187.1

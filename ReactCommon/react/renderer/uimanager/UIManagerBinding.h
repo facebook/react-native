@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <ReactCommon/RuntimeExecutor.h>
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 #include <react/renderer/core/RawValue.h>
@@ -28,7 +27,6 @@ class UIManagerBinding : public jsi::HostObject {
    */
   static void createAndInstallIfNeeded(
       jsi::Runtime &runtime,
-      RuntimeExecutor const &runtimeExecutor,
       std::shared_ptr<UIManager> const &uiManager);
 
   /*
@@ -37,9 +35,7 @@ class UIManagerBinding : public jsi::HostObject {
    */
   static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime &runtime);
 
-  UIManagerBinding(
-      std::shared_ptr<UIManager> uiManager,
-      RuntimeExecutor runtimeExecutor);
+  UIManagerBinding(std::shared_ptr<UIManager> uiManager);
 
   ~UIManagerBinding();
 
@@ -76,8 +72,6 @@ class UIManagerBinding : public jsi::HostObject {
   std::shared_ptr<UIManager> uiManager_;
   std::unique_ptr<EventHandler const> eventHandler_;
   mutable ReactEventPriority currentEventPriority_;
-
-  RuntimeExecutor runtimeExecutor_;
 };
 
 } // namespace facebook::react

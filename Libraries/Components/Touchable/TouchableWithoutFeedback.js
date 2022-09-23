@@ -45,6 +45,7 @@ type Props = $ReadOnly<{|
   'aria-valuenow'?: AccessibilityValue['now'],
   'aria-valuetext'?: AccessibilityValue['text'],
   accessibilityViewIsModal?: ?boolean,
+  'aria-modal'?: ?boolean,
   accessible?: ?boolean,
   /**
    * alias for accessibilityState
@@ -102,6 +103,7 @@ const PASSTHROUGH_PROPS = [
   'aria-valuenow',
   'aria-valuetext',
   'accessibilityViewIsModal',
+  'aria-modal',
   'hitSlop',
   'importantForAccessibility',
   'nativeID',

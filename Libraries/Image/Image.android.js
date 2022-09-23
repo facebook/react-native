@@ -129,7 +129,11 @@ export type ImageComponentStatics = $ReadOnly<{|
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const BaseImage = (props: ImagePropsType, forwardedRef) => {
-  let source = getImageSourcesFromImageProps(props);
+  let source = getImageSourcesFromImageProps(props) || {
+    uri: undefined,
+    width: undefined,
+    height: undefined,
+  };
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
     props.loadingIndicatorSource,
@@ -147,22 +151,19 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     );
   }
 
-  if (source && !source.uri && !Array.isArray(source)) {
-    source = null;
-  }
-
   let style;
   let sources;
-  if (!Array.isArray(source) && source?.uri != null) {
+  if (Array.isArray(source)) {
+    style = flattenStyle([styles.base, props.style]);
+    sources = source;
+  } else {
     const {width = props.width, height = props.height, uri} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
-    sources = [{uri: uri, width: width, height: height}];
+    sources = [source];
+
     if (uri === '') {
       console.warn('source.uri should not be an empty string');
     }
-  } else {
-    style = flattenStyle([styles.base, props.style]);
-    sources = source;
   }
 
   const {height, width, ...restProps} = props;
@@ -212,13 +213,12 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
           <TextAncestor.Consumer>
             {hasTextAncestor => {
               if (hasTextAncestor) {
-                let src = Array.isArray(sources) ? sources : [sources];
                 return (
                   <TextInlineImageNativeComponent
                     style={style}
                     resizeMode={resizeMode}
                     headers={nativeProps.headers}
-                    src={src}
+                    src={sources}
                     ref={forwardedRef}
                   />
                 );

@@ -21,7 +21,6 @@ global.performance = {
   now: jest.fn(Date.now),
 };
 
-global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
 global.window = global;
 
@@ -136,6 +135,10 @@ jest
       getRecommendedTimeoutMillis: jest.fn(),
     },
   }))
+  .mock('../Libraries/Components/Clipboard/Clipboard', () => ({
+    getString: jest.fn(() => ''),
+    setString: jest.fn(),
+  }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
     jest.requireActual(
       '../Libraries/Components/RefreshControl/__mocks__/RefreshControlMock',
@@ -202,10 +205,6 @@ jest
         process.nextTick(() => callback(null, [])),
       ),
     },
-    Clipboard: {
-      getString: jest.fn(() => ''),
-      setString: jest.fn(),
-    },
     DeviceInfo: {
       getConstants() {
         return {
@@ -231,7 +230,7 @@ jest
       reload: jest.fn(),
     },
     ImageLoader: {
-      getSize: jest.fn(url => Promise.resolve({width: 320, height: 240})),
+      getSize: jest.fn(url => Promise.resolve([320, 240])),
       prefetchImage: jest.fn(),
     },
     ImageViewManager: {

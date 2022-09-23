@@ -12,14 +12,14 @@
 
 import * as createAnimatedComponentInjection from './createAnimatedComponentInjection';
 
-const View = require('../Components/View/View');
-const {AnimatedEvent} = require('./AnimatedEvent');
-const AnimatedProps = require('./nodes/AnimatedProps');
-const React = require('react');
-const NativeAnimatedHelper = require('./NativeAnimatedHelper');
+import View from '../Components/View/View';
+import {AnimatedEvent} from './AnimatedEvent';
+import AnimatedProps from './nodes/AnimatedProps';
+import * as React from 'react';
+import NativeAnimatedHelper from './NativeAnimatedHelper';
 
-const invariant = require('invariant');
-const setAndForwardRef = require('../Utilities/setAndForwardRef');
+import invariant from 'invariant';
+import setAndForwardRef from '../Utilities/setAndForwardRef';
 
 let animatedComponentNextId = 1;
 
@@ -277,5 +277,5 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
 }
 
 // $FlowIgnore[incompatible-cast] - Will be compatible after refactors.
-module.exports = (createAnimatedComponentInjection.recordAndRetrieve() ??
+export default (createAnimatedComponentInjection.recordAndRetrieve() ??
   createAnimatedComponent: typeof createAnimatedComponent);

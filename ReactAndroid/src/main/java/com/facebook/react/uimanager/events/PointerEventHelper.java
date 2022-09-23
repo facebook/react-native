@@ -76,6 +76,29 @@ public class PointerEventHelper {
     }
   }
 
+  // https://w3c.github.io/pointerevents/#the-button-property
+  public static int getButtonChange(int lastButtonState, int currentButtonState) {
+    int changedMask = currentButtonState ^ lastButtonState;
+    if (changedMask == 0) {
+      return -1;
+    }
+
+    switch (changedMask) {
+      case MotionEvent.BUTTON_PRIMARY: // left button, touch/pen contact
+        return 0;
+      case MotionEvent.BUTTON_TERTIARY: // middle mouse
+        return 1;
+      case MotionEvent.BUTTON_SECONDARY: // rightbutton, Pen barrel button
+        return 2;
+      case MotionEvent.BUTTON_BACK:
+        return 3;
+      case MotionEvent.BUTTON_FORWARD:
+        return 4;
+        // TOD0 - Pen eraser button maps to what?
+    }
+    return -1;
+  }
+
   public static boolean isPrimary(int pointerId, int primaryPointerId, MotionEvent event) {
     if (supportsHover(event)) {
       return true;

@@ -23,6 +23,23 @@ $FOLLY_VERSION = '2021.07.22.00'
 
 $START_TIME = Time.now.to_i
 
+# This function returns the min iOS version supported by React Native
+# By using this function, you won't have to manualy change your Podfile
+# when we change the minimum version supported by the framework.
+def min_ios_version_supported
+  return '12.4'
+end
+
+# This function prepares the project for React Native, before processing
+# all the target exposed by the framework.
+def prepare_react_native_project!
+  # Temporary solution to suppress duplicated GUID error.
+  # Can be removed once we move to generate files outside pod install.
+  install! 'cocoapods', :deterministic_uuids => false
+
+  ReactNativePodsUtils.create_xcode_env_if_missing
+end
+
 # Function that setup all the react native dependencies
 # 
 # Parameters
@@ -46,6 +63,9 @@ def use_react_native! (
 
   CodegenUtils.clean_up_build_folder(app_path, $CODEGEN_OUTPUT_DIR)
 
+  # We are relying on this flag also in third parties libraries to proper install dependencies.
+  # Better to rely and enable this environment flag if the new architecture is turned on using flags.
+  ENV['RCT_NEW_ARCH_ENABLED'] = new_arch_enabled ? "1" : "0"
   fabric_enabled = fabric_enabled || new_arch_enabled
 
   prefix = path
@@ -180,7 +200,7 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
-  is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+  is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
 
   Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
@@ -190,7 +210,7 @@ end
 # We need to keep this while we continue to support the old architecture.
 # =====================
 def use_react_native_codegen!(spec, options={})
-  return if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+  return if ENV['RCT_NEW_ARCH_ENABLED'] == "1"
   # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
 
   # The prefix to react-native

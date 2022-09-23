@@ -14,10 +14,8 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath("com.android.tools.build:gradle:7.2.1")
+    classpath("com.android.tools.build:gradle:7.3.0")
     classpath("de.undercouch:gradle-download-task:5.0.1")
-    // NOTE: Do not place your application dependencies here; they belong
-    // in the individual module build.gradle files
   }
 }
 
@@ -37,6 +35,9 @@ allprojects {
 tasks.register("cleanAll", Delete::class.java) {
   description = "Remove all the build files and intermediate build outputs"
   dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":clean"))
+  dependsOn(":ReactAndroid:clean")
+  dependsOn(":ReactAndroid:hermes-engine:clean")
+  dependsOn(":packages:rn-tester:android:app:clean")
   delete(allprojects.map { it.buildDir })
   delete(rootProject.file("./ReactAndroid/.cxx"))
   delete(rootProject.file("./ReactAndroid/hermes-engine/.cxx"))
@@ -59,6 +60,9 @@ tasks.register("buildAll") {
   dependsOn(":ReactAndroid:installArchives")
   // This builds RN Tester for Hermes/JSC for debug only
   dependsOn(":packages:rn-tester:android:app:assembleDebug")
+  // This compiles the Unit Test sources (without running them as they're partially broken)
+  dependsOn(":ReactAndroid:compileDebugUnitTestSources")
+  dependsOn(":ReactAndroid:compileReleaseUnitTestSources")
 }
 
 tasks.register("downloadAll") {

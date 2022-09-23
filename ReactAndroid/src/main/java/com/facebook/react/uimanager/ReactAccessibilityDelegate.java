@@ -448,9 +448,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     } else if (role.equals(AccessibilityRole.SUMMARY)) {
       nodeInfo.setRoleDescription(context.getString(R.string.summary_description));
     } else if (role.equals(AccessibilityRole.HEADER)) {
-      final AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
-          AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(0, 1, 0, 1, true);
-      nodeInfo.setCollectionItemInfo(itemInfo);
+      nodeInfo.setHeading(true);
     } else if (role.equals(AccessibilityRole.ALERT)) {
       nodeInfo.setRoleDescription(context.getString(R.string.alert_description));
     } else if (role.equals(AccessibilityRole.COMBOBOX)) {

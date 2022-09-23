@@ -173,12 +173,6 @@ commands:
             - ~/.cache/yarn
           key: << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
 
-  install_github_bot_deps:
-    steps:
-      - run:
-          name: "Yarn: Install dependencies (GitHub bots)"
-          command: cd bots && yarn install --non-interactive --cache-folder ~/.cache/yarn
-
   brew_install:
     parameters:
       package:
@@ -247,7 +241,6 @@ commands:
         type: enum
         enum: ["android", "ios"]
     steps:
-      - install_github_bot_deps
       - run:
           name: Report size of RNTester.app (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
@@ -304,7 +297,6 @@ jobs:
       - checkout
       - run_yarn
 
-      - install_github_bot_deps
 
       # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
@@ -351,6 +343,11 @@ jobs:
       - run:
           name: Check for errors in code using Flow (Android)
           command: yarn flow-check-android
+          when: always
+
+      - run:
+          name: Run TypeScript tests
+          command: yarn test-typescript
           when: always
 
       - run:
@@ -405,27 +402,6 @@ jobs:
 
       - store_test_results:
           path: ./reports/junit
-
-  # -----------------------
-  #     JOBS: Codegen Tests
-  # -----------------------
-  test_codegen:
-    parameters:
-      executor:
-        type: executor
-        default: nodelts
-    executor: << parameters.executor >>
-    steps:
-      - checkout
-      - setup_artifacts
-      - run:
-          name: Install Yarn in codegen
-          command: yarn install
-          working_directory: packages/react-native-codegen
-      - run:
-          name: Run Tests
-          command: yarn jest
-          working_directory: packages/react-native-codegen
 
   # -------------------------
   #     JOBS: iOS Unit Tests
@@ -674,6 +650,9 @@ jobs:
       newarchitecture:
         type: boolean
         default: false
+      jsengine:
+        type: string
+        default: "Hermes"
     environment:
       - PROJECT_NAME: "AndroidTemplateProject"
     steps:
@@ -681,6 +660,16 @@ jobs:
       - run_yarn
       - attach_workspace:
           at: .
+      - when:
+          condition:
+            equal: ["JSC", << parameters.jsengine >>]
+          steps:
+            - run:
+                name: Set enableHermes in buld.gradle to false
+                command: |
+                  node ./scripts/set-rn-engine.js -e jsc
+                  echo "Hermes disabled."
+                  grep enableHermes: template/android/app/build.gradle
 
       - run:
           name: Create Android template project
@@ -692,7 +681,7 @@ jobs:
             yarn
 
       - run:
-          name: Build the template application for << parameters.flavor >> with New Architecture set << parameters.newarchitecture >>
+          name: Build the template application for << parameters.flavor >> with New Architecture set to << parameters.newarchitecture >>, and using the << parameters.jsengine>> JS engine.
           command: cd /tmp/$PROJECT_NAME/android/ && ./gradlew assemble<< parameters.flavor >> -PnewArchEnabled=<< parameters.newarchitecture >>
 
   # -------------------------
@@ -850,16 +839,19 @@ jobs:
       - checkout_code_with_cache
 
       - run:
-          name: Install Node
+          name: Disable NVM
+          # Use choco to manage node versions due to https://github.com/npm/cli/issues/4234
+          command: nvm off
+
+      - run:
+          name: Install Node JS
           # Note: Version set separately for non-Windows builds, see above.
-          command: |
-            nvm install 16
-            nvm use 16
+          command: choco install nodejs-lts
 
       # Setup Dependencies
       - run:
-          name: Install Yarn
-          command: choco install yarn
+          name: Enable Yarn with corepack
+          command: corepack enable
 
       - run:
           name: Display Environment info
@@ -1278,7 +1270,6 @@ jobs:
           condition:
             matches: { pattern: '^pull\/.*$', value: << pipeline.git.branch >> }
           steps:
-            - install_github_bot_deps
             - run:
                 name: Post link to PR build artifacts (pull-bot)
                 command: GITHUB_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" scripts/circleci/post-artifacts-link.sh || true
@@ -1349,7 +1340,6 @@ workflows:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
       - prepare_hermes_workspace
-      - test_codegen
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
@@ -1376,6 +1366,7 @@ workflows:
           matrix:
             parameters:
               newarchitecture: [true, false]
+              jsengine: ["Hermes", "JSC"]
               flavor: ["Debug", "Release"]
       - test_buck
       - test_ios_template:

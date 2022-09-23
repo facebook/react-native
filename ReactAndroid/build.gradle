@@ -84,7 +84,7 @@ task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Down
 task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleConversion], type: Copy) {
     from(dependenciesPath ?: tarTree(downloadDoubleConversion.dest))
     from("src/main/jni/third-party/double-conversion/")
-    include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "Android.mk", "CMakeLists.txt")
+    include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "CMakeLists.txt")
     filesMatching("*/src/**/*", { fname -> fname.path = "double-conversion/${fname.name}" })
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/double-conversion")
@@ -100,7 +100,7 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
 task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy) {
     from(dependenciesPath ?: tarTree(downloadFolly.dest))
     from("src/main/jni/third-party/folly/")
-    include("folly-${FOLLY_VERSION}/folly/**/*", "Android.mk", "CMakeLists.txt")
+    include("folly-${FOLLY_VERSION}/folly/**/*", "CMakeLists.txt")
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/folly")
@@ -116,7 +116,7 @@ task downloadFmt(dependsOn: createNativeDepsDirectories, type: Download) {
 task prepareFmt(dependsOn: dependenciesPath ? [] : [downloadFmt], type: Copy) {
     from(dependenciesPath ?: tarTree(downloadFmt.dest))
     from("src/main/jni/third-party/fmt/")
-    include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "Android.mk", "CMakeLists.txt")
+    include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "CMakeLists.txt")
     eachFile { fname -> fname.path = (fname.path - "fmt-${FMT_VERSION}/") }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/fmt")
@@ -153,7 +153,7 @@ final def prepareGlog = tasks.register("prepareGlog", PrepareGlogTask) {
     it.outputDir.set(new File(thirdPartyNdkDir, "glog"))
 }
 
-// Create Android.mk library module based on jsc from npm
+// Create Android native library module based on jsc from npm
 tasks.register('prepareJSC', PrepareJSCTask) {
     it.jscPackagePath.set(findNodeModulePath(projectDir, "jsc-android"))
     it.outputDir = project.layout.buildDirectory.dir("third-party-ndk/jsc")
@@ -298,6 +298,7 @@ android {
                     "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
+                    "react_newarchdefaults",
                     "turbomodulejsijni",
                     "fabricjni"
             }
@@ -431,15 +432,6 @@ react {
 }
 
 afterEvaluate {
-    // Needed as some of the native sources needs to be downloaded
-    // before configureNdkBuildDebug could be executed.
-    reactNativeArchitectures().each { architecture ->
-        tasks.findByName("configureCMakeDebug[${architecture}]")?.configure { dependsOn(preBuild) }
-        tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure { dependsOn(preBuild) }
-    }
-    configureCMakeDebug.dependsOn(preBuild)
-    configureCMakeRelWithDebInfo.dependsOn(preBuild)
-
     publishing {
         publications {
             release(MavenPublication) {

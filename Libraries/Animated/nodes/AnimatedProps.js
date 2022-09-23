@@ -12,14 +12,15 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-const {findNodeHandle} = require('../../ReactNative/RendererProxy');
-const {AnimatedEvent} = require('../AnimatedEvent');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-const AnimatedNode = require('./AnimatedNode');
-const AnimatedStyle = require('./AnimatedStyle');
-const invariant = require('invariant');
+import {AnimatedEvent} from '../AnimatedEvent';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import {findNodeHandle} from '../../ReactNative/RendererProxy';
+import invariant from 'invariant';
 
-class AnimatedProps extends AnimatedNode {
+import AnimatedNode from './AnimatedNode';
+import AnimatedStyle from './AnimatedStyle';
+
+export default class AnimatedProps extends AnimatedNode {
   _props: Object;
   _animatedView: any;
   _callback: () => void;
@@ -183,5 +184,3 @@ class AnimatedProps extends AnimatedNode {
     };
   }
 }
-
-module.exports = AnimatedProps;

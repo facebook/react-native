@@ -11,9 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
@@ -21,10 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.facebook.react.ReactRootView;
-import com.facebook.react.animation.Animation;
-import com.facebook.react.animation.AnimationPropertyUpdater;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
@@ -458,44 +452,6 @@ public class UIManagerModuleTest {
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
     assertThat(view0.getLeft()).isEqualTo(1);
-  }
-
-  private static class AnimationStub extends Animation {
-
-    public AnimationStub(int animationID, AnimationPropertyUpdater propertyUpdater) {
-      super(animationID, propertyUpdater);
-    }
-
-    @Override
-    public void run() {}
-  }
-
-  @Test
-  public void testAddAndRemoveAnimation() {
-    UIManagerModule uiManagerModule = getUIManagerModule();
-    TestMoveDeleteHierarchy hierarchy = createMoveDeleteHierarchy(uiManagerModule);
-
-    AnimationPropertyUpdater mockPropertyUpdater = mock(AnimationPropertyUpdater.class);
-    Animation mockAnimation = spy(new AnimationStub(1000, mockPropertyUpdater));
-    Callback callbackMock = mock(Callback.class);
-
-    int rootTag = hierarchy.rootView;
-    uiManagerModule.createView(
-        hierarchy.rootView,
-        ReactViewManager.REACT_CLASS,
-        rootTag,
-        JavaOnlyMap.of("collapsable", false));
-
-    uiManagerModule.registerAnimation(mockAnimation);
-    uiManagerModule.addAnimation(hierarchy.rootView, 1000, callbackMock);
-    uiManagerModule.removeAnimation(hierarchy.rootView, 1000);
-
-    uiManagerModule.onBatchComplete();
-    executePendingFrameCallbacks();
-
-    verify(callbackMock, times(1)).invoke(false);
-    verify(mockAnimation).run();
-    verify(mockAnimation).cancel();
   }
 
   /**

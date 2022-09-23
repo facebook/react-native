@@ -33,7 +33,7 @@ abstract class PrepareGlogTask : DefaultTask() {
     project.copy {
       it.from(glogPath)
       it.from(project.file("src/main/jni/third-party/glog/"))
-      it.include("glog-${glogVersion.get()}/src/**/*", "Android.mk", "CMakeLists.txt", "config.h")
+      it.include("glog-${glogVersion.get()}/src/**/*", "CMakeLists.txt", "config.h")
       it.duplicatesStrategy = DuplicatesStrategy.WARN
       it.includeEmptyDirs = false
       it.filesMatching("**/*.h.in") { matchedFile ->

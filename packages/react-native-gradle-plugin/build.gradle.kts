@@ -8,6 +8,7 @@
 import org.gradle.api.internal.classpath.ModuleRegistry
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.configurationcache.extensions.serviceOf
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   kotlin("jvm") version "1.6.10"
@@ -32,7 +33,7 @@ group = "com.facebook.react"
 
 dependencies {
   implementation(gradleApi())
-  implementation("com.android.tools.build:gradle:7.2.1")
+  implementation("com.android.tools.build:gradle:7.3.0")
   implementation("com.google.code.gson:gson:2.8.9")
   implementation("com.google.guava:guava:31.0.1-jre")
   implementation("com.squareup:javapoet:1.13.0")

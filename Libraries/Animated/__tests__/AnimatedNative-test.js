@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 jest
@@ -26,8 +26,8 @@ jest
 import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
 
-const Animated = require('../Animated');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
+const Animated = require('../Animated').default;
+const NativeAnimatedHelper = require('../NativeAnimatedHelper').default;
 
 describe('Native Animated', () => {
   const NativeAnimatedModule = require('../NativeAnimatedModule').default;

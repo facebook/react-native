@@ -1,9 +1,9 @@
 /**
  * (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
  *
- * @emails oncall+react_native
  * @flow strict
  * @format
+ * @oncall react_native
  */
 
 import EventEmitter from '../EventEmitter';

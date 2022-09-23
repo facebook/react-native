@@ -55,6 +55,7 @@ type Props = $ReadOnly<{|
   'aria-valuenow'?: AccessibilityValue['now'],
   'aria-valuetext'?: AccessibilityValue['text'],
   accessibilityViewIsModal?: ?boolean,
+  'aria-modal'?: ?boolean,
   accessible?: ?boolean,
 
   /**
@@ -265,6 +266,8 @@ function Pressable(props: Props, forwardedRef): React.Node {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
+    accessibilityViewIsModal:
+      restProps['aria-modal'] ?? restProps.accessibilityViewIsModal,
     accessibilityLiveRegion,
     accessibilityLabel,
     accessibilityState: _accessibilityState,
