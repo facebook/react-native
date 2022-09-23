@@ -762,7 +762,7 @@ rn_library(
         "//xplat/js/RKJSModules/vendor/scheduler:scheduler",
         "//xplat/js/react-native-github/packages/assets:assets",
         "//xplat/js/react-native-github/packages/normalize-color:normalize-color",
-        "//xplat/js/react-native-github/packages/js-polyfills:js-polyfills",
+        "//xplat/js/react-native-github/packages/js-polyfills:polyfills",
         "//xplat/js/tools/metro/packages/metro-runtime/src/modules:modules",
         "//xplat/js/tools/metro/packages/metro-runtime/src/polyfills:polyfills",
     ],
