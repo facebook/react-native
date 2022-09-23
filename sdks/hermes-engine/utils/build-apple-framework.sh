@@ -7,7 +7,9 @@
 NUM_CORES=$(sysctl -n hw.ncpu)
 IMPORT_HERMESC_PATH=${HERMES_OVERRIDE_HERMESC_PATH:-$PWD/build_host_hermesc/ImportHermesc.cmake}
 REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$PWD/../..}
-JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
+if [[ -z "$JSI_PATH" ]]; then
+  JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
+fi
 
 function use_env_var_or_ruby_prop {
   if [[ -n "$1" ]]; then

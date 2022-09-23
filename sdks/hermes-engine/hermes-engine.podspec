@@ -66,25 +66,25 @@ Pod::Spec.new do |spec|
   }
 
   if source[:git] then
-    hermes_utils_path = "#{react_native_path}/sdks/hermes-engine/utils"
+    ENV['REACT_NATIVE_PATH'] = react_native_path
+    hermes_utils_path = "/sdks/hermes-engine/utils"
+
     spec.prepare_command = <<-EOS
-      # When true, debug build will be used.
-      # See `build-apple-framework.sh` for details
+    export BUILD_TYPE=#{build_type.to_s.capitalize}
+    export RELEASE_VERSION="#{version}"
+    export IOS_DEPLOYMENT_TARGET="#{spec.deployment_target('ios')}"
+    export MAC_DEPLOYMENT_TARGET="#{spec.deployment_target('osx')}"
+    export JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
 
-      export BUILD_TYPE=#{get_hermes_build_type.to_s.capitalize}
-      export RELEASE_VERSION="#{version}"
-      export IOS_DEPLOYMENT_TARGET="#{spec.deployment_target('ios')}"
-      export MAC_DEPLOYMENT_TARGET="#{spec.deployment_target('osx')}"
+    # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
+    #{File.exist?(import_hermesc_file) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_file}" : ""}
+    #{File.exist?(import_hermesc_file) ? "echo \"Overriding HermesC path...\"" : ""}
 
-      # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
-      #{File.exist?(import_hermesc_file) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_file}" : ""}
-      #{File.exist?(import_hermesc_file) ? "echo \"Overriding HermesC path...\"" : ""}
+    # Build iOS framework
+    $REACT_NATIVE_PATH#{hermes_utils_path}/build-ios-framework.sh
 
-      # Build iOS framework
-      #{hermes_utils_path}/build-ios-framework.sh
-
-      # Build Mac framework
-      #{hermes_utils_path}/build-mac-framework.sh
+    # Build Mac framework
+    $REACT_NATIVE_PATH#{hermes_utils_path}/build-mac-framework.sh
     EOS
   end
 end
