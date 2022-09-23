@@ -1453,7 +1453,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
     const canTriggerOnEndReachedWithTalkback =
       typeof this._lastTimeOnEndReachedCalled === 'number'
-        ? Math.abs(this._lastTimeOnEndReachedCalled - Date.now()) > 100
+        ? Math.abs(this._lastTimeOnEndReachedCalled - Date.now()) > 500
         : true;
     if (
       onEndReached &&
@@ -1562,12 +1562,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       triggerTalkbackScrollToEnd &&
       talkbackCompatibility
     ) {
-      // onMomentumScrollEnd does not work with TalkBack gestures
-      // estrapolate this to a method talkbackScrollTo compatible with
-      // TalkBack gestures.
-      // The root cause of this issue may have been
-      // adding contentLength to state.
-      // Try to move this to another callback, for example componentDidUpdate
       this._hasTriggeredInitialScrollToIndex = true;
     }
     this._scheduleCellsToRenderUpdate();

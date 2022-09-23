@@ -150,16 +150,6 @@ function NestedFlatList(props) {
         }}
         enabledTalkbackCompatibleInvertedList
         accessibilityRole="list"
-        ListFooterComponent={
-          <Text style={{height: 50, width: 100, backgroundColor: 'yellow'}}>
-            Footer Component
-          </Text>
-        }
-        ListHeaderComponent={
-          <Text style={{height: 100, width: 100, backgroundColor: 'yellow'}}>
-            Header Component
-          </Text>
-        }
         inverted
         renderItem={renderItem}
         data={items}
