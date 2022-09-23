@@ -109,6 +109,8 @@ public class ReactScrollView extends ScrollView
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private long mLastScrollDispatchTime = 0;
   private int mScrollEventThrottle = 0;
+  private boolean mInitialScrollTriggered = false;
+  private boolean mEnabledTalkbackCompatibleInvertedList = false;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -181,6 +183,11 @@ public class ReactScrollView extends ScrollView
 
   public void setDisableIntervalMomentum(boolean disableIntervalMomentum) {
     mDisableIntervalMomentum = disableIntervalMomentum;
+  }
+
+  public void setEnabledTalkbackCompatibleInvertedList(
+      boolean enabledTalkbackCompatibleInvertedList) {
+    mEnabledTalkbackCompatibleInvertedList = enabledTalkbackCompatibleInvertedList;
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
@@ -1073,6 +1080,11 @@ public class ReactScrollView extends ScrollView
 
     int currentScrollY = getScrollY();
     int maxScrollY = getMaxScrollY();
+
+    if (mEnabledTalkbackCompatibleInvertedList && !mInitialScrollTriggered) {
+      scrollTo(getScrollX(), getMaxScrollY());
+      mInitialScrollTriggered = true;
+    }
     if (currentScrollY > maxScrollY) {
       scrollTo(getScrollX(), maxScrollY);
     }
