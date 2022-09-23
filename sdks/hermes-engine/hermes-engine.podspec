@@ -5,11 +5,6 @@
 
 require "json"
 
-module HermesHelper
-  BUILD_TYPE = :debug
-  # BUILD_TYPE = :release
-end
-
 react_native_path = File.join(__dir__, "..", "..")
 
 # package.json
@@ -40,7 +35,7 @@ elsif File.exists?(hermestag_file) && isInCI
   source[:git] = git
   source[:tag] = hermestag
 else
-  source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-v#{version}.tar.gz"
+  source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-#{get_hermes_build_type.to_s}-v#{version}.tar.gz"
 end
 
 Pod::Spec.new do |spec|
@@ -54,7 +49,7 @@ Pod::Spec.new do |spec|
   spec.source      = source
   spec.platforms   = { :osx => "10.13", :ios => "12.4" }
 
-  spec.preserve_paths      = ["destroot/bin/*"].concat(HermesHelper::BUILD_TYPE == :debug ? ["**/*.{h,c,cpp}"] : [])
+  spec.preserve_paths      = ["destroot/bin/*"].concat(get_hermes_build_type == :debug ? ["**/*.{h,c,cpp}"] : [])
   spec.source_files        = "destroot/include/**/*.h"
   spec.header_mappings_dir = "destroot/include"
 
@@ -64,22 +59,22 @@ Pod::Spec.new do |spec|
   spec.xcconfig            = {
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
     "CLANG_CXX_LIBRARY" => "compiler-default",
-    "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=#{HermesHelper::BUILD_TYPE == :debug ? "1" : "0"}"
+    "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=#{get_hermes_build_type == :debug ? "1" : "0"}"
   }
 
   if source[:git] then
     spec.prepare_command = <<-EOS
-      BUILD_TYPE=#{HermesHelper::BUILD_TYPE == :debug ? "Debug" : "Release"}
+    BUILD_TYPE=#{get_hermes_build_type.to_s.capitalize}
 
-      # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
-      #{File.exist?(import_hermesc_file) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_file}" : ""}
-      #{File.exist?(import_hermesc_file) ? "echo \"Overriding HermesC path...\"" : ""}
+    # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
+    #{File.exist?(import_hermesc_file) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_file}" : ""}
+    #{File.exist?(import_hermesc_file) ? "echo \"Overriding HermesC path...\"" : ""}
 
-      # Build iOS framework
-      ./utils/build-ios-framework.sh
+    # Build iOS framework
+    ./utils/build-ios-framework.sh
 
-      # Build Mac framework
-      ./utils/build-mac-framework.sh
+    # Build Mac framework
+    ./utils/build-mac-framework.sh
     EOS
   end
 end

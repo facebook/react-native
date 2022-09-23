@@ -18,3 +18,7 @@ def install_hermes_if_enabled(hermes_enabled, react_native_path)
     pod 'libevent', '~> 2.1.12'
     pod 'hermes-engine', :podspec => "#{react_native_path}/sdks/hermes/hermes-engine.podspec"
 end
+
+def get_hermes_build_type()
+    return ENV['PRODUCTION'] == "1" ? :release : :debug
+end
