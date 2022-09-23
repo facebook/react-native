@@ -7,6 +7,9 @@ require "json"
 
 react_native_path = File.join(__dir__, "..", "..")
 
+# Whether Hermes is built for Release or Debug is determined by the PRODUCTION envvar.
+build_type = ENV['PRODUCTION'] == "1" ? :release : :debug
+
 # package.json
 package_file = File.join(react_native_path, "package.json")
 package = JSON.parse(File.read(package_file))
@@ -35,7 +38,7 @@ elsif File.exists?(hermestag_file) && isInCI
   source[:git] = git
   source[:tag] = hermestag
 else
-  source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-#{get_hermes_build_type.to_s}-v#{version}.tar.gz"
+  source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-#{build_type.to_s}-v#{version}.tar.gz"
 end
 
 Pod::Spec.new do |spec|
@@ -49,7 +52,7 @@ Pod::Spec.new do |spec|
   spec.source      = source
   spec.platforms   = { :osx => "10.13", :ios => "12.4" }
 
-  spec.preserve_paths      = ["destroot/bin/*"].concat(get_hermes_build_type == :debug ? ["**/*.{h,c,cpp}"] : [])
+  spec.preserve_paths      = ["destroot/bin/*"].concat(build_type == :debug ? ["**/*.{h,c,cpp}"] : [])
   spec.source_files        = "destroot/include/**/*.h"
   spec.header_mappings_dir = "destroot/include"
 
@@ -59,12 +62,12 @@ Pod::Spec.new do |spec|
   spec.xcconfig            = {
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
     "CLANG_CXX_LIBRARY" => "compiler-default",
-    "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=#{get_hermes_build_type == :debug ? "1" : "0"}"
+    "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=#{build_type == :debug ? "1" : "0"}"
   }
 
   if source[:git] then
     spec.prepare_command = <<-EOS
-    BUILD_TYPE=#{get_hermes_build_type.to_s.capitalize}
+    BUILD_TYPE=#{build_type.to_s.capitalize}
 
     # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
     #{File.exist?(import_hermesc_file) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_file}" : ""}

@@ -22,7 +22,6 @@ class HermesTests < Test::Unit::TestCase
         Pod::Config.reset()
         Pod::UI.reset()
         podSpy_cleanUp()
-        ENV['PRODUCTION'] = '0'
     end
 
     # ============================= #
@@ -84,55 +83,4 @@ class HermesTests < Test::Unit::TestCase
         assert_equal($podInvocation["libevent"][:version], "~> 2.1.12")
         assert_equal($podInvocation["hermes-engine"][:podspec], "../../sdks/hermes/hermes-engine.podspec")
     end
-
-    # ========================= #
-    # TEST - getHermesBuildType #
-    # ========================= #
-    def test_getHermesBuildType_whenNotInProduction
-        # Arrange
-        ENV['PRODUCTION'] = '0'
-
-        # Act
-        build_type = get_hermes_build_type
-
-        # Assert
-        assert_equal(build_type, :debug)
-    end
-
-    def test_getHermesBuildType_whenInProduction
-        # Arrange
-        ENV['PRODUCTION'] = '1'
-
-        # Act
-        build_type = get_hermes_build_type
-
-        # Assert
-        assert_equal(build_type, :release)
-    end
-
-    def test_getHermesBuildType_whenProductionIsNotSet
-        # Arrange
-        ENV.delete 'PRODUCTION'
-
-        # Act
-        build_type = get_hermes_build_type
-
-        # Assert
-        assert_equal(build_type, :debug)
-    end
-
-    def test_getHermesBuildType_symbolsMatchStrings
-        # Arrange
-        ENV['PRODUCTION'] = '0'
-
-        # Act
-        build_type = get_hermes_build_type
-
-        # Assert
-        assert_equal(build_type, :debug)
-        assert_equal(build_type.to_s, "debug")
-        assert_equal(build_type.to_s.capitalize, "Debug")
-    end
-
-
 end
