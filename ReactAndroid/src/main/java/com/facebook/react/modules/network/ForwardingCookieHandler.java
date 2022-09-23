@@ -138,7 +138,13 @@ public class ForwardingCookieHandler extends CookieHandler {
         // https://bugs.chromium.org/p/chromium/issues/detail?id=559720
         return null;
       } catch (Exception exception) {
-        // Fatal exceptions are not good for the user experience, 
+        // Ideally we would like to catch a `MissingWebViewPackageException` here.
+        // That API is private so we can't access it.
+        // Historically we used string matching on the error message to understand 
+        // if the exception was a Missing Webview One.
+        // OEMs have been customizing that message making really hard to catch it.
+        // Therefore we result to returning null as a default instead of rethrowing
+        // the exception as it will result in a app crash at runtime.
         // a) We will return null for all the other unhandled conditions when a webview provider is not found.
         // b) We already have null checks in place for `getCookieManager()` calls.
         // c) We have annotated the method as @Nullable to notify future devs about our return type.
