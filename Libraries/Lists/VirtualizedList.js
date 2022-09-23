@@ -1456,7 +1456,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // talkback inverted flatlist, scroll to bottom when first rendered
     const {getItem, data, getItemCount} = this.props;
     const veryLast = getItemCount(data) - 1;
-    const firstItem = getItem(data, 0);
     const lastItem = getItem(data, veryLast);
     const lastItemDidNotChange = this._lastItem === lastItem;
     const scrollPositionChanged =
