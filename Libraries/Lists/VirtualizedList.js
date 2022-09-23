@@ -1213,11 +1213,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         e.nativeEvent.layout,
       );
       if (talkbackCompatibility) {
-        // may be the reason now we need a setTimeout
-        // onContentSizeChange to start FlatList from the bottom
-        // this additional state update may be the reason we have issues with
-        // the initial scroll position, the solution would be using position
-        // relative which does not break scroll functionalities.
         this.setState({visibleLength: this._scrollMetrics.visibleLength});
       }
     }

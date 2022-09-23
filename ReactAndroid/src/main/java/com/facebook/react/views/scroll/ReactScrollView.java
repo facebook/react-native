@@ -1081,6 +1081,7 @@ public class ReactScrollView extends ScrollView
     int currentScrollY = getScrollY();
     int maxScrollY = getMaxScrollY();
 
+    // start inverted flatlist from the bottom to be compatible with talkback
     if (mEnabledTalkbackCompatibleInvertedList && !mInitialScrollTriggered) {
       scrollTo(getScrollX(), getMaxScrollY());
       mInitialScrollTriggered = true;
