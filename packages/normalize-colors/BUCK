@@ -2,7 +2,7 @@ load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 load("@fbsource//xplat/js:JS_DEFS.bzl", "rn_library")
 
 rn_library(
-    name = "normalize-colors",
+    name = "normalize-color",
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
