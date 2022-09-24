@@ -1,4 +1,4 @@
-# react-native-gradle-plugin
+# react-native/gradle-plugin
 
 [![Version][version-badge]][package]
 
@@ -7,7 +7,7 @@ A Gradle Plugin used to support development of React Native applications for And
 ## Installation
 
 ```
-yarn add react-native-gradle-plugin
+yarn add react-native/gradle-plugin
 ```
 
 *Note: We're using `yarn` to install deps. Feel free to change commands to use `npm` 3+ and `npx` if you like*

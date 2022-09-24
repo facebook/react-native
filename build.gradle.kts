@@ -36,7 +36,7 @@ allprojects {
 
 tasks.register("cleanAll", Delete::class.java) {
   description = "Remove all the build files and intermediate build outputs"
-  dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":clean"))
+  dependsOn(gradle.includedBuild("react-native/gradle-plugin").task(":clean"))
   delete(allprojects.map { it.buildDir })
   delete(rootProject.file("./ReactAndroid/.cxx"))
   delete(rootProject.file("./ReactAndroid/hermes-engine/.cxx"))

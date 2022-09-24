@@ -13,4 +13,4 @@ pluginManagement {
   }
 }
 
-rootProject.name = "react-native-gradle-plugin"
+rootProject.name = "react-native/gradle-plugin"
