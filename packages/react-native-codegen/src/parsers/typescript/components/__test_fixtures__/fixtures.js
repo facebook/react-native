@@ -1099,6 +1099,7 @@ const PROPS_AND_EVENTS_WITH_INTERFACES = `
 import type {
   BubblingEventHandler,
   DirectEventHandler,
+  Int32,
 } from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
@@ -1110,7 +1111,7 @@ export interface Base1 {
 }
 
 export interface Base2 {
-  y: number;
+  y: Int32;
 }
 
 export interface Derived extends Base1, Base2 {
