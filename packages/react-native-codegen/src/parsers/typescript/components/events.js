@@ -148,7 +148,12 @@ function findEventArgumentsAndType(
   }
   const name = typeAnnotation.typeName.name;
   if (name === 'Readonly') {
-    return findEventArgumentsAndType(typeAnnotation.typeParameters.params[0], types, bubblingType, paperName);
+    return findEventArgumentsAndType(
+      typeAnnotation.typeParameters.params[0],
+      types,
+      bubblingType,
+      paperName,
+    );
   } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
     const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
     const paperTopLevelNameDeprecated =

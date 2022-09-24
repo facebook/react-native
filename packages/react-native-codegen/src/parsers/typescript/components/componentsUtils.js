@@ -44,36 +44,28 @@ function getPropProperties(
   }
 }
 
-function getTypeAnnotationForObjectAsArrayElement(
-  objectType: $FlowFixMe,
-  types: TypeDeclarationMap,
-) {
-  return {
-    type: 'ObjectTypeAnnotation',
-    properties: flattenProperties(
-      objectType.typeParameters.params[0].members ||
-        objectType.typeParameters.params,
-      types,
-    )
-      .map(prop => buildPropSchema(prop, types))
-      .filter(Boolean),
-  };
-}
-
 function getTypeAnnotationForArrayOfArrayOfObject(
+  name: string,
   typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
 ) {
-  // We need to go yet another level deeper to resolve
-  // types that may be defined in a type alias
-  const nestedObjectType = getValueFromTypes(typeAnnotation, types);
+  // for array of array of a type
+  // such type must be an object literal
+  const elementType = getTypeAnnotationForArray(
+    name,
+    typeAnnotation,
+    null,
+    types,
+  );
+  if (elementType.type !== 'ObjectTypeAnnotation') {
+    throw new Error(
+      `Only array of array of object is supported for "${name}".`,
+    );
+  }
 
   return {
     type: 'ArrayTypeAnnotation',
-    elementType: getTypeAnnotationForObjectAsArrayElement(
-      nestedObjectType,
-      types,
-    ),
+    elementType,
   };
 }
 
@@ -117,6 +109,7 @@ function getTypeAnnotationForArray(
   // Covers: T[]
   if (typeAnnotation.type === 'TSArrayType') {
     return getTypeAnnotationForArrayOfArrayOfObject(
+      name,
       typeAnnotation.elementType,
       types,
     );
@@ -127,12 +120,18 @@ function getTypeAnnotationForArray(
     const objectType = getValueFromTypes(extractedTypeAnnotation, types);
 
     if (objectType.typeName.name === 'Readonly') {
-      return getTypeAnnotationForObjectAsArrayElement(objectType, types);
+      return getTypeAnnotationForArray(
+        name,
+        objectType.typeParameters.params[0],
+        defaultValue,
+        types,
+      );
     }
 
     // Covers: ReadonlyArray<T>
     if (objectType.typeName.name === 'ReadonlyArray') {
       return getTypeAnnotationForArrayOfArrayOfObject(
+        name,
         objectType.typeParameters.params[0],
         types,
       );
@@ -147,6 +146,19 @@ function getTypeAnnotationForArray(
         extractedTypeAnnotation.type;
 
   switch (type) {
+    case 'TSTypeLiteral':
+    case 'TSInterfaceDeclaration': {
+      const rawProperties =
+        type === 'TSInterfaceDeclaration'
+          ? [typeAnnotation]
+          : typeAnnotation.members;
+      return {
+        type: 'ObjectTypeAnnotation',
+        properties: flattenProperties(rawProperties, types)
+          .map(prop => buildPropSchema(prop, types))
+          .filter(Boolean),
+      };
+    }
     case 'TSNumberKeyword':
       return {
         type: 'FloatTypeAnnotation',
@@ -352,12 +364,15 @@ function getTypeAnnotation(
   switch (type) {
     case 'TSTypeLiteral':
     case 'TSInterfaceDeclaration': {
-      const rawProperties = type === 'TSInterfaceDeclaration' ? [typeAnnotation] : typeAnnotation.members;
+      const rawProperties =
+        type === 'TSInterfaceDeclaration'
+          ? [typeAnnotation]
+          : typeAnnotation.members;
       const flattenedProperties = flattenProperties(rawProperties, types);
       const properties = flattenedProperties
         .map(prop => buildPropSchema(prop, types))
         .filter(Boolean);
-  
+
       return {
         type: 'ObjectTypeAnnotation',
         properties,
@@ -659,20 +674,25 @@ function flattenProperties(
           getPropProperties(property.typeName.name, types),
           types,
         );
-      } else if (property.type === 'TSExpressionWithTypeArguments' || property.type === 'TSInterfaceHeritage') {
+      } else if (
+        property.type === 'TSExpressionWithTypeArguments' ||
+        property.type === 'TSInterfaceHeritage'
+      ) {
         return flattenProperties(
           getPropProperties(property.expression.name, types),
           types,
         );
       } else if (property.type === 'TSTypeLiteral') {
-        return flattenProperties(property.members,types);
+        return flattenProperties(property.members, types);
       } else if (property.type === 'TSInterfaceDeclaration') {
         return flattenProperties(
           getPropProperties(property.id.name, types),
           types,
         );
       } else {
-        throw new Error(`${property.type} is not a supported object literal type.`);
+        throw new Error(
+          `${property.type} is not a supported object literal type.`,
+        );
       }
     })
     .filter(Boolean)
