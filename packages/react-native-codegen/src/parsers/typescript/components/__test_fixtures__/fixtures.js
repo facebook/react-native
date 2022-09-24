@@ -1107,21 +1107,23 @@ import type {HostComponent} from 'react-native';
 const codegenNativeComponent = require('codegenNativeComponent');
 
 export interface Base1 {
-  x: string;
+  readonly x: string;
 }
 
 export interface Base2 {
-  y: Int32;
+  readonly y: Int32;
 }
 
 export interface Derived extends Base1, Base2 {
-  z: boolean;
+  readonly z: boolean;
 }
 
 export interface ModuleProps extends ViewProps {
   // Props
-  ordinary_prop: Readonly<Derived>;
-  array_prop?: readonly Derived[];
+  ordinary_prop: Derived;
+  readonly_prop: Readonly<Derived>;
+  ordinary_array_prop?: readonly Derived[];
+  readonly_array_prop?: readonly Readonly<Derived>[];
 
   // Events
   onDirect: DirectEventHandler<Derived>;

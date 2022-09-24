@@ -125,15 +125,18 @@ function resolveTypeAnnotation(
 }
 
 function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
-  if (value.type === 'TSTypeReference' && types[value.typeName.name]) {
-    return getValueFromTypes(types[value.typeName.name], types);
+  switch (value.type) {
+    case 'TSTypeReference':
+      if (types[value.typeName.name]) {
+        return getValueFromTypes(types[value.typeName.name], types);
+      } else {
+        return value;
+      }
+    case 'TSTypeAliasDeclaration':
+      return getValueFromTypes(value.typeAnnotation, types);
+    default:
+      return value;
   }
-
-  if (value.type === 'TSTypeAliasDeclaration') {
-    return value.typeAnnotation;
-  }
-
-  return value;
 }
 
 export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
