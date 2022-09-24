@@ -1127,7 +1127,7 @@ export interface ModuleProps extends ViewProps {
 
   // Events
   onDirect: DirectEventHandler<Derived>;
-  onBubbling: BubblingEventHandler<Derived>;
+  onBubbling: BubblingEventHandler<Readonly<Derived>>;
 }
 
 export default codegenNativeComponent<ModuleProps>('Module', {

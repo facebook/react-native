@@ -54,5 +54,6 @@ function getProps(
 }
 
 module.exports = {
+  flattenProperties,
   getProps,
 };
