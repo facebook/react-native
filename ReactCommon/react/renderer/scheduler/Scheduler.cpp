@@ -95,7 +95,11 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-  runtimeExecutor_([uiManager](jsi::Runtime &runtime) {
+  auto bindingsExecutor =
+      schedulerToolbox.bridgelessBindingsExecutor.has_value()
+      ? schedulerToolbox.bridgelessBindingsExecutor.value()
+      : runtimeExecutor_;
+  bindingsExecutor([uiManager](jsi::Runtime &runtime) {
     UIManagerBinding::createAndInstallIfNeeded(runtime, uiManager);
   });
 
