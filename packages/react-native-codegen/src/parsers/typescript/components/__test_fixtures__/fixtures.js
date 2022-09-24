@@ -1124,6 +1124,8 @@ export interface ModuleProps extends ViewProps {
   readonly_prop: Readonly<Derived>;
   ordinary_array_prop?: readonly Derived[];
   readonly_array_prop?: readonly Readonly<Derived>[];
+  ordinary_nested_array_prop?: readonly Derived[][];
+  readonly_nested_array_prop?: readonly Readonly<Derived>[][];
 
   // Events
   onDirect: DirectEventHandler<Derived>;
