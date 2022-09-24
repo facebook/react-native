@@ -197,8 +197,8 @@ function filterReachableFromRoots(
   return {types, commands, events};
 }
 
-function main() {
-  const args = yargs
+async function main(): Promise<void> {
+  const args = await yargs
     .usage('Usage: msggen <header_path> <cpp_path>')
     .alias('h', 'help')
     .help('h')
