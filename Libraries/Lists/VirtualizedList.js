@@ -53,6 +53,7 @@ const ViewabilityHelper = require('./ViewabilityHelper');
 const invariant = require('invariant');
 
 const ON_END_REACHED_EPSILON = 0.001;
+const MIN_START_POSITION_THRESHOLD = 2;
 
 let _usedIndexForKey = false;
 let _keylessItemComponentName: string = '';
@@ -1329,22 +1330,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       inverted &&
       enabledTalkbackCompatibleInvertedList;
     let distanceFromEnd;
-    let endPositionReached;
     let startPositionReached;
     let isScrollingForward = dOffset < 0;
+    const threeshold = onEndReachedThresholdOrDefault(onEndReachedThreshold);
     // in case of inverted flatlist with talkback enabled
     // replace 2 with threeshold
-    const THRESHOLD = Platform.OS === 'android' ? 2 : 30;
     if (talkbackCompatibility && this._hasTriggeredInitialScrollToIndex) {
       distanceFromEnd = offset;
       startPositionReached =
-        Math.abs(visibleLength + offset - contentLength) < THRESHOLD;
-      endPositionReached = Math.abs(offset) < THRESHOLD;
+        Math.abs(visibleLength + offset - contentLength) <
+        MIN_START_POSITION_THRESHOLD;
     } else {
       distanceFromEnd = contentLength - visibleLength - offset;
-      endPositionReached =
-        Math.abs(visibleLength + offset - contentLength) < THRESHOLD;
-      startPositionReached = Math.abs(offset) < THRESHOLD;
+      startPositionReached = Math.abs(offset) < MIN_START_POSITION_THRESHOLD;
     }
 
     if (
@@ -1370,9 +1368,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return;
     }
 
-    // $FlowFixMe
-    const minimumDistanceFromEnd = onEndReachedThreshold * visibleLength;
-    if (distanceFromEnd >= minimumDistanceFromEnd) {
+    const minimumDistanceFromEnd = threeshold * visibleLength;
+    if (distanceFromEnd > minimumDistanceFromEnd) {
       return;
     }
 
@@ -1399,9 +1396,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       inverted &&
       enabledTalkbackCompatibleInvertedList
     ) {
+      /*
       console.error(
         'The prop enabledTalkbackCompatibleInvertedList can not be used with initialScrollIndex.',
       );
+      */
     }
     if (
       width > 0 &&
