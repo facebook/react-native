@@ -1387,19 +1387,23 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     const minimumDistanceFromEnd = threeshold * visibleLength;
     if (distanceFromEnd > minimumDistanceFromEnd) {
-      // console.log('distanceFromEnd > minimumDistanceFromEnd');
       return;
     }
 
     this._sentEndForContentLength = contentLength;
+    // with TalkBack inverted FlatList we trigger onEndReached when offset is 0
+    // (the top of the screen), automatically the FlatList scrolls to offset 0
+    // when new items are added. For this reason we save the _offsetFromBottomOfScreen
+    // to later restore it to the correct position
+    // and wait 1 second that the FlatList is restored to the correct position
     const canTriggerOnEndReachedWithTalkback =
       typeof this._lastTimeOnEndReachedCalled === 'number'
-        ? Math.abs(this._lastTimeOnEndReachedCalled - Date.now()) > 500
+        ? Math.abs(this._lastTimeOnEndReachedCalled - Date.now()) > 1000
         : true;
     if (
       canTriggerOnEndReachedWithTalkback &&
       talkbackCompatibility &&
-      distanceFromEnd < 30
+      distanceFromEnd < minimumDistanceFromEnd
     ) {
       // save the last position in the flastlist to restore it after animation to Top
       this._lastOffsetFromBottomOfScreen = this._offsetFromBottomOfScreen;
