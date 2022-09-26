@@ -19,6 +19,7 @@ import {
   Text,
   StatusBar,
   Button,
+  Platform,
 } from 'react-native';
 
 const DATA = [
@@ -96,14 +97,22 @@ function NestedFlatList(props) {
   const [disabled, setDisabled] = useState(false);
   const [index, setIndex] = useState(DATA.length + 1);
   const [counter, setCounter] = useState(0);
+  let lastOffsetFromTheBottom = React.useRef(null);
+  let _hasTriggeredInitialScrollToIndex = React.useRef(null);
+  let sentEndForContentLength = React.useRef(null);
   const getNewItems = startIndex => {
     let newItems = [];
-    for (let i = startIndex; i < startIndex + 11; i++) {
+    for (let i = startIndex; i < startIndex + 3; i++) {
       newItems.push({title: `${i} Item`});
     }
     return newItems;
   };
   let flatlist = React.useRef(null);
+  let _offsetFromBottomOfScreen;
+  let _sentEndForContentLength;
+  // set listener to disable/enabled depending on screenreader
+  const TALKBACK_ENABLED = true;
+  let _lastTimeOnEndReachedCalled;
   return (
     <View style={{flex: 1}}>
       <Button
@@ -137,27 +146,72 @@ function NestedFlatList(props) {
       />
       <Button
         title="increase index"
-        onPress={() => setCounter(counter => counter + 1)}
+        onPress={() => {
+          if (flatlist) flatlist.scrollToOffset({offset: 0, animated: false});
+        }}
       />
       <Text>Flatlist</Text>
       <FlatList
-        onScrollToIndexFailed={e => console.log(e)}
-        // initialScrollIndex is not supported with enableTalkbackCompatibleInvertedList
-        // initialScrollIndex={5}
         ref={ref => {
-          // $FlowFixMe
           flatlist = ref;
+        }}
+        onContentSizeChange={(width, height) => {
+          if (
+            flatlist &&
+            TALKBACK_ENABLED &&
+            _hasTriggeredInitialScrollToIndex.current &&
+            !!lastOffsetFromTheBottom.current
+          ) {
+            const newBottomHeight = height - lastOffsetFromTheBottom.current;
+            _hasTriggeredInitialScrollToIndex.current = false;
+            setTimeout(
+              (flatlist, newBottomHeight) => {
+                flatlist.scrollToOffset({
+                  offset: newBottomHeight,
+                  animated: false,
+                });
+              },
+              1,
+              flatlist,
+              newBottomHeight,
+            );
+          }
+        }}
+        onScroll={event => {
+          const {contentSize, contentOffset, contentInset, layoutMeasurement} =
+            event.nativeEvent;
+          if (flatlist && TALKBACK_ENABLED) {
+            const {offset, contentLength, visibleLength} =
+              flatlist._listRef._getScrollMetrics();
+            const canTriggerOnEndReachedWithTalkback =
+              typeof _lastTimeOnEndReachedCalled === 'number'
+                ? Math.abs(_lastTimeOnEndReachedCalled - Date.now()) > 1
+                : true;
+            const distanceFromEnd = offset;
+            _offsetFromBottomOfScreen = contentLength - offset;
+            if (
+              distanceFromEnd < 2 &&
+              _hasTriggeredInitialScrollToIndex.current &&
+              contentLength !== sentEndForContentLength.current &&
+              canTriggerOnEndReachedWithTalkback
+            ) {
+              _sentEndForContentLength = contentLength;
+              // wait 100 ms to call again onEndReached (TalkBack scrolling is slower)
+              _lastTimeOnEndReachedCalled = Date.now;
+              sentEndForContentLength.current = contentLength;
+              setItems(items => [...items, ...getNewItems(index)]);
+              setIndex(index => index + 3);
+              lastOffsetFromTheBottom.current = _offsetFromBottomOfScreen;
+            }
+            _hasTriggeredInitialScrollToIndex.current = true;
+          }
         }}
         enabledTalkbackCompatibleInvertedList
         accessibilityRole="list"
         inverted
         renderItem={renderItem}
         data={items}
-        onEndReached={() => {
-          console.log('TESTING:: ' + 'callback called');
-          setItems(items => [...items, ...getNewItems(index)]);
-          setIndex(index => index + 11);
-        }}
+        // onEndReachedThreshold={0.1}
       />
     </View>
   );
