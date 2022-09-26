@@ -33,7 +33,7 @@ export interface FlexStyle {
     | undefined;
   alignItems?: FlexAlignType | undefined;
   alignSelf?: 'auto' | FlexAlignType | undefined;
-  aspectRatio?: number | undefined;
+  aspectRatio?: number | string | undefined;
   borderBottomWidth?: number | undefined;
   borderEndWidth?: number | string | undefined;
   borderLeftWidth?: number | undefined;
