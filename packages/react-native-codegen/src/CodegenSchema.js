@@ -80,6 +80,7 @@ export type ComponentShape = $ReadOnly<{
   events: $ReadOnlyArray<EventTypeShape>,
   props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
   commands: $ReadOnlyArray<NamedShape<CommandTypeAnnotation>>,
+  state?: $ReadOnlyArray<NamedShape<StateTypeAnnotation>>,
 }>;
 
 export type OptionsShape = $ReadOnly<{
@@ -184,6 +185,8 @@ export type ReservedPropTypeAnnotation = $ReadOnly<{
     | 'PointPrimitive'
     | 'EdgeInsetsPrimitive',
 }>;
+
+export type StateTypeAnnotation = PropTypeAnnotation;
 
 export type CommandTypeAnnotation = FunctionTypeAnnotation<
   CommandParamTypeAnnotation,
