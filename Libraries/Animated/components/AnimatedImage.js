@@ -10,12 +10,12 @@
 
 import * as React from 'react';
 
-const Image = require('../../Image/Image');
-const createAnimatedComponent = require('../createAnimatedComponent');
+import Image from '../../Image/Image';
+import createAnimatedComponent from '../createAnimatedComponent';
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-module.exports = (createAnimatedComponent(
+export default (createAnimatedComponent(
   (Image: $FlowFixMe),
 ): AnimatedComponentType<
   React.ElementConfig<typeof Image>,

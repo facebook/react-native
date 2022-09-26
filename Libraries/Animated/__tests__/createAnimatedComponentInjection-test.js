@@ -11,9 +11,9 @@
 
 'use strict';
 
-const createAnimatedComponent = require('../createAnimatedComponent');
+const createAnimatedComponent = require('../createAnimatedComponent').default;
 const createAnimatedComponentInjection = require('../createAnimatedComponentInjection');
-const React = require('react');
+import * as React from 'react';
 
 function injected<TProps: {...}, TInstance>(
   Component: React.AbstractComponent<TProps, TInstance>,

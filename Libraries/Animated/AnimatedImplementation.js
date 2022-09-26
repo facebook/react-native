@@ -10,23 +10,23 @@
 
 'use strict';
 
-const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');
-const AnimatedAddition = require('./nodes/AnimatedAddition');
-const AnimatedDiffClamp = require('./nodes/AnimatedDiffClamp');
-const AnimatedDivision = require('./nodes/AnimatedDivision');
-const AnimatedInterpolation = require('./nodes/AnimatedInterpolation');
-const AnimatedModulo = require('./nodes/AnimatedModulo');
-const AnimatedMultiplication = require('./nodes/AnimatedMultiplication');
-const AnimatedNode = require('./nodes/AnimatedNode');
-const AnimatedSubtraction = require('./nodes/AnimatedSubtraction');
-const AnimatedTracking = require('./nodes/AnimatedTracking');
-const AnimatedValue = require('./nodes/AnimatedValue');
-const AnimatedValueXY = require('./nodes/AnimatedValueXY');
-const DecayAnimation = require('./animations/DecayAnimation');
-const SpringAnimation = require('./animations/SpringAnimation');
-const TimingAnimation = require('./animations/TimingAnimation');
+import {AnimatedEvent, attachNativeEvent} from './AnimatedEvent';
+import AnimatedAddition from './nodes/AnimatedAddition';
+import AnimatedDiffClamp from './nodes/AnimatedDiffClamp';
+import AnimatedDivision from './nodes/AnimatedDivision';
+import AnimatedInterpolation from './nodes/AnimatedInterpolation';
+import AnimatedModulo from './nodes/AnimatedModulo';
+import AnimatedMultiplication from './nodes/AnimatedMultiplication';
+import AnimatedNode from './nodes/AnimatedNode';
+import AnimatedSubtraction from './nodes/AnimatedSubtraction';
+import AnimatedTracking from './nodes/AnimatedTracking';
+import AnimatedValue from './nodes/AnimatedValue';
+import AnimatedValueXY from './nodes/AnimatedValueXY';
+import DecayAnimation from './animations/DecayAnimation';
+import SpringAnimation from './animations/SpringAnimation';
+import TimingAnimation from './animations/TimingAnimation';
 
-const createAnimatedComponent = require('./createAnimatedComponent');
+import createAnimatedComponent from './createAnimatedComponent';
 
 import type {
   AnimationConfig,
@@ -575,7 +575,7 @@ export type {AnimatedNumeric as Numeric};
  *
  * See https://reactnative.dev/docs/animated
  */
-module.exports = {
+export default {
   /**
    * Standard value class for driving animations.  Typically initialized with
    * `new Animated.Value(0);`

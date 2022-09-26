@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContainer
                          runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor
-                 bindingsInstallExecutor:(facebook::react::RuntimeExecutor)bindingsInstallExecutor;
+              bridgelessBindingsExecutor:(std::optional<facebook::react::RuntimeExecutor>)bridgelessBindingsExecutor;
 
 @property (nonatomic) facebook::react::ContextContainer::Shared contextContainer;
 @property (nonatomic) facebook::react::RuntimeExecutor runtimeExecutor;

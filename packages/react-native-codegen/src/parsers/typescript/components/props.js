@@ -21,6 +21,11 @@ function getPropProperties(
   types: TypeDeclarationMap,
 ): $FlowFixMe {
   const alias = types[propsTypeName];
+  if (!alias) {
+    throw new Error(
+      `Failed to find definition for "${propsTypeName}", please check that you have a valid codegen typescript file`,
+    );
+  }
   const aliasKind =
     alias.type === 'TSInterfaceDeclaration' ? 'interface' : 'type';
 
@@ -255,6 +260,17 @@ function getTypeAnnotation(
 ) {
   const typeAnnotation = getValueFromTypes(annotation, types);
 
+  // Covers: (T)
+  if (typeAnnotation.type === 'TSParenthesizedType') {
+    return getTypeAnnotation(
+      name,
+      typeAnnotation.typeAnnotation,
+      defaultValue,
+      withNullDefault,
+      types,
+    );
+  }
+
   // Covers: readonly T[]
   if (
     typeAnnotation.type === 'TSTypeOperator' &&
@@ -464,6 +480,56 @@ function getTypeAnnotation(
   }
 }
 
+function findProp(
+  name: string,
+  typeAnnotation: $FlowFixMe,
+  optionalType: boolean,
+) {
+  switch (typeAnnotation.type) {
+    // Check for (T)
+    case 'TSParenthesizedType':
+      return findProp(name, typeAnnotation.typeAnnotation, optionalType);
+
+    // Check for optional type in union e.g. T | null | undefined
+    case 'TSUnionType':
+      return findProp(
+        name,
+        typeAnnotation.types.filter(
+          t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
+        )[0],
+        optionalType ||
+          typeAnnotation.types.some(
+            t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
+          ),
+      );
+
+    case 'TSTypeReference':
+      // Check against optional type inside `WithDefault`
+      if (typeAnnotation.typeName.name === 'WithDefault' && optionalType) {
+        throw new Error(
+          'WithDefault<> is optional and does not need to be marked as optional. Please remove the union of undefined and/or null',
+        );
+      }
+      // Remove unwanted types
+      if (
+        typeAnnotation.typeName.name === 'DirectEventHandler' ||
+        typeAnnotation.typeName.name === 'BubblingEventHandler'
+      ) {
+        return null;
+      }
+      if (
+        name === 'style' &&
+        typeAnnotation.type === 'GenericTypeAnnotation' &&
+        typeAnnotation.typeName.name === 'ViewStyleProp'
+      ) {
+        return null;
+      }
+      return {typeAnnotation, optionalType};
+    default:
+      return {typeAnnotation, optionalType};
+  }
+}
+
 function buildPropSchema(
   property: PropAST,
   types: TypeDeclarationMap,
@@ -475,39 +541,12 @@ function buildPropSchema(
     types,
   );
 
-  let typeAnnotation = value;
-  let optional = property.optional || false;
-
-  // Check for optional type in union e.g. T | null | undefined
-  if (
-    typeAnnotation.type === 'TSUnionType' &&
-    typeAnnotation.types.some(
-      t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-    )
-  ) {
-    typeAnnotation = typeAnnotation.types.filter(
-      t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
-    )[0];
-    optional = true;
-
-    // Check against optional type inside `WithDefault`
-    if (
-      typeAnnotation.type === 'TSTypeReference' &&
-      typeAnnotation.typeName.name === 'WithDefault'
-    ) {
-      throw new Error(
-        'WithDefault<> is optional and does not need to be marked as optional. Please remove the union of void and/or null',
-      );
-    }
+  const foundProp = findProp(name, value, false);
+  if (!foundProp) {
+    return null;
   }
-
-  // example: WithDefault<string, ''>;
-  if (
-    value.type === 'TSTypeReference' &&
-    typeAnnotation.typeName.name === 'WithDefault'
-  ) {
-    optional = true;
-  }
+  let {typeAnnotation, optionalType} = foundProp;
+  let optional = property.optional || optionalType;
 
   // example: Readonly<{prop: string} | null | undefined>;
   if (
@@ -533,22 +572,6 @@ function buildPropSchema(
   }
 
   let type = typeAnnotation.type;
-  if (
-    type === 'TSTypeReference' &&
-    (typeAnnotation.typeName.name === 'DirectEventHandler' ||
-      typeAnnotation.typeName.name === 'BubblingEventHandler')
-  ) {
-    return null;
-  }
-
-  if (
-    name === 'style' &&
-    type === 'GenericTypeAnnotation' &&
-    typeAnnotation.typeName.name === 'ViewStyleProp'
-  ) {
-    return null;
-  }
-
   let defaultValue = null;
   let withNullDefault = false;
   if (
@@ -628,6 +651,7 @@ function flattenProperties(
         );
       }
     })
+    .filter(Boolean)
     .reduce((acc, item) => {
       if (Array.isArray(item)) {
         item.forEach(prop => {

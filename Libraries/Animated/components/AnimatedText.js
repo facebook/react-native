@@ -10,12 +10,12 @@
 
 import * as React from 'react';
 
-const Text = require('../../Text/Text');
-const createAnimatedComponent = require('../createAnimatedComponent');
+import Text from '../../Text/Text';
+import createAnimatedComponent from '../createAnimatedComponent';
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-module.exports = (createAnimatedComponent(
+export default (createAnimatedComponent(
   (Text: $FlowFixMe),
 ): AnimatedComponentType<
   React.ElementConfig<typeof Text>,

@@ -4,24 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
 import * as React from 'react';
 import {useMemo, useContext} from 'react';
-
-// Data propagated through nested lists (regardless of orientation) that is
-// useful for producing diagnostics for usage errors involving nesting (e.g
-// missing/duplicate keys).
-export type ListDebugInfo = $ReadOnly<{
-  cellKey: string,
-  listKey: string,
-  parent: ?ListDebugInfo,
-  // We include all ancestors regardless of orientation, so this is not always
-  // identical to the child's orientation.
-  horizontal: boolean,
-}>;
 
 type Context = $ReadOnly<{
   cellKey: ?string,
@@ -39,14 +27,11 @@ type Context = $ReadOnly<{
   getOutermostParentListRef: () => React.ElementRef<typeof React.Component>,
   registerAsNestedChild: ({
     cellKey: string,
-    key: string,
     ref: React.ElementRef<typeof React.Component>,
-    parentDebugInfo: ListDebugInfo,
   }) => void,
   unregisterAsNestedChild: ({
-    key: string,
+    ref: React.ElementRef<typeof React.Component>,
   }) => void,
-  debugInfo: ListDebugInfo,
 }>;
 
 export const VirtualizedListContext: React.Context<?Context> =
@@ -89,12 +74,6 @@ export function VirtualizedListContextProvider({
       getOutermostParentListRef: value.getOutermostParentListRef,
       registerAsNestedChild: value.registerAsNestedChild,
       unregisterAsNestedChild: value.unregisterAsNestedChild,
-      debugInfo: {
-        cellKey: value.debugInfo.cellKey,
-        horizontal: value.debugInfo.horizontal,
-        listKey: value.debugInfo.listKey,
-        parent: value.debugInfo.parent,
-      },
     }),
     [
       value.getScrollMetrics,
@@ -102,10 +81,6 @@ export function VirtualizedListContextProvider({
       value.getOutermostParentListRef,
       value.registerAsNestedChild,
       value.unregisterAsNestedChild,
-      value.debugInfo.cellKey,
-      value.debugInfo.horizontal,
-      value.debugInfo.listKey,
-      value.debugInfo.parent,
     ],
   );
   return (

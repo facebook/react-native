@@ -10,8 +10,8 @@
 
 import * as React from 'react';
 
-const ScrollView = require('../../Components/ScrollView/ScrollView');
-const createAnimatedComponent = require('../createAnimatedComponent');
+import ScrollView from '../../Components/ScrollView/ScrollView';
+import createAnimatedComponent from '../createAnimatedComponent';
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
@@ -22,7 +22,7 @@ const ScrollViewWithEventThrottle = React.forwardRef((props, ref) => (
   <ScrollView scrollEventThrottle={0.0001} {...props} ref={ref} />
 ));
 
-module.exports = (createAnimatedComponent(
+export default (createAnimatedComponent(
   ScrollViewWithEventThrottle,
 ): AnimatedComponentType<
   React.ElementConfig<typeof ScrollView>,

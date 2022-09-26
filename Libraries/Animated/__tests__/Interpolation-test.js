@@ -10,8 +10,8 @@
 
 'use strict';
 
-const AnimatedInterpolation = require('../nodes/AnimatedInterpolation');
-const Easing = require('../Easing');
+import AnimatedInterpolation from '../nodes/AnimatedInterpolation';
+import Easing from '../Easing';
 
 describe('Interpolation', () => {
   it('should work with defaults', () => {

@@ -39,6 +39,8 @@ describe('RNCodegen.generate', () => {
           'ShadowNodes.cpp': componentsOutputDir,
           'Props.h': componentsOutputDir,
           'Props.cpp': componentsOutputDir,
+          'States.h': componentsOutputDir,
+          'States.cpp': componentsOutputDir,
           'RCTComponentViewHelpers.h': componentsOutputDir,
           'EventEmitters.h': componentsOutputDir,
           'EventEmitters.cpp': componentsOutputDir,
