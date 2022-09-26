@@ -162,7 +162,7 @@ function getTypeAnnotationForArray<T>(
       return {
         type: 'ObjectTypeAnnotation',
         properties: flattenProperties(rawProperties, types)
-          .map(prop => buildPropSchema(prop, types))
+          .map(prop => buildSchema(prop, types))
           .filter(Boolean),
       };
     }
@@ -383,7 +383,7 @@ function getTypeAnnotation<T>(
           : typeAnnotation.members;
       const flattenedProperties = flattenProperties(rawProperties, types);
       const properties = flattenedProperties
-        .map(prop => buildPropSchema(prop, types))
+        .map(prop => buildSchema(prop, types))
         .filter(Boolean);
 
       return {
