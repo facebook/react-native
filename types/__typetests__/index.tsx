@@ -33,8 +33,6 @@ import {
   BackHandler,
   Button,
   ColorValue,
-  DataSourceAssetCallback,
-  DatePickerAndroid,
   DevSettings,
   DeviceEventEmitter,
   DeviceEventEmitterStatic,
@@ -61,10 +59,7 @@ import {
   LayoutChangeEvent,
   Linking,
   ListRenderItemInfo,
-  ListView,
-  ListViewDataSource,
   LogBox,
-  MaskedViewIOS,
   Modal,
   MouseEvent,
   NativeEventEmitter,
@@ -94,10 +89,8 @@ import {
   StyleProp,
   StyleSheet,
   Switch,
-  SwitchIOS,
   SwitchChangeEvent,
   Systrace,
-  TabBarIOS,
   Text,
   TextInput,
   TextInputChangeEventData,
@@ -111,13 +104,11 @@ import {
   TextLayoutEventData,
   TextProps,
   TextStyle,
-  TimePickerAndroid,
   TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
   UIManager,
   View,
-  ViewPagerAndroid,
   ViewStyle,
   VirtualizedList,
   YellowBox,
@@ -623,26 +614,6 @@ const AppStateExample = () => {
   );
 };
 
-// ViewPagerAndroid
-export class ViewPagerAndroidTest {
-  render() {
-    return (
-      <ViewPagerAndroid
-        style={{height: 56}}
-        initialPage={0}
-        keyboardDismissMode={'on-drag'}
-        onPageScroll={e => {
-          console.log(`position: ${e.nativeEvent.position}`);
-          console.log(`offset: ${e.nativeEvent.offset}`);
-        }}
-        onPageSelected={e => {
-          console.log(`position: ${e.nativeEvent.position}`);
-        }}
-      />
-    );
-  }
-}
-
 const profiledJSONParse = Systrace.measure('JSON', 'parse', JSON.parse);
 profiledJSONParse('[]');
 
@@ -936,112 +907,6 @@ LogBox.ignoreLogs(['someString', /^aRegex/]);
 LogBox.install();
 LogBox.uninstall();
 
-class ScrollerListComponentTest extends React.Component<
-  {},
-  {dataSource: ListViewDataSource}
-> {
-  _stickyHeaderComponent = ({children}: any) => {
-    return <View>{children}</View>;
-  };
-
-  eventHandler = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    console.log(event);
-  };
-
-  scrollView: ScrollView | null = null;
-
-  testNativeMethods() {
-    if (this.scrollView) {
-      this.scrollView.setNativeProps({scrollEnabled: false});
-
-      // Dummy values for scroll dimensions changes
-      this.scrollView.getScrollResponder().scrollResponderZoomTo({
-        x: 0,
-        y: 0,
-        width: 300,
-        height: 500,
-        animated: true,
-      });
-    }
-  }
-
-  render() {
-    const scrollViewStyle1 = StyleSheet.create({
-      scrollView: {
-        backgroundColor: 'red',
-      },
-    });
-    const scrollViewStyle2 = {
-      flex: 1,
-    };
-    return (
-      <ListView
-        dataSource={this.state.dataSource}
-        renderScrollComponent={props => {
-          if (props.scrollEnabled) {
-            throw new Error('Expected scroll to be enabled.');
-          }
-
-          return (
-            <ScrollView
-              ref={ref => (this.scrollView = ref)}
-              horizontal={true}
-              nestedScrollEnabled={true}
-              invertStickyHeaders={true}
-              contentOffset={{x: 0, y: 0}}
-              snapToStart={false}
-              snapToEnd={false}
-              snapToOffsets={[100, 300, 500]}
-              {...props}
-              style={[scrollViewStyle1.scrollView, scrollViewStyle2]}
-              onScrollToTop={() => {}}
-              scrollToOverflowEnabled={true}
-              fadingEdgeLength={200}
-              StickyHeaderComponent={this._stickyHeaderComponent}
-              stickyHeaderHiddenOnScroll={true}
-              automaticallyAdjustKeyboardInsets
-            />
-          );
-        }}
-        renderRow={({type, data}, _, row) => {
-          return <Text>Filler</Text>;
-        }}
-        onScroll={this.eventHandler}
-        onScrollBeginDrag={this.eventHandler}
-        onScrollEndDrag={this.eventHandler}
-        onMomentumScrollBegin={this.eventHandler}
-        onMomentumScrollEnd={this.eventHandler}
-      />
-    );
-  }
-}
-
-class TabBarTest extends React.Component {
-  render() {
-    return (
-      <TabBarIOS
-        barTintColor="darkslateblue"
-        itemPositioning="center"
-        tintColor="white"
-        translucent={true}
-        unselectedTintColor="black"
-        unselectedItemTintColor="red">
-        <TabBarIOS.Item
-          badge={0}
-          badgeColor="red"
-          icon={{uri: undefined}}
-          selected={true}
-          onPress={() => {}}
-          renderAsOriginal={true}
-          selectedIcon={undefined}
-          systemIcon="history"
-          title="Item 1"
-        />
-      </TabBarIOS>
-    );
-  }
-}
-
 class AlertTest extends React.Component {
   showAlert() {
     Alert.alert(
@@ -1091,16 +956,6 @@ Alert.prompt(
   'secure-text',
 );
 
-class MaskedViewTest extends React.Component {
-  render() {
-    return (
-      <MaskedViewIOS maskElement={<View />}>
-        <View />
-      </MaskedViewIOS>
-    );
-  }
-}
-
 class InputAccessoryViewTest extends React.Component {
   render() {
     const uniqueID = 'foobar';
@@ -1111,17 +966,6 @@ class InputAccessoryViewTest extends React.Component {
     );
   }
 }
-
-// DataSourceAssetCallback
-const dataSourceAssetCallback1: DataSourceAssetCallback = {
-  rowHasChanged: (r1, r2) => true,
-  sectionHeaderHasChanged: (h1, h2) => true,
-  getRowData: (dataBlob, sectionID, rowID) =>
-    (sectionID as number) + (rowID as number),
-  getSectionHeaderData: (dataBlob, sectionID) => sectionID as string,
-};
-
-const dataSourceAssetCallback2: DataSourceAssetCallback = {};
 
 // DeviceEventEmitterStatic
 const deviceEventEmitterStatic: DeviceEventEmitterStatic = DeviceEventEmitter;
@@ -1415,10 +1259,6 @@ export class ImageBackgroundProps extends React.Component {
   }
 }
 
-const listViewDataSourceTest = new ListView.DataSource({
-  rowHasChanged: () => true,
-});
-
 class AccessibilityTest extends React.Component {
   render() {
     return (
@@ -1510,30 +1350,6 @@ const KeyboardAvoidingViewTest = () => <KeyboardAvoidingView enabled />;
 
 const ModalTest = () => <Modal hardwareAccelerated />;
 const ModalTest2 = () => <Modal hardwareAccelerated testID="modal-test-2" />;
-
-const TimePickerAndroidTest = () => {
-  TimePickerAndroid.open({
-    hour: 8,
-    minute: 15,
-    is24Hour: true,
-    mode: 'spinner',
-  }).then(result => {
-    if (result.action === TimePickerAndroid.timeSetAction) {
-      console.log('Time', result.hour, result.minute);
-    }
-  });
-};
-
-const DatePickerAndroidTest = () => {
-  DatePickerAndroid.open({
-    date: new Date(),
-    mode: 'calendar',
-  }).then(result => {
-    if (result.action === DatePickerAndroid.dateSetAction) {
-      console.log('Date', result.year, result.month, result.day);
-    }
-  });
-};
 
 // $ExpectType HostComponent<{ nativeProp: string; }>
 const NativeBridgedComponent = requireNativeComponent<{nativeProp: string}>(
