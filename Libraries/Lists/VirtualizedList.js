@@ -157,7 +157,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       inverted,
       enabledTalkbackCompatibleInvertedList,
     } = this.props;
-    const talkbackCompatibility =
+    const screenreaderCompatibility =
       screenreaderEnabled &&
       initialScrollIndex == null &&
       inverted &&
@@ -186,7 +186,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return;
     }
 
-    const scrollToOffset = talkbackCompatibility ? 0 : offset;
+    const scrollToOffset = screenreaderCompatibility ? 0 : offset;
     this._scrollRef.scrollTo(
       horizontalOrDefault(this.props.horizontal)
         ? {x: scrollToOffset, animated}
@@ -665,7 +665,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     } = this.props;
     const {first, last, screenreaderEnabled, contentLength, visibleLength} =
       this.state;
-    const talkbackCompatibility =
+    const screenreaderCompatibility =
       screenreaderEnabled &&
       initialScrollIndex == null &&
       inverted &&
@@ -681,7 +681,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       : this.props.style;
     let contentContainerStyle = this.props.contentContainerStyle;
     if (
-      talkbackCompatibility &&
+      screenreaderCompatibility &&
       contentLength != null &&
       visibleLength != null
     ) {
@@ -696,7 +696,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           : {flexDirection: 'column'};
       }
     }
-    if (talkbackCompatibility) {
+    if (screenreaderCompatibility) {
       contentContainerStyle = horizontalOrDefault(this.props.horizontal)
         ? {flexDirection: 'row-reverse'}
         : {flexDirection: 'column-reverse'};
@@ -1194,7 +1194,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _onLayout = (e: LayoutEvent) => {
     const {screenreaderEnabled} = this.state;
     const {inverted, enabledTalkbackCompatibleInvertedList} = this.props;
-    const talkbackCompatibility =
+    const screenreaderCompatibility =
       screenreaderEnabled && inverted && enabledTalkbackCompatibleInvertedList;
     if (this._isNestedWithSameOrientation()) {
       // Need to adjust our scroll metrics to be relative to our containing
@@ -1204,7 +1204,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._scrollMetrics.visibleLength = this._selectLength(
         e.nativeEvent.layout,
       );
-      if (talkbackCompatibility) {
+      if (screenreaderCompatibility) {
         this.setState({visibleLength: this._scrollMetrics.visibleLength});
       }
     }
@@ -1323,8 +1323,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       initialScrollIndex,
       enabledTalkbackCompatibleInvertedList,
     } = this.props;
+    if (!onEndReached) {
+      return;
+    }
     const {contentLength, visibleLength, offset, dOffset} = this._scrollMetrics;
-    const talkbackCompatibility =
+    const screenreaderCompatibility =
       this.state.screenreaderEnabled &&
       initialScrollIndex == null &&
       inverted &&
@@ -1335,7 +1338,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const threeshold = onEndReachedThresholdOrDefault(onEndReachedThreshold);
     // in case of inverted flatlist with talkback enabled
     // replace 2 with threeshold
-    if (talkbackCompatibility && this._hasTriggeredInitialScrollToIndex) {
+    if (screenreaderCompatibility && this._hasTriggeredInitialScrollToIndex) {
       distanceFromEnd = offset;
       startPositionReached =
         Math.abs(visibleLength + offset - contentLength) <
@@ -1346,35 +1349,69 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     if (
-      talkbackCompatibility &&
+      screenreaderCompatibility &&
       startPositionReached &&
       !this._hasDoneFirstScroll
     ) {
+      console.log('return because start position');
       return;
     }
 
-    // If scrolled up in the vertical list
-    if (dOffset < 0) {
+    // If scrolls in the wrong direction in the vertical list
+    const talkbackCompatibility =
+      screenreaderCompatibility && Platform.OS === 'android';
+    if (!screenreaderCompatibility && dOffset < 0) {
+      return;
+    }
+
+    if (screenreaderCompatibility && dOffset > 0) {
       return;
     }
 
     // If contentLength has not changed
-    if (contentLength === this._sentEndForContentLength) {
+    if (
+      !talkbackCompatibility &&
+      contentLength === this._sentEndForContentLength
+    ) {
+      console.log('If contentLength has not changed ');
       return;
     }
 
     // If the distance is so farther than the area shown on the screen
     if (distanceFromEnd >= visibleLength * 1.5) {
+      console.log(
+        'If the distance is so farther than the area shown on the screen ',
+      );
       return;
     }
 
     const minimumDistanceFromEnd = threeshold * visibleLength;
     if (distanceFromEnd > minimumDistanceFromEnd) {
+      // console.log('distanceFromEnd > minimumDistanceFromEnd');
       return;
     }
 
     this._sentEndForContentLength = contentLength;
-    onEndReached({distanceFromEnd});
+    const canTriggerOnEndReachedWithTalkback =
+      typeof this._lastTimeOnEndReachedCalled === 'number'
+        ? Math.abs(this._lastTimeOnEndReachedCalled - Date.now()) > 500
+        : true;
+    if (
+      canTriggerOnEndReachedWithTalkback &&
+      talkbackCompatibility &&
+      distanceFromEnd < 30
+    ) {
+      // save the last position in the flastlist to restore it after animation to Top
+      this._lastOffsetFromBottomOfScreen = this._offsetFromBottomOfScreen;
+      // Only call onEndReached once for a given content length
+      this._sentEndForContentLength = this._scrollMetrics.contentLength;
+      // wait 100 ms to call again onEndReached (TalkBack scrolling is slower)
+      this._lastTimeOnEndReachedCalled = Date.now();
+      onEndReached({distanceFromEnd});
+    }
+    if (!talkbackCompatibility) {
+      onEndReached({distanceFromEnd});
+    }
   }
 
   _onContentSizeChange = (width: number, height: number) => {
@@ -1384,7 +1421,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       inverted,
       enabledTalkbackCompatibleInvertedList,
     } = this.props;
-    const talkbackCompatibility =
+    const screenreaderCompatibility =
       screenreaderEnabled &&
       initialScrollIndex == null &&
       inverted &&
@@ -1423,7 +1460,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._scrollMetrics.contentLength = this._selectLength({height, width});
     const contentLengthChanged =
       this._scrollMetrics.contentLength !== contentLength;
-    if (contentLengthChanged && talkbackCompatibility) {
+    if (contentLengthChanged && screenreaderCompatibility) {
       this.setState({contentLength: this._scrollMetrics.contentLength});
     }
     // talkback inverted flatlist, scroll to bottom when first rendered
@@ -1438,12 +1475,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._lastItem === undefined ||
       (lastItemDidNotChange && scrollPositionChanged);
     console.log('triggerTalkbackScrollToEnd:', triggerTalkbackScrollToEnd);
-    console.log('talkbackCompatibility:', talkbackCompatibility);
+    console.log('screenreaderCompatibility:', screenreaderCompatibility);
     if (
       width > 0 &&
       height > 0 &&
       triggerTalkbackScrollToEnd &&
-      talkbackCompatibility
+      screenreaderCompatibility
     ) {
       // onMomentumScrollEnd does not work with TalkBack gestures
       // estrapolate this to a method talkbackScrollTo compatible with
@@ -1479,7 +1516,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // and ScrollView scrollEnd events are not compatible with TalkBack
     // https://github.com/facebook/react-native/pull/34141#issuecomment-1189883210
     if (
-      talkbackCompatibility &&
+      screenreaderCompatibility &&
       this._hasTriggeredInitialScrollToIndex &&
       this._lastOffsetFromBottomOfScreen
     ) {
@@ -1534,7 +1571,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       inverted,
       enabledTalkbackCompatibleInvertedList,
     } = this.props;
-    const talkbackCompatibility =
+    const screenreaderCompatibility =
       screenreaderEnabled &&
       initialScrollIndex == null &&
       inverted &&
@@ -1554,7 +1591,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // contentLength and offset (the bottomY or bottomX) and we use it to
     // restore the scrollPosition after onEndReached
     // this.scrollToOffset({offset: newHeight - this._offsetFromBottomOfScreen})
-    if (talkbackCompatibility) {
+    if (screenreaderCompatibility) {
       this._offsetFromBottomOfScreen = contentLength - offset;
     }
 
@@ -1616,7 +1653,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Disabled with TalkBack inverted FlatList
     // Triggers a scrollTo bottom and subsequent top when scrolling down
     // fast, documented in https://bit.ly/3PkawQ4
-    if (!talkbackCompatibility) {
+    if (!screenreaderCompatibility) {
       this._scheduleCellsToRenderUpdate();
     }
   };
