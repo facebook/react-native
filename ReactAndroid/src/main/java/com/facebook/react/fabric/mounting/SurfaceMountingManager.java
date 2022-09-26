@@ -231,10 +231,19 @@ public class SurfaceMountingManager {
                   "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
                   rootView.getId(),
                   mSurfaceId);
-              throw new IllegalViewOperationException(
-                  "Trying to add a root view with an explicit id already set. React Native uses "
-                      + "the id field to track react tags and will overwrite this field. If that is fine, "
-                      + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+              // This behavior can not be guaranteed in hybrid apps that have a native android layer over
+              // which reactRootViews are added and the native views need to have ids on them in order to
+              // work.
+              // Hence this can cause unnecessary crashes at runtime for hybrid apps.
+              // So converting this to a soft exception such that pure react-native devs can still see the
+              // warning while hybrid apps continue to run without crashes
+              ReactSoftExceptionLogger.logSoftException(
+                TAG,
+                new IllegalViewOperationException(
+                  "Trying to attach a ReactRootView with an explicit id already set to ["
+                    + rootView.getId()
+                    + "]. React Native uses the id field to track react tags and will overwrite this"
+                    + " field. If that is fine, explicitly overwrite the id field to View.NO_ID."));
             }
             rootView.setId(mSurfaceId);
 
