@@ -240,10 +240,9 @@ public class SurfaceMountingManager {
               ReactSoftExceptionLogger.logSoftException(
                 TAG,
                 new IllegalViewOperationException(
-                  "Trying to attach a ReactRootView with an explicit id already set to ["
-                    + rootView.getId()
-                    + "]. React Native uses the id field to track react tags and will overwrite this"
-                    + " field. If that is fine, explicitly overwrite the id field to View.NO_ID."));
+                  "Trying to add a root view with an explicit id already set. React Native uses "
+                    + "the id field to track react tags and will overwrite this field. If that is fine, "
+                    + "explicitly overwrite the id field to View.NO_ID before calling addRootView."));
             }
             rootView.setId(mSurfaceId);
 
