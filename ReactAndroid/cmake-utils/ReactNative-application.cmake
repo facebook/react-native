@@ -12,9 +12,17 @@
 # - Include all the pre-built libraries in your build graph
 # - Link your library against those prebuilt libraries so you can access JSI, Fabric, etc.
 # - Link your library against any autolinked library.
+# - Make sure ccache is used as part of the compilation process, if you have it installed.
 
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
+
+# If you have ccache installed, we're going to honor it.
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif(CCACHE_FOUND)
 
 include(${REACT_ANDROID_DIR}/cmake-utils/Android-prebuilt.cmake)
 
