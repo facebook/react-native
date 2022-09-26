@@ -261,6 +261,7 @@ export interface TextStyleIOS extends ViewStyle {
 
 export interface TextStyleAndroid extends ViewStyle {
   textAlignVertical?: 'auto' | 'top' | 'bottom' | 'center' | undefined;
+  verticalAlign?: 'auto' | 'top' | 'bottom' | 'middle' | undefined;
   includeFontPadding?: boolean | undefined;
 }
 
