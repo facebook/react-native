@@ -15,7 +15,7 @@ import type {
   NamedShape,
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
-const {flattenProperties} = require('./props');
+const {flattenProperties} = require('./componentsUtils');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
