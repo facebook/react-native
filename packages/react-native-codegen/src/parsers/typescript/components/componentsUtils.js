@@ -14,14 +14,14 @@ import type {TypeDeclarationMap} from '../utils.js';
 import type {NamedShape} from '../../../CodegenSchema.js';
 const {getValueFromTypes} = require('../utils.js');
 
-function getPropProperties(
-  propsTypeName: string,
+function getProperties(
+  typeName: string,
   types: TypeDeclarationMap,
 ): $FlowFixMe {
-  const alias = types[propsTypeName];
+  const alias = types[typeName];
   if (!alias) {
     throw new Error(
-      `Failed to find definition for "${propsTypeName}", please check that you have a valid codegen typescript file`,
+      `Failed to find definition for "${typeName}", please check that you have a valid codegen typescript file`,
     );
   }
   const aliasKind =
@@ -39,16 +39,17 @@ function getPropProperties(
     );
   } catch (e) {
     throw new Error(
-      `Failed to find ${aliasKind} definition for "${propsTypeName}", please check that you have a valid codegen typescript file`,
+      `Failed to find ${aliasKind} definition for "${typeName}", please check that you have a valid codegen typescript file`,
     );
   }
 }
 
-function getTypeAnnotationForArrayOfArrayOfObject(
+function getTypeAnnotationForObjectAsArrayElement<T>(
   name: string,
   typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
-) {
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+): $FlowFixMe {
   // for array of array of a type
   // such type must be an object literal
   const elementType = getTypeAnnotationForArray(
@@ -56,6 +57,7 @@ function getTypeAnnotationForArrayOfArrayOfObject(
     typeAnnotation,
     null,
     types,
+    buildSchema,
   );
   if (elementType.type !== 'ObjectTypeAnnotation') {
     throw new Error(
@@ -69,18 +71,20 @@ function getTypeAnnotationForArrayOfArrayOfObject(
   };
 }
 
-function getTypeAnnotationForArray(
+function getTypeAnnotationForArray<T>(
   name: string,
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | null,
   types: TypeDeclarationMap,
-) {
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+): $FlowFixMe {
   if (typeAnnotation.type === 'TSParenthesizedType') {
     return getTypeAnnotationForArray(
       name,
       typeAnnotation.typeAnnotation,
       defaultValue,
       types,
+      buildSchema,
     );
   }
 
@@ -108,10 +112,11 @@ function getTypeAnnotationForArray(
 
   // Covers: T[]
   if (typeAnnotation.type === 'TSArrayType') {
-    return getTypeAnnotationForArrayOfArrayOfObject(
+    return getTypeAnnotationForObjectAsArrayElement(
       name,
       typeAnnotation.elementType,
       types,
+      buildSchema,
     );
   }
 
@@ -125,15 +130,17 @@ function getTypeAnnotationForArray(
         objectType.typeParameters.params[0],
         defaultValue,
         types,
+        buildSchema,
       );
     }
 
     // Covers: ReadonlyArray<T>
     if (objectType.typeName.name === 'ReadonlyArray') {
-      return getTypeAnnotationForArrayOfArrayOfObject(
+      return getTypeAnnotationForObjectAsArrayElement(
         name,
         objectType.typeParameters.params[0],
         types,
+        buildSchema,
       );
     }
   }
@@ -261,13 +268,14 @@ function getTypeAnnotationForArray(
   }
 }
 
-function getTypeAnnotation(
+function getTypeAnnotation<T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | null,
   withNullDefault: boolean,
   types: TypeDeclarationMap,
-) {
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+): $FlowFixMe {
   const typeAnnotation = getValueFromTypes(annotation, types);
 
   // Covers: (T)
@@ -278,6 +286,7 @@ function getTypeAnnotation(
       defaultValue,
       withNullDefault,
       types,
+      buildSchema,
     );
   }
 
@@ -294,6 +303,7 @@ function getTypeAnnotation(
         typeAnnotation.typeAnnotation.elementType,
         defaultValue,
         types,
+        buildSchema,
       ),
     };
   }
@@ -310,6 +320,7 @@ function getTypeAnnotation(
         typeAnnotation.typeParameters.params[0],
         defaultValue,
         types,
+        buildSchema,
       ),
     };
   }
@@ -328,6 +339,7 @@ function getTypeAnnotation(
         typeAnnotation.typeParameters.params[0],
         defaultValue,
         types,
+        buildSchema,
       ),
     };
   }
@@ -352,6 +364,7 @@ function getTypeAnnotation(
       defaultValue,
       withNullDefault,
       types,
+      buildSchema,
     );
   }
 
@@ -664,14 +677,14 @@ function verifyPropNotAlreadyDefined(
 function flattenProperties(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
-) {
+): $ReadOnlyArray<PropAST> {
   return typeDefinition
     .map(property => {
       if (property.type === 'TSPropertySignature') {
         return property;
       } else if (property.type === 'TSTypeReference') {
         return flattenProperties(
-          getPropProperties(property.typeName.name, types),
+          getProperties(property.typeName.name, types),
           types,
         );
       } else if (
@@ -679,14 +692,14 @@ function flattenProperties(
         property.type === 'TSInterfaceHeritage'
       ) {
         return flattenProperties(
-          getPropProperties(property.expression.name, types),
+          getProperties(property.expression.name, types),
           types,
         );
       } else if (property.type === 'TSTypeLiteral') {
         return flattenProperties(property.members, types);
       } else if (property.type === 'TSInterfaceDeclaration') {
         return flattenProperties(
-          getPropProperties(property.id.name, types),
+          getProperties(property.id.name, types),
           types,
         );
       } else {
