@@ -1445,7 +1445,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       triggerTalkbackScrollToEnd &&
       talkbackCompatibility
     ) {
-      console.log('scroll to the end');
       // onMomentumScrollEnd does not work with TalkBack gestures
       // estrapolate this to a method talkbackScrollTo compatible with
       // TalkBack gestures.

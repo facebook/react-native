@@ -168,7 +168,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @ReactProp(name = "enabledTalkbackCompatibleInvertedList")
   public void setEnabledTalkbackCompatibleInvertedList(
       ReactScrollView view, boolean enabledTalkbackCompatibleInvertedList) {
-    view.setEnabledTalkbackCompatibleInvertedList(true);
+    view.setEnabledTalkbackCompatibleInvertedList(enabledTalkbackCompatibleInvertedList);
   }
 
   /**
