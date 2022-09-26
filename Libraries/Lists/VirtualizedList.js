@@ -47,6 +47,7 @@ const {findNodeHandle} = require('../ReactNative/RendererProxy');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const infoLog = require('../Utilities/infoLog');
+const Platform = require('../Utilities/Platform');
 const FillRateHelper = require('./FillRateHelper');
 const ViewabilityHelper = require('./ViewabilityHelper');
 const invariant = require('invariant');
@@ -1034,6 +1035,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
+  _hasDoneFirstScroll = false;
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
@@ -1320,71 +1322,62 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       initialScrollIndex,
       enabledTalkbackCompatibleInvertedList,
     } = this.props;
-    const {contentLength, visibleLength, offset} = this._scrollMetrics;
+    const {contentLength, visibleLength, offset, dOffset} = this._scrollMetrics;
     const talkbackCompatibility =
       this.state.screenreaderEnabled &&
       initialScrollIndex == null &&
       inverted &&
       enabledTalkbackCompatibleInvertedList;
     let distanceFromEnd;
+    let endPositionReached;
+    let startPositionReached;
+    let isScrollingForward = dOffset < 0;
+    // in case of inverted flatlist with talkback enabled
+    // replace 2 with threeshold
+    const THRESHOLD = Platform.OS === 'android' ? 2 : 30;
     if (talkbackCompatibility && this._hasTriggeredInitialScrollToIndex) {
       distanceFromEnd = offset;
+      startPositionReached =
+        Math.abs(visibleLength + offset - contentLength) < THRESHOLD;
+      endPositionReached = Math.abs(offset) < THRESHOLD;
     } else {
       distanceFromEnd = contentLength - visibleLength - offset;
+      endPositionReached =
+        Math.abs(visibleLength + offset - contentLength) < THRESHOLD;
+      startPositionReached = Math.abs(offset) < THRESHOLD;
     }
 
-    // Especially when oERT is zero it's necessary to 'floor' very small distanceFromEnd values to be 0
-    // since debouncing causes us to not fire this event for every single "pixel" we scroll and can thus
-    // be at the "end" of the list with a distanceFromEnd approximating 0 but not quite there.
-    if (!talkbackCompatibility && distanceFromEnd < ON_END_REACHED_EPSILON) {
-      distanceFromEnd = 0;
-    }
-
-    // TODO: T121172172 Look into why we're "defaulting" to a threshold of 2 when oERT is not present
-    const threshold =
-      onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
-    const canTriggerOnEndReachedWithTalkback =
-      typeof this._lastTimeOnEndReachedCalled === 'number'
-        ? Math.abs(this._lastTimeOnEndReachedCalled - Date.now()) > 500
-        : true;
     if (
-      onEndReached &&
-      this._beginningReached &&
       talkbackCompatibility &&
-      distanceFromEnd === 0 &&
-      this._hasTriggeredInitialScrollToIndex &&
-      this.state.last === getItemCount(data) - 1 &&
-      this._scrollMetrics.contentLength !== this._sentEndForContentLength &&
-      canTriggerOnEndReachedWithTalkback
+      startPositionReached &&
+      !this._hasDoneFirstScroll
     ) {
-      // save the last position in the flastlist to restore it after animation to Top
-      this._lastOffsetFromBottomOfScreen = this._offsetFromBottomOfScreen;
-      // Only call onEndReached once for a given content length
-      this._sentEndForContentLength = this._scrollMetrics.contentLength;
-      // wait 100 ms to call again onEndReached (TalkBack scrolling is slower)
-      this._lastTimeOnEndReachedCalled = Date.now();
-      onEndReached({distanceFromEnd});
-    } else {
-      this._lastOffsetFromBottomOfScreen = undefined;
+      return;
     }
-    if (
-      onEndReached &&
-      this.state.last === getItemCount(data) - 1 &&
-      distanceFromEnd <= threshold &&
-      this._scrollMetrics.contentLength !== this._sentEndForContentLength
-    ) {
-      if (talkbackCompatibility) {
-        this._beginningReached = true;
-      } else {
-        // Only call onEndReached once for a given content length
-        this._sentEndForContentLength = this._scrollMetrics.contentLength;
-        onEndReached({distanceFromEnd});
-      }
-    } else if (distanceFromEnd > threshold) {
-      // If the user scrolls away from the end and back again cause
-      // an onEndReached to be triggered again
-      this._sentEndForContentLength = 0;
+
+    // If scrolled up in the vertical list
+    if (dOffset < 0) {
+      return;
     }
+
+    // If contentLength has not changed
+    if (contentLength === this._sentEndForContentLength) {
+      return;
+    }
+
+    // If the distance is so farther than the area shown on the screen
+    if (distanceFromEnd >= visibleLength * 1.5) {
+      return;
+    }
+
+    // $FlowFixMe
+    const minimumDistanceFromEnd = onEndReachedThreshold * visibleLength;
+    if (distanceFromEnd >= minimumDistanceFromEnd) {
+      return;
+    }
+
+    this._sentEndForContentLength = contentLength;
+    onEndReached({distanceFromEnd});
   }
 
   _onContentSizeChange = (width: number, height: number) => {
@@ -1445,12 +1438,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._lastScrollPosition === undefined ||
       this._lastItem === undefined ||
       (lastItemDidNotChange && scrollPositionChanged);
+    console.log('triggerTalkbackScrollToEnd:', triggerTalkbackScrollToEnd);
+    console.log('talkbackCompatibility:', talkbackCompatibility);
     if (
       width > 0 &&
       height > 0 &&
       triggerTalkbackScrollToEnd &&
       talkbackCompatibility
     ) {
+      console.log('scroll to the end');
       // onMomentumScrollEnd does not work with TalkBack gestures
       // estrapolate this to a method talkbackScrollTo compatible with
       // TalkBack gestures.
@@ -1613,6 +1609,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (!this.props) {
       return;
     }
+    this._hasDoneFirstScroll = true;
     this._maybeCallOnEndReached();
     if (velocity !== 0) {
       this._fillRateHelper.activate();
