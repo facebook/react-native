@@ -94,6 +94,13 @@ export type ImageProps = {|
   'aria-label'?: ?Stringish,
 
   /**
+   * Reperesents the nativeID of the associated label. When the assistive technology focuses on the component with this props.
+   *
+   * @platform android
+   */
+  'aria-labelledby'?: ?string,
+
+  /**
    * blurRadius: the blur radius of the blur filter added to the image
    *
    * See https://reactnative.dev/docs/image#blurradius
