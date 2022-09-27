@@ -1384,13 +1384,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _onScroll = (e: Object) => {
-    const {screenreaderEnabled} = this.state;
-    const {inverted, enabledTalkbackCompatibleInvertedList} = this.props;
-    const talkbackCompatibility =
-      screenreaderEnabled &&
-      inverted &&
-      Platform.OS === 'android' &&
-      enabledTalkbackCompatibleInvertedList;
     this._nestedChildLists.forEach(childList => {
       childList._onScroll(e);
     });
@@ -1457,12 +1450,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._fillRateHelper.activate();
     }
     this._computeBlankness();
-    // Disabled with TalkBack inverted FlatList
-    // Triggers a scrollTo bottom and subsequent top when scrolling down
-    // fast, documented in https://bit.ly/3PkawQ4
-    if (!talkbackCompatibility) {
-      this._scheduleCellsToRenderUpdate();
-    }
+    this._scheduleCellsToRenderUpdate();
   };
 
   _scheduleCellsToRenderUpdate() {
