@@ -143,6 +143,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   // scrollToEnd may be janky without getItemLayout prop
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
+    if (__DEV__ && this.props.enabledTalkbackCompatibleInvertedList) {
+      console.log(
+        'scrollToEnd is not compatible with enabledTalkbackCompatibleInvertedList,' +
+          'use instead scrollToOffset. An example implementation is available in rn-tester flatlist-inverted.',
+      );
+    }
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
     const frame = this.__getFrameMetricsApprox(veryLast);
@@ -646,7 +652,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const {contentLength, visibleLength} = this._scrollMetrics;
     const talkbackCompatibility =
       screenreaderEnabled &&
-      initialScrollIndex == null &&
       inverted &&
       Platform.OS === 'android' &&
       enabledTalkbackCompatibleInvertedList;
@@ -1290,9 +1295,26 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _maybeCallOnEndReached() {
-    const {data, getItemCount, onEndReached, onEndReachedThreshold} =
-      this.props;
+    const {
+      data,
+      getItemCount,
+      onEndReached,
+      onEndReachedThreshold,
+      inverted,
+      enabledTalkbackCompatibleInvertedList,
+    } = this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
+    if (
+      __DEV__ &&
+      inverted &&
+      enabledTalkbackCompatibleInvertedList &&
+      onEndReached != null
+    ) {
+      console.log(
+        'The prop enabledTalkbackCompatibleInvertedList is not compatible with onEndReached. ' +
+          'An example implementation is available in rn-tester flatlist-inverted.',
+      );
+    }
     let distanceFromEnd = contentLength - visibleLength - offset;
 
     // Especially when oERT is zero it's necessary to 'floor' very small distanceFromEnd values to be 0

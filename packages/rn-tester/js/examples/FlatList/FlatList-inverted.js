@@ -242,12 +242,6 @@ function InvertedFlatlist(props) {
         }}
         inverted
         enabledTalkbackCompatibleInvertedList
-        // contentOffset does not work when the offset does not change
-        contentOffset={
-          screenreaderEnabled === true && contentHeight != null
-            ? {y: contentHeight, x: 0}
-            : null
-        }
         renderItem={renderItem}
         data={items}
         accessibilityRole="list"
