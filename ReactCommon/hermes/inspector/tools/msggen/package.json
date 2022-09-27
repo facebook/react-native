@@ -16,22 +16,10 @@
     "yargs": "^17.5.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.2.0",
-    "@babel/core": "^7.2.0",
-    "@babel/plugin-syntax-flow": "^7.2.0",
-    "@babel/plugin-transform-flow-strip-types": "^7.2.0",
-    "@babel/preset-env": "^7.2.0",
-    "@babel/preset-flow": "^7.2.0",
-    "diff": "3.5.0",
-    "extend": "3.0.2",
-    "jest": "^26.6.3",
-    "nwmatcher": "1.4.4",
-    "randomatic": "3.0.0",
-    "sshpk": "1.16.1",
-    "webpack": "^4.41.0"
-  },
-  "resolutions": {
-    "set-value": "^4.1.0"
+    "@babel/cli": "^7.14.0",
+    "@babel/preset-env": "^7.14.0",
+    "@babel/preset-flow": "^7.14.0",
+    "jest": "^29.0.3"
   },
   "jest": {
     "transform": {

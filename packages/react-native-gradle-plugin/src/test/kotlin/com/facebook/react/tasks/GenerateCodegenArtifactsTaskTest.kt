@@ -127,7 +127,8 @@ class GenerateCodegenArtifactsTaskTest {
                 }
             }
         }
-        """.trimIndent())
+        """
+                  .trimIndent())
         }
 
     val task =
@@ -155,7 +156,8 @@ class GenerateCodegenArtifactsTaskTest {
             "codegenConfig": {
             }
         }
-        """.trimIndent())
+        """
+                  .trimIndent())
         }
 
     val task =

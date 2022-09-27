@@ -233,6 +233,7 @@ const createMockPressEvent = (
 describe('Pressability', () => {
   beforeEach(() => {
     jest.resetModules();
+    jest.restoreAllMocks();
     jest.spyOn(Date, 'now');
     jest.spyOn(HoverState, 'isHoverEnabled');
   });
@@ -667,15 +668,20 @@ describe('Pressability', () => {
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
       jest.runOnlyPendingTimers();
       expect(config.onPressIn).toBeCalled();
+
       // WORKAROUND: Jest does not advance `Date.now()`.
-      const touchActivateTime = Date.now();
+      expect(Date.now).toHaveBeenCalledTimes(1);
+      const touchActivateTime = Date.now.mock.results[0].value;
       jest.advanceTimersByTime(120);
       Date.now.mockReturnValue(touchActivateTime + 120);
       handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
 
       expect(config.onPressOut).not.toBeCalled();
       jest.advanceTimersByTime(10);
+      Date.now.mockReturnValue(touchActivateTime + 130);
       expect(config.onPressOut).toBeCalled();
+
+      Date.now.mockRestore();
     });
 
     it('is called synchronously if minimum press duration is 0ms', () => {

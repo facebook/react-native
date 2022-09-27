@@ -90,7 +90,8 @@ RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
   if (self = [super init]) {
     contextContainer->update(*RCTContextContainerFromBridge(bridge));
     _surfacePresenter = [[RCTSurfacePresenter alloc] initWithContextContainer:contextContainer
-                                                              runtimeExecutor:RCTRuntimeExecutorFromBridge(bridge)];
+                                                              runtimeExecutor:RCTRuntimeExecutorFromBridge(bridge)
+                                                   bridgelessBindingsExecutor:std::nullopt];
 
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;

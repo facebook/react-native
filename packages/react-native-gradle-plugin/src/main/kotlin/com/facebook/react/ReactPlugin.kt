@@ -46,7 +46,8 @@ class ReactPlugin : Plugin<Project> {
       
       ********************************************************************************
       
-      """.trimIndent())
+      """
+              .trimIndent())
       exitProcess(1)
     }
   }

@@ -263,6 +263,8 @@ def rn_codegen_components(
     generate_event_emitter_h_name = "generate_event_emitter_h-{}".format(name)
     generate_props_cpp_name = "generate_props_cpp-{}".format(name)
     generate_props_h_name = "generated_props_h-{}".format(name)
+    generate_state_cpp_name = "generate_state_cpp-{}".format(name)
+    generate_state_h_name = "generated_state_h-{}".format(name)
     generate_tests_cpp_name = "generate_tests_cpp-{}".format(name)
     generate_shadow_node_cpp_name = "generated_shadow_node_cpp-{}".format(name)
     generate_shadow_node_h_name = "generated_shadow_node_h-{}".format(name)
@@ -315,6 +317,13 @@ def rn_codegen_components(
     )
 
     fb_native.genrule(
+        name = generate_state_cpp_name,
+        cmd = "cp $(location :{})/States.cpp $OUT".format(generate_fixtures_rule_name),
+        out = "States.cpp",
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.genrule(
         name = generate_tests_cpp_name,
         cmd = "cp $(location :{})/Tests.cpp $OUT".format(generate_fixtures_rule_name),
         out = "Tests.cpp",
@@ -325,6 +334,13 @@ def rn_codegen_components(
         name = generate_props_h_name,
         cmd = "cp $(location :{})/Props.h $OUT".format(generate_fixtures_rule_name),
         out = "Props.h",
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.genrule(
+        name = generate_state_h_name,
+        cmd = "cp $(location :{})/States.h $OUT".format(generate_fixtures_rule_name),
+        out = "States.h",
         labels = ["codegen_rule"],
     )
 
@@ -388,12 +404,14 @@ def rn_codegen_components(
                 srcs = [
                     ":{}".format(generate_event_emitter_cpp_name),
                     ":{}".format(generate_props_cpp_name),
+                    ":{}".format(generate_state_cpp_name),
                     ":{}".format(generate_shadow_node_cpp_name),
                 ],
                 headers = [
                     ":{}".format(generate_component_descriptor_h_name),
                     ":{}".format(generate_event_emitter_h_name),
                     ":{}".format(generate_props_h_name),
+                    ":{}".format(generate_state_h_name),
                     ":{}".format(generate_shadow_node_h_name),
                 ],
                 header_namespace = "react/renderer/components/{}".format(name),
@@ -403,6 +421,7 @@ def rn_codegen_components(
                     "Props.h": ":{}".format(generate_props_h_name),
                     "RCTComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
                     "ShadowNodes.h": ":{}".format(generate_shadow_node_h_name),
+                    "States.h": ":{}".format(generate_state_h_name),
                 },
                 fbobjc_compiler_flags = get_apple_compiler_flags(),
                 fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),

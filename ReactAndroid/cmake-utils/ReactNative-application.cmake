@@ -12,20 +12,28 @@
 # - Include all the pre-built libraries in your build graph
 # - Link your library against those prebuilt libraries so you can access JSI, Fabric, etc.
 # - Link your library against any autolinked library.
+# - Make sure ccache is used as part of the compilation process, if you have it installed.
 
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+# If you have ccache installed, we're going to honor it.
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif(CCACHE_FOUND)
+
 include(${REACT_ANDROID_DIR}/cmake-utils/Android-prebuilt.cmake)
 
-file(GLOB input_SRC CONFIGURE_DEPENDS 
+file(GLOB input_SRC CONFIGURE_DEPENDS
         *.cpp
         ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/*.cpp)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})
 
-target_include_directories(${CMAKE_PROJECT_NAME} 
-        PUBLIC 
+target_include_directories(${CMAKE_PROJECT_NAME}
+        PUBLIC
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni)
 
@@ -45,6 +53,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_render_core
         react_render_debug
         react_render_graphics
+        react_render_mapbuffer
         rrc_view
         runtimeexecutor
         turbomodulejsijni

@@ -10,14 +10,14 @@
 
 import * as React from 'react';
 import {
+  Alert,
   Animated,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
-  Platform,
   View,
-  Alert,
 } from 'react-native';
 import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
 
@@ -101,7 +101,7 @@ function PressableAriaLabel() {
   );
 }
 function PressableFeedbackEvents() {
-  const [eventLog, setEventLog] = useState([]);
+  const [eventLog, setEventLog] = useState<Array<string>>([]);
 
   function appendEvent(eventName: string) {
     const limit = 6;
@@ -137,7 +137,7 @@ function PressableFeedbackEvents() {
 }
 
 function PressableDelayEvents() {
-  const [eventLog, setEventLog] = useState([]);
+  const [eventLog, setEventLog] = useState<Array<string>>([]);
 
   function appendEvent(eventName: string) {
     const limit = 6;
