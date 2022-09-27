@@ -72,7 +72,7 @@ module.exports = {
       },
     },
     {
-      files: ['types/**/*.{ts,tsx}'],
+      files: ['**/*.{ts,tsx}'],
       parser: '@typescript-eslint/parser',
       plugins: ['@typescript-eslint/eslint-plugin'],
       rules: {
