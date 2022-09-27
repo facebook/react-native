@@ -39,13 +39,13 @@ function requireModuleParser() {
       });
     } else {
       const config = {
-        only: [/react-native-codegen\/lib\//],
+        only: [/@react-native\/codegen\/lib\//],
         plugins: [require('@babel/plugin-transform-flow-strip-types').default],
       };
 
       withBabelRegister(config, () => {
-        RNModuleParser = require('react-native-codegen/lib/parsers/flow/modules');
-        RNParserUtils = require('react-native-codegen/lib/parsers/utils');
+        RNModuleParser = require('@react-native/codegen/lib/parsers/flow/modules');
+        RNParserUtils = require('@react-native/codegen/lib/parsers/flow/utils');
       });
     }
   }
