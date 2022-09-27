@@ -167,6 +167,9 @@ android {
                 path "$projectDir/src/main/jni/CMakeLists.txt"
             }
         }
+        buildFeatures {
+            prefab true
+        }
         def reactAndroidProjectDir = project(':ReactAndroid').projectDir
         def packageReactNdkDebugLibs = tasks.register("packageReactNdkDebugLibs", Copy) {
             dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")

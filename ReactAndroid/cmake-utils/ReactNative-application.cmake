@@ -39,6 +39,10 @@ target_include_directories(${CMAKE_PROJECT_NAME}
 
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions -frtti -std=c++17 -DWITH_INSPECTOR=1 -DLOG_TAG=\"ReactNative\")
 
+# Prefab packages
+find_package(ReactAndroid REQUIRED CONFIG)
+add_library(react_render_debug ALIAS ReactAndroid::react_render_debug)
+
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni
         fbjni
@@ -51,7 +55,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_newarchdefaults
         react_render_componentregistry
         react_render_core
-        react_render_debug
+        react_render_debug                  # prefab ready
         react_render_graphics
         react_render_mapbuffer
         rrc_view
