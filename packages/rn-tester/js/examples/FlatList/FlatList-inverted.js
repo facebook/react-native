@@ -12,31 +12,14 @@ import * as React from 'react';
 import {useState} from 'react';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import {
-  SafeAreaView,
   View,
   FlatList,
   StyleSheet,
   Text,
-  StatusBar,
   Button,
   Platform,
   AccessibilityInfo,
 } from 'react-native';
-
-const DATA_SHORT = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-  },
-];
 
 const DATA = [
   {
@@ -85,7 +68,7 @@ function Item({title}) {
   const [pressed, setPressed] = useState(false);
   return (
     <Text
-      onPress={() => setPressed(pressed => !pressed)}
+      onPress={() => setPressed(status => !status)}
       style={[styles.item, styles.title]}>
       {title}
       {` ${pressed ? 'pressed' : ''}`}
@@ -94,20 +77,7 @@ function Item({title}) {
 }
 
 const renderItem = ({item}) => <Item title={item.title} />;
-const ITEM_HEIGHT = 50;
 
-const renderFlatList = ({item}) => <NestedFlatList item={item} />;
-
-const NEW_ITEMS = [
-  {title: '11 Item'},
-  {title: '12 Item'},
-  {title: '13 Item'},
-  {title: '14 Item'},
-  {title: '15 Item'},
-  {title: '16 Item'},
-  {title: '17 Item'},
-  {title: '18 Item'},
-];
 function NestedFlatList(props) {
   const [items, setItems] = useState(DATA);
   const [index, setIndex] = useState(DATA.length + 1);
@@ -116,11 +86,11 @@ function NestedFlatList(props) {
   const [screenreaderEnabled, setScreenreaderEnabled] = useState(undefined);
   let lastOffsetFromTheBottom = React.useRef(null);
   let _hasTriggeredInitialScrollToIndex = React.useRef(null);
+  let _addedNewItems = React.useRef(null);
   let sentEndForContentLength = React.useRef(null);
   let flatlist = React.useRef(null);
   let _lastTimeOnEndReachedCalled = React.useRef(null);
   let _offsetFromBottomOfScreen;
-  let _sentEndForContentLength;
   let _screenreaderEventListener;
   const getNewItems = startIndex => {
     let newItems = [];
@@ -141,6 +111,7 @@ function NestedFlatList(props) {
     );
   }
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
     // updates the initial state of the screenreaderReader
     if (Platform.OS === 'android' && screenreaderEnabled === undefined) {
@@ -162,12 +133,14 @@ function NestedFlatList(props) {
     }
 
     return () => {
-      if (_screenreaderEventListener) _screenreaderEventListener.remove();
+      if (_screenreaderEventListener) {
+        _screenreaderEventListener.remove();
+      }
     };
   }, []);
 
   return (
-    <View style={{flex: 1}}>
+    <View style={styles.container}>
       <Button
         title="add an item"
         onPress={() => {
@@ -194,13 +167,15 @@ function NestedFlatList(props) {
         title={`scroll to index of value: ${counter}`}
         onPress={() => {
           // $FlowFixMe
-          if (flatlist) flatlist.scrollToIndex({index: counter});
+          if (flatlist) {
+            flatlist.scrollToIndex({index: counter});
+          }
         }}
       />
       <Button
         title="increase index"
         onPress={() => {
-          if (flatlist) flatlist.scrollToOffset({offset: 0, animated: false});
+          setCounter(currentCount => currentCount + 1);
         }}
       />
       <Text>Flatlist</Text>
@@ -216,7 +191,8 @@ function NestedFlatList(props) {
             flatlist &&
             screenreaderEnabled &&
             _hasTriggeredInitialScrollToIndex.current &&
-            !!lastOffsetFromTheBottom.current
+            !!lastOffsetFromTheBottom.current &&
+            _addedNewItems.current
           ) {
             const newBottomHeight = height - lastOffsetFromTheBottom.current;
             _hasTriggeredInitialScrollToIndex.current = false;
@@ -225,13 +201,12 @@ function NestedFlatList(props) {
               animated: false,
             });
             _hasTriggeredInitialScrollToIndex.current = true;
+            _addedNewItems.current = false;
           }
         }}
         onScroll={event => {
-          const {contentSize, contentOffset, contentInset, layoutMeasurement} =
-            event.nativeEvent;
           if (flatlist && screenreaderEnabled) {
-            const {offset, contentLength, visibleLength} =
+            const {offset, contentLength} =
               flatlist._listRef._getScrollMetrics();
             const canTriggerOnEndReachedWithTalkback =
               typeof _lastTimeOnEndReachedCalled.current === 'number'
@@ -241,7 +216,7 @@ function NestedFlatList(props) {
             const distanceFromEnd = offset;
             _offsetFromBottomOfScreen = contentLength - offset;
             if (
-              distanceFromEnd < 0.5 &&
+              distanceFromEnd < 20 &&
               _hasTriggeredInitialScrollToIndex.current &&
               contentLength !== sentEndForContentLength.current &&
               canTriggerOnEndReachedWithTalkback
@@ -251,9 +226,13 @@ function NestedFlatList(props) {
               // wait 100 ms to call again onEndReached (TalkBack scrolling is slower)
               _lastTimeOnEndReachedCalled.current = Date.now();
               sentEndForContentLength.current = contentLength;
-              setItems(items => [...items, ...getNewItems(index)]);
-              setIndex(index => index + 3);
+              setItems(previousItems => [
+                ...previousItems,
+                ...getNewItems(index),
+              ]);
+              setIndex(currentIndex => currentIndex + 3);
               lastOffsetFromTheBottom.current = _offsetFromBottomOfScreen;
+              _addedNewItems.current = true;
             }
             _hasTriggeredInitialScrollToIndex.current = true;
           }
@@ -275,6 +254,7 @@ const FlatList_nested = (): React.Node => {
 };
 
 const styles = StyleSheet.create({
+  container: {flex: 1},
   item: {
     backgroundColor: '#f9c2ff',
     padding: 20,

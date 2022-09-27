@@ -71,8 +71,8 @@ type OptionalProps = {|
    * Enable TalkBack support for inverted FlatList
    * The default implementation of inverted FlatList uses transform scaleX or scaleY and is not compatible
    * with TalkBack. This implementation manually inverts the order of the items, but does not yet support all
-   * FlatList functionalities, by default is disabled. Not supported functionalities: initialScrollIndex.
-   * Supported functionalities: infinite list, scrollToEnd, scrollToIndex, horizontal, scrollToOffset
+   * FlatList functionalities, by default is disabled.
+   * Experimental - Example of implementation available in rn-tester flatlist-inverted.
    */
   enabledTalkbackCompatibleInvertedList?: ?boolean,
 
