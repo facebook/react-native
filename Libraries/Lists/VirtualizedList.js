@@ -458,6 +458,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
       screenreaderEnabled: undefined,
+      contentLength: undefined,
+      visibleLength: undefined,
     };
   }
 
@@ -524,6 +526,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ),
       last: Math.max(0, Math.min(prevState.last, getItemCount(data) - 1)),
       screenreaderEnabled: prevState.screenreaderEnabled,
+      contentLength: prevState.contentLength,
+      visibleLength: prevState.visibleLength,
     };
   }
 
