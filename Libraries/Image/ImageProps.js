@@ -21,7 +21,6 @@ import type {
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {Node, Ref} from 'react';
 import typeof Image from './Image';
-import type {DimensionValue} from '../StyleSheet/StyleSheetTypes';
 
 export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -92,6 +91,14 @@ export type ImageProps = {|
    * See https://reactnative.dev/docs/image#accessibilitylabel
    */
   'aria-label'?: ?Stringish,
+
+  /**
+   * The text that's read by the screen reader when the user interacts with
+   * the image.
+   *
+   * See https://reactnative.dev/docs/image#alt
+   */
+  alt?: ?Stringish,
 
   /**
    * blurRadius: the blur radius of the blur filter added to the image

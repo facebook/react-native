@@ -245,6 +245,14 @@ export interface ImagePropsBase
    * A static image to display while downloading the final image off the network.
    */
   defaultSource?: ImageURISource | number | undefined;
+
+  /**
+   * The text that's read by the screen reader when the user interacts with
+   * the image.
+   *
+   * See https://reactnative.dev/docs/image#alt
+   */
+  alt?: string | undefined;
 }
 
 export interface ImageProps extends ImagePropsBase {
