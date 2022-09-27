@@ -12,7 +12,10 @@
 import * as React from 'react';
 import {byTestID, byTextMatching, enter, tap} from '../ReactNativeTestTools';
 
-import {Text, TextInput, TouchableWithoutFeedback, View} from 'react-native';
+import Text from '../../Text/Text';
+import TextInput from '../../Components/TextInput/TextInput';
+import TouchableWithoutFeedback from '../../Components/Touchable/TouchableWithoutFeedback';
+import View from '../../Components/View/View';
 
 const ReactTestRenderer = require('react-test-renderer');
 

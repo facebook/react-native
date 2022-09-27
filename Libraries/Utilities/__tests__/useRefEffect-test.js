@@ -11,7 +11,7 @@
 
 import useRefEffect from '../useRefEffect';
 import * as React from 'react';
-import {View} from 'react-native';
+import View from '../../Components/View/View';
 import {act, create} from 'react-test-renderer';
 
 /**
