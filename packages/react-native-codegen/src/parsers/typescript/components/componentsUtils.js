@@ -698,10 +698,7 @@ function flattenProperties(
       } else if (property.type === 'TSTypeLiteral') {
         return flattenProperties(property.members, types);
       } else if (property.type === 'TSInterfaceDeclaration') {
-        return flattenProperties(
-          getProperties(property.id.name, types),
-          types,
-        );
+        return flattenProperties(getProperties(property.id.name, types), types);
       } else {
         throw new Error(
           `${property.type} is not a supported object literal type.`,
