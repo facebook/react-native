@@ -166,8 +166,8 @@ function InvertedFlatlist(props) {
       <Button
         title={`scroll to index of value: ${counter}`}
         onPress={() => {
-          // $FlowFixMe
           if (flatlist) {
+            // $FlowFixMe
             flatlist.scrollToIndex({index: counter});
           }
         }}
@@ -181,6 +181,7 @@ function InvertedFlatlist(props) {
       <Text>Flatlist</Text>
       <FlatList
         ref={ref => {
+          // $FlowFixMe
           flatlist = ref;
         }}
         onContentSizeChange={(width, height) => {
@@ -189,13 +190,14 @@ function InvertedFlatlist(props) {
           }
           if (
             flatlist &&
-            screenreaderEnabled &&
-            _hasTriggeredInitialScrollToIndex.current &&
-            !!lastOffsetFromTheBottom.current &&
-            _addedNewItems.current
+            screenreaderEnabled === true &&
+            _hasTriggeredInitialScrollToIndex.current === true &&
+            lastOffsetFromTheBottom.current != null &&
+            _addedNewItems.current === true
           ) {
             const newBottomHeight = height - lastOffsetFromTheBottom.current;
             _hasTriggeredInitialScrollToIndex.current = false;
+            // $FlowFixMe
             flatlist.scrollToOffset({
               offset: newBottomHeight,
               animated: false,
@@ -205,8 +207,9 @@ function InvertedFlatlist(props) {
           }
         }}
         onScroll={event => {
-          if (flatlist && screenreaderEnabled) {
+          if (flatlist && screenreaderEnabled === true) {
             const {offset, contentLength} =
+              // $FlowFixMe
               flatlist._listRef._getScrollMetrics();
             const canTriggerOnEndReachedWithTalkback =
               typeof _lastTimeOnEndReachedCalled.current === 'number'
@@ -217,7 +220,7 @@ function InvertedFlatlist(props) {
             _offsetFromBottomOfScreen = contentLength - offset;
             if (
               distanceFromEnd < 20 &&
-              _hasTriggeredInitialScrollToIndex.current &&
+              _hasTriggeredInitialScrollToIndex.current === true &&
               contentLength !== sentEndForContentLength.current &&
               canTriggerOnEndReachedWithTalkback
             ) {
