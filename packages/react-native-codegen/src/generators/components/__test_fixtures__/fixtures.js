@@ -1641,6 +1641,434 @@ const EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES: SchemaType = {
   },
 };
 
+const COMPONENT_WITH_ALL_STATE_PROPS: SchemaType = {
+  modules: {
+    MyComponent: {
+      type: 'Component',
+      components: {
+        SimpleComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [],
+          commands: [],
+          state: [
+            {
+              name: 'disabled',
+              optional: false,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: false,
+              },
+            },
+            {
+              name: 'accessibilityHint',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: '',
+              },
+            },
+            {
+              name: 'accessibilityRole',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: null,
+              },
+            },
+            {
+              name: 'progress1',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32TypeAnnotation',
+                default: 0,
+              },
+            },
+            {
+              name: 'progress2',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32TypeAnnotation',
+                default: -1,
+              },
+            },
+            {
+              name: 'progress3',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32TypeAnnotation',
+                default: 10,
+              },
+            },
+            {
+              name: 'blurRadius',
+              optional: false,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: 0.0,
+              },
+            },
+            {
+              name: 'blurRadius2',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: 0.001,
+              },
+            },
+            {
+              name: 'blurRadius3',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: 2.1,
+              },
+            },
+            {
+              name: 'blurRadius4',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: 0,
+              },
+            },
+            {
+              name: 'blurRadius5',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: 1,
+              },
+            },
+            {
+              name: 'blurRadius6',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: -0.0,
+              },
+            },
+            {
+              name: 'd_blurRadius',
+              optional: false,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 0.0,
+              },
+            },
+            {
+              name: 'd_blurRadius2',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 0.001,
+              },
+            },
+            {
+              name: 'd_blurRadius3',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 2.1,
+              },
+            },
+            {
+              name: 'd_blurRadius4',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 0,
+              },
+            },
+            {
+              name: 'd_blurRadius5',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 1,
+              },
+            },
+            {
+              name: 'd_blurRadius6',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: -0.0,
+              },
+            },
+            {
+              name: 'tintColor',
+              optional: true,
+              typeAnnotation: {
+                type: 'ReservedPropTypeAnnotation',
+                name: 'ColorPrimitive',
+              },
+            },
+            {
+              name: 'thumbImage',
+              optional: true,
+              typeAnnotation: {
+                type: 'ReservedPropTypeAnnotation',
+                name: 'ImageSourcePrimitive',
+              },
+            },
+            {
+              name: 'startPoint',
+              optional: true,
+              typeAnnotation: {
+                type: 'ReservedPropTypeAnnotation',
+                name: 'PointPrimitive',
+              },
+            },
+            {
+              name: 'contentInset',
+              optional: true,
+              typeAnnotation: {
+                type: 'ReservedPropTypeAnnotation',
+                name: 'EdgeInsetsPrimitive',
+              },
+            },
+            {
+              name: 'nativePrimitives',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'colors',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ReservedPropTypeAnnotation',
+                          name: 'ColorPrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'srcs',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ReservedPropTypeAnnotation',
+                          name: 'ImageSourcePrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'points',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ReservedPropTypeAnnotation',
+                          name: 'PointPrimitive',
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: 'objectProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'stringProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: '',
+                    },
+                  },
+                  {
+                    name: 'booleanProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: false,
+                    },
+                  },
+                  {
+                    name: 'floatProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: 0.0,
+                    },
+                  },
+                  {
+                    name: 'intProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                      default: 0,
+                    },
+                  },
+                  {
+                    name: 'stringEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringEnumTypeAnnotation',
+                      default: 'option1',
+                      options: ['option1'],
+                    },
+                  },
+                  {
+                    name: 'intEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32EnumTypeAnnotation',
+                      default: 0,
+                      options: [0],
+                    },
+                  },
+                  {
+                    name: 'objectArrayProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'array',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'StringTypeAnnotation',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'objectPrimitiveRequiredProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'image',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ReservedPropTypeAnnotation',
+                            name: 'ImageSourcePrimitive',
+                          },
+                        },
+                        {
+                          name: 'color',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ReservedPropTypeAnnotation',
+                            name: 'ColorPrimitive',
+                          },
+                        },
+                        {
+                          name: 'point',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ReservedPropTypeAnnotation',
+                            name: 'PointPrimitive',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'nestedPropA',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'nestedPropB',
+                          optional: false,
+                          typeAnnotation: {
+                            type: 'ObjectTypeAnnotation',
+                            properties: [
+                              {
+                                name: 'nestedPropC',
+                                optional: true,
+                                typeAnnotation: {
+                                  type: 'StringTypeAnnotation',
+                                  default: '',
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'nestedArrayAsProperty',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'arrayProp',
+                          optional: false,
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'ObjectTypeAnnotation',
+                              properties: [
+                                {
+                                  name: 'stringProp',
+                                  optional: false,
+                                  typeAnnotation: {
+                                    type: 'StringTypeAnnotation',
+                                    default: '',
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'alignment',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringEnumTypeAnnotation',
+                default: 'center',
+                options: ['top', 'center', 'bottom-right'],
+              },
+            },
+            {
+              name: 'maxInterval',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32EnumTypeAnnotation',
+                default: 0,
+                options: [0, 1, 2],
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
 module.exports = {
   NO_PROPS_NO_EVENTS,
   INTERFACE_ONLY,
@@ -1669,4 +2097,5 @@ module.exports = {
   EXCLUDE_ANDROID,
   EXCLUDE_ANDROID_IOS,
   EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES,
+  COMPONENT_WITH_ALL_STATE_PROPS,
 };

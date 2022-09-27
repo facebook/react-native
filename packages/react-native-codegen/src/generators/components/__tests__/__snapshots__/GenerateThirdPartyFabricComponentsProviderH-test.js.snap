@@ -52,6 +52,7 @@ Class<RCTComponentViewProtocol> CommandNativeComponentCls(void) __attribute__((u
 Class<RCTComponentViewProtocol> ExcludedAndroidComponentCls(void) __attribute__((used)); // EXCLUDE_ANDROID
 
 Class<RCTComponentViewProtocol> MultiFileIncludedNativeComponentCls(void) __attribute__((used)); // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
+Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_ALL_STATE_PROPS
 
 #ifdef __cplusplus
 }

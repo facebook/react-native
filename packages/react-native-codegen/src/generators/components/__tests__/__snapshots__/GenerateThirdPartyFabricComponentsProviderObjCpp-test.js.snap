@@ -76,6 +76,8 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
 
     {\\"MultiFileIncludedNativeComponent\\", MultiFileIncludedNativeComponentCls}, // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
+
+    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_ALL_STATE_PROPS
   };
 
   auto p = sFabricComponentsClassMap.find(name);
