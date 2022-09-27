@@ -387,7 +387,7 @@ afterEvaluate {
                     into ("merged_assets/${variant.name}/out")
 
                     // Workaround for Android Gradle Plugin 7.1 asset directory
-                    into("$buildDir/intermediates/assets/${variant.name}/merge${targetName}Assets")
+                    into("$buildDir/intermediates/assets/${variant.name}")
                 }
             }
 
