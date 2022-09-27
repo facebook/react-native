@@ -20,7 +20,23 @@ import {
   StatusBar,
   Button,
   Platform,
+  AccessibilityInfo,
 } from 'react-native';
+
+const DATA_SHORT = [
+  {
+    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+    title: 'First Item',
+  },
+  {
+    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+    title: 'Second Item',
+  },
+  {
+    id: '58694a0f-3da1-471f-bd96-145571e29d72',
+    title: 'Third Item',
+  },
+];
 
 const DATA = [
   {
@@ -99,6 +115,7 @@ function NestedFlatList(props) {
   const [counter, setCounter] = useState(0);
   const [offsetFromBottom, setOffsetFromBottom] = useState(null);
   const [contentHeight, setContentHeight] = useState(null);
+  const [screenreaderEnabled, setScreenreaderEnabled] = useState(null);
   let lastOffsetFromTheBottom = React.useRef(null);
   // const [contentHeight, setContentHeight] = useState(null);
   const [currentPosition, setCurrentPosition] = useState(null);
@@ -115,7 +132,43 @@ function NestedFlatList(props) {
   let _offsetFromBottomOfScreen;
   let _sentEndForContentLength;
   // set listener to disable/enabled depending on screenreader
-  const TALKBACK_ENABLED = true;
+  let _screenreaderEventListener;
+  if (Platform.OS === 'android') {
+    _screenreaderEventListener = AccessibilityInfo.addEventListener(
+      'screenReaderChanged',
+      status => {
+        if (typeof status === 'boolean' && status !== screenreaderEnabled) {
+          setScreenreaderEnabled(status);
+        }
+      },
+    );
+  }
+
+  React.useEffect(() => {
+    // updates the initial state of the screenreaderReader
+    if (Platform.OS === 'android' && screenreaderEnabled === undefined) {
+      AccessibilityInfo.isScreenReaderEnabled().then(
+        status => {
+          if (typeof status === 'boolean' && status !== screenreaderEnabled) {
+            this.setState(status);
+          }
+        },
+        e => {
+          if (__DEV__) {
+            console.log(
+              'isScreenReaderEnabled() raised an error, in this case the default inverted FlatList will be used with Talkback. ' +
+                e.toString(),
+            );
+          }
+        },
+      );
+    }
+
+    return () => {
+      if (_screenreaderEventListener) _screenreaderEventListener.remove();
+    };
+  }, []);
+
   let _lastTimeOnEndReachedCalled = React.useRef(null);
   return (
     <View style={{flex: 1}}>
@@ -165,29 +218,22 @@ function NestedFlatList(props) {
           }
           if (
             flatlist &&
-            TALKBACK_ENABLED &&
+            screenreaderEnabled &&
             _hasTriggeredInitialScrollToIndex.current &&
             !!lastOffsetFromTheBottom.current
           ) {
             const newBottomHeight = height - lastOffsetFromTheBottom.current;
             _hasTriggeredInitialScrollToIndex.current = false;
-            setTimeout(
-              (flatlist, newBottomHeight) => {
-                flatlist.scrollToOffset({
-                  offset: newBottomHeight,
-                  animated: false,
-                });
-              },
-              1,
-              flatlist,
-              newBottomHeight,
-            );
+            flatlist.scrollToOffset({
+              offset: newBottomHeight,
+              animated: false,
+            });
           }
         }}
         onScroll={event => {
           const {contentSize, contentOffset, contentInset, layoutMeasurement} =
             event.nativeEvent;
-          if (flatlist && TALKBACK_ENABLED) {
+          if (flatlist && screenreaderEnabled) {
             const {offset, contentLength, visibleLength} =
               flatlist._listRef._getScrollMetrics();
             const canTriggerOnEndReachedWithTalkback =
