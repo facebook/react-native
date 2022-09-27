@@ -78,7 +78,7 @@ function Item({title}) {
 
 const renderItem = ({item}) => <Item title={item.title} />;
 
-function NestedFlatList(props) {
+function InvertedFlatlist(props) {
   const [items, setItems] = useState(DATA);
   const [index, setIndex] = useState(DATA.length + 1);
   const [counter, setCounter] = useState(0);
@@ -250,7 +250,7 @@ function NestedFlatList(props) {
 }
 
 const FlatList_nested = (): React.Node => {
-  return <NestedFlatList />;
+  return <InvertedFlatlist />;
 };
 
 const styles = StyleSheet.create({
