@@ -674,23 +674,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const diff = visibleLength - contentLength;
       if (diff > 0) {
         style = horizontalOrDefault(this.props.horizontal)
-          ? {flexDirection: 'row-reverse'}
-          : {flexDirection: 'column-reverse'};
+          ? [{flexDirection: 'row-reverse'}, this.props.style]
+          : [{flexDirection: 'column-reverse'}, this.props.style];
       } else {
-        style = horizontalOrDefault(this.props.horizontal)
-          ? {flexDirection: 'row'}
-          : {flexDirection: 'column'};
+        style = this.props.style;
       }
     }
     if (talkbackCompatibility) {
       contentContainerStyle = horizontalOrDefault(this.props.horizontal)
-        ? {flexDirection: 'row-reverse'}
-        : {flexDirection: 'column-reverse'};
+        ? [{flexDirection: 'row-reverse'}, this.props.contentContainerStyle]
+        : [{flexDirection: 'column-reverse'}, this.props.contentContainerStyle];
       inversionStyle = null;
       if (contentLength == null || visibleLength == null) {
-        style = horizontalOrDefault(this.props.horizontal)
-          ? {flexDirection: 'row'}
-          : {flexDirection: 'column'};
+        style = this.props.style;
       }
     }
     const cells = [];
