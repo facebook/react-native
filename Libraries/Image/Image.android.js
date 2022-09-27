@@ -182,6 +182,8 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       : null,
     ref: forwardedRef,
     accessibilityLabel: props['aria-label'] ?? props.accessibilityLabel,
+    accessibilityLabelledBy:
+      props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy,
     accessibilityState: {
       busy: props['aria-busy'] ?? props.accessibilityState?.busy,
       checked: props['aria-checked'] ?? props.accessibilityState?.checked,
