@@ -651,8 +651,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       Platform.OS === 'android' &&
       enabledTalkbackCompatibleInvertedList;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
-    let inversionStyle = this.props.inverted
-      ? horizontalOrDefault(this.props.horizontal)
+    let inversionStyle = inverted
+      ? horizontalOrDefault(horizontal)
         ? styles.horizontallyInverted
         : styles.verticallyInverted
       : null;
@@ -668,7 +668,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     ) {
       const diff = visibleLength - contentLength;
       if (diff > 0) {
-        style = horizontalOrDefault(this.props.horizontal)
+        style = horizontalOrDefault(horizontal)
           ? [{flexDirection: 'row-reverse'}, this.props.style]
           : [{flexDirection: 'column-reverse'}, this.props.style];
       } else {
@@ -680,12 +680,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       contentLength != null &&
       this.props.contentOffset == null
     ) {
-      contentOffset = horizontalOrDefault(this.props.horizontal)
+      contentOffset = horizontalOrDefault(horizontal)
         ? {y: 0, x: contentLength}
         : {y: contentLength, x: 0};
     }
     if (talkbackCompatibility) {
-      contentContainerStyle = horizontalOrDefault(this.props.horizontal)
+      contentContainerStyle = horizontalOrDefault(horizontal)
         ? [{flexDirection: 'row-reverse'}, this.props.contentContainerStyle]
         : [{flexDirection: 'column-reverse'}, this.props.contentContainerStyle];
       inversionStyle = null;
@@ -1322,20 +1322,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
-    const {screenreaderEnabled} = this.state;
     const {
       initialScrollIndex,
       inverted,
       enabledTalkbackCompatibleInvertedList,
     } = this.props;
-    const talkbackCompatibility =
-      screenreaderEnabled &&
-      initialScrollIndex == null &&
-      inverted &&
-      enabledTalkbackCompatibleInvertedList;
     if (
       __DEV__ &&
-      screenreaderEnabled &&
       initialScrollIndex != null &&
       inverted &&
       enabledTalkbackCompatibleInvertedList
