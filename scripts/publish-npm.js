@@ -197,6 +197,7 @@ if (isCommitly) {
 }
 
 // -------- Generating Android Artifacts
+env.REACT_NATIVE_SKIP_PREFAB = true;
 if (exec('./gradlew :ReactAndroid:installArchives').code) {
   echo('Could not generate artifacts');
   exit(1);
