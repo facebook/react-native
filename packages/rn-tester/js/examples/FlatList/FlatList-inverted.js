@@ -97,7 +97,11 @@ function NestedFlatList(props) {
   const [disabled, setDisabled] = useState(false);
   const [index, setIndex] = useState(DATA.length + 1);
   const [counter, setCounter] = useState(0);
+  const [offsetFromBottom, setOffsetFromBottom] = useState(null);
+  const [contentHeight, setContentHeight] = useState(null);
   let lastOffsetFromTheBottom = React.useRef(null);
+  // const [contentHeight, setContentHeight] = useState(null);
+  const [currentPosition, setCurrentPosition] = useState(null);
   let _hasTriggeredInitialScrollToIndex = React.useRef(null);
   let sentEndForContentLength = React.useRef(null);
   const getNewItems = startIndex => {
@@ -112,7 +116,7 @@ function NestedFlatList(props) {
   let _sentEndForContentLength;
   // set listener to disable/enabled depending on screenreader
   const TALKBACK_ENABLED = true;
-  let _lastTimeOnEndReachedCalled;
+  let _lastTimeOnEndReachedCalled = React.useRef(null);
   return (
     <View style={{flex: 1}}>
       <Button
@@ -156,6 +160,9 @@ function NestedFlatList(props) {
           flatlist = ref;
         }}
         onContentSizeChange={(width, height) => {
+          if (contentHeight == null) {
+            setContentHeight(height);
+          }
           if (
             flatlist &&
             TALKBACK_ENABLED &&
@@ -184,20 +191,23 @@ function NestedFlatList(props) {
             const {offset, contentLength, visibleLength} =
               flatlist._listRef._getScrollMetrics();
             const canTriggerOnEndReachedWithTalkback =
-              typeof _lastTimeOnEndReachedCalled === 'number'
-                ? Math.abs(_lastTimeOnEndReachedCalled - Date.now()) > 1
+              typeof _lastTimeOnEndReachedCalled.current === 'number'
+                ? Math.abs(_lastTimeOnEndReachedCalled.current - Date.now()) >
+                  500
                 : true;
             const distanceFromEnd = offset;
             _offsetFromBottomOfScreen = contentLength - offset;
             if (
-              distanceFromEnd < 2 &&
+              distanceFromEnd < 0.5 &&
               _hasTriggeredInitialScrollToIndex.current &&
               contentLength !== sentEndForContentLength.current &&
               canTriggerOnEndReachedWithTalkback
             ) {
+              console.log('------------->');
+              console.log('onEndReached');
               _sentEndForContentLength = contentLength;
               // wait 100 ms to call again onEndReached (TalkBack scrolling is slower)
-              _lastTimeOnEndReachedCalled = Date.now;
+              _lastTimeOnEndReachedCalled.current = Date.now();
               sentEndForContentLength.current = contentLength;
               setItems(items => [...items, ...getNewItems(index)]);
               setIndex(index => index + 3);
@@ -209,9 +219,10 @@ function NestedFlatList(props) {
         enabledTalkbackCompatibleInvertedList
         accessibilityRole="list"
         inverted
+        // contentOffset does not work when the offset does not change
+        contentOffset={contentHeight != null ? {y: contentHeight, x: 0} : null}
         renderItem={renderItem}
         data={items}
-        // onEndReachedThreshold={0.1}
       />
     </View>
   );

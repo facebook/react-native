@@ -165,12 +165,6 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     view.setPagingEnabled(pagingEnabled);
   }
 
-  @ReactProp(name = "enabledTalkbackCompatibleInvertedList")
-  public void setEnabledTalkbackCompatibleInvertedList(
-      ReactScrollView view, boolean enabledTalkbackCompatibleInvertedList) {
-    view.setEnabledTalkbackCompatibleInvertedList(enabledTalkbackCompatibleInvertedList);
-  }
-
   /**
    * When set, fills the rest of the scrollview with a color to avoid setting a background and
    * creating unnecessary overdraw.
