@@ -9,12 +9,16 @@
 
 'use strict';
 
+const path = require('node:path');
+
+require('eslint-plugin-lint').load(path.join(__dirname, 'tools/eslint/rules'));
+
 module.exports = {
   root: true,
 
   extends: ['@react-native-community'],
 
-  plugins: ['@react-native/eslint-plugin-specs'],
+  plugins: ['@react-native/eslint-plugin-specs', 'lint'],
 
   overrides: [
     // overriding the JS config from eslint-config-react-native-community config to ensure
@@ -38,6 +42,7 @@ module.exports = {
         '@react-native-community/error-subclass-name': 2,
         '@react-native-community/platform-colors': 2,
         '@react-native/specs/react-native-modules': 2,
+        'lint/no-react-native-imports': 2,
       },
     },
     {
