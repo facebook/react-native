@@ -7,18 +7,28 @@
 NUM_CORES=$(sysctl -n hw.ncpu)
 IMPORT_HERMESC_PATH=${HERMES_OVERRIDE_HERMESC_PATH:-$PWD/build_host_hermesc/ImportHermesc.cmake}
 REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$PWD/../..}
-JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
+if [[ -z "$JSI_PATH" ]]; then
+  JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
+fi
+
+function use_env_var_or_ruby_prop {
+  if [[ -n "$1" ]]; then
+    echo "$1"
+  else
+    ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').$2"
+  fi
+}
 
 function get_release_version {
-  ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').version"
+  use_env_var_or_ruby_prop "${RELEASE_VERSION}" "version"
 }
 
 function get_ios_deployment_target {
-  ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').deployment_target('ios')"
+  use_env_var_or_ruby_prop "${IOS_DEPLOYMENT_TARGET}" "deployment_target('ios')"
 }
 
 function get_mac_deployment_target {
-  ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').deployment_target('osx')"
+  use_env_var_or_ruby_prop "${MAC_DEPLOYMENT_TARGET}" "deployment_target('osx')"
 }
 
 # Build host hermes compiler for internal bytecode
