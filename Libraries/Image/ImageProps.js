@@ -98,7 +98,7 @@ export type ImageProps = {|
    * @platform android
    */
   'aria-labelledby'?: ?string,
-    
+  /**
    * The text that's read by the screen reader when the user interacts with
    * the image.
    *
