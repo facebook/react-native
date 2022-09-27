@@ -38,11 +38,11 @@ module.exports = {
     {
       files: ['Libraries/**/*.js'],
       rules: {
-        '@react-native-community/error-subclass-name': 2,
         '@react-native-community/platform-colors': 2,
         '@react-native/specs/react-native-modules': 2,
         'lint/no-haste-imports': 2,
         'lint/no-react-native-imports': 2,
+        'lint/require-extends-error': 2,
       },
     },
     {

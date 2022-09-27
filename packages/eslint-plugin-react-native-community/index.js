@@ -8,6 +8,5 @@
  */
 
 exports.rules = {
-  'error-subclass-name': require('./error-subclass-name'),
   'platform-colors': require('./platform-colors'),
 };
