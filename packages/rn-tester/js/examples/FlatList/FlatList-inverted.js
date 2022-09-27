@@ -110,17 +110,18 @@ const NEW_ITEMS = [
 ];
 function NestedFlatList(props) {
   const [items, setItems] = useState(DATA);
-  const [disabled, setDisabled] = useState(false);
   const [index, setIndex] = useState(DATA.length + 1);
   const [counter, setCounter] = useState(0);
-  const [offsetFromBottom, setOffsetFromBottom] = useState(null);
   const [contentHeight, setContentHeight] = useState(null);
-  const [screenreaderEnabled, setScreenreaderEnabled] = useState(null);
+  const [screenreaderEnabled, setScreenreaderEnabled] = useState(undefined);
   let lastOffsetFromTheBottom = React.useRef(null);
-  // const [contentHeight, setContentHeight] = useState(null);
-  const [currentPosition, setCurrentPosition] = useState(null);
   let _hasTriggeredInitialScrollToIndex = React.useRef(null);
   let sentEndForContentLength = React.useRef(null);
+  let flatlist = React.useRef(null);
+  let _lastTimeOnEndReachedCalled = React.useRef(null);
+  let _offsetFromBottomOfScreen;
+  let _sentEndForContentLength;
+  let _screenreaderEventListener;
   const getNewItems = startIndex => {
     let newItems = [];
     for (let i = startIndex; i < startIndex + 3; i++) {
@@ -128,11 +129,7 @@ function NestedFlatList(props) {
     }
     return newItems;
   };
-  let flatlist = React.useRef(null);
-  let _offsetFromBottomOfScreen;
-  let _sentEndForContentLength;
   // set listener to disable/enabled depending on screenreader
-  let _screenreaderEventListener;
   if (Platform.OS === 'android') {
     _screenreaderEventListener = AccessibilityInfo.addEventListener(
       'screenReaderChanged',
@@ -150,7 +147,7 @@ function NestedFlatList(props) {
       AccessibilityInfo.isScreenReaderEnabled().then(
         status => {
           if (typeof status === 'boolean' && status !== screenreaderEnabled) {
-            this.setState(status);
+            setScreenreaderEnabled(status);
           }
         },
         e => {
@@ -169,7 +166,6 @@ function NestedFlatList(props) {
     };
   }, []);
 
-  let _lastTimeOnEndReachedCalled = React.useRef(null);
   return (
     <View style={{flex: 1}}>
       <Button
@@ -228,6 +224,7 @@ function NestedFlatList(props) {
               offset: newBottomHeight,
               animated: false,
             });
+            _hasTriggeredInitialScrollToIndex.current = true;
           }
         }}
         onScroll={event => {
@@ -251,7 +248,6 @@ function NestedFlatList(props) {
             ) {
               console.log('------------->');
               console.log('onEndReached');
-              _sentEndForContentLength = contentLength;
               // wait 100 ms to call again onEndReached (TalkBack scrolling is slower)
               _lastTimeOnEndReachedCalled.current = Date.now();
               sentEndForContentLength.current = contentLength;
@@ -262,13 +258,13 @@ function NestedFlatList(props) {
             _hasTriggeredInitialScrollToIndex.current = true;
           }
         }}
-        enabledTalkbackCompatibleInvertedList
-        accessibilityRole="list"
         inverted
+        enabledTalkbackCompatibleInvertedList
         // contentOffset does not work when the offset does not change
         contentOffset={contentHeight != null ? {y: contentHeight, x: 0} : null}
         renderItem={renderItem}
         data={items}
+        accessibilityRole="list"
       />
     </View>
   );
