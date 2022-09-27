@@ -71,8 +71,6 @@ type State = {
   first: number,
   last: number,
   screenreaderEnabled: ?boolean,
-  contentLength: ?number,
-  visibleLength: ?number,
 };
 
 /**
@@ -458,8 +456,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
       screenreaderEnabled: undefined,
-      contentLength: undefined,
-      visibleLength: undefined,
     };
   }
 
@@ -526,8 +522,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ),
       last: Math.max(0, Math.min(prevState.last, getItemCount(data) - 1)),
       screenreaderEnabled: prevState.screenreaderEnabled,
-      contentLength: prevState.contentLength,
-      visibleLength: prevState.visibleLength,
     };
   }
 
@@ -648,8 +642,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       inverted,
       enabledTalkbackCompatibleInvertedList,
     } = this.props;
-    const {first, last, screenreaderEnabled, contentLength, visibleLength} =
-      this.state;
+    const {first, last, screenreaderEnabled} = this.state;
+    const {contentLength, visibleLength} = this._scrollMetrics;
     const talkbackCompatibility =
       screenreaderEnabled &&
       initialScrollIndex == null &&
@@ -666,6 +660,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ? [inversionStyle, this.props.style]
       : this.props.style;
     let contentContainerStyle = this.props.contentContainerStyle;
+    let contentOffset = this.props.contentOffset;
     if (
       talkbackCompatibility &&
       contentLength != null &&
@@ -679,6 +674,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       } else {
         style = this.props.style;
       }
+    }
+    if (
+      talkbackCompatibility &&
+      contentLength != null &&
+      this.props.contentOffset == null
+    ) {
+      contentOffset = horizontalOrDefault(this.props.horizontal)
+        ? {y: 0, x: contentLength}
+        : {y: contentLength, x: 0};
     }
     if (talkbackCompatibility) {
       contentContainerStyle = horizontalOrDefault(this.props.horizontal)
@@ -885,6 +889,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       stickyHeaderIndices,
       style,
       contentContainerStyle,
+      contentOffset,
     };
 
     this._hasMore =
@@ -1170,13 +1175,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onLayout = (e: LayoutEvent) => {
-    const {screenreaderEnabled} = this.state;
-    const {inverted, enabledTalkbackCompatibleInvertedList} = this.props;
-    const talkbackCompatibility =
-      screenreaderEnabled &&
-      inverted &&
-      Platform.OS === 'android' &&
-      enabledTalkbackCompatibleInvertedList;
     if (this._isNestedWithSameOrientation()) {
       // Need to adjust our scroll metrics to be relative to our containing
       // VirtualizedList before we can make claims about list item viewability
@@ -1185,9 +1183,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._scrollMetrics.visibleLength = this._selectLength(
         e.nativeEvent.layout,
       );
-      if (talkbackCompatibility) {
-        this.setState({visibleLength: this._scrollMetrics.visibleLength});
-      }
     }
     this.props.onLayout && this.props.onLayout(e);
     this._scheduleCellsToRenderUpdate();
@@ -1327,7 +1322,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
-    const {screenreaderEnabled, contentLength} = this.state;
+    const {screenreaderEnabled} = this.state;
     const {
       initialScrollIndex,
       inverted,
@@ -1368,11 +1363,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
-    const contentLengthChanged =
-      this._scrollMetrics.contentLength !== contentLength;
-    if (contentLengthChanged && talkbackCompatibility) {
-      this.setState({contentLength: this._scrollMetrics.contentLength});
-    }
     this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEndReached();
   };
