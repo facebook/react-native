@@ -28,7 +28,7 @@ export interface TouchableWithoutFeedbackPropsAndroid {
    *
    * @platform android
    */
-  touchSoundDisabled?: boolean | null | undefined;
+  touchSoundDisabled?: boolean | undefined;
 }
 
 /**
