@@ -446,8 +446,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   flexBasis?: number | string,
 
   /**
-   * Aspect ratio control the size of the undefined dimension of a node. Aspect ratio is a
-   * non-standard property only available in react native and not CSS.
+   * Aspect ratio control the size of the undefined dimension of a node.
    *
    * - On a node with a set width/height aspect ratio control the size of the unset dimension
    * - On a node with a set flex basis aspect ratio controls the size of the node in the cross axis
@@ -457,8 +456,13 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    * - On a node with flex grow/shrink aspect ratio controls the size of the node in the cross axis
    *   if unset
    * - Aspect ratio takes min/max dimensions into account
+   *
+   * Supports a number or a ratio, e.g.:
+   * - aspectRatio: '1 / 1'
+   * - aspectRatio: '1'
+   * - aspectRatio: '1'
    */
-  aspectRatio?: number,
+  aspectRatio?: number | string,
 
   /** `zIndex` controls which components display on top of others.
    *  Normally, you don't use `zIndex`. Components render according to
