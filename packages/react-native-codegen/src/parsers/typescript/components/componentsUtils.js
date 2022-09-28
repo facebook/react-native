@@ -271,19 +271,15 @@ function getTypeAnnotation<T>(
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
-  const typeAnnotation = getValueFromTypes(annotation, types);
+  // unpack WithDefault, (T) or T|U
+  const topLevelType = parseTopLevelType(typeAnnotation);
 
-  // Covers: (T)
-  if (typeAnnotation.type === 'TSParenthesizedType') {
-    return getTypeAnnotation(
-      name,
-      typeAnnotation.typeAnnotation,
-      defaultValue,
-      withNullDefault,
-      types,
-      buildSchema,
-    );
+  // if it is an union type, it should be union of literals
+  if (topLevelType.unions.length > 1) {
+    return getUnionOfLiterals(name, topLevelType.unions, defaultValue || topLevelType.defaultValue, types);
   }
+
+  const typeAnnotation = getValueFromTypes(annotation, types);
 
   // Covers: readonly T[]
   if (
@@ -455,55 +451,6 @@ function getTypeAnnotation<T>(
         };
       }
       throw new Error(`A default string (or null) is required for "${name}"`);
-    case 'TSUnionType':
-      typeAnnotation.types.reduce((lastType, currType) => {
-        const lastFlattenedType =
-          lastType && lastType.type === 'TSLiteralType'
-            ? lastType.literal.type
-            : lastType.type;
-        const currFlattenedType =
-          currType.type === 'TSLiteralType'
-            ? currType.literal.type
-            : currType.type;
-
-        if (lastFlattenedType && currFlattenedType !== lastFlattenedType) {
-          throw new Error(`Mixed types are not supported (see "${name}")`);
-        }
-        return currType;
-      });
-
-      if (defaultValue === null) {
-        throw new Error(`A default enum value is required for "${name}"`);
-      }
-
-      const unionType = typeAnnotation.types[0].type;
-      if (
-        unionType === 'TSLiteralType' &&
-        typeAnnotation.types[0].literal?.type === 'StringLiteral'
-      ) {
-        return {
-          type: 'StringEnumTypeAnnotation',
-          default: (defaultValue: string),
-          options: typeAnnotation.types.map(option => option.literal.value),
-        };
-      } else if (
-        unionType === 'TSLiteralType' &&
-        typeAnnotation.types[0].literal?.type === 'NumericLiteral'
-      ) {
-        return {
-          type: 'Int32EnumTypeAnnotation',
-          default: (defaultValue: number),
-          options: typeAnnotation.types.map(option => option.literal.value),
-        };
-      } else {
-        throw new Error(
-          `Unsupported union type for "${name}", received "${
-            unionType === 'TSLiteralType'
-              ? typeAnnotation.types[0].literal?.type
-              : unionType
-          }"`,
-        );
-      }
     case 'TSNumberKeyword':
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
