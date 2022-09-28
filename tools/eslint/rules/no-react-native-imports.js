@@ -86,9 +86,11 @@ module.exports = {
       const sourcePath = path.dirname(context.getPhysicalFilename());
       const relativePath = path.relative(sourcePath, importPath);
       // If importing from the same directory, prepend `./` to source path.
-      return relativePath.includes(path.sep)
+      const relativePathWithLeadingSlash = relativePath.includes(path.sep)
         ? relativePath
         : ['.', path.sep, relativePath].join('');
+      // Normalize backslash (on Windows) to forward slash.
+      return relativePathWithLeadingSlash.replace(/\\/g, '/');
     }
 
     function isValidImportPath(importPath) {
