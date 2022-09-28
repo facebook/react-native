@@ -508,7 +508,7 @@ export interface ScrollViewPropsIOS {
   scrollsToTop?: boolean | undefined;
 
   /**
-   * When `snapToInterval` is set, `snapToAlignment` will define the relationship of the the snapping to the scroll view.
+   * When `snapToInterval` is set, `snapToAlignment` will define the relationship of the snapping to the scroll view.
    *      - `start` (the default) will align the snap at the left (horizontal) or top (vertical)
    *      - `center` will align the snap in the center
    *      - `end` will align the snap at the right (horizontal) or bottom (vertical)
@@ -564,7 +564,7 @@ export interface ScrollViewPropsAndroid {
   nestedScrollEnabled?: boolean | undefined;
 
   /**
-   * Fades out the edges of the the scroll content.
+   * Fades out the edges of the scroll content.
    *
    * If the value is greater than 0, the fading edges will be set accordingly
    * to the current scroll direction and position,

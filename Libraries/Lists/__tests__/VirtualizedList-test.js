@@ -501,7 +501,7 @@ describe('VirtualizedList', () => {
 
     // The initial render is specified to be the length of items provided.
     // Expect that all sticky items (1 every 3) are passed to the underlying
-    // scrollview, indices offset by 1 to account for the the header component.
+    // scrollview, indices offset by 1 to account for the header component.
     expect(component).toMatchSnapshot();
   });
 

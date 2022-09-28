@@ -66,7 +66,7 @@ export interface SwitchProps extends SwitchPropsIOS {
   disabled?: boolean | undefined;
 
   /**
-   * Invoked with the the change event as an argument when the value changes.
+   * Invoked with the change event as an argument when the value changes.
    */
   onChange?:
     | ((event: SwitchChangeEvent) => Promise<void> | void)

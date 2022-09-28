@@ -808,7 +808,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray new];
 
-  // Prevent TurboModules from appearing the the NativeModule system
+  // Prevent TurboModules from appearing the NativeModule system
   for (id<RCTBridgeModule> module in appExtraModules) {
     if (!(RCTTurboModuleEnabled() && [module conformsToProtocol:@protocol(RCTTurboModule)])) {
       [extraModules addObject:module];

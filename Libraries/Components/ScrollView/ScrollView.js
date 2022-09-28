@@ -413,7 +413,7 @@ type AndroidProps = $ReadOnly<{|
    */
   persistentScrollbar?: ?boolean,
   /**
-   * Fades out the edges of the the scroll content.
+   * Fades out the edges of the scroll content.
    *
    * If the value is greater than 0, the fading edges will be set accordingly
    * to the current scroll direction and position,
