@@ -678,7 +678,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (
       talkbackCompatibility &&
       contentLength != null &&
-      this.props.contentOffset == null
+      this.props.contentOffset == null &&
+      this._hasDoneFirstScroll === false
     ) {
       contentOffset = horizontalOrDefault(horizontal)
         ? {y: 0, x: contentLength}
@@ -1020,6 +1021,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
+  _hasDoneFirstScroll = false;
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
@@ -1462,6 +1464,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (!this.props) {
       return;
     }
+    this._hasDoneFirstScroll = true;
     this._maybeCallOnEndReached();
     if (velocity !== 0) {
       this._fillRateHelper.activate();

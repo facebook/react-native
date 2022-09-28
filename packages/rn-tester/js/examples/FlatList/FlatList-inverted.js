@@ -92,6 +92,7 @@ function InvertedFlatlist(props) {
   let _lastTimeOnEndReachedCalled = React.useRef(null);
   let _offsetFromBottomOfScreen;
   let _screenreaderEventListener;
+  let _resetPositionTimeout;
   const getNewItems = startIndex => {
     let newItems = [];
     for (let i = startIndex; i < startIndex + 3; i++) {
@@ -135,6 +136,9 @@ function InvertedFlatlist(props) {
     return () => {
       if (_screenreaderEventListener) {
         _screenreaderEventListener.remove();
+      }
+      if (_resetPositionTimeout) {
+        clearTimeout(_resetPositionTimeout);
       }
     };
   }, []);
@@ -185,9 +189,7 @@ function InvertedFlatlist(props) {
           flatlist = ref;
         }}
         onContentSizeChange={(width, height) => {
-          if (contentHeight == null) {
-            setContentHeight(height);
-          }
+          setContentHeight(height);
           if (
             flatlist &&
             screenreaderEnabled === true &&
@@ -198,10 +200,17 @@ function InvertedFlatlist(props) {
             const newBottomHeight = height - lastOffsetFromTheBottom.current;
             _hasTriggeredInitialScrollToIndex.current = false;
             // $FlowFixMe
-            flatlist.scrollToOffset({
-              offset: newBottomHeight,
-              animated: false,
-            });
+            _resetPositionTimeout = setTimeout(
+              flatlist => {
+                flatlist.scrollToOffset({
+                  offset: newBottomHeight,
+                  animated: false,
+                });
+              },
+              1000,
+              flatlist,
+              newBottomHeight,
+            );
             _hasTriggeredInitialScrollToIndex.current = true;
             _addedNewItems.current = false;
           }
