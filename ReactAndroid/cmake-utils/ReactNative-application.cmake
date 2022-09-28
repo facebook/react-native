@@ -43,6 +43,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions 
 find_package(ReactAndroid REQUIRED CONFIG)
 add_library(react_render_debug ALIAS ReactAndroid::react_render_debug)
 add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
+add_library(runtimeexecutor ALIAS ReactAndroid::runtimeexecutor)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni
@@ -60,7 +61,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_render_graphics
         react_render_mapbuffer
         rrc_view
-        runtimeexecutor
+        runtimeexecutor                     # prefab ready
         turbomodulejsijni                   # prefab ready
         yoga)
 

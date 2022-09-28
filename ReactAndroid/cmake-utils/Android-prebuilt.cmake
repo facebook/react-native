@@ -209,13 +209,5 @@ set_target_properties(react_codegen_rncore
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_codegen_rncore.so)
 target_include_directories(react_codegen_rncore INTERFACE ${REACT_GENERATED_SRC_DIR}/codegen/jni)
 
-## runtimeexecutor
-add_library(runtimeexecutor SHARED IMPORTED GLOBAL)
-set_target_properties(runtimeexecutor
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libruntimeexecutor.so)
-target_include_directories(runtimeexecutor INTERFACE ${REACT_COMMON_DIR}/runtimeexecutor)
-
 ## fbjni
 add_subdirectory(${FIRST_PARTY_NDK_DIR}/fbjni fbjni_build)

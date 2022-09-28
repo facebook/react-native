@@ -69,7 +69,11 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "turbomodulejsijni",
                 new Pair("src/main/jni/react/turbomodule", "")
-            )
+            ),
+            new PrefabPreprocessingEntry(
+                "runtimeexecutor",
+                new Pair("../ReactCommon/runtimeexecutor/", "")
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -326,7 +330,8 @@ android {
                     "fabricjni",
                     // prefab targets
                     "react_render_debug",
-                    "turbomodulejsijni"
+                    "turbomodulejsijni",
+                    "runtimeexecutor"
             }
         }
         ndk {
@@ -402,6 +407,9 @@ android {
         }
         turbomodulejsijni {
             headers(new File(prefabHeadersDir, "turbomodulejsijni").absolutePath)
+        }
+        runtimeexecutor {
+            headers(new File(prefabHeadersDir, "runtimeexecutor").absolutePath)
         }
     }
 
