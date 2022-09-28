@@ -466,51 +466,29 @@ function getTypeAnnotation<T>(
 function findProp(
   name: string,
   typeAnnotation: $FlowFixMe,
-  optionalType: boolean,
 ) {
-  switch (typeAnnotation.type) {
-    // Check for (T)
-    case 'TSParenthesizedType':
-      return findProp(name, typeAnnotation.typeAnnotation, optionalType);
+  // unpack WithDefault, (T) or T|U
+  const topLevelType = parseTopLevelType(typeAnnotation);
+  if(topLevelType.unions.length!=1) return null;
 
-    // Check for optional type in union e.g. T | null | undefined
-    case 'TSUnionType':
-      return findProp(
-        name,
-        typeAnnotation.types.filter(
-          t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
-        )[0],
-        optionalType ||
-          typeAnnotation.types.some(
-            t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-          ),
-      );
-
-    case 'TSTypeReference':
-      // Check against optional type inside `WithDefault`
-      if (typeAnnotation.typeName.name === 'WithDefault' && optionalType) {
-        throw new Error(
-          'WithDefault<> is optional and does not need to be marked as optional. Please remove the union of undefined and/or null',
-        );
-      }
+  const elementType = topLevelType.unions[0];
+  if (elementType.type === 'TSTypeReference') {
       // Remove unwanted types
       if (
-        typeAnnotation.typeName.name === 'DirectEventHandler' ||
-        typeAnnotation.typeName.name === 'BubblingEventHandler'
+        elementType.typeName.name === 'DirectEventHandler' ||
+        elementType.typeName.name === 'BubblingEventHandler'
       ) {
         return null;
       }
       if (
         name === 'style' &&
-        typeAnnotation.type === 'GenericTypeAnnotation' &&
-        typeAnnotation.typeName.name === 'ViewStyleProp'
+        elementType.type === 'GenericTypeAnnotation' &&
+        elementType.typeName.name === 'ViewStyleProp'
       ) {
         return null;
       }
-      return {typeAnnotation, optionalType};
-    default:
-      return {typeAnnotation, optionalType};
   }
+  return {typeAnnotation, optionalType:topLevelType.optional};
 }
 
 type SchemaInfo = {
@@ -532,7 +510,7 @@ function getSchemaInfo(
     types,
   );
 
-  const foundProp = findProp(name, value, false);
+  const foundProp = findProp(name, value);
   if (!foundProp) {
     return null;
   }

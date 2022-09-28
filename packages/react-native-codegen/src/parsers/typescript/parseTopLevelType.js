@@ -39,6 +39,11 @@ function handleUnionAndParen(
     }
     case 'TSTypeReference':
       if (type.typeName.name === 'WithDefault') {
+        if(result.optional) {
+            throw new Error(
+              'WithDefault<> is optional and does not need to be marked as optional. Please remove the union of undefined and/or null',
+            );
+        }
         if (type.typeParameters.params.length !== 2) {
           throw new Error(
             `WithDefault requires two parameters: type and default value.`,
@@ -50,12 +55,12 @@ function handleUnionAndParen(
           );
         }
         result.optional = true;
-        handleUnionAndParen(typeParameters.params[0], result);
+        handleUnionAndParen(type.typeParameters.params[0], result);
 
-        const valueType = typeParameters.params[1].type;
+        const valueType = type.typeParameters.params[1].type;
         if (valueType === 'TSLiteralType') {
-          const literal = defaultLiteralType.literal;
-          if (literal.type === 'Literal') {
+          const literal = type.typeParameters.params[1].literal;
+          if (literal.type === 'Literal' || literal.type === 'StringLiteral' || literal.type === 'NumericLiteral' || literal.type === 'BooleanLiteral') {
             if (
               typeof literal.value === 'string' ||
               typeof literal.value === 'number' ||
