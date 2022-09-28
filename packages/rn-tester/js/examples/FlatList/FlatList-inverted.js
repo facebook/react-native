@@ -250,7 +250,7 @@ function InvertedFlatlist(props) {
   );
 }
 
-const FlatList_nested = (): React.Node => {
+const FlatList_inverted = (): React.Node => {
   return <InvertedFlatlist />;
 };
 
@@ -271,5 +271,5 @@ export default ({
   title: 'Inverted (Talkback)',
   name: 'inverted (Talkback)',
   description: 'Test inverted prop on FlatList',
-  render: () => <FlatList_nested />,
+  render: () => <FlatList_inverted />,
 }: RNTesterModuleExample);
