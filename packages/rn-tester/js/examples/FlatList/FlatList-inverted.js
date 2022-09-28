@@ -91,6 +91,7 @@ function InvertedFlatlist(props) {
   let flatlist = React.useRef(null);
   let _lastTimeOnEndReachedCalled = React.useRef(null);
   let _offsetFromBottomOfScreen;
+  let _firstScrollStarted = false;
   let _screenreaderEventListener;
   let _resetPositionTimeout;
   const getNewItems = startIndex => {
@@ -219,6 +220,7 @@ function InvertedFlatlist(props) {
           }
         }}
         onScroll={event => {
+          _firstScrollStarted = true;
           if (flatlist && screenreaderEnabled === true) {
             const {offset, contentLength} =
               // $FlowFixMe
@@ -226,7 +228,7 @@ function InvertedFlatlist(props) {
             const canTriggerOnEndReachedWithTalkback =
               typeof _lastTimeOnEndReachedCalled.current === 'number'
                 ? Math.abs(_lastTimeOnEndReachedCalled.current - Date.now()) >
-                  500
+                  1000
                 : true;
             const distanceFromEnd = offset;
             _offsetFromBottomOfScreen = contentLength - offset;
@@ -255,7 +257,9 @@ function InvertedFlatlist(props) {
         inverted
         // add your own logic for horizontal flatlist
         contentOffset={
-          screenreaderEnabled === true && contentHeight != null
+          screenreaderEnabled === true &&
+          contentHeight != null &&
+          _firstScrollStarted === false
             ? {y: contentHeight, x: 0}
             : null
         }
