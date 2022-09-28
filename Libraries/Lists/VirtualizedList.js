@@ -139,7 +139,6 @@ function windowSizeOrDefault(windowSize: ?number) {
  */
 class VirtualizedList extends React.PureComponent<Props, State> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
-  _screenreaderEventListener: EventSubscription;
 
   // scrollToEnd may be janky without getItemLayout prop
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
@@ -1022,6 +1021,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
   _hasDoneFirstScroll = false;
+  _screenreaderEventListener: EventSubscription;
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
