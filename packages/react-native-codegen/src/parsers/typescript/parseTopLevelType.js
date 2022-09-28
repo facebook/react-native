@@ -93,5 +93,8 @@ function handleUnionAndParen(
 export function parseTopLevelType(type: TSTypeAnnotation): TopLevelType {
   let result: TopLevelType = {unions: [], optional: false};
   handleUnionAndParen(type, result);
+  if (result.unions.length === 0) {
+    throw new Error('Union type could not be just null or undefined.');
+  }
   return result;
 }
