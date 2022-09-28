@@ -56,7 +56,6 @@ const View: React.AbstractComponent<
       'aria-disabled': ariaDisabled,
       'aria-expanded': ariaExpanded,
       'aria-selected': ariaSelected,
-      ...restProps
     } = otherProps;
 
     const _accessibilityState = {

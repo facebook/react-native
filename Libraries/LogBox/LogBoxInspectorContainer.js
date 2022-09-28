@@ -9,7 +9,8 @@
  */
 
 import * as React from 'react';
-import {View, StyleSheet} from 'react-native';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import View from '../Components/View/View';
 import * as LogBoxData from './Data/LogBoxData';
 import LogBoxInspector from './UI/LogBoxInspector';
 import type LogBoxLog from './Data/LogBoxLog';

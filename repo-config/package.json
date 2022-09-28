@@ -30,6 +30,7 @@
     "eslint-plugin-ft-flow": "^2.0.1",
     "eslint-plugin-jest": "^26.5.3",
     "eslint-plugin-jsx-a11y": "^6.6.0",
+    "eslint-plugin-lint": "^1.0.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",

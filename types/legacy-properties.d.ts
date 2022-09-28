@@ -20,12 +20,10 @@ import {
   ViewProps,
   ViewPropsIOS,
   ViewPropsAndroid,
-  ViewPagerAndroidProps,
   ScrollViewProps,
   ScrollViewPropsIOS,
   ScrollViewPropsAndroid,
   InputAccessoryViewProps,
-  NavigatorIOSProps,
   ActivityIndicatorProps,
   ActivityIndicatorIOSProps,
   DatePickerIOSProps,
@@ -35,11 +33,9 @@ import {
   RefreshControlProps,
   RefreshControlPropsIOS,
   RefreshControlPropsAndroid,
-  RecyclerViewBackedScrollViewProps,
   SliderProps,
   SliderPropsIOS,
   SliderPropsAndroid,
-  SwitchIOSProps,
   ImageSourcePropType,
   ImageProps,
   ImagePropsIOS,
@@ -48,16 +44,11 @@ import {
   FlatListProps,
   VirtualizedListProps,
   SectionListProps,
-  ListViewProps,
-  MaskedViewIOSProps,
   ModalProps,
   TouchableWithoutFeedbackProps,
   TouchableHighlightProps,
   TouchableOpacityProps,
   TouchableNativeFeedbackProps,
-  TabBarIOSItemProps,
-  TabBarIOSProps,
-  SnapshotViewIOSProps,
   ButtonProps,
   StatusBarProps,
   StatusBarPropsIOS,
@@ -109,9 +100,6 @@ declare module 'react-native' {
   /** @deprecated Use ViewPropsAndroid */
   export type ViewPropertiesAndroid = ViewPropsAndroid;
 
-  /** @deprecated Use ViewPagerAndroidProps */
-  export type ViewPagerAndroidProperties = ViewPagerAndroidProps;
-
   /** @deprecated Use ScrollViewProps */
   export type ScrollViewProperties = ScrollViewProps;
 
@@ -123,9 +111,6 @@ declare module 'react-native' {
 
   /** @deprecated Use InputAccessoryViewProps */
   export type InputAccessoryViewProperties = InputAccessoryViewProps;
-
-  /** @deprecated Use NavigatorIOSProps */
-  export type NavigatorIOSProperties = NavigatorIOSProps;
 
   /** @deprecated Use ActivityIndicatorProps */
   export type ActivityIndicatorProperties = ActivityIndicatorProps;
@@ -154,10 +139,6 @@ declare module 'react-native' {
   /** @deprecated Use RefreshControlPropsAndroid */
   export type RefreshControlPropertiesAndroid = RefreshControlPropsAndroid;
 
-  /** @deprecated Use RecyclerViewBackedScrollViewProps */
-  export type RecyclerViewBackedScrollViewProperties =
-    RecyclerViewBackedScrollViewProps;
-
   /** @deprecated Use SliderProps */
   export type SliderProperties = SliderProps;
 
@@ -166,9 +147,6 @@ declare module 'react-native' {
 
   /** @deprecated Use SliderPropsAndroid */
   export type SliderPropertiesAndroid = SliderPropsAndroid;
-
-  /** @deprecated Use SwitchIOSProps */
-  export type SwitchIOSProperties = SwitchIOSProps;
 
   /** @deprecated Use ImageSourcePropType */
   export type ImagePropertiesSourceOptions = ImageSourcePropType;
@@ -194,12 +172,6 @@ declare module 'react-native' {
   /** @deprecated Use SectionListProps */
   export type SectionListProperties<ItemT> = SectionListProps<ItemT>;
 
-  /** @deprecated Use ListViewProps */
-  export type ListViewProperties = ListViewProps;
-
-  /** @deprecated Use MaskedViewIOSProps */
-  export type MaskedViewIOSProperties = MaskedViewIOSProps;
-
   /** @deprecated Use ModalProps */
   export type ModalProperties = ModalProps;
 
@@ -215,15 +187,6 @@ declare module 'react-native' {
 
   /** @deprecated Use TouchableNativeFeedbackProps */
   export type TouchableNativeFeedbackProperties = TouchableNativeFeedbackProps;
-
-  /** @deprecated Use TabBarIOSItemProps */
-  export type TabBarIOSItemProperties = TabBarIOSItemProps;
-
-  /** @deprecated Use TabBarIOSProps */
-  export type TabBarIOSProperties = TabBarIOSProps;
-
-  /** @deprecated Use SnapshotViewIOSProps */
-  export type SnapshotViewIOSProperties = SnapshotViewIOSProps;
 
   /** @deprecated Use ButtonProps */
   export type ButtonProperties = ButtonProps;

@@ -14,12 +14,19 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
 
-internal fun createProject(): Project {
-  with(ProjectBuilder.builder().build()) {
-    plugins.apply("com.android.library")
-    plugins.apply("com.facebook.react")
-    return this
-  }
+internal fun createProject(projectDir: File? = null): Project {
+  val project =
+      ProjectBuilder.builder()
+          .apply {
+            if (projectDir != null) {
+              withProjectDir(projectDir)
+            }
+          }
+          .build()
+
+  project.plugins.apply("com.android.library")
+  project.plugins.apply("com.facebook.react")
+  return project
 }
 
 internal inline fun <reified T : Task> createTestTask(

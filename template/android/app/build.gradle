@@ -161,11 +161,14 @@ android {
     }
 
     if (isNewArchitectureEnabled()) {
-        // We configure the NDK build only if you decide to opt-in for the New Architecture.
+        // We configure the CMake build only if you decide to opt-in for the New Architecture.
         externalNativeBuild {
             cmake {
                 path "$projectDir/src/main/jni/CMakeLists.txt"
             }
+        }
+        buildFeatures {
+            prefab true
         }
         def reactAndroidProjectDir = project(':ReactAndroid').projectDir
         def packageReactNdkDebugLibs = tasks.register("packageReactNdkDebugLibs", Copy) {

@@ -47,10 +47,10 @@ const yargs = require('yargs');
 
 const buildTag = process.env.CIRCLE_TAG;
 const otp = process.env.NPM_CONFIG_OTP;
-process.env.TMP_PUBLISH_DIR = fs.mkdtempSync(
+const tmpPublishingFolder = fs.mkdtempSync(
   path.join(os.tmpdir(), 'rn-publish-'),
 );
-echo(`The temp folder is ${process.env.TMP_PUBLISH_DIR}`);
+echo(`The temp publishing folder is ${tmpPublishingFolder}`);
 
 const argv = yargs
   .option('n', {
@@ -88,7 +88,7 @@ const filesToSaveAndRestore = [
   'ReactCommon/cxxreact/ReactNativeVersion.h',
 ];
 
-saveFiles(...filesToSaveAndRestore);
+saveFiles(filesToSaveAndRestore, tmpPublishingFolder);
 
 if (includeHermes) {
   const HERMES_INSTALL_LOCATION = 'sdks';
@@ -197,6 +197,7 @@ if (isCommitly) {
 }
 
 // -------- Generating Android Artifacts
+env.REACT_NATIVE_SKIP_PREFAB = true;
 if (exec('./gradlew :ReactAndroid:installArchives').code) {
   echo('Could not generate artifacts');
   exit(1);
@@ -210,7 +211,7 @@ if (exec('./gradlew :ReactAndroid:hermes-engine:installArchives').code) {
 }
 
 // undo uncommenting javadoc setting
-revertFiles('ReactAndroid/gradle.properties');
+revertFiles(['ReactAndroid/gradle.properties'], tmpPublishingFolder);
 
 echo('Generated artifacts for Maven');
 

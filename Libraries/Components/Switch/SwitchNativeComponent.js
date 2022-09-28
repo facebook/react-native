@@ -14,7 +14,7 @@ import type {ViewProps} from '../View/ViewPropTypes';
 import * as React from 'react';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 type SwitchChangeEvent = $ReadOnly<{|

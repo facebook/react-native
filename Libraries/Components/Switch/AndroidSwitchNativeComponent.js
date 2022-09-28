@@ -10,14 +10,11 @@
 
 import * as React from 'react';
 
-import type {
-  WithDefault,
-  BubblingEventHandler,
-} from 'react-native/Libraries/Types/CodegenTypes';
+import type {WithDefault, BubblingEventHandler} from '../../Types/CodegenTypes';
 
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';

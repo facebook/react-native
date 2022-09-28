@@ -36,6 +36,7 @@ const FileTemplate = ({
 #pragma once
 
 ${imports}#include <react/renderer/components/${libraryName}/Props.h>
+#include <react/renderer/components/${libraryName}/States.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
@@ -63,7 +64,8 @@ JSI_EXPORT extern const char ${className}ComponentName[];
  */
 using ${className}ShadowNode = ConcreteViewShadowNode<
     ${className}ComponentName,
-    ${className}Props${eventEmitter}>;
+    ${className}Props${eventEmitter},
+    ${className}State>;
 `.trim();
 
 module.exports = {
@@ -74,8 +76,6 @@ module.exports = {
     assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'ShadowNodes.h';
-
-    let hasAnyEvents = false;
 
     const moduleResults = Object.keys(schema.modules)
       .map(moduleName => {
@@ -97,15 +97,7 @@ module.exports = {
               return;
             }
 
-            const hasEvents = component.events.length > 0;
-
-            if (hasEvents) {
-              hasAnyEvents = true;
-            }
-
-            const eventEmitter = hasEvents
-              ? `,\n${componentName}EventEmitter`
-              : '';
+            const eventEmitter = `,\n    ${componentName}EventEmitter`;
 
             const replacedTemplate = ComponentTemplate({
               className: componentName,
@@ -124,7 +116,7 @@ module.exports = {
     const replacedTemplate = FileTemplate({
       componentClasses: moduleResults,
       libraryName,
-      imports: hasAnyEvents ? eventEmitterImport : '',
+      imports: eventEmitterImport,
     });
 
     return new Map([[fileName, replacedTemplate]]);

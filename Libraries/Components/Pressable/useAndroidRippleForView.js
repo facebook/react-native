@@ -12,7 +12,9 @@ import invariant from 'invariant';
 import {Commands} from '../View/ViewNativeComponent';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import {Platform, View, processColor} from 'react-native';
+import Platform from '../../Utilities/Platform';
+import View from '../View/View';
+import processColor from '../../StyleSheet/processColor';
 import * as React from 'react';
 import {useMemo} from 'react';
 

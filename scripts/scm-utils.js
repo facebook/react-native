@@ -60,20 +60,20 @@ function getCurrentCommit() {
     : 'TEMP';
 }
 
-function saveFiles(...filePaths) {
+function saveFiles(filePaths, tmpFolder) {
   for (const filePath of filePaths) {
     const dirName = path.dirname(filePath);
     if (dirName !== '.') {
-      const destFolder = `${process.env.TMP_PUBLISH_DIR}/${dirName}`;
+      const destFolder = `${tmpFolder}/${dirName}`;
       mkdirp.sync(destFolder);
     }
-    cp(filePath, `${process.env.TMP_PUBLISH_DIR}/${filePath}`);
+    cp(filePath, `${tmpFolder}/${filePath}`);
   }
 }
 
-function revertFiles(...filePaths) {
+function revertFiles(filePaths, tmpFolder) {
   for (const filePath of filePaths) {
-    const absoluteTmpPath = `${process.env.TMP_PUBLISH_DIR}/${filePath}`;
+    const absoluteTmpPath = `${tmpFolder}/${filePath}`;
     if (fs.existsSync(absoluteTmpPath)) {
       cp(absoluteTmpPath, filePath);
     } else {

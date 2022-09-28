@@ -22,14 +22,130 @@ const stringifySafe = require('../Utilities/stringifySafe').default;
  * interface to native code.
  */
 function processTransform(
-  transform: Array<Object>,
+  transform: Array<Object> | string,
 ): Array<Object> | Array<number> {
+  if (typeof transform === 'string') {
+    const regex = new RegExp(/(\w+)\(([^)]+)\)/g);
+    let transformArray: Array<Object> = [];
+    let matches;
+
+    while ((matches = regex.exec(transform))) {
+      const {key, value} = _getKeyAndValueFromCSSTransform(
+        matches[1],
+        matches[2],
+      );
+
+      if (value !== undefined) {
+        transformArray.push({[key]: value});
+      }
+    }
+    transform = transformArray;
+  }
+
   if (__DEV__) {
     _validateTransforms(transform);
   }
 
   return transform;
 }
+
+const _getKeyAndValueFromCSSTransform: (
+  key:
+    | string
+    | $TEMPORARY$string<'matrix'>
+    | $TEMPORARY$string<'perspective'>
+    | $TEMPORARY$string<'rotate'>
+    | $TEMPORARY$string<'rotateX'>
+    | $TEMPORARY$string<'rotateY'>
+    | $TEMPORARY$string<'rotateZ'>
+    | $TEMPORARY$string<'scale'>
+    | $TEMPORARY$string<'scaleX'>
+    | $TEMPORARY$string<'scaleY'>
+    | $TEMPORARY$string<'skewX'>
+    | $TEMPORARY$string<'skewY'>
+    | $TEMPORARY$string<'translate'>
+    | $TEMPORARY$string<'translate3d'>
+    | $TEMPORARY$string<'translateX'>
+    | $TEMPORARY$string<'translateY'>,
+  args: string,
+) => {key: string, value?: number[] | number | string} = (key, args) => {
+  const argsWithUnitsRegex = new RegExp(/([+-]?\d+(\.\d+)?)([a-zA-Z]+)?/g);
+
+  switch (key) {
+    case 'matrix':
+      return {key, value: args.match(/[+-]?\d+(\.\d+)?/g)?.map(Number)};
+    case 'translate':
+    case 'translate3d':
+      const parsedArgs = [];
+      let missingUnitOfMeasurement = false;
+
+      let matches;
+      while ((matches = argsWithUnitsRegex.exec(args))) {
+        const value = Number(matches[1]);
+        const unitOfMeasurement = matches[3];
+
+        if (value !== 0 && !unitOfMeasurement) {
+          missingUnitOfMeasurement = true;
+        }
+
+        parsedArgs.push(value);
+      }
+
+      if (__DEV__) {
+        invariant(
+          !missingUnitOfMeasurement,
+          `Transform with key ${key} must have units unless the provided value is 0, found %s`,
+          `${key}(${args})`,
+        );
+
+        if (key === 'translate') {
+          invariant(
+            parsedArgs?.length === 1 || parsedArgs?.length === 2,
+            'Transform with key translate must be an string with 1 or 2 parameters, found %s: %s',
+            parsedArgs?.length,
+            `${key}(${args})`,
+          );
+        } else {
+          invariant(
+            parsedArgs?.length === 3,
+            'Transform with key translate3d must be an string with 3 parameters, found %s: %s',
+            parsedArgs?.length,
+            `${key}(${args})`,
+          );
+        }
+      }
+
+      if (parsedArgs?.length === 1) {
+        parsedArgs.push(0);
+      }
+
+      return {key: 'translate', value: parsedArgs};
+    case 'translateX':
+    case 'translateY':
+    case 'perspective':
+      const argMatches = argsWithUnitsRegex.exec(args);
+
+      if (!argMatches?.length) {
+        return {key, value: undefined};
+      }
+
+      const value = Number(argMatches[1]);
+      const unitOfMeasurement = argMatches[3];
+
+      if (__DEV__) {
+        invariant(
+          value === 0 || unitOfMeasurement,
+          `Transform with key ${key} must have units unless the provided value is 0, found %s`,
+          `${key}(${args})`,
+        );
+      }
+
+      return {key, value};
+
+    default:
+      return {key, value: !isNaN(args) ? Number(args) : args};
+  }
+};
 
 function _validateTransforms(transform: Array<Object>): void {
   transform.forEach(transformation => {

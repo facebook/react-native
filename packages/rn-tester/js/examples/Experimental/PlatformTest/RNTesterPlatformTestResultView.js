@@ -82,7 +82,7 @@ function FilterModalButton(props: FilterModalProps) {
         transparent={true}>
         <SafeAreaView style={styles.filterModalRoot}>
           <KeyboardAvoidingView
-            style={styles.filterModalKeboardAvoidingRoot}
+            style={styles.filterModalKeyboardAvoidingRoot}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <View style={styles.filterModalContainer}>
               <View style={styles.filterModalContentContainer}>
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgb(171, 171, 171)',
     borderRadius: 8,
   },
-  filterModalKeboardAvoidingRoot: {
+  filterModalKeyboardAvoidingRoot: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
