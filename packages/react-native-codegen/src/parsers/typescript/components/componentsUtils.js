@@ -76,7 +76,7 @@ function getUnionOfLiterals(
   name: string,
   forArray: boolean,
   elementTypes: $FlowFixMe[],
-  defaultValue: $FlowFixMe | null,
+  defaultValue: $FlowFixMe | undefined,
   types: TypeDeclarationMap,
 ) {
   elementTypes.reduce((lastType, currType) => {
@@ -93,7 +93,7 @@ function getUnionOfLiterals(
     return currType;
   });
 
-  if (defaultValue === null) {
+  if (defaultValue === undefined) {
     throw new Error(`A default enum value is required for "${name}"`);
   }
 
@@ -134,7 +134,7 @@ function getUnionOfLiterals(
 function getTypeAnnotationForArray<T>(
   name: string,
   typeAnnotation: $FlowFixMe,
-  defaultValue: $FlowFixMe | null,
+  defaultValue: $FlowFixMe | undefined,
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
@@ -275,8 +275,7 @@ function getTypeAnnotationForArray<T>(
 function getTypeAnnotation<T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
-  defaultValue: $FlowFixMe | null,
-  withNullDefault: boolean,
+  defaultValue: $FlowFixMe | undefined,
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
@@ -285,7 +284,7 @@ function getTypeAnnotation<T>(
 
   // if it is an union type, it should be union of literals
   if (topLevelType.unions.length > 1) {
-    return getUnionOfLiterals(name, false, topLevelType.unions, defaultValue || topLevelType.defaultValue, types);
+    return getUnionOfLiterals(name, false, topLevelType.unions, (defaultValue!==undefined?defaultValue:  topLevelType.defaultValue), types);
   }
 
   const typeAnnotation = getValueFromTypes(topLevelType.unions[0], types);
@@ -355,7 +354,6 @@ function getTypeAnnotation<T>(
       name,
       elementType,
       defaultValue,
-      withNullDefault,
       types,
       buildSchema,
     );
@@ -426,19 +424,15 @@ function getTypeAnnotation<T>(
     case 'Float':
       return {
         type: 'FloatTypeAnnotation',
-        default: withNullDefault
-          ? (defaultValue: number | null)
-          : ((defaultValue ? defaultValue : 0): number),
+        default: ((defaultValue === null ? null : defaultValue ? defaultValue : 0): number | null),
       };
     case 'TSBooleanKeyword':
       return {
         type: 'BooleanTypeAnnotation',
-        default: withNullDefault
-          ? (defaultValue: boolean | null)
-          : ((defaultValue == null ? false : defaultValue): boolean),
+        default: !!defaultValue,
       };
     case 'TSStringKeyword':
-      if (typeof defaultValue !== 'undefined') {
+      if (defaultValue !== undefined) {
         return {
           type: 'StringTypeAnnotation',
           default: (defaultValue: string | null),
@@ -446,7 +440,7 @@ function getTypeAnnotation<T>(
       }
       throw new Error(`A default string (or null) is required for "${name}"`);
     case 'Stringish':
-      if (typeof defaultValue !== 'undefined') {
+      if (defaultValue !== undefined) {
         return {
           type: 'StringTypeAnnotation',
           default: (defaultValue: string | null),
@@ -469,8 +463,7 @@ function findProp(
 ) {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(typeAnnotation);
-  if(topLevelType.unions.length!=1) return null;
-
+  if(topLevelType.unions.length==1){
   const elementType = topLevelType.unions[0];
   if (elementType.type === 'TSTypeReference') {
       // Remove unwanted types
@@ -488,7 +481,8 @@ function findProp(
         return null;
       }
   }
-  return {typeAnnotation, optionalType:topLevelType.optional};
+}
+  return topLevelType;
 }
 
 type SchemaInfo = {
@@ -496,7 +490,6 @@ type SchemaInfo = {
   optional: boolean,
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe,
-  withNullDefault: boolean,
 };
 
 function getSchemaInfo(
@@ -510,84 +503,19 @@ function getSchemaInfo(
     types,
   );
 
-  const foundProp = findProp(name, value);
-  if (!foundProp) {
+  const topLevelType = findProp(name, value);
+  if (!topLevelType) {
     return null;
   }
-  let {typeAnnotation, optionalType} = foundProp;
-  let optional = property.optional || optionalType;
-
-  // example: Readonly<{prop: string} | null | undefined>;
-  if (
-    value.type === 'TSTypeReference' &&
-    typeAnnotation.typeParameters?.params[0].type === 'TSUnionType' &&
-    typeAnnotation.typeParameters?.params[0].types.some(
-      element =>
-        element.type === 'TSNullKeyword' ||
-        element.type === 'TSUndefinedKeyword',
-    )
-  ) {
-    optional = true;
-  }
-
-  if (
-    !property.optional &&
-    value.type === 'TSTypeReference' &&
-    typeAnnotation.typeName.name === 'WithDefault'
-  ) {
-    throw new Error(
-      `key ${name} must be optional if used with WithDefault<> annotation`,
-    );
-  }
-
-  let type = typeAnnotation.type;
-  let defaultValue = null;
-  let withNullDefault = false;
-  if (
-    type === 'TSTypeReference' &&
-    typeAnnotation.typeName.name === 'WithDefault'
-  ) {
-    if (typeAnnotation.typeParameters.params.length === 1) {
-      throw new Error(
-        `WithDefault requires two parameters, did you forget to provide a default value for "${name}"?`,
-      );
-    }
-
-    let defaultValueType = typeAnnotation.typeParameters.params[1].type;
-    defaultValue = typeAnnotation.typeParameters.params[1].value;
-
-    if (defaultValueType === 'TSLiteralType') {
-      defaultValueType = typeAnnotation.typeParameters.params[1].literal.type;
-      defaultValue = typeAnnotation.typeParameters.params[1].literal.value;
-      if (
-        defaultValueType === 'UnaryExpression' &&
-        typeAnnotation.typeParameters.params[1].literal.argument.type ===
-          'NumericLiteral' &&
-        typeAnnotation.typeParameters.params[1].literal.operator === '-'
-      ) {
-        defaultValue =
-          -1 * typeAnnotation.typeParameters.params[1].literal.argument.value;
-      }
-    }
-
-    if (defaultValueType === 'TSNullKeyword') {
-      defaultValue = null;
-      withNullDefault = true;
-    }
-
-    typeAnnotation = typeAnnotation.typeParameters.params[0];
-    type =
-      typeAnnotation.type === 'TSTypeReference'
-        ? typeAnnotation.typeName.name
-        : typeAnnotation.type;
-  }
+  const optional = property.optional || topLevelType.optional;
+  const defaultValue=topLevelType.defaultValue;
+  const typeAnnotation = topLevelType.unions.length===1?topLevelType.unions[0]:{type:'TSUnionType',types:topLevelType.unions};
 
   return {
     name,
     optional,
     typeAnnotation,
     defaultValue,
-    withNullDefault,
   };
 }
 

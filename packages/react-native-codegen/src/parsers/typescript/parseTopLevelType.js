@@ -38,7 +38,9 @@ function handleUnionAndParen(
       break;
     }
     case 'TSTypeReference':
-      if (type.typeName.name === 'WithDefault') {
+      if (type.typeName.name==='Readonly') {
+        handleUnionAndParen(type.typeAnnotation, result);
+      } else if (type.typeName.name === 'WithDefault') {
         if(result.optional) {
             throw new Error(
               'WithDefault<> is optional and does not need to be marked as optional. Please remove the union of undefined and/or null',
