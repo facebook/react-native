@@ -82,7 +82,6 @@ function InvertedFlatlist(props) {
   const [items, setItems] = useState(DATA);
   const [index, setIndex] = useState(DATA.length + 1);
   const [counter, setCounter] = useState(0);
-  const [contentHeight, setContentHeight] = useState(null);
   const [screenreaderEnabled, setScreenreaderEnabled] = useState(undefined);
   let lastOffsetFromTheBottom = React.useRef(null);
   let _hasTriggeredInitialScrollToIndex = React.useRef(null);
@@ -189,7 +188,6 @@ function InvertedFlatlist(props) {
           flatlist = ref;
         }}
         onContentSizeChange={(width, height) => {
-          setContentHeight(height);
           if (
             flatlist &&
             screenreaderEnabled === true &&
@@ -201,8 +199,8 @@ function InvertedFlatlist(props) {
             _hasTriggeredInitialScrollToIndex.current = false;
             // $FlowFixMe
             _resetPositionTimeout = setTimeout(
-              flatlist => {
-                flatlist.scrollToOffset({
+              flatlistRef => {
+                flatlistRef.scrollToOffset({
                   offset: newBottomHeight,
                   animated: false,
                 });

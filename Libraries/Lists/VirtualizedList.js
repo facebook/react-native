@@ -678,7 +678,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       talkbackCompatibility &&
       contentLength != null &&
       this.props.contentOffset == null &&
-      this._hasDoneFirstScroll === false
+      this._hasDoneFirstScroll === false &&
+      contentLength != 0
     ) {
       contentOffset = horizontalOrDefault(horizontal)
         ? {y: 0, x: contentLength}
