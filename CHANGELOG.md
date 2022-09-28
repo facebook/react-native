@@ -84,7 +84,7 @@
 
 - Accept TypeScript type `T | null | undefined` as a maybe type of T in turbo module. ([9ecd203eec](https://github.com/facebook/react-native/commit/9ecd203eec97e7d21d10311d950c9f8f30c7a4b1) by [@ZihanChen-MSFT](https://github.com/ZihanChen-MSFT))
 - Bump react-native-gradle-plugin to 0.70.3 ([e33633644c](https://github.com/facebook/react-native/commit/e33633644c70ea39af6e450fcf31d9458051fd5f) by [@dmytrorykun](https://github.com/dmytrorykun))
-- Bump @react-native/codegen to 0.70.5 ([6a8c38eef2](https://github.com/facebook/react-native/commit/6a8c38eef272e79e52a35941afa9c3fe9e8fc191) by [@dmytrorykun](https://github.com/dmytrorykun))
+- Bump react-native-codegen to 0.70.5 ([6a8c38eef2](https://github.com/facebook/react-native/commit/6a8c38eef272e79e52a35941afa9c3fe9e8fc191) by [@dmytrorykun](https://github.com/dmytrorykun))
 - Hermes version bump for 0.70.1 ([5132211228](https://github.com/facebook/react-native/commit/5132211228a5b9e36d58c1f7e2c99ccaabe1ba3d) by [@dmytrorykun](https://github.com/dmytrorykun))
 
 ### Fixed
@@ -317,7 +317,7 @@
 
 ### Changed
 
-- Bump @react-native/codegen to 0.69.2 ([df3d52bfbf](https://github.com/facebook/react-native/commit/df3d52bfbf4254cd16e1dc0ca0af2743cd7e11c1) by [@dmytrorykun](https://github.com/dmytrorykun))
+- Bump react-native-codegen to 0.69.2 ([df3d52bfbf](https://github.com/facebook/react-native/commit/df3d52bfbf4254cd16e1dc0ca0af2743cd7e11c1) by [@dmytrorykun](https://github.com/dmytrorykun))
 
 #### Android specific
 
@@ -634,8 +634,8 @@
 
 ### Changed
 
-- Bump used version of @react-native/codegen to 0.0.17 ([dfda480a98](https://github.com/facebook/react-native/commit/dfda480a9888d95c542cea40f25e8e783565c1db) by [@cortinico](https://github.com/cortinico))
-- Bump @react-native/codegen to 0.0.17 ([a5ddc2e165](https://github.com/facebook/react-native/commit/a5ddc2e16523ea336ffbecf7acfd4820469a29e7) by [@cortinico](https://github.com/cortinico))
+- Bump used version of react-native-codegen to 0.0.17 ([dfda480a98](https://github.com/facebook/react-native/commit/dfda480a9888d95c542cea40f25e8e783565c1db) by [@cortinico](https://github.com/cortinico))
+- Bump react-native-codegen to 0.0.17 ([a5ddc2e165](https://github.com/facebook/react-native/commit/a5ddc2e16523ea336ffbecf7acfd4820469a29e7) by [@cortinico](https://github.com/cortinico))
 
 ### Fixed
 
@@ -734,7 +734,7 @@
 - Upgraded packages to the latest versions for ESLint v7. ([cf763cdf81](https://github.com/facebook/react-native/commit/cf763cdf816e1cad20caf2347c54bc96c7f6dd47) by [@yungsters](https://github.com/yungsters))
 - Updated the links for the discussions and changelog ([daf37a1fce](https://github.com/facebook/react-native/commit/daf37a1fce43403e6320e1e3023e86fd1b970bdf) by [@MikeyAlmighty](https://github.com/MikeyAlmighty))
 - XMLHttpRequest.getAllResponseHeaders() now returns headers with names lowercased and sorted in ascending order, as per specification ([b2415c4866](https://github.com/facebook/react-native/commit/b2415c48669391ee1ab7c6450748c4d91097a666) by [@ascherkus](https://github.com/ascherkus))
-- Bump @react-native/codegen to 0.0.9 ([e3a71b019f](https://github.com/facebook/react-native/commit/e3a71b019fa78e2b4b3454ccc59ea9c8cc543b29) by [@cortinico](https://github.com/cortinico))
+- Bump react-native-codegen to 0.0.9 ([e3a71b019f](https://github.com/facebook/react-native/commit/e3a71b019fa78e2b4b3454ccc59ea9c8cc543b29) by [@cortinico](https://github.com/cortinico))
 - Accessing `Image.propTypes`, `Text.propTypes`, `TextInput.propTypes`, `ColorPropType`, `EdgeInsetsPropType`, `PointPropType`, or `ViewPropTypes` now emits a deprecation warning. ([3f629049ba](https://github.com/facebook/react-native/commit/3f629049ba9773793978cf9093c7a71af15e3e8d) by [@yungsters](https://github.com/yungsters))
 - Bump `core-workflow-apply-version-label` version ([e973b3afc2](https://github.com/facebook/react-native/commit/e973b3afc274f892a0e5a6fdea9004dc5d84eb2b) by [@lucasbento](https://github.com/lucasbento))
 - Add `vendor/bundle` into .gitignore template ([2f67f5d68b](https://github.com/facebook/react-native/commit/2f67f5d68b17010c49f2996a788fe68c1fe2e9f6) by [@MoOx](https://github.com/MoOx))
@@ -1217,7 +1217,7 @@
 ### Highlights
 
 - Hermes 0.8.1. Please see the highlighted changes from its [0.8.0](https://github.com/facebook/hermes/releases/tag/v0.8.0) and [0.8.1](https://github.com/facebook/hermes/releases/tag/v0.8.1) release notes.
-- `@react-native/codegen` version `0.0.7` is now needed as a `devDependency` in the `package.json`.
+- `react-native-codegen` version `0.0.7` is now needed as a `devDependency` in the `package.json`.
 
 ### Breaking Changes
 
@@ -1257,7 +1257,7 @@
 - Added reset method to `RCTFabricSurface` to help with reloads ([53858ceaa3](https://github.com/facebook/react-native/commit/53858ceaa3beab02726b1bd6e125e506477d445e) by [@PeteTheHeat](https://github.com/PeteTheHeat))
 - Allow `RCTRootView` to be initialized with a frame ([00bc09c8f7](https://github.com/facebook/react-native/commit/00bc09c8f76879eb1f9a92a6a643191da9355de8) by [@appden](https://github.com/appden))
 - Allow for configuring the `NSURLSessionConfiguration` ([58444c74f5](https://github.com/facebook/react-native/commit/58444c74f5c18b74e88a6c1cd0f059fe434c1a21) by [@hakonk](https://github.com/hakonk))
-- Use @react-native/codegen in iOS app template ([e99b8bbb40](https://github.com/facebook/react-native/commit/e99b8bbb404f8cd1f11b6c7998083be530d7b8a4) by [@hramos](https://github.com/hramos))
+- Use react-native-codegen in iOS app template ([e99b8bbb40](https://github.com/facebook/react-native/commit/e99b8bbb404f8cd1f11b6c7998083be530d7b8a4) by [@hramos](https://github.com/hramos))
 
 ### Changed
 
@@ -1275,7 +1275,7 @@
 - `DevSettings` no longer inherits from `NativeEventEmitter` ([70cd569e7e](https://github.com/facebook/react-native/commit/70cd569e7e4cceac81023eae4ea5089cff2f9b59) by [@yungsters](https://github.com/yungsters))
 - LogBox will not initially collapse stack frames if every frame would be collapsed. ([88a41f180c](https://github.com/facebook/react-native/commit/88a41f180c315bc55e05d77ddc3fc671ad8630e6) by [@yungsters](https://github.com/yungsters))
 - Update package name warning of deprecated modules ([34e1b0ef98](https://github.com/facebook/react-native/commit/34e1b0ef981559adc09cd9f994bef9584f1c82b7) by [@Naturalclar](https://github.com/Naturalclar))
-- Update @react-native/codegen to 0.0.7 ([cd6c9f3273](https://github.com/facebook/react-native/commit/cd6c9f3273fbe41052c4ec8512d3b1129daf149b) by [@Naturalclar](https://github.com/Naturalclar))
+- Update react-native-codegen to 0.0.7 ([cd6c9f3273](https://github.com/facebook/react-native/commit/cd6c9f3273fbe41052c4ec8512d3b1129daf149b) by [@Naturalclar](https://github.com/Naturalclar))
 - Update template devDependencies ([652e3953f4](https://github.com/facebook/react-native/commit/652e3953f48938580e1bf8ea1ba70105997e59d2) by [@Bardiamist](https://github.com/Bardiamist))
 - Don't minify JS bundle by default when using hermes ([1a67dda668](https://github.com/facebook/react-native/commit/1a67dda668c71d961a4bb3b0cdf6aa22c0e5c138) by [@janicduplessis](https://github.com/janicduplessis))
 - Migrate warnings in index.js to point to new lean core repos ([4421a64ac1](https://github.com/facebook/react-native/commit/4421a64ac1ea9df3827fb99194c8576a0750beab) by [@Naturalclar](https://github.com/Naturalclar))
