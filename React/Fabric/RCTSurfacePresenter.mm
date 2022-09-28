@@ -79,7 +79,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   RCTScheduler *_Nullable _scheduler; // Thread-safe. Pointer is protected by `_schedulerAccessMutex`.
   ContextContainer::Shared _contextContainer; // Protected by `_schedulerLifeCycleMutex`.
   RuntimeExecutor _runtimeExecutor; // Protected by `_schedulerLifeCycleMutex`.
-  RuntimeExecutor _bindingsInstallExecutor; // Only used for installing bindings.
+  std::optional<RuntimeExecutor> _bridgelessBindingsExecutor; // Only used for installing bindings.
 
   butter::shared_mutex _observerListMutex;
   std::vector<__weak id<RCTSurfacePresenterObserver>> _observers; // Protected by `_observerListMutex`.
@@ -87,12 +87,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
                          runtimeExecutor:(RuntimeExecutor)runtimeExecutor
-                 bindingsInstallExecutor:(RuntimeExecutor)bindingsInstallExecutor
+              bridgelessBindingsExecutor:(std::optional<RuntimeExecutor>)bridgelessBindingsExecutor
 {
   if (self = [super init]) {
     assert(contextContainer && "RuntimeExecutor must be not null.");
     _runtimeExecutor = runtimeExecutor;
-    _bindingsInstallExecutor = bindingsInstallExecutor;
+    _bridgelessBindingsExecutor = bridgelessBindingsExecutor;
     _contextContainer = contextContainer;
 
     _surfaceRegistry = [RCTSurfaceRegistry new];
@@ -298,14 +298,16 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   }
 
   toolbox.runtimeExecutor = runtimeExecutor;
-  toolbox.bindingsInstallExecutor = _bindingsInstallExecutor;
+  toolbox.bridgelessBindingsExecutor = _bridgelessBindingsExecutor;
 
   toolbox.mainRunLoopObserverFactory = [](RunLoopObserver::Activity activities,
                                           RunLoopObserver::WeakOwner const &owner) {
     return std::make_unique<MainRunLoopObserver>(activities, owner);
   };
 
-  toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_background_executor_ios")) {
+    toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
+  }
 
   toolbox.synchronousEventBeatFactory =
       [runtimeExecutor, runtimeScheduler = runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {

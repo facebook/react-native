@@ -10,10 +10,10 @@
 
 'use strict';
 
-const AnimatedInterpolation = require('./AnimatedInterpolation');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
-const InteractionManager = require('../../Interaction/InteractionManager');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
+import AnimatedInterpolation from './AnimatedInterpolation';
+import AnimatedWithChildren from './AnimatedWithChildren';
+import InteractionManager from '../../Interaction/InteractionManager';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
 
 import type AnimatedNode from './AnimatedNode';
 import type Animation, {EndCallback} from '../animations/Animation';
@@ -84,7 +84,7 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  *
  * See https://reactnative.dev/docs/animatedvalue
  */
-class AnimatedValue extends AnimatedWithChildren {
+export default class AnimatedValue extends AnimatedWithChildren {
   _value: number;
   _startingValue: number;
   _offset: number;
@@ -304,5 +304,3 @@ class AnimatedValue extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedValue;

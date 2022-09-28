@@ -16,7 +16,7 @@ import type {
   MeasureLayoutOnSuccessCallback,
   LayoutAnimationConfig,
 } from '../Renderer/shims/ReactNativeTypes';
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import type {RootTag} from '../Types/RootTagTypes';
 
 // TODO: type these properly.
 type Node = {...};

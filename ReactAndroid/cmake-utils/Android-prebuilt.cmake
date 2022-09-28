@@ -103,16 +103,6 @@ target_include_directories(react_nativemodule_core
         ${REACT_COMMON_DIR}/react/nativemodule/core/platform/android)
 target_link_libraries(react_nativemodule_core INTERFACE folly_runtime)
 
-## turbomodulejsijni
-add_library(turbomodulejsijni SHARED IMPORTED GLOBAL)
-set_target_properties(turbomodulejsijni
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libturbomodulejsijni.so)
-target_include_directories(turbomodulejsijni
-        INTERFACE
-        ${REACT_ANDROID_SRC_DIR}/jni/react/turbomodule)
-
 ## react_render_core
 add_library(react_render_core SHARED IMPORTED GLOBAL)
 set_target_properties(react_render_core
@@ -123,14 +113,6 @@ target_include_directories(react_render_core
         INTERFACE
         ${REACT_COMMON_DIR}
         ${REACT_COMMON_DIR}/react/renderer/core)
-
-## react_render_debug
-add_library(react_render_debug SHARED IMPORTED GLOBAL)
-set_target_properties(react_render_debug
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_debug.so)
-target_include_directories(react_render_debug INTERFACE ${REACT_COMMON_DIR}/react/renderer/debug)
 
 ## react_debug
 add_library(react_debug SHARED IMPORTED GLOBAL)
@@ -218,22 +200,6 @@ set_target_properties(jsi
         IMPORTED_LOCATION
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libjsi.so)
 target_include_directories(jsi INTERFACE ${REACT_COMMON_DIR}/jsi)
-
-## react_codegen_rncore
-add_library(react_codegen_rncore SHARED IMPORTED GLOBAL)
-set_target_properties(react_codegen_rncore
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_codegen_rncore.so)
-target_include_directories(react_codegen_rncore INTERFACE ${REACT_GENERATED_SRC_DIR}/codegen/jni)
-
-## runtimeexecutor
-add_library(runtimeexecutor SHARED IMPORTED GLOBAL)
-set_target_properties(runtimeexecutor
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libruntimeexecutor.so)
-target_include_directories(runtimeexecutor INTERFACE ${REACT_COMMON_DIR}/runtimeexecutor)
 
 ## fbjni
 add_subdirectory(${FIRST_PARTY_NDK_DIR}/fbjni fbjni_build)

@@ -9,7 +9,10 @@
  */
 
 import type {Node} from 'react';
-import {ImageBackground, StyleSheet, Text, useColorScheme} from 'react-native';
+import ImageBackground from '../../Image/ImageBackground';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import useColorScheme from '../../Utilities/useColorScheme';
 import React from 'react';
 import Colors from './Colors';
 import HermesBadge from './HermesBadge';

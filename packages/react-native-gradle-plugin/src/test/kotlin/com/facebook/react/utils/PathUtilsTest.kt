@@ -261,14 +261,14 @@ class PathUtilsTest {
   }
 
   @Test
-  @WithOs(OS.UNIX)
-  fun getHermesCBin_onUnix_returnsHermesc() {
+  @WithOs(OS.LINUX)
+  fun getHermesCBin_onLinux_returnsHermesc() {
     assertEquals("hermesc", getHermesCBin())
   }
 
   @Test
   @WithOs(OS.MAC)
-  fun getHermesCBin_onMax_returnsHermesc() {
+  fun getHermesCBin_onMac_returnsHermesc() {
     assertEquals("hermesc", getHermesCBin())
   }
 
@@ -278,6 +278,7 @@ class PathUtilsTest {
     val moduleFolder = tempFolder.newFolder("awesome-module")
 
     val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.android.library")
     project.plugins.apply("com.facebook.react")
     val extension = project.extensions.getByType(ReactExtension::class.java)
 
@@ -290,6 +291,7 @@ class PathUtilsTest {
     val localFile = File(moduleFolder, "package.json").apply { writeText("{}") }
 
     val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.android.library")
     project.plugins.apply("com.facebook.react")
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }

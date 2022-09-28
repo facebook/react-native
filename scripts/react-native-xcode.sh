@@ -78,11 +78,11 @@ fi
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
-# If hermes-engine is in the podfile.lock, it means that Hermes is a dependency of the project
+# If hermes-engine is in the Podfile.lock, it means that Hermes is a dependency of the project
 # and it is enabled. If not, it means that hermes is disabled.
-HERMES_ENABLED=$(grep hermes-engine podfile.lock)
+HERMES_ENABLED=$(grep hermes-engine $PODS_PODFILE_DIR_PATH/Podfile.lock)
 
-# If hermes-engine is not in the podfile.lock, it means that the app is not using Hermes.
+# If hermes-engine is not in the Podfile.lock, it means that the app is not using Hermes.
 # Setting USE_HERMES is no the only way to set whether the app can use hermes or not: users
 # can also modify manually the Podfile.
 if [[ -z "$HERMES_ENABLED" ]]; then

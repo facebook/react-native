@@ -12,13 +12,13 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-const flattenStyle = require('../../StyleSheet/flattenStyle');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-const AnimatedNode = require('./AnimatedNode');
-const AnimatedTransform = require('./AnimatedTransform');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
+import flattenStyle from '../../StyleSheet/flattenStyle';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedNode from './AnimatedNode';
+import AnimatedTransform from './AnimatedTransform';
+import AnimatedWithChildren from './AnimatedWithChildren';
 
-class AnimatedStyle extends AnimatedWithChildren {
+export default class AnimatedStyle extends AnimatedWithChildren {
   _style: Object;
 
   constructor(style: any) {
@@ -131,5 +131,3 @@ class AnimatedStyle extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedStyle;

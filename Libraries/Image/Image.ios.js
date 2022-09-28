@@ -24,7 +24,7 @@ import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 import {convertObjectFitToResizeMode} from './ImageUtils';
 
 import ImageViewNativeComponent from './ImageViewNativeComponent';
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import type {RootTag} from '../Types/RootTagTypes';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 
 function getSize(
@@ -173,7 +173,8 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
           <ImageViewNativeComponent
             accessibilityState={_accessibilityState}
             {...restProps}
-            accessibilityLabel={accessibilityLabel}
+            accessible={props.alt !== undefined ? true : props.accessible}
+            accessibilityLabel={accessibilityLabel ?? props.alt}
             ref={forwardedRef}
             style={style}
             resizeMode={resizeMode}

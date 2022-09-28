@@ -36,13 +36,11 @@ export type ReactTestRendererJSON =
    * delete this comment and run Flow. */
   $ReturnType<ReactTestRenderer.create.toJSON>;
 
-const {
-  Switch,
-  Text,
-  TextInput,
-  View,
-  VirtualizedList,
-} = require('react-native');
+const Switch = require('../Components/Switch/Switch').default;
+const Text = require('../Text/Text');
+const TextInput = require('../Components/TextInput/TextInput');
+const View = require('../Components/View/View');
+const VirtualizedList = require('../Lists/VirtualizedList');
 
 function byClickable(): Predicate {
   return withMessage(

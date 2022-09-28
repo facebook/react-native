@@ -31,8 +31,15 @@
  *     * or otherwise `{major}.{minor}-stable`
  */
 
-const {exec, echo, exit, test, env} = require('shelljs');
-const {parseVersion, isTaggedLatest} = require('./version-utils');
+const {exec, echo, exit, env, test} = require('shelljs');
+const {parseVersion} = require('./version-utils');
+const {
+  exitIfNotOnGit,
+  getCurrentCommit,
+  isTaggedLatest,
+  revertFiles,
+  saveFiles,
+} = require('./scm-utils');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -40,6 +47,10 @@ const yargs = require('yargs');
 
 const buildTag = process.env.CIRCLE_TAG;
 const otp = process.env.NPM_CONFIG_OTP;
+const tmpPublishingFolder = fs.mkdtempSync(
+  path.join(os.tmpdir(), 'rn-publish-'),
+);
+echo(`The temp publishing folder is ${tmpPublishingFolder}`);
 
 const argv = yargs
   .option('n', {
@@ -61,6 +72,23 @@ const nightlyBuild = argv.nightly;
 const dryRunBuild = argv.dryRun;
 const includeHermes = argv.includeHermes;
 const isCommitly = nightlyBuild || dryRunBuild;
+
+const filesToSaveAndRestore = [
+  'template/Gemfile',
+  'template/_ruby-version',
+  'template/package.json',
+  '.ruby-version',
+  'Gemfile.lock',
+  'Gemfile',
+  'package.json',
+  'ReactAndroid/gradle.properties',
+  'Libraries/Core/ReactNativeVersion.js',
+  'React/Base/RCTVersion.m',
+  'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
+  'ReactCommon/cxxreact/ReactNativeVersion.h',
+];
+
+saveFiles(filesToSaveAndRestore, tmpPublishingFolder);
 
 if (includeHermes) {
   const HERMES_INSTALL_LOCATION = 'sdks';
@@ -118,9 +146,7 @@ if (includeHermes) {
 }
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
-const currentCommit = exec('git rev-parse HEAD', {
-  silent: true,
-}).stdout.trim();
+const currentCommit = getCurrentCommit();
 const shortCommit = currentCommit.slice(0, 9);
 
 const rawVersion =
@@ -171,6 +197,7 @@ if (isCommitly) {
 }
 
 // -------- Generating Android Artifacts
+env.REACT_NATIVE_SKIP_PREFAB = true;
 if (exec('./gradlew :ReactAndroid:installArchives').code) {
   echo('Could not generate artifacts');
   exit(1);
@@ -184,7 +211,7 @@ if (exec('./gradlew :ReactAndroid:hermes-engine:installArchives').code) {
 }
 
 // undo uncommenting javadoc setting
-exec('git checkout ReactAndroid/gradle.properties');
+revertFiles(['ReactAndroid/gradle.properties'], tmpPublishingFolder);
 
 echo('Generated artifacts for Maven');
 
@@ -206,7 +233,11 @@ artifacts.forEach(name => {
       `./android/com/facebook/react/react-native/${releaseVersion}/${name}`,
     )
   ) {
-    echo(`Failing as expected file: ${name} was not correctly generated.`);
+    echo(
+      `Failing as expected file: \n\
+      android/com/facebook/react/react-native/${releaseVersion}/${name}\n\
+      was not correctly generated.`,
+    );
     exit(1);
   }
 });
@@ -217,7 +248,10 @@ if (dryRunBuild) {
 }
 
 // Running to see if this commit has been git tagged as `latest`
-const isLatest = isTaggedLatest(currentCommit);
+const isLatest = exitIfNotOnGit(
+  () => isTaggedLatest(currentCommit),
+  'Not in git. We do not want to publish anything',
+);
 
 const releaseBranch = `${major}.${minor}-stable`;
 

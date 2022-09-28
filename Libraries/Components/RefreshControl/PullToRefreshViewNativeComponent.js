@@ -19,7 +19,7 @@ import * as React from 'react';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,

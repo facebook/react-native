@@ -9,7 +9,7 @@
  */
 
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import type {RootTag} from '../Types/RootTagTypes';
 
 import BatchedBridge from '../BatchedBridge/BatchedBridge';
 import BugReporting from '../BugReporting/BugReporting';

@@ -12,7 +12,6 @@ import com.facebook.react.tests.OsRule
 import com.facebook.react.tests.WithOs
 import com.facebook.react.tests.createTestTask
 import java.io.File
-import org.gradle.api.tasks.*
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -89,7 +88,7 @@ class GenerateCodegenSchemaTaskTest {
   }
 
   @Test
-  @WithOs(OS.UNIX)
+  @WithOs(OS.LINUX)
   fun setupCommandLine_willSetupCorrectly() {
     val codegenDir = tempFolder.newFolder("codegen")
     val jsRootDir = tempFolder.newFolder("js")

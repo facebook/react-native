@@ -224,6 +224,9 @@ const Text: React.AbstractComponent<
     flattenedStyle.fontWeight = flattenedStyle?.fontWeight.toString();
   }
 
+  const _hasOnPressOrOnLongPress =
+    props.onPress != null || props.onLongPress != null;
+
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
@@ -246,7 +249,11 @@ const Text: React.AbstractComponent<
         {...eventHandlersForText}
         disabled={_disabled}
         selectable={_selectable}
-        accessible={_accessible}
+        accessible={
+          accessible == null && Platform.OS === 'android'
+            ? _hasOnPressOrOnLongPress
+            : _accessible
+        }
         accessibilityLabel={ariaLabel ?? accessibilityLabel}
         accessibilityState={nativeTextAccessibilityState}
         allowFontScaling={allowFontScaling !== false}

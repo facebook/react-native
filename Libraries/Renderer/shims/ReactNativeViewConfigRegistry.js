@@ -6,7 +6,7 @@
  *
  * @noformat
  * @flow strict-local
- * @generated SignedSource<<a5b40ebf1f5b17d6dc83479c1c597566>>
+ * @generated SignedSource<<825c6cbf78ba133c9a0ffdeace7f6fc0>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -18,19 +18,19 @@ import invariant from 'invariant';
 
 // Event configs
 const customBubblingEventTypes: {
-  [eventName: string]: $ReadOnly<{|
-    phasedRegistrationNames: $ReadOnly<{|
+  [eventName: string]: $ReadOnly<{
+    phasedRegistrationNames: $ReadOnly<{
       captured: string,
       bubbled: string,
       skipBubbling?: ?boolean,
-    |}>,
-  |}>,
+    }>,
+  }>,
   ...,
 } = {};
 const customDirectEventTypes: {
-  [eventName: string]: $ReadOnly<{|
+  [eventName: string]: $ReadOnly<{
     registrationName: string,
-  |}>,
+  }>,
   ...,
 } = {};
 

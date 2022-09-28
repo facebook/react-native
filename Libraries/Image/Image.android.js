@@ -181,7 +181,9 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       ? loadingIndicatorSource.uri
       : null,
     ref: forwardedRef,
-    accessibilityLabel: props['aria-label'] ?? props.accessibilityLabel,
+    accessible: props.alt !== undefined ? true : props.accessible,
+    accessibilityLabel:
+      props['aria-label'] ?? props.accessibilityLabel ?? props.alt,
     accessibilityState: {
       busy: props['aria-busy'] ?? props.accessibilityState?.busy,
       checked: props['aria-checked'] ?? props.accessibilityState?.checked,

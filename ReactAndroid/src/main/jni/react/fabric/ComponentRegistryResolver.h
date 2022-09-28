@@ -8,7 +8,7 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <react/fabric/ComponentManager.h>
+#include <react/cxxcomponents/ComponentManager.h>
 
 namespace facebook {
 namespace react {

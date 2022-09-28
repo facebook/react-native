@@ -8,16 +8,17 @@
  * @flow
  */
 
-import ElementBox from './ElementBox';
-import * as React from 'react';
 import type {PressEvent} from '../Types/CoreEventTypes';
+import type {HostRef} from './getInspectorDataForViewAtPoint';
+
 import View from '../Components/View/View';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import Dimensions from '../Utilities/Dimensions';
-const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
-const {findNodeHandle} = require('../ReactNative/RendererProxy');
+import ElementBox from './ElementBox';
+import * as React from 'react';
 
-import type {HostRef} from './getInspectorDataForViewAtPoint';
+const {findNodeHandle} = require('../ReactNative/RendererProxy');
+const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
 
 const {useEffect, useState, useCallback, useRef} = React;
 
@@ -28,7 +29,9 @@ export default function DevtoolsOverlay({
 }: {
   inspectedView: ?HostRef,
 }): React.Node {
-  const [inspected, setInspected] = useState(null);
+  const [inspected, setInspected] = useState<null | {
+    frame: {height: any, left: any, top: any, width: any},
+  }>(null);
   const [isInspecting, setIsInspecting] = useState(false);
   const devToolsAgentRef = useRef(null);
 

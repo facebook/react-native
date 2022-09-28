@@ -77,7 +77,7 @@ class GenerateCodegenArtifactsTaskTest {
   }
 
   @Test
-  @WithOs(OS.UNIX)
+  @WithOs(OS.LINUX)
   fun setupCommandLine_willSetupCorrectly() {
     val reactNativeDir = tempFolder.newFolder("node_modules/react-native/")
     val codegenDir = tempFolder.newFolder("codegen")
@@ -127,7 +127,8 @@ class GenerateCodegenArtifactsTaskTest {
                 }
             }
         }
-        """.trimIndent())
+        """
+                  .trimIndent())
         }
 
     val task =
@@ -155,7 +156,8 @@ class GenerateCodegenArtifactsTaskTest {
             "codegenConfig": {
             }
         }
-        """.trimIndent())
+        """
+                  .trimIndent())
         }
 
     val task =

@@ -10,14 +10,12 @@
 
 'use strict';
 
-const AnimatedValue = require('./nodes/AnimatedValue');
-const AnimatedValueXY = require('./nodes/AnimatedValueXY');
-const NativeAnimatedHelper = require('./NativeAnimatedHelper');
-const {findNodeHandle} = require('../ReactNative/RendererProxy');
+import AnimatedValue from './nodes/AnimatedValue';
+import AnimatedValueXY from './nodes/AnimatedValueXY';
+import NativeAnimatedHelper from './NativeAnimatedHelper';
+import {findNodeHandle} from '../ReactNative/RendererProxy';
 
-const invariant = require('invariant');
-
-const {shouldUseNativeDriver} = require('./NativeAnimatedHelper');
+import invariant from 'invariant';
 
 import type {PlatformConfig} from './AnimatedPlatformConfig';
 
@@ -31,7 +29,7 @@ export type EventConfig = {
   platformConfig?: PlatformConfig,
 };
 
-function attachNativeEvent(
+export function attachNativeEvent(
   viewRef: any,
   eventName: string,
   argMapping: $ReadOnlyArray<?Mapping>,
@@ -146,7 +144,7 @@ function validateMapping(argMapping: $ReadOnlyArray<?Mapping>, args: any) {
   });
 }
 
-class AnimatedEvent {
+export class AnimatedEvent {
   _argMapping: $ReadOnlyArray<?Mapping>;
   _listeners: Array<Function> = [];
   _attachedEvent: ?{detach: () => void, ...};
@@ -165,7 +163,7 @@ class AnimatedEvent {
       this.__addListener(config.listener);
     }
     this._attachedEvent = null;
-    this.__isNative = shouldUseNativeDriver(config);
+    this.__isNative = NativeAnimatedHelper.shouldUseNativeDriver(config);
     this.__platformConfig = config.platformConfig;
   }
 
@@ -257,5 +255,3 @@ class AnimatedEvent {
     this._listeners.forEach(listener => listener(...args));
   };
 }
-
-module.exports = {AnimatedEvent, attachNativeEvent};
