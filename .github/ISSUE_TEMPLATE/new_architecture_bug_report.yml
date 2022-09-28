@@ -45,7 +45,7 @@ body:
     attributes:
       label: Snack, code example, screenshot, or link to a repository
       description: |
-        Please provide a Snack (https://snack.expo.io/), a link to a repository on GitHub, or provide a minimal code example that reproduces the problem.
+        Please provide a Snack (https://snack.expo.dev/), a link to a repository on GitHub, or provide a minimal code example that reproduces the problem.
         You may provide a screenshot of the application if you think it is relevant to your bug report.
         Here are some tips for providing a minimal example: https://stackoverflow.com/help/mcve
         Please note that a reproducer is mandatory. Issues without reproducer are more likely to stall and will be closed.
