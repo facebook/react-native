@@ -12,6 +12,7 @@
 import type {ASTNode} from '../utils';
 import type {TypeDeclarationMap} from '../utils.js';
 import type {NamedShape} from '../../../CodegenSchema.js';
+const {parseTopLevelType} = require('../parseTopLevelType');
 const {getValueFromTypes} = require('../utils.js');
 
 function getProperties(
@@ -71,6 +72,56 @@ function getTypeAnnotationForObjectAsArrayElement<T>(
   };
 }
 
+function getUnionOfLiterals(
+  name: string,
+  elementTypes: $FlowFixMe[],
+  defaultValue: $FlowFixMe | null,
+  types: TypeDeclarationMap,
+) {
+  elementTypes.reduce((lastType, currType) => {
+    const lastFlattenedType =
+      lastType && lastType.type === 'TSLiteralType'
+        ? lastType.literal.type
+        : lastType.type;
+    const currFlattenedType =
+      currType.type === 'TSLiteralType' ? currType.literal.type : currType.type;
+
+    if (lastFlattenedType && currFlattenedType !== lastFlattenedType) {
+      throw new Error(`Mixed types are not supported (see "${name}")`);
+    }
+    return currType;
+  });
+
+  if (defaultValue === null) {
+    throw new Error(`A default enum value is required for "${name}"`);
+  }
+
+  const unionType = elementTypes[0].type;
+  if (
+    unionType === 'TSLiteralType' &&
+    elementTypes[0].literal?.type === 'StringLiteral'
+  ) {
+    return {
+      type: 'StringEnumTypeAnnotation',
+      default: (defaultValue: string),
+      options: elementTypes.map(option => option.literal.value),
+    };
+  } else if (
+    unionType === 'TSLiteralType' &&
+    elementTypes[0].literal?.type === 'NumericLiteral'
+  ) {
+    throw new Error(`Arrays of int enums are not supported (see: "${name}")`);
+  } else {
+    throw new Error(
+      `Unsupported union type for "${name}", received "${
+        unionType === 'TSLiteralType'
+          ? elementTypes[0].literal?.type
+          : unionType
+      }"`,
+    );
+  }
+}
+
 function getTypeAnnotationForArray<T>(
   name: string,
   typeAnnotation: $FlowFixMe,
@@ -78,37 +129,28 @@ function getTypeAnnotationForArray<T>(
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
-  if (typeAnnotation.type === 'TSParenthesizedType') {
-    return getTypeAnnotationForArray(
-      name,
-      typeAnnotation.typeAnnotation,
-      defaultValue,
-      types,
-      buildSchema,
+  // unpack WithDefault, (T) or T|U
+  const topLevelType = parseTopLevelType(typeAnnotation);
+  if (topLevelType.defaultValue !== undefined) {
+    throw new Error(
+      'Nested optionals such as "ReadonlyArray<boolean | null | undefined>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | undefined"',
     );
   }
-
-  const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
-
-  if (
-    extractedTypeAnnotation.type === 'TSUnionType' &&
-    extractedTypeAnnotation.types.some(
-      t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-    )
-  ) {
+  if (topLevelType.optional) {
     throw new Error(
       'Nested optionals such as "ReadonlyArray<boolean | null | undefined>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | undefined"',
     );
   }
 
-  if (
-    extractedTypeAnnotation.type === 'TSTypeReference' &&
-    extractedTypeAnnotation.typeName.name === 'WithDefault'
-  ) {
-    throw new Error(
-      'Nested defaults such as "ReadonlyArray<WithDefault<boolean, false>>" are not supported, please declare defaults at the top level of value definitions as in "WithDefault<ReadonlyArray<boolean>, false>"',
-    );
+  // if it is an union type, it should be union of literals
+  if (topLevelType.unions.length > 1) {
+    return getUnionOfLiterals(name, topLevelType.unions, defaultValue, types);
   }
+
+  const extractedTypeAnnotation = getValueFromTypes(
+    topLevelType.unions[0],
+    types,
+  );
 
   // Covers: T[]
   if (typeAnnotation.type === 'TSArrayType') {
@@ -215,53 +257,6 @@ function getTypeAnnotationForArray<T>(
       return {
         type: 'StringTypeAnnotation',
       };
-    case 'TSUnionType':
-      typeAnnotation.types.reduce((lastType, currType) => {
-        const lastFlattenedType =
-          lastType && lastType.type === 'TSLiteralType'
-            ? lastType.literal.type
-            : lastType.type;
-        const currFlattenedType =
-          currType.type === 'TSLiteralType'
-            ? currType.literal.type
-            : currType.type;
-
-        if (lastFlattenedType && currFlattenedType !== lastFlattenedType) {
-          throw new Error(`Mixed types are not supported (see "${name}")`);
-        }
-        return currType;
-      });
-
-      if (defaultValue === null) {
-        throw new Error(`A default enum value is required for "${name}"`);
-      }
-
-      const unionType = typeAnnotation.types[0].type;
-      if (
-        unionType === 'TSLiteralType' &&
-        typeAnnotation.types[0].literal?.type === 'StringLiteral'
-      ) {
-        return {
-          type: 'StringEnumTypeAnnotation',
-          default: (defaultValue: string),
-          options: typeAnnotation.types.map(option => option.literal.value),
-        };
-      } else if (
-        unionType === 'TSLiteralType' &&
-        typeAnnotation.types[0].literal?.type === 'NumericLiteral'
-      ) {
-        throw new Error(
-          `Arrays of int enums are not supported (see: "${name}")`,
-        );
-      } else {
-        throw new Error(
-          `Unsupported union type for "${name}", received "${
-            unionType === 'TSLiteralType'
-              ? typeAnnotation.types[0].literal?.type
-              : unionType
-          }"`,
-        );
-      }
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": ${type}`);
