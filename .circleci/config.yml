@@ -617,7 +617,7 @@ jobs:
             if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
               echo "JavaScript bundle missing, cannot run instrumentation tests. Verify Build JavaScript Bundle step completed successfully."; exit 1;
             fi
-            source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck build ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+            source scripts/android-setup.sh && NO_BUCKD=1 scripts/retry3 timeout 300 buck build ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
 
       - run:
           name: Collect Test Results
