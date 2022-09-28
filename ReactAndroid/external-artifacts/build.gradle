@@ -1,0 +1,90 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+plugins {
+    id("maven-publish")
+    id("signing")
+}
+
+//version = parent.publishing_version
+version = "0.0.1" // To avoid to accidentally publish a 1000.0.0-main
+
+def REPO_URL = "file://${projectDir}/../../android"
+configurations.maybeCreate("default")
+
+// The artifact should be placed inside the `artifacts/hermes-ios.tar.gz` location.
+def hermesiOSArtifactFile = layout.projectDirectory.file('artifacts/hermes-ios.tar.gz')
+def hermesiOSArtifact = artifacts.add('default', hermesiOSArtifactFile) {
+    type 'tgz'
+    extension 'tar.gz'
+    classifier 'hermes-ios'
+}
+
+publishing {
+    publications {
+        artifacts(MavenPublication) {
+            artifactId = "react-native-artifacts"
+            groupId = GROUP
+            artifact hermesiOSArtifact
+
+            pom {
+                name = POM_NAME
+                description = "Supporting artifacts to for the React Native framework"
+                url = "https://github.com/facebook/react-native"
+
+                developers {
+                    developer {
+                        id = "facebook"
+                        name = "Facebook"
+                    }
+                }
+
+                licenses {
+                    license {
+                        name = "MIT License"
+                        url = "https://github.com/facebook/react-native/blob/HEAD/LICENSE"
+                        distribution = "repo"
+                    }
+                }
+
+                scm {
+                    url = "https://github.com/facebook/react-native.git"
+                    connection = "scm:git:https://github.com/facebook/react-native.git"
+                    developerConnection = "scm:git:git@github.com:facebook/react-native.git"
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "npm"
+            url = REPO_URL
+        }
+        if (project.hasProperty("SONATYPE_USERNAME") && project.hasProperty("SONATYPE_PASSWORD")) {
+            maven {
+                name = "mavenCentral"
+                url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                credentials {
+                    username = SONATYPE_USERNAME
+                    password = SONATYPE_PASSWORD
+                }
+            }
+        }
+    }
+
+    if (!project.hasProperty("SIGNING_KEY")) {
+        logger.info("Signing Disable as the PGP key was not found")
+    } else {
+        logger.info("PGP Key found - Signing enabled")
+        signing {
+            useInMemoryPgpKeys(SIGNING_KEY, SIGNING_PWD)
+            sign(publishing.publications.artifacts)
+        }
+    }
+}
+
