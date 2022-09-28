@@ -641,13 +641,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
-    const {
-      data,
-      horizontal,
-      initialScrollIndex,
-      inverted,
-      enabledTalkbackCompatibleInvertedList,
-    } = this.props;
+    const {data, horizontal, inverted, enabledTalkbackCompatibleInvertedList} =
+      this.props;
     const {first, last, screenreaderEnabled} = this.state;
     const {contentLength, visibleLength} = this._scrollMetrics;
     const talkbackCompatibility =
