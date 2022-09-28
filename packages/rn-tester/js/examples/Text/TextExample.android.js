@@ -745,7 +745,7 @@ class TextExample extends React.Component<{...}> {
           <Text
             style={{
               fontSize: 20,
-              textShadow: '2 2 1 red',
+              textShadow: '3 3 2 rgba(200, 10 , 20, 0.5)',
             }}>
             Demo text shadow
           </Text>

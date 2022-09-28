@@ -1094,7 +1094,7 @@ exports.examples = [
           <Text
             style={{
               fontSize: 20,
-              textShadow: '3 3 2 red',
+              textShadow: '#ff5423 1px 4px 1px',
             }}>
             Demo text shadow
           </Text>
