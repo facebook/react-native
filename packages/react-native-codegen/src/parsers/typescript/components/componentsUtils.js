@@ -74,6 +74,7 @@ function getTypeAnnotationForObjectAsArrayElement<T>(
 
 function getUnionOfLiterals(
   name: string,
+  forArray: boolean,
   elementTypes: $FlowFixMe[],
   defaultValue: $FlowFixMe | null,
   types: TypeDeclarationMap,
@@ -110,7 +111,15 @@ function getUnionOfLiterals(
     unionType === 'TSLiteralType' &&
     elementTypes[0].literal?.type === 'NumericLiteral'
   ) {
-    throw new Error(`Arrays of int enums are not supported (see: "${name}")`);
+    if (forArray) {
+      throw new Error(`Arrays of int enums are not supported (see: "${name}")`);
+    }else{
+      return {
+        type: 'Int32EnumTypeAnnotation',
+        default: (defaultValue: number),
+        options: elementTypes.map(option => option.literal.value),
+      };
+    }
   } else {
     throw new Error(
       `Unsupported union type for "${name}", received "${
@@ -144,7 +153,7 @@ function getTypeAnnotationForArray<T>(
 
   // if it is an union type, it should be union of literals
   if (topLevelType.unions.length > 1) {
-    return getUnionOfLiterals(name, topLevelType.unions, defaultValue, types);
+    return getUnionOfLiterals(name, true, topLevelType.unions, defaultValue, types);
   }
 
   const extractedTypeAnnotation = getValueFromTypes(
@@ -272,14 +281,14 @@ function getTypeAnnotation<T>(
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
-  const topLevelType = parseTopLevelType(typeAnnotation);
+  const topLevelType = parseTopLevelType(annotation);
 
   // if it is an union type, it should be union of literals
   if (topLevelType.unions.length > 1) {
-    return getUnionOfLiterals(name, topLevelType.unions, defaultValue || topLevelType.defaultValue, types);
+    return getUnionOfLiterals(name, false, topLevelType.unions, defaultValue || topLevelType.defaultValue, types);
   }
 
-  const typeAnnotation = getValueFromTypes(annotation, types);
+  const typeAnnotation = getValueFromTypes(topLevelType.unions[0], types);
 
   // Covers: readonly T[]
   if (
@@ -341,14 +350,7 @@ function getTypeAnnotation<T>(
     typeAnnotation.typeName?.name === 'Readonly' &&
     typeAnnotation.typeParameters.type === 'TSTypeParameterInstantiation'
   ) {
-    // TODO:
-    // the original implementation assume Readonly<TSUnionType>
-    // to be Readonly<{ ... } | null | undefined>
-    // without actually verifying it
     let elementType = typeAnnotation.typeParameters.params[0];
-    if (elementType.type === 'TSUnionType') {
-      elementType = elementType.types[0];
-    }
     return getTypeAnnotation(
       name,
       elementType,
