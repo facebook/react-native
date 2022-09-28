@@ -83,6 +83,7 @@ function InvertedFlatlist(props) {
   const [index, setIndex] = useState(DATA.length + 1);
   const [counter, setCounter] = useState(0);
   const [screenreaderEnabled, setScreenreaderEnabled] = useState(undefined);
+  const [contentHeight, setContentHeight] = useState(null);
   let lastOffsetFromTheBottom = React.useRef(null);
   let _hasTriggeredInitialScrollToIndex = React.useRef(null);
   let _addedNewItems = React.useRef(null);
@@ -188,6 +189,9 @@ function InvertedFlatlist(props) {
           flatlist = ref;
         }}
         onContentSizeChange={(width, height) => {
+          if (contentHeight == null) {
+            setContentHeight(height);
+          }
           if (
             flatlist &&
             screenreaderEnabled === true &&
@@ -248,6 +252,12 @@ function InvertedFlatlist(props) {
           }
         }}
         inverted
+        // add your own logic for horizontal flatlist
+        contentOffset={
+          screenreaderEnabled === true && contentHeight != null
+            ? {y: contentHeight, x: 0}
+            : null
+        }
         enabledTalkbackCompatibleInvertedList
         renderItem={renderItem}
         data={items}

@@ -659,7 +659,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ? [inversionStyle, this.props.style]
       : this.props.style;
     let contentContainerStyle = this.props.contentContainerStyle;
-    let contentOffset = this.props.contentOffset;
     if (
       talkbackCompatibility &&
       contentLength != null &&
@@ -673,17 +672,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       } else {
         style = this.props.style;
       }
-    }
-    if (
-      talkbackCompatibility &&
-      contentLength != null &&
-      this.props.contentOffset == null &&
-      this._hasDoneFirstScroll === false &&
-      contentLength != 0
-    ) {
-      contentOffset = horizontalOrDefault(horizontal)
-        ? {y: 0, x: contentLength}
-        : {y: contentLength, x: 0};
     }
     if (talkbackCompatibility) {
       contentContainerStyle = horizontalOrDefault(horizontal)
@@ -890,7 +878,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       stickyHeaderIndices,
       style,
       contentContainerStyle,
-      contentOffset,
     };
 
     this._hasMore =
@@ -1021,7 +1008,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
-  _hasDoneFirstScroll = false;
   _screenreaderEventListener: EventSubscription;
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -1465,7 +1451,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (!this.props) {
       return;
     }
-    this._hasDoneFirstScroll = true;
     this._maybeCallOnEndReached();
     if (velocity !== 0) {
       this._fillRateHelper.activate();
