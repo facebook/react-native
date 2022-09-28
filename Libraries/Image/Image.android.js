@@ -25,6 +25,7 @@ import {convertObjectFitToResizeMode} from './ImageUtils';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {RootTag} from '../Types/RootTagTypes';
+import type {ImageAndroid} from './Image.flow';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 
 let _requestId = 1;
@@ -331,9 +332,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((Image: any): React.AbstractComponent<
-  ImagePropsType,
-  | React.ElementRef<typeof TextInlineImageNativeComponent>
-  | React.ElementRef<typeof ImageViewNativeComponent>,
-> &
-  ImageComponentStatics);
+module.exports = ((Image: any): ImageAndroid);

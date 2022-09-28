@@ -27,6 +27,8 @@ import ImageViewNativeComponent from './ImageViewNativeComponent';
 import type {RootTag} from '../Types/RootTagTypes';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 
+import type {ImageIOS} from './Image.flow';
+
 function getSize(
   uri: string,
   success: (width: number, height: number) => void,
@@ -269,8 +271,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((Image: any): React.AbstractComponent<
-  ImagePropsType,
-  React.ElementRef<typeof ImageViewNativeComponent>,
-> &
-  ImageComponentStatics);
+module.exports = ((Image: any): ImageIOS);
