@@ -39,7 +39,8 @@ function handleUnionAndParen(
     }
     case 'TSTypeReference':
       if (type.typeName.name==='Readonly') {
-        handleUnionAndParen(type.typeAnnotation, result);
+        handleUnionAndParen(type.typeParameters.params[0], result);
+        break;
       } else if (type.typeName.name === 'WithDefault') {
         if(result.optional) {
             throw new Error(

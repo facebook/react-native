@@ -88,6 +88,7 @@ function getUnionOfLiterals(
       currType.type === 'TSLiteralType' ? currType.literal.type : currType.type;
 
     if (lastFlattenedType && currFlattenedType !== lastFlattenedType) {
+      throw new Error(JSON.stringify(elementTypes,undefined,4));
       throw new Error(`Mixed types are not supported (see "${name}")`);
     }
     return currType;
@@ -429,24 +430,18 @@ function getTypeAnnotation<T>(
     case 'TSBooleanKeyword':
       return {
         type: 'BooleanTypeAnnotation',
-        default: !!defaultValue,
+        default: (defaultValue === null ? null : !!defaultValue),
       };
     case 'TSStringKeyword':
-      if (defaultValue !== undefined) {
-        return {
-          type: 'StringTypeAnnotation',
-          default: (defaultValue: string | null),
-        };
-      }
-      throw new Error(`A default string (or null) is required for "${name}"`);
+      return {
+        type: 'StringTypeAnnotation',
+        default: ((defaultValue === undefined ? null : defaultValue): string | null),
+      };
     case 'Stringish':
-      if (defaultValue !== undefined) {
-        return {
-          type: 'StringTypeAnnotation',
-          default: (defaultValue: string | null),
-        };
-      }
-      throw new Error(`A default string (or null) is required for "${name}"`);
+      return {
+        type: 'StringTypeAnnotation',
+        default: ((defaultValue === undefined ? null : defaultValue): string | null),
+      };
     case 'TSNumberKeyword':
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
