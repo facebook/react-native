@@ -124,14 +124,6 @@ target_include_directories(react_render_core
         ${REACT_COMMON_DIR}
         ${REACT_COMMON_DIR}/react/renderer/core)
 
-## react_render_debug
-add_library(react_render_debug SHARED IMPORTED GLOBAL)
-set_target_properties(react_render_debug
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_debug.so)
-target_include_directories(react_render_debug INTERFACE ${REACT_COMMON_DIR}/react/renderer/debug)
-
 ## react_debug
 add_library(react_debug SHARED IMPORTED GLOBAL)
 set_target_properties(react_debug

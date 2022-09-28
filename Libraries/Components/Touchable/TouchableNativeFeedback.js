@@ -13,9 +13,9 @@ import Pressability, {
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
-import {Commands} from 'react-native/Libraries/Components/View/ViewNativeComponent';
+import {Commands} from '../View/ViewNativeComponent';
 import {findHostInstance_DEPRECATED} from '../../ReactNative/RendererProxy';
-import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {PressEvent} from '../../Types/CoreEventTypes';
 import Platform from '../../Utilities/Platform';
 import View from '../../Components/View/View';
 import processColor from '../../StyleSheet/processColor';

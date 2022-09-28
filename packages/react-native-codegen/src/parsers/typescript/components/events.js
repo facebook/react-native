@@ -15,6 +15,7 @@ import type {
   NamedShape,
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
+const {flattenProperties} = require('./componentsUtils');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -126,16 +127,33 @@ function findEventArgumentsAndType(
   bubblingType: void | 'direct' | 'bubble',
   paperName: ?$FlowFixMe,
 ) {
+  if (typeAnnotation.type === 'TSInterfaceDeclaration') {
+    return {
+      argumentProps: flattenProperties([typeAnnotation], types),
+      paperTopLevelNameDeprecated: paperName,
+      bubblingType,
+    };
+  }
+
+  if (typeAnnotation.type === 'TSTypeLiteral') {
+    return {
+      argumentProps: typeAnnotation.members,
+      paperTopLevelNameDeprecated: paperName,
+      bubblingType,
+    };
+  }
+
   if (!typeAnnotation.typeName) {
     throw new Error("typeAnnotation of event doesn't have a name");
   }
   const name = typeAnnotation.typeName.name;
   if (name === 'Readonly') {
-    return {
-      argumentProps: typeAnnotation.typeParameters.params[0].members,
-      paperTopLevelNameDeprecated: paperName,
+    return findEventArgumentsAndType(
+      typeAnnotation.typeParameters.params[0],
+      types,
       bubblingType,
-    };
+      paperName,
+    );
   } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
     const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
     const paperTopLevelNameDeprecated =
@@ -160,8 +178,12 @@ function findEventArgumentsAndType(
         );
     }
   } else if (types[name]) {
+    let elementType = types[name];
+    if (elementType.type === 'TSTypeAliasDeclaration') {
+      elementType = elementType.typeAnnotation;
+    }
     return findEventArgumentsAndType(
-      types[name].typeAnnotation,
+      elementType,
       types,
       bubblingType,
       paperName,

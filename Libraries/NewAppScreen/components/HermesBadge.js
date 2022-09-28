@@ -10,7 +10,10 @@
 
 import React from 'react';
 import type {Node} from 'react';
-import {StyleSheet, Text, useColorScheme, View} from 'react-native';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import View from '../../Components/View/View';
+import useColorScheme from '../../Utilities/useColorScheme';
 import Colors from './Colors';
 
 const HermesBadge = (): Node => {

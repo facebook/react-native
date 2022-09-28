@@ -7,39 +7,59 @@
  * @format
  */
 
+'use strict';
+
 module.exports = {
   meta: {
     type: 'problem',
     docs: {
-      description:
-        'disallow Haste module names in import statements and require calls',
+      description: 'Disallow importing Haste module names',
+      recommended: true,
+    },
+    messages: {
+      hasteImport:
+        "'{{importPath}}' seems to be a Haste module name; use path-based imports intead",
     },
     schema: [],
   },
 
   create(context) {
     return {
-      ImportDeclaration(node) {
-        checkImportForHaste(context, node.source.value, node.source);
-      },
       CallExpression(node) {
-        if (isStaticRequireCall(node)) {
-          const [firstArgument] = node.arguments;
-          checkImportForHaste(context, firstArgument.value, firstArgument);
+        if (
+          node.callee.type === 'Identifier' &&
+          node.callee.name === 'require' &&
+          node.arguments.length === 1
+        ) {
+          processSource(node.arguments[0]);
         }
       },
+      ImportExpression(node) {
+        processSource(node.source);
+      },
+      ImportDeclaration(node) {
+        processSource(node.source);
+      },
     };
+
+    function processSource(source) {
+      if (source.type !== 'Literal' || typeof source.value !== 'string') {
+        return;
+      }
+      const importPath = source.value;
+      if (!isLikelyHasteModuleName(importPath)) {
+        return;
+      }
+      context.report({
+        node: source,
+        messageId: 'hasteImport',
+        data: {
+          importPath,
+        },
+      });
+    }
   },
 };
-
-function checkImportForHaste(context, importPath, node) {
-  if (isLikelyHasteModuleName(importPath)) {
-    context.report({
-      node,
-      message: `"${importPath}" appears to be a Haste module name. Use path-based imports instead.`,
-    });
-  }
-}
 
 function isLikelyHasteModuleName(importPath) {
   // Our heuristic assumes an import path is a Haste module name if it is not a
@@ -57,17 +77,5 @@ function isLikelyHasteModuleName(importPath) {
     !importPath.includes('/') &&
     // Include camelCase and UpperCamelCase
     /[A-Z]/.test(importPath)
-  );
-}
-
-function isStaticRequireCall(node) {
-  return (
-    node &&
-    node.callee &&
-    node.callee.type === 'Identifier' &&
-    node.callee.name === 'require' &&
-    node.arguments.length === 1 &&
-    node.arguments[0].type === 'Literal' &&
-    typeof node.arguments[0].value === 'string'
   );
 }

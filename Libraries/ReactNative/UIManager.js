@@ -9,7 +9,7 @@
  */
 
 import type {Spec} from './NativeUIManager';
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import type {RootTag} from '../Types/RootTagTypes';
 
 export interface UIManagerJSInterface extends Spec {
   +getViewManagerConfig: (viewManagerName: string) => Object;
