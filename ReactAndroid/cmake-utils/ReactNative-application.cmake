@@ -44,6 +44,7 @@ find_package(ReactAndroid REQUIRED CONFIG)
 add_library(react_render_debug ALIAS ReactAndroid::react_render_debug)
 add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
 add_library(runtimeexecutor ALIAS ReactAndroid::runtimeexecutor)
+add_library(react_codegen_rncore ALIAS ReactAndroid::react_codegen_rncore)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni
@@ -51,7 +52,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         folly_runtime
         glog
         jsi
-        react_codegen_rncore
+        react_codegen_rncore                # prefab ready
         react_debug
         react_nativemodule_core
         react_newarchdefaults

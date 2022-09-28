@@ -201,13 +201,5 @@ set_target_properties(jsi
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libjsi.so)
 target_include_directories(jsi INTERFACE ${REACT_COMMON_DIR}/jsi)
 
-## react_codegen_rncore
-add_library(react_codegen_rncore SHARED IMPORTED GLOBAL)
-set_target_properties(react_codegen_rncore
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_codegen_rncore.so)
-target_include_directories(react_codegen_rncore INTERFACE ${REACT_GENERATED_SRC_DIR}/codegen/jni)
-
 ## fbjni
 add_subdirectory(${FIRST_PARTY_NDK_DIR}/fbjni fbjni_build)
