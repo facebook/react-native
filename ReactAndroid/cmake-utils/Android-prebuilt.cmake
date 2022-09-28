@@ -168,14 +168,6 @@ set_target_properties(fabricjni
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libfabricjni.so)
 target_include_directories(fabricjni INTERFACE ${REACT_ANDROID_SRC_DIR}/jni/react/fabric)
 
-## react_render_componentregistry
-add_library(react_render_componentregistry SHARED IMPORTED GLOBAL)
-set_target_properties(react_render_componentregistry
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_componentregistry.so)
-target_include_directories(react_render_componentregistry INTERFACE ${REACT_COMMON_DIR}/react/renderer/componentregistry)
-
 ## react_newarchdefaults
 add_library(react_newarchdefaults SHARED IMPORTED GLOBAL)
 set_target_properties(react_newarchdefaults
