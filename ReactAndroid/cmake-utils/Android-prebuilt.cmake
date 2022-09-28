@@ -114,15 +114,6 @@ target_include_directories(react_render_core
         ${REACT_COMMON_DIR}
         ${REACT_COMMON_DIR}/react/renderer/core)
 
-## react_debug
-add_library(react_debug SHARED IMPORTED GLOBAL)
-set_target_properties(react_debug
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_debug.so)
-target_include_directories(react_debug INTERFACE ${REACT_COMMON_DIR}/react/debug)
-target_link_libraries(react_nativemodule_core INTERFACE folly_runtime)
-
 ## react_render_graphics
 add_library(react_render_graphics SHARED IMPORTED GLOBAL)
 set_target_properties(react_render_graphics

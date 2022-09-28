@@ -45,6 +45,7 @@ add_library(react_render_debug ALIAS ReactAndroid::react_render_debug)
 add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
 add_library(runtimeexecutor ALIAS ReactAndroid::runtimeexecutor)
 add_library(react_codegen_rncore ALIAS ReactAndroid::react_codegen_rncore)
+add_library(react_debug ALIAS ReactAndroid::react_debug)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni
@@ -53,7 +54,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         glog
         jsi
         react_codegen_rncore                # prefab ready
-        react_debug
+        react_debug                         # prefab ready
         react_nativemodule_core
         react_newarchdefaults
         react_render_componentregistry

@@ -78,6 +78,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "react_codegen_rncore",
                 new Pair(new File(buildDir, "generated/source/codegen/jni/").absolutePath, "")
             ),
+            new PrefabPreprocessingEntry(
+                "react_debug",
+                new Pair("../ReactCommon/react/debug/", "react/debug/")
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -336,7 +340,8 @@ android {
                     "react_render_debug",
                     "turbomodulejsijni",
                     "runtimeexecutor",
-                    "react_codegen_rncore"
+                    "react_codegen_rncore",
+                    "react_debug"
             }
         }
         ndk {
@@ -418,6 +423,9 @@ android {
         }
         react_codegen_rncore {
             headers(new File(prefabHeadersDir, "react_codegen_rncore").absolutePath)
+        }
+        react_debug {
+            headers(new File(prefabHeadersDir, "react_debug").absolutePath)
         }
     }
 
