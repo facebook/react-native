@@ -42,6 +42,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions 
 # Prefab packages
 find_package(ReactAndroid REQUIRED CONFIG)
 add_library(react_render_debug ALIAS ReactAndroid::react_render_debug)
+add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni
@@ -60,7 +61,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_render_mapbuffer
         rrc_view
         runtimeexecutor
-        turbomodulejsijni
+        turbomodulejsijni                   # prefab ready
         yoga)
 
 # If project is on RN CLI v9, then we can use the following lines to link against the autolinked 3rd party libraries.

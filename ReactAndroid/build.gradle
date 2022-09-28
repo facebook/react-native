@@ -65,6 +65,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "react_render_debug",
                 new Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/")
+            ),
+            new PrefabPreprocessingEntry(
+                "turbomodulejsijni",
+                new Pair("src/main/jni/react/turbomodule", "")
             )
         ]
     )
@@ -319,10 +323,10 @@ android {
                     "reactnativeblob",
                     "reactperfloggerjni",
                     "react_newarchdefaults",
-                    "turbomodulejsijni",
                     "fabricjni",
                     // prefab targets
-                    "react_render_debug"
+                    "react_render_debug",
+                    "turbomodulejsijni"
             }
         }
         ndk {
@@ -395,6 +399,9 @@ android {
     prefab {
         react_render_debug {
             headers(new File(prefabHeadersDir, "react_render_debug").absolutePath)
+        }
+        turbomodulejsijni {
+            headers(new File(prefabHeadersDir, "turbomodulejsijni").absolutePath)
         }
     }
 

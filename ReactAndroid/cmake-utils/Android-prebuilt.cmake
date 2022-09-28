@@ -103,16 +103,6 @@ target_include_directories(react_nativemodule_core
         ${REACT_COMMON_DIR}/react/nativemodule/core/platform/android)
 target_link_libraries(react_nativemodule_core INTERFACE folly_runtime)
 
-## turbomodulejsijni
-add_library(turbomodulejsijni SHARED IMPORTED GLOBAL)
-set_target_properties(turbomodulejsijni
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libturbomodulejsijni.so)
-target_include_directories(turbomodulejsijni
-        INTERFACE
-        ${REACT_ANDROID_SRC_DIR}/jni/react/turbomodule)
-
 ## react_render_core
 add_library(react_render_core SHARED IMPORTED GLOBAL)
 set_target_properties(react_render_core
