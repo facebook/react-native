@@ -203,6 +203,7 @@ function InvertedFlatlist(props) {
             _hasTriggeredInitialScrollToIndex.current = false;
             // $FlowFixMe
             _resetPositionTimeout = setTimeout(
+              // $FlowFixMe
               flatlistRef => {
                 flatlistRef.scrollToOffset({
                   offset: newBottomHeight,
