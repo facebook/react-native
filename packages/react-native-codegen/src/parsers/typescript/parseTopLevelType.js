@@ -26,7 +26,10 @@ export type TopLevelType = {
   defaultValue?: LegalDefaultValues,
 };
 
-function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
+function getValueFromTypes(
+  value: $FlowFixMe,
+  types: TypeDeclarationMap,
+): $FlowFixMe {
   switch (value.type) {
     case 'TSTypeReference':
       if (types[value.typeName.name]) {
@@ -151,8 +154,8 @@ function handleUnionAndParen(
 }
 
 export function parseTopLevelType(
-  type: TSTypeAnnotation,
-  knownTypes: TypeDeclarationMap,
+  type: $FlowFixMe,
+  knownTypes?: TypeDeclarationMap,
 ): TopLevelType {
   let result: TopLevelTypeInternal = {unions: [], optional: false};
   handleUnionAndParen(type, result, knownTypes);
