@@ -17,7 +17,7 @@ import type {
 } from '../../../CodegenSchema.js';
 const {flattenProperties} = require('./componentsUtils');
 const {parseTopLevelType} = require('../parseTopLevelType');
-const {TypeDeclarationMap} = require('./utils.js');
+const {TypeDeclarationMap} = require('../utils.js');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's

@@ -10,27 +10,18 @@
 
 'use strict';
 
-import type {
-  TSEnumDeclaration,
-  TSInterfaceDeclaration,
-  TSTypeAnnotation,
-} from '@babel/types';
-const {TypeDeclarationMap} = require('./utils.js');
+import type {TypeDeclarationMap} from './utils.js';
 
 export type LegalDefaultValues = string | number | boolean | null;
-export type LegalTypeNode =
-  | TSEnumDeclaration
-  | TSInterfaceDeclaration
-  | TSTypeAnnotation;
 
 type TopLevelTypeInternal = {
-  unions: Array<LegalTypeNode>,
+  unions: Array<$FlowFixMe>,
   optional: boolean,
   defaultValue?: LegalDefaultValues,
 };
 
 export type TopLevelType = {
-  type: LegalTypeNode,
+  type: $FlowFixMe,
   optional: boolean,
   defaultValue?: LegalDefaultValues,
 };
@@ -50,7 +41,7 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
   }
 }
 
-function isNull(t: LegalTypeNode) {
+function isNull(t: $FlowFixMe) {
   return (
     t.type === 'TSNullKeyword' ||
     t.type === 'TSUndefinedKeyword' ||
@@ -59,7 +50,7 @@ function isNull(t: LegalTypeNode) {
 }
 
 function handleUnionAndParen(
-  type: LegalTypeNode,
+  type: $FlowFixMe,
   result: TopLevelTypeInternal,
   knownTypes?: TypeDeclarationMap,
 ): void {

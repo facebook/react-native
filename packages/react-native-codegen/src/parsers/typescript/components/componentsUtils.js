@@ -75,7 +75,7 @@ function getUnionOfLiterals(
   name: string,
   forArray: boolean,
   elementTypes: $FlowFixMe[],
-  defaultValue: $FlowFixMe | undefined,
+  defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
 ) {
   elementTypes.reduce((lastType, currType) => {
@@ -133,7 +133,7 @@ function getUnionOfLiterals(
 function detectArrayType<T>(
   name: string,
   typeAnnotation: $FlowFixMe | ASTNode,
-  defaultValue: $FlowFixMe | undefined,
+  defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
@@ -193,7 +193,7 @@ function detectArrayType<T>(
 function getTypeAnnotationForArray<T>(
   name: string,
   typeAnnotation: $FlowFixMe,
-  defaultValue: $FlowFixMe | undefined,
+  defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
@@ -310,7 +310,7 @@ function getTypeAnnotationForArray<T>(
 function getTypeAnnotation<T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
-  defaultValue: $FlowFixMe | undefined,
+  defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
