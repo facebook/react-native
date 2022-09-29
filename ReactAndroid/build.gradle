@@ -128,6 +128,14 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("src/main/jni/first-party/yogajni/jni", "")
                 ]
             ),
+            new PrefabPreprocessingEntry(
+                "folly_runtime",
+                [
+                    new Pair(new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
+                ]
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -395,7 +403,8 @@ android {
                     "glog",
                     "fabricjni",
                     "react_render_mapbuffer",
-                    "yoga"
+                    "yoga",
+                    "folly_runtime"
             }
         }
         ndk {
@@ -510,6 +519,9 @@ android {
         }
         yoga {
             headers(new File(prefabHeadersDir, "yoga").absolutePath)
+        }
+        folly_runtime {
+            headers(new File(prefabHeadersDir, "folly_runtime").absolutePath)
         }
     }
 

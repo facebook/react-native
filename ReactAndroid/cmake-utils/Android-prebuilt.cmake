@@ -41,26 +41,6 @@ target_include_directories(fb
         INTERFACE
         ${FIRST_PARTY_NDK_DIR}/fb/include)
 
-## folly_runtime
-add_library(folly_runtime SHARED IMPORTED GLOBAL)
-set_target_properties(folly_runtime
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libfolly_runtime.so)
-target_include_directories(folly_runtime
-        INTERFACE
-        ${THIRD_PARTY_NDK_DIR}/boost/boost_1_76_0
-        ${THIRD_PARTY_NDK_DIR}/double-conversion
-        ${THIRD_PARTY_NDK_DIR}/folly)
-target_compile_options(folly_runtime
-        INTERFACE
-        -DFOLLY_NO_CONFIG=1
-        -DFOLLY_HAVE_CLOCK_GETTIME=1
-        -DFOLLY_HAVE_MEMRCHR=1
-        -DFOLLY_USE_LIBCPP=1
-        -DFOLLY_MOBILE=1
-        -DFOLLY_HAVE_XSI_STRERROR_R=1)
-
 ## react_nativemodule_core
 add_library(react_nativemodule_core SHARED IMPORTED GLOBAL)
 set_target_properties(react_nativemodule_core

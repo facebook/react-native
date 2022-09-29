@@ -17,6 +17,8 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+include(${CMAKE_CURRENT_LIST_DIR}/folly-flags.cmake)
+
 # If you have ccache installed, we're going to honor it.
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
@@ -56,11 +58,12 @@ add_library(glog ALIAS ReactAndroid::glog)
 add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 add_library(react_render_mapbuffer ALIAS ReactAndroid::react_render_mapbuffer)
 add_library(yoga ALIAS ReactAndroid::yoga)
+add_library(folly_runtime ALIAS ReactAndroid::folly_runtime)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni                           # prefab ready
         fbjni
-        folly_runtime
+        folly_runtime                       # prefab ready
         glog                                # prefab ready
         jsi                                 # prefab ready
         react_codegen_rncore                # prefab ready
@@ -77,8 +80,15 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         turbomodulejsijni                   # prefab ready
         yoga)                               # prefab ready
 
+# We use an interface targe to propagate flags to all the generated targets
+# such as the folly flags or others.
+add_library(common_flags INTERFACE)
+target_compile_options(common_flags INTERFACE ${folly_FLAGS})
+target_link_libraries(ReactAndroid::react_codegen_rncore INTERFACE common_flags)
+
 # If project is on RN CLI v9, then we can use the following lines to link against the autolinked 3rd party libraries.
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
         include(${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
         target_link_libraries(${CMAKE_PROJECT_NAME} ${AUTOLINKED_LIBRARIES})
+        target_link_libraries(${AUTOLINKED_LIBRARIES} PRIVATE common_flags)
 endif()
