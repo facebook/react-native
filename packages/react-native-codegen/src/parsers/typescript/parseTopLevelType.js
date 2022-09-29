@@ -88,12 +88,12 @@ function handleUnionAndParen(
         }
         if (type.typeParameters.params.length !== 2) {
           throw new Error(
-            `WithDefault requires two parameters: type and default value.`,
+            'WithDefault requires two parameters: type and default value.',
           );
         }
         if (result.defaultValue !== undefined) {
           throw new Error(
-            `Multiple WithDefault is not allowed in a union type.`,
+            'Multiple WithDefault is not allowed in a union type.',
           );
         }
         result.optional = true;

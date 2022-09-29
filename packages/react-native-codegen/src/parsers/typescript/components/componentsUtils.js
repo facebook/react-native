@@ -44,33 +44,6 @@ function getProperties(
   }
 }
 
-function getTypeAnnotationForObjectAsArrayElement<T>(
-  name: string,
-  typeAnnotation: $FlowFixMe,
-  types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
-): $FlowFixMe {
-  // for array of array of a type
-  // such type must be an object literal
-  const elementType = getTypeAnnotationForArray(
-    name,
-    typeAnnotation,
-    null,
-    types,
-    buildSchema,
-  );
-  if (elementType.type !== 'ObjectTypeAnnotation') {
-    throw new Error(
-      `Only array of array of object is supported for "${name}".`,
-    );
-  }
-
-  return {
-    type: 'ArrayTypeAnnotation',
-    elementType,
-  };
-}
-
 function getUnionOfLiterals(
   name: string,
   forArray: boolean,
@@ -218,7 +191,14 @@ function getTypeAnnotationForArray<T>(
     types,
     buildSchema,
   );
-  if (arrayType) return arrayType;
+  if (arrayType) {
+    if (arrayType.elementType.type !== 'ObjectTypeAnnotation') {
+      throw new Error(
+        `Only array of array of object is supported for "${name}".`,
+      );
+    }
+    return arrayType;
+  }
 
   const type =
     extractedTypeAnnotation.elementType === 'TSTypeReference'
@@ -324,7 +304,9 @@ function getTypeAnnotation<T>(
     types,
     buildSchema,
   );
-  if (arrayType) return arrayType;
+  if (arrayType) {
+    return arrayType;
+  }
 
   const type =
     typeAnnotation.type === 'TSTypeReference' ||
