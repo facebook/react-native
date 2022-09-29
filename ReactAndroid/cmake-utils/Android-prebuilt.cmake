@@ -168,14 +168,6 @@ set_target_properties(fabricjni
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libfabricjni.so)
 target_include_directories(fabricjni INTERFACE ${REACT_ANDROID_SRC_DIR}/jni/react/fabric)
 
-## react_newarchdefaults
-add_library(react_newarchdefaults SHARED IMPORTED GLOBAL)
-set_target_properties(react_newarchdefaults
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_newarchdefaults.so)
-target_include_directories(react_newarchdefaults INTERFACE ${REACT_ANDROID_SRC_DIR}/jni/react/newarchdefaults)
-
 ## jsi
 add_library(jsi SHARED IMPORTED GLOBAL)
 set_target_properties(jsi

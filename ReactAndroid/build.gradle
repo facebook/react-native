@@ -86,6 +86,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "react_render_componentregistry",
                 new Pair("../ReactCommon/react/renderer/componentregistry/", "react/renderer/componentregistry/")
             ),
+            new PrefabPreprocessingEntry(
+                "react_newarchdefaults",
+                new Pair("src/main/jni/react/newarchdefaults", "")
+            )
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -338,7 +342,6 @@ android {
                     "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
-                    "react_newarchdefaults",
                     "fabricjni",
                     // prefab targets
                     "react_render_debug",
@@ -346,7 +349,8 @@ android {
                     "runtimeexecutor",
                     "react_codegen_rncore",
                     "react_debug",
-                    "react_render_componentregistry"
+                    "react_render_componentregistry",
+                    "react_newarchdefaults"
             }
         }
         ndk {
@@ -434,6 +438,9 @@ android {
         }
         react_render_componentregistry {
             headers(new File(prefabHeadersDir, "react_render_componentregistry").absolutePath)
+        }
+        react_newarchdefaults {
+            headers(new File(prefabHeadersDir, "react_newarchdefaults").absolutePath)
         }
     }
 
