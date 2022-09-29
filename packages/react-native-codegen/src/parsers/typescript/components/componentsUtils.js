@@ -199,7 +199,7 @@ function getTypeAnnotationForArray<T>(
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
-  const topLevelType = parseTopLevelType(typeAnnotation);
+  const topLevelType = parseTopLevelType(typeAnnotation, types);
   if (topLevelType.defaultValue !== undefined) {
     throw new Error(
       'Nested optionals such as "ReadonlyArray<boolean | null | undefined>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | undefined"',
@@ -211,7 +211,7 @@ function getTypeAnnotationForArray<T>(
     );
   }
 
-  const extractedTypeAnnotation = getValueFromTypes(topLevelType.type, types);
+  const extractedTypeAnnotation = topLevelType.type;
   const arrayType = detectArrayType(
     name,
     extractedTypeAnnotation,
@@ -316,8 +316,8 @@ function getTypeAnnotation<T>(
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
-  const topLevelType = parseTopLevelType(annotation);
-  const typeAnnotation = getValueFromTypes(topLevelType.type, types);
+  const topLevelType = parseTopLevelType(annotation, types);
+  const typeAnnotation = topLevelType.type;
   const arrayType = detectArrayType(
     name,
     typeAnnotation,
@@ -435,26 +435,24 @@ function getTypeAnnotation<T>(
   }
 }
 
-function findProp(name: string, typeAnnotation: $FlowFixMe) {
-  // unpack WithDefault, (T) or T|U
-  const topLevelType = parseTopLevelType(typeAnnotation);
-  if (topLevelType.type.type === 'TSTypeReference') {
+function isProp(name:string, typeAnnotation: $FlowFixMe) {
+  if (typeAnnotation.type === 'TSTypeReference') {
     // Remove unwanted types
     if (
-      topLevelType.type.typeName.name === 'DirectEventHandler' ||
-      topLevelType.type.typeName.name === 'BubblingEventHandler'
+      typeAnnotation.typeName.name === 'DirectEventHandler' ||
+      typeAnnotation.typeName.name === 'BubblingEventHandler'
     ) {
-      return null;
+      return false;
     }
     if (
       name === 'style' &&
-      topLevelType.type.type === 'GenericTypeAnnotation' &&
-      topLevelType.type.typeName.name === 'ViewStyleProp'
+      typeAnnotation.type === 'GenericTypeAnnotation' &&
+      typeAnnotation.typeName.name === 'ViewStyleProp'
     ) {
-      return null;
+      return false;
     }
   }
-  return topLevelType;
+  return true;
 }
 
 type SchemaInfo = {
@@ -468,15 +466,10 @@ function getSchemaInfo(
   property: PropAST,
   types: TypeDeclarationMap,
 ): ?SchemaInfo {
+  // unpack WithDefault, (T) or T|U
+  const topLevelType = parseTopLevelType(property.typeAnnotation.typeAnnotation, types);
   const name = property.key.name;
-
-  const value = getValueFromTypes(
-    property.typeAnnotation.typeAnnotation,
-    types,
-  );
-
-  const topLevelType = findProp(name, value);
-  if (!topLevelType) {
+  if (!isProp(name, topLevelType.type)) {
     return null;
   }
 

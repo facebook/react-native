@@ -10,29 +10,32 @@
 
 'use strict';
 
-import type {TSTypeAnnotation} from '@babel/types';
+import type {TSEnumDeclaration, TSInterfaceDeclaration, TSTypeAnnotation} from '@babel/types';
+const {getValueFromTypes, TypeDeclarationMap} = require('./utils.js');
 
 export type LegalDefaultValues = string | number | boolean | null;
+export type LegalTypeNode = TSEnumDeclaration | TSInterfaceDeclaration | TSTypeAnnotation;
 
 type TopLevelTypeInternal = {
-  unions: Array<TSTypeAnnotation>,
+  unions: Array<LegalTypeNode>,
   optional: boolean,
   defaultValue?: LegalDefaultValues,
 };
 
 export type TopLevelType = {
-  type: TSTypeAnnotation,
+  type: LegalTypeNode,
   optional: boolean,
   defaultValue?: LegalDefaultValues,
 };
 
 function handleUnionAndParen(
-  type: TSTypeAnnotation,
+  type: LegalTypeNode,
   result: TopLevelTypeInternal,
+  knownTypes: TypeDeclarationMap,
 ): void {
   switch (type.type) {
     case 'TSParenthesizedType': {
-      handleUnionAndParen(type.typeAnnotation, result);
+      handleUnionAndParen(type.typeAnnotation, result,knownTypes);
       break;
     }
     case 'TSUnionType': {
@@ -40,15 +43,14 @@ function handleUnionAndParen(
         if (t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword') {
           result.optional = true;
         } else {
-          handleUnionAndParen(t, result);
+          handleUnionAndParen(t, result,knownTypes);
         }
       }
       break;
     }
     case 'TSTypeReference':
       if (type.typeName.name === 'Readonly') {
-        handleUnionAndParen(type.typeParameters.params[0], result);
-        break;
+        handleUnionAndParen(type.typeParameters.params[0], result,knownTypes);
       } else if (type.typeName.name === 'WithDefault') {
         if (result.optional) {
           throw new Error(
@@ -66,7 +68,7 @@ function handleUnionAndParen(
           );
         }
         result.optional = true;
-        handleUnionAndParen(type.typeParameters.params[0], result);
+        handleUnionAndParen(type.typeParameters.params[0], result,knownTypes);
 
         const valueType = type.typeParameters.params[1].type;
         if (valueType === 'TSLiteralType') {
@@ -103,17 +105,24 @@ function handleUnionAndParen(
             'The default value in WithDefault must be string, number, boolean or null.',
           );
         }
-        break;
+      } else {
+        const resolvedType = getValueFromTypes(type, knownTypes);
+        if (resolvedType.type === 'TSTypeReference' && resolvedType.typeName.name === type.typeName.name) {
+          result.unions.push(type);
+        } else {
+        handleUnionAndParen(resolvedType,result,knownTypes);
+        }
       }
-    // fall through
+      break;
     default:
       result.unions.push(type);
   }
 }
 
-export function parseTopLevelType(type: TSTypeAnnotation): TopLevelType {
+export function parseTopLevelType(type: TSTypeAnnotation,
+  knownTypes: TypeDeclarationMap): TopLevelType {
   let result: TopLevelTypeInternal = {unions: [], optional: false};
-  handleUnionAndParen(type, result);
+  handleUnionAndParen(type, result, knownTypes);
   if (result.unions.length === 0) {
     throw new Error('Union type could not be just null or undefined.');
   } else if (result.unions.length === 1) {
