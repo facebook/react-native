@@ -52,6 +52,45 @@ function isNull(t: $FlowFixMe) {
   );
 }
 
+function evaluateLiteral(
+  literalNode: $FlowFixMe,
+): string | number | boolean | null {
+  const valueType = literalNode.type;
+  if (valueType === 'TSLiteralType') {
+    const literal = literalNode.literal;
+    if (
+      literal.type === 'Literal' ||
+      literal.type === 'StringLiteral' ||
+      literal.type === 'NumericLiteral' ||
+      literal.type === 'BooleanLiteral'
+    ) {
+      if (
+        typeof literal.value === 'string' ||
+        typeof literal.value === 'number' ||
+        typeof literal.value === 'boolean'
+      ) {
+        return literal.value;
+      }
+    } else if (
+      literal.type === 'UnaryExpression' &&
+      literal.operator === '-' &&
+      literal.argument.type === 'Literal' &&
+      typeof literal.argument.literal === 'number'
+    ) {
+      return -literal.argument.value;
+    }
+  } else if (
+    valueType === 'TSNullKeyword' ||
+    valueType === 'TSUndefinedKeyword'
+  ) {
+    return null;
+  }
+
+  throw new Error(
+    'The default value in WithDefault must be string, number, boolean or null.',
+  );
+}
+
 function handleUnionAndParen(
   type: $FlowFixMe,
   result: TopLevelTypeInternal,
@@ -93,47 +132,12 @@ function handleUnionAndParen(
         }
         if (result.defaultValue !== undefined) {
           throw new Error(
-            'Multiple WithDefault is not allowed in a union type.',
+            'Multiple WithDefault is not allowed nested or in a union type.',
           );
         }
         result.optional = true;
+        result.defaultValue = evaluateLiteral(type.typeParameters.params[1]);
         handleUnionAndParen(type.typeParameters.params[0], result, knownTypes);
-
-        const valueType = type.typeParameters.params[1].type;
-        if (valueType === 'TSLiteralType') {
-          const literal = type.typeParameters.params[1].literal;
-          if (
-            literal.type === 'Literal' ||
-            literal.type === 'StringLiteral' ||
-            literal.type === 'NumericLiteral' ||
-            literal.type === 'BooleanLiteral'
-          ) {
-            if (
-              typeof literal.value === 'string' ||
-              typeof literal.value === 'number' ||
-              typeof literal.value === 'boolean'
-            ) {
-              result.defaultValue = literal.value;
-            }
-          } else if (
-            literal.type === 'UnaryExpression' &&
-            literal.argument.type === 'Literal' &&
-            typeof literal.argument.literal === 'number'
-          ) {
-            result.defaultValue = -literal.argument.value;
-          }
-        } else if (
-          valueType === 'TSNullKeyword' ||
-          valueType === 'TSUndefinedKeyword'
-        ) {
-          result.defaultValue = null;
-        }
-
-        if (result.defaultValue === undefined) {
-          throw new Error(
-            'The default value in WithDefault must be string, number, boolean or null.',
-          );
-        }
       } else if (!knownTypes) {
         result.unions.push(type);
       } else {
@@ -153,7 +157,7 @@ function handleUnionAndParen(
   }
 }
 
-export function parseTopLevelType(
+function parseTopLevelType(
   type: $FlowFixMe,
   knownTypes?: TypeDeclarationMap,
 ): TopLevelType {
@@ -175,3 +179,7 @@ export function parseTopLevelType(
     };
   }
 }
+
+module.exports = {
+  parseTopLevelType,
+};
