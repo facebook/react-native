@@ -108,6 +108,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "jsi",
                 new Pair("../ReactCommon/jsi/", "")
+            ),
+            new PrefabPreprocessingEntry(
+                "glog",
+                new Pair(new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, "")
             )
         ]
     )
@@ -373,7 +377,8 @@ android {
                     "react_render_core",
                     "react_render_graphics",
                     "rrc_view",
-                    "jsi"
+                    "jsi",
+                    "glog"
             }
         }
         ndk {
@@ -476,6 +481,9 @@ android {
         }
         jsi {
             headers(new File(prefabHeadersDir, "jsi").absolutePath)
+        }
+        glog {
+            headers(new File(prefabHeadersDir, "glog").absolutePath)
         }
     }
 

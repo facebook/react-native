@@ -61,14 +61,6 @@ target_compile_options(folly_runtime
         -DFOLLY_MOBILE=1
         -DFOLLY_HAVE_XSI_STRERROR_R=1)
 
-## glog
-add_library(glog SHARED IMPORTED GLOBAL)
-set_target_properties(glog
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libglog.so)
-target_include_directories(glog INTERFACE ${THIRD_PARTY_NDK_DIR}/glog/exported)
-
 ## yoga
 add_library(yoga SHARED IMPORTED GLOBAL)
 set_target_properties(yoga
