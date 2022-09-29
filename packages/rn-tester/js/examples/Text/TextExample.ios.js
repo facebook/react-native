@@ -1270,7 +1270,7 @@ exports.examples = [
                   return (
                     <View key={code}>
                       <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
-                      <Text ios_lineBreakStrategy={strategy}>
+                      <Text lineBreakStrategyIOS={strategy}>
                         {textByCode[code]}
                       </Text>
                     </View>

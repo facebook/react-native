@@ -149,7 +149,7 @@ const RCTTextInputViewConfig = {
     clearTextOnFocus: true,
     showSoftInputOnFocus: true,
     autoFocus: true,
-    ios_lineBreakStrategy: true,
+    lineBreakStrategyIOS: true,
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,
       onSelectionChange: true,

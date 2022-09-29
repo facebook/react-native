@@ -240,7 +240,7 @@ export type TextProps = $ReadOnly<{|
   /**
    * Set line break strategy on iOS.
    *
-   * See https://reactnative.dev/docs/text.html#ios_linebreakstrategy
+   * See https://reactnative.dev/docs/text.html#linebreakstrategyios
    */
-  ios_lineBreakStrategy?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
+  lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
 |}>;

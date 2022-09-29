@@ -887,7 +887,7 @@ exports.examples = ([
                       <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
                       <TextInput
                         multiline
-                        ios_lineBreakStrategy={strategy}
+                        lineBreakStrategyIOS={strategy}
                         style={styles.default}
                         defaultValue={textByCode[code]}
                       />
