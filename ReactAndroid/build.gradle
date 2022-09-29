@@ -116,6 +116,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "fabricjni",
                 new Pair("src/main/jni/react/fabric", "")
+            ),
+            new PrefabPreprocessingEntry(
+                "react_render_mapbuffer",
+                new Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/")
             )
         ]
     )
@@ -382,7 +386,8 @@ android {
                     "rrc_view",
                     "jsi",
                     "glog",
-                    "fabricjni"
+                    "fabricjni",
+                    "react_render_mapbuffer"
             }
         }
         ndk {
@@ -491,6 +496,9 @@ android {
         }
         fabricjni {
             headers(new File(prefabHeadersDir, "fabricjni").absolutePath)
+        }
+        react_render_mapbuffer {
+            headers(new File(prefabHeadersDir, "react_render_mapbuffer").absolutePath)
         }
     }
 

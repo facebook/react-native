@@ -114,13 +114,5 @@ set_target_properties(react_render_mounting
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_mounting.so)
 target_include_directories(react_render_mounting INTERFACE ${REACT_COMMON_DIR}/react/renderer/mounting)
 
-## react_render_mapbuffer
-add_library(react_render_mapbuffer SHARED IMPORTED GLOBAL)
-set_target_properties(react_render_mapbuffer
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_mapbuffer.so)
-target_include_directories(react_render_mapbuffer INTERFACE ${REACT_COMMON_DIR}/react/renderer/mapbuffer)
-
 ## fbjni
 add_subdirectory(${FIRST_PARTY_NDK_DIR}/fbjni fbjni_build)

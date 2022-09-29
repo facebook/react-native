@@ -54,6 +54,7 @@ add_library(rrc_view ALIAS ReactAndroid::rrc_view)
 add_library(jsi ALIAS ReactAndroid::jsi)
 add_library(glog ALIAS ReactAndroid::glog)
 add_library(fabricjni ALIAS ReactAndroid::fabricjni)
+add_library(react_render_mapbuffer ALIAS ReactAndroid::react_render_mapbuffer)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni                           # prefab ready
@@ -69,7 +70,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_render_core                   # prefab ready
         react_render_debug                  # prefab ready
         react_render_graphics               # prefab ready
-        react_render_mapbuffer
+        react_render_mapbuffer              # prefab ready
         rrc_view                            # prefab ready
         runtimeexecutor                     # prefab ready
         turbomodulejsijni                   # prefab ready
