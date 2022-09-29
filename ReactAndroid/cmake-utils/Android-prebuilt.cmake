@@ -41,22 +41,6 @@ target_include_directories(fb
         INTERFACE
         ${FIRST_PARTY_NDK_DIR}/fb/include)
 
-## react_nativemodule_core
-add_library(react_nativemodule_core SHARED IMPORTED GLOBAL)
-set_target_properties(react_nativemodule_core
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_nativemodule_core.so)
-target_include_directories(react_nativemodule_core
-        INTERFACE
-        ${REACT_ANDROID_SRC_DIR}/jni
-        ${REACT_COMMON_DIR}
-        ${REACT_COMMON_DIR}/callinvoker
-        ${REACT_COMMON_DIR}/jsi
-        ${REACT_COMMON_DIR}/react/nativemodule/core
-        ${REACT_COMMON_DIR}/react/nativemodule/core/platform/android)
-target_link_libraries(react_nativemodule_core INTERFACE folly_runtime)
-
 ## react_render_imagemanager
 add_library(react_render_imagemanager SHARED IMPORTED GLOBAL)
 set_target_properties(react_render_imagemanager

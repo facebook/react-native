@@ -59,6 +59,7 @@ add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 add_library(react_render_mapbuffer ALIAS ReactAndroid::react_render_mapbuffer)
 add_library(yoga ALIAS ReactAndroid::yoga)
 add_library(folly_runtime ALIAS ReactAndroid::folly_runtime)
+add_library(react_nativemodule_core ALIAS ReactAndroid::react_nativemodule_core)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni                           # prefab ready
@@ -68,7 +69,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         jsi                                 # prefab ready
         react_codegen_rncore                # prefab ready
         react_debug                         # prefab ready
-        react_nativemodule_core
+        react_nativemodule_core             # prefab ready
         react_newarchdefaults               # prefab ready
         react_render_componentregistry      # prefab ready
         react_render_core                   # prefab ready

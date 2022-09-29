@@ -136,6 +136,31 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair(new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
                 ]
             ),
+            new PrefabPreprocessingEntry(
+                "react_nativemodule_core",
+                [
+                    new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
+                    new Pair("../ReactCommon/butter/", "butter/"),
+                    new Pair("../ReactCommon/callinvoker/", ""),
+                    new Pair("../ReactCommon/react/bridging/", "react/bridging/"),
+                    new Pair("../ReactCommon/react/config/", "react/config/"),
+                    new Pair("../ReactCommon/react/nativemodule/core/", ""),
+                    new Pair("../ReactCommon/react/nativemodule/core/platform/android/", ""),
+                    new Pair("../ReactCommon/react/renderer/componentregistry/", "react/renderer/componentregistry/"),
+                    new Pair("../ReactCommon/react/renderer/components/root/", "react/renderer/components/root/"),
+                    new Pair("../ReactCommon/react/renderer/leakchecker/", "react/renderer/leakchecker/"),
+                    new Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/"),
+                    new Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
+                    new Pair("../ReactCommon/react/renderer/runtimescheduler/", "react/renderer/runtimescheduler/"),
+                    new Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
+                    new Pair("../ReactCommon/react/renderer/telemetry/", "react/renderer/telemetry/"),
+                    new Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
+                    new Pair("../ReactCommon/react/utils/", "react/utils/"),
+                    new Pair("src/main/jni/react/jni", "react/jni/"),
+                ]
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -404,7 +429,8 @@ android {
                     "fabricjni",
                     "react_render_mapbuffer",
                     "yoga",
-                    "folly_runtime"
+                    "folly_runtime",
+                    "react_nativemodule_core"
             }
         }
         ndk {
@@ -522,6 +548,9 @@ android {
         }
         folly_runtime {
             headers(new File(prefabHeadersDir, "folly_runtime").absolutePath)
+        }
+        react_nativemodule_core {
+            headers(new File(prefabHeadersDir, "react_nativemodule_core").absolutePath)
         }
     }
 
