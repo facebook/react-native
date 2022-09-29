@@ -84,7 +84,7 @@ function resolveTypeAnnotation(
 
   for (;;) {
     const topLevelType = parseTopLevelType(node);
-    nullable ||= topLevelType.optional;
+    nullable = nullable || topLevelType.optional;
     node = topLevelType.type;
 
     if (node.type === 'TSTypeReference') {
