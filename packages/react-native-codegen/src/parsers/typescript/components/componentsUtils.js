@@ -13,7 +13,6 @@ import type {ASTNode} from '../utils';
 import type {TypeDeclarationMap} from '../utils.js';
 import type {NamedShape} from '../../../CodegenSchema.js';
 const {parseTopLevelType} = require('../parseTopLevelType');
-const {getValueFromTypes} = require('../utils.js');
 
 function getProperties(
   typeName: string,

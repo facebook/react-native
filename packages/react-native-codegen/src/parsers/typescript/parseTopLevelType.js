@@ -38,7 +38,7 @@ export type TopLevelType = {
 function handleUnionAndParen(
   type: LegalTypeNode,
   result: TopLevelTypeInternal,
-  knownTypes: TypeDeclarationMap,
+  knownTypes?: TypeDeclarationMap,
 ): void {
   switch (type.type) {
     case 'TSParenthesizedType': {
@@ -112,6 +112,8 @@ function handleUnionAndParen(
             'The default value in WithDefault must be string, number, boolean or null.',
           );
         }
+      } else if (!knownTypes) {
+        result.unions.push(type);
       } else {
         const resolvedType = getValueFromTypes(type, knownTypes);
         if (
