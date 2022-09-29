@@ -48,6 +48,7 @@ add_library(react_codegen_rncore ALIAS ReactAndroid::react_codegen_rncore)
 add_library(react_debug ALIAS ReactAndroid::react_debug)
 add_library(react_render_componentregistry ALIAS ReactAndroid::react_render_componentregistry)
 add_library(react_newarchdefaults ALIAS ReactAndroid::react_newarchdefaults)
+add_library(react_render_core ALIAS ReactAndroid::react_render_core)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni
@@ -60,7 +61,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_nativemodule_core
         react_newarchdefaults               # prefab ready
         react_render_componentregistry      # prefab ready
-        react_render_core
+        react_render_core                   # prefab ready
         react_render_debug                  # prefab ready
         react_render_graphics
         react_render_mapbuffer

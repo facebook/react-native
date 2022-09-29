@@ -89,6 +89,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "react_newarchdefaults",
                 new Pair("src/main/jni/react/newarchdefaults", "")
+            ),
+            new PrefabPreprocessingEntry(
+                "react_render_core",
+                new Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/")
             )
         ]
     )
@@ -350,7 +354,8 @@ android {
                     "react_codegen_rncore",
                     "react_debug",
                     "react_render_componentregistry",
-                    "react_newarchdefaults"
+                    "react_newarchdefaults",
+                    "react_render_core"
             }
         }
         ndk {
@@ -441,6 +446,9 @@ android {
         }
         react_newarchdefaults {
             headers(new File(prefabHeadersDir, "react_newarchdefaults").absolutePath)
+        }
+        react_render_core {
+            headers(new File(prefabHeadersDir, "react_render_core").absolutePath)
         }
     }
 

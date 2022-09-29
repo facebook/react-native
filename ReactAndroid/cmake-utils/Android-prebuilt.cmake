@@ -103,17 +103,6 @@ target_include_directories(react_nativemodule_core
         ${REACT_COMMON_DIR}/react/nativemodule/core/platform/android)
 target_link_libraries(react_nativemodule_core INTERFACE folly_runtime)
 
-## react_render_core
-add_library(react_render_core SHARED IMPORTED GLOBAL)
-set_target_properties(react_render_core
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_core.so)
-target_include_directories(react_render_core
-        INTERFACE
-        ${REACT_COMMON_DIR}
-        ${REACT_COMMON_DIR}/react/renderer/core)
-
 ## react_render_graphics
 add_library(react_render_graphics SHARED IMPORTED GLOBAL)
 set_target_properties(react_render_graphics
