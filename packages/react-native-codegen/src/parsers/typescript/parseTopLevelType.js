@@ -50,6 +50,12 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
   }
 }
 
+function isNull(t:LegalTypeNode){
+  return t.type === 'TSNullKeyword' ||
+  t.type === 'TSUndefinedKeyword' ||
+  t.type === 'TSVoidKeyword';
+}
+
 function handleUnionAndParen(
   type: LegalTypeNode,
   result: TopLevelTypeInternal,
@@ -61,14 +67,15 @@ function handleUnionAndParen(
       break;
     }
     case 'TSUnionType': {
+      // the order is important
+      // result.optional must be set first
       for (const t of type.types) {
-        if (
-          t.type === 'TSNullKeyword' ||
-          t.type === 'TSUndefinedKeyword' ||
-          t.type === 'TSVoidKeyword'
-        ) {
+        if (isNull(t)) {
           result.optional = true;
-        } else {
+        }
+      }
+      for (const t of type.types) {
+        if (!isNull(t)) {
           handleUnionAndParen(t, result, knownTypes);
         }
       }

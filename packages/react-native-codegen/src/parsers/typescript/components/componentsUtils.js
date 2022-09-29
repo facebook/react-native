@@ -470,9 +470,14 @@ function getSchemaInfo(
     property.typeAnnotation.typeAnnotation,
     types,
   );
+
   const name = property.key.name;
   if (!isProp(name, topLevelType.type)) {
     return null;
+  }
+
+  if(!property.optional && topLevelType.defaultValue!==undefined){
+    throw new Error(`key ${name} must be optional if used with WithDefault<> annotation`);
   }
 
   return {
