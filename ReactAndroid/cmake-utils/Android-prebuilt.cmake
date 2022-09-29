@@ -61,24 +61,6 @@ target_compile_options(folly_runtime
         -DFOLLY_MOBILE=1
         -DFOLLY_HAVE_XSI_STRERROR_R=1)
 
-## yoga
-add_library(yoga SHARED IMPORTED GLOBAL)
-set_target_properties(yoga
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libyoga.so)
-target_include_directories(yoga
-        INTERFACE
-        ${FIRST_PARTY_NDK_DIR}/yogajni/jni
-        ${REACT_COMMON_DIR}/yoga)
-target_compile_options(yoga
-        INTERFACE
-        -fvisibility=hidden
-        -fexceptions
-        -frtti
-        -O3)
-target_link_libraries(yoga INTERFACE log android)
-
 ## react_nativemodule_core
 add_library(react_nativemodule_core SHARED IMPORTED GLOBAL)
 set_target_properties(react_nativemodule_core

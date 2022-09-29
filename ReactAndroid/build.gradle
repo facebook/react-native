@@ -120,7 +120,14 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "react_render_mapbuffer",
                 new Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/")
-            )
+            ),
+            new PrefabPreprocessingEntry(
+                "yoga",
+                [
+                    new Pair("../ReactCommon/yoga/", ""),
+                    new Pair("src/main/jni/first-party/yogajni/jni", "")
+                ]
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -387,7 +394,8 @@ android {
                     "jsi",
                     "glog",
                     "fabricjni",
-                    "react_render_mapbuffer"
+                    "react_render_mapbuffer",
+                    "yoga"
             }
         }
         ndk {
@@ -499,6 +507,9 @@ android {
         }
         react_render_mapbuffer {
             headers(new File(prefabHeadersDir, "react_render_mapbuffer").absolutePath)
+        }
+        yoga {
+            headers(new File(prefabHeadersDir, "yoga").absolutePath)
         }
     }
 

@@ -55,6 +55,7 @@ add_library(jsi ALIAS ReactAndroid::jsi)
 add_library(glog ALIAS ReactAndroid::glog)
 add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 add_library(react_render_mapbuffer ALIAS ReactAndroid::react_render_mapbuffer)
+add_library(yoga ALIAS ReactAndroid::yoga)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni                           # prefab ready
@@ -74,7 +75,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         rrc_view                            # prefab ready
         runtimeexecutor                     # prefab ready
         turbomodulejsijni                   # prefab ready
-        yoga)
+        yoga)                               # prefab ready
 
 # If project is on RN CLI v9, then we can use the following lines to link against the autolinked 3rd party libraries.
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
