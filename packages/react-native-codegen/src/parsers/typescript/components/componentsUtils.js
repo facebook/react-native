@@ -132,6 +132,67 @@ function getUnionOfLiterals(
   }
 }
 
+function detectArrayType<T>(
+  name: string,
+  typeAnnotation: $FlowFixMe | ASTNode,
+  defaultValue: $FlowFixMe | undefined,
+  types: TypeDeclarationMap,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+): $FlowFixMe {
+  // Covers: readonly T[]
+  if (
+    typeAnnotation.type === 'TSTypeOperator' &&
+    typeAnnotation.operator === 'readonly' &&
+    typeAnnotation.typeAnnotation.type === 'TSArrayType'
+  ) {
+    return {
+      type: 'ArrayTypeAnnotation',
+      elementType: getTypeAnnotationForArray(
+        name,
+        typeAnnotation.typeAnnotation.elementType,
+        defaultValue,
+        types,
+        buildSchema,
+      ),
+    };
+  }
+
+  // Covers: T[]
+  if (
+    typeAnnotation.type === 'TSArrayType'
+  ) {
+    return {
+      type: 'ArrayTypeAnnotation',
+      elementType: getTypeAnnotationForArray(
+        name,
+        typeAnnotation.elementType,
+        defaultValue,
+        types,
+        buildSchema,
+      ),
+    };
+  }
+
+  // Covers: Array<T> and ReadonlyArray<T>
+  if (
+    typeAnnotation.type === 'TSTypeReference' &&
+    (typeAnnotation.typeName.name === 'ReadonlyArray' || typeAnnotation.typeName.name === 'Array')
+  ) {
+    return {
+      type: 'ArrayTypeAnnotation',
+      elementType: getTypeAnnotationForArray(
+        name,
+        typeAnnotation.typeParameters.params[0],
+        defaultValue,
+        types,
+        buildSchema,
+      ),
+    };
+  }
+
+  return null;
+}
+
 function getTypeAnnotationForArray<T>(
   name: string,
   typeAnnotation: $FlowFixMe,
@@ -162,40 +223,8 @@ function getTypeAnnotationForArray<T>(
     types,
   );
 
-  // Covers: T[]
-  if (extractedTypeAnnotation.type === 'TSArrayType') {
-    return getTypeAnnotationForObjectAsArrayElement(
-      name,
-      extractedTypeAnnotation.elementType,
-      types,
-      buildSchema,
-    );
-  }
-
-  if (extractedTypeAnnotation.type === 'TSTypeReference') {
-    // Resolve the type alias if it's not defined inline
-    const objectType = getValueFromTypes(extractedTypeAnnotation, types);
-
-    if (objectType.typeName.name === 'Readonly') {
-      return getTypeAnnotationForArray(
-        name,
-        objectType.typeParameters.params[0],
-        defaultValue,
-        types,
-        buildSchema,
-      );
-    }
-
-    // Covers: ReadonlyArray<T>
-    if (objectType.typeName.name === 'ReadonlyArray') {
-      return getTypeAnnotationForObjectAsArrayElement(
-        name,
-        objectType.typeParameters.params[0],
-        types,
-        buildSchema,
-      );
-    }
-  }
+  const arrayType = detectArrayType(name, extractedTypeAnnotation, defaultValue, types, buildSchema);
+  if(arrayType) return arrayType;
 
   const type =
     extractedTypeAnnotation.elementType === 'TSTypeReference'
@@ -292,57 +321,8 @@ function getTypeAnnotation<T>(
   }
 
   const typeAnnotation = getValueFromTypes(topLevelType.unions[0], types);
-
-  // Covers: readonly T[]
-  if (
-    typeAnnotation.type === 'TSTypeOperator' &&
-    typeAnnotation.operator === 'readonly' &&
-    typeAnnotation.typeAnnotation.type === 'TSArrayType'
-  ) {
-    return {
-      type: 'ArrayTypeAnnotation',
-      elementType: getTypeAnnotationForArray(
-        name,
-        typeAnnotation.typeAnnotation.elementType,
-        defaultValue,
-        types,
-        buildSchema,
-      ),
-    };
-  }
-
-  // Covers: T[]
-  if (
-    typeAnnotation.type === 'TSArrayType'
-  ) {
-    return {
-      type: 'ArrayTypeAnnotation',
-      elementType: getTypeAnnotationForArray(
-        name,
-        typeAnnotation.elementType,
-        defaultValue,
-        types,
-        buildSchema,
-      ),
-    };
-  }
-
-  // Covers: Array<T> and ReadonlyArray<T>
-  if (
-    typeAnnotation.type === 'TSTypeReference' &&
-    (typeAnnotation.typeName.name === 'ReadonlyArray' || typeAnnotation.typeName.name === 'Array')
-  ) {
-    return {
-      type: 'ArrayTypeAnnotation',
-      elementType: getTypeAnnotationForArray(
-        name,
-        typeAnnotation.typeParameters.params[0],
-        defaultValue,
-        types,
-        buildSchema,
-      ),
-    };
-  }
+  const arrayType = detectArrayType(name, typeAnnotation, defaultValue, types, buildSchema);
+  if(arrayType) return arrayType;
 
   const type =
     typeAnnotation.type === 'TSTypeReference' ||
