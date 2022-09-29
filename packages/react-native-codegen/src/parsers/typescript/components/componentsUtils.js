@@ -476,8 +476,10 @@ function getSchemaInfo(
     return null;
   }
 
-  if(!property.optional && topLevelType.defaultValue!==undefined){
-    throw new Error(`key ${name} must be optional if used with WithDefault<> annotation`);
+  if (!property.optional && topLevelType.defaultValue !== undefined) {
+    throw new Error(
+      `key ${name} must be optional if used with WithDefault<> annotation`,
+    );
   }
 
   return {

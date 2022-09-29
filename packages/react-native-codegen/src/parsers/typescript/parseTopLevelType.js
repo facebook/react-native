@@ -50,10 +50,12 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
   }
 }
 
-function isNull(t:LegalTypeNode){
-  return t.type === 'TSNullKeyword' ||
-  t.type === 'TSUndefinedKeyword' ||
-  t.type === 'TSVoidKeyword';
+function isNull(t: LegalTypeNode) {
+  return (
+    t.type === 'TSNullKeyword' ||
+    t.type === 'TSUndefinedKeyword' ||
+    t.type === 'TSVoidKeyword'
+  );
 }
 
 function handleUnionAndParen(
