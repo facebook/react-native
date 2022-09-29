@@ -20,7 +20,10 @@ const {parseTopLevelType} = require('../parseTopLevelType');
 type EventTypeAST = Object;
 
 function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
-  const topLevelType = parseTopLevelType(property.typeAnnotation.typeAnnotation, types);
+  const topLevelType = parseTopLevelType(
+    property.typeAnnotation.typeAnnotation,
+    types,
+  );
   const name = property.key.name;
   const optional = property.optional || topLevelType.optional;
   const value = topLevelType.type;
