@@ -435,7 +435,7 @@ function getTypeAnnotation<T>(
   }
 }
 
-function isProp(name:string, typeAnnotation: $FlowFixMe) {
+function isProp(name: string, typeAnnotation: $FlowFixMe) {
   if (typeAnnotation.type === 'TSTypeReference') {
     // Remove unwanted types
     if (
@@ -467,7 +467,10 @@ function getSchemaInfo(
   types: TypeDeclarationMap,
 ): ?SchemaInfo {
   // unpack WithDefault, (T) or T|U
-  const topLevelType = parseTopLevelType(property.typeAnnotation.typeAnnotation, types);
+  const topLevelType = parseTopLevelType(
+    property.typeAnnotation.typeAnnotation,
+    types,
+  );
   const name = property.key.name;
   if (!isProp(name, topLevelType.type)) {
     return null;
