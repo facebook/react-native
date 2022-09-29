@@ -1204,9 +1204,9 @@ jobs:
           name: Build HermesC for Windows
           command: |
             if (-not(Test-Path -Path $Env:HERMES_WS_DIR\win64-bin\hermesc.exe)) {
-              Choco-Install -PackageName cmake -ArgumentList "--no-progress", "--version 3.14.7"
+              choco install --no-progress cmake --version 3.14.7
               if (-not $?) { throw "Failed to install CMake" }
-              Choco-Install -PackageName python3 -ArgumentList "--no-progress"
+              choco install --no-progress python3
               if (-not $?) { throw "Failed to install Python" }
 
               cd $Env:HERMES_WS_DIR\icu
