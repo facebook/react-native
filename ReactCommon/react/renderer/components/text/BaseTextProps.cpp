@@ -105,6 +105,12 @@ static TextAttributes convertRawProp(
       "baseWritingDirection",
       sourceTextAttributes.baseWritingDirection,
       defaultTextAttributes.baseWritingDirection);
+  textAttributes.lineBreakStrategy = convertRawProp(
+      context,
+      rawProps,
+      "lineBreakStrategyIOS",
+      sourceTextAttributes.lineBreakStrategy,
+      defaultTextAttributes.lineBreakStrategy);
 
   // Decoration
   textAttributes.textDecorationColor = convertRawProp(
@@ -243,6 +249,12 @@ void BaseTextProps::setProp(
         textAttributes,
         baseWritingDirection,
         "baseWritingDirection");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        lineBreakStrategy,
+        "lineBreakStrategyIOS");
     REBUILD_FIELD_SWITCH_CASE(
         defaults,
         value,
