@@ -54,6 +54,7 @@ function codegenNativeComponent<Props>(
       options.paperComponentNameDeprecated != null &&
       UIManager.hasViewManagerConfig(options.paperComponentNameDeprecated)
     ) {
+      // $FlowFixMe[incompatible-type]
       componentNameInUse = options.paperComponentNameDeprecated;
     } else {
       throw new Error(
@@ -65,6 +66,7 @@ function codegenNativeComponent<Props>(
   }
 
   return (requireNativeComponent<Props>(
+    // $FlowFixMe[incompatible-call]
     componentNameInUse,
   ): HostComponent<Props>);
 }
