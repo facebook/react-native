@@ -138,13 +138,5 @@ set_target_properties(fabricjni
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libfabricjni.so)
 target_include_directories(fabricjni INTERFACE ${REACT_ANDROID_SRC_DIR}/jni/react/fabric)
 
-## jsi
-add_library(jsi SHARED IMPORTED GLOBAL)
-set_target_properties(jsi
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libjsi.so)
-target_include_directories(jsi INTERFACE ${REACT_COMMON_DIR}/jsi)
-
 ## fbjni
 add_subdirectory(${FIRST_PARTY_NDK_DIR}/fbjni fbjni_build)

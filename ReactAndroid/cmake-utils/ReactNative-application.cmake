@@ -51,13 +51,14 @@ add_library(react_newarchdefaults ALIAS ReactAndroid::react_newarchdefaults)
 add_library(react_render_core ALIAS ReactAndroid::react_render_core)
 add_library(react_render_graphics ALIAS ReactAndroid::react_render_graphics)
 add_library(rrc_view ALIAS ReactAndroid::rrc_view)
+add_library(jsi ALIAS ReactAndroid::jsi)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni
         fbjni
         folly_runtime
         glog
-        jsi
+        jsi                                 # prefab ready
         react_codegen_rncore                # prefab ready
         react_debug                         # prefab ready
         react_nativemodule_core
