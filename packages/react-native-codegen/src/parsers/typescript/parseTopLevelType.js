@@ -62,7 +62,7 @@ function handleUnionAndParen(
     }
     case 'TSUnionType': {
       for (const t of type.types) {
-        if (t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword') {
+        if (t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword' || t.type === 'TSVoidKeyword') {
           result.optional = true;
         } else {
           handleUnionAndParen(t, result, knownTypes);
