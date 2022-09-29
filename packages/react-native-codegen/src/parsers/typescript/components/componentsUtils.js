@@ -88,7 +88,6 @@ function getUnionOfLiterals(
       currType.type === 'TSLiteralType' ? currType.literal.type : currType.type;
 
     if (lastFlattenedType && currFlattenedType !== lastFlattenedType) {
-      throw new Error(JSON.stringify(elementTypes,undefined,4));
       throw new Error(`Mixed types are not supported (see "${name}")`);
     }
     return currType;
@@ -114,7 +113,7 @@ function getUnionOfLiterals(
   ) {
     if (forArray) {
       throw new Error(`Arrays of int enums are not supported (see: "${name}")`);
-    }else{
+    } else {
       return {
         type: 'Int32EnumTypeAnnotation',
         default: (defaultValue: number),
@@ -158,9 +157,7 @@ function detectArrayType<T>(
   }
 
   // Covers: T[]
-  if (
-    typeAnnotation.type === 'TSArrayType'
-  ) {
+  if (typeAnnotation.type === 'TSArrayType') {
     return {
       type: 'ArrayTypeAnnotation',
       elementType: getTypeAnnotationForArray(
@@ -176,7 +173,8 @@ function detectArrayType<T>(
   // Covers: Array<T> and ReadonlyArray<T>
   if (
     typeAnnotation.type === 'TSTypeReference' &&
-    (typeAnnotation.typeName.name === 'ReadonlyArray' || typeAnnotation.typeName.name === 'Array')
+    (typeAnnotation.typeName.name === 'ReadonlyArray' ||
+      typeAnnotation.typeName.name === 'Array')
   ) {
     return {
       type: 'ArrayTypeAnnotation',
@@ -213,9 +211,15 @@ function getTypeAnnotationForArray<T>(
     );
   }
 
-  const extractedTypeAnnotation = getValueFromTypes(topLevelType.type,types);
-  const arrayType = detectArrayType(name, extractedTypeAnnotation, defaultValue, types, buildSchema);
-  if(arrayType) return arrayType;
+  const extractedTypeAnnotation = getValueFromTypes(topLevelType.type, types);
+  const arrayType = detectArrayType(
+    name,
+    extractedTypeAnnotation,
+    defaultValue,
+    types,
+    buildSchema,
+  );
+  if (arrayType) return arrayType;
 
   const type =
     extractedTypeAnnotation.elementType === 'TSTypeReference'
@@ -231,7 +235,7 @@ function getTypeAnnotationForArray<T>(
         type === 'TSInterfaceDeclaration'
           ? [extractedTypeAnnotation]
           : extractedTypeAnnotation.members;
-      if (rawProperties===undefined){
+      if (rawProperties === undefined) {
         throw new Error(type);
       }
       return {
@@ -291,7 +295,13 @@ function getTypeAnnotationForArray<T>(
         type: 'StringTypeAnnotation',
       };
     case 'TSUnionType':
-      return getUnionOfLiterals(name, true, extractedTypeAnnotation.types, defaultValue, types);
+      return getUnionOfLiterals(
+        name,
+        true,
+        extractedTypeAnnotation.types,
+        defaultValue,
+        types,
+      );
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": ${type}`);
@@ -308,8 +318,14 @@ function getTypeAnnotation<T>(
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(annotation);
   const typeAnnotation = getValueFromTypes(topLevelType.type, types);
-  const arrayType = detectArrayType(name, typeAnnotation, defaultValue, types, buildSchema);
-  if(arrayType) return arrayType;
+  const arrayType = detectArrayType(
+    name,
+    typeAnnotation,
+    defaultValue,
+    types,
+    buildSchema,
+  );
+  if (arrayType) return arrayType;
 
   const type =
     typeAnnotation.type === 'TSTypeReference' ||
@@ -376,56 +392,67 @@ function getTypeAnnotation<T>(
     case 'Float':
       return {
         type: 'FloatTypeAnnotation',
-        default: ((defaultValue === null ? null : defaultValue ? defaultValue : 0): number | null),
+        default: ((defaultValue === null
+          ? null
+          : defaultValue
+          ? defaultValue
+          : 0): number | null),
       };
     case 'TSBooleanKeyword':
       return {
         type: 'BooleanTypeAnnotation',
-        default: (defaultValue === null ? null : !!defaultValue),
+        default: defaultValue === null ? null : !!defaultValue,
       };
     case 'TSStringKeyword':
       return {
         type: 'StringTypeAnnotation',
-        default: ((defaultValue === undefined ? null : defaultValue): string | null),
+        default: ((defaultValue === undefined ? null : defaultValue):
+          | string
+          | null),
       };
     case 'Stringish':
       return {
         type: 'StringTypeAnnotation',
-        default: ((defaultValue === undefined ? null : defaultValue): string | null),
+        default: ((defaultValue === undefined ? null : defaultValue):
+          | string
+          | null),
       };
     case 'TSNumberKeyword':
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
       );
     case 'TSUnionType':
-      return getUnionOfLiterals(name, false, typeAnnotation.types, defaultValue, types);
+      return getUnionOfLiterals(
+        name,
+        false,
+        typeAnnotation.types,
+        defaultValue,
+        types,
+      );
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": "${type}"`);
   }
 }
 
-function findProp(
-  name: string,
-  typeAnnotation: $FlowFixMe,
-) {
+function findProp(name: string, typeAnnotation: $FlowFixMe) {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(typeAnnotation);
   if (topLevelType.type.type === 'TSTypeReference') {
-      // Remove unwanted types
-      if (
-        topLevelType.type.typeName.name === 'DirectEventHandler' ||
-        topLevelType.type.typeName.name === 'BubblingEventHandler'
-      ) {
-        return null;
-      }
-      if (
-        name === 'style' &&
-        topLevelType.type.type === 'GenericTypeAnnotation' &&
-        topLevelType.type.typeName.name === 'ViewStyleProp'
-      ) {
-        return null;
-      }
+    // Remove unwanted types
+    if (
+      topLevelType.type.typeName.name === 'DirectEventHandler' ||
+      topLevelType.type.typeName.name === 'BubblingEventHandler'
+    ) {
+      return null;
+    }
+    if (
+      name === 'style' &&
+      topLevelType.type.type === 'GenericTypeAnnotation' &&
+      topLevelType.type.typeName.name === 'ViewStyleProp'
+    ) {
+      return null;
+    }
   }
   return topLevelType;
 }
@@ -455,9 +482,9 @@ function getSchemaInfo(
 
   return {
     name,
-    optional:property.optional || topLevelType.optional,
-    typeAnnotation:topLevelType.type,
-    defaultValue:topLevelType.defaultValue,
+    optional: property.optional || topLevelType.optional,
+    typeAnnotation: topLevelType.type,
+    defaultValue: topLevelType.defaultValue,
   };
 }
 

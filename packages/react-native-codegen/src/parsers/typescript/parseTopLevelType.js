@@ -12,7 +12,7 @@
 
 import type {TSTypeAnnotation} from '@babel/types';
 
-export type LegalDefaultValues = string | number | boolean | null
+export type LegalDefaultValues = string | number | boolean | null;
 
 type TopLevelTypeInternal = {
   unions: Array<TSTypeAnnotation>,
@@ -46,14 +46,14 @@ function handleUnionAndParen(
       break;
     }
     case 'TSTypeReference':
-      if (type.typeName.name==='Readonly') {
+      if (type.typeName.name === 'Readonly') {
         handleUnionAndParen(type.typeParameters.params[0], result);
         break;
       } else if (type.typeName.name === 'WithDefault') {
-        if(result.optional) {
-            throw new Error(
-              'WithDefault<> is optional and does not need to be marked as optional. Please remove the union of undefined and/or null',
-            );
+        if (result.optional) {
+          throw new Error(
+            'WithDefault<> is optional and does not need to be marked as optional. Please remove the union of undefined and/or null',
+          );
         }
         if (type.typeParameters.params.length !== 2) {
           throw new Error(
@@ -71,7 +71,12 @@ function handleUnionAndParen(
         const valueType = type.typeParameters.params[1].type;
         if (valueType === 'TSLiteralType') {
           const literal = type.typeParameters.params[1].literal;
-          if (literal.type === 'Literal' || literal.type === 'StringLiteral' || literal.type === 'NumericLiteral' || literal.type === 'BooleanLiteral') {
+          if (
+            literal.type === 'Literal' ||
+            literal.type === 'StringLiteral' ||
+            literal.type === 'NumericLiteral' ||
+            literal.type === 'BooleanLiteral'
+          ) {
             if (
               typeof literal.value === 'string' ||
               typeof literal.value === 'number' ||
@@ -111,17 +116,17 @@ export function parseTopLevelType(type: TSTypeAnnotation): TopLevelType {
   handleUnionAndParen(type, result);
   if (result.unions.length === 0) {
     throw new Error('Union type could not be just null or undefined.');
-  } else if (result.unions.length===1) {
+  } else if (result.unions.length === 1) {
     return {
-      type:result.unions[0],
-      optional:result.optional,
-      defaultValue:result.defaultValue,
+      type: result.unions[0],
+      optional: result.optional,
+      defaultValue: result.defaultValue,
     };
   } else {
     return {
-      type:{type:'TSUnionType',types:result.unions},
-      optional:result.optional,
-      defaultValue:result.defaultValue,
+      type: {type: 'TSUnionType', types: result.unions},
+      optional: result.optional,
+      defaultValue: result.defaultValue,
     };
   }
 }
