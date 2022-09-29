@@ -163,10 +163,10 @@ function getTypeAnnotationForArray<T>(
   );
 
   // Covers: T[]
-  if (typeAnnotation.type === 'TSArrayType') {
+  if (extractedTypeAnnotation.type === 'TSArrayType') {
     return getTypeAnnotationForObjectAsArrayElement(
       name,
-      typeAnnotation.elementType,
+      extractedTypeAnnotation.elementType,
       types,
       buildSchema,
     );
@@ -209,8 +209,11 @@ function getTypeAnnotationForArray<T>(
     case 'TSInterfaceDeclaration': {
       const rawProperties =
         type === 'TSInterfaceDeclaration'
-          ? [typeAnnotation]
-          : typeAnnotation.members;
+          ? [extractedTypeAnnotation]
+          : extractedTypeAnnotation.members;
+      if (rawProperties===undefined){
+        throw new Error(type);
+      }
       return {
         type: 'ObjectTypeAnnotation',
         properties: flattenProperties(rawProperties, types)
@@ -308,10 +311,26 @@ function getTypeAnnotation<T>(
     };
   }
 
-  // Covers: ReadonlyArray<T>
+  // Covers: T[]
+  if (
+    typeAnnotation.type === 'TSArrayType'
+  ) {
+    return {
+      type: 'ArrayTypeAnnotation',
+      elementType: getTypeAnnotationForArray(
+        name,
+        typeAnnotation.elementType,
+        defaultValue,
+        types,
+        buildSchema,
+      ),
+    };
+  }
+
+  // Covers: Array<T> and ReadonlyArray<T>
   if (
     typeAnnotation.type === 'TSTypeReference' &&
-    typeAnnotation.typeName.name === 'ReadonlyArray'
+    (typeAnnotation.typeName.name === 'ReadonlyArray' || typeAnnotation.typeName.name === 'Array')
   ) {
     return {
       type: 'ArrayTypeAnnotation',
@@ -323,41 +342,6 @@ function getTypeAnnotation<T>(
         buildSchema,
       ),
     };
-  }
-
-  // Covers: Readonly<T[]>
-  if (
-    typeAnnotation.type === 'TSTypeReference' &&
-    typeAnnotation.typeName?.name === 'Readonly' &&
-    typeAnnotation.typeParameters.type === 'TSTypeParameterInstantiation' &&
-    typeAnnotation.typeParameters.params[0].type === 'TSArrayType'
-  ) {
-    return {
-      type: 'ArrayTypeAnnotation',
-      elementType: getTypeAnnotationForArray(
-        name,
-        typeAnnotation.typeParameters.params[0],
-        defaultValue,
-        types,
-        buildSchema,
-      ),
-    };
-  }
-
-  // Covers: Readonly<T>, Readonly<{ ... }>, Readonly<T | U ...>
-  if (
-    typeAnnotation.type === 'TSTypeReference' &&
-    typeAnnotation.typeName?.name === 'Readonly' &&
-    typeAnnotation.typeParameters.type === 'TSTypeParameterInstantiation'
-  ) {
-    let elementType = typeAnnotation.typeParameters.params[0];
-    return getTypeAnnotation(
-      name,
-      elementType,
-      defaultValue,
-      types,
-      buildSchema,
-    );
   }
 
   const type =
