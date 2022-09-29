@@ -103,17 +103,6 @@ target_include_directories(react_nativemodule_core
         ${REACT_COMMON_DIR}/react/nativemodule/core/platform/android)
 target_link_libraries(react_nativemodule_core INTERFACE folly_runtime)
 
-## react_render_graphics
-add_library(react_render_graphics SHARED IMPORTED GLOBAL)
-set_target_properties(react_render_graphics
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_graphics.so)
-target_include_directories(react_render_graphics
-        INTERFACE
-        ${REACT_COMMON_DIR}/react/renderer/graphics
-        ${REACT_COMMON_DIR}/react/renderer/graphics/platform/cxx)
-
 ## react_render_imagemanager
 add_library(react_render_imagemanager SHARED IMPORTED GLOBAL)
 set_target_properties(react_render_imagemanager
