@@ -124,21 +124,6 @@ function resolveTypeAnnotation(
   };
 }
 
-function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
-  switch (value.type) {
-    case 'TSTypeReference':
-      if (types[value.typeName.name]) {
-        return getValueFromTypes(types[value.typeName.name], types);
-      } else {
-        return value;
-      }
-    case 'TSTypeAliasDeclaration':
-      return getValueFromTypes(value.typeAnnotation, types);
-    default:
-      return value;
-  }
-}
-
 export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
 
 function createParserErrorCapturer(): [
@@ -231,7 +216,6 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
 }
 
 module.exports = {
-  getValueFromTypes,
   resolveTypeAnnotation,
   createParserErrorCapturer,
   getTypes,

@@ -15,7 +15,7 @@ import type {
   TSInterfaceDeclaration,
   TSTypeAnnotation,
 } from '@babel/types';
-const {getValueFromTypes, TypeDeclarationMap} = require('./utils.js');
+const {TypeDeclarationMap} = require('./utils.js');
 
 export type LegalDefaultValues = string | number | boolean | null;
 export type LegalTypeNode =
@@ -34,6 +34,21 @@ export type TopLevelType = {
   optional: boolean,
   defaultValue?: LegalDefaultValues,
 };
+
+function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
+  switch (value.type) {
+    case 'TSTypeReference':
+      if (types[value.typeName.name]) {
+        return getValueFromTypes(types[value.typeName.name], types);
+      } else {
+        return value;
+      }
+    case 'TSTypeAliasDeclaration':
+      return getValueFromTypes(value.typeAnnotation, types);
+    default:
+      return value;
+  }
+}
 
 function handleUnionAndParen(
   type: LegalTypeNode,
