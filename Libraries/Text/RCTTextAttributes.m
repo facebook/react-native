@@ -67,7 +67,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _baseWritingDirection = textAttributes->_baseWritingDirection != NSWritingDirectionNatural
       ? textAttributes->_baseWritingDirection
       : _baseWritingDirection; // *
-  _lineBreakStrategy = textAttributes->_lineBreakStrategy != NSLineBreakStrategyNone ? textAttributes->_lineBreakStrategy : _lineBreakStrategy;
+  _lineBreakStrategy = textAttributes->_lineBreakStrategy ?: _lineBreakStrategy;
 
   // Decoration
   _textDecorationColor = textAttributes->_textDecorationColor ?: _textDecorationColor;
