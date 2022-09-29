@@ -53,9 +53,10 @@ add_library(react_render_graphics ALIAS ReactAndroid::react_render_graphics)
 add_library(rrc_view ALIAS ReactAndroid::rrc_view)
 add_library(jsi ALIAS ReactAndroid::jsi)
 add_library(glog ALIAS ReactAndroid::glog)
+add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-        fabricjni
+        fabricjni                           # prefab ready
         fbjni
         folly_runtime
         glog                                # prefab ready

@@ -112,6 +112,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "glog",
                 new Pair(new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, "")
+            ),
+            new PrefabPreprocessingEntry(
+                "fabricjni",
+                new Pair("src/main/jni/react/fabric", "")
             )
         ]
     )
@@ -365,7 +369,6 @@ android {
                     "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
-                    "fabricjni",
                     // prefab targets
                     "react_render_debug",
                     "turbomodulejsijni",
@@ -378,7 +381,8 @@ android {
                     "react_render_graphics",
                     "rrc_view",
                     "jsi",
-                    "glog"
+                    "glog",
+                    "fabricjni"
             }
         }
         ndk {
@@ -484,6 +488,9 @@ android {
         }
         glog {
             headers(new File(prefabHeadersDir, "glog").absolutePath)
+        }
+        fabricjni {
+            headers(new File(prefabHeadersDir, "fabricjni").absolutePath)
         }
     }
 
