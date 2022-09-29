@@ -218,13 +218,16 @@ function buildEventSchema(
   property: EventTypeAST,
 ): ?EventTypeShape {
   // unpack WithDefault, (T) or T|U
-  const topLevelType = parseTopLevelType(property.typeAnnotation.typeAnnotation, types);
+  const topLevelType = parseTopLevelType(
+    property.typeAnnotation.typeAnnotation,
+    types,
+  );
   if (!isEvent(topLevelType.type)) {
     return null;
   }
-  
+
   const name = property.key.name;
-  const typeAnnotation=topLevelType.type;
+  const typeAnnotation = topLevelType.type;
   const optional = property.optional || topLevelType.optional;
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(typeAnnotation, types);
