@@ -455,7 +455,6 @@ function translateTypeAnnotation(
         });
       }
       // Fallthrough
-      throw new Error(JSON.stringify(typeAnnotation,undefined,4));
     }
     case 'TSUnknownKeyword': {
       if (cxxOnly) {
