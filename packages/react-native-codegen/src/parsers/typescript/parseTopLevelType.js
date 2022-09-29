@@ -12,15 +12,23 @@
 
 import type {TSTypeAnnotation} from '@babel/types';
 
-export type TopLevelType = {
+export type LegalDefaultValues = string | number | boolean | null
+
+type TopLevelTypeInternal = {
   unions: Array<TSTypeAnnotation>,
   optional: boolean,
-  defaultValue?: string | number | boolean | null,
+  defaultValue?: LegalDefaultValues,
+};
+
+export type TopLevelType = {
+  type: TSTypeAnnotation,
+  optional: boolean,
+  defaultValue?: LegalDefaultValues,
 };
 
 function handleUnionAndParen(
   type: TSTypeAnnotation,
-  result: TopLevelType,
+  result: TopLevelTypeInternal,
 ): void {
   switch (type.type) {
     case 'TSParenthesizedType': {
@@ -99,10 +107,21 @@ function handleUnionAndParen(
 }
 
 export function parseTopLevelType(type: TSTypeAnnotation): TopLevelType {
-  let result: TopLevelType = {unions: [], optional: false};
+  let result: TopLevelTypeInternal = {unions: [], optional: false};
   handleUnionAndParen(type, result);
   if (result.unions.length === 0) {
     throw new Error('Union type could not be just null or undefined.');
+  } else if (result.unions.length===1) {
+    return {
+      type:result.unions[0],
+      optional:result.optional,
+      defaultValue:result.defaultValue,
+    };
+  } else {
+    return {
+      type:{type:'TSUnionType',types:result.unions},
+      optional:result.optional,
+      defaultValue:result.defaultValue,
+    };
   }
-  return result;
 }

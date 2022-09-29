@@ -213,16 +213,7 @@ function getTypeAnnotationForArray<T>(
     );
   }
 
-  // if it is an union type, it should be union of literals
-  if (topLevelType.unions.length > 1) {
-    return getUnionOfLiterals(name, true, topLevelType.unions, defaultValue, types);
-  }
-
-  const extractedTypeAnnotation = getValueFromTypes(
-    topLevelType.unions[0],
-    types,
-  );
-
+  const extractedTypeAnnotation = getValueFromTypes(topLevelType.type,types);
   const arrayType = detectArrayType(name, extractedTypeAnnotation, defaultValue, types, buildSchema);
   if(arrayType) return arrayType;
 
@@ -299,6 +290,8 @@ function getTypeAnnotationForArray<T>(
       return {
         type: 'StringTypeAnnotation',
       };
+    case 'TSUnionType':
+      return getUnionOfLiterals(name, true, extractedTypeAnnotation.types, defaultValue, types);
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": ${type}`);
@@ -314,13 +307,7 @@ function getTypeAnnotation<T>(
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(annotation);
-
-  // if it is an union type, it should be union of literals
-  if (topLevelType.unions.length > 1) {
-    return getUnionOfLiterals(name, false, topLevelType.unions, (defaultValue!==undefined?defaultValue:  topLevelType.defaultValue), types);
-  }
-
-  const typeAnnotation = getValueFromTypes(topLevelType.unions[0], types);
+  const typeAnnotation = getValueFromTypes(topLevelType.type, types);
   const arrayType = detectArrayType(name, typeAnnotation, defaultValue, types, buildSchema);
   if(arrayType) return arrayType;
 
@@ -410,6 +397,8 @@ function getTypeAnnotation<T>(
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
       );
+    case 'TSUnionType':
+      return getUnionOfLiterals(name, false, typeAnnotation.types, defaultValue, types);
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": "${type}"`);
@@ -422,25 +411,22 @@ function findProp(
 ) {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(typeAnnotation);
-  if(topLevelType.unions.length==1){
-  const elementType = topLevelType.unions[0];
-  if (elementType.type === 'TSTypeReference') {
+  if (topLevelType.type.type === 'TSTypeReference') {
       // Remove unwanted types
       if (
-        elementType.typeName.name === 'DirectEventHandler' ||
-        elementType.typeName.name === 'BubblingEventHandler'
+        topLevelType.type.typeName.name === 'DirectEventHandler' ||
+        topLevelType.type.typeName.name === 'BubblingEventHandler'
       ) {
         return null;
       }
       if (
         name === 'style' &&
-        elementType.type === 'GenericTypeAnnotation' &&
-        elementType.typeName.name === 'ViewStyleProp'
+        topLevelType.type.type === 'GenericTypeAnnotation' &&
+        topLevelType.type.typeName.name === 'ViewStyleProp'
       ) {
         return null;
       }
   }
-}
   return topLevelType;
 }
 
@@ -466,15 +452,12 @@ function getSchemaInfo(
   if (!topLevelType) {
     return null;
   }
-  const optional = property.optional || topLevelType.optional;
-  const defaultValue=topLevelType.defaultValue;
-  const typeAnnotation = topLevelType.unions.length===1?topLevelType.unions[0]:{type:'TSUnionType',types:topLevelType.unions};
 
   return {
     name,
-    optional,
-    typeAnnotation,
-    defaultValue,
+    optional:property.optional || topLevelType.optional,
+    typeAnnotation:topLevelType.type,
+    defaultValue:topLevelType.defaultValue,
   };
 }
 
