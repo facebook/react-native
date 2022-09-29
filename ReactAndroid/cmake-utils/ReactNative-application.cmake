@@ -50,6 +50,7 @@ add_library(react_render_componentregistry ALIAS ReactAndroid::react_render_comp
 add_library(react_newarchdefaults ALIAS ReactAndroid::react_newarchdefaults)
 add_library(react_render_core ALIAS ReactAndroid::react_render_core)
 add_library(react_render_graphics ALIAS ReactAndroid::react_render_graphics)
+add_library(rrc_view ALIAS ReactAndroid::rrc_view)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni
@@ -66,7 +67,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_render_debug                  # prefab ready
         react_render_graphics               # prefab ready
         react_render_mapbuffer
-        rrc_view
+        rrc_view                            # prefab ready
         runtimeexecutor                     # prefab ready
         turbomodulejsijni                   # prefab ready
         yoga)

@@ -130,14 +130,6 @@ set_target_properties(react_render_mapbuffer
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_mapbuffer.so)
 target_include_directories(react_render_mapbuffer INTERFACE ${REACT_COMMON_DIR}/react/renderer/mapbuffer)
 
-## rrc_view
-add_library(rrc_view SHARED IMPORTED GLOBAL)
-set_target_properties(rrc_view
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/librrc_view.so)
-target_include_directories(rrc_view INTERFACE ${REACT_COMMON_DIR}/react/renderer/components/view)
-
 ## fabricjni
 add_library(fabricjni SHARED IMPORTED GLOBAL)
 set_target_properties(fabricjni
