@@ -57,6 +57,8 @@ def skipPrefabPublishing = System.getenv("REACT_NATIVE_SKIP_PREFAB") != null
 def prefabHeadersDir = project.file("$buildDir/prefab-headers")
 
 final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
+    dependsOn(prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
+    dependsOn("generateCodegenArtifactsFromSchema")
     // To export to a ReactNativePrefabProcessingEntities.kt once all
     // libraries have been moved. We keep it here for now as it make easier to
     // migrate one library at a time.
