@@ -80,6 +80,16 @@ export type Props = $ReadOnly<{|
   ),
 
   /**
+   * The `modalDetent` determines the height for modal,
+   * based on the detent value.
+   */
+  modalDetent?: ?(
+    | 'large'
+    | 'medium'
+    | 'mediumResizable'
+  ),
+
+  /**
    * The `transparent` prop determines whether your modal will fill the
    * entire view.
    *
@@ -244,8 +254,10 @@ class Modal extends React.Component<Props> {
       this.props.children
     );
 
+    console.log('this.props.modalDetent ', this.props.modalDetent)
     return (
       <RCTModalHostView
+        modalDetent={this.props.modalDetent}
         animationType={animationType}
         presentationStyle={presentationStyle}
         transparent={this.props.transparent}
