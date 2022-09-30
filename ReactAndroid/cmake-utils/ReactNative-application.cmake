@@ -91,5 +91,6 @@ target_link_libraries(ReactAndroid::react_codegen_rncore INTERFACE common_flags)
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
         include(${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
         target_link_libraries(${CMAKE_PROJECT_NAME} ${AUTOLINKED_LIBRARIES})
-        target_link_libraries(${AUTOLINKED_LIBRARIES} PRIVATE common_flags)
+        # TODO Re-link autlinking libraries against common_flags
+        # target_link_libraries(${AUTOLINKED_LIBRARIES} PRIVATE common_flags)
 endif()
