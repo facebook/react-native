@@ -49,6 +49,8 @@ module.exports = {
     {
       files: ['flow-typed/**/*.js'],
       rules: {
+        'lint/valid-flow-typed-signature': 2,
+        'no-unused-vars': 0,
         quotes: 0,
       },
     },

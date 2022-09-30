@@ -2,7 +2,6 @@
 **/staticBundle.js
 docs/generatedComponentApiDocs.js
 flow/
-flow-typed/
 Libraries/Renderer/*
 Libraries/vendor/**/*
 node_modules/
