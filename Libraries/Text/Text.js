@@ -178,8 +178,7 @@ const Text: React.AbstractComponent<
     _selectable = userSelectToSelectableMap[style.userSelect];
   }
 
-  if (style && style.verticalAlign !== undefined) {
-    // $FlowFixMe[prop-missing]
+  if (style?.verticalAlign != null) {
     style = StyleSheet.compose(style, {
       textAlignVertical:
         verticalAlignToTextAlignVerticalMap[style.verticalAlign],

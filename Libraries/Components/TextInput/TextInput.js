@@ -1602,8 +1602,7 @@ const ExportedForwardRef: React.AbstractComponent<
 ) {
   let style = flattenStyle(restProps.style);
 
-  if (style && style.verticalAlign !== undefined) {
-    // $FlowFixMe
+  if (style?.verticalAlign != null) {
     style.textAlignVertical =
       verticalAlignToTextAlignVerticalMap[style.verticalAlign];
   }
