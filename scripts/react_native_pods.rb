@@ -190,6 +190,19 @@ end
 def react_native_post_install(installer, react_native_path = "../node_modules/react-native", mac_catalyst_enabled: false)
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
 
+  # This is necessary for Xcode 14, because it signs resource bundles by default
+  # when building for devices.
+  # addressess https://github.com/facebook/react-native/issues/34673
+  # while we wait for a fix in CocoaPods, see https://github.com/CocoaPods/CocoaPods/issues/11402
+  installer.target_installation_results.pod_target_installation_results
+    .each do |pod_name, target_installation_result|
+    target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+      resource_bundle_target.build_configurations.each do |config|
+        config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+      end
+    end
+  end
+
   if ReactNativePodsUtils.has_pod(installer, 'Flipper')
     flipper_post_install(installer)
   end
