@@ -74,8 +74,9 @@ function evaluateLiteral(
     } else if (
       literal.type === 'UnaryExpression' &&
       literal.operator === '-' &&
-      literal.argument.type === 'Literal' &&
-      typeof literal.argument.literal === 'number'
+      (literal.argument.type === 'Literal' ||
+        literal.argument.type === 'NumericLiteral') &&
+      typeof literal.argument.value === 'number'
     ) {
       return -literal.argument.value;
     }
@@ -87,7 +88,7 @@ function evaluateLiteral(
   }
 
   throw new Error(
-    'The default value in WithDefault must be string, number, boolean or null.',
+    'The default value in WithDefault must be string, number, boolean or null .',
   );
 }
 
