@@ -9,6 +9,7 @@
  */
 
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
+
 import processAspectRatio from '../../StyleSheet/processAspectRatio';
 import processColor from '../../StyleSheet/processColor';
 import processFontVariant from '../../StyleSheet/processFontVariant';

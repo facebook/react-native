@@ -8,11 +8,11 @@
  * @format
  */
 
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import logError from '../Utilities/logError';
-import NativeAppState from './NativeAppState';
 import Platform from '../Utilities/Platform';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import NativeAppState from './NativeAppState';
 
 export type AppStateValues = 'inactive' | 'background' | 'active';
 

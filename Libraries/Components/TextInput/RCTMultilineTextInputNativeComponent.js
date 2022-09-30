@@ -12,10 +12,11 @@ import type {
   HostComponent,
   PartialViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
-import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
-import RCTTextInputViewConfig from './RCTTextInputViewConfig';
+
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import RCTTextInputViewConfig from './RCTTextInputViewConfig';
 
 type NativeType = HostComponent<mixed>;
 

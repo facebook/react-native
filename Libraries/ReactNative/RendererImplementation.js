@@ -8,9 +8,10 @@
  * @flow strict-local
  */
 
-import {type RootTag} from './RootTag';
-import type {Element, ElementType, ElementRef} from 'react';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {Element, ElementRef, ElementType} from 'react';
+
+import {type RootTag} from './RootTag';
 
 export function renderElement({
   element,

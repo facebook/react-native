@@ -11,9 +11,9 @@
 
 'use strict';
 
-const React = require('react');
-const LogBoxInspectorHeader = require('../LogBoxInspectorHeader').default;
 const render = require('../../../../jest/renderer');
+const LogBoxInspectorHeader = require('../LogBoxInspectorHeader').default;
+const React = require('react');
 
 describe('LogBoxInspectorHeader', () => {
   it('should render no buttons for one total', () => {

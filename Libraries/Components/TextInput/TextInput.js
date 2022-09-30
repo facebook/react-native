@@ -8,31 +8,29 @@
  * @format
  */
 
-import * as React from 'react';
-
-import Platform from '../../Utilities/Platform';
-import StyleSheet, {
-  type TextStyleProp,
-  type ViewStyleProp,
-  type ColorValue,
-} from '../../StyleSheet/StyleSheet';
-import Text from '../../Text/Text';
-import TextAncestor from '../../Text/TextAncestor';
-import TextInputState from './TextInputState';
-import invariant from 'invariant';
-import nullthrows from 'nullthrows';
-import setAndForwardRef from '../../Utilities/setAndForwardRef';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  PressEvent,
+  ScrollEvent,
+  SyntheticEvent,
+} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputType} from './TextInput.flow';
 
 import usePressability from '../../Pressability/usePressability';
-
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {
-  SyntheticEvent,
-  ScrollEvent,
-  PressEvent,
-} from '../../Types/CoreEventTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import StyleSheet, {
+  type ColorValue,
+  type TextStyleProp,
+  type ViewStyleProp,
+} from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import TextAncestor from '../../Text/TextAncestor';
+import Platform from '../../Utilities/Platform';
+import setAndForwardRef from '../../Utilities/setAndForwardRef';
+import TextInputState from './TextInputState';
+import invariant from 'invariant';
+import nullthrows from 'nullthrows';
+import * as React from 'react';
 
 const {useLayoutEffect, useRef, useState} = React;
 

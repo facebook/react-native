@@ -8,11 +8,12 @@
  * @format
  */
 
-import type {ScrollViewNativeProps as Props} from './ScrollViewNativeComponentType';
 import type {
   HostComponent,
   PartialViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
+import type {ScrollViewNativeProps as Props} from './ScrollViewNativeComponentType';
+
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import {ConditionallyIgnoredEventHandlers} from '../../NativeComponent/ViewConfigIgnore';
 import Platform from '../../Utilities/Platform';

@@ -8,15 +8,15 @@
  * @format
  */
 
-import * as React from 'react';
+import typeof ScrollView from '../Components/ScrollView/ScrollView';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
   ViewToken,
 } from './ViewabilityHelper';
 
-import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
-import typeof ScrollView from '../Components/ScrollView/ScrollView';
+import * as React from 'react';
 
 export type Item = any;
 

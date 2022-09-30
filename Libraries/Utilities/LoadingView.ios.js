@@ -9,8 +9,8 @@
  */
 
 import processColor from '../StyleSheet/processColor';
-import NativeDevLoadingView from './NativeDevLoadingView';
 import Appearance from './Appearance';
+import NativeDevLoadingView from './NativeDevLoadingView';
 
 module.exports = {
   showMessage(message: string, type: 'load' | 'refresh') {

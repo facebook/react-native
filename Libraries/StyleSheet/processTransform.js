@@ -10,8 +10,8 @@
 
 'use strict';
 
-const invariant = require('invariant');
 const stringifySafe = require('../Utilities/stringifySafe').default;
+const invariant = require('invariant');
 
 /**
  * Generate a transform matrix based on the provided transforms, and use that

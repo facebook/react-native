@@ -10,11 +10,10 @@
 
 'use strict';
 
-const Blob = require('./Blob');
-
-const invariant = require('invariant');
-
 import type {BlobOptions} from './BlobTypes';
+
+const Blob = require('./Blob');
+const invariant = require('invariant');
 
 /**
  * The File interface provides information about files.

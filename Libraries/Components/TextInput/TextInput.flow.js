@@ -8,20 +8,20 @@
  * @format
  */
 
-import * as React from 'react';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  PressEvent,
+  ScrollEvent,
+  SyntheticEvent,
+} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 import {
+  type ColorValue,
   type TextStyleProp,
   type ViewStyleProp,
-  type ColorValue,
 } from '../../StyleSheet/StyleSheet';
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {
-  SyntheticEvent,
-  ScrollEvent,
-  PressEvent,
-} from '../../Types/CoreEventTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import * as React from 'react';
 type ComponentRef = React.ElementRef<HostComponent<mixed>>;
 
 type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);

@@ -10,13 +10,13 @@
 
 'use strict';
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {InterpolationConfigType} from './AnimatedInterpolation';
+
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedNode from './AnimatedNode';
 import AnimatedValue from './AnimatedValue';
 import AnimatedWithChildren from './AnimatedWithChildren';
-
-import type {InterpolationConfigType} from './AnimatedInterpolation';
-import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 export default class AnimatedDivision extends AnimatedWithChildren {
   _a: AnimatedNode;

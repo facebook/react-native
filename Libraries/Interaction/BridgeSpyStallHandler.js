@@ -11,10 +11,10 @@
 'use strict';
 
 import type {SpyData} from '../BatchedBridge/MessageQueue';
-const JSEventLoopWatchdog = require('./JSEventLoopWatchdog');
 
 const MessageQueue = require('../BatchedBridge/MessageQueue');
 const infoLog = require('../Utilities/infoLog');
+const JSEventLoopWatchdog = require('./JSEventLoopWatchdog');
 
 const BridgeSpyStallHandler = {
   register: function () {

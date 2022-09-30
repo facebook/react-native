@@ -23,8 +23,8 @@ jest
   // findNodeHandle is imported from RendererProxy so mock that whole module.
   .setMock('../../ReactNative/RendererProxy', {findNodeHandle: () => 1});
 
-import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
+import TestRenderer from 'react-test-renderer';
 
 const Animated = require('../Animated').default;
 const NativeAnimatedHelper = require('../NativeAnimatedHelper').default;

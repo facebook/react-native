@@ -8,12 +8,11 @@
  * @format
  */
 
-import * as React from 'react';
+import type {AnimatedComponentType} from '../createAnimatedComponent';
 
 import Image from '../../Image/Image';
 import createAnimatedComponent from '../createAnimatedComponent';
-
-import type {AnimatedComponentType} from '../createAnimatedComponent';
+import * as React from 'react';
 
 export default (createAnimatedComponent(
   (Image: $FlowFixMe),

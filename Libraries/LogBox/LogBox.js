@@ -8,11 +8,11 @@
  * @format
  */
 
-import Platform from '../Utilities/Platform';
-import RCTLog from '../Utilities/RCTLog';
-
 import type {IgnorePattern, LogData} from './Data/LogBoxData';
 import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
+
+import Platform from '../Utilities/Platform';
+import RCTLog from '../Utilities/RCTLog';
 
 export type {LogData, ExtendedExceptionData, IgnorePattern};
 

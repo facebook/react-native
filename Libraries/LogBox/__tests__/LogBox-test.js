@@ -11,8 +11,8 @@
 
 'use strict';
 
-const LogBox = require('../LogBox');
 const LogBoxData = require('../Data/LogBoxData');
+const LogBox = require('../LogBox');
 
 declare var console: any;
 

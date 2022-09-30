@@ -10,19 +10,16 @@
 
 'use strict';
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {RgbaValue} from '../nodes/AnimatedColor';
+import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
 import type AnimatedValue from '../nodes/AnimatedValue';
 import type AnimatedValueXY from '../nodes/AnimatedValueXY';
-import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
-
-import Animation from './Animation';
+import type {AnimationConfig, EndCallback} from './Animation';
 
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
-
-import type {PlatformConfig} from '../AnimatedPlatformConfig';
-import type {AnimationConfig, EndCallback} from './Animation';
-import type {RgbaValue} from '../nodes/AnimatedColor';
-
 import AnimatedColor from '../nodes/AnimatedColor';
+import Animation from './Animation';
 
 export type TimingAnimationConfig = $ReadOnly<{
   ...AnimationConfig,

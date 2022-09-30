@@ -8,11 +8,11 @@
  * @flow strict-local
  */
 
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {WithDefault} from '../../Types/CodegenTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,

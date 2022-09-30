@@ -8,13 +8,13 @@
  * @format
  */
 
-import {ansiToJson} from 'anser';
-import * as React from 'react';
+import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
+
+import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import View from '../../Components/View/View';
-
-import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
+import {ansiToJson} from 'anser';
+import * as React from 'react';
 
 // Afterglow theme from https://iterm2colorschemes.com/
 const COLORS = {

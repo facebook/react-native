@@ -8,18 +8,16 @@
  * @format
  */
 
-import * as React from 'react';
-
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {FocusEvent, LayoutEvent} from '../Types/CoreEventTypes';
-import type {RenderItemType} from './VirtualizedListProps';
 import type FillRateHelper from './FillRateHelper';
+import type {RenderItemType} from './VirtualizedListProps';
 
-import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
 import View from '../Components/View/View';
 import StyleSheet from '../StyleSheet/StyleSheet';
-
+import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
 import invariant from 'invariant';
+import * as React from 'react';
 
 export type Props<ItemT> = {
   CellRendererComponent?: ?React.ComponentType<any>,

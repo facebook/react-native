@@ -8,16 +8,17 @@
  * @format
  */
 
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {AccessibilityInfoType} from './AccessibilityInfo.flow';
+import type {ElementRef} from 'react';
+
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import {sendAccessibilityEvent} from '../../ReactNative/RendererProxy';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import Platform from '../../Utilities/Platform';
-import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
 import NativeAccessibilityInfoAndroid from './NativeAccessibilityInfo';
 import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
-import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
-import type {ElementRef} from 'react';
-import type {AccessibilityInfoType} from './AccessibilityInfo.flow';
 
 // Events that are only supported on Android.
 type AccessibilityEventDefinitionsAndroid = {

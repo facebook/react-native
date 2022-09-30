@@ -8,22 +8,22 @@
  * @flow strict-local
  */
 
-import Keyboard from './Keyboard';
-import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
-import Platform from '../../Utilities/Platform';
-import * as React from 'react';
-import StyleSheet from '../../StyleSheet/StyleSheet';
-import View from '../View/View';
-
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {
-  ViewProps,
   ViewLayout,
   ViewLayoutEvent,
+  ViewProps,
 } from '../View/ViewPropTypes';
 import type {KeyboardEvent, KeyboardMetrics} from './Keyboard';
+
+import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Platform from '../../Utilities/Platform';
+import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 import AccessibilityInfo from '../AccessibilityInfo/AccessibilityInfo';
+import View from '../View/View';
+import Keyboard from './Keyboard';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   ...ViewProps,

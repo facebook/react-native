@@ -8,15 +8,15 @@
  * @format
  */
 
-import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import type {
   HostComponent,
   PartialViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
-import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
-import {type ViewProps as Props} from './ViewPropTypes';
-import Platform from '../../Utilities/Platform';
 
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import Platform from '../../Utilities/Platform';
+import {type ViewProps as Props} from './ViewPropTypes';
 import * as React from 'react';
 
 export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =

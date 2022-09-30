@@ -10,10 +10,9 @@
 
 'use strict';
 
+const StatusBar = require('../StatusBar');
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
-
-const StatusBar = require('../StatusBar');
 
 describe('StatusBar', () => {
   it('renders the statusbar', () => {

@@ -10,10 +10,10 @@
 
 'use strict';
 
-import AnimatedProps from './nodes/AnimatedProps';
-import {AnimatedEvent} from './AnimatedEvent';
 import useRefEffect from '../Utilities/useRefEffect';
+import {AnimatedEvent} from './AnimatedEvent';
 import NativeAnimatedHelper from './NativeAnimatedHelper';
+import AnimatedProps from './nodes/AnimatedProps';
 import {
   useCallback,
   useEffect,

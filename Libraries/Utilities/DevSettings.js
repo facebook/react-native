@@ -8,8 +8,8 @@
  * @format
  */
 
-import NativeDevSettings from '../NativeModules/specs/NativeDevSettings';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import NativeDevSettings from '../NativeModules/specs/NativeDevSettings';
 import Platform from '../Utilities/Platform';
 
 let DevSettings: {

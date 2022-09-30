@@ -12,13 +12,14 @@
 // TextInputs. All calls relating to the keyboard should be funneled
 // through here.
 
-const React = require('react');
-const Platform = require('../../Utilities/Platform');
-const {findNodeHandle} = require('../../ReactNative/RendererProxy');
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+
 import {Commands as AndroidTextInputCommands} from '../../Components/TextInput/AndroidTextInputNativeComponent';
 import {Commands as iOSTextInputCommands} from '../../Components/TextInput/RCTSingelineTextInputNativeComponent';
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+const {findNodeHandle} = require('../../ReactNative/RendererProxy');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
 type ComponentRef = React.ElementRef<HostComponent<mixed>>;
 
 let currentlyFocusedInputRef: ?ComponentRef = null;

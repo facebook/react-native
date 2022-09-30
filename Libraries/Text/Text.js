@@ -10,12 +10,12 @@
 
 import type {PressEvent} from '../Types/CoreEventTypes';
 
-import Platform from '../Utilities/Platform';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
-import StyleSheet from '../StyleSheet/StyleSheet';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import {type TextProps} from './TextProps';

@@ -11,12 +11,12 @@
 
 'use strict';
 
-const React = require('react');
+const render = require('../../../jest/renderer');
+const LogBoxLog = require('../Data/LogBoxLog').default;
 const {
   _LogBoxNotificationContainer: LogBoxNotificationContainer,
 } = require('../LogBoxNotificationContainer');
-const LogBoxLog = require('../Data/LogBoxLog').default;
-const render = require('../../../jest/renderer');
+const React = require('react');
 
 describe('LogBoxNotificationContainer', () => {
   it('should render null with no logs', () => {

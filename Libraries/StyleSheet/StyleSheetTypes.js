@@ -11,11 +11,17 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
-
 import type {NativeColorValue} from './PlatformColorValueTypes';
+import type {
+  ____DangerouslyImpreciseStyle_InternalOverrides,
+  ____ImageStyle_InternalOverrides,
+  ____ShadowStyle_InternalOverrides,
+  ____TextStyle_InternalOverrides,
+  ____ViewStyle_InternalOverrides,
+} from './private/_StyleSheetTypesOverrides';
+import type {____TransformStyle_Internal} from './private/_TransformStyle';
 
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
-
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
 export type PointValue = {
   x: number,
@@ -28,16 +34,6 @@ export type EdgeInsetsValue = {
   bottom: number,
 };
 export type DimensionValue = null | number | string | AnimatedNode;
-
-import type {
-  ____DangerouslyImpreciseStyle_InternalOverrides,
-  ____ImageStyle_InternalOverrides,
-  ____ShadowStyle_InternalOverrides,
-  ____TextStyle_InternalOverrides,
-  ____ViewStyle_InternalOverrides,
-} from './private/_StyleSheetTypesOverrides';
-
-import type {____TransformStyle_Internal} from './private/_TransformStyle';
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
