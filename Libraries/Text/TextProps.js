@@ -187,6 +187,23 @@ export type TextProps = $ReadOnly<{|
   adjustsFontSizeToFit?: ?boolean,
 
   /**
+   * The Dynamic Text scale ramp to apply to this element on iOS.
+   */
+  fontScaleRamp?: ?(
+    | 'caption2'
+    | 'caption1'
+    | 'footnote'
+    | 'subhead'
+    | 'callout'
+    | 'body'
+    | 'headline'
+    | 'title3'
+    | 'title2'
+    | 'title1'
+    | 'largeTitle'
+  ),
+
+  /**
    * Smallest possible scale a font can reach.
    *
    * See https://reactnative.dev/docs/text#minimumfontscale

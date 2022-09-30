@@ -34,6 +34,7 @@ export const NativeText: HostComponent<NativeTextProps> =
       numberOfLines: true,
       ellipsizeMode: true,
       allowFontScaling: true,
+      fontScaleRamp: true,
       maxFontSizeMultiplier: true,
       disabled: true,
       selectable: true,

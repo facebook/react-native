@@ -1245,4 +1245,49 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Dynamic Text sizing (iOS only)',
+    render: function (): React.Node {
+      const boldStyle = {fontWeight: 'bold'};
+      const boxStyle = {
+        borderWidth: 1,
+        padding: 8,
+        margin: 8,
+      };
+      return (
+        <View style={{marginTop: 10, marginBottom: 10}}>
+          <Text>
+            Adjust text size in Accessibility settings and watch how the font
+            sizes change relative to each other.
+          </Text>
+          <View style={boxStyle}>
+            <Text style={boldStyle}>With `fontScaleRamp`:</Text>
+            <Text style={{fontSize: 34}} fontScaleRamp="largeTitle">
+              Large Title
+            </Text>
+            <Text style={{fontSize: 28}} fontScaleRamp="title1">
+              Title
+            </Text>
+            <Text style={{fontSize: 22}} fontScaleRamp="title2">
+              Title 2
+            </Text>
+            <Text style={{fontSize: 20}} fontScaleRamp="title3">
+              Title 3
+            </Text>
+            <Text style={{fontSize: 17}} fontScaleRamp="body">
+              Body
+            </Text>
+          </View>
+          <View style={boxStyle}>
+            <Text style={boldStyle}>Without `fontScaleRamp`:</Text>
+            <Text style={{fontSize: 34}}>Large Title</Text>
+            <Text style={{fontSize: 28}}>Title</Text>
+            <Text style={{fontSize: 22}}>Title 2</Text>
+            <Text style={{fontSize: 20}}>Title 3</Text>
+            <Text style={{fontSize: 17}}>Body</Text>
+          </View>
+        </View>
+      );
+    },
+  },
 ];
