@@ -109,6 +109,18 @@ const char* YGFlexDirectionToString(const YGFlexDirection value) {
   return "unknown";
 }
 
+const char* YGGutterToString(const YGGutter value) {
+  switch (value) {
+    case YGGutterColumn:
+      return "column";
+    case YGGutterRow:
+      return "row";
+    case YGGutterAll:
+      return "all";
+  }
+  return "unknown";
+}
+
 const char* YGJustifyToString(const YGJustify value) {
   switch (value) {
     case YGJustifyFlexStart:

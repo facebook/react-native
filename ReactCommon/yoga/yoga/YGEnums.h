@@ -65,6 +65,12 @@ YG_ENUM_SEQ_DECL(
     YGFlexDirectionRowReverse)
 
 YG_ENUM_SEQ_DECL(
+    YGGutter,
+    YGGutterColumn,
+    YGGutterRow,
+    YGGutterAll)
+
+YG_ENUM_SEQ_DECL(
     YGJustify,
     YGJustifyFlexStart,
     YGJustifyCenter,
