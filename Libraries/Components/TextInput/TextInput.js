@@ -1600,7 +1600,7 @@ const ExportedForwardRef: React.AbstractComponent<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
 ) {
-  let style = flattenStyle(restProps.style);
+  const style = flattenStyle(restProps.style);
 
   if (style?.verticalAlign != null) {
     style.textAlignVertical =
