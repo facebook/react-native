@@ -1073,6 +1073,10 @@ type ModuleNativeState = $ReadOnly<{|
   float_null_optional_key?: WithDefault<Float, null>,
   float_null_optional_both?: WithDefault<Float, null>,
 
+  // Float props, negative default
+  negative_float_optional_key?: WithDefault<Float, -1.0>;
+  negative_float_optional_both?: WithDefault<Float, -1.0>;
+
   // Int32 props
   int32_required: Int32,
   int32_optional_key?: WithDefault<Int32, 1>,
@@ -1129,6 +1133,43 @@ type ModuleNativeState = $ReadOnly<{|
 export default (codegenNativeComponent<ModuleProps, Options>(
   'Module',
 ): HostComponent<ModuleProps>);
+`;
+
+const STATE_NEGATIVE_DEFAULTS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
+import type {ImageSource} from 'ImageSource';
+import type {ColorValue, PointValue, ProcessColorValue, EdgeInsetsValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {HostComponent} from 'react-native';
+
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+|}>;
+
+type ModuleNativeState = $ReadOnly<{|
+
+  // Negative numbers default
+  negative_float_optional_key?: WithDefault<Float, -1.0>;
+  negative_int_optional_key?: WithDefault<Int32, -1>;
+  negative_double_optional_key?: WithDefault<Double, -1.0>;
+|}>
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as HostComponent<ModuleProps>;
 `;
 
 const ARRAY_STATE_TYPES = `
@@ -1446,5 +1487,6 @@ module.exports = {
   ALL_STATE_TYPES,
   ARRAY_STATE_TYPES,
   OBJECT_STATE_TYPES,
+  STATE_NEGATIVE_DEFAULTS,
   // STATE_ALIASED_LOCALLY,
 };

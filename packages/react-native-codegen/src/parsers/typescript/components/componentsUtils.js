@@ -637,6 +637,15 @@ function getSchemaInfo(
     if (defaultValueType === 'TSLiteralType') {
       defaultValueType = typeAnnotation.typeParameters.params[1].literal.type;
       defaultValue = typeAnnotation.typeParameters.params[1].literal.value;
+      if (
+        defaultValueType === 'UnaryExpression' &&
+        typeAnnotation.typeParameters.params[1].literal.argument.type ===
+          'NumericLiteral' &&
+        typeAnnotation.typeParameters.params[1].literal.operator === '-'
+      ) {
+        defaultValue =
+          -1 * typeAnnotation.typeParameters.params[1].literal.argument.value;
+      }
     }
 
     if (defaultValueType === 'TSNullKeyword') {
