@@ -254,7 +254,6 @@ class Modal extends React.Component<Props> {
       this.props.children
     );
 
-    console.log('this.props.modalDetent ', this.props.modalDetent)
     return (
       <RCTModalHostView
         modalDetent={this.props.modalDetent}
