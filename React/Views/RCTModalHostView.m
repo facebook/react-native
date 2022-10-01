@@ -185,6 +185,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     if (@available(iOS 13.0, *)) {
       _modalViewController.presentationController.delegate = self;
     }
+    [self handleDetents];
     [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = YES;
   }
@@ -192,6 +193,28 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   BOOL shouldBeHidden = _isPresented && (!_visible || !self.superview);
   if (shouldBeHidden) {
     [self dismissModalViewController];
+  }
+}
+
+- (void)handleDetents
+{
+  if (@available(iOS 15.0, *)) {
+    if (_modalViewController.sheetPresentationController) {
+      NSArray<UISheetPresentationControllerDetent *> *detents = @[UISheetPresentationControllerDetent.largeDetent];
+      switch (self.modalDetent) {
+        case ModalDetentLarge:
+          break;
+        case ModalDetentMedium:
+          detents = @[UISheetPresentationControllerDetent.mediumDetent];
+          break;
+        case ModalDetentMediumResizable:
+          _modalViewController.sheetPresentationController.prefersGrabberVisible = true;
+          _modalViewController.sheetPresentationController.largestUndimmedDetentIdentifier =  UISheetPresentationControllerDetentIdentifierMedium;
+          detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+          break;
+      }
+    _modalViewController.sheetPresentationController.detents = detents;
+    }
   }
 }
 
