@@ -83,11 +83,7 @@ export type Props = $ReadOnly<{|
    * The `modalDetent` determines the height for modal,
    * based on the detent value.
    */
-  modalDetent?: ?(
-    | 'large'
-    | 'medium'
-    | 'mediumResizable'
-  ),
+  modalDetent?: ?('large' | 'medium' | 'mediumResizable'),
 
   /**
    * The `transparent` prop determines whether your modal will fill the
