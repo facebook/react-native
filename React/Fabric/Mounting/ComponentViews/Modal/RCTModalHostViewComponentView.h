@@ -11,7 +11,7 @@
 /**
  * UIView class for root <ModalHostView> component.
  */
-@interface RCTModalHostViewComponentView : RCTViewComponentView <RCTMountingTransactionObserving>
+@interface RCTModalHostViewComponentView : RCTViewComponentView <RCTMountingTransactionObserving, UIAdaptivePresentationControllerDelegate>
 
 /**
  * Subclasses may override this method and present the modal on different view controller.

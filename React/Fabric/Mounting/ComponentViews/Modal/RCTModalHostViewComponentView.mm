@@ -150,6 +150,9 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL shouldBePresented = !_isPresented && _shouldPresent && self.window;
   if (shouldBePresented) {
     _isPresented = YES;
+    if (@available(iOS 13.0, *)) {
+        _viewController.presentationController.delegate = self;
+    }
     [self presentViewController:self.viewController
                        animated:_shouldAnimatePresentation
                      completion:^{
@@ -177,6 +180,28 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                          eventEmitter->onDismiss(ModalHostViewEventEmitter::OnDismiss{});
                        }
                      }];
+  }
+}
+
+- (void)handleDetents:(ModalHostViewModalDetent)_modalDetent
+{
+  if (@available(iOS 15.0, *)) {
+    if (self.viewController.sheetPresentationController) {
+      NSArray<UISheetPresentationControllerDetent *> *detents = @[UISheetPresentationControllerDetent.largeDetent];
+      switch (_modalDetent) {
+        case ModalHostViewModalDetent::Large:
+          break;
+        case ModalHostViewModalDetent::Medium:
+          detents = @[UISheetPresentationControllerDetent.mediumDetent];
+          break;
+        case ModalHostViewModalDetent::MediumResizable:
+              self.viewController.sheetPresentationController.prefersGrabberVisible = true;
+              self.viewController.sheetPresentationController.largestUndimmedDetentIdentifier =  UISheetPresentationControllerDetentIdentifierMedium;
+          detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+          break;
+      }
+        self.viewController.sheetPresentationController.detents = detents;
+    }
   }
 }
 
@@ -227,6 +252,14 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   }
 }
 
+- (void)presentationControllerDidAttemptToDismiss:(UIPresentationController *)controller
+{
+    auto eventEmitter = [self modalEventEmitter];
+    if (eventEmitter) {
+        eventEmitter->onRequestClose(ModalHostViewEventEmitter::OnRequestClose{});
+    }
+}
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -258,6 +291,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   self.viewController.modalPresentationStyle = presentationConfiguration(newProps);
 
   _shouldPresent = newProps.visible;
+  [self handleDetents: newProps.modalDetent];
   [self ensurePresentedOnlyIfNeeded];
 
   [super updateProps:props oldProps:oldProps];
