@@ -103,6 +103,12 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   public void setPresentationStyle(ReactModalHostView view, @Nullable String value) {}
 
   @Override
+  @ReactProp(name = "modalDetent")
+  public void setModalDetent(ReactModalHostView view, @Nullable String value) {
+    // iOS only
+  }
+
+  @Override
   @ReactProp(name = "animated")
   public void setAnimated(ReactModalHostView view, boolean value) {}
 
