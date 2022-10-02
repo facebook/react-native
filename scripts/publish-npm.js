@@ -196,6 +196,14 @@ if (isCommitly) {
   }
 }
 
+// Add setup-nightly.js postinstall script for nightly build
+if (nightlyBuild) {
+  const packageJsonPath = path.join(tmpPublishingFolder, 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+  packageJson.scripts.postinstall = './scripts/setup-nightly.js';
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+}
+
 // -------- Generating Android Artifacts
 env.REACT_NATIVE_SKIP_PREFAB = true;
 if (exec('./gradlew :ReactAndroid:installArchives').code) {

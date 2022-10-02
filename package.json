@@ -59,6 +59,7 @@
     "scripts/react_native_pods.rb",
     "scripts/cocoapods",
     "scripts/react-native-xcode.sh",
+    "scripts/setup-nightly.js",
     "sdks/.hermesversion",
     "sdks/hermes-engine",
     "sdks/hermesc",
