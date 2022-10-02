@@ -14,6 +14,7 @@ namespace facebook {
 namespace react {
 
 bool Props::enablePropIteratorSetter = false;
+bool Props::enableMapBuffer = false;
 
 Props::Props(
     const PropsParserContext &context,

@@ -51,9 +51,9 @@ FabricMountingManager::FabricMountingManager(
           "react_fabric:disable_revision_check_for_preallocation")),
       useOverflowInset_(getFeatureFlagValue("useOverflowInset")),
       shouldRememberAllocatedViews_(
-          getFeatureFlagValue("shouldRememberAllocatedViews")),
-      useMapBufferForViewProps_(config->getBool(
-          "react_native_new_architecture:use_mapbuffer_for_viewprops")) {}
+          getFeatureFlagValue("shouldRememberAllocatedViews")) {
+  Props::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
+}
 
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
@@ -258,8 +258,9 @@ static inline float scale(Float value, Float pointScaleFactor) {
 local_ref<jobject> FabricMountingManager::getProps(
     ShadowView const &oldShadowView,
     ShadowView const &newShadowView) {
-  if (useMapBufferForViewProps_ &&
-      newShadowView.traits.check(ShadowNodeTraits::Trait::View)) {
+  if (Props::enableMapBuffer &&
+      newShadowView.traits.check(
+          ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported)) {
     react_native_assert(
         newShadowView.props->rawProps.empty() &&
         "Raw props must be empty when views are using mapbuffer");

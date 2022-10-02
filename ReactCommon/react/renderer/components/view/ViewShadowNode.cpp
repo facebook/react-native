@@ -14,36 +14,11 @@ namespace react {
 
 char const ViewComponentName[] = "View";
 
-static inline bool keepRawValuesInViewProps(PropsParserContext const &context) {
-  static bool shouldUseRawProps = true;
-
-#ifdef ANDROID
-  static bool initialized = false;
-
-  if (!initialized) {
-    auto config =
-        context.contextContainer.find<std::shared_ptr<const ReactNativeConfig>>(
-            "ReactNativeConfig");
-    if (config.has_value()) {
-      initialized = true;
-      shouldUseRawProps = !config.value()->getBool(
-          "react_native_new_architecture:use_mapbuffer_for_viewprops");
-    }
-  }
-#endif
-
-  return shouldUseRawProps;
-}
-
 ViewShadowNodeProps::ViewShadowNodeProps(
     PropsParserContext const &context,
     ViewShadowNodeProps const &sourceProps,
     RawProps const &rawProps)
-    : ViewProps(
-          context,
-          sourceProps,
-          rawProps,
-          keepRawValuesInViewProps(context)){};
+    : ViewProps(context, sourceProps, rawProps, !Props::enableMapBuffer){};
 
 ViewShadowNode::ViewShadowNode(
     ShadowNodeFragment const &fragment,
@@ -106,6 +81,10 @@ void ViewShadowNode::initialize() noexcept {
   } else {
     traits_.unset(ShadowNodeTraits::Trait::FormsStackingContext);
   }
+
+#ifdef ANDROID
+  traits_.set(ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported);
+#endif
 }
 
 } // namespace react
