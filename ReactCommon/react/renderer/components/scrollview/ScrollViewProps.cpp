@@ -303,7 +303,11 @@ void ScrollViewProps::setProp(
     RawPropsPropNameHash hash,
     const char *propName,
     RawValue const &value) {
+  // All Props structs setProp methods must always, unconditionally,
+  // call all super::setProp methods, since multiple structs may
+  // reuse the same values.
   ViewProps::setProp(context, hash, propName, value);
+
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(alwaysBounceHorizontal, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(alwaysBounceVertical, {});
