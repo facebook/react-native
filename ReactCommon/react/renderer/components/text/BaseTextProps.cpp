@@ -12,19 +12,6 @@
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/graphics/conversions.h>
 
-#define REBUILD_FIELD_SWITCH_CASE(                  \
-    defaults, rawValue, property, field, fieldName) \
-  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {   \
-    if (rawValue.hasValue()) {                      \
-      decltype(defaults.field) res;                 \
-      fromRawValue(context, rawValue, res);         \
-      property.field = res;                         \
-    } else {                                        \
-      property.field = defaults.field;              \
-    }                                               \
-    return;                                         \
-  }
-
 namespace facebook {
 namespace react {
 

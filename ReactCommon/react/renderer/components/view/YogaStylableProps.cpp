@@ -50,7 +50,8 @@ static inline T const getFieldValue(
     return;                                                              \
   }
 
-#define REBUILD_FIELD_SWITCH_CASE(field) \
+// @lint-ignore CLANGTIDY cppcoreguidelines-macro-usage
+#define REBUILD_FIELD_SWITCH_CASE_YSP(field) \
   REBUILD_FIELD_SWITCH_CASE2(field, #field)
 
 #define REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, index, fieldName) \
@@ -99,21 +100,21 @@ void YogaStylableProps::setProp(
   Props::setProp(context, hash, propName, value);
 
   switch (hash) {
-    REBUILD_FIELD_SWITCH_CASE(direction);
-    REBUILD_FIELD_SWITCH_CASE(flexDirection);
-    REBUILD_FIELD_SWITCH_CASE(justifyContent);
-    REBUILD_FIELD_SWITCH_CASE(alignContent);
-    REBUILD_FIELD_SWITCH_CASE(alignItems);
-    REBUILD_FIELD_SWITCH_CASE(alignSelf);
-    REBUILD_FIELD_SWITCH_CASE(flexWrap);
-    REBUILD_FIELD_SWITCH_CASE(overflow);
-    REBUILD_FIELD_SWITCH_CASE(display);
-    REBUILD_FIELD_SWITCH_CASE(flex);
-    REBUILD_FIELD_SWITCH_CASE(flexGrow);
-    REBUILD_FIELD_SWITCH_CASE(flexShrink);
-    REBUILD_FIELD_SWITCH_CASE(flexBasis);
+    REBUILD_FIELD_SWITCH_CASE_YSP(direction);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flexDirection);
+    REBUILD_FIELD_SWITCH_CASE_YSP(justifyContent);
+    REBUILD_FIELD_SWITCH_CASE_YSP(alignContent);
+    REBUILD_FIELD_SWITCH_CASE_YSP(alignItems);
+    REBUILD_FIELD_SWITCH_CASE_YSP(alignSelf);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flexWrap);
+    REBUILD_FIELD_SWITCH_CASE_YSP(overflow);
+    REBUILD_FIELD_SWITCH_CASE_YSP(display);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flex);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flexGrow);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flexShrink);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flexBasis);
     REBUILD_FIELD_SWITCH_CASE2(positionType, "position");
-    REBUILD_FIELD_SWITCH_CASE(aspectRatio);
+    REBUILD_FIELD_SWITCH_CASE_YSP(aspectRatio);
     REBUILD_FIELD_YG_DIMENSION(dimensions, "width", "height");
     REBUILD_FIELD_YG_DIMENSION(minDimensions, "minWidth", "minHeight");
     REBUILD_FIELD_YG_DIMENSION(maxDimensions, "maxWidth", "maxHeight");
