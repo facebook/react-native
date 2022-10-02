@@ -23,23 +23,29 @@ ParagraphProps::ParagraphProps(
     RawProps const &rawProps)
     : ViewProps(context, sourceProps, rawProps),
       BaseTextProps(context, sourceProps, rawProps),
-      paragraphAttributes(convertRawProp(
-          context,
-          rawProps,
-          sourceProps.paragraphAttributes,
-          {})),
-      isSelectable(convertRawProp(
-          context,
-          rawProps,
-          "selectable",
-          sourceProps.isSelectable,
-          false)),
-      onTextLayout(convertRawProp(
-          context,
-          rawProps,
-          "onTextLayout",
-          sourceProps.onTextLayout,
-          {})) {
+      paragraphAttributes(
+          Props::enablePropIteratorSetter ? sourceProps.paragraphAttributes
+                                          : convertRawProp(
+                                                context,
+                                                rawProps,
+                                                sourceProps.paragraphAttributes,
+                                                {})),
+      isSelectable(
+          Props::enablePropIteratorSetter ? sourceProps.isSelectable
+                                          : convertRawProp(
+                                                context,
+                                                rawProps,
+                                                "selectable",
+                                                sourceProps.isSelectable,
+                                                false)),
+      onTextLayout(
+          Props::enablePropIteratorSetter ? sourceProps.onTextLayout
+                                          : convertRawProp(
+                                                context,
+                                                rawProps,
+                                                "onTextLayout",
+                                                sourceProps.onTextLayout,
+                                                {})) {
   /*
    * These props are applied to `View`, therefore they must not be a part of
    * base text attributes.
@@ -58,6 +64,63 @@ void ParagraphProps::setProp(
   // reuse the same values.
   ViewProps::setProp(context, hash, propName, value);
   BaseTextProps::setProp(context, hash, propName, value);
+
+  // ParagraphAttributes has its own switch statement - to keep all
+  // of these fields together, and because there are some collisions between
+  // propnames parsed here and outside of ParagraphAttributes.
+  // This code is also duplicated in AndroidTextInput.
+  static auto paDefaults = ParagraphAttributes{};
+  switch (hash) {
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        maximumNumberOfLines,
+        "numberOfLines");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults, value, paragraphAttributes, ellipsizeMode, "ellipsizeMode");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        textBreakStrategy,
+        "textBreakStrategy");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        adjustsFontSizeToFit,
+        "adjustsFontSizeToFit");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        minimumFontSize,
+        "minimumFontSize");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        maximumFontSize,
+        "maximumFontSize");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        includeFontPadding,
+        "includeFontPadding");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        android_hyphenationFrequency,
+        "android_hyphenationFrequency");
+  }
+
+  switch (hash) {
+    RAW_SET_PROP_SWITCH_CASE_BASIC(isSelectable, false);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(onTextLayout, {});
+  }
 
   /*
    * These props are applied to `View`, therefore they must not be a part of

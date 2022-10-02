@@ -269,12 +269,12 @@ void AndroidTextInputProps::setProp(
   ViewProps::setProp(context, hash, propName, value);
   BaseTextProps::setProp(context, hash, propName, value);
 
-  static auto paDefaults = ParagraphAttributes{};
-
   // ParagraphAttributes has its own switch statement - to keep all
   // of these fields together, and because there are some collisions between
   // propnames parsed here and outside of ParagraphAttributes. For example,
   // textBreakStrategy is duplicated.
+  // This code is also duplicated in ParagraphProps.
+  static auto paDefaults = ParagraphAttributes{};
   switch (hash) {
     REBUILD_FIELD_SWITCH_CASE(
         paDefaults,
