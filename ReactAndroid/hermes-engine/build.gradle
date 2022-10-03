@@ -86,7 +86,7 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 
 task configureBuildForHermes(type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath))
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), Os.isFamily(Os.FAMILY_WINDOWS) ? "-GNMake Makefiles" : "", "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath))
 }
 
 task buildHermes(dependsOn: configureBuildForHermes, type: Exec) {
