@@ -37,6 +37,8 @@ endfunction()
 
 # Third-party prefabs
 find_package(hermes-engine REQUIRED CONFIG)
+find_package(fbjni REQUIRED CONFIG)
+add_library(fbjni ALIAS fbjni::fbjni)
 
 # Third-party downloaded targets
 add_react_third_party_ndk_subdir(glog)
@@ -96,7 +98,6 @@ add_react_common_subdir(react/nativemodule/core)
 
 # ReactAndroid JNI targets
 add_react_build_subdir(generated/source/codegen/jni)
-add_react_android_subdir(src/main/jni/first-party/fbjni)
 add_react_android_subdir(src/main/jni/first-party/fb)
 add_react_android_subdir(src/main/jni/first-party/fbgloginit)
 add_react_android_subdir(src/main/jni/first-party/yogajni)
