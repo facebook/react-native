@@ -88,7 +88,7 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
       if (filename === undefined || filename === null) {
         throw new Error('Filepath expected while parasing a module');
       }
-      const hasteModuleName = path.basename(filename).replace(/\.js$/, '');
+      const hasteModuleName = path.basename(filename).replace(/\.[jt]s$/, '');
 
       const [parsingErrors, tryParse] = createParserErrorCapturer();
       const schema = tryParse(() =>
