@@ -6,6 +6,7 @@
  */
 
 #include "Props.h"
+#include "PropsMapBuffer.h"
 
 #include <folly/dynamic.h>
 #include <react/renderer/core/propsConversions.h>

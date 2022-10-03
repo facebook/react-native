@@ -9,7 +9,6 @@
 #include "CppViewMutationsWrapper.h"
 #include "EventEmitterWrapper.h"
 #include "StateWrapperImpl.h"
-#include "viewPropConversions.h"
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
@@ -264,12 +263,11 @@ local_ref<jobject> FabricMountingManager::getProps(
     react_native_assert(
         newShadowView.props->rawProps.empty() &&
         "Raw props must be empty when views are using mapbuffer");
-    auto oldProps = oldShadowView.props != nullptr
-        ? static_cast<ViewProps const &>(*oldShadowView.props)
-        : ViewProps{};
-    auto newProps = static_cast<ViewProps const &>(*newShadowView.props);
-    return JReadableMapBuffer::createWithContents(
-        viewPropsDiff(oldProps, newProps));
+
+    // MapBufferBuilder must be constructed and live in this scope,
+    MapBufferBuilder builder;
+    newShadowView.props->propsDiffMapBuffer(&*oldShadowView.props, builder);
+    return JReadableMapBuffer::createWithContents(builder.build());
   } else {
     return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
   }
