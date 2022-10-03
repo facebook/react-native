@@ -52,18 +52,21 @@ function isNullOrVoid(t: $FlowFixMe) {
   return  isNull(t) ||  t.type === 'TSVoidKeyword';
 }
 
+function couldBeNumericLiteral(type:string) {
+  return type==='Literal' || type==='NumericLiteral';
+}
+
+function couldBeSimpleLiteral(type:string) {
+  return couldBeNumericLiteral(type) || type==='StringLiteral' || type==='BooleanLiteral';
+}
+
 function evaluateLiteral(
   literalNode: $FlowFixMe,
 ): string | number | boolean | null {
   const valueType = literalNode.type;
   if (valueType === 'TSLiteralType') {
     const literal = literalNode.literal;
-    if (
-      literal.type === 'Literal' ||
-      literal.type === 'StringLiteral' ||
-      literal.type === 'NumericLiteral' ||
-      literal.type === 'BooleanLiteral'
-    ) {
+    if (couldBeSimpleLiteral(literal.type)) {
       if (
         typeof literal.value === 'string' ||
         typeof literal.value === 'number' ||
@@ -74,8 +77,7 @@ function evaluateLiteral(
     } else if (
       literal.type === 'UnaryExpression' &&
       literal.operator === '-' &&
-      (literal.argument.type === 'Literal' ||
-        literal.argument.type === 'NumericLiteral') &&
+      couldBeNumericLiteral(literal.argument.type) &&
       typeof literal.argument.value === 'number'
     ) {
       return -literal.argument.value;
