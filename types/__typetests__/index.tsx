@@ -1147,7 +1147,8 @@ class TextTest extends React.Component {
         lineBreakMode="clip"
         numberOfLines={2}
         onLayout={this.handleOnLayout}
-        onTextLayout={this.handleOnTextLayout}>
+        onTextLayout={this.handleOnTextLayout}
+        disabled>
         Test text
       </Text>
     );
