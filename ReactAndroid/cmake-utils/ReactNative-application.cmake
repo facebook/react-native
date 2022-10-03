@@ -18,14 +18,19 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_ANDROID_DIR}/cmake-utils/Android-prebuilt.cmake)
 
-file(GLOB input_SRC CONFIGURE_DEPENDS 
+set(BUILD_DIR ${PROJECT_BUILD_DIR})
+if(CMAKE_HOST_WIN32)
+        string(REPLACE "\\" "/" BUILD_DIR ${BUILD_DIR})
+endif()
+
+file(GLOB input_SRC CONFIGURE_DEPENDS
         *.cpp
-        ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/*.cpp)
+        ${BUILD_DIR}/generated/rncli/src/main/jni/*.cpp)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})
 
-target_include_directories(${CMAKE_PROJECT_NAME} 
-        PUBLIC 
+target_include_directories(${CMAKE_PROJECT_NAME}
+        PUBLIC
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni)
 
