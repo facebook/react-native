@@ -15,6 +15,9 @@ const getDevServer = require('./getDevServer');
 function openFileInEditor(file: string, lineNumber: number) {
   fetch(getDevServer().url + 'open-stack-frame', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({file, lineNumber}),
   });
 }
