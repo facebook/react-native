@@ -210,9 +210,6 @@ if (exec('./gradlew :ReactAndroid:hermes-engine:installArchives').code) {
   exit(1);
 }
 
-// undo uncommenting javadoc setting
-revertFiles(['ReactAndroid/gradle.properties'], tmpPublishingFolder);
-
 echo('Generated artifacts for Maven');
 
 let artifacts = [
