@@ -197,6 +197,11 @@ jobs:
 
       - template: templates/android-build-office-setup.yml
 
+      - bash: |
+            echo "##vso[task.prependpath]/home/linuxbrew/.linuxbrew/bin"
+            echo ##vso[task.prependpath]/home/linuxbrew/.linuxbrew/sbin
+        displayName: Add Homebrew to PATH
+
       - task: CmdLine@2
         displayName: Bump package version
         inputs:
