@@ -19,6 +19,7 @@ describe('RNCodegen.generate', () => {
   beforeEach(() => {
     jest.resetModules();
   });
+
   it('when type `all`, with default paths', () => {
     jest.mock('fs', () => ({
       existsSync: location => {
@@ -47,14 +48,21 @@ describe('RNCodegen.generate', () => {
           'ComponentDescriptors.h': componentsOutputDir,
         };
 
-        let receivedDir = path.dirname(location);
-        let receivedBasename = path.basename(location);
+        return {
+          existsSync: location => {
+            return true;
+          },
+          writeFileSync: (location, content) => {
+            let receivedDir = path.dirname(location);
+            let receivedBasename = path.basename(location);
 
-        let expectedPath = path.join(
-          outputDirectory,
-          expectedPaths[receivedBasename],
-        );
-        expect(receivedDir).toEqual(expectedPath);
+            let expectedPath = path.join(
+              outputDirectory,
+              expectedPaths[receivedBasename],
+            );
+            expect(receivedDir).toEqual(expectedPath);
+          },
+        };
       },
     }));
 
