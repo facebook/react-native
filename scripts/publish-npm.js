@@ -37,7 +37,6 @@ const {
   exitIfNotOnGit,
   getCurrentCommit,
   isTaggedLatest,
-  revertFiles,
   saveFiles,
 } = require('./scm-utils');
 const fs = require('fs');
