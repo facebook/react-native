@@ -18,6 +18,7 @@ import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputType} from './TextInput.flow';
 
 import usePressability from '../../Pressability/usePressability';
+import flattenStyle from '../../StyleSheet/flattenStyle';
 import StyleSheet, {
   type ColorValue,
   type TextStyleProp,
@@ -1599,6 +1600,13 @@ const ExportedForwardRef: React.AbstractComponent<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
 ) {
+  const style = flattenStyle(restProps.style);
+
+  if (style?.verticalAlign != null) {
+    style.textAlignVertical =
+      verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+  }
+
   return (
     <InternalTextInput
       allowFontScaling={allowFontScaling}
@@ -1628,6 +1636,7 @@ const ExportedForwardRef: React.AbstractComponent<
       }
       {...restProps}
       forwardedRef={forwardedRef}
+      style={style}
     />
   );
 });
@@ -1658,6 +1667,13 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
 });
+
+const verticalAlignToTextAlignVerticalMap = {
+  auto: 'auto',
+  top: 'top',
+  bottom: 'bottom',
+  middle: 'center',
+};
 
 // $FlowFixMe[unclear-type] Unclear type. Using `any` type is not safe.
 module.exports = ((ExportedForwardRef: any): TextInputType);

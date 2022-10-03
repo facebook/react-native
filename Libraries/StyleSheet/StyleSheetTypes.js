@@ -671,6 +671,7 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
   textDecorationColor?: ____ColorValue_Internal,
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
   userSelect?: 'auto' | 'text' | 'none' | 'contain' | 'all',
+  verticalAlign?: 'auto' | 'top' | 'bottom' | 'middle',
   writingDirection?: 'auto' | 'ltr' | 'rtl',
 }>;
 

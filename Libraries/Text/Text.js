@@ -178,6 +178,13 @@ const Text: React.AbstractComponent<
     _selectable = userSelectToSelectableMap[style.userSelect];
   }
 
+  if (style?.verticalAlign != null) {
+    style = StyleSheet.compose(style, {
+      textAlignVertical:
+        verticalAlignToTextAlignVerticalMap[style.verticalAlign],
+    });
+  }
+
   if (__DEV__) {
     if (PressabilityDebug.isEnabled() && onPress != null) {
       style = StyleSheet.compose(restProps.style, {
@@ -273,6 +280,13 @@ const userSelectToSelectableMap = {
   none: false,
   contain: true,
   all: true,
+};
+
+const verticalAlignToTextAlignVerticalMap = {
+  auto: 'auto',
+  top: 'top',
+  bottom: 'bottom',
+  middle: 'center',
 };
 
 module.exports = Text;
