@@ -45,11 +45,11 @@ function getValueFromTypes(
 }
 
 function isNull(t: $FlowFixMe) {
-  return (
-    t.type === 'TSNullKeyword' ||
-    t.type === 'TSUndefinedKeyword' ||
-    t.type === 'TSVoidKeyword'
-  );
+  return t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword';
+}
+
+function isNullOrVoid(t: $FlowFixMe) {
+  return  isNull(t) ||  t.type === 'TSVoidKeyword';
 }
 
 function evaluateLiteral(
@@ -80,10 +80,7 @@ function evaluateLiteral(
     ) {
       return -literal.argument.value;
     }
-  } else if (
-    valueType === 'TSNullKeyword' ||
-    valueType === 'TSUndefinedKeyword'
-  ) {
+  } else if (isNull(literalNode)) {
     return null;
   }
 
@@ -106,12 +103,12 @@ function handleUnionAndParen(
       // the order is important
       // result.optional must be set first
       for (const t of type.types) {
-        if (isNull(t)) {
+        if (isNullOrVoid(t)) {
           result.optional = true;
         }
       }
       for (const t of type.types) {
-        if (!isNull(t)) {
+        if (!isNullOrVoid(t)) {
           handleUnionAndParen(t, result, knownTypes);
         }
       }
