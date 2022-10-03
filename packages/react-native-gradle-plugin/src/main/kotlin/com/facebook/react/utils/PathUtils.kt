@@ -29,7 +29,7 @@ internal fun detectedEntryFile(config: ReactExtension): File =
 /**
  * Computes the CLI location for React Native. The Algo follows this order:
  * 1. The path provided by the `cliPath` config in the `reactApp` Gradle extension
- * 2. The output of `node -e "console.log(require('react-native/cli').bin);"` if not failing.
+ * 2. The output of `node --print "require.resolve('react-native/cli');"` if not failing.
  * 3. The `node_modules/react-native/cli.js` file if exists
  * 4. Fails otherwise
  */
@@ -88,9 +88,9 @@ private fun detectCliPath(
   val nodeProcess =
       Runtime.getRuntime()
           .exec(
-              arrayOf("node", "-e", "console.log(require('react-native/cli').bin);"),
+              arrayOf("node", "--print", "require.resolve('react-native/cli');"),
               emptyArray(),
-              projectDir)
+              reactRoot)
 
   val nodeProcessOutput = nodeProcess.inputStream.use { it.bufferedReader().readText().trim() }
 
