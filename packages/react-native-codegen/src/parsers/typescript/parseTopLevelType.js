@@ -49,15 +49,19 @@ function isNull(t: $FlowFixMe) {
 }
 
 function isNullOrVoid(t: $FlowFixMe) {
-  return  isNull(t) ||  t.type === 'TSVoidKeyword';
+  return isNull(t) || t.type === 'TSVoidKeyword';
 }
 
-function couldBeNumericLiteral(type:string) {
-  return type==='Literal' || type==='NumericLiteral';
+function couldBeNumericLiteral(type: string) {
+  return type === 'Literal' || type === 'NumericLiteral';
 }
 
-function couldBeSimpleLiteral(type:string) {
-  return couldBeNumericLiteral(type) || type==='StringLiteral' || type==='BooleanLiteral';
+function couldBeSimpleLiteral(type: string) {
+  return (
+    couldBeNumericLiteral(type) ||
+    type === 'StringLiteral' ||
+    type === 'BooleanLiteral'
+  );
 }
 
 function evaluateLiteral(
