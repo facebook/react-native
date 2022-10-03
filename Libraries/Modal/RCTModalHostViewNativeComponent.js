@@ -43,10 +43,10 @@ type NativeProps = $ReadOnly<{|
   >,
 
   /**
-   * The `modalDetent` determines the height for modal,
+   * The `detent` determines the height for modal,
    * based on the detent value.
    */
-  modalDetent?: WithDefault<'large' | 'medium' | 'mediumResizable', 'large'>,
+  detent?: WithDefault<'large' | 'medium' | 'mediumResizable', 'large'>,
 
   /**
    * The `transparent` prop determines whether your modal will fill the
