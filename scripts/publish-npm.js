@@ -37,7 +37,6 @@ const {
   exitIfNotOnGit,
   getCurrentCommit,
   isTaggedLatest,
-  revertFiles,
   saveFiles,
 } = require('./scm-utils');
 const fs = require('fs');
@@ -209,9 +208,6 @@ if (exec('./gradlew :ReactAndroid:hermes-engine:installArchives').code) {
   echo('Could not generate artifacts');
   exit(1);
 }
-
-// undo uncommenting javadoc setting
-revertFiles(['ReactAndroid/gradle.properties'], tmpPublishingFolder);
 
 echo('Generated artifacts for Maven');
 
