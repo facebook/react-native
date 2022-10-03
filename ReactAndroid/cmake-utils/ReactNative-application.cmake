@@ -28,9 +28,14 @@ endif(CCACHE_FOUND)
 
 include(${REACT_ANDROID_DIR}/cmake-utils/Android-prebuilt.cmake)
 
+set(BUILD_DIR ${PROJECT_BUILD_DIR})
+if(CMAKE_HOST_WIN32)
+        string(REPLACE "\\" "/" BUILD_DIR ${BUILD_DIR})
+endif()
+
 file(GLOB input_SRC CONFIGURE_DEPENDS
         *.cpp
-        ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/*.cpp)
+        ${BUILD_DIR}/generated/rncli/src/main/jni/*.cpp)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})
 
