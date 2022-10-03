@@ -49,12 +49,12 @@ describe('RNCodegen.generate', () => {
         };
 
         return {
-          existsSync: location => {
+          existsSync: location2 => {
             return true;
           },
-          writeFileSync: (location, content) => {
-            let receivedDir = path.dirname(location);
-            let receivedBasename = path.basename(location);
+          writeFileSync: (location2, content2) => {
+            let receivedDir = path.dirname(location2);
+            let receivedBasename = path.basename(location2);
 
             let expectedPath = path.join(
               outputDirectory,
