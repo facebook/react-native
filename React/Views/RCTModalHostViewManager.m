@@ -28,13 +28,13 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 RCT_ENUM_CONVERTER(
-    ModalDetents, 
+    Detent, 
     (@{
-      @"large": @(ModalDetentLarge),
-      @"medium": @(ModalDetentMedium),
-      @"mediumResizable": @(ModalDetentMediumResizable),
+      @"large": @(DetentLarge),
+      @"medium": @(DetentMedium),
+      @"mediumResizable": @(DetentMediumResizable),
     }), 
-    ModalDetentLarge, 
+    DetentLarge, 
     integerValue)
 
 @end
@@ -135,7 +135,7 @@ RCT_EXPORT_VIEW_PROPERTY(supportedOrientations, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(onOrientationChange, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(visible, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onRequestClose, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(modalDetent, ModalDetents)
+RCT_EXPORT_VIEW_PROPERTY(detent, Detent)
 
 // Fabric only
 RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)

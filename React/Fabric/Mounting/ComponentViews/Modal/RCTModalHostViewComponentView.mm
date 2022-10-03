@@ -183,18 +183,18 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   }
 }
 
-- (void)handleDetents:(ModalHostViewModalDetent)_modalDetent
+- (void)handleDetent:(ModalHostViewDetent)detent
 {
   if (@available(iOS 15.0, *)) {
     if (self.viewController.sheetPresentationController) {
       NSArray<UISheetPresentationControllerDetent *> *detents = @[UISheetPresentationControllerDetent.largeDetent];
-      switch (_modalDetent) {
-        case ModalHostViewModalDetent::Large:
+      switch (detent) {
+        case ModalHostViewDetent::Large:
           break;
-        case ModalHostViewModalDetent::Medium:
+        case ModalHostViewDetent::Medium:
           detents = @[UISheetPresentationControllerDetent.mediumDetent];
           break;
-        case ModalHostViewModalDetent::MediumResizable:
+        case ModalHostViewDetent::MediumResizable:
               self.viewController.sheetPresentationController.prefersGrabberVisible = true;
               self.viewController.sheetPresentationController.largestUndimmedDetentIdentifier =  UISheetPresentationControllerDetentIdentifierMedium;
           detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
@@ -291,7 +291,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   self.viewController.modalPresentationStyle = presentationConfiguration(newProps);
 
   _shouldPresent = newProps.visible;
-  [self handleDetents: newProps.modalDetent];
+  [self handleDetent: newProps.detent];
   [self ensurePresentedOnlyIfNeeded];
 
   [super updateProps:props oldProps:oldProps];
