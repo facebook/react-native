@@ -38,14 +38,6 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
       bool shouldSetRawProps = true);
   virtual ~Props() = default;
 
-  static bool enablePropIteratorSetter;
-
-  // This is used as a feature flag for *all* PropsX structs.
-  // For MapBuffer to be used for a particular component instance,
-  // its ShadowNode traits must set the MapBuffer trait; and this
-  // must be set to "true" globally.
-  static bool enableMapBuffer;
-
   /**
    * Set a prop value via iteration (see enableIterator above).
    * If setProp is defined for a particular props struct, it /must/

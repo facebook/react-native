@@ -8,6 +8,7 @@
 #include "ViewShadowNode.h"
 #include <react/config/ReactNativeConfig.h>
 #include <react/renderer/components/view/primitives.h>
+#include <react/renderer/core/CoreFeatures.h>
 
 namespace facebook {
 namespace react {
@@ -18,7 +19,11 @@ ViewShadowNodeProps::ViewShadowNodeProps(
     PropsParserContext const &context,
     ViewShadowNodeProps const &sourceProps,
     RawProps const &rawProps)
-    : ViewProps(context, sourceProps, rawProps, !Props::enableMapBuffer){};
+    : ViewProps(
+          context,
+          sourceProps,
+          rawProps,
+          !CoreFeatures::enableMapBuffer){};
 
 ViewShadowNode::ViewShadowNode(
     ShadowNodeFragment const &fragment,

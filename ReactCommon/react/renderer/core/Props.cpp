@@ -9,13 +9,11 @@
 #include "PropsMapBuffer.h"
 
 #include <folly/dynamic.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
-
-bool Props::enablePropIteratorSetter = false;
-bool Props::enableMapBuffer = false;
 
 Props::Props(
     const PropsParserContext &context,
@@ -23,13 +21,13 @@ Props::Props(
     const RawProps &rawProps,
     const bool shouldSetRawProps)
     : nativeId(
-          enablePropIteratorSetter ? sourceProps.nativeId
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "nativeID",
-                                         sourceProps.nativeId,
-                                         {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.nativeId
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "nativeID",
+                                                       sourceProps.nativeId,
+                                                       {})),
       revision(sourceProps.revision + 1)
 #ifdef ANDROID
       ,

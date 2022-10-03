@@ -12,6 +12,7 @@
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
@@ -51,7 +52,7 @@ FabricMountingManager::FabricMountingManager(
       useOverflowInset_(getFeatureFlagValue("useOverflowInset")),
       shouldRememberAllocatedViews_(
           getFeatureFlagValue("shouldRememberAllocatedViews")) {
-  Props::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
+  CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
 }
 
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
@@ -257,7 +258,7 @@ static inline float scale(Float value, Float pointScaleFactor) {
 local_ref<jobject> FabricMountingManager::getProps(
     ShadowView const &oldShadowView,
     ShadowView const &newShadowView) {
-  if (Props::enableMapBuffer &&
+  if (CoreFeatures::enableMapBuffer &&
       newShadowView.traits.check(
           ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported)) {
     react_native_assert(

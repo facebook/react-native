@@ -9,6 +9,7 @@
 
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/attributedstring/primitives.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 
@@ -24,28 +25,29 @@ ParagraphProps::ParagraphProps(
     : ViewProps(context, sourceProps, rawProps),
       BaseTextProps(context, sourceProps, rawProps),
       paragraphAttributes(
-          Props::enablePropIteratorSetter ? sourceProps.paragraphAttributes
-                                          : convertRawProp(
-                                                context,
-                                                rawProps,
-                                                sourceProps.paragraphAttributes,
-                                                {})),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.paragraphAttributes
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    sourceProps.paragraphAttributes,
+                    {})),
       isSelectable(
-          Props::enablePropIteratorSetter ? sourceProps.isSelectable
-                                          : convertRawProp(
-                                                context,
-                                                rawProps,
-                                                "selectable",
-                                                sourceProps.isSelectable,
-                                                false)),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.isSelectable
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "selectable",
+                                                       sourceProps.isSelectable,
+                                                       false)),
       onTextLayout(
-          Props::enablePropIteratorSetter ? sourceProps.onTextLayout
-                                          : convertRawProp(
-                                                context,
-                                                rawProps,
-                                                "onTextLayout",
-                                                sourceProps.onTextLayout,
-                                                {})) {
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.onTextLayout
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "onTextLayout",
+                                                       sourceProps.onTextLayout,
+                                                       {})) {
   /*
    * These props are applied to `View`, therefore they must not be a part of
    * base text attributes.

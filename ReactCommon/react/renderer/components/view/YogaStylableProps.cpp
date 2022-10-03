@@ -9,6 +9,7 @@
 
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 #include <yoga/YGNode.h>
@@ -26,7 +27,7 @@ YogaStylableProps::YogaStylableProps(
     bool shouldSetRawProps)
     : Props(context, sourceProps, rawProps, shouldSetRawProps),
       yogaStyle(
-          Props::enablePropIteratorSetter
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.yogaStyle
               : convertRawProp(context, rawProps, sourceProps.yogaStyle)){};
 

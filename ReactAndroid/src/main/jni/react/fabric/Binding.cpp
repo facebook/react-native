@@ -23,6 +23,7 @@
 #include <react/renderer/animations/LayoutAnimationDriver.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
@@ -455,11 +456,12 @@ void Binding::installFabricUIManager(
       getFeatureFlagValue("enableLargeTextMeasureCache"));
 
   // Props setter pattern feature
-  Props::enablePropIteratorSetter =
+  CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   AccessibilityProps::enablePropIteratorSetter =
-      Props::enablePropIteratorSetter;
-  BaseTextProps::enablePropIteratorSetter = Props::enablePropIteratorSetter;
+      CoreFeatures::enablePropIteratorSetter;
+  BaseTextProps::enablePropIteratorSetter =
+      CoreFeatures::enablePropIteratorSetter;
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =

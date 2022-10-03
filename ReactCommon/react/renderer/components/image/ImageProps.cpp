@@ -7,6 +7,7 @@
 
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/image/conversions.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
@@ -18,55 +19,57 @@ ImageProps::ImageProps(
     const RawProps &rawProps)
     : ViewProps(context, sourceProps, rawProps),
       sources(
-          Props::enablePropIteratorSetter ? sourceProps.sources
-                                          : convertRawProp(
-                                                context,
-                                                rawProps,
-                                                "source",
-                                                sourceProps.sources,
-                                                {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.sources
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "source",
+                                                       sourceProps.sources,
+                                                       {})),
       defaultSources(
-          Props::enablePropIteratorSetter ? sourceProps.defaultSources
-                                          : convertRawProp(
-                                                context,
-                                                rawProps,
-                                                "defaultSource",
-                                                sourceProps.defaultSources,
-                                                {})),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.defaultSources
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "defaultSource",
+                    sourceProps.defaultSources,
+                    {})),
       resizeMode(
-          Props::enablePropIteratorSetter ? sourceProps.resizeMode
-                                          : convertRawProp(
-                                                context,
-                                                rawProps,
-                                                "resizeMode",
-                                                sourceProps.resizeMode,
-                                                ImageResizeMode::Stretch)),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.resizeMode
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "resizeMode",
+                    sourceProps.resizeMode,
+                    ImageResizeMode::Stretch)),
       blurRadius(
-          Props::enablePropIteratorSetter ? sourceProps.blurRadius
-                                          : convertRawProp(
-                                                context,
-                                                rawProps,
-                                                "blurRadius",
-                                                sourceProps.blurRadius,
-                                                {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.blurRadius
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "blurRadius",
+                                                       sourceProps.blurRadius,
+                                                       {})),
       capInsets(
-          Props::enablePropIteratorSetter ? sourceProps.capInsets
-                                          : convertRawProp(
-                                                context,
-                                                rawProps,
-                                                "capInsets",
-                                                sourceProps.capInsets,
-                                                {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.capInsets
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "capInsets",
+                                                       sourceProps.capInsets,
+                                                       {})),
       tintColor(
-          Props::enablePropIteratorSetter ? sourceProps.tintColor
-                                          : convertRawProp(
-                                                context,
-                                                rawProps,
-                                                "tintColor",
-                                                sourceProps.tintColor,
-                                                {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.tintColor
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "tintColor",
+                                                       sourceProps.tintColor,
+                                                       {})),
       internal_analyticTag(
-          Props::enablePropIteratorSetter
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.internal_analyticTag
               : convertRawProp(
                     context,
