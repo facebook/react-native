@@ -48,21 +48,14 @@ describe('RNCodegen.generate', () => {
           'ComponentDescriptors.h': componentsOutputDir,
         };
 
-        return {
-          existsSync: location2 => {
-            return true;
-          },
-          writeFileSync: (location2, content2) => {
-            let receivedDir = path.dirname(location2);
-            let receivedBasename = path.basename(location2);
+        let receivedDir = path.dirname(location);
+        let receivedBasename = path.basename(location);
 
-            let expectedPath = path.join(
-              outputDirectory,
-              expectedPaths[receivedBasename],
-            );
-            expect(receivedDir).toEqual(expectedPath);
-          },
-        };
+        let expectedPath = path.join(
+          outputDirectory,
+          expectedPaths[receivedBasename],
+        );
+        expect(receivedDir).toEqual(expectedPath);
       },
     }));
 
