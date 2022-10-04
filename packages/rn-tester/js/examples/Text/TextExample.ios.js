@@ -1261,25 +1261,25 @@ exports.examples = [
             sizes change relative to each other.
           </Text>
           <View style={boxStyle}>
-            <Text style={boldStyle}>With `fontScaleRamp`:</Text>
-            <Text style={{fontSize: 34}} fontScaleRamp="largeTitle">
+            <Text style={boldStyle}>With `dynamicTypeRamp`:</Text>
+            <Text style={{fontSize: 34}} dynamicTypeRamp="largeTitle">
               Large Title
             </Text>
-            <Text style={{fontSize: 28}} fontScaleRamp="title1">
+            <Text style={{fontSize: 28}} dynamicTypeRamp="title1">
               Title
             </Text>
-            <Text style={{fontSize: 22}} fontScaleRamp="title2">
+            <Text style={{fontSize: 22}} dynamicTypeRamp="title2">
               Title 2
             </Text>
-            <Text style={{fontSize: 20}} fontScaleRamp="title3">
+            <Text style={{fontSize: 20}} dynamicTypeRamp="title3">
               Title 3
             </Text>
-            <Text style={{fontSize: 17}} fontScaleRamp="body">
+            <Text style={{fontSize: 17}} dynamicTypeRamp="body">
               Body
             </Text>
           </View>
           <View style={boxStyle}>
-            <Text style={boldStyle}>Without `fontScaleRamp`:</Text>
+            <Text style={boldStyle}>Without `dynamicTypeRamp`:</Text>
             <Text style={{fontSize: 34}}>Large Title</Text>
             <Text style={{fontSize: 28}}>Title</Text>
             <Text style={{fontSize: 22}}>Title 2</Text>
