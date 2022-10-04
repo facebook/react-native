@@ -44,24 +44,8 @@
   XCTAssertFalse(_bridge.loading);
 
   _logSem = dispatch_semaphore_create(0);
-}
 
-- (void)tearDown
-{
-  [_bridge invalidate];
-  _bridge = nil;
-
-  RCTSetLogFunction(RCTDefaultLogFunction);
-}
-
-- (void)testLogging
-{
-  // First console log call will fire after 2.0 sec, to allow for any initial log messages
-  // that might come in (seeing this in tvOS)
-  [_bridge enqueueJSCall:@"LoggingTestModule.logToConsoleAfterWait" args:@[ @"Invoking console.log", @2000 ]];
-  // Spin native layer for 1.9 sec
-  [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.9]];
-  // Now set the log function to signal the semaphore
+  // Set the log function to signal the semaphore
   RCTSetLogFunction(
       ^(RCTLogLevel level,
         RCTLogSource source,
@@ -75,7 +59,27 @@
           dispatch_semaphore_signal(self->_logSem);
         }
       });
-  // Wait for console log to signal the semaphore
+}
+
+- (void)tearDown
+{
+  [_bridge invalidate];
+  _bridge = nil;
+
+  RCTSetLogFunction(RCTDefaultLogFunction);
+}
+
+- (void)testLogging
+{
+  // First queue the marker and spin until it happens to be logged.
+  // This is to ensure we skip all of the other messages, that were logged earlier.
+  NSString *const LogMarker = @"===LOG_MARKER===";
+  [_bridge enqueueJSCall:@"LoggingTestModule.logToConsole" args:@[ LogMarker ]];
+  do {
+    dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+  } while (![_lastLogMessage isEqualToString:LogMarker]);
+
+  [_bridge enqueueJSCall:@"LoggingTestModule.logToConsole" args:@[ @"Invoking console.log" ]];
   dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelInfo);
