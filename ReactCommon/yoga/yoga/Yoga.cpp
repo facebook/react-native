@@ -302,7 +302,7 @@ YOGA_EXPORT void YGNodeReset(YGNodeRef node) {
   node->reset();
 }
 
-int32_t YGConfigGetInstanceCount(void) {
+YOGA_EXPORT int32_t YGConfigGetInstanceCount(void) {
   return gConfigInstanceCount;
 }
 
@@ -4324,7 +4324,7 @@ YOGA_EXPORT void YGConfigSetExperimentalFeatureEnabled(
   config->experimentalFeatures[feature] = enabled;
 }
 
-inline bool YGConfigIsExperimentalFeatureEnabled(
+YOGA_EXPORT bool YGConfigIsExperimentalFeatureEnabled(
     const YGConfigRef config,
     const YGExperimentalFeature feature) {
   return config->experimentalFeatures[feature];
