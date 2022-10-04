@@ -38,7 +38,7 @@
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
     "scripts/find-node-for-xcode.sh",
-    "scripts/generate-artifacts.js",
+    "scripts/generate-codegen-artifacts.js",
     "scripts/generate-provider-cli.js",
     "scripts/generate-specs-cli.js",
     "scripts/codegen/codegen-utils.js",
@@ -95,6 +95,8 @@
     "test-android-instrumentation": "yarn run docker-build-android && yarn run test-android-run-instrumentation",
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
+    "test-e2e-local": "node ./scripts/test-e2e-local.js",
+    "test-e2e-local-clean": "node ./scripts/test-e2e-local-clean.js",
     "test-ios": "./scripts/objc-test.sh test",
     "test-typescript": "dtslint types"
   },

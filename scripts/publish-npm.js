@@ -31,14 +31,17 @@
  *     * or otherwise `{major}.{minor}-stable`
  */
 
-const {exec, echo, exit, env, test} = require('shelljs');
+const {exec, echo, exit} = require('shelljs');
 const {parseVersion} = require('./version-utils');
 const {
   exitIfNotOnGit,
   getCurrentCommit,
   isTaggedLatest,
-  saveFiles,
 } = require('./scm-utils');
+const {
+  generateAndroidArtifacts,
+  saveFilesToRestore,
+} = require('./release-utils');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -72,22 +75,7 @@ const dryRunBuild = argv.dryRun;
 const includeHermes = argv.includeHermes;
 const isCommitly = nightlyBuild || dryRunBuild;
 
-const filesToSaveAndRestore = [
-  'template/Gemfile',
-  'template/_ruby-version',
-  'template/package.json',
-  '.ruby-version',
-  'Gemfile.lock',
-  'Gemfile',
-  'package.json',
-  'ReactAndroid/gradle.properties',
-  'Libraries/Core/ReactNativeVersion.js',
-  'React/Base/RCTVersion.m',
-  'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
-  'ReactCommon/cxxreact/ReactNativeVersion.h',
-];
-
-saveFiles(filesToSaveAndRestore, tmpPublishingFolder);
+saveFilesToRestore(tmpPublishingFolder);
 
 if (includeHermes) {
   const HERMES_INSTALL_LOCATION = 'sdks';
@@ -195,48 +183,7 @@ if (isCommitly) {
   }
 }
 
-// -------- Generating Android Artifacts
-env.REACT_NATIVE_SKIP_PREFAB = true;
-if (exec('./gradlew :ReactAndroid:installArchives').code) {
-  echo('Could not generate artifacts');
-  exit(1);
-}
-
-// -------- Generating the Hermes Engine Artifacts
-env.REACT_NATIVE_HERMES_SKIP_PREFAB = true;
-if (exec('./gradlew :ReactAndroid:hermes-engine:installArchives').code) {
-  echo('Could not generate artifacts');
-  exit(1);
-}
-
-echo('Generated artifacts for Maven');
-
-let artifacts = [
-  '.module',
-  '.pom',
-  '-debug.aar',
-  '-release.aar',
-  '-debug-sources.jar',
-  '-release-sources.jar',
-].map(suffix => {
-  return `react-native-${releaseVersion}${suffix}`;
-});
-
-artifacts.forEach(name => {
-  if (
-    !test(
-      '-e',
-      `./android/com/facebook/react/react-native/${releaseVersion}/${name}`,
-    )
-  ) {
-    echo(
-      `Failing as expected file: \n\
-      android/com/facebook/react/react-native/${releaseVersion}/${name}\n\
-      was not correctly generated.`,
-    );
-    exit(1);
-  }
-});
+generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
 
 if (dryRunBuild) {
   echo('Skipping `npm publish` because --dry-run is set.');
