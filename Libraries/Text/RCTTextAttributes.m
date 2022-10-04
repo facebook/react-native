@@ -70,7 +70,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _fontStyle = textAttributes->_fontStyle ?: _fontStyle;
   _fontVariant = textAttributes->_fontVariant ?: _fontVariant;
   _allowFontScaling = textAttributes->_allowFontScaling || _allowFontScaling;  // *
-  _dynamicTypeRamp = textAttributes->_dynamicTypeRamp != RCTDynamicTypeRampUndefined ? textAttributes->_dynamicTypeRamp : _dynamicTypeRamp;
+  _dynamicTypeRamp = textAttributes->_dynamicTypeRamp != RCTDynamicTypeRampUndefined ? textAttributes->_dynamicTypeRamp : _dynamicTypeRamp; // TODO(macOS GH#774)
   _letterSpacing = !isnan(textAttributes->_letterSpacing) ? textAttributes->_letterSpacing : _letterSpacing;
   _fontSmoothing = textAttributes->_fontSmoothing != RCTFontSmoothingAuto ? textAttributes->_fontSmoothing : _fontSmoothing; // TODO(OSS Candidate ISS#2710739)
 
@@ -336,7 +336,7 @@ static NSString *capitalizeText(NSString *text)
     RCTTextAttributesCompareObjects(_fontStyle) &&
     RCTTextAttributesCompareObjects(_fontVariant) &&
     RCTTextAttributesCompareOthers(_allowFontScaling) &&
-    RCTTextAttributesCompareOthers(_dynamicTypeRamp) &&
+    RCTTextAttributesCompareOthers(_dynamicTypeRamp) && // TODO(macOS GH#774)
     RCTTextAttributesCompareFloats(_letterSpacing) &&
     RCTTextAttributesCompareOthers(_fontSmoothing) && // TODO(OSS Candidate ISS#2710739)
     // Paragraph Styles

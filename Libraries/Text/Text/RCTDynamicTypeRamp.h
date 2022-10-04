@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// TODO(macOS GH#774)
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTConvert.h>
