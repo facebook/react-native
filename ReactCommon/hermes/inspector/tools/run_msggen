@@ -3,7 +3,7 @@
 set -e
 
 ROOT=$(pwd)
-pushd $ROOT >/dev/null || exit
+pushd $ROOT >/dev/null
 
 DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 
@@ -15,8 +15,8 @@ FBSOURCE=$(hg root)
 CLANG_FORMAT="${FBSOURCE}/tools/third-party/clang-format/clang-format"
 SIGNEDSOURCE="${FBSOURCE}/tools/signedsource"
 
-popd >/dev/null || exit
-cd "packages/hermes-inspector-msggen"
+popd >/dev/null
+pushd "${ROOT}/packages/hermes-inspector-msggen"
 
 yarn install
 yarn build
@@ -32,3 +32,5 @@ node bin/index.js \
 
 "${SIGNEDSOURCE}" sign "${HEADER_PATH}"
 "${SIGNEDSOURCE}" sign "${CPP_PATH}"
+
+popd >/dev/null
