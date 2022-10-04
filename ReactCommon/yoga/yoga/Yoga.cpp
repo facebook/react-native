@@ -2641,7 +2641,7 @@ static void YGJustifyMainAxis(
 //    but the algorithm below assumes a default of 'column'.
 //
 // Input parameters:
-//    - node: current node to be sized and layed out
+//    - node: current node to be sized and laid out
 //    - availableWidth & availableHeight: available size to be used for sizing
 //      the node or YGUndefined if the size is not available; interpretation
 //      depends on layout flags
@@ -2653,7 +2653,7 @@ static void YGJustifyMainAxis(
 //      for explanation)
 //    - performLayout: specifies whether the caller is interested in just the
 //      dimensions of the node or it requires the entire node and its subtree to
-//      be layed out (with final positions)
+//      be laid out (with final positions)
 //
 // Details:
 //    This routine is called recursively to lay out subtrees of flexbox
@@ -3790,7 +3790,7 @@ bool YGLayoutNodeInternal(
   // Determine whether the results are already cached. We maintain a separate
   // cache for layouts and measurements. A layout operation modifies the
   // positions and dimensions for nodes in the subtree. The algorithm assumes
-  // that each node gets layed out a maximum of one time per tree layout, but
+  // that each node gets laid out a maximum of one time per tree layout, but
   // multiple measurements may be required to resolve all of the flex
   // dimensions. We handle nodes with measure functions specially here because
   // they are the most expensive to measure, so it's worth avoiding redundant
