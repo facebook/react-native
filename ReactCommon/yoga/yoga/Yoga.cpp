@@ -4336,6 +4336,11 @@ YOGA_EXPORT void YGConfigSetUseWebDefaults(
   config->useWebDefaults = enabled;
 }
 
+YOGA_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(
+    const YGConfigRef config) {
+  return config->useLegacyStretchBehaviour;
+}
+
 YOGA_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
     const YGConfigRef config,
     const bool useLegacyStretchBehaviour) {

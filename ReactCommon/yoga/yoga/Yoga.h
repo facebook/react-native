@@ -318,6 +318,7 @@ void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
 // resulted in implicit behaviour similar to align-self: stretch; Because this
 // was such a long-standing bug we must allow legacy users to switch back to
 // this behaviour.
+WIN_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(YGConfigRef config);
 WIN_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
     YGConfigRef config,
     bool useLegacyStretchBehaviour);
