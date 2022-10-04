@@ -9,30 +9,30 @@
 
 #import <React/RCTConvert.h>
 
-typedef NS_ENUM(NSInteger, RCTFontScaleRamp) {
-  RCTFontScaleRampUndefined,
-  RCTFontScaleRampCaption2,
-  RCTFontScaleRampCaption1,
-  RCTFontScaleRampFootnote,
-  RCTFontScaleRampSubhead,
-  RCTFontScaleRampCallout,
-  RCTFontScaleRampBody,
-  RCTFontScaleRampHeadline,
-  RCTFontScaleRampTitle3,
-  RCTFontScaleRampTitle2,
-  RCTFontScaleRampTitle1,
-  RCTFontScaleRampLargeTitle
+typedef NS_ENUM(NSInteger, RCTDynamicTypeRamp) {
+  RCTDynamicTypeRampUndefined,
+  RCTDynamicTypeRampCaption2,
+  RCTDynamicTypeRampCaption1,
+  RCTDynamicTypeRampFootnote,
+  RCTDynamicTypeRampSubhead,
+  RCTDynamicTypeRampCallout,
+  RCTDynamicTypeRampBody,
+  RCTDynamicTypeRampHeadline,
+  RCTDynamicTypeRampTitle3,
+  RCTDynamicTypeRampTitle2,
+  RCTDynamicTypeRampTitle1,
+  RCTDynamicTypeRampLargeTitle
 };
 
-@interface RCTConvert (FontScaleRamp)
+@interface RCTConvert (DynamicTypeRamp)
 
-+ (RCTFontScaleRamp)RCTFontScaleRamp:(nullable id)json;
++ (RCTDynamicTypeRamp)RCTDynamicTypeRamp:(nullable id)json;
 
 @end
 
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
-/// Generates a `UIFontMetrics` instance representing a particular font scale ramp.
-UIFontMetrics * _Nonnull RCTUIFontMetricsForFontScaleRamp(RCTFontScaleRamp fontScaleRamp);
+/// Generates a `UIFontMetrics` instance representing a particular Dynamic Type ramp.
+UIFontMetrics * _Nonnull RCTUIFontMetricsForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp);
 /// The "reference" size for a particular font scale ramp, equal to a text element's size under default text size settings.
-CGFloat RCTUIBaseSizeForFontScaleRamp(RCTFontScaleRamp fontScaleRamp);
+CGFloat RCTUIBaseSizeForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp);
 #endif // ]TODO(macOS GH#774)

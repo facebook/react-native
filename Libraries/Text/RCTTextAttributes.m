@@ -70,7 +70,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _fontStyle = textAttributes->_fontStyle ?: _fontStyle;
   _fontVariant = textAttributes->_fontVariant ?: _fontVariant;
   _allowFontScaling = textAttributes->_allowFontScaling || _allowFontScaling;  // *
-  _fontScaleRamp = textAttributes->_fontScaleRamp != RCTFontScaleRampUndefined ? textAttributes->_fontScaleRamp : _fontScaleRamp;
+  _dynamicTypeRamp = textAttributes->_dynamicTypeRamp != RCTDynamicTypeRampUndefined ? textAttributes->_dynamicTypeRamp : _dynamicTypeRamp;
   _letterSpacing = !isnan(textAttributes->_letterSpacing) ? textAttributes->_letterSpacing : _letterSpacing;
   _fontSmoothing = textAttributes->_fontSmoothing != RCTFontSmoothingAuto ? textAttributes->_fontSmoothing : _fontSmoothing; // TODO(OSS Candidate ISS#2710739)
 
@@ -232,9 +232,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   if (fontScalingEnabled) {
     CGFloat fontSizeMultiplier = !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
-    if (_fontScaleRamp != RCTFontScaleRampUndefined) {
-      UIFontMetrics *fontMetrics = RCTUIFontMetricsForFontScaleRamp(_fontScaleRamp);
-      CGFloat baseSize = RCTUIBaseSizeForFontScaleRamp(_fontScaleRamp);
+    if (_dynamicTypeRamp != RCTDynamicTypeRampUndefined) {
+      UIFontMetrics *fontMetrics = RCTUIFontMetricsForDynamicTypeRamp(_dynamicTypeRamp);
+      CGFloat baseSize = RCTUIBaseSizeForDynamicTypeRamp(_dynamicTypeRamp);
       fontSizeMultiplier = [fontMetrics scaledValueForValue:baseSize] / baseSize;
     }
 #endif // ]TODO(macOS GH#774)
@@ -336,7 +336,7 @@ static NSString *capitalizeText(NSString *text)
     RCTTextAttributesCompareObjects(_fontStyle) &&
     RCTTextAttributesCompareObjects(_fontVariant) &&
     RCTTextAttributesCompareOthers(_allowFontScaling) &&
-    RCTTextAttributesCompareOthers(_fontScaleRamp) &&
+    RCTTextAttributesCompareOthers(_dynamicTypeRamp) &&
     RCTTextAttributesCompareFloats(_letterSpacing) &&
     RCTTextAttributesCompareOthers(_fontSmoothing) && // TODO(OSS Candidate ISS#2710739)
     // Paragraph Styles
