@@ -10,7 +10,7 @@
 'use strict';
 
 const {exec, echo, exit, test, env} = require('shelljs');
-const {revertFiles, saveFiles} = require('./scm-utils');
+const {saveFiles} = require('./scm-utils');
 
 function saveFilesToRestore(tmpPublishingFolder) {
   const filesToSaveAndRestore = [
@@ -45,9 +45,6 @@ function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
     echo('Could not generate artifacts');
     exit(1);
   }
-
-  // undo uncommenting javadoc setting
-  revertFiles(['ReactAndroid/gradle.properties'], tmpPublishingFolder);
 
   echo('Generated artifacts for Maven');
 
