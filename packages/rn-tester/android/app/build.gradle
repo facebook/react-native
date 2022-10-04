@@ -197,6 +197,7 @@ android {
     packagingOptions {
         pickFirst '**/libhermes.so'
         pickFirst '**/libjsc.so'
+        pickFirst '**/libc++_shared.so'
     }
 }
 
@@ -205,23 +206,13 @@ dependencies {
     implementation project(':ReactAndroid')
 
     // Consume Hermes as built from source only for the Hermes variant.
-    hermesImplementation(project(":ReactAndroid:hermes-engine")) {
-        exclude group:'com.facebook.fbjni'
-    }
+    hermesImplementation(project(":ReactAndroid:hermes-engine"))
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.fbjni'
-    }
-
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
-    }
-
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
-    }
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}")
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
 
     if (useIntlJsc) {
         jscImplementation 'org.webkit:android-jsc-intl:+'
