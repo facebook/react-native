@@ -246,27 +246,7 @@ android {
     }
 }
 
-def packageReactDebugNdkLibs = tasks.register("packageReactDebugNdkLibs", Copy) {
-    // TODO: handle extracting .so from prebuilt :ReactAndroid.
-    dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
-    dependsOn("generateCodegenArtifactsFromSchema")
-    from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
-    into("$buildDir/react-ndk/exported")
-}
-def packageReactReleaseNdkLibs = tasks.register("packageReactReleaseNdkLibs", Copy) {
-    // TODO: handle extracting .so from prebuilt :ReactAndroid.
-    dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
-    dependsOn("generateCodegenArtifactsFromSchema")
-    from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
-    into("$buildDir/react-ndk/exported")
-}
-
 afterEvaluate {
-    preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
-    preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
-    preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
-    preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
-
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
     emitHermesDebugHermesResources.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
