@@ -189,7 +189,7 @@ export type TextProps = $ReadOnly<{|
   /**
    * The Dynamic Text scale ramp to apply to this element on iOS.
    */
-   dynamicTypeRamp?: ?(
+  dynamicTypeRamp?: ?(
     | 'caption2'
     | 'caption1'
     | 'footnote'
