@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {ParserError} = require('./errors');
+const {ParserError} = require('../errors');
 
 /**
  * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
