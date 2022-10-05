@@ -67,6 +67,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, T view) {
     // Reset tags
+    view.setTag(null);
     view.setTag(R.id.pointer_enter, null);
     view.setTag(R.id.pointer_leave, null);
     view.setTag(R.id.pointer_move, null);
