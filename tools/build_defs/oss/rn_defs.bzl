@@ -192,7 +192,6 @@ def _unique(li):
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
     _ = kwargs.pop("autoglob", False)
-    _ = kwargs.pop("is_androidx", False)
     _ = kwargs.pop("pure_kotlin", False)
     if react_native_target(
         "java/com/facebook/react/uimanager/annotations:annotations",
@@ -238,7 +237,6 @@ def rn_apple_library(*args, **kwargs):
     fb_apple_library(*args, **kwargs)
 
 def rn_java_library(*args, **kwargs):
-    _ = kwargs.pop("is_androidx", False)
     native.java_library(*args, **kwargs)
 
 def rn_java_annotation_processor(*args, **kwargs):
@@ -257,7 +255,6 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     vm_args = vm_args or []
 
     _ = kwargs.pop("autoglob", False)
-    _ = kwargs.pop("is_androidx", False)
 
     kwargs["deps"] = kwargs.pop("deps", []) + [
         react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
