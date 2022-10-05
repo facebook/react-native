@@ -50,10 +50,7 @@ class AppContainer extends React.Component<Props, State> {
 
   componentDidMount(): void {
     if (__DEV__) {
-      if (
-        !global.__RCTProfileIsProfiling &&
-        !this.props.internal_excludeInspector
-      ) {
+      if (!this.props.internal_excludeInspector) {
         this._subscription = RCTDeviceEventEmitter.addListener(
           'toggleElementInspector',
           () => {
@@ -93,12 +90,10 @@ class AppContainer extends React.Component<Props, State> {
   render(): React.Node {
     let logBox = null;
     if (__DEV__) {
-      if (!global.__RCTProfileIsProfiling) {
-        if (!this.props.internal_excludeLogBox) {
-          const LogBoxNotificationContainer =
-            require('../LogBox/LogBoxNotificationContainer').default;
-          logBox = <LogBoxNotificationContainer />;
-        }
+      if (!this.props.internal_excludeLogBox) {
+        const LogBoxNotificationContainer =
+          require('../LogBox/LogBoxNotificationContainer').default;
+        logBox = <LogBoxNotificationContainer />;
       }
     }
 
