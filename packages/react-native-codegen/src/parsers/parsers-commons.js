@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {SchemaType, NativeModuleSchema} from '../../../CodegenSchema.js';
+import type {SchemaType, NativeModuleSchema} from '../CodegenSchema.js';
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
