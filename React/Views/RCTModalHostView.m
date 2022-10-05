@@ -199,22 +199,24 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 - (void)handleDetent
 {
   if (@available(iOS 15.0, *)) {
-    if (_modalViewController.sheetPresentationController) {
-      NSArray<UISheetPresentationControllerDetent *> *detents = @[UISheetPresentationControllerDetent.largeDetent];
-      switch (self.detent) {
-        case DetentLarge:
-          break;
-        case DetentMedium:
-          detents = @[UISheetPresentationControllerDetent.mediumDetent];
-          break;
-        case DetentMediumResizable:
-          _modalViewController.sheetPresentationController.prefersGrabberVisible = true;
-          _modalViewController.sheetPresentationController.largestUndimmedDetentIdentifier =  UISheetPresentationControllerDetentIdentifierMedium;
-          detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
-          break;
-      }
-    _modalViewController.sheetPresentationController.detents = detents;
+    if (!_modalViewController.sheetPresentationController) {
+      return;
     }
+
+    NSArray<UISheetPresentationControllerDetent *> *detents = @[UISheetPresentationControllerDetent.largeDetent];
+    switch (self.detent) {
+      case DetentLarge:
+        break;
+      case DetentMedium:
+        detents = @[UISheetPresentationControllerDetent.mediumDetent];
+        break;
+      case DetentMediumResizable:
+        _modalViewController.sheetPresentationController.prefersGrabberVisible = true;
+        _modalViewController.sheetPresentationController.largestUndimmedDetentIdentifier =  UISheetPresentationControllerDetentIdentifierMedium;
+        detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        break;
+    }
+    _modalViewController.sheetPresentationController.detents = detents;
   }
 }
 
