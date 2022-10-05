@@ -8,14 +8,13 @@
 #include "BaseTextProps.h"
 
 #include <react/renderer/attributedstring/conversions.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/graphics/conversions.h>
 
 namespace facebook {
 namespace react {
-
-bool BaseTextProps::enablePropIteratorSetter = false;
 
 static TextAttributes convertRawProp(
     PropsParserContext const &context,
@@ -195,7 +194,7 @@ BaseTextProps::BaseTextProps(
     const BaseTextProps &sourceProps,
     const RawProps &rawProps)
     : textAttributes(
-          BaseTextProps::enablePropIteratorSetter
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.textAttributes
               : convertRawProp(
                     context,

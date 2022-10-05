@@ -273,8 +273,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cpp_props_iterator_setter_ios")) {
     CoreFeatures::enablePropIteratorSetter = true;
-    AccessibilityProps::enablePropIteratorSetter = true;
-    BaseTextProps::enablePropIteratorSetter = true;
   }
 
   auto componentRegistryFactory =

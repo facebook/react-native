@@ -458,10 +458,6 @@ void Binding::installFabricUIManager(
   // Props setter pattern feature
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
-  AccessibilityProps::enablePropIteratorSetter =
-      CoreFeatures::enablePropIteratorSetter;
-  BaseTextProps::enablePropIteratorSetter =
-      CoreFeatures::enablePropIteratorSetter;
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
