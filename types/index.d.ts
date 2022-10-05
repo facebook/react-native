@@ -122,7 +122,7 @@ export * from '../Libraries/Lists/SectionList';
 export * from '../Libraries/Lists/VirtualizedList';
 export * from '../Libraries/LogBox/LogBox';
 export * from '../Libraries/Modal/Modal';
-export * from '../Libraries/Performance/Systrace';
+export * as Systrace from '../Libraries/Performance/Systrace';
 export * from '../Libraries/PermissionsAndroid/PermissionsAndroid';
 export * from '../Libraries/PushNotificationIOS/PushNotificationIOS';
 export * from '../Libraries/ReactNative/AppRegistry';

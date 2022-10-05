@@ -76,7 +76,7 @@ import typeof PushNotificationIOS from './Libraries/PushNotificationIOS/PushNoti
 import typeof Settings from './Libraries/Settings/Settings';
 import typeof Share from './Libraries/Share/Share';
 import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
-import typeof Systrace from './Libraries/Performance/Systrace';
+import typeof * as Systrace from './Libraries/Performance/Systrace';
 import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
 import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
 import typeof UIManager from './Libraries/ReactNative/UIManager';
