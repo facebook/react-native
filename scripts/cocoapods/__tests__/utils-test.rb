@@ -382,6 +382,44 @@ class UtilsTests < Test::Unit::TestCase
         end
     end
 
+    # ===================================== #
+    # Test - Apply Xcode14 React-Core patch #
+    # ===================================== #
+
+    def test_turnOffResourceBundleReactCore_correctlyAppliesPatch
+        # Arrange
+        react_core_debug_config = prepare_Code_Signing_YES_build_configuration("Debug")
+        react_core_release_config = prepare_Code_Signing_YES_build_configuration("Release")
+
+        user_project_mock = UserProjectMock.new("a/path", [
+            prepare_config("Debug"),
+            prepare_config("Release"),
+        ])
+
+        pods_projects_mock = PodsProjectMock.new([],
+            {
+            "hermes-engine" => {},
+            "React-Core" => [ react_core_debug_config, react_core_release_config ],
+        })
+
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.turn_off_resource_bundle_react_core(installer)
+
+        # Assert
+        # something like this?
+        # assert_equal(pods_projects_mock.build_settings['CODE_SIGNING_ALLOWED'], "NO")
+
+         user_project_mock.native_targets.each do |target|
+            target.build_configurations.each do |config|
+                assert_equal(config.build_configurations['CODE_SIGNING_ALLOWED'], "NO")
+            end
+        end
+    end
+
     # ================================= #
     # Test - Apply Mac Catalyst Patches #
     # ================================= #
@@ -501,4 +539,10 @@ def prepare_target(name, product_type = nil)
       prepare_config("Debug"),
       prepare_config("Release")
   ], product_type)
+end
+
+def prepare_Code_Signing_YES_build_configuration(name)
+    return BuildConfigurationMock.new(name, {
+        "CODE_SIGNING_ALLOWED" => "YES"
+    })
 end
