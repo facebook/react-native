@@ -11,8 +11,7 @@ react_native_path = File.join(__dir__, "..", "..")
 build_type = ENV['PRODUCTION'] == "1" ? :release : :debug
 
 # package.json
-package_file = File.join(react_native_path, "package.json")
-package = JSON.parse(File.read(package_file))
+package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
 version = package['version']
 
 # sdks/.hermesversion
@@ -59,11 +58,10 @@ Pod::Spec.new do |spec|
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
   spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
 
-  spec.xcconfig            = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-    "CLANG_CXX_LIBRARY" => "compiler-default",
-    "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=#{build_type == :debug ? "1" : "0"}"
-  }
+  spec.xcconfig = {
+                    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                    "CLANG_CXX_LIBRARY" => "compiler-default"
+                  }.merge!(build_type == :debug ? { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" } : {})
 
   if source[:git] then
     ENV['REACT_NATIVE_PATH'] = react_native_path
