@@ -12,7 +12,6 @@ import * as Systrace from './Systrace';
 
 const TRACE_TAG_REACT_APPS = 1 << 17; // eslint-disable-line no-bitwise
 
-let _enabled = false;
 let _asyncCookie = 0;
 
 type EventName = string | (() => string);
@@ -32,7 +31,9 @@ type EventArgs = ?{[string]: string};
  * }
  */
 export function isEnabled(): boolean {
-  return _enabled;
+  return global.nativeTraceIsTracing
+    ? global.nativeTraceIsTracing(TRACE_TAG_REACT_APPS)
+    : Boolean(global.__RCTProfileIsProfiling);
 }
 
 /**
@@ -48,7 +49,7 @@ export function setEnabled(_doEnable: boolean): void {}
  * frame. The end of this event should be marked using the `endEvent` function.
  */
 export function beginEvent(eventName: EventName, args?: EventArgs): void {
-  if (_enabled) {
+  if (isEnabled()) {
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
     global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, eventNameString, args);
@@ -59,7 +60,7 @@ export function beginEvent(eventName: EventName, args?: EventArgs): void {
  * Marks the end of a synchronous event started in the same stack frame.
  */
 export function endEvent(args?: EventArgs): void {
-  if (_enabled) {
+  if (isEnabled()) {
     global.nativeTraceEndSection(TRACE_TAG_REACT_APPS, args);
   }
 }
@@ -74,7 +75,7 @@ export function beginAsyncEvent(
   args?: EventArgs,
 ): number {
   const cookie = _asyncCookie;
-  if (_enabled) {
+  if (isEnabled()) {
     _asyncCookie++;
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
@@ -97,7 +98,7 @@ export function endAsyncEvent(
   cookie: number,
   args?: EventArgs,
 ): void {
-  if (_enabled) {
+  if (isEnabled()) {
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
     global.nativeTraceEndAsyncSection(
@@ -113,7 +114,7 @@ export function endAsyncEvent(
  * Registers a new value for a counter event.
  */
 export function counterEvent(eventName: EventName, value: number): void {
-  if (_enabled) {
+  if (isEnabled()) {
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
     global.nativeTraceCounter &&
@@ -125,8 +126,4 @@ if (__DEV__) {
   // The metro require polyfill can not have dependencies (true for all polyfills).
   // Ensure that `Systrace` is available in polyfill by exposing it globally.
   global[(global.__METRO_GLOBAL_PREFIX__ || '') + '__SYSTRACE'] = Systrace;
-}
-
-if (global.__RCTProfileIsProfiling) {
-  _enabled = true;
 }
