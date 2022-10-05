@@ -8,8 +8,8 @@
  * @format
  */
 
-import type {Spec} from './NativeUIManager';
 import type {RootTag} from '../Types/RootTagTypes';
+import type {Spec} from './NativeUIManager';
 
 export interface UIManagerJSInterface extends Spec {
   +getViewManagerConfig: (viewManagerName: string) => Object;

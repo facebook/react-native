@@ -11,11 +11,10 @@
 
 'use strict';
 
-const React = require('react');
+const render = require('../../../jest/renderer');
 const View = require('../../Components/View/View');
 const Modal = require('../Modal');
-
-const render = require('../../../jest/renderer');
+const React = require('react');
 
 describe('<Modal />', () => {
   it('should render as <Modal> when mocked', () => {

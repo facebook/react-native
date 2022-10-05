@@ -12,13 +12,12 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
+import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import {AnimatedEvent} from '../AnimatedEvent';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
-import {findNodeHandle} from '../../ReactNative/RendererProxy';
-import invariant from 'invariant';
-
 import AnimatedNode from './AnimatedNode';
 import AnimatedStyle from './AnimatedStyle';
+import invariant from 'invariant';
 
 export default class AnimatedProps extends AnimatedNode {
   _props: Object;

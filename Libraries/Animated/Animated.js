@@ -10,7 +10,6 @@
 
 export type {CompositeAnimation, Numeric} from './AnimatedImplementation';
 
-import Platform from '../Utilities/Platform';
 import typeof AnimatedFlatList from './components/AnimatedFlatList';
 import typeof AnimatedImage from './components/AnimatedImage';
 import typeof AnimatedScrollView from './components/AnimatedScrollView';
@@ -18,8 +17,9 @@ import typeof AnimatedSectionList from './components/AnimatedSectionList';
 import typeof AnimatedText from './components/AnimatedText';
 import typeof AnimatedView from './components/AnimatedView';
 
-import AnimatedMock from './AnimatedMock';
+import Platform from '../Utilities/Platform';
 import AnimatedImplementation from './AnimatedImplementation';
+import AnimatedMock from './AnimatedMock';
 
 const Animated = ((Platform.isTesting
   ? AnimatedMock

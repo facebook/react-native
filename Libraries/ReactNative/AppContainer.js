@@ -8,12 +8,13 @@
  * @flow
  */
 
+import type {RootTag} from './RootTag';
+
 import View from '../Components/View/View';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import {RootTagContext, createRootTag} from './RootTag';
-import type {RootTag} from './RootTag';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|

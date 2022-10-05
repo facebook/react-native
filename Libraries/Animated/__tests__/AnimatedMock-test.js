@@ -10,8 +10,8 @@
 
 'use strict';
 
-import AnimatedMock from '../AnimatedMock';
 import AnimatedImplementation from '../AnimatedImplementation';
+import AnimatedMock from '../AnimatedMock';
 
 describe('Animated Mock', () => {
   it('matches implementation keys', () => {

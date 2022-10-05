@@ -9,14 +9,14 @@
  * @oncall react_native
  */
 
-const React = require('react');
 import LogBoxInspectorStackFrames, {
   getCollapseMessage,
 } from '../LogBoxInspectorStackFrames';
 
-const {} = require('../LogBoxInspectorStackFrames');
-const LogBoxLog = require('../../Data/LogBoxLog').default;
 const render = require('../../../../jest/renderer');
+const LogBoxLog = require('../../Data/LogBoxLog').default;
+const {} = require('../LogBoxInspectorStackFrames');
+const React = require('react');
 
 const createLogWithFrames = (collapsedOptions: Array<?boolean>) => {
   return new LogBoxLog({

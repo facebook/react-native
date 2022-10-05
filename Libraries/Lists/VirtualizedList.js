@@ -11,7 +11,6 @@
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {LayoutEvent, ScrollEvent} from '../Types/CoreEventTypes';
-
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   FrameMetricProps,
@@ -21,21 +20,20 @@ import type {
   RenderItemType,
   Separators,
 } from './VirtualizedListProps';
-export type {RenderItemProps, RenderItemType, Separators};
 
+import ChildListCollection from './ChildListCollection';
+import CellRenderer from './VirtualizedListCellRenderer';
 import {
   VirtualizedListCellContextProvider,
   VirtualizedListContext,
   VirtualizedListContextProvider,
 } from './VirtualizedListContext.js';
+import * as VirtualizedListInjection from './VirtualizedListInjection';
 import {
   computeWindowedRenderLimits,
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
-import * as VirtualizedListInjection from './VirtualizedListInjection';
-import CellRenderer from './VirtualizedListCellRenderer';
 import * as React from 'react';
-import ChildListCollection from './ChildListCollection';
 
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 const ScrollView = require('../Components/ScrollView/ScrollView');
@@ -48,6 +46,8 @@ const infoLog = require('../Utilities/infoLog');
 const FillRateHelper = require('./FillRateHelper');
 const ViewabilityHelper = require('./ViewabilityHelper');
 const invariant = require('invariant');
+
+export type {RenderItemProps, RenderItemType, Separators};
 
 const ON_END_REACHED_EPSILON = 0.001;
 

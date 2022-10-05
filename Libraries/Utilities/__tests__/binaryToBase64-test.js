@@ -11,7 +11,7 @@
 'use strict';
 
 const base64 = require('base64-js');
-const {TextEncoder, TextDecoder} = require('util');
+const {TextDecoder, TextEncoder} = require('util');
 
 describe('binaryToBase64', () => {
   const binaryToBase64 = require('../binaryToBase64');

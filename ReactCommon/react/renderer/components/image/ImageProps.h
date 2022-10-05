@@ -22,15 +22,21 @@ class ImageProps final : public ViewProps {
       const ImageProps &sourceProps,
       const RawProps &rawProps);
 
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
+
 #pragma mark - Props
 
-  const ImageSources sources{};
-  const ImageSources defaultSources{};
-  const ImageResizeMode resizeMode{ImageResizeMode::Stretch};
-  const Float blurRadius{};
-  const EdgeInsets capInsets{};
-  const SharedColor tintColor{};
-  const std::string internal_analyticTag{};
+  ImageSources sources{};
+  ImageSources defaultSources{};
+  ImageResizeMode resizeMode{ImageResizeMode::Stretch};
+  Float blurRadius{};
+  EdgeInsets capInsets{};
+  SharedColor tintColor{};
+  std::string internal_analyticTag{};
 };
 
 } // namespace react

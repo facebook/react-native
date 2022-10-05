@@ -11,9 +11,9 @@
 
 'use strict';
 
-const React = require('react');
-const LogBoxInspectorCodeFrame = require('../LogBoxInspectorCodeFrame').default;
 const render = require('../../../../jest/renderer');
+const LogBoxInspectorCodeFrame = require('../LogBoxInspectorCodeFrame').default;
+const React = require('react');
 
 describe('LogBoxInspectorCodeFrame', () => {
   it('should render null for no code frame', () => {

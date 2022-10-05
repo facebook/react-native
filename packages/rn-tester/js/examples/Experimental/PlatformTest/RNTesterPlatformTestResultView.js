@@ -68,7 +68,7 @@ function FilterModalButton(props: FilterModalProps) {
     setModalVisible(false);
   }, []);
 
-  const onPendingTextChange = useCallback(newText => {
+  const onPendingTextChange = useCallback((newText: string) => {
     setPendingFilterText(newText);
   }, []);
 

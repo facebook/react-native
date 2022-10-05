@@ -10,13 +10,12 @@
 
 'use strict';
 
-import type AnimatedValue from './AnimatedValue';
-
-import AnimatedNode from './AnimatedNode';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
-
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {EndCallback} from '../animations/Animation';
+import type AnimatedValue from './AnimatedValue';
+
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedNode from './AnimatedNode';
 
 export default class AnimatedTracking extends AnimatedNode {
   _value: AnimatedValue;

@@ -8,24 +8,20 @@
  * @format
  */
 
-import * as React from 'react';
-import StyleSheet from '../StyleSheet/StyleSheet';
-
-import ImageInjection from './ImageInjection';
-import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import flattenStyle from '../StyleSheet/flattenStyle';
-import resolveAssetSource from './resolveAssetSource';
-
+import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
+import type {RootTag} from '../Types/RootTagTypes';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
-import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
-import NativeImageLoaderIOS from './NativeImageLoaderIOS';
-
-import {convertObjectFitToResizeMode} from './ImageUtils';
-
-import ImageViewNativeComponent from './ImageViewNativeComponent';
-import type {RootTag} from '../Types/RootTagTypes';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
+import ImageInjection from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
+import {convertObjectFitToResizeMode} from './ImageUtils';
+import ImageViewNativeComponent from './ImageViewNativeComponent';
+import NativeImageLoaderIOS from './NativeImageLoaderIOS';
+import resolveAssetSource from './resolveAssetSource';
+import * as React from 'react';
 
 import type {ImageIOS} from './Image.flow';
 

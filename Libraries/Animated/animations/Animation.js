@@ -10,9 +10,10 @@
 
 'use strict';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedValue from '../nodes/AnimatedValue';
+
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
 
 export type EndResult = {finished: boolean, ...};
 export type EndCallback = (result: EndResult) => void;

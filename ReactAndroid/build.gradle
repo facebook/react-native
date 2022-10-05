@@ -57,6 +57,8 @@ def skipPrefabPublishing = System.getenv("REACT_NATIVE_SKIP_PREFAB") != null
 def prefabHeadersDir = project.file("$buildDir/prefab-headers")
 
 final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
+    dependsOn(prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
+    dependsOn("generateCodegenArtifactsFromSchema")
     // To export to a ReactNativePrefabProcessingEntities.kt once all
     // libraries have been moved. We keep it here for now as it make easier to
     // migrate one library at a time.
@@ -337,31 +339,12 @@ def reactNativeArchitectures() {
 }
 
 tasks.register("packageReactNdkLibsForBuck") {
-    dependsOn("packageReactNdkDebugLibsForBuck")
-}
-
-tasks.register("packageReactNdkDebugLibsForBuck", Copy) {
     dependsOn("mergeDebugNativeLibs")
     // Shared libraries (.so) are copied from the merged_native_libs folder instead
     from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
     exclude("**/libjsc.so")
     exclude("**/libhermes.so")
     into("src/main/jni/prebuilt/lib")
-}
-
-tasks.register("packageReactNdkReleaseLibsForBuck", Copy) {
-    dependsOn("mergeReleaseNativeLibs")
-    // Shared libraries (.so) are copied from the merged_native_libs folder instead
-    from("$buildDir/intermediates/merged_native_libs/release/out/lib/")
-    exclude("**/libjsc.so")
-    exclude("**/libhermes.so")
-    into("src/main/jni/prebuilt/lib")
-}
-
-final def extractNativeDependencies = tasks.register('extractNativeDependencies', ExtractJniAndHeadersTask) {
-    it.extractHeadersConfiguration.setFrom(configurations.extractHeaders)
-    it.extractJniConfiguration.setFrom(configurations.extractJNI)
-    it.baseOutputDir = project.file("src/main/jni/first-party/")
 }
 
 task installArchives {
@@ -462,7 +445,7 @@ android {
         }
     }
 
-    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractNativeDependencies)
+    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent)
     preBuild.dependsOn("generateCodegenArtifactsFromSchema")
     preBuild.dependsOn(preparePrefab)
 
@@ -488,11 +471,6 @@ android {
         // that will include the necessary .so files to load.
         exclude("**/libhermes.so")
         exclude("**/libjsc.so")
-    }
-
-    configurations {
-        extractHeaders
-        extractJNI
     }
 
     buildFeatures {
@@ -569,7 +547,7 @@ dependencies {
     api("androidx.swiperefreshlayout:swiperefreshlayout:${SWIPEREFRESH_LAYOUT_VERSION}")
     api("androidx.tracing:tracing:${ANDROIDX_TRACING_VERSION}")
 
-    api("com.facebook.fbjni:fbjni-java-only:${FBJNI_VERSION}")
+    api("com.facebook.fbjni:fbjni:${FBJNI_VERSION}")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
     api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
@@ -582,9 +560,6 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okio:okio:${OKIO_VERSION}")
     api("javax.inject:javax.inject:${JAVAX_INJECT_VERSION}")
-
-    extractHeaders("com.facebook.fbjni:fbjni:${FBJNI_VERSION}:headers")
-    extractJNI("com.facebook.fbjni:fbjni:${FBJNI_VERSION}")
 
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.

@@ -11,11 +11,11 @@
 
 'use strict';
 
-const React = require('react');
+const render = require('../../../../jest/renderer');
+const LogBoxLog = require('../../Data/LogBoxLog').default;
 const LogBoxInspectorReactFrames =
   require('../LogBoxInspectorReactFrames').default;
-const LogBoxLog = require('../../Data/LogBoxLog').default;
-const render = require('../../../../jest/renderer');
+const React = require('react');
 
 describe('LogBoxInspectorReactFrames', () => {
   it('should render null for no componentStack frames', () => {

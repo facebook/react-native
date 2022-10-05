@@ -9,16 +9,17 @@
  */
 
 import type {Message as MessageType} from '../Data/parseLogBoxLog';
-import * as React from 'react';
+
+import View from '../../Components/View/View';
 import Image from '../../Image/Image';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import View from '../../Components/View/View';
-import LogBoxButton from './LogBoxButton';
-import * as LogBoxStyle from './LogBoxStyle';
-import LogBoxLog from '../Data/LogBoxLog';
-import LogBoxMessage from './LogBoxMessage';
 import * as LogBoxData from '../Data/LogBoxData';
+import LogBoxLog from '../Data/LogBoxLog';
+import LogBoxButton from './LogBoxButton';
+import LogBoxMessage from './LogBoxMessage';
+import * as LogBoxStyle from './LogBoxStyle';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   log: LogBoxLog,

@@ -1001,4 +1001,26 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Text alignment',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text style={{textAlignVertical: 'top', borderWidth: 1, height: 75}}>
+            Text element aligned to the top via textAlignVertical
+          </Text>
+          <Text style={{verticalAlign: 'top', borderWidth: 1, height: 75}}>
+            Text element aligned to the top via verticalAlign
+          </Text>
+          <Text
+            style={{textAlignVertical: 'center', borderWidth: 1, height: 75}}>
+            Text element aligned to the middle via textAlignVertical
+          </Text>
+          <Text style={{verticalAlign: 'middle', borderWidth: 1, height: 75}}>
+            Text element aligned to the middle via verticalAlign
+          </Text>
+        </View>
+      );
+    },
+  },
 ];

@@ -9,11 +9,10 @@
  */
 
 'use strict';
-import * as React from 'react';
+import type {HostComponent} from '../../../Renderer/shims/ReactNativeTypes';
 
 import requireNativeComponent from '../../../ReactNative/requireNativeComponent';
-
-import type {HostComponent} from '../../../Renderer/shims/ReactNativeTypes';
+import * as React from 'react';
 
 const RCTRefreshControl: HostComponent<mixed> =
   requireNativeComponent<mixed>('RCTRefreshControl');

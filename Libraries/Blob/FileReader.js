@@ -10,9 +10,9 @@
 
 import type Blob from './Blob';
 
-const EventTarget = require('event-target-shim');
-
 import NativeFileReaderModule from './NativeFileReaderModule';
+
+const EventTarget = require('event-target-shim');
 
 type ReadyState =
   | 0 // EMPTY

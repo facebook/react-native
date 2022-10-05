@@ -11,10 +11,10 @@
 
 'use strict';
 
-const React = require('react');
+const render = require('../../../../jest/renderer');
 const LogBoxInspectorSourceMapStatus =
   require('../LogBoxInspectorSourceMapStatus').default;
-const render = require('../../../../jest/renderer');
+const React = require('react');
 
 describe('LogBoxInspectorSourceMapStatus', () => {
   it('should render for failed', () => {

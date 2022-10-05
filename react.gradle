@@ -53,7 +53,7 @@ def detectCliPath(config, reactRoot) {
     }
 
     // 2. node module path
-    def cliJsFromNode = new File(["node", "--print", "require.resolve('react-native/cli').bin"].execute(null, rootDir).text.trim())
+    def cliJsFromNode = new File(["node", "--print", "require.resolve('react-native/cli')"].execute(null, rootDir).text.trim())
     if (cliJsFromNode.exists()) {
         return cliJsFromNode.getAbsolutePath()
     }

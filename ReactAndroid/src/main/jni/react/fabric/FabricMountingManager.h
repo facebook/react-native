@@ -77,7 +77,6 @@ class FabricMountingManager final {
   bool const disableRevisionCheckForPreallocation_{false};
   bool const useOverflowInset_{false};
   bool const shouldRememberAllocatedViews_{false};
-  bool const useMapBufferForViewProps_{false};
 
   jni::local_ref<jobject> getProps(
       ShadowView const &oldShadowView,

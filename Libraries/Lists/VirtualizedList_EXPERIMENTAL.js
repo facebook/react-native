@@ -11,7 +11,6 @@
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {LayoutEvent, ScrollEvent} from '../Types/CoreEventTypes';
-
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   FrameMetricProps,
@@ -22,11 +21,6 @@ import type {
   Separators,
 } from './VirtualizedListProps';
 
-export type {RenderItemProps, RenderItemType, Separators};
-
-import * as React from 'react';
-import invariant from 'invariant';
-
 import RefreshControl from '../Components/RefreshControl/RefreshControl';
 import ScrollView from '../Components/ScrollView/ScrollView';
 import View from '../Components/View/View';
@@ -36,22 +30,25 @@ import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import clamp from '../Utilities/clamp';
 import infoLog from '../Utilities/infoLog';
-
 import {CellRenderMask} from './CellRenderMask';
 import ChildListCollection from './ChildListCollection';
-import StateSafePureComponent from './StateSafePureComponent';
 import FillRateHelper from './FillRateHelper';
+import StateSafePureComponent from './StateSafePureComponent';
 import ViewabilityHelper from './ViewabilityHelper';
-import {
-  computeWindowedRenderLimits,
-  keyExtractor as defaultKeyExtractor,
-} from './VirtualizeUtils';
 import CellRenderer from './VirtualizedListCellRenderer';
 import {
   VirtualizedListCellContextProvider,
   VirtualizedListContext,
   VirtualizedListContextProvider,
 } from './VirtualizedListContext.js';
+import {
+  computeWindowedRenderLimits,
+  keyExtractor as defaultKeyExtractor,
+} from './VirtualizeUtils';
+import invariant from 'invariant';
+import * as React from 'react';
+
+export type {RenderItemProps, RenderItemType, Separators};
 
 const ON_END_REACHED_EPSILON = 0.001;
 

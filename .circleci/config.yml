@@ -826,6 +826,10 @@ jobs:
   # -------------------------
   test_ios_rntester:
     executor: reactnativeios
+    parameters:
+      architecture:
+        type: string
+        default: "OldArch"
     steps:
       - checkout_code_with_cache
       - run_yarn
@@ -854,9 +858,14 @@ jobs:
           set_tarball_path: True
           steps:
             - run:
-                name: Install CocoaPods dependencies
+                name: Install CocoaPods dependencies - Architecture << parameters.architecture >>
                 command: |
                   rm -rf packages/rn-tester/Pods
+
+                  if [[ << parameters.architecture >> == "NewArch" ]]; then
+                    export RCT_NEW_ARCH_ENABLED=1
+                  fi
+
                   cd packages/rn-tester && bundle exec pod install
 
       - run:
@@ -1466,6 +1475,9 @@ workflows:
       - test_ios_rntester:
           requires:
             - build_hermes_macos
+          matrix:
+            parameters:
+              architecture: ["NewArch", "OldArch"]
       - test_ios:
           run_unit_tests: true
           requires:

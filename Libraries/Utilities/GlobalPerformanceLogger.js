@@ -8,8 +8,9 @@
  * @format
  */
 
-import createPerformanceLogger from './createPerformanceLogger';
 import type {IPerformanceLogger} from './createPerformanceLogger';
+
+import createPerformanceLogger from './createPerformanceLogger';
 
 /**
  * This is a global shared instance of IPerformanceLogger that is created with

@@ -11,15 +11,15 @@
 
 'use strict';
 
-import * as React from 'react';
-import {type ColorValue} from '../StyleSheet/StyleSheet';
-
+import type {PressEvent} from '../Types/CoreEventTypes';
 import type {
-  AccessibilityState,
   AccessibilityActionEvent,
   AccessibilityActionInfo,
+  AccessibilityState,
 } from './View/ViewAccessibility';
-import type {PressEvent} from '../Types/CoreEventTypes';
+
+import {type ColorValue} from '../StyleSheet/StyleSheet';
+import * as React from 'react';
 
 type ButtonProps = $ReadOnly<{|
   /**

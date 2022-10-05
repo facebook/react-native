@@ -9,13 +9,12 @@
  * @oncall react_native
  */
 
-import * as React from 'react';
-import {byTestID, byTextMatching, enter, tap} from '../ReactNativeTestTools';
-
-import Text from '../../Text/Text';
 import TextInput from '../../Components/TextInput/TextInput';
 import TouchableWithoutFeedback from '../../Components/Touchable/TouchableWithoutFeedback';
 import View from '../../Components/View/View';
+import Text from '../../Text/Text';
+import {byTestID, byTextMatching, enter, tap} from '../ReactNativeTestTools';
+import * as React from 'react';
 
 const ReactTestRenderer = require('react-test-renderer');
 

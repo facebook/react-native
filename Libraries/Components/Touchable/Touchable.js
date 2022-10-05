@@ -8,19 +8,18 @@
  * @format
  */
 
-import * as React from 'react';
-import BoundingDimensions from './BoundingDimensions';
-import Platform from '../../Utilities/Platform';
-import Position from './Position';
-import UIManager from '../../ReactNative/UIManager';
-import SoundManager from '../Sound/SoundManager';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {TouchableType} from './Touchable.flow';
 
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
-
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import UIManager from '../../ReactNative/UIManager';
+import Platform from '../../Utilities/Platform';
+import SoundManager from '../Sound/SoundManager';
+import BoundingDimensions from './BoundingDimensions';
+import Position from './Position';
+import * as React from 'react';
 
 const extractSingleTouch = (nativeEvent: {
   +changedTouches: $ReadOnlyArray<PressEvent['nativeEvent']>,

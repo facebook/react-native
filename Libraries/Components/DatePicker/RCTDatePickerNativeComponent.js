@@ -9,15 +9,16 @@
  */
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  BubblingEventHandler,
+  Float,
+  WithDefault,
+} from '../../Types/CodegenTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import * as React from 'react';
-import type {
-  Float,
-  WithDefault,
-  BubblingEventHandler,
-} from '../../Types/CodegenTypes';
 
 type Event = $ReadOnly<{|
   timestamp: Float,

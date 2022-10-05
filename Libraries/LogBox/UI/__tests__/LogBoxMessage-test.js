@@ -11,9 +11,9 @@
 
 'use strict';
 
-const React = require('react');
-const LogBoxMessage = require('../LogBoxMessage').default;
 const render = require('../../../../jest/renderer');
+const LogBoxMessage = require('../LogBoxMessage').default;
+const React = require('react');
 
 describe('LogBoxMessage', () => {
   it('should render message', () => {

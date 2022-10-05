@@ -10,8 +10,8 @@
 
 'use strict';
 
-import AnimatedInterpolation from '../nodes/AnimatedInterpolation';
 import Easing from '../Easing';
+import AnimatedInterpolation from '../nodes/AnimatedInterpolation';
 
 describe('Interpolation', () => {
   it('should work with defaults', () => {

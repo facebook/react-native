@@ -10,13 +10,12 @@
 
 'use strict';
 
-import Animation from './Animation';
-
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
-
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedValue from '../nodes/AnimatedValue';
 import type {AnimationConfig, EndCallback} from './Animation';
+
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import Animation from './Animation';
 
 export type DecayAnimationConfig = {
   ...AnimationConfig,

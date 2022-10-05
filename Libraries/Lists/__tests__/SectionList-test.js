@@ -10,10 +10,9 @@
 
 'use strict';
 
+import SectionList from '../SectionList';
 import * as React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-
-import SectionList from '../SectionList';
 
 describe('SectionList', () => {
   it('renders empty list', () => {

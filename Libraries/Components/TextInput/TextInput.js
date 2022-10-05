@@ -8,31 +8,30 @@
  * @format
  */
 
-import * as React from 'react';
-
-import Platform from '../../Utilities/Platform';
-import StyleSheet, {
-  type TextStyleProp,
-  type ViewStyleProp,
-  type ColorValue,
-} from '../../StyleSheet/StyleSheet';
-import Text from '../../Text/Text';
-import TextAncestor from '../../Text/TextAncestor';
-import TextInputState from './TextInputState';
-import invariant from 'invariant';
-import nullthrows from 'nullthrows';
-import setAndForwardRef from '../../Utilities/setAndForwardRef';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  PressEvent,
+  ScrollEvent,
+  SyntheticEvent,
+} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputType} from './TextInput.flow';
 
 import usePressability from '../../Pressability/usePressability';
-
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {
-  SyntheticEvent,
-  ScrollEvent,
-  PressEvent,
-} from '../../Types/CoreEventTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import flattenStyle from '../../StyleSheet/flattenStyle';
+import StyleSheet, {
+  type ColorValue,
+  type TextStyleProp,
+  type ViewStyleProp,
+} from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import TextAncestor from '../../Text/TextAncestor';
+import Platform from '../../Utilities/Platform';
+import setAndForwardRef from '../../Utilities/setAndForwardRef';
+import TextInputState from './TextInputState';
+import invariant from 'invariant';
+import nullthrows from 'nullthrows';
+import * as React from 'react';
 
 const {useLayoutEffect, useRef, useState} = React;
 
@@ -1601,6 +1600,13 @@ const ExportedForwardRef: React.AbstractComponent<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
 ) {
+  const style = flattenStyle(restProps.style);
+
+  if (style?.verticalAlign != null) {
+    style.textAlignVertical =
+      verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+  }
+
   return (
     <InternalTextInput
       allowFontScaling={allowFontScaling}
@@ -1630,6 +1636,7 @@ const ExportedForwardRef: React.AbstractComponent<
       }
       {...restProps}
       forwardedRef={forwardedRef}
+      style={style}
     />
   );
 });
@@ -1660,6 +1667,13 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
 });
+
+const verticalAlignToTextAlignVerticalMap = {
+  auto: 'auto',
+  top: 'top',
+  bottom: 'bottom',
+  middle: 'center',
+};
 
 // $FlowFixMe[unclear-type] Unclear type. Using `any` type is not safe.
 module.exports = ((ExportedForwardRef: any): TextInputType);

@@ -8,10 +8,10 @@
  * @format
  */
 
-import * as React from 'react';
-import View from '../View/View';
-
 import type {ViewProps} from '../View/ViewPropTypes';
+
+import View from '../View/View';
+import * as React from 'react';
 
 export type SafeAreaViewType = React.AbstractComponent<
   ViewProps,

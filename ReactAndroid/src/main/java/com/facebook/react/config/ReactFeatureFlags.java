@@ -79,6 +79,9 @@ public class ReactFeatureFlags {
   /** Enables or disables MapBuffer Serialization */
   public static boolean mapBufferSerializationEnabled = false;
 
+  /* Enables or disables MapBuffer use in Props infrastructure. */
+  public static boolean useMapBufferProps = false;
+
   /** Enables or disables calculation of Transformed Frames */
   public static boolean calculateTransformedFramesEnabled = false;
 

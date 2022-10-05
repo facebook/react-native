@@ -10,17 +10,17 @@
 
 'use strict';
 
-import Platform from '../Utilities/Platform';
-import React, {useRef, forwardRef, useImperativeHandle} from 'react';
-import VirtualizedSectionList from './VirtualizedSectionList';
-
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {
-  SectionBase as _SectionBase,
   Props as VirtualizedSectionListProps,
   ScrollToLocationParamsType,
+  SectionBase as _SectionBase,
 } from './VirtualizedSectionList';
-import type {Element, ElementRef, AbstractComponent} from 'react';
+import type {AbstractComponent, Element, ElementRef} from 'react';
+
+import Platform from '../Utilities/Platform';
+import VirtualizedSectionList from './VirtualizedSectionList';
+import React, {forwardRef, useImperativeHandle, useRef} from 'react';
 
 type Item = any;
 

@@ -10,15 +10,15 @@
 
 'use strict';
 
-import AnimatedInterpolation from './AnimatedInterpolation';
-import AnimatedWithChildren from './AnimatedWithChildren';
-import InteractionManager from '../../Interaction/InteractionManager';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
-
-import type AnimatedNode from './AnimatedNode';
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
+import type AnimatedNode from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
+
+import InteractionManager from '../../Interaction/InteractionManager';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedInterpolation from './AnimatedInterpolation';
+import AnimatedWithChildren from './AnimatedWithChildren';
 
 export type AnimatedValueConfig = $ReadOnly<{
   useNativeDriver: boolean,

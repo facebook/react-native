@@ -9,7 +9,7 @@
  */
 
 import * as React from 'react';
-import {useMemo, useContext} from 'react';
+import {useContext, useMemo} from 'react';
 
 type Context = $ReadOnly<{
   cellKey: ?string,
