@@ -60,7 +60,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   // But there is no way to transparently compose three separate callback refs,
   // so we just combine them all into one for now.
   const refEffect = useCallback(
-    instance => {
+    (instance: TInstance) => {
       // NOTE: This may be called more often than necessary (e.g. when `props`
       // changes), but `setNativeView` already optimizes for that.
       node.setNativeView(instance);

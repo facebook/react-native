@@ -106,7 +106,7 @@ function constructAsyncTestHook(
       });
     }, [description]);
 
-    const stepHandler = useCallback(testCase => {
+    const stepHandler = useCallback((testCase: PlatformTestCase) => {
       const stepAssertions = runTestCase(testCase);
       assertionsRef.current.push(...stepAssertions);
     }, []);

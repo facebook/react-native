@@ -9,7 +9,9 @@
  */
 
 'use strict';
+
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {ViewToken} from '../../../../../Libraries/Lists/ViewabilityHelper';
 import BaseFlatListExample from './BaseFlatListExample';
 import {StyleSheet, View, FlatList} from 'react-native';
 import * as React from 'react';
@@ -32,7 +34,7 @@ export function FlatList_onViewableItemsChanged(props: {
   const {viewabilityConfig, offScreen, horizontal, useScrollRefScroll} = props;
   const [output, setOutput] = React.useState('');
   const onViewableItemsChanged = React.useCallback(
-    info =>
+    (info: {changed: Array<ViewToken>, viewableItems: Array<ViewToken>, ...}) =>
       setOutput(
         info.viewableItems
           .filter(viewToken => viewToken.index != null && viewToken.isViewable)
