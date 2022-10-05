@@ -1,6 +1,7 @@
 {
-  "name": "hermes-inspector-msggen",
-  "version": "1.0.0",
+  "name": "@react-native/hermes-inspector-msggen",
+  "private": true,
+  "version": "0.71.0",
   "license": "MIT",
   "bin": {
     "msggen": "./bin/index.js"
