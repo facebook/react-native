@@ -49,8 +49,12 @@ const useSingleOpBatching =
   ReactNativeFeatureFlags.animatedShouldUseSingleOp();
 let flushQueueTimeout = null;
 
-const eventListenerGetValueCallbacks = {};
-const eventListenerAnimationFinishedCallbacks = {};
+const eventListenerGetValueCallbacks: {
+  [$FlowFixMe | number]: ((value: number) => void) | void,
+} = {};
+const eventListenerAnimationFinishedCallbacks: {
+  [$FlowFixMe | number]: EndCallback | void,
+} = {};
 let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
 
@@ -79,7 +83,7 @@ const nativeOps: ?typeof NativeAnimatedModule = useSingleOpBatching
         'addListener', // 20
         'removeListener', // 21
       ];
-      return apis.reduce((acc, functionName, i) => {
+      return apis.reduce<{[string]: number}>((acc, functionName, i) => {
         // These indices need to be kept in sync with the indices in native (see NativeAnimatedModule in Java, or the equivalent for any other native platform).
         // $FlowFixMe[prop-missing]
         acc[functionName] = i + 1;
