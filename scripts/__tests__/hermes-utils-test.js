@@ -15,6 +15,7 @@ const {
   copyPodSpec,
   downloadHermesTarball,
   expandHermesTarball,
+  getHermesTarballName,
   getHermesTagSHA,
   readHermesTag,
   setHermesTag,
@@ -148,6 +149,33 @@ describe('hermes-utils', () => {
     it('should set Hermes tag and read it back', () => {
       setHermesTag(hermesTag);
       expect(readHermesTag()).toEqual(hermesTag);
+    });
+  });
+  describe('getHermesTarballName', () => {
+    it('should return Hermes tarball name', () => {
+      expect(getHermesTarballName('Debug', '1000.0.0')).toEqual(
+        'hermes-runtime-darwin-debug-v1000.0.0.tar.gz',
+      );
+    });
+    it('should throw if build type is undefined', () => {
+      expect(() => {
+        getHermesTarballName();
+      }).toThrow('Did not specify build type.');
+    });
+    it('should throw if release version is undefined', () => {
+      expect(() => {
+        getHermesTarballName('Release');
+      }).toThrow('Did not specify release version.');
+    });
+    it('should return debug Hermes tarball name for RN 0.70.0', () => {
+      expect(getHermesTarballName('Debug', '0.70.0')).toEqual(
+        'hermes-runtime-darwin-debug-v0.70.0.tar.gz',
+      );
+    });
+    it('should return a wildcard Hermes tarball name for any RN version', () => {
+      expect(getHermesTarballName('Debug', '*')).toEqual(
+        'hermes-runtime-darwin-debug-v*.tar.gz',
+      );
     });
   });
   describe('getHermesTagSHA', () => {
