@@ -388,18 +388,22 @@ class UtilsTests < Test::Unit::TestCase
 
     def test_turnOffResourceBundleReactCore_correctlyAppliesPatch
         # Arrange
-        react_core_debug_config = prepare_Code_Signing_YES_build_configuration("Debug")
-        react_core_release_config = prepare_Code_Signing_YES_build_configuration("Release")
+        react_core_debug_config = prepare_Code_Signing_build_configuration("Debug", "YES")
+        react_core_release_config = prepare_Code_Signing_build_configuration("Release", "YES")
+        hermes_engine_debug_config = prepare_Code_Signing_build_configuration("Debug", "NO")
+        hermes_engine_release_config = prepare_Code_Signing_build_configuration("Release", "NO")
+        assets_debug_config = prepare_Code_Signing_build_configuration("Debug", "YES")
+        assets_release_config = prepare_Code_Signing_build_configuration("Release", "YES")
 
         user_project_mock = UserProjectMock.new("a/path", [
             prepare_config("Debug"),
             prepare_config("Release"),
         ])
 
-        pods_projects_mock = PodsProjectMock.new([],
-            {
-            "hermes-engine" => {},
+        pods_projects_mock = PodsProjectMock.new([], {
             "React-Core" => [ react_core_debug_config, react_core_release_config ],
+            "hermes-engine" => [ hermes_engine_debug_config, hermes_engine_release_config ],
+            "assets" => [ assets_debug_config, assets_release_config ],
         })
 
         installer = InstallerMock.new(pods_projects_mock, [
@@ -410,14 +414,12 @@ class UtilsTests < Test::Unit::TestCase
         ReactNativePodsUtils.turn_off_resource_bundle_react_core(installer)
 
         # Assert
-        # something like this?
-        # assert_equal(pods_projects_mock.build_settings['CODE_SIGNING_ALLOWED'], "NO")
-
-         user_project_mock.native_targets.each do |target|
-            target.build_configurations.each do |config|
-                assert_equal(config.build_configurations['CODE_SIGNING_ALLOWED'], "NO")
-            end
-        end
+        assert_equal(react_core_debug_config.build_settings["CODE_SIGNING_ALLOWED"], "NO")
+        assert_equal(react_core_release_config.build_settings["CODE_SIGNING_ALLOWED"], "NO")
+        assert_equal(hermes_engine_debug_config.build_settings["CODE_SIGNING_ALLOWED"], "NO")
+        assert_equal(hermes_engine_release_config.build_settings["CODE_SIGNING_ALLOWED"], "NO")
+        assert_equal(assets_debug_config.build_settings["CODE_SIGNING_ALLOWED"], "YES")
+        assert_equal(assets_release_config.build_settings["CODE_SIGNING_ALLOWED"], "YES")
     end
 
     # ================================= #
@@ -541,8 +543,8 @@ def prepare_target(name, product_type = nil)
   ], product_type)
 end
 
-def prepare_Code_Signing_YES_build_configuration(name)
+def prepare_Code_Signing_build_configuration(name, param)
     return BuildConfigurationMock.new(name, {
-        "CODE_SIGNING_ALLOWED" => "YES"
+        "CODE_SIGNING_ALLOWED" => param
     })
 end
