@@ -614,8 +614,21 @@ const AppStateExample = () => {
   );
 };
 
-const profiledJSONParse = Systrace.measure('JSON', 'parse', JSON.parse);
-profiledJSONParse('[]');
+if (Systrace.isEnabled()) {
+  const cookie = Systrace.beginAsyncEvent('async-event');
+  Systrace.endAsyncEvent('async-event', cookie);
+
+  const cookie2 = Systrace.beginAsyncEvent('async-event-2', {foo: '123'});
+  Systrace.endAsyncEvent('async-event-2', cookie2, {bar: '456'});
+
+  Systrace.beginEvent('sync-event');
+  Systrace.endEvent();
+
+  Systrace.beginEvent('sync-event-2', {key: 'value'});
+  Systrace.endEvent({key: 'other-value'});
+
+  Systrace.counterEvent('counter', 123);
+}
 
 InteractionManager.runAfterInteractions(() => {
   // ...
