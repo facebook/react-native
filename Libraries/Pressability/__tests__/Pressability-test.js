@@ -11,12 +11,12 @@
 
 import type {PressEvent} from '../../Types/CoreEventTypes';
 
+const UIManager = require('../../ReactNative/UIManager');
+const Platform = require('../../Utilities/Platform');
 const HoverState = require('../HoverState');
 const Pressability = require('../Pressability').default;
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
-const Platform = require('../../Utilities/Platform');
-const UIManager = require('../../ReactNative/UIManager');
 
 // TODO: Move this util to a shared location.
 function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(

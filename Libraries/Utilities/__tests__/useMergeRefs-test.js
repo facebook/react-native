@@ -9,9 +9,9 @@
  * @oncall react_native
  */
 
+import View from '../../Components/View/View';
 import useMergeRefs from '../useMergeRefs';
 import * as React from 'react';
-import View from '../../Components/View/View';
 import {act, create} from 'react-test-renderer';
 
 /**

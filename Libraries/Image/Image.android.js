@@ -8,24 +8,22 @@
  * @format
  */
 
-import ImageViewNativeComponent from './ImageViewNativeComponent';
-import * as React from 'react';
+import type {RootTag} from '../Types/RootTagTypes';
+import type {ImageAndroid} from './Image.flow';
+import type {ImageProps as ImagePropsType} from './ImageProps';
+
+import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import TextAncestor from '../Text/TextAncestor';
-import ImageInjection from './ImageInjection';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import flattenStyle from '../StyleSheet/flattenStyle';
-import resolveAssetSource from './resolveAssetSource';
-
-import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
-
-import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
-
-import {convertObjectFitToResizeMode} from './ImageUtils';
-
-import type {ImageProps as ImagePropsType} from './ImageProps';
-import type {RootTag} from '../Types/RootTagTypes';
+import ImageInjection from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
+import {convertObjectFitToResizeMode} from './ImageUtils';
+import ImageViewNativeComponent from './ImageViewNativeComponent';
+import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
+import resolveAssetSource from './resolveAssetSource';
+import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
+import * as React from 'react';
 
 let _requestId = 1;
 function generateRequestId() {
@@ -331,9 +329,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((Image: any): React.AbstractComponent<
-  ImagePropsType,
-  | React.ElementRef<typeof TextInlineImageNativeComponent>
-  | React.ElementRef<typeof ImageViewNativeComponent>,
-> &
-  ImageComponentStatics);
+module.exports = ((Image: any): ImageAndroid);

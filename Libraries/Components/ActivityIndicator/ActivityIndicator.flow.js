@@ -9,10 +9,11 @@
  */
 
 'use strict';
-import * as React from 'react';
-import {type ColorValue} from '../../StyleSheet/StyleSheet';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+
+import {type ColorValue} from '../../StyleSheet/StyleSheet';
+import * as React from 'react';
 
 type IndicatorSize = number | 'small' | 'large';
 

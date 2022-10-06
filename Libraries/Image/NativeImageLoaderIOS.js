@@ -10,6 +10,7 @@
 
 import type {RootTag} from '../TurboModule/RCTExport';
 import type {TurboModule} from '../TurboModule/RCTExport';
+
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {

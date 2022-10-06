@@ -8,27 +8,13 @@
 #include "BaseTextProps.h"
 
 #include <react/renderer/attributedstring/conversions.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/graphics/conversions.h>
 
-#define REBUILD_FIELD_SWITCH_CASE(                  \
-    defaults, rawValue, property, field, fieldName) \
-  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {   \
-    if (rawValue.hasValue()) {                      \
-      decltype(defaults.field) res;                 \
-      fromRawValue(context, rawValue, res);         \
-      property.field = res;                         \
-    } else {                                        \
-      property.field = defaults.field;              \
-    }                                               \
-    return;                                         \
-  }
-
 namespace facebook {
 namespace react {
-
-bool BaseTextProps::enablePropIteratorSetter = false;
 
 static TextAttributes convertRawProp(
     PropsParserContext const &context,
@@ -208,7 +194,7 @@ BaseTextProps::BaseTextProps(
     const BaseTextProps &sourceProps,
     const RawProps &rawProps)
     : textAttributes(
-          BaseTextProps::enablePropIteratorSetter
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.textAttributes
               : convertRawProp(
                     context,

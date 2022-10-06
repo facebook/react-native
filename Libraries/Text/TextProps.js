@@ -11,19 +11,19 @@
 'use strict';
 
 import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+  AccessibilityRole,
+  AccessibilityState,
+} from '../Components/View/ViewAccessibility';
+import type {TextStyleProp} from '../StyleSheet/StyleSheet';
+import type {
   LayoutEvent,
   PointerEvent,
   PressEvent,
   TextLayoutEvent,
 } from '../Types/CoreEventTypes';
 import type {Node} from 'react';
-import type {TextStyleProp} from '../StyleSheet/StyleSheet';
-import type {
-  AccessibilityRole,
-  AccessibilityState,
-  AccessibilityActionInfo,
-  AccessibilityActionEvent,
-} from '../Components/View/ViewAccessibility';
 
 export type PressRetentionOffset = $ReadOnly<{|
   top: number,

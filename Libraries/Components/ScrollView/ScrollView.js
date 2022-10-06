@@ -8,47 +8,45 @@
  * @flow strict-local
  */
 
-import AnimatedImplementation from '../../Animated/AnimatedImplementation';
-import Dimensions from '../../Utilities/Dimensions';
-import Platform from '../../Utilities/Platform';
-import * as React from 'react';
-import {findNodeHandle} from '../../ReactNative/RendererProxy';
-import ScrollViewStickyHeader from './ScrollViewStickyHeader';
-import StyleSheet from '../../StyleSheet/StyleSheet';
-import View from '../View/View';
-import UIManager from '../../ReactNative/UIManager';
-import Keyboard from '../Keyboard/Keyboard';
-import FrameRateLogger from '../../Interaction/FrameRateLogger';
-import TextInputState from '../TextInput/TextInputState';
-
-import dismissKeyboard from '../../Utilities/dismissKeyboard';
-import flattenStyle from '../../StyleSheet/flattenStyle';
-import invariant from 'invariant';
-import processDecelerationRate from './processDecelerationRate';
-import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
-import setAndForwardRef from '../../Utilities/setAndForwardRef';
-
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {
+  LayoutEvent,
   PressEvent,
   ScrollEvent,
-  LayoutEvent,
 } from '../../Types/CoreEventTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
-import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
-import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
-import type {KeyboardEvent, KeyboardMetrics} from '../Keyboard/Keyboard';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {KeyboardEvent, KeyboardMetrics} from '../Keyboard/Keyboard';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
-import Commands from './ScrollViewCommands';
+import AnimatedImplementation from '../../Animated/AnimatedImplementation';
+import FrameRateLogger from '../../Interaction/FrameRateLogger';
+import {findNodeHandle} from '../../ReactNative/RendererProxy';
+import UIManager from '../../ReactNative/UIManager';
+import flattenStyle from '../../StyleSheet/flattenStyle';
+import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Dimensions from '../../Utilities/Dimensions';
+import dismissKeyboard from '../../Utilities/dismissKeyboard';
+import Platform from '../../Utilities/Platform';
+import setAndForwardRef from '../../Utilities/setAndForwardRef';
+import Keyboard from '../Keyboard/Keyboard';
+import TextInputState from '../TextInput/TextInputState';
+import View from '../View/View';
 import AndroidHorizontalScrollContentViewNativeComponent from './AndroidHorizontalScrollContentViewNativeComponent';
 import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrollViewNativeComponent';
+import processDecelerationRate from './processDecelerationRate';
 import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent';
+import Commands from './ScrollViewCommands';
+import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
 import ScrollViewNativeComponent from './ScrollViewNativeComponent';
+import ScrollViewStickyHeader from './ScrollViewStickyHeader';
+import invariant from 'invariant';
+import * as React from 'react';
 
 if (Platform.OS === 'ios') {
   require('../../Renderer/shims/ReactNative'); // Force side effects to prevent T55744311

@@ -8,25 +8,25 @@
  * @flow strict-local
  */
 
-const AppContainer = require('../ReactNative/AppContainer');
-const I18nManager = require('../ReactNative/I18nManager');
-import ModalInjection from './ModalInjection';
-import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import NativeModalManager from './NativeModalManager';
-const Platform = require('../Utilities/Platform');
-const React = require('react');
-const ScrollView = require('../Components/ScrollView/ScrollView');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const View = require('../Components/View/View');
-
-const {RootTagContext} = require('../ReactNative/RootTag');
-
 import type {ViewProps} from '../Components/View/ViewPropTypes';
-import {VirtualizedListContextResetter} from '../Lists/VirtualizedListContext.js';
 import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
+
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import {VirtualizedListContextResetter} from '../Lists/VirtualizedListContext.js';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import ModalInjection from './ModalInjection';
+import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
+
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const View = require('../Components/View/View');
+const AppContainer = require('../ReactNative/AppContainer');
+const I18nManager = require('../ReactNative/I18nManager');
+const {RootTagContext} = require('../ReactNative/RootTag');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Platform = require('../Utilities/Platform');
+const React = require('react');
 
 type ModalEventDefinitions = {
   modalDismissed: [{modalID: number}],

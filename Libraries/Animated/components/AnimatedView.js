@@ -8,12 +8,11 @@
  * @format
  */
 
-import * as React from 'react';
+import type {AnimatedComponentType} from '../createAnimatedComponent';
 
 import View from '../../Components/View/View';
 import createAnimatedComponent from '../createAnimatedComponent';
-
-import type {AnimatedComponentType} from '../createAnimatedComponent';
+import * as React from 'react';
 
 export default (createAnimatedComponent(View): AnimatedComponentType<
   React.ElementConfig<typeof View>,

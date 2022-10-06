@@ -10,8 +10,8 @@
 
 'use strict';
 
-const PlatformIOS = require('../Platform.ios');
 const PlatformAndroid = require('../Platform.android');
+const PlatformIOS = require('../Platform.ios');
 
 describe('Platform', () => {
   describe('OS', () => {

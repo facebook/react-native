@@ -8,12 +8,11 @@
  * @format
  */
 
-import * as React from 'react';
+import type {AnimatedComponentType} from '../createAnimatedComponent';
 
 import SectionList from '../../Lists/SectionList';
 import createAnimatedComponent from '../createAnimatedComponent';
-
-import type {AnimatedComponentType} from '../createAnimatedComponent';
+import * as React from 'react';
 
 /**
  * @see https://github.com/facebook/react-native/commit/b8c8562

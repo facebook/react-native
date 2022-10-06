@@ -7,70 +7,60 @@
  * @format
  */
 
-export interface RelayProfiler {
-  attachProfileHandler(
-    name: string,
-    handler: (name: string, state?: any) => () => void,
-  ): void;
+type EventName = string | (() => string);
+type EventArgs = {[key: string]: string} | void | null;
 
-  attachAggregateHandler(
-    name: string,
-    handler: (name: string, callback: () => void) => void,
-  ): void;
-}
+/**
+ * Indicates if the application is currently being traced.
+ *
+ * Calling methods on this module when the application isn't being traced is
+ * cheap, but this method can be used to avoid computing expensive values for
+ * those functions.
+ *
+ * @example
+ * if (Systrace.isEnabled()) {
+ *   const expensiveArgs = computeExpensiveArgs();
+ *   Systrace.beginEvent('myEvent', expensiveArgs);
+ * }
+ */
+export function isEnabled(): boolean;
 
-export interface SystraceStatic {
-  setEnabled(enabled: boolean): void;
+/**
+ * @deprecated This function is now a no-op but it's left for backwards
+ * compatibility. `isEnabled` will now synchronously check if we're actively
+ * profiling or not. This is necessary because we don't have callbacks to know
+ * when profiling has started/stopped on Android APIs.
+ */
+export function setEnabled(_doEnable: boolean): void;
 
-  /**
-   * beginEvent/endEvent for starting and then ending a profile within the same call stack frame
-   **/
-  beginEvent(profileName?: any, args?: any): void;
-  endEvent(): void;
+/**
+ * Marks the start of a synchronous event that should end in the same stack
+ * frame. The end of this event should be marked using the `endEvent` function.
+ */
+export function beginEvent(eventName: EventName, args?: EventArgs): void;
 
-  /**
-   * beginAsyncEvent/endAsyncEvent for starting and then ending a profile where the end can either
-   * occur on another thread or out of the current stack frame, eg await
-   * the returned cookie variable should be used as input into the endAsyncEvent call to end the profile
-   **/
-  beginAsyncEvent(profileName?: any): any;
-  endAsyncEvent(profileName?: any, cookie?: any): void;
+/**
+ * Marks the end of a synchronous event started in the same stack frame.
+ */
+export function endEvent(args?: EventArgs): void;
 
-  /**
-   * counterEvent registers the value to the profileName on the systrace timeline
-   **/
-  counterEvent(profileName?: any, value?: any): void;
+/**
+ * Marks the start of a potentially asynchronous event. The end of this event
+ * should be marked calling the `endAsyncEvent` function with the cookie
+ * returned by this function.
+ */
+export function beginAsyncEvent(eventName: EventName, args?: EventArgs): number;
 
-  /**
-   * Relay profiles use await calls, so likely occur out of current stack frame
-   * therefore async variant of profiling is used
-   **/
-  attachToRelayProfiler(relayProfiler: RelayProfiler): void;
+/**
+ * Registers a new value for a counter event.
+ */
+export function endAsyncEvent(
+  eventName: EventName,
+  cookie: number,
+  args?: EventArgs,
+): void;
 
-  /* This is not called by default due to perf overhead but it's useful
-        if you want to find traces which spend too much time in JSON. */
-  swizzleJSON(): void;
-
-  /**
-   * Measures multiple methods of a class. For example, you can do:
-   * Systrace.measureMethods(JSON, 'JSON', ['parse', 'stringify']);
-   *
-   * @param methodNames Map from method names to method display names.
-   */
-  measureMethods(
-    object: any,
-    objectName: string,
-    methodNames: Array<string>,
-  ): void;
-
-  /**
-   * Returns an profiled version of the input function. For example, you can:
-   * JSON.parse = Systrace.measure('JSON', 'parse', JSON.parse);
-   *
-   * @return replacement function
-   */
-  measure<T extends Function>(objName: string, fnName: string, func: T): T;
-}
-
-export const Systrace: SystraceStatic;
-export type Systrace = SystraceStatic;
+/**
+ * counterEvent registers the value to the eventName on the systrace timeline
+ **/
+export function counterEvent(eventName: EventName, value: number): void;

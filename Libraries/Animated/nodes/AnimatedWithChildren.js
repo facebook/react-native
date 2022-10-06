@@ -11,8 +11,9 @@
 'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
-import AnimatedNode from './AnimatedNode';
+
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedNode from './AnimatedNode';
 
 export default class AnimatedWithChildren extends AnimatedNode {
   _children: Array<AnimatedNode>;

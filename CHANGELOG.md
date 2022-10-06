@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.70.2
+
+### Added
+
+#### iOS specific
+
+- Add support for "Prefer Cross-Fade Transitions" into AccessibilityInfo ([be7c50fefd](https://github.com/facebook/react-native/commit/be7c50fefd7f13201fb538ded93d91b374341173) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### Changed
+
+- Bump CLI to 9.1.3 and Metro to 0.72.3 ([f164556037](https://github.com/facebook/react-native/commit/f1645560376b734a87f0eba1fef69f6cba312cc1) by [@kelset](https://github.com/kelset))
+
+### Fixed
+
+- Inform ScrollView of Keyboard Events Before Mount ([26d148029c](https://github.com/facebook/react-native/commit/26d148029c7fde117f33b0d6c8b34286c45a0ef2) by [@NickGerleman](https://github.com/NickGerleman))
+
+#### Android specific
+
+- Fix port as -1 if dev server without specifying port on Android ([3d7e1380b4](https://github.com/facebook/react-native/commit/3d7e1380b4e609f5340ee80c19d566b17e620427) by [@Kudo](https://github.com/Kudo))
+
 ## v0.70.1
 
 ### Added

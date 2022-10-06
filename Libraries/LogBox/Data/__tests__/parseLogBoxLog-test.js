@@ -11,7 +11,7 @@
 
 'use strict';
 
-const {parseLogBoxLog, parseLogBoxException} = require('../parseLogBoxLog');
+const {parseLogBoxException, parseLogBoxLog} = require('../parseLogBoxLog');
 
 describe('parseLogBoxLog', () => {
   it('parses strings', () => {

@@ -8,13 +8,14 @@
  * @flow
  */
 
-import Blob from '../Blob/Blob';
 import type {BlobData} from '../Blob/BlobTypes';
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+
+import Blob from '../Blob/Blob';
 import BlobManager from '../Blob/BlobManager';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import binaryToBase64 from '../Utilities/binaryToBase64';
 import Platform from '../Utilities/Platform';
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeWebSocketModule from './NativeWebSocketModule';
 import WebSocketEvent from './WebSocketEvent';
 import base64 from 'base64-js';

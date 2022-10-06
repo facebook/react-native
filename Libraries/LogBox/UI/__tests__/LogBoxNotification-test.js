@@ -11,10 +11,10 @@
 
 'use strict';
 
-const React = require('react');
-const LogBoxNotification = require('../LogBoxNotification').default;
-const LogBoxLog = require('../../Data/LogBoxLog').default;
 const render = require('../../../../jest/renderer');
+const LogBoxLog = require('../../Data/LogBoxLog').default;
+const LogBoxNotification = require('../LogBoxNotification').default;
+const React = require('react');
 
 const log = new LogBoxLog({
   level: 'warn',

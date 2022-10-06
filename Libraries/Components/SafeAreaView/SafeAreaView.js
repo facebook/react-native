@@ -8,12 +8,12 @@
  * @format
  */
 
-import Platform from '../../Utilities/Platform';
-import * as React from 'react';
-import View from '../View/View';
-
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SafeAreaViewType} from './SafeAreaView.flow';
+
+import Platform from '../../Utilities/Platform';
+import View from '../View/View';
+import * as React from 'react';
 
 let exported: React.AbstractComponent<ViewProps, React.ElementRef<typeof View>>;
 

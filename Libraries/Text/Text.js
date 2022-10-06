@@ -10,12 +10,12 @@
 
 import type {PressEvent} from '../Types/CoreEventTypes';
 
-import Platform from '../Utilities/Platform';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
-import StyleSheet from '../StyleSheet/StyleSheet';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import {type TextProps} from './TextProps';
@@ -180,6 +180,13 @@ const Text: React.AbstractComponent<
     _selectable = userSelectToSelectableMap[style.userSelect];
   }
 
+  if (style?.verticalAlign != null) {
+    style = StyleSheet.compose(style, {
+      textAlignVertical:
+        verticalAlignToTextAlignVerticalMap[style.verticalAlign],
+    });
+  }
+
   if (__DEV__) {
     if (PressabilityDebug.isEnabled() && onPress != null) {
       style = StyleSheet.compose(restProps.style, {
@@ -290,6 +297,13 @@ const userSelectToSelectableMap = {
   none: false,
   contain: true,
   all: true,
+};
+
+const verticalAlignToTextAlignVerticalMap = {
+  auto: 'auto',
+  top: 'top',
+  bottom: 'bottom',
+  middle: 'center',
 };
 
 module.exports = Text;

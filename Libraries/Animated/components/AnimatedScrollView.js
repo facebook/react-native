@@ -8,20 +8,19 @@
  * @format
  */
 
-import * as React from 'react';
-import {useMemo} from 'react';
+import type {AnimatedComponentType} from '../createAnimatedComponent';
 
 import RefreshControl from '../../Components/RefreshControl/RefreshControl';
 import ScrollView from '../../Components/ScrollView/ScrollView';
-import StyleSheet from '../../StyleSheet/StyleSheet';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
+import StyleSheet from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
 import createAnimatedComponent from '../createAnimatedComponent';
 import useAnimatedProps from '../useAnimatedProps';
-
-import type {AnimatedComponentType} from '../createAnimatedComponent';
+import * as React from 'react';
+import {useMemo} from 'react';
 
 type Props = React.ElementConfig<typeof ScrollView>;
 type Instance = React.ElementRef<typeof ScrollView>;

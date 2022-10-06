@@ -9,11 +9,10 @@
  * @oncall react_native
  */
 
-import * as React from 'react';
-
-import Pressable from '../Pressable';
-import View from '../../View/View';
 import {expectRendersMatchingSnapshot} from '../../../Utilities/ReactNativeTestTools';
+import View from '../../View/View';
+import Pressable from '../Pressable';
+import * as React from 'react';
 
 describe('<Pressable />', () => {
   it('should render as expected', () => {

@@ -10,20 +10,20 @@
 
 'use strict';
 
-const Dimensions = require('../Utilities/Dimensions');
-const InspectorOverlay = require('./InspectorOverlay');
-const InspectorPanel = require('./InspectorPanel');
-const Platform = require('../Utilities/Platform');
-const PressabilityDebug = require('../Pressability/PressabilityDebug');
-const React = require('react');
-const {findNodeHandle} = require('../ReactNative/RendererProxy');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const View = require('../Components/View/View');
-const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
-
 import type {TouchedViewDataAtPoint} from '../Renderer/shims/ReactNativeTypes';
 import type {HostRef} from './getInspectorDataForViewAtPoint';
+
+const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const View = require('../Components/View/View');
+const PressabilityDebug = require('../Pressability/PressabilityDebug');
+const {findNodeHandle} = require('../ReactNative/RendererProxy');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Dimensions = require('../Utilities/Dimensions');
+const Platform = require('../Utilities/Platform');
+const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
+const InspectorOverlay = require('./InspectorOverlay');
+const InspectorPanel = require('./InspectorPanel');
+const React = require('react');
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 

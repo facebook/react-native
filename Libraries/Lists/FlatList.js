@@ -8,25 +8,25 @@
  * @format
  */
 
-const Platform = require('../Utilities/Platform');
-const deepDiffer = require('../Utilities/differ/deepDiffer');
-const React = require('react');
-const View = require('../Components/View/View');
-const VirtualizedList = require('./VirtualizedList');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-
-const invariant = require('invariant');
-
 import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
-import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
-  ViewToken,
   ViewabilityConfigCallbackPair,
+  ViewToken,
 } from './ViewabilityHelper';
-import type {RenderItemType, RenderItemProps} from './VirtualizedList';
+import type {RenderItemProps, RenderItemType} from './VirtualizedList';
+
+import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import memoizeOne from 'memoize-one';
+
+const View = require('../Components/View/View');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const deepDiffer = require('../Utilities/differ/deepDiffer');
+const Platform = require('../Utilities/Platform');
+const VirtualizedList = require('./VirtualizedList');
+const invariant = require('invariant');
+const React = require('react');
 
 type RequiredProps<ItemT> = {|
   /**

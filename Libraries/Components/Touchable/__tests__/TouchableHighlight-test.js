@@ -10,10 +10,10 @@
 
 'use strict';
 
-import * as React from 'react';
 import Text from '../../../Text/Text';
 import View from '../../View/View';
 import TouchableHighlight from '../TouchableHighlight';
+import * as React from 'react';
 
 const render = require('../../../../jest/renderer');
 

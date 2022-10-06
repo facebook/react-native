@@ -321,6 +321,7 @@ class MessageQueue {
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && this.__spy && isFinite(moduleID)) {
+      // $FlowFixMe[not-a-function]
       this.__spy({
         type: TO_NATIVE,
         module: this._remoteModuleTable[moduleID],

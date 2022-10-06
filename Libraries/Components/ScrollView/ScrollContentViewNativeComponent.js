@@ -12,8 +12,9 @@ import type {
   HostComponent,
   PartialViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
-import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import type {ViewProps as Props} from '../View/ViewPropTypes';
+
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
 export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   uiViewClassName: 'RCTScrollContentView',

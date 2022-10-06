@@ -16,6 +16,7 @@ import com.facebook.react.tasks.BuildCodegenCLITask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
 import com.facebook.react.utils.JsonUtils
+import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativePrefab
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
@@ -53,6 +54,7 @@ class ReactPlugin : Plugin<Project> {
   }
 
   private fun applyAppPlugin(project: Project, config: ReactExtension) {
+    configureReactNativePrefab(project)
     project.afterEvaluate {
       if (config.applyAppPlugin.getOrElse(false)) {
         val androidConfiguration = project.extensions.getByType(BaseExtension::class.java)

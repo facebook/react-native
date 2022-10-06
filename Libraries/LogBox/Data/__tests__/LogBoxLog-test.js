@@ -11,8 +11,8 @@
 
 'use strict';
 
-import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 import type {SymbolicatedStackTrace} from '../../../Core/Devtools/symbolicateStackTrace';
+import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 
 jest.mock('../LogBoxSymbolication', () => {
   return {__esModule: true, symbolicate: jest.fn(), deleteStack: jest.fn()};

@@ -8,13 +8,14 @@
  * @format
  */
 
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
+
+import Animated from '../../Animated/Animated';
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
-import Animated from '../../Animated/Animated';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 

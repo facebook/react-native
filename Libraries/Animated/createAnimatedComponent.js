@@ -10,16 +10,14 @@
 
 'use strict';
 
-import * as createAnimatedComponentInjection from './createAnimatedComponentInjection';
-
 import View from '../Components/View/View';
-import {AnimatedEvent} from './AnimatedEvent';
-import AnimatedProps from './nodes/AnimatedProps';
-import * as React from 'react';
-import NativeAnimatedHelper from './NativeAnimatedHelper';
-
-import invariant from 'invariant';
 import setAndForwardRef from '../Utilities/setAndForwardRef';
+import {AnimatedEvent} from './AnimatedEvent';
+import * as createAnimatedComponentInjection from './createAnimatedComponentInjection';
+import NativeAnimatedHelper from './NativeAnimatedHelper';
+import AnimatedProps from './nodes/AnimatedProps';
+import invariant from 'invariant';
+import * as React from 'react';
 
 let animatedComponentNextId = 1;
 

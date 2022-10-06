@@ -8,12 +8,13 @@
  * @format
  */
 
-const Blob = require('./Blob');
-const BlobRegistry = require('./BlobRegistry');
+import type {BlobCollector, BlobData, BlobOptions} from './BlobTypes';
 
-import type {BlobData, BlobOptions, BlobCollector} from './BlobTypes';
 import NativeBlobModule from './NativeBlobModule';
 import invariant from 'invariant';
+
+const Blob = require('./Blob');
+const BlobRegistry = require('./BlobRegistry');
 
 /*eslint-disable no-bitwise */
 /*eslint-disable eqeqeq */

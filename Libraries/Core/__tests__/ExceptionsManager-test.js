@@ -10,9 +10,9 @@
 
 'use strict';
 
+const LogBox = require('../../LogBox/LogBox');
 const ExceptionsManager = require('../ExceptionsManager');
 const NativeExceptionsManager = require('../NativeExceptionsManager').default;
-const LogBox = require('../../LogBox/LogBox');
 const ReactFiberErrorDialog = require('../ReactFiberErrorDialog').default;
 const fs = require('fs');
 const path = require('path');

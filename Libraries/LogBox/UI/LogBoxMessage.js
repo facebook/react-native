@@ -8,11 +8,11 @@
  * @format
  */
 
-import * as React from 'react';
-import Text from '../../Text/Text';
-
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {Message} from '../Data/parseLogBoxLog';
+
+import Text from '../../Text/Text';
+import * as React from 'react';
 
 type Props = {
   message: Message,

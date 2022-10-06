@@ -170,24 +170,10 @@ android {
         buildFeatures {
             prefab true
         }
-        def reactAndroidProjectDir = project(':ReactAndroid').projectDir
-        def packageReactNdkDebugLibs = tasks.register("packageReactNdkDebugLibs", Copy) {
-            dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
-            from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
-            into("$buildDir/react-ndk/exported")
-        }
-        def packageReactNdkReleaseLibs = tasks.register("packageReactNdkReleaseLibs", Copy) {
-            dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
-            from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
-            into("$buildDir/react-ndk/exported")
-        }
-        afterEvaluate {
-            // If you wish to add a custom TurboModule or component locally,
-            // you should uncomment this line.
-            // preBuild.dependsOn("generateCodegenArtifactsFromSchema")
-            preDebugBuild.dependsOn(packageReactNdkDebugLibs)
-            preReleaseBuild.dependsOn(packageReactNdkReleaseLibs)
-        }
+    }
+    packagingOptions {
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libfbjni.so'
     }
 
     splits {
@@ -244,24 +230,15 @@ dependencies {
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.fbjni'
-    }
-
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
         exclude group:'com.squareup.okhttp3', module:'okhttp'
     }
 
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
-    }
-
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
     if (enableHermes) {
         //noinspection GradleDynamicVersion
-        implementation("com.facebook.react:hermes-engine:+") { // From node_modules
-            exclude group:'com.facebook.fbjni'
-        }
+        implementation("com.facebook.react:hermes-engine:+") // From node_modules
     } else {
         implementation jscFlavor
     }

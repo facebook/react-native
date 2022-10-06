@@ -11,10 +11,9 @@
 
 'use strict';
 
-const React = require('react');
-const ProgressViewIOS = require('../ProgressViewIOS');
-
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
+const ProgressViewIOS = require('../ProgressViewIOS');
+const React = require('react');
 
 describe('<ProgressViewIOS />', () => {
   it('should render as expected', () => {

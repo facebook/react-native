@@ -8,19 +8,20 @@
  * @format
  */
 
+import type {PressEvent} from '../../Types/CoreEventTypes';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
+
+import View from '../../Components/View/View';
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
-import {Commands} from '../View/ViewNativeComponent';
 import {findHostInstance_DEPRECATED} from '../../ReactNative/RendererProxy';
-import type {PressEvent} from '../../Types/CoreEventTypes';
-import Platform from '../../Utilities/Platform';
-import View from '../../Components/View/View';
 import processColor from '../../StyleSheet/processColor';
-import * as React from 'react';
+import Platform from '../../Utilities/Platform';
+import {Commands} from '../View/ViewNativeComponent';
 import invariant from 'invariant';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   ...React.ElementConfig<TouchableWithoutFeedback>,

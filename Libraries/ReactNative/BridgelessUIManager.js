@@ -11,6 +11,7 @@
 'use strict';
 
 import type {RootTag} from '../Types/RootTagTypes';
+
 import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
 
 const errorMessageForMethod = (methodName: string): string =>

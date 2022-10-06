@@ -10,19 +10,18 @@
 
 'use strict';
 
+import VirtualizedList_EXPERIMENTAL from '../VirtualizedList_EXPERIMENTAL';
+import * as VirtualizedListInjection from '../VirtualizedListInjection';
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-import * as VirtualizedListInjection from '../VirtualizedListInjection';
-import VirtualizedList_EXPERIMENTAL from '../VirtualizedList_EXPERIMENTAL';
+
+const VirtualizedList = require('../VirtualizedList');
 
 const useExperimentalList =
   process.env.USE_EXPERIMENTAL_VIRTUALIZEDLIST === 'true';
-
 if (useExperimentalList) {
   VirtualizedListInjection.inject(VirtualizedList_EXPERIMENTAL);
 }
-
-const VirtualizedList = require('../VirtualizedList');
 
 describe('VirtualizedList', () => {
   it('renders simple list', () => {

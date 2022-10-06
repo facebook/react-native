@@ -435,6 +435,11 @@ export interface TextInputAndroidProps {
    * When false, it will prevent the soft keyboard from showing when the field is focused. The default value is true
    */
   showSoftInputOnFocus?: boolean | undefined;
+
+  /**
+   * Vertically align text when `multiline` is set to true
+   */
+  verticalAlign?: 'auto' | 'top' | 'bottom' | 'middle' | undefined;
 }
 
 /**

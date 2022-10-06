@@ -10,9 +10,10 @@
 
 'use strict';
 
-import {useSyncExternalStore} from 'use-sync-external-store/shim';
-import Appearance from './Appearance';
 import type {ColorSchemeName} from './NativeAppearance';
+
+import Appearance from './Appearance';
+import {useSyncExternalStore} from 'use-sync-external-store/shim';
 
 export default function useColorScheme(): ?ColorSchemeName {
   return useSyncExternalStore(

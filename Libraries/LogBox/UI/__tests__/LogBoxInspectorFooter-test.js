@@ -11,9 +11,9 @@
 
 'use strict';
 
-const React = require('react');
-const LogBoxInspectorFooter = require('../LogBoxInspectorFooter').default;
 const render = require('../../../../jest/renderer');
+const LogBoxInspectorFooter = require('../LogBoxInspectorFooter').default;
+const React = require('react');
 
 describe('LogBoxInspectorFooter', () => {
   it('should render two buttons for warning', () => {

@@ -8,15 +8,16 @@
  * @format
  */
 
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
+
+import View from '../../Components/View/View';
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import StyleSheet, {type ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 import Platform from '../../Utilities/Platform';
-import View from '../../Components/View/View';
 import * as React from 'react';
 
 type AndroidProps = $ReadOnly<{|

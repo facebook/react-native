@@ -8,11 +8,11 @@
  * @format
  */
 
-import * as React from 'react';
-
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {PressEvent} from '../../Types/CoreEventTypes';
+
+import * as React from 'react';
 
 /**
  * `Touchable`: Taps done right.
