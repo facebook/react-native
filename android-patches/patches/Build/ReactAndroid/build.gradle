@@ -1,5 +1,5 @@
 diff --git a/ReactAndroid/build.gradle b/ReactAndroid/build.gradle
-index cae7d90ada9..f14559c03a8 100644
+index cae7d90ada9..91f15aa6ac8 100644
 --- a/ReactAndroid/build.gradle
 +++ b/ReactAndroid/build.gradle
 @@ -12,6 +12,10 @@ plugins {
@@ -7,7 +7,7 @@ index cae7d90ada9..f14559c03a8 100644
  }
  
 +rootProject.ext {
-+    ndkVersion="21.4.7075529"
++    ndkVersion="25.0.8775105"
 +}
 +
  import com.facebook.react.tasks.internal.*
