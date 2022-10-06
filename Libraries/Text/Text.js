@@ -8,12 +8,14 @@
  * @format
  */
 
+import type {TypeForStyleKey} from '../StyleSheet/StyleSheet';
 import type {PressEvent} from '../Types/CoreEventTypes';
 
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
+import processTextShadow from '../StyleSheet/processTextShadow';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
@@ -21,8 +23,6 @@ import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
-import type {TypeForStyleKey} from '../StyleSheet/StyleSheet';
-import processTextShadow from '../StyleSheet/processTextShadow';
 
 /**
  * Text is the fundamental component for displaying text.

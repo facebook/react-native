@@ -10,7 +10,7 @@
 
 import type {ColorValue} from '../StyleSheet/StyleSheet';
 
-import {namedColors, getColorRegExStrings} from '@react-native/normalize-color';
+import {getColorRegExStrings, namedColors} from '@react-native/normalize-color';
 
 function processTextShadow(textShadow: string): {
   xOffset?: number,
