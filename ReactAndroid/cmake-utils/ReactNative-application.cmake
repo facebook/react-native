@@ -68,6 +68,7 @@ add_library(yoga ALIAS ReactAndroid::yoga)
 add_library(folly_runtime ALIAS ReactAndroid::folly_runtime)
 add_library(react_nativemodule_core ALIAS ReactAndroid::react_nativemodule_core)
 add_library(react_render_imagemanager ALIAS ReactAndroid::react_render_imagemanager)
+add_library(rrc_image ALIAS ReactAndroid::rrc_image)
 
 find_package(fbjni REQUIRED CONFIG)
 add_library(fbjni ALIAS fbjni::fbjni)
@@ -88,6 +89,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_render_graphics               # prefab ready
         react_render_imagemanager           # prefab ready
         react_render_mapbuffer              # prefab ready
+        rrc_image                           # prefab ready
         rrc_view                            # prefab ready
         runtimeexecutor                     # prefab ready
         turbomodulejsijni                   # prefab ready

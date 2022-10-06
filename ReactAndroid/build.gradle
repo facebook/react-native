@@ -170,6 +170,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("../ReactCommon/react/renderer/imagemanager/platform/cxx/", ""),
                 ]
             ),
+            new PrefabPreprocessingEntry(
+                "rrc_image",
+                new Pair("../ReactCommon/react/renderer/components/image/", "react/renderer/components/image/")
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -413,6 +417,7 @@ android {
                     "react_newarchdefaults",
                     "react_render_core",
                     "react_render_graphics",
+                    "rrc_image",
                     "rrc_view",
                     "jsi",
                     "glog",
@@ -513,6 +518,9 @@ android {
         }
         react_render_graphics {
             headers(new File(prefabHeadersDir, "react_render_graphics").absolutePath)
+        }
+        rrc_image {
+            headers(new File(prefabHeadersDir, "rrc_image").absolutePath)
         }
         rrc_view {
             headers(new File(prefabHeadersDir, "rrc_view").absolutePath)
