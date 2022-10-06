@@ -8,12 +8,14 @@
 package com.facebook.react.utils
 
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.facebook.react.ReactExtension
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
+import java.io.File
 import org.gradle.api.Project
 
 internal object NdkConfiguratorUtils {
   @Suppress("UnstableApiUsage")
-  fun configureReactNativePrefab(project: Project) {
+  fun configureReactNativeNdk(project: Project, extension: ReactExtension) {
     if (!project.isNewArchEnabled) {
       return
     }
@@ -54,6 +56,34 @@ internal object NdkConfiguratorUtils {
                 // AGP will give priority of libc++_shared coming from App modules.
                 "**/libc++_shared.so",
             ))
+
+        // If the user has not provided a CmakeLists.txt path, let's provide
+        // the default one from the framework
+        if (ext.externalNativeBuild.cmake.path == null) {
+          System.err.println("NCOR: Patching cmake path file")
+          ext.externalNativeBuild.cmake.path = File("TODO")
+        }
+
+        // Parameters should be provided in an additive manner (do not override what
+        // the user provided, but allow for sensible defaults).
+        val cmakeArgs = ext.defaultConfig.externalNativeBuild.cmake.arguments
+        if ("-DGENERATED_SRC_DIR" !in cmakeArgs) {
+          cmakeArgs.add("-DGENERATED_SRC_DIR=${File(project.buildDir, "generated/source")}")
+        }
+        if ("-DPROJECT_BUILD_DIR" !in cmakeArgs) {
+          cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.buildDir}")
+        }
+        if ("-DREACT_ANDROID_DIR" !in cmakeArgs) {
+          cmakeArgs.add(
+              "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}")
+        }
+        if ("-DREACT_ANDROID_BUILD_DIR" !in cmakeArgs) {
+          cmakeArgs.add(
+              "-DREACT_ANDROID_BUILD_DIR=${extension.reactNativeDir.file("ReactAndroid/build").get().asFile}")
+        }
+        if ("-DANDROID_STL" !in cmakeArgs) {
+          cmakeArgs.add("-DANDROID_STL=c++_shared")
+        }
       }
     }
   }

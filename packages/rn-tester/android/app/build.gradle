@@ -215,24 +215,11 @@ dependencies {
     androidTestImplementation 'junit:junit:4.12'
 }
 
-// TODO: Move all this logic to CodegenPlugin.java.
-def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
-def reactAndroidBuildDir = project(':ReactAndroid').buildDir;
-
 android {
-    defaultConfig {
-        externalNativeBuild {
-            cmake {
-                arguments "-DGENERATED_SRC_DIR=$buildDir/generated/source",
-                    "-DPROJECT_BUILD_DIR=$buildDir",
-                    "-DREACT_ANDROID_DIR=$reactAndroidProjectDir",
-                    "-DREACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir",
-                    "-DANDROID_STL=c++_shared"
-            }
-        }
-    }
     externalNativeBuild {
         cmake {
+            // RN Tester is doing custom linking of C++ libraries therefore needs
+            // a dedicated CMakeLists.txt file.
             path "src/main/jni/CMakeLists.txt"
         }
     }
