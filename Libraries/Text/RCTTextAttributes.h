@@ -8,7 +8,7 @@
 #import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTTextDecorationLineType.h>
-#import <React/RCTDynamicTypeRamp.h>
+#import <React/RCTDynamicTypeRamp.h> // TODO(macOS GH#774)
 #import <React/RCTFontSmoothing.h> // TODO(OSS Candidate ISS#2710739)
 
 #import "RCTTextTransform.h"
