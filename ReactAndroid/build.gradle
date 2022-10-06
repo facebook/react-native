@@ -163,6 +163,13 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("src/main/jni/react/jni", "react/jni/"),
                 ]
             ),
+            new PrefabPreprocessingEntry(
+                "react_render_imagemanager",
+                [
+                    new Pair("../ReactCommon/react/renderer/imagemanager/", "react/renderer/imagemanager/"),
+                    new Pair("../ReactCommon/react/renderer/imagemanager/platform/cxx/", ""),
+                ]
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -413,7 +420,8 @@ android {
                     "react_render_mapbuffer",
                     "yoga",
                     "folly_runtime",
-                    "react_nativemodule_core"
+                    "react_nativemodule_core",
+                    "react_render_imagemanager"
             }
         }
         ndk {
@@ -529,6 +537,9 @@ android {
         }
         react_nativemodule_core {
             headers(new File(prefabHeadersDir, "react_nativemodule_core").absolutePath)
+        }
+        react_render_imagemanager {
+            headers(new File(prefabHeadersDir, "react_render_imagemanager").absolutePath)
         }
     }
 
