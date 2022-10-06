@@ -11,7 +11,7 @@
 
 'use strict';
 
-import normalizeColor from '..';
+import {normalizeColor} from '..';
 
 it('accepts only spec compliant colors', () => {
   expect(normalizeColor('#abc')).not.toBe(null);

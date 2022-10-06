@@ -7,4 +7,20 @@
  * @flow strict
  */
 
-declare module.exports: (color: ?(string | number)) => null | number;
+declare module.exports: {
+    normalizeColor: (color: ?(string | number)) => null | number;
+    namedColors: $ReadOnlyArray<string>;
+    getColorRegExStrings: () => {
+        rgb: string,
+        rgba:
+          string,
+        hsl: string,
+        hsla:
+        string,
+        hwb: string,
+        hex3: string,
+        hex4: string,
+        hex6: string,
+        hex8: string,
+      };
+}

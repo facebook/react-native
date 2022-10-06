@@ -10,158 +10,7 @@
 
 import type {ColorValue} from '../StyleSheet/StyleSheet';
 
-const namedColors = [
-  'transparent',
-  'aliceblue',
-  'antiquewhite',
-  'aqua',
-  'aquamarine',
-  'azure',
-  'beige',
-  'bisque',
-  'black',
-  'blanchedalmond',
-  'blue',
-  'blueviolet',
-  'brown',
-  'burlywood',
-  'burntsienna',
-  'cadetblue',
-  'chartreuse',
-  'chocolate',
-  'coral',
-  'cornflowerblue',
-  'cornsilk',
-  'crimson',
-  'cyan',
-  'darkblue',
-  'darkcyan',
-  'darkgoldenrod',
-  'darkgray',
-  'darkgreen',
-  'darkgrey',
-  'darkkhaki',
-  'darkmagenta',
-  'darkolivegreen',
-  'darkorange',
-  'darkorchid',
-  'darkred',
-  'darksalmon',
-  'darkseagreen',
-  'darkslateblue',
-  'darkslategray',
-  'darkslategrey',
-  'darkturquoise',
-  'darkviolet',
-  'deeppink',
-  'deepskyblue',
-  'dimgray',
-  'dimgrey',
-  'dodgerblue',
-  'firebrick',
-  'floralwhite',
-  'forestgreen',
-  'fuchsia',
-  'gainsboro',
-  'ghostwhite',
-  'gold',
-  'goldenrod',
-  'gray',
-  'green',
-  'greenyellow',
-  'grey',
-  'honeydew',
-  'hotpink',
-  'indianred',
-  'indigo',
-  'ivory',
-  'khaki',
-  'lavender',
-  'lavenderblush',
-  'lawngreen',
-  'lemonchiffon',
-  'lightblue',
-  'lightcoral',
-  'lightcyan',
-  'lightgoldenrodyellow',
-  'lightgray',
-  'lightgreen',
-  'lightgrey',
-  'lightpink',
-  'lightsalmon',
-  'lightseagreen',
-  'lightskyblue',
-  'lightslategray',
-  'lightslategrey',
-  'lightsteelblue',
-  'lightyellow',
-  'lime',
-  'limegreen',
-  'linen',
-  'magenta',
-  'maroon',
-  'mediumaquamarine',
-  'mediumblue',
-  'mediumorchid',
-  'mediumpurple',
-  'mediumseagreen',
-  'mediumslateblue',
-  'mediumspringgreen',
-  'mediumturquoise',
-  'mediumvioletred',
-  'midnightblue',
-  'mintcream',
-  'mistyrose',
-  'moccasin',
-  'navajowhite',
-  'navy',
-  'oldlace',
-  'olive',
-  'olivedrab',
-  'orange',
-  'orangered',
-  'orchid',
-  'palegoldenrod',
-  'palegreen',
-  'paleturquoise',
-  'palevioletred',
-  'papayawhip',
-  'peachpuff',
-  'peru',
-  'pink',
-  'plum',
-  'powderblue',
-  'purple',
-  'rebeccapurple',
-  'red',
-  'rosybrown',
-  'royalblue',
-  'saddlebrown',
-  'salmon',
-  'sandybrown',
-  'seagreen',
-  'seashell',
-  'sienna',
-  'silver',
-  'skyblue',
-  'slateblue',
-  'slategray',
-  'slategrey',
-  'snow',
-  'springgreen',
-  'steelblue',
-  'tan',
-  'teal',
-  'thistle',
-  'tomato',
-  'turquoise',
-  'violet',
-  'wheat',
-  'white',
-  'whitesmoke',
-  'yellow',
-  'yellowgreen',
-];
+import {namedColors, getColorRegExStrings} from '@react-native/normalize-color';
 
 function processTextShadow(textShadow: string): {
   xOffset?: number,
@@ -173,11 +22,13 @@ function processTextShadow(textShadow: string): {
   const valueSeparator = '\\s+';
   const twoOrThreeOffsetRegex = `(${offsetRegex}(?:${valueSeparator}${offsetRegex}){1,2})`;
 
-  const hex8 = '#[0-9a-f]{8}';
-  const hex6 = '#[0-9a-f]{6}';
-  const hex3 = '#[0-9a-f]{3}';
-  const hexColor = `(?:(?:${hex8}|${hex6}|${hex3}))\\b`;
-  const colorFunction = '(?:(?:rgb|hsl)a?|hwb)(?:[^)]*\\))';
+  const colorRegexStrings = getColorRegExStrings();
+  const hex8 = colorRegexStrings.hex8;
+  const hex6 = colorRegexStrings.hex6;
+  const hex4 = colorRegexStrings.hex4;
+  const hex3 = colorRegexStrings.hex3;
+  const hexColor = `(?:(?:${hex8}|${hex6}|${hex3}|${hex4}))\\b`;
+  const colorFunction = `(?:${colorRegexStrings.rgb}|${colorRegexStrings.rgba}|${colorRegexStrings.hsl}|${colorRegexStrings.hsla}|${colorRegexStrings.hwb})`;
   const namedColor = namedColors.join('|');
   const colorRegex = `(${hexColor}|${colorFunction}|${namedColor})`;
 
@@ -200,7 +51,7 @@ function processTextShadow(textShadow: string): {
   let numbers;
 
   if ((match = shadowColorFirst.exec(textShadow))) {
-    numbers = match[2];
+    numbers = match[38];
     color = match[1];
 
     if (shadowColorFirst.exec(textShadow)) {
