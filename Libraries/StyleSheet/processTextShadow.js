@@ -51,6 +51,7 @@ function processTextShadow(textShadow: string): {
   let numbers;
 
   if ((match = shadowColorFirst.exec(textShadow))) {
+    // Index is really 38 due to the use of many capturing groups.
     numbers = match[38];
     color = match[1];
 
