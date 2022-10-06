@@ -14,4 +14,22 @@ internal object ProjectUtils {
     get() =
         project.hasProperty("newArchEnabled") &&
             project.property("newArchEnabled").toString().toBoolean()
+
+  const val HERMES_FALLBACK = true
+
+  internal val Project.isHermesEnabled: Boolean
+    get() =
+        if (project.hasProperty("enableHermes")) {
+          project.property("enableHermes").toString().lowercase().toBooleanStrictOrNull() ?: true
+        } else if (project.extensions.extraProperties.has("react")) {
+          @Suppress("UNCHECKED_CAST")
+          val reactMap = project.extensions.extraProperties.get("react") as? Map<String, Any?>
+          when (val enableHermesKey = reactMap?.get("enableHermes")) {
+            is Boolean -> enableHermesKey
+            is String -> enableHermesKey.lowercase().toBooleanStrictOrNull() ?: true
+            else -> HERMES_FALLBACK
+          }
+        } else {
+          HERMES_FALLBACK
+        }
 }
