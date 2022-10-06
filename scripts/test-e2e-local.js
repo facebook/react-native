@@ -74,7 +74,7 @@ if (argv.target === 'RNTester') {
     console.info(
       `We're going to test the ${
         argv.hermes ? 'Hermes' : 'JSC'
-      } version of RNTester iOS`,
+      } version of RNTester iOS with the new Architecture enabled`,
     );
     exec(
       `cd packages/rn-tester && USE_HERMES=${
@@ -98,7 +98,7 @@ if (argv.target === 'RNTester') {
     console.info(
       `We're going to test the ${
         argv.hermes ? 'Hermes' : 'JSC'
-      } version of RNTester Android`,
+      } version of RNTester Android with the new Architecture enabled`,
     );
     exec(
       `./gradlew :packages:rn-tester:android:app:${
