@@ -10,7 +10,12 @@
 
 'use strict';
 
-import type {SchemaType, NativeModuleSchema} from '../CodegenSchema.js';
+import type {
+  SchemaType,
+  NativeModuleSchema,
+  NativeModuleTypeAnnotation,
+  Nullable,
+} from '../CodegenSchema.js';
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -23,6 +28,32 @@ function wrapModuleSchema(
   };
 }
 
+function unwrapNullable<+T: NativeModuleTypeAnnotation>(
+  x: Nullable<T>,
+): [T, boolean] {
+  if (x.type === 'NullableTypeAnnotation') {
+    return [x.typeAnnotation, true];
+  }
+
+  return [x, false];
+}
+
+function wrapNullable<+T: NativeModuleTypeAnnotation>(
+  nullable: boolean,
+  typeAnnotation: T,
+): Nullable<T> {
+  if (!nullable) {
+    return typeAnnotation;
+  }
+
+  return {
+    type: 'NullableTypeAnnotation',
+    typeAnnotation,
+  };
+}
+
 module.exports = {
   wrapModuleSchema,
+  unwrapNullable,
+  wrapNullable,
 };
