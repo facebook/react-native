@@ -382,6 +382,62 @@ class UtilsTests < Test::Unit::TestCase
         end
     end
 
+    # ===================================== #
+    # Test - Apply Xcode14 React-Core patch #
+    # ===================================== #
+
+    def test_turnOffResourceBundleReactCore_correctlyAppliesPatch
+        # Arrange
+        react_core_target = TargetMock.new('React-Core')
+        react_core_target_native_target = react_core_target
+        react_core_debug_config = prepare_Code_Signing_build_configuration("Debug", "YES")
+        react_core_release_config = prepare_Code_Signing_build_configuration("Release", "YES")
+
+        hermes_engine_target = TargetMock.new('hermes-engine')
+        hermes_engine_target_native_target = hermes_engine_target
+        hermes_engine_debug_config = prepare_Code_Signing_build_configuration("Debug", "NO")
+        hermes_engine_release_config = prepare_Code_Signing_build_configuration("Release", "NO")
+
+        assets_target = TargetMock.new('assets')
+        assets_target_native_target = assets_target
+        assets_debug_config = prepare_Code_Signing_build_configuration("Debug", "YES")
+        assets_release_config = prepare_Code_Signing_build_configuration("Release", "YES")
+
+        installer = InstallerMock.new(pod_target_installation_results: {
+            'React-Core':
+                TargetInstallationResultMock.new(
+                    react_core_target,
+                    react_core_target_native_target,
+                    [TargetMock.new('React-Core',[react_core_debug_config, react_core_release_config])]
+                ),
+            'hermes-engine':
+                TargetInstallationResultMock.new(
+                    hermes_engine_target,
+                    hermes_engine_target_native_target,
+                    [TargetMock.new('hermes-engine',[hermes_engine_debug_config, hermes_engine_release_config])]
+                ),
+            'assets':
+                TargetInstallationResultMock.new(
+                    assets_target,
+                    assets_target_native_target,
+                    [TargetMock.new('assets',[assets_debug_config, assets_release_config])]
+                ),
+        })
+
+        # Act
+        ReactNativePodsUtils.turn_off_resource_bundle_react_core(installer)
+
+        # Assert
+        # these must have changed
+        assert_equal(react_core_debug_config.build_settings["CODE_SIGNING_ALLOWED"], "NO")
+        assert_equal(react_core_release_config.build_settings["CODE_SIGNING_ALLOWED"], "NO")
+        # these needs to stay the same
+        assert_equal(hermes_engine_debug_config.build_settings["CODE_SIGNING_ALLOWED"], "NO")
+        assert_equal(hermes_engine_release_config.build_settings["CODE_SIGNING_ALLOWED"], "NO")
+        assert_equal(assets_debug_config.build_settings["CODE_SIGNING_ALLOWED"], "YES")
+        assert_equal(assets_release_config.build_settings["CODE_SIGNING_ALLOWED"], "YES")
+    end
+
     # ================================= #
     # Test - Apply Mac Catalyst Patches #
     # ================================= #
@@ -501,4 +557,10 @@ def prepare_target(name, product_type = nil)
       prepare_config("Debug"),
       prepare_config("Release")
   ], product_type)
+end
+
+def prepare_Code_Signing_build_configuration(name, param)
+    return BuildConfigurationMock.new(name, {
+        "CODE_SIGNING_ALLOWED" => param
+    })
 end
