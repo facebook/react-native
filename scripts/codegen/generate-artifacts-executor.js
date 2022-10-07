@@ -311,6 +311,7 @@ function generateSchema(tmpDir, library, node, codegenCliPath) {
 
   console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
   // Generate one schema for the entire library...
+  // TODO: restore the `--platform ios` parameters as soon as we publish the codegen package.
   executeNodeScript(
     node,
     `${path.join(
@@ -319,7 +320,7 @@ function generateSchema(tmpDir, library, node, codegenCliPath) {
       'cli',
       'combine',
       'combine-js-to-schema-cli.js',
-    )} --platform ios ${pathToSchema} ${pathToJavaScriptSources}`,
+    )} ${pathToSchema} ${pathToJavaScriptSources}`,
   );
   console.log(`[Codegen] Generated schema: ${pathToSchema}`);
   return pathToSchema;
