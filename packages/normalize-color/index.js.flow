@@ -9,7 +9,6 @@
 
 declare module.exports: {
     normalizeColor: (color: ?(string | number)) => null | number;
-    namedColors: $ReadOnlyArray<string>;
     getColorRegExStrings: () => {
         rgb: string,
         rgba:
