@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -326,11 +327,19 @@ public class ReactModalHostView extends ViewGroup
     if (currentActivity != null && !currentActivity.isFinishing()) {
       mDialog.show();
       if (context instanceof Activity) {
-        mDialog
-            .getWindow()
-            .getDecorView()
-            .setSystemUiVisibility(
-                ((Activity) context).getWindow().getDecorView().getSystemUiVisibility());
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+          mDialog
+              .getWindow()
+              .getInsetsController();
+              .setSystemBarsAppearance(
+                  ((Activity) context).getWindow().getInsetsController().getSystemBarsAppearance());
+        } else {
+          mDialog
+              .getWindow()
+              .getDecorView()
+              .setSystemUiVisibility(
+                  ((Activity) context).getWindow().getDecorView().getSystemUiVisibility());
+        }
       }
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
     }
