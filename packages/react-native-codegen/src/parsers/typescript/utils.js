@@ -11,6 +11,7 @@
 'use strict';
 
 const {ParserError} = require('./errors');
+const {parseTopLevelType} = require('./parseTopLevelType');
 
 /**
  * TODO(T108222691): Use flow-types for @babel/parser
@@ -82,18 +83,11 @@ function resolveTypeAnnotation(
   };
 
   for (;;) {
-    // Check for optional type in union e.g. T | null | undefined
-    if (
-      node.type === 'TSUnionType' &&
-      node.types.some(
-        t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-      )
-    ) {
-      node = node.types.filter(
-        t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
-      )[0];
-      nullable = true;
-    } else if (node.type === 'TSTypeReference') {
+    const topLevelType = parseTopLevelType(node);
+    nullable = nullable || topLevelType.optional;
+    node = topLevelType.type;
+
+    if (node.type === 'TSTypeReference') {
       typeAliasResolutionStatus = {
         successful: true,
         aliasName: node.typeName.name,
@@ -122,21 +116,6 @@ function resolveTypeAnnotation(
     typeAnnotation: node,
     typeAliasResolutionStatus,
   };
-}
-
-function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
-  switch (value.type) {
-    case 'TSTypeReference':
-      if (types[value.typeName.name]) {
-        return getValueFromTypes(types[value.typeName.name], types);
-      } else {
-        return value;
-      }
-    case 'TSTypeAliasDeclaration':
-      return getValueFromTypes(value.typeAnnotation, types);
-    default:
-      return value;
-  }
 }
 
 export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
@@ -231,7 +210,6 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
 }
 
 module.exports = {
-  getValueFromTypes,
   resolveTypeAnnotation,
   createParserErrorCapturer,
   getTypes,

@@ -29,7 +29,7 @@ function buildStateSchema(
   if (info == null) {
     return null;
   }
-  const {name, optional, typeAnnotation, defaultValue, withNullDefault} = info;
+  const {name, optional, typeAnnotation, defaultValue} = info;
   return {
     name,
     optional,
@@ -37,7 +37,6 @@ function buildStateSchema(
       name,
       typeAnnotation,
       defaultValue,
-      withNullDefault,
       types,
       buildStateSchema,
     ),

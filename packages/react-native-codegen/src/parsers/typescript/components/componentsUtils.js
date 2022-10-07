@@ -12,7 +12,7 @@
 import type {ASTNode} from '../utils';
 import type {TypeDeclarationMap} from '../utils.js';
 import type {NamedShape} from '../../../CodegenSchema.js';
-const {getValueFromTypes} = require('../utils.js');
+const {parseTopLevelType} = require('../parseTopLevelType');
 
 function getProperties(
   typeName: string,
@@ -44,105 +44,160 @@ function getProperties(
   }
 }
 
-function getTypeAnnotationForObjectAsArrayElement<T>(
+function getUnionOfLiterals(
   name: string,
-  typeAnnotation: $FlowFixMe,
+  forArray: boolean,
+  elementTypes: $FlowFixMe[],
+  defaultValue: $FlowFixMe | void,
+  types: TypeDeclarationMap,
+) {
+  elementTypes.reduce((lastType, currType) => {
+    const lastFlattenedType =
+      lastType && lastType.type === 'TSLiteralType'
+        ? lastType.literal.type
+        : lastType.type;
+    const currFlattenedType =
+      currType.type === 'TSLiteralType' ? currType.literal.type : currType.type;
+
+    if (lastFlattenedType && currFlattenedType !== lastFlattenedType) {
+      throw new Error(`Mixed types are not supported (see "${name}")`);
+    }
+    return currType;
+  });
+
+  if (defaultValue === undefined) {
+    throw new Error(`A default enum value is required for "${name}"`);
+  }
+
+  const unionType = elementTypes[0].type;
+  if (
+    unionType === 'TSLiteralType' &&
+    elementTypes[0].literal?.type === 'StringLiteral'
+  ) {
+    return {
+      type: 'StringEnumTypeAnnotation',
+      default: (defaultValue: string),
+      options: elementTypes.map(option => option.literal.value),
+    };
+  } else if (
+    unionType === 'TSLiteralType' &&
+    elementTypes[0].literal?.type === 'NumericLiteral'
+  ) {
+    if (forArray) {
+      throw new Error(`Arrays of int enums are not supported (see: "${name}")`);
+    } else {
+      return {
+        type: 'Int32EnumTypeAnnotation',
+        default: (defaultValue: number),
+        options: elementTypes.map(option => option.literal.value),
+      };
+    }
+  } else {
+    throw new Error(
+      `Unsupported union type for "${name}", received "${
+        unionType === 'TSLiteralType'
+          ? elementTypes[0].literal?.type
+          : unionType
+      }"`,
+    );
+  }
+}
+
+function detectArrayType<T>(
+  name: string,
+  typeAnnotation: $FlowFixMe | ASTNode,
+  defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
-  // for array of array of a type
-  // such type must be an object literal
-  const elementType = getTypeAnnotationForArray(
-    name,
-    typeAnnotation,
-    null,
-    types,
-    buildSchema,
-  );
-  if (elementType.type !== 'ObjectTypeAnnotation') {
-    throw new Error(
-      `Only array of array of object is supported for "${name}".`,
-    );
+  // Covers: readonly T[]
+  if (
+    typeAnnotation.type === 'TSTypeOperator' &&
+    typeAnnotation.operator === 'readonly' &&
+    typeAnnotation.typeAnnotation.type === 'TSArrayType'
+  ) {
+    return {
+      type: 'ArrayTypeAnnotation',
+      elementType: getTypeAnnotationForArray(
+        name,
+        typeAnnotation.typeAnnotation.elementType,
+        defaultValue,
+        types,
+        buildSchema,
+      ),
+    };
   }
 
-  return {
-    type: 'ArrayTypeAnnotation',
-    elementType,
-  };
+  // Covers: T[]
+  if (typeAnnotation.type === 'TSArrayType') {
+    return {
+      type: 'ArrayTypeAnnotation',
+      elementType: getTypeAnnotationForArray(
+        name,
+        typeAnnotation.elementType,
+        defaultValue,
+        types,
+        buildSchema,
+      ),
+    };
+  }
+
+  // Covers: Array<T> and ReadonlyArray<T>
+  if (
+    typeAnnotation.type === 'TSTypeReference' &&
+    (typeAnnotation.typeName.name === 'ReadonlyArray' ||
+      typeAnnotation.typeName.name === 'Array')
+  ) {
+    return {
+      type: 'ArrayTypeAnnotation',
+      elementType: getTypeAnnotationForArray(
+        name,
+        typeAnnotation.typeParameters.params[0],
+        defaultValue,
+        types,
+        buildSchema,
+      ),
+    };
+  }
+
+  return null;
 }
 
 function getTypeAnnotationForArray<T>(
   name: string,
   typeAnnotation: $FlowFixMe,
-  defaultValue: $FlowFixMe | null,
+  defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
-  if (typeAnnotation.type === 'TSParenthesizedType') {
-    return getTypeAnnotationForArray(
-      name,
-      typeAnnotation.typeAnnotation,
-      defaultValue,
-      types,
-      buildSchema,
+  // unpack WithDefault, (T) or T|U
+  const topLevelType = parseTopLevelType(typeAnnotation, types);
+  if (topLevelType.defaultValue !== undefined) {
+    throw new Error(
+      'Nested optionals such as "ReadonlyArray<boolean | null | undefined>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | undefined"',
     );
   }
-
-  const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
-
-  if (
-    extractedTypeAnnotation.type === 'TSUnionType' &&
-    extractedTypeAnnotation.types.some(
-      t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-    )
-  ) {
+  if (topLevelType.optional) {
     throw new Error(
       'Nested optionals such as "ReadonlyArray<boolean | null | undefined>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | undefined"',
     );
   }
 
-  if (
-    extractedTypeAnnotation.type === 'TSTypeReference' &&
-    extractedTypeAnnotation.typeName.name === 'WithDefault'
-  ) {
-    throw new Error(
-      'Nested defaults such as "ReadonlyArray<WithDefault<boolean, false>>" are not supported, please declare defaults at the top level of value definitions as in "WithDefault<ReadonlyArray<boolean>, false>"',
-    );
-  }
-
-  // Covers: T[]
-  if (typeAnnotation.type === 'TSArrayType') {
-    return getTypeAnnotationForObjectAsArrayElement(
-      name,
-      typeAnnotation.elementType,
-      types,
-      buildSchema,
-    );
-  }
-
-  if (extractedTypeAnnotation.type === 'TSTypeReference') {
-    // Resolve the type alias if it's not defined inline
-    const objectType = getValueFromTypes(extractedTypeAnnotation, types);
-
-    if (objectType.typeName.name === 'Readonly') {
-      return getTypeAnnotationForArray(
-        name,
-        objectType.typeParameters.params[0],
-        defaultValue,
-        types,
-        buildSchema,
+  const extractedTypeAnnotation = topLevelType.type;
+  const arrayType = detectArrayType(
+    name,
+    extractedTypeAnnotation,
+    defaultValue,
+    types,
+    buildSchema,
+  );
+  if (arrayType) {
+    if (arrayType.elementType.type !== 'ObjectTypeAnnotation') {
+      throw new Error(
+        `Only array of array of object is supported for "${name}".`,
       );
     }
-
-    // Covers: ReadonlyArray<T>
-    if (objectType.typeName.name === 'ReadonlyArray') {
-      return getTypeAnnotationForObjectAsArrayElement(
-        name,
-        objectType.typeParameters.params[0],
-        types,
-        buildSchema,
-      );
-    }
+    return arrayType;
   }
 
   const type =
@@ -157,8 +212,11 @@ function getTypeAnnotationForArray<T>(
     case 'TSInterfaceDeclaration': {
       const rawProperties =
         type === 'TSInterfaceDeclaration'
-          ? [typeAnnotation]
-          : typeAnnotation.members;
+          ? [extractedTypeAnnotation]
+          : extractedTypeAnnotation.members;
+      if (rawProperties === undefined) {
+        throw new Error(type);
+      }
       return {
         type: 'ObjectTypeAnnotation',
         properties: flattenProperties(rawProperties, types)
@@ -216,52 +274,13 @@ function getTypeAnnotationForArray<T>(
         type: 'StringTypeAnnotation',
       };
     case 'TSUnionType':
-      typeAnnotation.types.reduce((lastType, currType) => {
-        const lastFlattenedType =
-          lastType && lastType.type === 'TSLiteralType'
-            ? lastType.literal.type
-            : lastType.type;
-        const currFlattenedType =
-          currType.type === 'TSLiteralType'
-            ? currType.literal.type
-            : currType.type;
-
-        if (lastFlattenedType && currFlattenedType !== lastFlattenedType) {
-          throw new Error(`Mixed types are not supported (see "${name}")`);
-        }
-        return currType;
-      });
-
-      if (defaultValue === null) {
-        throw new Error(`A default enum value is required for "${name}"`);
-      }
-
-      const unionType = typeAnnotation.types[0].type;
-      if (
-        unionType === 'TSLiteralType' &&
-        typeAnnotation.types[0].literal?.type === 'StringLiteral'
-      ) {
-        return {
-          type: 'StringEnumTypeAnnotation',
-          default: (defaultValue: string),
-          options: typeAnnotation.types.map(option => option.literal.value),
-        };
-      } else if (
-        unionType === 'TSLiteralType' &&
-        typeAnnotation.types[0].literal?.type === 'NumericLiteral'
-      ) {
-        throw new Error(
-          `Arrays of int enums are not supported (see: "${name}")`,
-        );
-      } else {
-        throw new Error(
-          `Unsupported union type for "${name}", received "${
-            unionType === 'TSLiteralType'
-              ? typeAnnotation.types[0].literal?.type
-              : unionType
-          }"`,
-        );
-      }
+      return getUnionOfLiterals(
+        name,
+        true,
+        extractedTypeAnnotation.types,
+        defaultValue,
+        types,
+      );
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": ${type}`);
@@ -271,101 +290,22 @@ function getTypeAnnotationForArray<T>(
 function getTypeAnnotation<T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
-  defaultValue: $FlowFixMe | null,
-  withNullDefault: boolean,
+  defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
-  const typeAnnotation = getValueFromTypes(annotation, types);
-
-  // Covers: (T)
-  if (typeAnnotation.type === 'TSParenthesizedType') {
-    return getTypeAnnotation(
-      name,
-      typeAnnotation.typeAnnotation,
-      defaultValue,
-      withNullDefault,
-      types,
-      buildSchema,
-    );
-  }
-
-  // Covers: readonly T[]
-  if (
-    typeAnnotation.type === 'TSTypeOperator' &&
-    typeAnnotation.operator === 'readonly' &&
-    typeAnnotation.typeAnnotation.type === 'TSArrayType'
-  ) {
-    return {
-      type: 'ArrayTypeAnnotation',
-      elementType: getTypeAnnotationForArray(
-        name,
-        typeAnnotation.typeAnnotation.elementType,
-        defaultValue,
-        types,
-        buildSchema,
-      ),
-    };
-  }
-
-  // Covers: ReadonlyArray<T>
-  if (
-    typeAnnotation.type === 'TSTypeReference' &&
-    typeAnnotation.typeName.name === 'ReadonlyArray'
-  ) {
-    return {
-      type: 'ArrayTypeAnnotation',
-      elementType: getTypeAnnotationForArray(
-        name,
-        typeAnnotation.typeParameters.params[0],
-        defaultValue,
-        types,
-        buildSchema,
-      ),
-    };
-  }
-
-  // Covers: Readonly<T[]>
-  if (
-    typeAnnotation.type === 'TSTypeReference' &&
-    typeAnnotation.typeName?.name === 'Readonly' &&
-    typeAnnotation.typeParameters.type === 'TSTypeParameterInstantiation' &&
-    typeAnnotation.typeParameters.params[0].type === 'TSArrayType'
-  ) {
-    return {
-      type: 'ArrayTypeAnnotation',
-      elementType: getTypeAnnotationForArray(
-        name,
-        typeAnnotation.typeParameters.params[0],
-        defaultValue,
-        types,
-        buildSchema,
-      ),
-    };
-  }
-
-  // Covers: Readonly<T>, Readonly<{ ... }>, Readonly<T | U ...>
-  if (
-    typeAnnotation.type === 'TSTypeReference' &&
-    typeAnnotation.typeName?.name === 'Readonly' &&
-    typeAnnotation.typeParameters.type === 'TSTypeParameterInstantiation'
-  ) {
-    // TODO:
-    // the original implementation assume Readonly<TSUnionType>
-    // to be Readonly<{ ... } | null | undefined>
-    // without actually verifying it
-    let elementType = typeAnnotation.typeParameters.params[0];
-    if (elementType.type === 'TSUnionType') {
-      elementType = elementType.types[0];
-    }
-    return getTypeAnnotation(
-      name,
-      elementType,
-      defaultValue,
-      withNullDefault,
-      types,
-      buildSchema,
-    );
+  // unpack WithDefault, (T) or T|U
+  const topLevelType = parseTopLevelType(annotation, types);
+  const typeAnnotation = topLevelType.type;
+  const arrayType = detectArrayType(
+    name,
+    typeAnnotation,
+    defaultValue,
+    types,
+    buildSchema,
+  );
+  if (arrayType) {
+    return arrayType;
   }
 
   const type =
@@ -433,85 +373,42 @@ function getTypeAnnotation<T>(
     case 'Float':
       return {
         type: 'FloatTypeAnnotation',
-        default: withNullDefault
-          ? (defaultValue: number | null)
-          : ((defaultValue ? defaultValue : 0): number),
+        default: ((defaultValue === null
+          ? null
+          : defaultValue
+          ? defaultValue
+          : 0): number | null),
       };
     case 'TSBooleanKeyword':
       return {
         type: 'BooleanTypeAnnotation',
-        default: withNullDefault
-          ? (defaultValue: boolean | null)
-          : ((defaultValue == null ? false : defaultValue): boolean),
+        default: defaultValue === null ? null : !!defaultValue,
       };
     case 'TSStringKeyword':
-      if (typeof defaultValue !== 'undefined') {
-        return {
-          type: 'StringTypeAnnotation',
-          default: (defaultValue: string | null),
-        };
-      }
-      throw new Error(`A default string (or null) is required for "${name}"`);
+      return {
+        type: 'StringTypeAnnotation',
+        default: ((defaultValue === undefined ? null : defaultValue):
+          | string
+          | null),
+      };
     case 'Stringish':
-      if (typeof defaultValue !== 'undefined') {
-        return {
-          type: 'StringTypeAnnotation',
-          default: (defaultValue: string | null),
-        };
-      }
-      throw new Error(`A default string (or null) is required for "${name}"`);
-    case 'TSUnionType':
-      typeAnnotation.types.reduce((lastType, currType) => {
-        const lastFlattenedType =
-          lastType && lastType.type === 'TSLiteralType'
-            ? lastType.literal.type
-            : lastType.type;
-        const currFlattenedType =
-          currType.type === 'TSLiteralType'
-            ? currType.literal.type
-            : currType.type;
-
-        if (lastFlattenedType && currFlattenedType !== lastFlattenedType) {
-          throw new Error(`Mixed types are not supported (see "${name}")`);
-        }
-        return currType;
-      });
-
-      if (defaultValue === null) {
-        throw new Error(`A default enum value is required for "${name}"`);
-      }
-
-      const unionType = typeAnnotation.types[0].type;
-      if (
-        unionType === 'TSLiteralType' &&
-        typeAnnotation.types[0].literal?.type === 'StringLiteral'
-      ) {
-        return {
-          type: 'StringEnumTypeAnnotation',
-          default: (defaultValue: string),
-          options: typeAnnotation.types.map(option => option.literal.value),
-        };
-      } else if (
-        unionType === 'TSLiteralType' &&
-        typeAnnotation.types[0].literal?.type === 'NumericLiteral'
-      ) {
-        return {
-          type: 'Int32EnumTypeAnnotation',
-          default: (defaultValue: number),
-          options: typeAnnotation.types.map(option => option.literal.value),
-        };
-      } else {
-        throw new Error(
-          `Unsupported union type for "${name}", received "${
-            unionType === 'TSLiteralType'
-              ? typeAnnotation.types[0].literal?.type
-              : unionType
-          }"`,
-        );
-      }
+      return {
+        type: 'StringTypeAnnotation',
+        default: ((defaultValue === undefined ? null : defaultValue):
+          | string
+          | null),
+      };
     case 'TSNumberKeyword':
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
+      );
+    case 'TSUnionType':
+      return getUnionOfLiterals(
+        name,
+        false,
+        typeAnnotation.types,
+        defaultValue,
+        types,
       );
     default:
       (type: empty);
@@ -519,54 +416,24 @@ function getTypeAnnotation<T>(
   }
 }
 
-function findProp(
-  name: string,
-  typeAnnotation: $FlowFixMe,
-  optionalType: boolean,
-) {
-  switch (typeAnnotation.type) {
-    // Check for (T)
-    case 'TSParenthesizedType':
-      return findProp(name, typeAnnotation.typeAnnotation, optionalType);
-
-    // Check for optional type in union e.g. T | null | undefined
-    case 'TSUnionType':
-      return findProp(
-        name,
-        typeAnnotation.types.filter(
-          t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
-        )[0],
-        optionalType ||
-          typeAnnotation.types.some(
-            t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-          ),
-      );
-
-    case 'TSTypeReference':
-      // Check against optional type inside `WithDefault`
-      if (typeAnnotation.typeName.name === 'WithDefault' && optionalType) {
-        throw new Error(
-          'WithDefault<> is optional and does not need to be marked as optional. Please remove the union of undefined and/or null',
-        );
-      }
-      // Remove unwanted types
-      if (
-        typeAnnotation.typeName.name === 'DirectEventHandler' ||
-        typeAnnotation.typeName.name === 'BubblingEventHandler'
-      ) {
-        return null;
-      }
-      if (
-        name === 'style' &&
-        typeAnnotation.type === 'GenericTypeAnnotation' &&
-        typeAnnotation.typeName.name === 'ViewStyleProp'
-      ) {
-        return null;
-      }
-      return {typeAnnotation, optionalType};
-    default:
-      return {typeAnnotation, optionalType};
+function isProp(name: string, typeAnnotation: $FlowFixMe) {
+  if (typeAnnotation.type === 'TSTypeReference') {
+    // Remove unwanted types
+    if (
+      typeAnnotation.typeName.name === 'DirectEventHandler' ||
+      typeAnnotation.typeName.name === 'BubblingEventHandler'
+    ) {
+      return false;
+    }
+    if (
+      name === 'style' &&
+      typeAnnotation.type === 'GenericTypeAnnotation' &&
+      typeAnnotation.typeName.name === 'ViewStyleProp'
+    ) {
+      return false;
+    }
   }
+  return true;
 }
 
 type SchemaInfo = {
@@ -574,98 +441,34 @@ type SchemaInfo = {
   optional: boolean,
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe,
-  withNullDefault: boolean,
 };
 
 function getSchemaInfo(
   property: PropAST,
   types: TypeDeclarationMap,
 ): ?SchemaInfo {
-  const name = property.key.name;
-
-  const value = getValueFromTypes(
+  // unpack WithDefault, (T) or T|U
+  const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,
     types,
   );
 
-  const foundProp = findProp(name, value, false);
-  if (!foundProp) {
+  const name = property.key.name;
+  if (!isProp(name, topLevelType.type)) {
     return null;
   }
-  let {typeAnnotation, optionalType} = foundProp;
-  let optional = property.optional || optionalType;
 
-  // example: Readonly<{prop: string} | null | undefined>;
-  if (
-    value.type === 'TSTypeReference' &&
-    typeAnnotation.typeParameters?.params[0].type === 'TSUnionType' &&
-    typeAnnotation.typeParameters?.params[0].types.some(
-      element =>
-        element.type === 'TSNullKeyword' ||
-        element.type === 'TSUndefinedKeyword',
-    )
-  ) {
-    optional = true;
-  }
-
-  if (
-    !property.optional &&
-    value.type === 'TSTypeReference' &&
-    typeAnnotation.typeName.name === 'WithDefault'
-  ) {
+  if (!property.optional && topLevelType.defaultValue !== undefined) {
     throw new Error(
       `key ${name} must be optional if used with WithDefault<> annotation`,
     );
   }
 
-  let type = typeAnnotation.type;
-  let defaultValue = null;
-  let withNullDefault = false;
-  if (
-    type === 'TSTypeReference' &&
-    typeAnnotation.typeName.name === 'WithDefault'
-  ) {
-    if (typeAnnotation.typeParameters.params.length === 1) {
-      throw new Error(
-        `WithDefault requires two parameters, did you forget to provide a default value for "${name}"?`,
-      );
-    }
-
-    let defaultValueType = typeAnnotation.typeParameters.params[1].type;
-    defaultValue = typeAnnotation.typeParameters.params[1].value;
-
-    if (defaultValueType === 'TSLiteralType') {
-      defaultValueType = typeAnnotation.typeParameters.params[1].literal.type;
-      defaultValue = typeAnnotation.typeParameters.params[1].literal.value;
-      if (
-        defaultValueType === 'UnaryExpression' &&
-        typeAnnotation.typeParameters.params[1].literal.argument.type ===
-          'NumericLiteral' &&
-        typeAnnotation.typeParameters.params[1].literal.operator === '-'
-      ) {
-        defaultValue =
-          -1 * typeAnnotation.typeParameters.params[1].literal.argument.value;
-      }
-    }
-
-    if (defaultValueType === 'TSNullKeyword') {
-      defaultValue = null;
-      withNullDefault = true;
-    }
-
-    typeAnnotation = typeAnnotation.typeParameters.params[0];
-    type =
-      typeAnnotation.type === 'TSTypeReference'
-        ? typeAnnotation.typeName.name
-        : typeAnnotation.type;
-  }
-
   return {
     name,
-    optional,
-    typeAnnotation,
-    defaultValue,
-    withNullDefault,
+    optional: property.optional || topLevelType.optional,
+    typeAnnotation: topLevelType.type,
+    defaultValue: topLevelType.defaultValue,
   };
 }
 

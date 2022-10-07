@@ -29,7 +29,7 @@ function buildPropSchema(
   if (info == null) {
     return null;
   }
-  const {name, optional, typeAnnotation, defaultValue, withNullDefault} = info;
+  const {name, optional, typeAnnotation, defaultValue} = info;
   return {
     name,
     optional,
@@ -37,7 +37,6 @@ function buildPropSchema(
       name,
       typeAnnotation,
       defaultValue,
-      withNullDefault,
       types,
       buildPropSchema,
     ),

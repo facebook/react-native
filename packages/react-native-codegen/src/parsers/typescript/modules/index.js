@@ -154,16 +154,6 @@ function translateTypeAnnotation(
     resolveTypeAnnotation(typeScriptTypeAnnotation, types);
 
   switch (typeAnnotation.type) {
-    case 'TSParenthesizedType': {
-      return translateTypeAnnotation(
-        hasteModuleName,
-        typeAnnotation.typeAnnotation,
-        types,
-        aliasMap,
-        tryParse,
-        cxxOnly,
-      );
-    }
     case 'TSArrayType': {
       return translateArrayTypeAnnotation(
         hasteModuleName,
@@ -230,25 +220,6 @@ function translateTypeAnnotation(
             typeAnnotation.typeParameters.params[0],
             nullable,
           );
-        }
-        case 'Readonly': {
-          assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-            hasteModuleName,
-            typeAnnotation,
-          );
-
-          const [paramType, isParamNullable] = unwrapNullable(
-            translateTypeAnnotation(
-              hasteModuleName,
-              typeAnnotation.typeParameters.params[0],
-              types,
-              aliasMap,
-              tryParse,
-              cxxOnly,
-            ),
-          );
-
-          return wrapNullable(nullable || isParamNullable, paramType);
         }
         case 'Stringish': {
           return wrapNullable(nullable, {
