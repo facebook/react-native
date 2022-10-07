@@ -15,6 +15,7 @@ import type {
   Int32TypeAnnotation,
   NativeModuleNumberTypeAnnotation,
   Nullable,
+  ReservedTypeAnnotation,
 } from '../CodegenSchema';
 
 const {wrapNullable} = require('./parsers-commons');
@@ -39,8 +40,16 @@ function emitNumber(
   });
 }
 
+function emitRootTag(nullable: boolean): Nullable<ReservedTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'ReservedTypeAnnotation',
+    name: 'RootTag',
+  });
+}
+
 module.exports = {
   emitBoolean,
   emitInt32,
   emitNumber,
+  emitRootTag,
 };
