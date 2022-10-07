@@ -32,7 +32,7 @@ const {
   visit,
   isModuleRegistryCall,
 } = require('../utils.js');
-const {unwrapNullable, wrapNullable} = require('./utils');
+const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
 const {
   IncorrectlyParameterizedTypeScriptGenericParserError,
   MisnamedModuleTypeScriptInterfaceParserError,
