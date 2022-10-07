@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Fixed
-- Load react-native.config.js from correct path for codegen
+- Load react-native.config.js from correct path during codegen
 
 ## v0.70.2
 
