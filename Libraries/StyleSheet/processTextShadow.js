@@ -10,7 +10,7 @@
 
 import type {ColorValue} from '../StyleSheet/StyleSheet';
 
-import {getColorRegExStrings, namedColors} from '@react-native/normalize-color';
+import {getColorRegExStrings} from '@react-native/normalize-color';
 
 function processTextShadow(textShadow: string): {
   xOffset?: number,
@@ -29,7 +29,7 @@ function processTextShadow(textShadow: string): {
   const hex3 = colorRegexStrings.hex3;
   const hexColor = `(?:(?:${hex8}|${hex6}|${hex3}|${hex4}))\\b`;
   const colorFunction = `(?:${colorRegexStrings.rgb}|${colorRegexStrings.rgba}|${colorRegexStrings.hsl}|${colorRegexStrings.hsla}|${colorRegexStrings.hwb})`;
-  const namedColor = namedColors.join('|');
+  const namedColor = '\\b[a-z]+\\b';
   const colorRegex = `(${hexColor}|${colorFunction}|${namedColor})`;
 
   const numberWithoutUnitRegex = /[+-]?\d+(\.\d+)?/g;

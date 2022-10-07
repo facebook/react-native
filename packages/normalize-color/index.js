@@ -313,165 +313,165 @@ function getColorRegExStrings() {
   };
 }
 
-const namedColors = {
-  transparent: 0x00000000,
-  aliceblue: 0xf0f8ffff,
-  antiquewhite: 0xfaebd7ff,
-  aqua: 0x00ffffff,
-  aquamarine: 0x7fffd4ff,
-  azure: 0xf0ffffff,
-  beige: 0xf5f5dcff,
-  bisque: 0xffe4c4ff,
-  black: 0x000000ff,
-  blanchedalmond: 0xffebcdff,
-  blue: 0x0000ffff,
-  blueviolet: 0x8a2be2ff,
-  brown: 0xa52a2aff,
-  burlywood: 0xdeb887ff,
-  burntsienna: 0xea7e5dff,
-  cadetblue: 0x5f9ea0ff,
-  chartreuse: 0x7fff00ff,
-  chocolate: 0xd2691eff,
-  coral: 0xff7f50ff,
-  cornflowerblue: 0x6495edff,
-  cornsilk: 0xfff8dcff,
-  crimson: 0xdc143cff,
-  cyan: 0x00ffffff,
-  darkblue: 0x00008bff,
-  darkcyan: 0x008b8bff,
-  darkgoldenrod: 0xb8860bff,
-  darkgray: 0xa9a9a9ff,
-  darkgreen: 0x006400ff,
-  darkgrey: 0xa9a9a9ff,
-  darkkhaki: 0xbdb76bff,
-  darkmagenta: 0x8b008bff,
-  darkolivegreen: 0x556b2fff,
-  darkorange: 0xff8c00ff,
-  darkorchid: 0x9932ccff,
-  darkred: 0x8b0000ff,
-  darksalmon: 0xe9967aff,
-  darkseagreen: 0x8fbc8fff,
-  darkslateblue: 0x483d8bff,
-  darkslategray: 0x2f4f4fff,
-  darkslategrey: 0x2f4f4fff,
-  darkturquoise: 0x00ced1ff,
-  darkviolet: 0x9400d3ff,
-  deeppink: 0xff1493ff,
-  deepskyblue: 0x00bfffff,
-  dimgray: 0x696969ff,
-  dimgrey: 0x696969ff,
-  dodgerblue: 0x1e90ffff,
-  firebrick: 0xb22222ff,
-  floralwhite: 0xfffaf0ff,
-  forestgreen: 0x228b22ff,
-  fuchsia: 0xff00ffff,
-  gainsboro: 0xdcdcdcff,
-  ghostwhite: 0xf8f8ffff,
-  gold: 0xffd700ff,
-  goldenrod: 0xdaa520ff,
-  gray: 0x808080ff,
-  green: 0x008000ff,
-  greenyellow: 0xadff2fff,
-  grey: 0x808080ff,
-  honeydew: 0xf0fff0ff,
-  hotpink: 0xff69b4ff,
-  indianred: 0xcd5c5cff,
-  indigo: 0x4b0082ff,
-  ivory: 0xfffff0ff,
-  khaki: 0xf0e68cff,
-  lavender: 0xe6e6faff,
-  lavenderblush: 0xfff0f5ff,
-  lawngreen: 0x7cfc00ff,
-  lemonchiffon: 0xfffacdff,
-  lightblue: 0xadd8e6ff,
-  lightcoral: 0xf08080ff,
-  lightcyan: 0xe0ffffff,
-  lightgoldenrodyellow: 0xfafad2ff,
-  lightgray: 0xd3d3d3ff,
-  lightgreen: 0x90ee90ff,
-  lightgrey: 0xd3d3d3ff,
-  lightpink: 0xffb6c1ff,
-  lightsalmon: 0xffa07aff,
-  lightseagreen: 0x20b2aaff,
-  lightskyblue: 0x87cefaff,
-  lightslategray: 0x778899ff,
-  lightslategrey: 0x778899ff,
-  lightsteelblue: 0xb0c4deff,
-  lightyellow: 0xffffe0ff,
-  lime: 0x00ff00ff,
-  limegreen: 0x32cd32ff,
-  linen: 0xfaf0e6ff,
-  magenta: 0xff00ffff,
-  maroon: 0x800000ff,
-  mediumaquamarine: 0x66cdaaff,
-  mediumblue: 0x0000cdff,
-  mediumorchid: 0xba55d3ff,
-  mediumpurple: 0x9370dbff,
-  mediumseagreen: 0x3cb371ff,
-  mediumslateblue: 0x7b68eeff,
-  mediumspringgreen: 0x00fa9aff,
-  mediumturquoise: 0x48d1ccff,
-  mediumvioletred: 0xc71585ff,
-  midnightblue: 0x191970ff,
-  mintcream: 0xf5fffaff,
-  mistyrose: 0xffe4e1ff,
-  moccasin: 0xffe4b5ff,
-  navajowhite: 0xffdeadff,
-  navy: 0x000080ff,
-  oldlace: 0xfdf5e6ff,
-  olive: 0x808000ff,
-  olivedrab: 0x6b8e23ff,
-  orange: 0xffa500ff,
-  orangered: 0xff4500ff,
-  orchid: 0xda70d6ff,
-  palegoldenrod: 0xeee8aaff,
-  palegreen: 0x98fb98ff,
-  paleturquoise: 0xafeeeeff,
-  palevioletred: 0xdb7093ff,
-  papayawhip: 0xffefd5ff,
-  peachpuff: 0xffdab9ff,
-  peru: 0xcd853fff,
-  pink: 0xffc0cbff,
-  plum: 0xdda0ddff,
-  powderblue: 0xb0e0e6ff,
-  purple: 0x800080ff,
-  rebeccapurple: 0x663399ff,
-  red: 0xff0000ff,
-  rosybrown: 0xbc8f8fff,
-  royalblue: 0x4169e1ff,
-  saddlebrown: 0x8b4513ff,
-  salmon: 0xfa8072ff,
-  sandybrown: 0xf4a460ff,
-  seagreen: 0x2e8b57ff,
-  seashell: 0xfff5eeff,
-  sienna: 0xa0522dff,
-  silver: 0xc0c0c0ff,
-  skyblue: 0x87ceebff,
-  slateblue: 0x6a5acdff,
-  slategray: 0x708090ff,
-  slategrey: 0x708090ff,
-  snow: 0xfffafaff,
-  springgreen: 0x00ff7fff,
-  steelblue: 0x4682b4ff,
-  tan: 0xd2b48cff,
-  teal: 0x008080ff,
-  thistle: 0xd8bfd8ff,
-  tomato: 0xff6347ff,
-  turquoise: 0x40e0d0ff,
-  violet: 0xee82eeff,
-  wheat: 0xf5deb3ff,
-  white: 0xffffffff,
-  whitesmoke: 0xf5f5f5ff,
-  yellow: 0xffff00ff,
-  yellowgreen: 0x9acd32ff,
-};
-
 function normalizeKeyword(name) {
-  return namedColors[name] ?? null;
+  // prettier-ignore
+  switch (name) {
+    case 'transparent': return 0x00000000;
+    // http://www.w3.org/TR/css3-color/#svg-color
+    case 'aliceblue': return 0xf0f8ffff;
+    case 'antiquewhite': return 0xfaebd7ff;
+    case 'aqua': return 0x00ffffff;
+    case 'aquamarine': return 0x7fffd4ff;
+    case 'azure': return 0xf0ffffff;
+    case 'beige': return 0xf5f5dcff;
+    case 'bisque': return 0xffe4c4ff;
+    case 'black': return 0x000000ff;
+    case 'blanchedalmond': return 0xffebcdff;
+    case 'blue': return 0x0000ffff;
+    case 'blueviolet': return 0x8a2be2ff;
+    case 'brown': return 0xa52a2aff;
+    case 'burlywood': return 0xdeb887ff;
+    case 'burntsienna': return 0xea7e5dff;
+    case 'cadetblue': return 0x5f9ea0ff;
+    case 'chartreuse': return 0x7fff00ff;
+    case 'chocolate': return 0xd2691eff;
+    case 'coral': return 0xff7f50ff;
+    case 'cornflowerblue': return 0x6495edff;
+    case 'cornsilk': return 0xfff8dcff;
+    case 'crimson': return 0xdc143cff;
+    case 'cyan': return 0x00ffffff;
+    case 'darkblue': return 0x00008bff;
+    case 'darkcyan': return 0x008b8bff;
+    case 'darkgoldenrod': return 0xb8860bff;
+    case 'darkgray': return 0xa9a9a9ff;
+    case 'darkgreen': return 0x006400ff;
+    case 'darkgrey': return 0xa9a9a9ff;
+    case 'darkkhaki': return 0xbdb76bff;
+    case 'darkmagenta': return 0x8b008bff;
+    case 'darkolivegreen': return 0x556b2fff;
+    case 'darkorange': return 0xff8c00ff;
+    case 'darkorchid': return 0x9932ccff;
+    case 'darkred': return 0x8b0000ff;
+    case 'darksalmon': return 0xe9967aff;
+    case 'darkseagreen': return 0x8fbc8fff;
+    case 'darkslateblue': return 0x483d8bff;
+    case 'darkslategray': return 0x2f4f4fff;
+    case 'darkslategrey': return 0x2f4f4fff;
+    case 'darkturquoise': return 0x00ced1ff;
+    case 'darkviolet': return 0x9400d3ff;
+    case 'deeppink': return 0xff1493ff;
+    case 'deepskyblue': return 0x00bfffff;
+    case 'dimgray': return 0x696969ff;
+    case 'dimgrey': return 0x696969ff;
+    case 'dodgerblue': return 0x1e90ffff;
+    case 'firebrick': return 0xb22222ff;
+    case 'floralwhite': return 0xfffaf0ff;
+    case 'forestgreen': return 0x228b22ff;
+    case 'fuchsia': return 0xff00ffff;
+    case 'gainsboro': return 0xdcdcdcff;
+    case 'ghostwhite': return 0xf8f8ffff;
+    case 'gold': return 0xffd700ff;
+    case 'goldenrod': return 0xdaa520ff;
+    case 'gray': return 0x808080ff;
+    case 'green': return 0x008000ff;
+    case 'greenyellow': return 0xadff2fff;
+    case 'grey': return 0x808080ff;
+    case 'honeydew': return 0xf0fff0ff;
+    case 'hotpink': return 0xff69b4ff;
+    case 'indianred': return 0xcd5c5cff;
+    case 'indigo': return 0x4b0082ff;
+    case 'ivory': return 0xfffff0ff;
+    case 'khaki': return 0xf0e68cff;
+    case 'lavender': return 0xe6e6faff;
+    case 'lavenderblush': return 0xfff0f5ff;
+    case 'lawngreen': return 0x7cfc00ff;
+    case 'lemonchiffon': return 0xfffacdff;
+    case 'lightblue': return 0xadd8e6ff;
+    case 'lightcoral': return 0xf08080ff;
+    case 'lightcyan': return 0xe0ffffff;
+    case 'lightgoldenrodyellow': return 0xfafad2ff;
+    case 'lightgray': return 0xd3d3d3ff;
+    case 'lightgreen': return 0x90ee90ff;
+    case 'lightgrey': return 0xd3d3d3ff;
+    case 'lightpink': return 0xffb6c1ff;
+    case 'lightsalmon': return 0xffa07aff;
+    case 'lightseagreen': return 0x20b2aaff;
+    case 'lightskyblue': return 0x87cefaff;
+    case 'lightslategray': return 0x778899ff;
+    case 'lightslategrey': return 0x778899ff;
+    case 'lightsteelblue': return 0xb0c4deff;
+    case 'lightyellow': return 0xffffe0ff;
+    case 'lime': return 0x00ff00ff;
+    case 'limegreen': return 0x32cd32ff;
+    case 'linen': return 0xfaf0e6ff;
+    case 'magenta': return 0xff00ffff;
+    case 'maroon': return 0x800000ff;
+    case 'mediumaquamarine': return 0x66cdaaff;
+    case 'mediumblue': return 0x0000cdff;
+    case 'mediumorchid': return 0xba55d3ff;
+    case 'mediumpurple': return 0x9370dbff;
+    case 'mediumseagreen': return 0x3cb371ff;
+    case 'mediumslateblue': return 0x7b68eeff;
+    case 'mediumspringgreen': return 0x00fa9aff;
+    case 'mediumturquoise': return 0x48d1ccff;
+    case 'mediumvioletred': return 0xc71585ff;
+    case 'midnightblue': return 0x191970ff;
+    case 'mintcream': return 0xf5fffaff;
+    case 'mistyrose': return 0xffe4e1ff;
+    case 'moccasin': return 0xffe4b5ff;
+    case 'navajowhite': return 0xffdeadff;
+    case 'navy': return 0x000080ff;
+    case 'oldlace': return 0xfdf5e6ff;
+    case 'olive': return 0x808000ff;
+    case 'olivedrab': return 0x6b8e23ff;
+    case 'orange': return 0xffa500ff;
+    case 'orangered': return 0xff4500ff;
+    case 'orchid': return 0xda70d6ff;
+    case 'palegoldenrod': return 0xeee8aaff;
+    case 'palegreen': return 0x98fb98ff;
+    case 'paleturquoise': return 0xafeeeeff;
+    case 'palevioletred': return 0xdb7093ff;
+    case 'papayawhip': return 0xffefd5ff;
+    case 'peachpuff': return 0xffdab9ff;
+    case 'peru': return 0xcd853fff;
+    case 'pink': return 0xffc0cbff;
+    case 'plum': return 0xdda0ddff;
+    case 'powderblue': return 0xb0e0e6ff;
+    case 'purple': return 0x800080ff;
+    case 'rebeccapurple': return 0x663399ff;
+    case 'red': return 0xff0000ff;
+    case 'rosybrown': return 0xbc8f8fff;
+    case 'royalblue': return 0x4169e1ff;
+    case 'saddlebrown': return 0x8b4513ff;
+    case 'salmon': return 0xfa8072ff;
+    case 'sandybrown': return 0xf4a460ff;
+    case 'seagreen': return 0x2e8b57ff;
+    case 'seashell': return 0xfff5eeff;
+    case 'sienna': return 0xa0522dff;
+    case 'silver': return 0xc0c0c0ff;
+    case 'skyblue': return 0x87ceebff;
+    case 'slateblue': return 0x6a5acdff;
+    case 'slategray': return 0x708090ff;
+    case 'slategrey': return 0x708090ff;
+    case 'snow': return 0xfffafaff;
+    case 'springgreen': return 0x00ff7fff;
+    case 'steelblue': return 0x4682b4ff;
+    case 'tan': return 0xd2b48cff;
+    case 'teal': return 0x008080ff;
+    case 'thistle': return 0xd8bfd8ff;
+    case 'tomato': return 0xff6347ff;
+    case 'turquoise': return 0x40e0d0ff;
+    case 'violet': return 0xee82eeff;
+    case 'wheat': return 0xf5deb3ff;
+    case 'white': return 0xffffffff;
+    case 'whitesmoke': return 0xf5f5f5ff;
+    case 'yellow': return 0xffff00ff;
+    case 'yellowgreen': return 0x9acd32ff;
+  }
+  return null;
 }
 
 module.exports = {
   normalizeColor,
-  namedColors: Object.keys(namedColors),
   getColorRegExStrings: getColorRegExStrings,
 };
