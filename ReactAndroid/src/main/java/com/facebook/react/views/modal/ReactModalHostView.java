@@ -330,7 +330,7 @@ public class ReactModalHostView extends ViewGroup
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
           mDialog
               .getWindow()
-              .getInsetsController();
+              .getInsetsController()
               .setSystemBarsAppearance(
                   ((Activity) context).getWindow().getInsetsController().getSystemBarsAppearance());
         } else {
