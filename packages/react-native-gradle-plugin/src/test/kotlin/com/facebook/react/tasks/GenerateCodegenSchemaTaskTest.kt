@@ -147,6 +147,8 @@ class GenerateCodegenSchemaTaskTest {
         listOf(
             "--verbose",
             File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").toString(),
+            "--platform",
+            "android",
             File(outputDir, "schema.json").toString(),
             jsRootDir.toString(),
         ),

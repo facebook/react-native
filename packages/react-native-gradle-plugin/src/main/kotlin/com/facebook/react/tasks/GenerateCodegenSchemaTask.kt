@@ -69,6 +69,8 @@ abstract class GenerateCodegenSchemaTask : Exec() {
                 .get()
                 .asFile
                 .absolutePath,
+            "--platform",
+            "android",
             generatedSchemaFile.get().asFile.absolutePath,
             jsRootDir.asFile.get().absolutePath,
         ))

@@ -13,7 +13,7 @@
 import type {SchemaType} from '../../CodegenSchema.js';
 const babelParser = require('@babel/parser');
 const fs = require('fs');
-const path = require('path');
+const {extractNativeModuleName} = require('../utils.js');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
@@ -98,12 +98,12 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
       if (filename === undefined || filename === null) {
         throw new Error('Filepath expected while parasing a module');
       }
-      const hasteModuleName = path.basename(filename).replace(/\.tsx?$/, '');
+      const nativeModuleName = extractNativeModuleName(filename);
 
       const [parsingErrors, tryParse] = createParserErrorCapturer();
 
       const schema = tryParse(() =>
-        buildModuleSchema(hasteModuleName, ast, tryParse),
+        buildModuleSchema(nativeModuleName, ast, tryParse),
       );
 
       if (parsingErrors.length > 0) {
@@ -123,7 +123,7 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
         'When there are no parsing errors, the schema should not be null',
       );
 
-      return wrapModuleSchema(schema, hasteModuleName);
+      return wrapModuleSchema(schema, nativeModuleName);
     }
     default:
       return {modules: {}};

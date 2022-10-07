@@ -319,7 +319,7 @@ function generateSchema(tmpDir, library, node, codegenCliPath) {
       'cli',
       'combine',
       'combine-js-to-schema-cli.js',
-    )} ${pathToSchema} ${pathToJavaScriptSources}`,
+    )} --platform ios ${pathToSchema} ${pathToJavaScriptSources}`,
   );
   console.log(`[Codegen] Generated schema: ${pathToSchema}`);
   return pathToSchema;
