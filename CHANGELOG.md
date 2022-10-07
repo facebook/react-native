@@ -1,10 +1,5 @@
 # Changelog
 
-## Unreleased
-
-### Fixed
-- Load react-native.config.js from correct path during codegen
-
 ## v0.70.2
 
 ### Added
