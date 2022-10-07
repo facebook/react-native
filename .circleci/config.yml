@@ -26,6 +26,8 @@ references:
 
   hermes_workspace_root: &hermes_workspace_root
     /tmp/hermes
+  hermes_tarball_artifacts_dir: &hermes_tarball_artifacts_dir
+    /tmp/hermes/hermes-runtime-darwin
   attach_hermes_workspace: &attach_hermes_workspace
     attach_workspace:
       at: *hermes_workspace_root
@@ -66,7 +68,7 @@ references:
       - ~/react-native/sdks/hermes/build_macosx
       - ~/react-native/sdks/hermes/destroot
     hermes_tarball_cache_paths: &hermes_tarball_cache_paths
-      - /tmp/hermes/hermes-runtime-darwin/
+      - *hermes_tarball_artifacts_dir
 
   # -------------------------
   #        Filters
@@ -269,6 +271,9 @@ commands:
       flavor:
         type: string
         default: "Debug"
+      hermes_tarball_artifacts_dir:
+        type: string
+        default: *hermes_tarball_artifacts_dir
     steps:
       - when:
           condition:
@@ -288,26 +293,27 @@ commands:
           condition: << parameters.set_tarball_path >>
           steps:
             - run:
-                name: Set HERMES_ENGINE_TARBALL_PATH if present
+                name: Set HERMES_ENGINE_TARBALL_PATH envvar if Hermes tarball is present
                 command: |
-                  BASE_PATH=/tmp/hermes/hermes-runtime-darwin/
-                  if [ ! -d $BASE_PATH ]; then
-                    echo "Hermes tarball base path not present ($BASE_PATH). Build it from source."
+                  HERMES_TARBALL_ARTIFACTS_DIR=<< parameters.hermes_tarball_artifacts_dir >>
+                  if [ ! -d $HERMES_TARBALL_ARTIFACTS_DIR ]; then
+                    echo "Hermes tarball artifacts dir not present ($HERMES_TARBALL_ARTIFACTS_DIR). Build Hermes from source."
                     exit 0
                   fi
-                  if [[ << parameters.flavor >> == "Debug" ]]; then
-                    TARBALL_FILENAME=hermes-runtime-darwin-debug-*.tar.gz
-                  elif [[ << parameters.flavor >> == "Release" ]]; then
-                    TARBALL_FILENAME=hermes-runtime-darwin-release-*.tar.gz
-                  else
-                    echo "Unsupported build type << parameters.flavor >>."
+
+                  if [ ! -d ~/react-native ]; then
+                    echo "No React Native checkout found. Run `checkout` first."
                     exit 0
                   fi
-                  # /tmp/hermes/hermes-runtime-darwin/hermes-runtime-darwin-release-v0.70.0.tar.gz
-                  # /tmp/hermes/hermes-runtime-darwin/hermes-runtime-darwin-debug-v0.70.0.tar.gz
-                  TARBALL_PATH=$(ls $BASE_PATH$TARBALL_FILENAME)
+
+                  TARBALL_FILENAME=$(node ~/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>" --releaseVersion "*")
+                  TARBALL_PATH=$(ls $HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME)
+
+                  echo "Looking for $TARBALL_FILENAME in $HERMES_TARBALL_ARTIFACTS_DIR"
+                  echo "$TARBALL_PATH"
+
                   if [ ! -f $TARBALL_PATH ]; then
-                    echo "Hermes tarball not present ($TARBALL_PATH). Build it from source."
+                    echo "Hermes tarball not present ($TARBALL_PATH). Build Hermes from source."
                     exit 0
                   fi
 
@@ -1093,8 +1099,10 @@ jobs:
     executor: reactnativeios
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
+      - HERMES_TARBALL_ARTIFACTS_DIR: *hermes_tarball_artifacts_dir
     steps:
       - checkout_code_with_cache
+      - run_yarn
       - *attach_hermes_workspace
       - when:
           condition:
@@ -1135,35 +1143,42 @@ jobs:
             - run:
                 name: Package the Hermes Apple frameworks
                 command: |
-                  echo "Packaging Hermes Apple frameworks for << parameters.flavor >> build type"
+                  BUILD_TYPE="<< parameters.flavor >>"
+                  echo "Packaging Hermes Apple frameworks for $BUILD_TYPE build type"
 
+                  TARBALL_OUTPUT_DIR=$(mktemp -d /tmp/hermes-tarball-output-XXXXXXXX)
+
+                  # get_release_version() is defined in build-apple-framework.sh
                   cd ~/react-native/sdks/hermes
-                  BUILD_TYPE="<< parameters.flavor >>" source ./utils/build-apple-framework.sh
+                  BUILD_TYPE=$BUILD_TYPE source ./utils/build-apple-framework.sh
+                  RELEASE_VERSION=$(get_release_version)
 
-                  mkdir -p /tmp/cocoapods-package-root/destroot
-                  mkdir -p /tmp/hermes/output
-                  cp -R ./destroot /tmp/cocoapods-package-root
-                  cp LICENSE /tmp/cocoapods-package-root
+                  cd ~/react-native
 
-                  if [[ << parameters.flavor >> == "Debug" ]]; then
-                    TARBALL_FILENAME=hermes-runtime-darwin-debug-v$(get_release_version).tar.gz
-                  elif [[ << parameters.flavor >> == "Release" ]]; then
-                    TARBALL_FILENAME=hermes-runtime-darwin-release-v$(get_release_version).tar.gz
-                  else
-                    echo "Unsupported build type << parameters.flavor >>."
-                    exit 0
+                  TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE" --releaseVersion "$RELEASE_VERSION")
+
+                  echo "Packaging Hermes Apple frameworks for $BUILD_TYPE build type"
+
+                  TARBALL_OUTPUT_PATH=$(node ./scripts/hermes/create-tarball.js \
+                    --inputDir ~/react-native/sdks/hermes \
+                    --buildType "$BUILD_TYPE" \
+                    --releaseVersion "$RELEASE_VERSION" \
+                    --outputDir "$TARBALL_OUTPUT_DIR")
+
+                  echo "Hermes tarball saved to $TARBALL_OUTPUT_PATH"
+
+                  mkdir -p "$HERMES_TARBALL_ARTIFACTS_DIR"
+                  cp "$TARBALL_OUTPUT_PATH" "$HERMES_TARBALL_ARTIFACTS_DIR/."
+
+                  # Make a copy of the debug tarball and use the old filename.
+                  # This is necessary to support patch releases in versions of
+                  # React Native that expect a single tarball.
+                  # TODO: Remove once 0.70.x and 0.69.x are no longer being patched.
+                  if [[ $BUILD_TYPE == "Debug" ]]; then
+                    OLD_TARBALL_FILENAME="hermes-runtime-darwin-v$RELEASE_VERSION.tar.gz"
+                    cp "$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME" "$HERMES_TARBALL_ARTIFACTS_DIR/$OLD_TARBALL_FILENAME"
+                    echo "$OLD_TARBALL_FILENAME is a copy of $TARBALL_FILENAME, provided for backward compatibility." >> "$HERMES_TARBALL_ARTIFACTS_DIR/README.txt"
                   fi
-
-                  tar -C /tmp/cocoapods-package-root/ -czvf /tmp/hermes/output/$TARBALL_FILENAME .
-
-                  mkdir -p /tmp/hermes/hermes-runtime-darwin
-                  cp /tmp/hermes/output/$TARBALL_FILENAME /tmp/hermes/hermes-runtime-darwin/.
-
-                  # TODO: Remove this once the client side is aware of -release and -debug tarballs
-                  if [[ << parameters.flavor >> == "Debug" ]]; then
-                    cp /tmp/hermes/hermes-runtime-darwin/hermes-runtime-darwin-debug-v$(get_release_version).tar.gz /tmp/hermes/hermes-runtime-darwin/hermes-runtime-darwin-v$(get_release_version).tar.gz
-                  fi
-                  ls /tmp/hermes/hermes-runtime-darwin/
             - when:
                 condition:
                   equal: [ << parameters.flavor >>, "Debug"]
@@ -1179,7 +1194,7 @@ jobs:
                       key: *hermes_workspace_release_cache_key
                       paths: *hermes_workspace_macos_cache_paths
             - store_artifacts:
-                path: /tmp/hermes/hermes-runtime-darwin/
+                path: *hermes_tarball_artifacts_dir
             - store_artifacts:
                 path: /tmp/hermes/osx-bin/
             - persist_to_workspace:
