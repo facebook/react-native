@@ -30,6 +30,7 @@ import com.facebook.react.modules.image.ImageLoaderModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.permissions.PermissionsModule;
+import com.facebook.react.modules.devtoolssettings.DevToolsSettingsManagerModule;
 import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
@@ -145,6 +146,8 @@ public class MainReactPackage extends TurboReactPackage {
         return new VibrationModule(context);
       case WebSocketModule.NAME:
         return new WebSocketModule(context);
+      case DevToolsSettingsManagerModule.NAME:
+        return new DevToolsSettingsManagerModule(context);
       default:
         return null;
     }
@@ -185,7 +188,8 @@ public class MainReactPackage extends TurboReactPackage {
           Class.forName("com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider");
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
-      // In OSS case, the annotation processor does not run. We fall back on creating this byhand
+      // In the OSS case, the annotation processor does not run. We fall back to creating this by
+      // hand
       Class<? extends NativeModule>[] moduleList =
           new Class[] {
             AccessibilityInfoModule.class,
@@ -204,6 +208,7 @@ public class MainReactPackage extends TurboReactPackage {
             NativeAnimatedModule.class,
             NetworkingModule.class,
             PermissionsModule.class,
+            DevToolsSettingsManagerModule.class,
             ShareModule.class,
             StatusBarModule.class,
             SoundManagerModule.class,
