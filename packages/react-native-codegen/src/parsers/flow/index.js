@@ -18,7 +18,7 @@ const {extractNativeModuleName} = require('../utils.js');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
-const {wrapModuleSchema} = require('./modules/schema');
+const {wrapModuleSchema} = require('../parsers-commons');
 const {
   createParserErrorCapturer,
   visit,
