@@ -62,6 +62,7 @@ if (__DEV__) {
       });
 
       const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+      const cachedSettingsStore = require('./cachedSettingsStore');
 
       reactDevTools.connectToDevTools({
         isAppActive,
@@ -70,6 +71,7 @@ if (__DEV__) {
           ReactNativeStyleAttributes,
         ),
         websocket: ws,
+        cachedSettingsStore,
       });
     }
   };
