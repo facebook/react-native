@@ -77,7 +77,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     return NO;
   }
 
-  if ([newText isEqualToString:string]) {
+  if ([newText isEqualToString:string] && ![newText isEqualToString:@""]) {
     _textDidChangeIsComing = YES;
     return YES;
   }
@@ -229,7 +229,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     return NO;
   }
 
-  if ([newText isEqualToString:text]) {
+  if ([newText isEqualToString:text] && ![newText isEqualToString:@""]) {
     _textDidChangeIsComing = YES;
     return YES;
   }
