@@ -27,7 +27,7 @@ const {capitalize} = require('../../Utils');
 const {
   wrapNullable,
   unwrapNullable,
-} = require('../../../parsers/flow/modules/utils');
+} = require('../../../parsers/parsers-commons');
 
 const ProtocolMethodTemplate = ({
   returnObjCType,

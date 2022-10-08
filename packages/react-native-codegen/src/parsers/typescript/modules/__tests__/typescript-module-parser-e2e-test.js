@@ -16,7 +16,7 @@ import type {
 } from '../../../../CodegenSchema';
 
 const {parseString} = require('../../index.js');
-const {unwrapNullable} = require('../utils');
+const {unwrapNullable} = require('../../../parsers-commons');
 const {
   UnsupportedTypeScriptGenericParserError,
   UnsupportedTypeScriptTypeAnnotationParserError,
