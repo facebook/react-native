@@ -11,22 +11,22 @@
 
 'use strict';
 
-import * as React from 'react';
-import Platform from '../Utilities/Platform';
+import type {PressEvent} from '../Types/CoreEventTypes';
+import type {Button as ButtonType} from './Button.flow';
+import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+  AccessibilityState,
+} from './View/ViewAccessibility';
+
 import StyleSheet, {type ColorValue} from '../StyleSheet/StyleSheet';
 import Text from '../Text/Text';
+import Platform from '../Utilities/Platform';
 import TouchableNativeFeedback from './Touchable/TouchableNativeFeedback';
 import TouchableOpacity from './Touchable/TouchableOpacity';
 import View from './View/View';
 import invariant from 'invariant';
-import type {Button as ButtonType} from './Button.flow';
-
-import type {
-  AccessibilityState,
-  AccessibilityActionEvent,
-  AccessibilityActionInfo,
-} from './View/ViewAccessibility';
-import type {PressEvent} from '../Types/CoreEventTypes';
+import * as React from 'react';
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -126,7 +126,11 @@ type ButtonProps = $ReadOnly<{|
     Text to display for blindness accessibility features.
    */
   accessibilityLabel?: ?string,
-
+  /**
+   * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
+   * https://github.com/facebook/react-native/issues/34424
+   */
+  'aria-label'?: ?string,
   /**
     If `true`, disable all interactions for this component.
 
@@ -286,6 +290,7 @@ class Button extends React.Component<ButtonProps> {
       'aria-checked': ariaChecked,
       'aria-disabled': ariaDisabled,
       'aria-expanded': ariaExpanded,
+      'aria-label': ariaLabel,
       'aria-selected': ariaSelected,
       importantForAccessibility,
       color,
@@ -358,7 +363,7 @@ class Button extends React.Component<ButtonProps> {
         accessible={accessible}
         accessibilityActions={accessibilityActions}
         onAccessibilityAction={onAccessibilityAction}
-        accessibilityLabel={accessibilityLabel}
+        accessibilityLabel={ariaLabel || accessibilityLabel}
         accessibilityHint={accessibilityHint}
         accessibilityLanguage={accessibilityLanguage}
         accessibilityRole="button"

@@ -799,6 +799,21 @@ exports.examples = ([
     },
   },
   {
+    title: 'Text Auto Complete',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="country">
+            <TextInput autoComplete="country" style={styles.default} />
+          </WithLabel>
+          <WithLabel label="one-time-code">
+            <TextInput autoComplete="one-time-code" style={styles.default} />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
     title: 'Text Content Type',
     render: function (): React.Node {
       return (

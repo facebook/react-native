@@ -80,7 +80,8 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
             reactNativeDir = rootProject.file('../node_modules/react-native')
         }
         ********************************************************************************
-      """.trimIndent())
+      """
+              .trimIndent())
     }
   }
 

@@ -10,9 +10,10 @@
 
 'use strict';
 
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedValue from '../nodes/AnimatedValue';
+
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
 
 export type EndResult = {finished: boolean, ...};
 export type EndCallback = (result: EndResult) => void;
@@ -30,7 +31,7 @@ let startNativeAnimationNextId = 1;
 // Important note: start() and stop() will only be called at most once.
 // Once an animation has been stopped or finished its course, it will
 // not be reused.
-class Animation {
+export default class Animation {
   __active: boolean;
   __isInteraction: boolean;
   __nativeId: number;
@@ -85,5 +86,3 @@ class Animation {
     }
   }
 }
-
-module.exports = Animation;

@@ -129,13 +129,6 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-/**
- * The name of the dynamic library for this application. This will contain all the
- * compiled C++ code and will be loaded at runtime.
- * The default is "appmodules" so that we'll have a `libappmodules.so` to load.
- */
-def dynamicLibraryName = "appmodules"
-
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -148,7 +141,6 @@ android {
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
-        buildConfigField "String", "DYNAMIC_LIBRARY_NAME", "\"$dynamicLibraryName\""
 
         if (isNewArchitectureEnabled()) {
             // We configure the CMake build only if you decide to opt-in for the New Architecture.
@@ -157,7 +149,6 @@ android {
                     arguments "-DPROJECT_BUILD_DIR=$buildDir",
                         "-DREACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
                         "-DREACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build",
-                        "-DTARGET_NAME=$dynamicLibraryName",
                         "-DANDROID_STL=c++_shared"
                 }
             }
@@ -170,44 +161,19 @@ android {
     }
 
     if (isNewArchitectureEnabled()) {
-        // We configure the NDK build only if you decide to opt-in for the New Architecture.
+        // We configure the CMake build only if you decide to opt-in for the New Architecture.
         externalNativeBuild {
             cmake {
                 path "$projectDir/src/main/jni/CMakeLists.txt"
             }
         }
-        def reactAndroidProjectDir = project(':ReactAndroid').projectDir
-        def packageReactNdkDebugLibs = tasks.register("packageReactNdkDebugLibs", Copy) {
-            dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
-            from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
-            into("$buildDir/react-ndk/exported")
+        buildFeatures {
+            prefab true
         }
-        def packageReactNdkReleaseLibs = tasks.register("packageReactNdkReleaseLibs", Copy) {
-            dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
-            from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
-            into("$buildDir/react-ndk/exported")
-        }
-        afterEvaluate {
-            // If you wish to add a custom TurboModule or component locally,
-            // you should uncomment this line.
-            // preBuild.dependsOn("generateCodegenArtifactsFromSchema")
-            preDebugBuild.dependsOn(packageReactNdkDebugLibs)
-            preReleaseBuild.dependsOn(packageReactNdkReleaseLibs)
-
-            // Due to a bug inside AGP, we have to explicitly set a dependency
-            // between configureCMakeDebug* tasks and the preBuild tasks.
-            // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
-            configureCMakeRelWithDebInfo.dependsOn(preReleaseBuild)
-            configureCMakeDebug.dependsOn(preDebugBuild)
-            reactNativeArchitectures().each { architecture ->
-                tasks.findByName("configureCMakeDebug[${architecture}]")?.configure {
-                    dependsOn("preDebugBuild")
-                }
-                tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure {
-                    dependsOn("preReleaseBuild")
-                }
-            }
-        }
+    }
+    packagingOptions {
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libfbjni.so'
     }
 
     splits {
@@ -264,24 +230,15 @@ dependencies {
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.fbjni'
-    }
-
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
         exclude group:'com.squareup.okhttp3', module:'okhttp'
     }
 
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
-    }
-
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
     if (enableHermes) {
         //noinspection GradleDynamicVersion
-        implementation("com.facebook.react:hermes-engine:+") { // From node_modules
-            exclude group:'com.facebook.fbjni'
-        }
+        implementation("com.facebook.react:hermes-engine:+") // From node_modules
     } else {
         implementation jscFlavor
     }

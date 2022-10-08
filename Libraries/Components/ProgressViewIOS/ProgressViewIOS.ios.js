@@ -8,12 +8,12 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-import StyleSheet, {type ColorValue} from '../../StyleSheet/StyleSheet';
-
-import RCTProgressViewNativeComponent from './RCTProgressViewNativeComponent';
 import type {ImageSource} from '../../Image/ImageSource';
 import type {ViewProps} from '../View/ViewPropTypes';
+
+import StyleSheet, {type ColorValue} from '../../StyleSheet/StyleSheet';
+import RCTProgressViewNativeComponent from './RCTProgressViewNativeComponent';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   ...ViewProps,

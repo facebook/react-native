@@ -17,6 +17,7 @@ import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.defaults.DefaultNativeEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
@@ -111,8 +112,8 @@ public class RNTesterApplication extends Application implements ReactApplication
         }
 
         @Override
-        public String getDynamicLibraryName() {
-          return BuildConfig.DYNAMIC_LIBRARY_NAME;
+        protected boolean isNewArchEnabled() {
+          return true;
         }
       };
 
@@ -122,7 +123,7 @@ public class RNTesterApplication extends Application implements ReactApplication
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    SoLoader.loadLibrary(BuildConfig.DYNAMIC_LIBRARY_NAME);
+    DefaultNativeEntryPoint.load();
     ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
 

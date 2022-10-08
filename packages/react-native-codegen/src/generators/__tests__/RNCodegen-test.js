@@ -4,9 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
  * @flow strict-local
  * @format
+ * @oncall react_native
  */
 
 'use strict';
@@ -19,6 +19,7 @@ describe('RNCodegen.generate', () => {
   beforeEach(() => {
     jest.resetModules();
   });
+
   it('when type `all`, with default paths', () => {
     jest.mock('fs', () => ({
       existsSync: location => {
@@ -39,6 +40,8 @@ describe('RNCodegen.generate', () => {
           'ShadowNodes.cpp': componentsOutputDir,
           'Props.h': componentsOutputDir,
           'Props.cpp': componentsOutputDir,
+          'States.h': componentsOutputDir,
+          'States.cpp': componentsOutputDir,
           'RCTComponentViewHelpers.h': componentsOutputDir,
           'EventEmitters.h': componentsOutputDir,
           'EventEmitters.cpp': componentsOutputDir,

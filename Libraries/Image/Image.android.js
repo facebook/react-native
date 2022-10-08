@@ -8,22 +8,22 @@
  * @format
  */
 
-import ImageViewNativeComponent from './ImageViewNativeComponent';
-import * as React from 'react';
+import type {RootTag} from '../Types/RootTagTypes';
+import type {ImageAndroid} from './Image.flow';
+import type {ImageProps as ImagePropsType} from './ImageProps';
+
+import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import TextAncestor from '../Text/TextAncestor';
-import ImageInjection from './ImageInjection';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import flattenStyle from '../StyleSheet/flattenStyle';
-import resolveAssetSource from './resolveAssetSource';
-
-import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
-
-import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
-
-import type {ImageProps as ImagePropsType} from './ImageProps';
-import type {RootTag} from '../Types/RootTagTypes';
+import ImageInjection from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
+import {convertObjectFitToResizeMode} from './ImageUtils';
+import ImageViewNativeComponent from './ImageViewNativeComponent';
+import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
+import resolveAssetSource from './resolveAssetSource';
+import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
+import * as React from 'react';
 
 let _requestId = 1;
 function generateRequestId() {
@@ -127,7 +127,11 @@ export type ImageComponentStatics = $ReadOnly<{|
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const BaseImage = (props: ImagePropsType, forwardedRef) => {
-  let source = getImageSourcesFromImageProps(props);
+  let source = getImageSourcesFromImageProps(props) || {
+    uri: undefined,
+    width: undefined,
+    height: undefined,
+  };
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
     props.loadingIndicatorSource,
@@ -145,22 +149,19 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     );
   }
 
-  if (source && !source.uri && !Array.isArray(source)) {
-    source = null;
-  }
-
   let style;
   let sources;
-  if (!Array.isArray(source) && source?.uri != null) {
+  if (Array.isArray(source)) {
+    style = flattenStyle([styles.base, props.style]);
+    sources = source;
+  } else {
     const {width = props.width, height = props.height, uri} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
-    sources = [{uri: uri, width: width, height: height}];
+    sources = [source];
+
     if (uri === '') {
       console.warn('source.uri should not be an empty string');
     }
-  } else {
-    style = flattenStyle([styles.base, props.style]);
-    sources = source;
   }
 
   const {height, width, ...restProps} = props;
@@ -178,6 +179,9 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       ? loadingIndicatorSource.uri
       : null,
     ref: forwardedRef,
+    accessible: props.alt !== undefined ? true : props.accessible,
+    accessibilityLabel:
+      props['aria-label'] ?? props.accessibilityLabel ?? props.alt,
     accessibilityState: {
       busy: props['aria-busy'] ?? props.accessibilityState?.busy,
       checked: props['aria-checked'] ?? props.accessibilityState?.checked,
@@ -186,6 +190,14 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       selected: props['aria-selected'] ?? props.accessibilityState?.selected,
     },
   };
+
+  const objectFit =
+    style && style.objectFit
+      ? convertObjectFitToResizeMode(style.objectFit)
+      : null;
+  // $FlowFixMe[prop-missing]
+  const resizeMode =
+    objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
 
   return (
     <ImageAnalyticsTagContext.Consumer>
@@ -201,19 +213,23 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
           <TextAncestor.Consumer>
             {hasTextAncestor => {
               if (hasTextAncestor) {
-                let src = Array.isArray(sources) ? sources : [sources];
                 return (
                   <TextInlineImageNativeComponent
                     style={style}
-                    resizeMode={props.resizeMode}
+                    resizeMode={resizeMode}
                     headers={nativeProps.headers}
-                    src={src}
+                    src={sources}
                     ref={forwardedRef}
                   />
                 );
               }
 
-              return <ImageViewNativeComponent {...nativePropsWithAnalytics} />;
+              return (
+                <ImageViewNativeComponent
+                  {...nativePropsWithAnalytics}
+                  resizeMode={resizeMode}
+                />
+              );
             }}
           </TextAncestor.Consumer>
         );
@@ -313,9 +329,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((Image: any): React.AbstractComponent<
-  ImagePropsType,
-  | React.ElementRef<typeof TextInlineImageNativeComponent>
-  | React.ElementRef<typeof ImageViewNativeComponent>,
-> &
-  ImageComponentStatics);
+module.exports = ((Image: any): ImageAndroid);

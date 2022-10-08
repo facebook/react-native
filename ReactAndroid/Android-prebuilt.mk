@@ -88,7 +88,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := turbomodulejsijni
 LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libturbomodulejsijni.so
 LOCAL_EXPORT_C_INCLUDES := \
-  $(REACT_ANDROID_SRC_DIR)/java/com/facebook/react/turbomodule/core/jni
+  $(REACT_ANDROID_SRC_DIR)/jni/react/turbomodule
 include $(PREBUILT_SHARED_LIBRARY)
 
 # react_render_core
@@ -164,7 +164,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := fabricjni
 LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libfabricjni.so
 LOCAL_EXPORT_C_INCLUDES := \
-  $(REACT_ANDROID_SRC_DIR)/java/com/facebook/react/fabric/jni
+  $(REACT_ANDROID_SRC_DIR)/jni/react/fabricjni
 include $(PREBUILT_SHARED_LIBRARY)
 
 # react_render_componentregistry
@@ -173,6 +173,14 @@ LOCAL_MODULE := react_render_componentregistry
 LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_render_componentregistry.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_COMMON_DIR)/react/renderer/componentregistry
+include $(PREBUILT_SHARED_LIBRARY)
+
+# react_newarchdefaults
+include $(CLEAR_VARS)
+LOCAL_MODULE := react_newarchdefaults
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_newarchdefaults.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_ANDROID_SRC_DIR)/jni/react/newarchdefaults
 include $(PREBUILT_SHARED_LIBRARY)
 
 # jsi

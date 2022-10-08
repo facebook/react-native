@@ -14,6 +14,7 @@ import type {
   EventSubscription,
   IEventEmitter,
 } from '../vendor/emitter/EventEmitter';
+
 import Platform from '../Utilities/Platform';
 import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
 import invariant from 'invariant';

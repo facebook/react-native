@@ -8,16 +8,17 @@
  * @flow strict-local
  */
 
-const DevSettings = require('./DevSettings');
-const invariant = require('invariant');
-const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
-const Platform = require('./Platform');
-const prettyFormat = require('pretty-format');
+import type {ExtendedError} from '../Core/ExtendedError';
 
 import getDevServer from '../Core/Devtools/getDevServer';
-import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 import LogBox from '../LogBox/LogBox';
-import type {ExtendedError} from '../Core/ExtendedError';
+import NativeRedBox from '../NativeModules/specs/NativeRedBox';
+
+const DevSettings = require('./DevSettings');
+const Platform = require('./Platform');
+const invariant = require('invariant');
+const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
+const prettyFormat = require('pretty-format');
 
 const pendingEntryPoints = [];
 let hmrClient = null;

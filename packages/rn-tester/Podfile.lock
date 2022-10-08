@@ -295,6 +295,7 @@ PODS:
     - React-Fabric/debug_renderer (= 1000.0.0)
     - React-Fabric/imagemanager (= 1000.0.0)
     - React-Fabric/leakchecker (= 1000.0.0)
+    - React-Fabric/mapbuffer (= 1000.0.0)
     - React-Fabric/mounting (= 1000.0.0)
     - React-Fabric/runtimescheduler (= 1000.0.0)
     - React-Fabric/scheduler (= 1000.0.0)
@@ -515,6 +516,14 @@ PODS:
     - React-RCTImage (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-Fabric/leakchecker (1000.0.0):
+    - RCT-Folly/Fabric (= 2021.07.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/mapbuffer (1000.0.0):
     - RCT-Folly/Fabric (= 2021.07.22.00)
     - RCTRequired (= 1000.0.0)
     - RCTTypeSafety (= 1000.0.0)
@@ -900,7 +909,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: 19e408e76fa9258dd32191a50d60c41444f52d29
-  FBReactNativeSpec: a9bf67b4be55c0819bc88e1721820286c1340710
+  FBReactNativeSpec: 27a89a8eea1b441a73a78f420dd18dad3ed13723
   Flipper: 26fc4b7382499f1281eb8cb921e5c3ad6de91fe0
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
@@ -924,7 +933,7 @@ SPEC CHECKSUMS:
   React-Core: ce4282fb714ffbe444b84d296d1728eaee4d0e9f
   React-CoreModules: 675170bccf156da3a3348e04e2036ce401b2010d
   React-cxxreact: 7276467c246302fedf598cc40d7003896ddb20ba
-  React-Fabric: b49c8e76c926b5b6b708802759b27dd6e02bb4bc
+  React-Fabric: a696c92be541f2015b9777956a3e7df8a8f34aed
   React-graphics: 5ccc9cc0d91794fd42bc1c693e9aea207554bbef
   React-jsi: a042596cb558abea721ab5e23cb175647610a73d
   React-jsiexecutor: f7fbac5dff7e7ff110a66edf2626b4f4f4600ef5
@@ -944,14 +953,14 @@ SPEC CHECKSUMS:
   React-RCTTest: 06c388632dc7b30df17af01c8f9e89e641b4d31c
   React-RCTText: a861fbf2835299d3cc4189697cddd8bd8602afb9
   React-RCTVibration: 0386f50996a153b3f39cecbe7d139763ac9a9fdf
-  React-rncore: 2a6ad37560e94cf7ff32e3f2ae1e708491b4c1f3
+  React-rncore: 665c70690f404bbfa3948148de72689672a906d2
   React-runtimeexecutor: 97dca9247f4d3cfe0733384b189c6930fbd402b7
   ReactCommon: 8e39c4b24da570ea2b631accbf779b5891befe0c
-  ScreenshotManager: 71d047abd38a77310985b87f8136b620c5c61e88
+  ScreenshotManager: 3fc534a218e7b8dde632158411d0f15b0ca8893c
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1b1a12ff3d86a10565ea7cbe057d42f5e5fb2a07
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: c3d82494e47e0adce02921f2ed9dba2427f0a9ff
+PODFILE CHECKSUM: e86c02825ce4e267e6fb3975bae791feb32a94a0
 
 COCOAPODS: 1.11.3

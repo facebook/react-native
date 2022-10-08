@@ -8,12 +8,11 @@
  * @flow
  */
 
+import NativeTiming from './NativeTiming';
+
 const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
 const Systrace = require('../../Performance/Systrace');
-
 const invariant = require('invariant');
-
-import NativeTiming from './NativeTiming';
 
 /**
  * JS implementation of timer functions. Must be completely driven by an

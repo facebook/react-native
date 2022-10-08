@@ -111,7 +111,7 @@ const RNTesterApp = (): React.Node => {
   );
 
   const handleModuleExampleCardPress = React.useCallback(
-    exampleName => {
+    (exampleName: string) => {
       dispatch({
         type: RNTesterActionsType.EXAMPLE_CARD_PRESS,
         data: {key: exampleName},
@@ -131,7 +131,7 @@ const RNTesterApp = (): React.Node => {
   );
 
   const handleNavBarPress = React.useCallback(
-    args => {
+    (args: {screen: string}) => {
       dispatch({
         type: RNTesterActionsType.NAVBAR_PRESS,
         data: {screen: args.screen},

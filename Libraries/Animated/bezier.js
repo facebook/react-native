@@ -92,7 +92,7 @@ function newtonRaphsonIterate(
   return aGuessT;
 }
 
-module.exports = function bezier(
+export default function bezier(
   mX1: number,
   mY1: number,
   mX2: number,
@@ -161,4 +161,4 @@ module.exports = function bezier(
     }
     return calcBezier(getTForX(x), mY1, mY2);
   };
-};
+}

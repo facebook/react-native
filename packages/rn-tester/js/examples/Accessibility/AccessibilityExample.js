@@ -930,6 +930,92 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
   }
 }
 
+class FakeSliderExampleForAccessibilityValue extends React.Component<
+  {},
+  FakeSliderExampleState,
+> {
+  state: FakeSliderExampleState = {
+    current: 50,
+    textualValue: 'center',
+  };
+
+  increment: () => void = () => {
+    let newValue = this.state.current + 2;
+    if (newValue > 100) {
+      newValue = 100;
+    }
+    this.setState({
+      current: newValue,
+    });
+  };
+
+  decrement: () => void = () => {
+    let newValue = this.state.current - 2;
+    if (newValue < 0) {
+      newValue = 0;
+    }
+    this.setState({
+      current: newValue,
+    });
+  };
+
+  render(): React.Node {
+    return (
+      <View>
+        <View
+          accessible={true}
+          accessibilityLabel="Fake Slider"
+          accessibilityRole="adjustable"
+          accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
+          onAccessibilityAction={event => {
+            switch (event.nativeEvent.actionName) {
+              case 'increment':
+                this.increment();
+                break;
+              case 'decrement':
+                this.decrement();
+                break;
+            }
+          }}
+          aria-valuemax={100}
+          aria-valuemin={0}
+          aria-valuetext={'slider aria value text'}
+          aria-valuenow={this.state.current}>
+          <Text>Fake Slider</Text>
+        </View>
+        <TouchableWithoutFeedback
+          accessible={true}
+          accessibilityLabel="Equalizer"
+          accessibilityRole="adjustable"
+          accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
+          onAccessibilityAction={event => {
+            switch (event.nativeEvent.actionName) {
+              case 'increment':
+                if (this.state.textualValue === 'center') {
+                  this.setState({textualValue: 'right'});
+                } else if (this.state.textualValue === 'left') {
+                  this.setState({textualValue: 'center'});
+                }
+                break;
+              case 'decrement':
+                if (this.state.textualValue === 'center') {
+                  this.setState({textualValue: 'left'});
+                } else if (this.state.textualValue === 'right') {
+                  this.setState({textualValue: 'center'});
+                }
+                break;
+            }
+          }}
+          accessibilityValue={{text: this.state.textualValue}}>
+          <View>
+            <Text>Equalizer</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    );
+  }
+}
+
 class AnnounceForAccessibility extends React.Component<{}> {
   _handleOnPress = (): TimeoutID =>
     setTimeout(
@@ -1307,6 +1393,12 @@ exports.examples = [
     title: 'Fake Slider Example',
     render(): React.Element<typeof FakeSliderExample> {
       return <FakeSliderExample />;
+    },
+  },
+  {
+    title: 'Fake SliderExample For AccessibilityValue',
+    render(): React.Element<typeof FakeSliderExampleForAccessibilityValue> {
+      return <FakeSliderExampleForAccessibilityValue />;
     },
   },
   {

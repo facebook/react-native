@@ -10,9 +10,9 @@
 
 import type {ViewProps} from './ViewPropTypes';
 
-import ViewNativeComponent from './ViewNativeComponent';
-import TextAncestor from '../../Text/TextAncestor';
 import flattenStyle from '../../StyleSheet/flattenStyle';
+import TextAncestor from '../../Text/TextAncestor';
+import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 
 export type Props = ViewProps;
@@ -31,10 +31,16 @@ const View: React.AbstractComponent<
   (
     {
       accessibilityElementsHidden,
+      accessibilityLiveRegion,
+      'aria-live': ariaLive,
+      accessibilityLabel,
       accessibilityRole,
+      'aria-label': ariaLabel,
       'aria-hidden': ariaHidden,
       focusable,
+      id,
       importantForAccessibility,
+      nativeID,
       pointerEvents,
       role,
       style,
@@ -50,7 +56,6 @@ const View: React.AbstractComponent<
       'aria-disabled': ariaDisabled,
       'aria-expanded': ariaExpanded,
       'aria-selected': ariaSelected,
-      ...restProps
     } = otherProps;
 
     const _accessibilityState = {
@@ -129,12 +134,24 @@ const View: React.AbstractComponent<
       treeitem: undefined,
     };
 
+    const accessibilityValue = {
+      max: otherProps['aria-valuemax'] ?? otherProps.accessibilityValue?.max,
+      min: otherProps['aria-valuemin'] ?? otherProps.accessibilityValue?.min,
+      now: otherProps['aria-valuenow'] ?? otherProps.accessibilityValue?.now,
+      text: otherProps['aria-valuetext'] ?? otherProps.accessibilityValue?.text,
+    };
+    const restWithDefaultProps = {...otherProps, accessibilityValue};
+
     const flattenedStyle = flattenStyle(style);
     const newPointerEvents = flattenedStyle?.pointerEvents || pointerEvents;
 
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
+          accessibilityLiveRegion={
+            ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
+          }
+          accessibilityLabel={ariaLabel ?? accessibilityLabel}
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
           accessibilityState={_accessibilityState}
           accessibilityRole={
@@ -148,7 +165,8 @@ const View: React.AbstractComponent<
               ? 'no-hide-descendants'
               : importantForAccessibility
           }
-          {...restProps}
+          nativeID={id ?? nativeID}
+          {...restWithDefaultProps}
           style={style}
           pointerEvents={newPointerEvents}
           ref={forwardedRef}

@@ -221,25 +221,6 @@ function translateTypeAnnotation(
             nullable,
           );
         }
-        case 'Readonly': {
-          assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-            hasteModuleName,
-            typeAnnotation,
-          );
-
-          const [paramType, isParamNullable] = unwrapNullable(
-            translateTypeAnnotation(
-              hasteModuleName,
-              typeAnnotation.typeParameters.params[0],
-              types,
-              aliasMap,
-              tryParse,
-              cxxOnly,
-            ),
-          );
-
-          return wrapNullable(nullable || isParamNullable, paramType);
-        }
         case 'Stringish': {
           return wrapNullable(nullable, {
             type: 'StringTypeAnnotation',

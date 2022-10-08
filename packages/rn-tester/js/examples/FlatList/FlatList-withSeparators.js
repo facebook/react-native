@@ -32,7 +32,7 @@ const Separator =
           styles.separator,
           {backgroundColor: highlighted ? highlightColor : defaultColor},
         ]}>
-        <Text style={styles.separtorText}>{text}</Text>
+        <Text style={styles.separatorText}>{text}</Text>
       </View>
     );
   };
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 12,
   },
-  separtorText: {
+  separatorText: {
     fontSize: 10,
   },
 });

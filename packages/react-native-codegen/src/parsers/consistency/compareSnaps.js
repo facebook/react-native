@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
  * @format
+ * @oncall react_native
  */
 
 'use strict';
@@ -17,6 +17,7 @@ function compareSnaps(
   tsFixtures,
   tsSnaps,
   tsExtraCases,
+  ignoredCases,
 ) {
   const flowCases = Object.keys(flowFixtures).sort();
   const tsCases = Object.keys(tsFixtures).sort();
@@ -36,17 +37,32 @@ function compareSnaps(
     });
 
     for (const commonCase of commonCases) {
-      it(`should generate the same snap from Flow and TypeScript for fixture ${commonCase}`, () => {
-        expect(
-          flowSnaps[
-            `RN Codegen Flow Parser can generate fixture ${commonCase}`
-          ],
-        ).toEqual(
-          tsSnaps[
-            `RN Codegen TypeScript Parser can generate fixture ${commonCase}`
-          ],
-        );
+      const flowSnap =
+        flowSnaps[
+          `RN Codegen Flow Parser can generate fixture ${commonCase} 1`
+        ];
+      const tsSnap =
+        tsSnaps[
+          `RN Codegen TypeScript Parser can generate fixture ${commonCase} 1`
+        ];
+
+      it(`should be able to find the snapshot for Flow for case ${commonCase}`, () => {
+        expect(typeof flowSnap).toEqual('string');
       });
+
+      it(`should be able to find the snapshot for TypeScript for case ${commonCase}`, () => {
+        expect(typeof tsSnap).toEqual('string');
+      });
+
+      if (ignoredCases.indexOf(commonCase) === -1) {
+        it(`should generate the same snapshot from Flow and TypeScript for fixture ${commonCase}`, () => {
+          expect(flowSnap).toEqual(tsSnap);
+        });
+      } else {
+        it(`should generate the different snapshot from Flow and TypeScript for fixture ${commonCase}`, () => {
+          expect(flowSnap).not.toEqual(tsSnap);
+        });
+      }
     }
   });
 }

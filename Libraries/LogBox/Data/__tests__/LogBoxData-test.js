@@ -4,9 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
- * @format
  * @flow
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
@@ -16,8 +16,8 @@ jest.mock('../../../Core/Devtools/parseErrorStack', () => {
 
 jest.mock('../../../Core/ExceptionsManager');
 
-const LogBoxData = require('../LogBoxData');
 const ExceptionsManager: any = require('../../../Core/ExceptionsManager');
+const LogBoxData = require('../LogBoxData');
 
 const registry = () => {
   const observer = jest.fn();

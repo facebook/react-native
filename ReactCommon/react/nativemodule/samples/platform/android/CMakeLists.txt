@@ -13,6 +13,7 @@ add_compile_options(
         -Wall
         -Wpedantic
         -Wno-gnu-zero-variadic-macro-arguments
+        -DFOLLY_NO_CONFIG=1
         -DLOG_TAG=\"ReactNative\")
 
 file(GLOB sampleturbomodule_SRC CONFIGURE_DEPENDS ReactCommon/*.cpp)

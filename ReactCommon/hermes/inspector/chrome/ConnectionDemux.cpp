@@ -6,7 +6,6 @@
  */
 
 #include "ConnectionDemux.h"
-#include "AutoAttachUtils.h"
 #include "Connection.h"
 
 #include <jsinspector/InspectorInterfaces.h>
@@ -85,11 +84,8 @@ DebugSessionToken ConnectionDemux::enableDebugging(
     removePage(pageId);
   }
 
-  // TODO(hypuk): Provide real app and device names.
   auto waitForDebugger =
-      (inspectedContexts_->find(title) != inspectedContexts_->end()) ||
-      isNetworkInspected(title, "app_name", "device_name");
-
+      (inspectedContexts_->find(title) != inspectedContexts_->end());
   return addPage(
       std::make_shared<Connection>(std::move(adapter), title, waitForDebugger));
 }

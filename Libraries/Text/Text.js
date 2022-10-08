@@ -10,17 +10,17 @@
 
 import type {PressEvent} from '../Types/CoreEventTypes';
 
-import Platform from '../Utilities/Platform';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
-import StyleSheet from '../StyleSheet/StyleSheet';
+import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
-import flattenStyle from '../StyleSheet/flattenStyle';
 
 /**
  * Text is the fundamental component for displaying text.
@@ -33,13 +33,17 @@ const Text: React.AbstractComponent<
 > = React.forwardRef((props: TextProps, forwardedRef) => {
   const {
     accessible,
+    accessibilityLabel,
     allowFontScaling,
     'aria-busy': ariaBusy,
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-label': ariaLabel,
     'aria-selected': ariaSelected,
     ellipsizeMode,
+    id,
+    nativeID,
     onLongPress,
     onPress,
     onPressIn,
@@ -174,6 +178,13 @@ const Text: React.AbstractComponent<
     _selectable = userSelectToSelectableMap[style.userSelect];
   }
 
+  if (style?.verticalAlign != null) {
+    style = StyleSheet.compose(style, {
+      textAlignVertical:
+        verticalAlignToTextAlignVerticalMap[style.verticalAlign],
+    });
+  }
+
   if (__DEV__) {
     if (PressabilityDebug.isEnabled() && onPress != null) {
       style = StyleSheet.compose(restProps.style, {
@@ -197,17 +208,28 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
+  let flattenedStyle = flattenStyle(style);
+
+  if (typeof flattenedStyle?.fontWeight === 'number') {
+    flattenedStyle.fontWeight = flattenedStyle?.fontWeight.toString();
+  }
+
+  const _hasOnPressOrOnLongPress =
+    props.onPress != null || props.onLongPress != null;
+
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
       accessibilityState={_accessibilityState}
       {...eventHandlersForText}
+      accessibilityLabel={ariaLabel ?? accessibilityLabel}
       isHighlighted={isHighlighted}
       isPressable={isPressable}
       selectable={_selectable}
+      nativeID={id ?? nativeID}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
-      style={style}
+      style={flattenedStyle}
       ref={forwardedRef}
     />
   ) : (
@@ -217,14 +239,20 @@ const Text: React.AbstractComponent<
         {...eventHandlersForText}
         disabled={_disabled}
         selectable={_selectable}
-        accessible={_accessible}
+        accessible={
+          accessible == null && Platform.OS === 'android'
+            ? _hasOnPressOrOnLongPress
+            : _accessible
+        }
+        accessibilityLabel={ariaLabel ?? accessibilityLabel}
         accessibilityState={nativeTextAccessibilityState}
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
+        nativeID={id ?? nativeID}
         numberOfLines={numberOfLines}
         selectionColor={selectionColor}
-        style={style}
+        style={flattenedStyle}
         ref={forwardedRef}
       />
     </TextAncestor.Provider>
@@ -252,6 +280,13 @@ const userSelectToSelectableMap = {
   none: false,
   contain: true,
   all: true,
+};
+
+const verticalAlignToTextAlignVerticalMap = {
+  auto: 'auto',
+  top: 'top',
+  bottom: 'bottom',
+  middle: 'center',
 };
 
 module.exports = Text;

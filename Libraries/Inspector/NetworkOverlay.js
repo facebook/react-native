@@ -151,7 +151,7 @@ class NetworkOverlay extends React.Component<Props, State> {
       this.setState(({requests}) => {
         const networkRequestInfo = requests[xhrIndex];
         if (!networkRequestInfo.requestHeaders) {
-          networkRequestInfo.requestHeaders = {};
+          networkRequestInfo.requestHeaders = ({}: {[any]: any});
         }
         networkRequestInfo.requestHeaders[header] = value;
         return {requests};

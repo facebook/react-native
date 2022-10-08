@@ -95,11 +95,13 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-  runtimeExecutor_(
-      [uiManager, runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
-        UIManagerBinding::createAndInstallIfNeeded(
-            runtime, runtimeExecutor, uiManager);
-      });
+  auto bindingsExecutor =
+      schedulerToolbox.bridgelessBindingsExecutor.has_value()
+      ? schedulerToolbox.bridgelessBindingsExecutor.value()
+      : runtimeExecutor_;
+  bindingsExecutor([uiManager](jsi::Runtime &runtime) {
+    UIManagerBinding::createAndInstallIfNeeded(runtime, uiManager);
+  });
 
   auto componentDescriptorRegistryKey =
       "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE";

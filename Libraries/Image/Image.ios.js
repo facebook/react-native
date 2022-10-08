@@ -8,22 +8,22 @@
  * @format
  */
 
-import * as React from 'react';
-import StyleSheet from '../StyleSheet/StyleSheet';
-
-import ImageInjection from './ImageInjection';
-import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import flattenStyle from '../StyleSheet/flattenStyle';
-import resolveAssetSource from './resolveAssetSource';
-
+import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
+import type {RootTag} from '../Types/RootTagTypes';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
-import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
-import NativeImageLoaderIOS from './NativeImageLoaderIOS';
-
-import ImageViewNativeComponent from './ImageViewNativeComponent';
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
+import ImageInjection from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
+import {convertObjectFitToResizeMode} from './ImageUtils';
+import ImageViewNativeComponent from './ImageViewNativeComponent';
+import NativeImageLoaderIOS from './NativeImageLoaderIOS';
+import resolveAssetSource from './resolveAssetSource';
+import * as React from 'react';
+
+import type {ImageIOS} from './Image.flow';
 
 function getSize(
   uri: string,
@@ -127,8 +127,14 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     }
   }
 
-  // $FlowFixMe[prop-missing]
-  const resizeMode = props.resizeMode || style.resizeMode || 'cover';
+  const objectFit =
+    // $FlowFixMe[prop-missing]
+    style && style.objectFit
+      ? convertObjectFitToResizeMode(style.objectFit)
+      : null;
+  const resizeMode =
+    // $FlowFixMe[prop-missing]
+    objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
   // $FlowFixMe[prop-missing]
   const tintColor = props.tintColor || style.tintColor;
 
@@ -156,6 +162,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     expanded: ariaExpanded ?? props.accessibilityState?.expanded,
     selected: ariaSelected ?? props.accessibilityState?.selected,
   };
+  const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
   return (
     <ImageAnalyticsTagContext.Consumer>
@@ -164,6 +171,8 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
           <ImageViewNativeComponent
             accessibilityState={_accessibilityState}
             {...restProps}
+            accessible={props.alt !== undefined ? true : props.accessible}
+            accessibilityLabel={accessibilityLabel ?? props.alt}
             ref={forwardedRef}
             style={style}
             resizeMode={resizeMode}
@@ -258,8 +267,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((Image: any): React.AbstractComponent<
-  ImagePropsType,
-  React.ElementRef<typeof ImageViewNativeComponent>,
-> &
-  ImageComponentStatics);
+module.exports = ((Image: any): ImageIOS);

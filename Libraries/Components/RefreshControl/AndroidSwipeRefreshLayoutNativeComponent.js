@@ -8,19 +8,18 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {
   DirectEventHandler,
   Float,
   WithDefault,
 } from '../../Types/CodegenTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
+
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import * as React from 'react';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,

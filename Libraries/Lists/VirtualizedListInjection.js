@@ -10,10 +10,11 @@
 
 'use strict';
 
-import * as React from 'react';
 import type VirtualizedList from './VirtualizedList';
 import type {Props as VirtualizedListProps} from './VirtualizedListProps';
+
 import invariant from 'invariant';
+import * as React from 'react';
 
 export type ListImplementation = React.ComponentType<VirtualizedListProps> &
   interface {};

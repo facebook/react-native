@@ -4,8 +4,11 @@
 # LICENSE file in the root directory of this source tree.
 
 class NewArchitectureHelper
+    @@shared_flags = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1"
 
-    @@new_arch_cpp_flags = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
+    @@folly_compiler_flags = "#{@@shared_flags} -Wno-comma -Wno-shorten-64-to-32"
+
+    @@new_arch_cpp_flags = "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 #{@@shared_flags}"
 
     def self.set_clang_cxx_language_standard_if_needed(installer)
         language_standard = nil
@@ -55,5 +58,37 @@ class NewArchitectureHelper
                 end
             end
         end
+    end
+
+    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version)
+        # Pod::Specification does not have getters so, we have to read
+        # the existing values from a hash representation of the object.
+        hash = spec.to_hash
+
+        compiler_flags = hash["compiler_flags"] ? hash["compiler_flags"] : ""
+        current_config = hash["pod_target_xcconfig"] != nil ? hash["pod_target_xcconfig"] : {}
+        current_headers = current_config["HEADER_SEARCH_PATHS"] != nil ? current_config["HEADER_SEARCH_PATHS"] : ""
+
+        boost_search_path = "\"$(PODS_ROOT)/boost\""
+
+        spec.compiler_flags = compiler_flags.empty? ? @@folly_compiler_flags : "#{compiler_flags} #{@@folly_compiler_flags}"
+        current_config["HEADER_SEARCH_PATHS"] = current_headers.empty? ? boost_search_path : "#{current_headers} #{boost_search_path}"
+        spec.pod_target_xcconfig = current_config
+
+        spec.dependency "React-Core"
+        spec.dependency "RCT-Folly", '2021.07.22.00'
+
+        if new_arch_enabled
+            spec.dependency "React-RCTFabric" # This is for Fabric Component
+            spec.dependency "React-Codegen"
+
+            spec.dependency "RCTRequired"
+            spec.dependency "RCTTypeSafety"
+            spec.dependency "ReactCommon/turbomodule/core"
+        end
+    end
+
+    def self.folly_compiler_flags
+        return @@folly_compiler_flags
     end
 end

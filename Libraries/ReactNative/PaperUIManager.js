@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import type {RootTag} from '../Types/RootTagTypes';
 
 import NativeUIManager from './NativeUIManager';
 

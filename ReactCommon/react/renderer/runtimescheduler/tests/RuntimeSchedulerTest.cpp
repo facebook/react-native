@@ -116,7 +116,7 @@ TEST_F(RuntimeSchedulerTest, scheduleImmediatePriorityTask) {
   auto callback =
       createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
         didRunTask = true;
-        EXPECT_FALSE(didUserCallbackTimeout);
+        EXPECT_TRUE(didUserCallbackTimeout);
         return jsi::Value::undefined();
       });
 
@@ -137,9 +137,7 @@ TEST_F(RuntimeSchedulerTest, taskExpiration) {
   auto callback =
       createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
         didRunTask = true;
-        // Task has timed out but the parameter is deprecated and `false` is
-        // hardcoded.
-        EXPECT_FALSE(didUserCallbackTimeout);
+        EXPECT_TRUE(didUserCallbackTimeout);
         return jsi::Value::undefined();
       });
 
@@ -427,7 +425,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTaskFromTask) {
         auto secondCallback = createHostFunctionFromLambda(
             [&didRunSecondTask](bool didUserCallbackTimeout) {
               didRunSecondTask = true;
-              EXPECT_FALSE(didUserCallbackTimeout);
+              EXPECT_TRUE(didUserCallbackTimeout);
               return jsi::Value::undefined();
             });
 
@@ -508,7 +506,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
           auto callback = createHostFunctionFromLambda(
               [&didRunSubsequentTask](bool didUserCallbackTimeout) {
                 didRunSubsequentTask = true;
-                EXPECT_FALSE(didUserCallbackTimeout);
+                EXPECT_TRUE(didUserCallbackTimeout);
                 return jsi::Value::undefined();
               });
 

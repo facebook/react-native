@@ -8,14 +8,13 @@
  * @format
  */
 
-import * as React from 'react';
-
-const View = require('../../Components/View/View');
-const createAnimatedComponent = require('../createAnimatedComponent');
-
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-module.exports = (createAnimatedComponent(View): AnimatedComponentType<
+import View from '../../Components/View/View';
+import createAnimatedComponent from '../createAnimatedComponent';
+import * as React from 'react';
+
+export default (createAnimatedComponent(View): AnimatedComponentType<
   React.ElementConfig<typeof View>,
   React.ElementRef<typeof View>,
 >);

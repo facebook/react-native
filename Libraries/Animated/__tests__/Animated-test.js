@@ -5,12 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
-import AnimatedProps from '../nodes/AnimatedProps';
-import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
+import TestRenderer from 'react-test-renderer';
+
+let Animated = require('../Animated').default;
+let AnimatedProps = require('../nodes/AnimatedProps').default;
 
 jest.mock('../../BatchedBridge/NativeModules', () => ({
   NativeAnimatedModule: {},
@@ -20,8 +22,6 @@ jest.mock('../../BatchedBridge/NativeModules', () => ({
     },
   },
 }));
-
-let Animated = require('../Animated');
 
 describe('Animated tests', () => {
   beforeEach(() => {
@@ -692,7 +692,7 @@ describe('Animated tests', () => {
 
     beforeEach(() => {
       jest.mock('../../Interaction/InteractionManager');
-      Animated = require('../Animated');
+      Animated = require('../Animated').default;
       InteractionManager = require('../../Interaction/InteractionManager');
     });
 

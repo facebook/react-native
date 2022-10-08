@@ -11,6 +11,7 @@
 'use strict';
 
 const {ParserError} = require('./errors');
+const {parseTopLevelType} = require('./parseTopLevelType');
 
 /**
  * TODO(T108222691): Use flow-types for @babel/parser
@@ -19,26 +20,26 @@ export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
-    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
-      if (
-        node.declaration.type === 'TSTypeAliasDeclaration' ||
-        node.declaration.type === 'TSInterfaceDeclaration'
-      ) {
-        types[node.declaration.id.name] = node.declaration;
+    switch (node.type) {
+      case 'ExportNamedDeclaration': {
+        if (node.declaration) {
+          switch (node.declaration.type) {
+            case 'TSTypeAliasDeclaration':
+            case 'TSInterfaceDeclaration':
+            case 'TSEnumDeclaration': {
+              types[node.declaration.id.name] = node.declaration;
+              break;
+            }
+          }
+        }
+        break;
       }
-    } else if (
-      node.type === 'ExportNamedDeclaration' &&
-      node.exportKind === 'value' &&
-      node.declaration &&
-      node.declaration.type === 'TSEnumDeclaration'
-    ) {
-      types[node.declaration.id.name] = node.declaration;
-    } else if (
-      node.type === 'TSTypeAliasDeclaration' ||
-      node.type === 'TSInterfaceDeclaration' ||
-      node.type === 'TSEnumDeclaration'
-    ) {
-      types[node.id.name] = node;
+      case 'TSTypeAliasDeclaration':
+      case 'TSInterfaceDeclaration':
+      case 'TSEnumDeclaration': {
+        types[node.id.name] = node;
+        break;
+      }
     }
     return types;
   }, {});
@@ -82,18 +83,11 @@ function resolveTypeAnnotation(
   };
 
   for (;;) {
-    // Check for optional type in union e.g. T | null | undefined
-    if (
-      node.type === 'TSUnionType' &&
-      node.types.some(
-        t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-      )
-    ) {
-      node = node.types.filter(
-        t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
-      )[0];
-      nullable = true;
-    } else if (node.type === 'TSTypeReference') {
+    const topLevelType = parseTopLevelType(node);
+    nullable = nullable || topLevelType.optional;
+    node = topLevelType.type;
+
+    if (node.type === 'TSTypeReference') {
       typeAliasResolutionStatus = {
         successful: true,
         aliasName: node.typeName.name,
@@ -122,18 +116,6 @@ function resolveTypeAnnotation(
     typeAnnotation: node,
     typeAliasResolutionStatus,
   };
-}
-
-function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
-  if (value.type === 'TSTypeReference' && types[value.typeName.name]) {
-    return getValueFromTypes(types[value.typeName.name], types);
-  }
-
-  if (value.type === 'TSTypeAliasDeclaration') {
-    return value.typeAnnotation;
-  }
-
-  return value;
 }
 
 export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
@@ -228,7 +210,6 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
 }
 
 module.exports = {
-  getValueFromTypes,
   resolveTypeAnnotation,
   createParserErrorCapturer,
   getTypes,

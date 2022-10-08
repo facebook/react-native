@@ -24,7 +24,7 @@ try {
   RNCodegen = require('react-native-codegen/lib/generators/RNCodegen');
 }
 
-function parse(filename, code) {
+function parseFile(filename, code) {
   if (filename.endsWith('js')) {
     return flowParser.parseString(code);
   }
@@ -39,7 +39,7 @@ function parse(filename, code) {
 }
 
 function generateViewConfig(filename, code) {
-  const schema = parse(filename, code);
+  const schema = parseFile(filename, code);
 
   const libraryName = basename(filename).replace(
     /NativeComponent\.(js|ts)$/,

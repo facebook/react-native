@@ -108,7 +108,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   // C++ parts
   private final HybridData mHybridData;
 
-  private static native HybridData initHybrid(boolean enableRuntimeScheduler);
+  private static native HybridData initHybrid();
 
   public native CallInvokerHolderImpl getJSCallInvokerHolder();
 
@@ -123,7 +123,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstanceImpl");
 
-    mHybridData = initHybrid(ReactFeatureFlags.enableRuntimeScheduler);
+    mHybridData = initHybrid();
 
     mReactQueueConfiguration =
         ReactQueueConfigurationImpl.create(

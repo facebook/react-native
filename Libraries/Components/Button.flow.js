@@ -11,15 +11,15 @@
 
 'use strict';
 
-import * as React from 'react';
-import {type ColorValue} from '../StyleSheet/StyleSheet';
-
+import type {PressEvent} from '../Types/CoreEventTypes';
 import type {
-  AccessibilityState,
   AccessibilityActionEvent,
   AccessibilityActionInfo,
+  AccessibilityState,
 } from './View/ViewAccessibility';
-import type {PressEvent} from '../Types/CoreEventTypes';
+
+import {type ColorValue} from '../StyleSheet/StyleSheet';
+import * as React from 'react';
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -119,7 +119,11 @@ type ButtonProps = $ReadOnly<{|
     Text to display for blindness accessibility features.
    */
   accessibilityLabel?: ?string,
-
+  /**
+   * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
+   * https://github.com/facebook/react-native/issues/34424
+   */
+  'aria-label'?: ?string,
   /**
     If `true`, disable all interactions for this component.
 

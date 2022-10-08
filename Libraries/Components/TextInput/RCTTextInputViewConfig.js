@@ -9,6 +9,7 @@
  */
 
 import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+
 import {ConditionallyIgnoredEventHandlers} from '../../NativeComponent/ViewConfigIgnore';
 
 type PartialViewConfigWithoutName = $Rest<

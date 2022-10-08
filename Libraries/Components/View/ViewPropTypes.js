@@ -10,26 +10,26 @@
 
 'use strict';
 
+import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BlurEvent,
   FocusEvent,
+  Layout,
+  LayoutEvent,
   MouseEvent,
   PointerEvent,
   PressEvent,
-  Layout,
-  LayoutEvent,
 } from '../../Types/CoreEventTypes';
-import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
-import type {Node} from 'react';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
-  Role,
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
   AccessibilityRole,
   AccessibilityState,
   AccessibilityValue,
-  AccessibilityActionEvent,
-  AccessibilityActionInfo,
+  Role,
 } from './ViewAccessibility';
+import type {Node} from 'react';
 
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
@@ -294,6 +294,16 @@ type AndroidViewProps = $ReadOnly<{|
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
 
   /**
+   * Indicates to accessibility services whether the user should be notified
+   * when this view changes. Works for Android API >= 19 only.
+   *
+   * @platform android
+   *
+   * See https://reactnative.dev/docs/view#accessibilityliveregion
+   */
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
+
+  /**
    * Controls how view is important for accessibility which is if it
    * fires accessibility events and if it is reported to accessibility services
    * that query the screen. Works for Android only.
@@ -394,6 +404,15 @@ type IOSViewProps = $ReadOnly<{|
   accessibilityViewIsModal?: ?boolean,
 
   /**
+   * The aria-modal attribute indicates content contained within a modal with aria-modal="true"
+   * should be accessible to the user.
+   * Default is `false`.
+   *
+   *  @platform ios
+   */
+  'aria-modal'?: ?boolean,
+
+  /**
    * A value indicating whether the accessibility elements contained within
    * this accessibility element are hidden.
    *
@@ -454,6 +473,12 @@ export type ViewProps = $ReadOnly<{|
   accessibilityHint?: ?Stringish,
 
   /**
+   * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
+   * https://github.com/facebook/react-native/issues/34424
+   */
+  'aria-label'?: ?Stringish,
+
+  /**
    * Indicates to the accessibility services that the UI component is in
    * a specific language. The provided string should be formatted following
    * the BCP 47 specification (https://www.rfc-editor.org/info/bcp47).
@@ -477,6 +502,15 @@ export type ViewProps = $ReadOnly<{|
    */
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
+
+  /**
+   * alias for accessibilityState
+   * It represents textual description of a component's value, or for range-based components, such as sliders and progress bars.
+   */
+  'aria-valuemax'?: ?AccessibilityValue['max'],
+  'aria-valuemin'?: ?AccessibilityValue['min'],
+  'aria-valuenow'?: ?AccessibilityValue['now'],
+  'aria-valuetext'?: ?AccessibilityValue['text'],
 
   /**
    * Provides an array of custom actions available for accessibility.
@@ -520,6 +554,15 @@ export type ViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#collapsable
    */
   collapsable?: ?boolean,
+
+  /**
+   * Used to locate this view from native classes.
+   *
+   * > This disables the 'layout-only view removal' optimization for this view!
+   *
+   * See https://reactnative.dev/docs/view#id
+   */
+  id?: string,
 
   /**
    * Used to locate this view in end-to-end tests.

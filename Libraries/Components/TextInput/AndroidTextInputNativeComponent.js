@@ -8,7 +8,15 @@
  * @format
  */
 
-import type {ViewProps} from '../View/ViewPropTypes';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  ColorValue,
+  TextStyleProp,
+  ViewStyleProp,
+} from '../../StyleSheet/StyleSheet';
 import type {
   BubblingEventHandler,
   DirectEventHandler,
@@ -17,18 +25,11 @@ import type {
   Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
-import type {
-  HostComponent,
-  PartialViewConfig,
-} from '../../Renderer/shims/ReactNativeTypes';
-import type {
-  TextStyleProp,
-  ViewStyleProp,
-  ColorValue,
-} from '../../StyleSheet/StyleSheet';
-import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
+
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 
 export type KeyboardType =
   // Cross Platform

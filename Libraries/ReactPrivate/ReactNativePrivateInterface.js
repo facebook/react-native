@@ -9,20 +9,21 @@
  */
 
 import typeof BatchedBridge from '../BatchedBridge/BatchedBridge';
-import typeof ExceptionsManager from '../Core/ExceptionsManager';
-import typeof Platform from '../Utilities/Platform';
-import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
-import typeof ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
-import typeof TextInputState from '../Components/TextInput/TextInputState';
-import typeof UIManager from '../ReactNative/UIManager';
-import typeof deepDiffer from '../Utilities/differ/deepDiffer';
-import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAndThrowOnMutationInDev';
-import typeof flattenStyle from '../StyleSheet/flattenStyle';
-import {type DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
-import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
 import typeof legacySendAccessibilityEvent from '../Components/AccessibilityInfo/legacySendAccessibilityEvent';
+import typeof TextInputState from '../Components/TextInput/TextInputState';
+import typeof ExceptionsManager from '../Core/ExceptionsManager';
 import typeof RawEventEmitter from '../Core/RawEventEmitter';
+import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
+import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
 import typeof CustomEvent from '../Events/CustomEvent';
+import typeof UIManager from '../ReactNative/UIManager';
+import typeof ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
+import typeof flattenStyle from '../StyleSheet/flattenStyle';
+import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAndThrowOnMutationInDev';
+import typeof deepDiffer from '../Utilities/differ/deepDiffer';
+import typeof Platform from '../Utilities/Platform';
+
+import {type DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
 
 // flowlint unsafe-getters-setters:off
 module.exports = {

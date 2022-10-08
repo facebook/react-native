@@ -19,8 +19,26 @@ require_relative './cocoapods/local_podspec_patch.rb'
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
+$FOLLY_VERSION = '2021.07.22.00'
 
 $START_TIME = Time.now.to_i
+
+# This function returns the min iOS version supported by React Native
+# By using this function, you won't have to manualy change your Podfile
+# when we change the minimum version supported by the framework.
+def min_ios_version_supported
+  return '12.4'
+end
+
+# This function prepares the project for React Native, before processing
+# all the target exposed by the framework.
+def prepare_react_native_project!
+  # Temporary solution to suppress duplicated GUID error.
+  # Can be removed once we move to generate files outside pod install.
+  install! 'cocoapods', :deterministic_uuids => false
+
+  ReactNativePodsUtils.create_xcode_env_if_missing
+end
 
 # Function that setup all the react native dependencies
 # 
@@ -45,12 +63,12 @@ def use_react_native! (
 
   CodegenUtils.clean_up_build_folder(app_path, $CODEGEN_OUTPUT_DIR)
 
+  # We are relying on this flag also in third parties libraries to proper install dependencies.
+  # Better to rely and enable this environment flag if the new architecture is turned on using flags.
+  ENV['RCT_NEW_ARCH_ENABLED'] = new_arch_enabled ? "1" : "0"
   fabric_enabled = fabric_enabled || new_arch_enabled
 
   prefix = path
-
-  # The version of folly that must be used
-  folly_version = '2021.07.22.00'
 
   ReactNativePodsUtils.warn_if_not_on_arm64()
 
@@ -100,7 +118,7 @@ def use_react_native! (
     :fabric_enabled => fabric_enabled,
     :codegen_output_dir => $CODEGEN_OUTPUT_DIR,
     :package_json_file => File.join(__dir__, "..", "package.json"),
-    :folly_version => folly_version
+    :folly_version => $FOLLY_VERSION
   )
 
   pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
@@ -131,6 +149,23 @@ def use_react_native! (
   end
 end
 
+# Getter to retrieve the folly flags in case contributors need to apply them manually.
+#
+# Returns: the folly compiler flags
+def folly_flags()
+  return NewArchitectureHelper.folly_compiler_flags
+end
+
+# This function can be used by library developer to prepare their modules for the New Architecture.
+# It passes the Folly Flags to the module, it configures the search path and installs some New Architecture specific dependencies.
+#
+# Parameters:
+# - spec: The spec that has to be configured with the New Architecture code
+# - new_arch_enabled: Whether the module should install dependencies for the new architecture
+def install_modules_dependencies(spec, new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == "1")
+  NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, $FOLLY_VERSION)
+end
+
 # It returns the default flags.
 def get_default_flags()
   return ReactNativePodsUtils.get_default_flags()
@@ -153,6 +188,8 @@ end
 # - react_native_path: path to React Native.
 # - mac_catalyst_enabled: whether we are running the Pod on a Mac Catalyst project or not.
 def react_native_post_install(installer, react_native_path = "../node_modules/react-native", mac_catalyst_enabled: false)
+  ReactNativePodsUtils.turn_off_resource_bundle_react_core(installer)
+
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
 
   if ReactNativePodsUtils.has_pod(installer, 'Flipper')
@@ -165,7 +202,7 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
-  is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+  is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
 
   Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
@@ -175,7 +212,7 @@ end
 # We need to keep this while we continue to support the old architecture.
 # =====================
 def use_react_native_codegen!(spec, options={})
-  return if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+  return if ENV['RCT_NEW_ARCH_ENABLED'] == "1"
   # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
 
   # The prefix to react-native
@@ -208,6 +245,8 @@ def use_react_native_codegen!(spec, options={})
         "EventEmitters.h",
         "Props.cpp",
         "Props.h",
+        "States.cpp",
+        "States.h",
         "RCTComponentViewHelpers.h",
         "ShadowNodes.cpp",
         "ShadowNodes.h"

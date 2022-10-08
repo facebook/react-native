@@ -70,8 +70,6 @@ public class ReactFeatureFlags {
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
-  public static boolean enableRuntimeScheduler = false;
-
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 
@@ -80,6 +78,9 @@ public class ReactFeatureFlags {
 
   /** Enables or disables MapBuffer Serialization */
   public static boolean mapBufferSerializationEnabled = false;
+
+  /* Enables or disables MapBuffer use in Props infrastructure. */
+  public static boolean useMapBufferProps = false;
 
   /** Enables or disables calculation of Transformed Frames */
   public static boolean calculateTransformedFramesEnabled = false;
@@ -105,16 +106,10 @@ public class ReactFeatureFlags {
    */
   public static boolean enableLargeTextMeasureCache = true;
 
-  /** TODO: T113245006 Delete this flag. Enables caching of spannables for text */
-  public static boolean enableSpannableCache = false;
-
   public static boolean dispatchPointerEvents = false;
 
   /** Feature Flag to enable the pending event queue in fabric before mounting views */
   public static boolean enableFabricPendingEventQueue = false;
-
-  /** Feature Flag to control RN Android scrollEventThrottle prop. */
-  public static boolean enableScrollEventThrottle = false;
 
   /**
    * Feature flag that controls how turbo modules are exposed to JS

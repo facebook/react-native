@@ -8,6 +8,7 @@
 package com.facebook.react.fabric;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
@@ -23,16 +24,27 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   @NonNull private final ComponentFactory mComponentFactory;
   @NonNull private final ReactNativeConfig mConfig;
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
+  @Nullable private final CppComponentRegistry mCppComponentRegistry;
 
   public FabricJSIModuleProvider(
       @NonNull ReactApplicationContext reactApplicationContext,
       @NonNull ComponentFactory componentFactory,
       @NonNull ReactNativeConfig config,
       @NonNull ViewManagerRegistry viewManagerRegistry) {
+    this(reactApplicationContext, componentFactory, config, viewManagerRegistry, null);
+  }
+
+  public FabricJSIModuleProvider(
+      @NonNull ReactApplicationContext reactApplicationContext,
+      @NonNull ComponentFactory componentFactory,
+      @NonNull ReactNativeConfig config,
+      @NonNull ViewManagerRegistry viewManagerRegistry,
+      @Nullable CppComponentRegistry cppComponentRegistry) {
     mReactApplicationContext = reactApplicationContext;
     mComponentFactory = componentFactory;
     mConfig = config;
     mViewManagerRegistry = viewManagerRegistry;
+    mCppComponentRegistry = cppComponentRegistry;
   }
 
   @Override
@@ -55,7 +67,8 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
         uiManager,
         eventBeatManager,
         mComponentFactory,
-        mConfig);
+        mConfig,
+        mCppComponentRegistry);
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

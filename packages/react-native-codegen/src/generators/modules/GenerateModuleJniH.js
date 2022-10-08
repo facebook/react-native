@@ -92,6 +92,9 @@ LOCAL_SHARED_LIBRARIES := libfbjni \
   libreact_render_core \
   libreact_render_debug \
   libreact_render_graphics \
+  libreact_render_imagemanager \
+  libreact_render_mapbuffer \
+  librrc_image \
   librrc_view \
   libturbomodulejsijni \
   libyoga
@@ -139,6 +142,8 @@ target_link_libraries(
   react_render_core
   react_render_debug
   react_render_graphics
+  react_render_imagemanager
+  rrc_image
   rrc_view
   turbomodulejsijni
   yoga

@@ -9,6 +9,7 @@
  */
 
 import type {TurboModule} from '../TurboModule/RCTExport';
+
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 // TODO: Use proper enum types.

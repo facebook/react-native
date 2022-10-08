@@ -1,5 +1,55 @@
 # Changelog
 
+## v0.70.2
+
+### Added
+
+#### iOS specific
+
+- Add support for "Prefer Cross-Fade Transitions" into AccessibilityInfo ([be7c50fefd](https://github.com/facebook/react-native/commit/be7c50fefd7f13201fb538ded93d91b374341173) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### Changed
+
+- Bump CLI to 9.1.3 and Metro to 0.72.3 ([f164556037](https://github.com/facebook/react-native/commit/f1645560376b734a87f0eba1fef69f6cba312cc1) by [@kelset](https://github.com/kelset))
+
+### Fixed
+
+- Inform ScrollView of Keyboard Events Before Mount ([26d148029c](https://github.com/facebook/react-native/commit/26d148029c7fde117f33b0d6c8b34286c45a0ef2) by [@NickGerleman](https://github.com/NickGerleman))
+
+#### Android specific
+
+- Fix port as -1 if dev server without specifying port on Android ([3d7e1380b4](https://github.com/facebook/react-native/commit/3d7e1380b4e609f5340ee80c19d566b17e620427) by [@Kudo](https://github.com/Kudo))
+
+## v0.70.1
+
+### Added
+
+- Add more debugging settings for *HermesExecutorFactory* ([32d12e89f8](https://github.com/facebook/react-native/commit/32d12e89f864a106433c8e54c10691d7876333ee) by [@Kudo](https://github.com/Kudo))
+- Support TypeScript array types for turbo module (component only) ([33d1291e1a](https://github.com/facebook/react-native/commit/33d1291e1a96497a4f994e9d622248a745ee1ea6) by [@ZihanChen-MSFT](https://github.com/ZihanChen-MSFT))
+
+### Changed
+
+- Accept TypeScript type `T | null | undefined` as a maybe type of T in turbo module. ([9ecd203eec](https://github.com/facebook/react-native/commit/9ecd203eec97e7d21d10311d950c9f8f30c7a4b1) by [@ZihanChen-MSFT](https://github.com/ZihanChen-MSFT))
+- Bump react-native-gradle-plugin to 0.70.3 ([e33633644c](https://github.com/facebook/react-native/commit/e33633644c70ea39af6e450fcf31d9458051fd5f) by [@dmytrorykun](https://github.com/dmytrorykun))
+- Bump react-native-codegen to 0.70.5 ([6a8c38eef2](https://github.com/facebook/react-native/commit/6a8c38eef272e79e52a35941afa9c3fe9e8fc191) by [@dmytrorykun](https://github.com/dmytrorykun))
+- Hermes version bump for 0.70.1 ([5132211228](https://github.com/facebook/react-native/commit/5132211228a5b9e36d58c1f7e2c99ccaabe1ba3d) by [@dmytrorykun](https://github.com/dmytrorykun))
+
+### Fixed
+
+- Fix hermes profiler ([81564c1a3d](https://github.com/facebook/react-native/commit/81564c1a3dae4222858de2a9a34089097f665e82) by [@janicduplessis](https://github.com/janicduplessis))
+
+#### Android specific
+
+- Support PlatformColor in borderColor ([2d5db284b0](https://github.com/facebook/react-native/commit/2d5db284b061aec33af671b25065632e20217f62) by [@danilobuerger](https://github.com/danilobuerger))
+- Avoid crash in ForwardingCookieHandler if webview is disabled ([5451cd48bd](https://github.com/facebook/react-native/commit/5451cd48bd0166ba70d516e3a11c6786bc22171a) by [@Pajn](https://github.com/Pajn))
+- Correctly resolve classes with FindClass(..) ([361b310bcc](https://github.com/facebook/react-native/commit/361b310bcc8dddbff42cf63495649291c894d661) by [@evancharlton](https://github.com/evancharlton))
+
+#### iOS specific
+
+- Fix KeyboardAvoidingView height when "Prefer Cross-Fade Transitions" is enabled ([4b9382c250](https://github.com/facebook/react-native/commit/4b9382c250261aab89b271618f8b68083ba01785) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix React module build error with swift integration on new architecture mode ([3afef3c167](https://github.com/facebook/react-native/commit/3afef3c16702cefa5115b059a08741fba255b2db) by [@Kudo](https://github.com/Kudo))
+- Fix ios pod install error ([0cae4959b7](https://github.com/facebook/react-native/commit/0cae4959b750ea051dcd04e4c9374e02b1de6e7a) by [@Romick2005](https://github.com/Romick2005))
+
 ## 0.70.0
 
 ### Breaking
@@ -185,6 +235,25 @@
 - Add GitHub token permissions for workflows ([3da3d82320](https://github.com/facebook/react-native/commit/3da3d82320bd035c6bd361a82ea12a70dba4e851) by [@varunsh-coder](https://github.com/varunsh-coder))
 - Bump RCT-Folly to 2021-07-22 ([68f3a42fc7](https://github.com/facebook/react-native/commit/68f3a42fc7380051714253f43b42175de361f8bd) by [@luissantana](https://github.com/luissantana))
 
+## v0.69.6
+
+### Changed
+
+- Bump version of `promise` from 8.0.3 to 8.2.0, enabling `Promise.allSettled` ([951538c080](https://github.com/facebook/react-native/commit/951538c080ef745da304fb308fa91d597e0dd98a) by [@retyui](https://github.com/retyui))
+
+### Fixed
+
+- Fix hermes profiler ([81564c1a3d](https://github.com/facebook/react-native/commit/81564c1a3dae4222858de2a9a34089097f665e82) by [@janicduplessis](https://github.com/janicduplessis))
+
+#### Android specific
+
+- Correctly resolve classes with FindClass(..) ([361b310bcc](https://github.com/facebook/react-native/commit/361b310bcc8dddbff42cf63495649291c894d661) by [@evancharlton](https://github.com/evancharlton))
+
+#### iOS specific
+
+- Fix the way the orientation events are published, to avoid false publish on orientation change when app changes state to inactive ([7d42106d4c](https://github.com/facebook/react-native/commit/7d42106d4ce20c644bda4d928fb0abc163580cee) by [@lbaldy](https://github.com/lbaldy))
+- Fix React module build error with swift integration on new architecture mode ([3afef3c167](https://github.com/facebook/react-native/commit/3afef3c16702cefa5115b059a08741fba255b2db) by [@Kudo](https://github.com/Kudo))
+
 ## v0.69.5
 
 ### Changed
@@ -320,6 +389,7 @@
 - Type the argument of Animated.interpolate as read-only ([6584304c10](https://github.com/facebook/react-native/commit/6584304c100ce4d51a5c4d606170a6ad0dc00875) by [@motiz88](https://github.com/motiz88))
 - Update gradle-download-task to 5.0.1 to support concurrent downloads ([a86cae7aac](https://github.com/facebook/react-native/commit/a86cae7aacc9837536e7d679870a57dcd0f45475) by [@michel-kraemer](https://github.com/michel-kraemer))
 - Logging a soft error when ReactRootView has an id other than -1 instead of crashing the app in hybrid apps ([1ca2c24930](https://github.com/facebook/react-native/commit/1ca2c2493027c1b027146cd41e17dd8a4fc33a41) by [@Kunal-Airtel2022](https://github.com/Kunal-Airtel2022))
+- Upgrade to React 18 ([41cbccd98d](https://github.com/facebook/react-native/commit/41cbccd98dd6c98d1f662674164cf455105a1359) by [@rickhanlonii](https://github.com/rickhanlonii))
 
 #### Android specific
 
