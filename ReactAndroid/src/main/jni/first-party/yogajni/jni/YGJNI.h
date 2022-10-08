@@ -22,13 +22,13 @@ const int HAS_NEW_LAYOUT = 16;
 
 union YGNodeContext {
   uintptr_t edgesSet = 0;
-  void* asVoidPtr;
+  void *asVoidPtr;
 };
 
 class YGNodeEdges {
   uintptr_t edges_;
 
-public:
+ public:
   enum Edge {
     MARGIN = 1,
     PADDING = 2,
@@ -47,26 +47,30 @@ public:
     node->setContext(context.asVoidPtr);
   }
 
-  bool has(Edge edge) { return (edges_ & edge) == edge; }
+  bool has(Edge edge) {
+    return (edges_ & edge) == edge;
+  }
 
-  YGNodeEdges& add(Edge edge) {
+  YGNodeEdges &add(Edge edge) {
     edges_ |= edge;
     return *this;
   }
 
-  int get() { return edges_; }
+  int get() {
+    return edges_;
+  }
 };
 
 struct YogaValue {
   static constexpr jint NAN_BYTES = 0x7fc00000;
 
-  static jlong asJavaLong(const YGValue& value) {
+  static jlong asJavaLong(const YGValue &value) {
     uint32_t valueBytes = 0;
     memcpy(&valueBytes, &value.value, sizeof valueBytes);
-    return ((jlong) value.unit) << 32 | valueBytes;
+    return ((jlong)value.unit) << 32 | valueBytes;
   }
   constexpr static jlong undefinedAsJavaLong() {
-    return ((jlong) YGUnitUndefined) << 32 | NAN_BYTES;
+    return ((jlong)YGUnitUndefined) << 32 | NAN_BYTES;
   }
 };
 } // namespace

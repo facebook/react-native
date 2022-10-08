@@ -25,5 +25,5 @@ createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const 
 NSError *tryAndReturnError(const std::function<void()> &func);
 NSString *deriveSourceURL(NSURL *url);
 
-}
-}
+} // namespace react
+} // namespace facebook

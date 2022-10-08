@@ -9,25 +9,25 @@
 
 #ifdef __cplusplus
 
-#include <cstdint>
 #include <stdio.h>
+#include <cstdint>
 #include "BitUtils.h"
 #include "CompactValue.h"
 #include "YGConfig.h"
 #include "YGLayout.h"
-#include "YGStyle.h"
 #include "YGMacros.h"
+#include "YGStyle.h"
 #include "Yoga-internal.h"
 
 YGConfigRef YGConfigGetDefault();
 
 struct YOGA_EXPORT YGNode {
   using MeasureWithContextFn =
-      YGSize (*)(YGNode*, float, YGMeasureMode, float, YGMeasureMode, void*);
-  using BaselineWithContextFn = float (*)(YGNode*, float, float, void*);
-  using PrintWithContextFn = void (*)(YGNode*, void*);
+      YGSize (*)(YGNode *, float, YGMeasureMode, float, YGMeasureMode, void *);
+  using BaselineWithContextFn = float (*)(YGNode *, float, float, void *);
+  using PrintWithContextFn = void (*)(YGNode *, void *);
 
-private:
+ private:
   static constexpr size_t hasNewLayout_ = 0;
   static constexpr size_t isReferenceBaseline_ = 1;
   static constexpr size_t isDirty_ = 2;
@@ -37,7 +37,7 @@ private:
   static constexpr size_t printUsesContext_ = 6;
   static constexpr size_t useWebDefaults_ = 7;
 
-  void* context_ = nullptr;
+  void *context_ = nullptr;
   uint8_t flags = 1;
   uint8_t reserved_ = 0;
   union {
@@ -80,11 +80,11 @@ private:
   // them (potentially incorrect) or ignore them (danger of leaks). Only ever
   // use this after checking that there are no children.
   // DO NOT CHANGE THE VISIBILITY OF THIS METHOD!
-  YGNode& operator=(YGNode&&) = default;
+  YGNode &operator=(YGNode &&) = default;
 
   using CompactValue = facebook::yoga::detail::CompactValue;
 
-public:
+ public:
   YGNode() : YGNode{YGConfigGetDefault()} {}
   explicit YGNode(const YGConfigRef config) : config_{config} {
     if (config->useWebDefaults) {
@@ -93,26 +93,32 @@ public:
   };
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
 
-  YGNode(YGNode&&);
+  YGNode(YGNode &&);
 
   // Does not expose true value semantics, as children are not cloned eagerly.
   // Should we remove this?
-  YGNode(const YGNode& node) = default;
+  YGNode(const YGNode &node) = default;
 
   // for RB fabric
-  YGNode(const YGNode& node, YGConfigRef config);
+  YGNode(const YGNode &node, YGConfigRef config);
 
   // assignment means potential leaks of existing children, or alternatively
   // freeing unowned memory, double free, or freeing stack memory.
-  YGNode& operator=(const YGNode&) = delete;
+  YGNode &operator=(const YGNode &) = delete;
 
   // Getters
-  void* getContext() const { return context_; }
+  void *getContext() const {
+    return context_;
+  }
 
-  uint8_t& reserved() { return reserved_; }
-  uint8_t reserved() const { return reserved_; }
+  uint8_t &reserved() {
+    return reserved_;
+  }
+  uint8_t reserved() const {
+    return reserved_;
+  }
 
-  void print(void*);
+  void print(void *);
 
   bool getHasNewLayout() const {
     return facebook::yoga::detail::getBooleanData(flags, hasNewLayout_);
@@ -122,29 +128,43 @@ public:
     return facebook::yoga::detail::getEnumData<YGNodeType>(flags, nodeType_);
   }
 
-  bool hasMeasureFunc() const noexcept { return measure_.noContext != nullptr; }
+  bool hasMeasureFunc() const noexcept {
+    return measure_.noContext != nullptr;
+  }
 
-  YGSize measure(float, YGMeasureMode, float, YGMeasureMode, void*);
+  YGSize measure(float, YGMeasureMode, float, YGMeasureMode, void *);
 
   bool hasBaselineFunc() const noexcept {
     return baseline_.noContext != nullptr;
   }
 
-  float baseline(float width, float height, void* layoutContext);
+  float baseline(float width, float height, void *layoutContext);
 
-  YGDirtiedFunc getDirtied() const { return dirtied_; }
-
-  // For Performance reasons passing as reference.
-  YGStyle& getStyle() { return style_; }
-
-  const YGStyle& getStyle() const { return style_; }
+  YGDirtiedFunc getDirtied() const {
+    return dirtied_;
+  }
 
   // For Performance reasons passing as reference.
-  YGLayout& getLayout() { return layout_; }
+  YGStyle &getStyle() {
+    return style_;
+  }
 
-  const YGLayout& getLayout() const { return layout_; }
+  const YGStyle &getStyle() const {
+    return style_;
+  }
 
-  uint32_t getLineIndex() const { return lineIndex_; }
+  // For Performance reasons passing as reference.
+  YGLayout &getLayout() {
+    return layout_;
+  }
+
+  const YGLayout &getLayout() const {
+    return layout_;
+  }
+
+  uint32_t getLineIndex() const {
+    return lineIndex_;
+  }
 
   bool isReferenceBaseline() {
     return facebook::yoga::detail::getBooleanData(flags, isReferenceBaseline_);
@@ -154,19 +174,25 @@ public:
   // the YogaTree that a YGNode belongs to. This method will return the parent
   // of the YGNode when a YGNode only belongs to one YogaTree or nullptr when
   // the YGNode is shared between two or more YogaTrees.
-  YGNodeRef getOwner() const { return owner_; }
+  YGNodeRef getOwner() const {
+    return owner_;
+  }
 
   // Deprecated, use getOwner() instead.
-  YGNodeRef getParent() const { return getOwner(); }
+  YGNodeRef getParent() const {
+    return getOwner();
+  }
 
-  const YGVector& getChildren() const { return children_; }
+  const YGVector &getChildren() const {
+    return children_;
+  }
 
   // Applies a callback to all children, after cloning them if they are not
   // owned.
   template <typename T>
-  void iterChildrenAfterCloningIfNeeded(T callback, void* cloneContext) {
+  void iterChildrenAfterCloningIfNeeded(T callback, void *cloneContext) {
     int i = 0;
-    for (YGNodeRef& child : children_) {
+    for (YGNodeRef &child : children_) {
       if (child->getOwner() != this) {
         child = config_->cloneNode(child, this, i, cloneContext);
         child->setOwner(this);
@@ -177,9 +203,13 @@ public:
     }
   }
 
-  YGNodeRef getChild(uint32_t index) const { return children_.at(index); }
+  YGNodeRef getChild(uint32_t index) const {
+    return children_.at(index);
+  }
 
-  YGConfigRef getConfig() const { return config_; }
+  YGConfigRef getConfig() const {
+    return config_;
+  }
 
   bool isDirty() const {
     return facebook::yoga::detail::getBooleanData(flags, isDirty_);
@@ -194,12 +224,12 @@ public:
   }
 
   static CompactValue computeEdgeValueForColumn(
-      const YGStyle::Edges& edges,
+      const YGStyle::Edges &edges,
       YGEdge edge,
       CompactValue defaultValue);
 
   static CompactValue computeEdgeValueForRow(
-      const YGStyle::Edges& edges,
+      const YGStyle::Edges &edges,
       YGEdge rowEdge,
       YGEdge edge,
       CompactValue defaultValue);
@@ -238,7 +268,9 @@ public:
       const float widthSize) const;
   // Setters
 
-  void setContext(void* context) { context_ = context; }
+  void setContext(void *context) {
+    context_ = context;
+  }
 
   void setPrintFunc(YGPrintFunc printFunc) {
     print_.noContext = printFunc;
@@ -248,7 +280,9 @@ public:
     print_.withContext = printFunc;
     facebook::yoga::detail::setBooleanData(flags, printUsesContext_, true);
   }
-  void setPrintFunc(std::nullptr_t) { setPrintFunc(YGPrintFunc{nullptr}); }
+  void setPrintFunc(std::nullptr_t) {
+    setPrintFunc(YGPrintFunc{nullptr});
+  }
 
   void setHasNewLayout(bool hasNewLayout) {
     facebook::yoga::detail::setBooleanData(flags, hasNewLayout_, hasNewLayout);
@@ -277,26 +311,40 @@ public:
     return setBaselineFunc(YGBaselineFunc{nullptr});
   }
 
-  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) { dirtied_ = dirtiedFunc; }
+  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) {
+    dirtied_ = dirtiedFunc;
+  }
 
-  void setStyle(const YGStyle& style) { style_ = style; }
+  void setStyle(const YGStyle &style) {
+    style_ = style;
+  }
 
-  void setLayout(const YGLayout& layout) { layout_ = layout; }
+  void setLayout(const YGLayout &layout) {
+    layout_ = layout;
+  }
 
-  void setLineIndex(uint32_t lineIndex) { lineIndex_ = lineIndex; }
+  void setLineIndex(uint32_t lineIndex) {
+    lineIndex_ = lineIndex;
+  }
 
   void setIsReferenceBaseline(bool isReferenceBaseline) {
     facebook::yoga::detail::setBooleanData(
         flags, isReferenceBaseline_, isReferenceBaseline);
   }
 
-  void setOwner(YGNodeRef owner) { owner_ = owner; }
+  void setOwner(YGNodeRef owner) {
+    owner_ = owner;
+  }
 
-  void setChildren(const YGVector& children) { children_ = children; }
+  void setChildren(const YGVector &children) {
+    children_ = children;
+  }
 
   // TODO: rvalue override for setChildren
 
-  YG_DEPRECATED void setConfig(YGConfigRef config) { config_ = config; }
+  YG_DEPRECATED void setConfig(YGConfigRef config) {
+    config_ = config;
+  }
 
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(YGDirection direction);
@@ -335,13 +383,13 @@ public:
   bool removeChild(YGNodeRef child);
   void removeChild(uint32_t index);
 
-  void cloneChildrenIfNeeded(void*);
+  void cloneChildrenIfNeeded(void *);
   void markDirtyAndPropogate();
   float resolveFlexGrow() const;
   float resolveFlexShrink() const;
   bool isNodeFlexible();
   bool didUseLegacyFlag();
-  bool isLayoutTreeEqualToNode(const YGNode& node) const;
+  bool isLayoutTreeEqualToNode(const YGNode &node) const;
   void reset();
 };
 

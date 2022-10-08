@@ -17,11 +17,11 @@
 //
 
 // Enables verbose logging for the LayoutAnimations subsystem.
-//#define LAYOUT_ANIMATION_VERBOSE_LOGGING 1
+// #define LAYOUT_ANIMATION_VERBOSE_LOGGING 1
 
 // Logs information before running `assert` in LayoutAnimations. More useful on
 // Android vs other platforms.
-//#define VERBOSE_LAYOUT_ANIMATION_ASSERTS 1
+// #define VERBOSE_LAYOUT_ANIMATION_ASSERTS 1
 
 // Enables some Shadow Tree introspection features (maintains a StubViewTree,
 // and logs prev/next tree and mutations if there are any discrepancies). If you
@@ -38,13 +38,13 @@
 
 // Enables *very* verbose, noisy logs in the differ. Useful for debugging
 // specifically the differ, but not much else.
-//#define DEBUG_LOGS_DIFFER
+// #define DEBUG_LOGS_DIFFER
 
 // Uncomment to enable verbose StubViewTree debug logs. This ensures that errors
 // are logged to console before the `assert` is fired. More useful on Android vs
 // other platforms.
-//#define STUB_VIEW_TREE_VERBOSE 1
+// #define STUB_VIEW_TREE_VERBOSE 1
 
 // Verbose logging for certain Yoga-related things in the RN codebase (not Yoga
 // codebase). Useful for debugging layout.
-//#define RN_DEBUG_YOGA_LOGGER 1
+// #define RN_DEBUG_YOGA_LOGGER 1

@@ -25,10 +25,7 @@ YG_ENUM_SEQ_DECL(
     YGAlignSpaceBetween,
     YGAlignSpaceAround)
 
-YG_ENUM_SEQ_DECL(
-    YGDimension,
-    YGDimensionWidth,
-    YGDimensionHeight)
+YG_ENUM_SEQ_DECL(YGDimension, YGDimensionWidth, YGDimensionHeight)
 
 YG_ENUM_SEQ_DECL(
     YGDirection,
@@ -36,10 +33,7 @@ YG_ENUM_SEQ_DECL(
     YGDirectionLTR,
     YGDirectionRTL)
 
-YG_ENUM_SEQ_DECL(
-    YGDisplay,
-    YGDisplayFlex,
-    YGDisplayNone)
+YG_ENUM_SEQ_DECL(YGDisplay, YGDisplayFlex, YGDisplayNone)
 
 YG_ENUM_SEQ_DECL(
     YGEdge,
@@ -53,9 +47,7 @@ YG_ENUM_SEQ_DECL(
     YGEdgeVertical,
     YGEdgeAll)
 
-YG_ENUM_SEQ_DECL(
-    YGExperimentalFeature,
-    YGExperimentalFeatureWebFlexBasis)
+YG_ENUM_SEQ_DECL(YGExperimentalFeature, YGExperimentalFeatureWebFlexBasis)
 
 YG_ENUM_SEQ_DECL(
     YGFlexDirection,
@@ -64,11 +56,7 @@ YG_ENUM_SEQ_DECL(
     YGFlexDirectionRow,
     YGFlexDirectionRowReverse)
 
-YG_ENUM_SEQ_DECL(
-    YGGutter,
-    YGGutterColumn,
-    YGGutterRow,
-    YGGutterAll)
+YG_ENUM_SEQ_DECL(YGGutter, YGGutterColumn, YGGutterRow, YGGutterAll)
 
 YG_ENUM_SEQ_DECL(
     YGJustify,
@@ -94,10 +82,7 @@ YG_ENUM_SEQ_DECL(
     YGMeasureModeExactly,
     YGMeasureModeAtMost)
 
-YG_ENUM_SEQ_DECL(
-    YGNodeType,
-    YGNodeTypeDefault,
-    YGNodeTypeText)
+YG_ENUM_SEQ_DECL(YGNodeType, YGNodeTypeDefault, YGNodeTypeText)
 
 YG_ENUM_SEQ_DECL(
     YGOverflow,
@@ -124,10 +109,6 @@ YG_ENUM_SEQ_DECL(
     YGUnitPercent,
     YGUnitAuto)
 
-YG_ENUM_SEQ_DECL(
-    YGWrap,
-    YGWrapNoWrap,
-    YGWrapWrap,
-    YGWrapWrapReverse)
+YG_ENUM_SEQ_DECL(YGWrap, YGWrapNoWrap, YGWrapWrap, YGWrapWrapReverse)
 
 YG_EXTERN_C_END

@@ -9,7 +9,7 @@
 
 @protocol RCTSurfaceProtocol;
 
-@interface RCTSurfaceBackedComponentState: NSObject
+@interface RCTSurfaceBackedComponentState : NSObject
 
 @property (atomic, readonly, strong) id<RCTSurfaceProtocol> surface;
 

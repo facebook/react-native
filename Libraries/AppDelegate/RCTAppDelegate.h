@@ -5,16 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeDelegate.h>
+#import <UIKit/UIKit.h>
 
 #if RCT_NEW_ARCH_ENABLED
 // When the new architecture is enabled, the RCTAppDelegate imports some additional headers
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
-
 
 #endif
 

@@ -14,11 +14,11 @@
 #else
 #include <cstring>
 #endif
-#include "YGValue.h"
-#include "YGMacros.h"
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include "YGMacros.h"
+#include "YGValue.h"
 
 static_assert(
     std::numeric_limits<float>::is_iec559,
@@ -50,7 +50,7 @@ namespace detail {
 class YOGA_EXPORT CompactValue {
   friend constexpr bool operator==(CompactValue, CompactValue) noexcept;
 
-public:
+ public:
   static constexpr auto LOWER_BOUND = 1.08420217e-19f;
   static constexpr auto UPPER_BOUND_POINT = 36893485948395847680.0f;
   static constexpr auto UPPER_BOUND_PERCENT = 18446742974197923840.0f;
@@ -96,7 +96,7 @@ public:
 
   constexpr CompactValue() noexcept : repr_(0x7FC00000) {}
 
-  CompactValue(const YGValue& x) noexcept : repr_(uint32_t{0}) {
+  CompactValue(const YGValue &x) noexcept : repr_(uint32_t{0}) {
     switch (x.unit) {
       case YGUnitUndefined:
         *this = ofUndefined();
@@ -141,9 +141,11 @@ public:
         repr_ != ZERO_BITS_PERCENT && std::isnan(asFloat(repr_)));
   }
 
-  bool isAuto() const noexcept { return repr_ == AUTO_BITS; }
+  bool isAuto() const noexcept {
+    return repr_ == AUTO_BITS;
+  }
 
-private:
+ private:
   uint32_t repr_;
 
   static constexpr uint32_t BIAS = 0x20000000;
@@ -157,7 +159,9 @@ private:
 
   constexpr CompactValue(uint32_t data) noexcept : repr_(data) {}
 
-  VISIBLE_FOR_TESTING uint32_t repr() { return repr_; }
+  VISIBLE_FOR_TESTING uint32_t repr() {
+    return repr_;
+  }
 
   static uint32_t asU32(float f) {
 #ifdef __cpp_lib_bit_cast

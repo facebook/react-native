@@ -15,7 +15,7 @@ namespace react {
 class JSExecutorFactory;
 
 }
-}
+} // namespace facebook
 
 // This is a separate class so non-C++ implementations don't need to
 // take a C++ dependency.

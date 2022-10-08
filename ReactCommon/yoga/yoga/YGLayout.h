@@ -22,7 +22,7 @@ struct YGLayout {
   std::array<float, 4> border = {};
   std::array<float, 4> padding = {};
 
-private:
+ private:
   static constexpr size_t directionOffset = 0;
   static constexpr size_t didUseLegacyFlagOffset =
       directionOffset + facebook::yoga::detail::bitWidthFn<YGDirection>();
@@ -32,7 +32,7 @@ private:
       doesLegacyStretchFlagAffectsLayoutOffset + 1;
   uint8_t flags = 0;
 
-public:
+ public:
   uint32_t computedFlexBasisGeneration = 0;
   YGFloatOptional computedFlexBasis = {};
 
@@ -86,7 +86,9 @@ public:
   }
 
   bool operator==(YGLayout layout) const;
-  bool operator!=(YGLayout layout) const { return !(*this == layout); }
+  bool operator!=(YGLayout layout) const {
+    return !(*this == layout);
+  }
 };
 
 #endif
