@@ -377,34 +377,21 @@ RCT_ENUM_CONVERTER(
 
 + (NSLineBreakStrategy)NSLineBreakStrategy:(id)json RCT_DYNAMIC
 {
-  static NSDictionary *mapping;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
     if (@available(iOS 14.0, *)) {
-      mapping = @{
-        @"none" : @(NSLineBreakStrategyNone),
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
-        @"standard" : @(NSLineBreakStrategyStandard),
-        @"hangul-word" : @(NSLineBreakStrategyHangulWordPriority),
-        @"push-out": @(NSLineBreakStrategyPushOut)
-#else
-        @"standard" : @(NSLineBreakStrategyNone),
-        @"hangul-word" : @(NSLineBreakStrategyNone),
-        @"push-out": @(NSLineBreakStrategyNone)
-#endif
-      };
+      static NSDictionary *mapping;
+      static dispatch_once_t onceToken;
+      dispatch_once(&onceToken, ^{
+        mapping = @{
+          @"none" : @(NSLineBreakStrategyNone),
+          @"standard" : @(NSLineBreakStrategyStandard),
+          @"hangul-word" : @(NSLineBreakStrategyHangulWordPriority),
+          @"push-out": @(NSLineBreakStrategyPushOut)
+        };
+      });
+      return RCTConvertEnumValue("NSLineBreakStrategy", mapping, @(NSLineBreakStrategyNone), json).integerValue;
     } else {
-      mapping = @{
-        @"none" : @(NSLineBreakStrategyNone),
-        @"standard" : @(NSLineBreakStrategyNone),
-        @"hangul-word" : @(NSLineBreakStrategyNone),
-        @"push-out": @(NSLineBreakStrategyNone)
-      };
+      return NSLineBreakStrategyNone;
     }
-  });
-
-  NSLineBreakStrategy type = RCTConvertEnumValue("NSLineBreakStrategy", mapping, @(NSLineBreakStrategyNone), json).integerValue;
-  return type;
 }
 
 RCT_ENUM_CONVERTER(
