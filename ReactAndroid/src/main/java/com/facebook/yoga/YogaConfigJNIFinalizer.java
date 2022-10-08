@@ -19,7 +19,7 @@ public class YogaConfigJNIFinalizer extends YogaConfigJNIBase {
     } finally {
       super.finalize();
     }
-   }
+  }
 
   public void freeNatives() {
     if (mNativePointer != 0) {

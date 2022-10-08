@@ -24,8 +24,10 @@ public enum YogaExperimentalFeature {
 
   public static YogaExperimentalFeature fromInt(int value) {
     switch (value) {
-      case 0: return WEB_FLEX_BASIS;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return WEB_FLEX_BASIS;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

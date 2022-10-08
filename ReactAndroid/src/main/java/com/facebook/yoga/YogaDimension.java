@@ -25,9 +25,12 @@ public enum YogaDimension {
 
   public static YogaDimension fromInt(int value) {
     switch (value) {
-      case 0: return WIDTH;
-      case 1: return HEIGHT;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return WIDTH;
+      case 1:
+        return HEIGHT;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

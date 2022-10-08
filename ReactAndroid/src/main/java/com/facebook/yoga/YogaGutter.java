@@ -26,10 +26,14 @@ public enum YogaGutter {
 
   public static YogaGutter fromInt(int value) {
     switch (value) {
-      case 0: return COLUMN;
-      case 1: return ROW;
-      case 2: return ALL;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return COLUMN;
+      case 1:
+        return ROW;
+      case 2:
+        return ALL;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

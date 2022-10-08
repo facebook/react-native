@@ -23,7 +23,7 @@ public class YogaNodeJNIFinalizer extends YogaNodeJNIBase {
     } finally {
       super.finalize();
     }
-   }
+  }
 
   public void freeNatives() {
     if (mNativePointer != 0) {

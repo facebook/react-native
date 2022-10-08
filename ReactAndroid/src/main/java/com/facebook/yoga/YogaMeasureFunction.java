@@ -8,9 +8,7 @@
 package com.facebook.yoga;
 
 public interface YogaMeasureFunction {
-  /**
-   * Return a value created by YogaMeasureOutput.make(width, height);
-   */
+  /** Return a value created by YogaMeasureOutput.make(width, height); */
   long measure(
       YogaNode node,
       float width,

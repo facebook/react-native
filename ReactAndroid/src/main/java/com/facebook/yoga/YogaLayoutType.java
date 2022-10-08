@@ -25,11 +25,16 @@ public enum YogaLayoutType {
 
   public static YogaLayoutType fromInt(int value) {
     switch (value) {
-      case 0: return LAYOUT;
-      case 1: return MEASURE;
-      case 2: return CACHED_LAYOUT;
-      case 3: return CACHED_MEASURE;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return LAYOUT;
+      case 1:
+        return MEASURE;
+      case 2:
+        return CACHED_LAYOUT;
+      case 3:
+        return CACHED_MEASURE;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

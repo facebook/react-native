@@ -7,9 +7,7 @@
 
 package com.facebook.yoga;
 
-/**
- * Helpers for building measure output value.
- */
+/** Helpers for building measure output value. */
 public class YogaMeasureOutput {
 
   public static long make(float width, float height) {

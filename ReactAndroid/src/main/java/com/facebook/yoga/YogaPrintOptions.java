@@ -26,10 +26,14 @@ public enum YogaPrintOptions {
 
   public static YogaPrintOptions fromInt(int value) {
     switch (value) {
-      case 1: return LAYOUT;
-      case 2: return STYLE;
-      case 4: return CHILDREN;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 1:
+        return LAYOUT;
+      case 2:
+        return STYLE;
+      case 4:
+        return CHILDREN;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

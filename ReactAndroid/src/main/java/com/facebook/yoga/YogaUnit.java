@@ -27,11 +27,16 @@ public enum YogaUnit {
 
   public static YogaUnit fromInt(int value) {
     switch (value) {
-      case 0: return UNDEFINED;
-      case 1: return POINT;
-      case 2: return PERCENT;
-      case 3: return AUTO;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return UNDEFINED;
+      case 1:
+        return POINT;
+      case 2:
+        return PERCENT;
+      case 3:
+        return AUTO;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

@@ -26,10 +26,14 @@ public enum YogaWrap {
 
   public static YogaWrap fromInt(int value) {
     switch (value) {
-      case 0: return NO_WRAP;
-      case 1: return WRAP;
-      case 2: return WRAP_REVERSE;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return NO_WRAP;
+      case 1:
+        return WRAP;
+      case 2:
+        return WRAP_REVERSE;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

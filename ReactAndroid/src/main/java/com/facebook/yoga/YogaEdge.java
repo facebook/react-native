@@ -32,16 +32,26 @@ public enum YogaEdge {
 
   public static YogaEdge fromInt(int value) {
     switch (value) {
-      case 0: return LEFT;
-      case 1: return TOP;
-      case 2: return RIGHT;
-      case 3: return BOTTOM;
-      case 4: return START;
-      case 5: return END;
-      case 6: return HORIZONTAL;
-      case 7: return VERTICAL;
-      case 8: return ALL;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return LEFT;
+      case 1:
+        return TOP;
+      case 2:
+        return RIGHT;
+      case 3:
+        return BOTTOM;
+      case 4:
+        return START;
+      case 5:
+        return END;
+      case 6:
+        return HORIZONTAL;
+      case 7:
+        return VERTICAL;
+      case 8:
+        return ALL;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

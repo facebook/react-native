@@ -33,13 +33,20 @@ public enum YogaLogLevel {
   @DoNotStrip
   public static YogaLogLevel fromInt(int value) {
     switch (value) {
-      case 0: return ERROR;
-      case 1: return WARN;
-      case 2: return INFO;
-      case 3: return DEBUG;
-      case 4: return VERBOSE;
-      case 5: return FATAL;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return ERROR;
+      case 1:
+        return WARN;
+      case 2:
+        return INFO;
+      case 3:
+        return DEBUG;
+      case 4:
+        return VERBOSE;
+      case 5:
+        return FATAL;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

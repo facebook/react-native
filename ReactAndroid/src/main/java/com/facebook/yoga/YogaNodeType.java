@@ -25,9 +25,12 @@ public enum YogaNodeType {
 
   public static YogaNodeType fromInt(int value) {
     switch (value) {
-      case 0: return DEFAULT;
-      case 1: return TEXT;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return DEFAULT;
+      case 1:
+        return TEXT;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

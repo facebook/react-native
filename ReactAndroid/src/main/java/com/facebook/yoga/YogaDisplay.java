@@ -25,9 +25,12 @@ public enum YogaDisplay {
 
   public static YogaDisplay fromInt(int value) {
     switch (value) {
-      case 0: return FLEX;
-      case 1: return NONE;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return FLEX;
+      case 1:
+        return NONE;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

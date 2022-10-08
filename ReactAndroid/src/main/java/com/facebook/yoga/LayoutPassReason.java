@@ -29,15 +29,24 @@ public enum LayoutPassReason {
 
   public static LayoutPassReason fromInt(int value) {
     switch (value) {
-      case 0: return INITIAL;
-      case 1: return ABS_LAYOUT;
-      case 2: return STRETCH;
-      case 3: return MULTILINE_STRETCH;
-      case 4: return FLEX_LAYOUT;
-      case 5: return MEASURE;
-      case 6: return ABS_MEASURE;
-      case 7: return FLEX_MEASURE;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return INITIAL;
+      case 1:
+        return ABS_LAYOUT;
+      case 2:
+        return STRETCH;
+      case 3:
+        return MULTILINE_STRETCH;
+      case 4:
+        return FLEX_LAYOUT;
+      case 5:
+        return MEASURE;
+      case 6:
+        return ABS_MEASURE;
+      case 7:
+        return FLEX_MEASURE;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

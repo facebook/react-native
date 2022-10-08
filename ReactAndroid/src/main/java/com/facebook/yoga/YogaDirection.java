@@ -26,10 +26,14 @@ public enum YogaDirection {
 
   public static YogaDirection fromInt(int value) {
     switch (value) {
-      case 0: return INHERIT;
-      case 1: return LTR;
-      case 2: return RTL;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return INHERIT;
+      case 1:
+        return LTR;
+      case 2:
+        return RTL;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

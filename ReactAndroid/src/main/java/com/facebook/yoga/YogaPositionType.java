@@ -26,10 +26,14 @@ public enum YogaPositionType {
 
   public static YogaPositionType fromInt(int value) {
     switch (value) {
-      case 0: return STATIC;
-      case 1: return RELATIVE;
-      case 2: return ABSOLUTE;
-      default: throw new IllegalArgumentException("Unknown enum value: " + value);
+      case 0:
+        return STATIC;
+      case 1:
+        return RELATIVE;
+      case 2:
+        return ABSOLUTE;
+      default:
+        throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }
