@@ -11,11 +11,25 @@
 'use strict';
 
 import type {
-  Nullable,
+  BooleanTypeAnnotation,
+  Int32TypeAnnotation,
   NativeModuleNumberTypeAnnotation,
+  Nullable,
 } from '../CodegenSchema';
 
 const {wrapNullable} = require('./parsers-commons');
+
+function emitBoolean(nullable: boolean): Nullable<BooleanTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'BooleanTypeAnnotation',
+  });
+}
+
+function emitInt32(nullable: boolean): Nullable<Int32TypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'Int32TypeAnnotation',
+  });
+}
 
 function emitNumber(
   nullable: boolean,
@@ -26,5 +40,7 @@ function emitNumber(
 }
 
 module.exports = {
+  emitBoolean,
+  emitInt32,
   emitNumber,
 };

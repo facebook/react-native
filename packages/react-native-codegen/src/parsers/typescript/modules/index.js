@@ -33,7 +33,11 @@ const {
   isModuleRegistryCall,
 } = require('../utils.js');
 const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
-const {emitNumber} = require('../../parsers-primitives');
+const {
+  emitBoolean,
+  emitNumber,
+  emitInt32,
+} = require('../../parsers-primitives');
 const {
   IncorrectlyParameterizedTypeScriptGenericParserError,
   MisnamedModuleTypeScriptInterfaceParserError,
@@ -228,9 +232,7 @@ function translateTypeAnnotation(
           });
         }
         case 'Int32': {
-          return wrapNullable(nullable, {
-            type: 'Int32TypeAnnotation',
-          });
+          return emitInt32(nullable);
         }
         case 'Double': {
           return wrapNullable(nullable, {
@@ -398,9 +400,7 @@ function translateTypeAnnotation(
       });
     }
     case 'TSBooleanKeyword': {
-      return wrapNullable(nullable, {
-        type: 'BooleanTypeAnnotation',
-      });
+      return emitBoolean(nullable);
     }
     case 'TSNumberKeyword': {
       return emitNumber(nullable);
