@@ -70,6 +70,8 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
         case 'ImageSourcePrimitive':
           return j.template
             .expression`{ process: require('react-native/Libraries/Image/resolveAssetSource') }`;
+        case 'ImageRequestPrimitive':
+          throw new Error('ImageRequest should not be used in props');
         case 'PointPrimitive':
           return j.template
             .expression`{ diff: require('react-native/Libraries/Utilities/differ/pointsDiffer') }`;

@@ -11,7 +11,10 @@
 'use strict';
 import type {ComponentShape} from '../../CodegenSchema';
 
-const {getNativeTypeFromAnnotation} = require('./ComponentsGeneratorUtils.js');
+const {
+  getNativeTypeFromAnnotation,
+  getLocalImports,
+} = require('./ComponentsGeneratorUtils.js');
 
 const {
   convertDefaultTypeToString,
@@ -19,7 +22,6 @@ const {
   getEnumName,
   toSafeCppString,
   generateStructName,
-  getImports,
   toIntEnumValueName,
 } = require('./CppHelpers.js');
 
@@ -494,85 +496,6 @@ function getExtendsImports(
       default:
         (extendProps.type: empty);
         throw new Error('Invalid extended type');
-    }
-  });
-
-  return imports;
-}
-
-function getLocalImports(
-  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
-): Set<string> {
-  const imports: Set<string> = new Set();
-
-  function addImportsForNativeName(
-    name:
-      | 'ColorPrimitive'
-      | 'EdgeInsetsPrimitive'
-      | 'ImageSourcePrimitive'
-      | 'PointPrimitive',
-  ) {
-    switch (name) {
-      case 'ColorPrimitive':
-        imports.add('#include <react/renderer/graphics/Color.h>');
-        return;
-      case 'ImageSourcePrimitive':
-        imports.add('#include <react/renderer/imagemanager/primitives.h>');
-        return;
-      case 'PointPrimitive':
-        imports.add('#include <react/renderer/graphics/Geometry.h>');
-        return;
-      case 'EdgeInsetsPrimitive':
-        imports.add('#include <react/renderer/graphics/Geometry.h>');
-        return;
-      default:
-        (name: empty);
-        throw new Error(`Invalid ReservedPropTypeAnnotation name, got ${name}`);
-    }
-  }
-
-  properties.forEach(prop => {
-    const typeAnnotation = prop.typeAnnotation;
-
-    if (typeAnnotation.type === 'ReservedPropTypeAnnotation') {
-      addImportsForNativeName(typeAnnotation.name);
-    }
-
-    if (typeAnnotation.type === 'ArrayTypeAnnotation') {
-      imports.add('#include <vector>');
-      if (typeAnnotation.elementType.type === 'StringEnumTypeAnnotation') {
-        imports.add('#include <cinttypes>');
-      }
-    }
-
-    if (
-      typeAnnotation.type === 'ArrayTypeAnnotation' &&
-      typeAnnotation.elementType.type === 'ReservedPropTypeAnnotation'
-    ) {
-      addImportsForNativeName(typeAnnotation.elementType.name);
-    }
-
-    if (
-      typeAnnotation.type === 'ArrayTypeAnnotation' &&
-      typeAnnotation.elementType.type === 'ObjectTypeAnnotation'
-    ) {
-      const objectProps = typeAnnotation.elementType.properties;
-      const objectImports = getImports(objectProps);
-      const localImports = getLocalImports(objectProps);
-      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-      objectImports.forEach(imports.add, imports);
-      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-      localImports.forEach(imports.add, imports);
-    }
-
-    if (typeAnnotation.type === 'ObjectTypeAnnotation') {
-      imports.add('#include <react/renderer/core/propsConversions.h>');
-      const objectImports = getImports(typeAnnotation.properties);
-      const localImports = getLocalImports(typeAnnotation.properties);
-      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-      objectImports.forEach(imports.add, imports);
-      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-      localImports.forEach(imports.add, imports);
     }
   });
 

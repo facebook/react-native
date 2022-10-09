@@ -2483,6 +2483,54 @@ const COMPONENT_WITH_INT_ENUM_STATE: SchemaType = {
   },
 };
 
+const COMPONENTS_WITH_IMAGES_IN_STATE: SchemaType = {
+  modules: {
+    MyComponent: {
+      type: 'Component',
+      components: {
+        SimpleComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'imageSource',
+              optional: false,
+              typeAnnotation: {
+                type: 'ReservedPropTypeAnnotation',
+                name: 'ImageSourcePrimitive',
+              },
+            },
+          ],
+          commands: [],
+          state: [
+            {
+              name: 'imageSource',
+              optional: false,
+              typeAnnotation: {
+                type: 'ReservedPropTypeAnnotation',
+                name: 'ImageSourcePrimitive',
+              },
+            },
+            {
+              name: 'imageRequest',
+              optional: false,
+              typeAnnotation: {
+                type: 'ReservedPropTypeAnnotation',
+                name: 'ImageRequestPrimitive',
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
 module.exports = {
   NO_PROPS_NO_EVENTS,
   INTERFACE_ONLY,
@@ -2525,4 +2573,5 @@ module.exports = {
   COMPONENT_WITH_ARRAY_OF_OBJECTS_STATE,
   COMPONENT_WITH_STRING_ENUM_STATE_PROPS,
   COMPONENT_WITH_INT_ENUM_STATE,
+  COMPONENTS_WITH_IMAGES_IN_STATE,
 };
