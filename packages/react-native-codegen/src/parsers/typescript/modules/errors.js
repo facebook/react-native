@@ -11,7 +11,7 @@
 'use strict';
 
 const invariant = require('invariant');
-const {ParserError} = require('../errors');
+const {ParserError} = require('../../errors');
 
 class MisnamedModuleTypeScriptInterfaceParserError extends ParserError {
   constructor(hasteModuleName: string, id: $FlowFixMe) {
