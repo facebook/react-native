@@ -37,6 +37,7 @@ const {
   emitBoolean,
   emitNumber,
   emitInt32,
+  emitDouble,
 } = require('../../parsers-primitives');
 const {
   IncorrectlyParameterizedFlowGenericParserError,
@@ -202,9 +203,7 @@ function translateTypeAnnotation(
           return emitInt32(nullable);
         }
         case 'Double': {
-          return wrapNullable(nullable, {
-            type: 'DoubleTypeAnnotation',
-          });
+          return emitDouble(nullable);
         }
         case 'Float': {
           return wrapNullable(nullable, {

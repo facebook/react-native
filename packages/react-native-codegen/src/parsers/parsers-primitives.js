@@ -14,6 +14,7 @@ import type {
   BooleanTypeAnnotation,
   Int32TypeAnnotation,
   NativeModuleNumberTypeAnnotation,
+  DoubleTypeAnnotation,
   Nullable,
 } from '../CodegenSchema';
 
@@ -39,8 +40,15 @@ function emitNumber(
   });
 }
 
+function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'DoubleTypeAnnotation',
+  });
+}
+
 module.exports = {
   emitBoolean,
   emitInt32,
   emitNumber,
+  emitDouble,
 };

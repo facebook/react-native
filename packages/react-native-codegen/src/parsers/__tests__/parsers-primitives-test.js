@@ -15,6 +15,7 @@ const {
   emitBoolean,
   emitNumber,
   emitInt32,
+  emitDouble,
 } = require('../parsers-primitives.js');
 
 describe('emitBoolean', () => {
@@ -88,6 +89,32 @@ describe('emitNumber', () => {
       const result = emitNumber(false);
       const expected = {
         type: 'NumberTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitDouble', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitDouble(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'DoubleTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitDouble(false);
+      const expected = {
+        type: 'DoubleTypeAnnotation',
       };
 
       expect(result).toEqual(expected);
