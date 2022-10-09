@@ -160,7 +160,7 @@ Map {
 namespace facebook {
 namespace react {
 
-std::vector<SimpleComponentArrayStateStruct> SimpleComponent::getArrayState() const {
+std::vector<SimpleComponentArrayStateStruct> SimpleComponentState::getArrayState() const {
   return arrayState_;
 }
 
@@ -186,47 +186,47 @@ Map {
 namespace facebook {
 namespace react {
 
-std::vector<std::string> SimpleComponent::getNames() const {
+std::vector<std::string> SimpleComponentState::getNames() const {
   return names_;
 }
 
-std::vector<bool> SimpleComponent::getDisableds() const {
+std::vector<bool> SimpleComponentState::getDisableds() const {
   return disableds_;
 }
 
-std::vector<int> SimpleComponent::getProgress() const {
+std::vector<int> SimpleComponentState::getProgress() const {
   return progress_;
 }
 
-std::vector<Float> SimpleComponent::getRadii() const {
+std::vector<Float> SimpleComponentState::getRadii() const {
   return radii_;
 }
 
-std::vector<SharedColor> SimpleComponent::getColors() const {
+std::vector<SharedColor> SimpleComponentState::getColors() const {
   return colors_;
 }
 
-std::vector<ImageSource> SimpleComponent::getSrcs() const {
+std::vector<ImageSource> SimpleComponentState::getSrcs() const {
   return srcs_;
 }
 
-std::vector<Point> SimpleComponent::getPoints() const {
+std::vector<Point> SimpleComponentState::getPoints() const {
   return points_;
 }
 
-SimpleComponentSizesMask SimpleComponent::getSizes() const {
+SimpleComponentSizesMask SimpleComponentState::getSizes() const {
   return sizes_;
 }
 
-std::vector<SimpleComponentObjectStruct> SimpleComponent::getObject() const {
+std::vector<SimpleComponentObjectStruct> SimpleComponentState::getObject() const {
   return object_;
 }
 
-std::vector<SimpleComponentArrayStruct> SimpleComponent::getArray() const {
+std::vector<SimpleComponentArrayStruct> SimpleComponentState::getArray() const {
   return array_;
 }
 
-std::vector<std::vector<SimpleComponentArrayOfArrayOfObjectStruct>> SimpleComponent::getArrayOfArrayOfObject() const {
+std::vector<std::vector<SimpleComponentArrayOfArrayOfObjectStruct>> SimpleComponentState::getArrayOfArrayOfObject() const {
   return arrayOfArrayOfObject_;
 }
 
@@ -252,7 +252,7 @@ Map {
 namespace facebook {
 namespace react {
 
-bool SimpleComponent::getDisabled() const {
+bool SimpleComponentState::getDisabled() const {
   return disabled_;
 }
 
@@ -278,7 +278,7 @@ Map {
 namespace facebook {
 namespace react {
 
-SharedColor SimpleComponent::getTintColor() const {
+SharedColor SimpleComponentState::getTintColor() const {
   return tintColor_;
 }
 
@@ -304,15 +304,15 @@ Map {
 namespace facebook {
 namespace react {
 
-double SimpleComponent::getD_blurRadius() const {
+double SimpleComponentState::getD_blurRadius() const {
   return d_blurRadius_;
 }
 
-double SimpleComponent::getD_blurRadius2() const {
+double SimpleComponentState::getD_blurRadius2() const {
   return d_blurRadius2_;
 }
 
-double SimpleComponent::getD_blurRadius3() const {
+double SimpleComponentState::getD_blurRadius3() const {
   return d_blurRadius3_;
 }
 
@@ -338,7 +338,7 @@ Map {
 namespace facebook {
 namespace react {
 
-EdgeInsets SimpleComponent::getContentInset() const {
+EdgeInsets SimpleComponentState::getContentInset() const {
   return contentInset_;
 }
 
@@ -364,15 +364,15 @@ Map {
 namespace facebook {
 namespace react {
 
-Float SimpleComponent::getBlurRadius() const {
+Float SimpleComponentState::getBlurRadius() const {
   return blurRadius_;
 }
 
-Float SimpleComponent::getBlurRadius2() const {
+Float SimpleComponentState::getBlurRadius2() const {
   return blurRadius2_;
 }
 
-Float SimpleComponent::getBlurRadius3() const {
+Float SimpleComponentState::getBlurRadius3() const {
   return blurRadius3_;
 }
 
@@ -398,7 +398,7 @@ Map {
 namespace facebook {
 namespace react {
 
-ImageSource SimpleComponent::getThumbImage() const {
+ImageSource SimpleComponentState::getThumbImage() const {
   return thumbImage_;
 }
 
@@ -424,7 +424,7 @@ Map {
 namespace facebook {
 namespace react {
 
-SimpleComponentMaxInterval SimpleComponent::getMaxInterval() const {
+SimpleComponentMaxInterval SimpleComponentState::getMaxInterval() const {
   return maxInterval_;
 }
 
@@ -450,15 +450,15 @@ Map {
 namespace facebook {
 namespace react {
 
-int SimpleComponent::getProgress1() const {
+int SimpleComponentState::getProgress1() const {
   return progress1_;
 }
 
-int SimpleComponent::getProgress2() const {
+int SimpleComponentState::getProgress2() const {
   return progress2_;
 }
 
-int SimpleComponent::getProgress3() const {
+int SimpleComponentState::getProgress3() const {
   return progress3_;
 }
 
@@ -484,7 +484,7 @@ Map {
 namespace facebook {
 namespace react {
 
-SimpleComponentObjectPropStruct SimpleComponent::getObjectProp() const {
+SimpleComponentObjectPropStruct SimpleComponentState::getObjectProp() const {
   return objectProp_;
 }
 
@@ -510,7 +510,7 @@ Map {
 namespace facebook {
 namespace react {
 
-Point SimpleComponent::getStartPoint() const {
+Point SimpleComponentState::getStartPoint() const {
   return startPoint_;
 }
 
@@ -536,7 +536,7 @@ Map {
 namespace facebook {
 namespace react {
 
-SimpleComponentAlignment SimpleComponent::getAlignment() const {
+SimpleComponentAlignment SimpleComponentState::getAlignment() const {
   return alignment_;
 }
 
@@ -562,12 +562,42 @@ Map {
 namespace facebook {
 namespace react {
 
-std::string SimpleComponent::getAccessibilityHint() const {
+std::string SimpleComponentState::getAccessibilityHint() const {
   return accessibilityHint_;
 }
 
-std::string SimpleComponent::getAccessibilityRole() const {
+std::string SimpleComponentState::getAccessibilityRole() const {
   return accessibilityRole_;
+}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateStateCpp can generate fixture COMPONENTS_WITH_IMAGES_IN_STATE 1`] = `
+Map {
+  "States.cpp" => "
+/**
+ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
+ *
+ * Do not edit this file as changes may cause incorrect behavior and will be lost
+ * once the code is regenerated.
+ *
+ * @generated by codegen project: GenerateStateCpp.js
+ */
+#include <react/renderer/components/COMPONENTS_WITH_IMAGES_IN_STATE/States.h>
+
+namespace facebook {
+namespace react {
+
+ImageSource SimpleComponentState::getImageSource() const {
+  return imageSource_;
+}
+
+ImageRequest const & SimpleComponentState::getImageRequest() const {
+  return *imageRequest_;
 }
 
 } // namespace react

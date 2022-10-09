@@ -16,16 +16,25 @@ import type {
   StateTypeAnnotation,
 } from '../../CodegenSchema';
 const {capitalize} = require('../Utils.js');
-const {getStateConstituents} = require('./ComponentsGeneratorUtils.js');
+const {
+  getStateConstituents,
+  convertCtorParamToAddressType,
+  convertGettersReturnTypeToAddressType,
+  convertCtorInitToSharedPointers,
+  convertVarTypeToSharedPointer,
+  getLocalImports,
+} = require('./ComponentsGeneratorUtils.js');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
 const FileTemplate = ({
   libraryName,
+  imports,
   stateClasses,
 }: {
   libraryName: string,
+  imports: string,
   stateClasses: string,
 }) =>
   `
@@ -46,6 +55,8 @@ const FileTemplate = ({
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
+
+${imports}
 
 namespace facebook {
 namespace react {
@@ -71,34 +82,31 @@ const StateTemplate = ({
 }) => {
   let stateWithParams = '';
   if (ctorParams.length > 0) {
-    stateWithParams = `
-      ${stateName}State(
-        ${ctorParams}
-      )
-      : ${ctorInits}{};
-    `;
+    stateWithParams = `${stateName}State(
+      ${ctorParams})
+    : ${ctorInits}{};`;
   }
 
   return `
 class ${stateName}State {
-    public:
-    ${stateWithParams}
-    ${stateName}State() = default;
+public:
+  ${stateWithParams}
+  ${stateName}State() = default;
 
-    ${getters}
+  ${getters}
 
 #ifdef ANDROID
-    ${stateName}State(${stateName}State const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  ${stateName}State(${stateName}State const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    ${stateProps}
+private:
+  ${stateProps}
 };
 `.trim();
 };
@@ -130,14 +138,21 @@ function generateStrings(
       stateShape,
     );
 
-    ctorParams += `      ${type} ${name},\n`;
-    ctorInits += `${varName}(${name}),\n      `;
-    getters += `${type} get${capitalize(name)}() const;\n    `;
+    ctorParams += `${convertCtorParamToAddressType(type)} ${name},\n      `;
+    ctorInits += `${varName}(${convertCtorInitToSharedPointers(
+      type,
+      name,
+    )}),\n      `;
+    getters += `${convertGettersReturnTypeToAddressType(type)} get${capitalize(
+      name,
+    )}() const;\n  `;
     let finalDefaultValue = defaultValue;
     if (defaultValue.length > 0) {
       finalDefaultValue = `{${defaultValue}}`;
     }
-    stateProps += `  ${type} ${varName}${finalDefaultValue};\n    `;
+    stateProps += `  ${convertVarTypeToSharedPointer(
+      type,
+    )} ${varName}${finalDefaultValue};\n  `;
   });
 
   // Sanitize
@@ -160,6 +175,8 @@ module.exports = {
     assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'States.h';
+
+    const allImports: Set<string> = new Set();
 
     const stateClasses = Object.keys(schema.modules)
       .map(moduleName => {
@@ -194,6 +211,11 @@ module.exports = {
             const {ctorParams, ctorInits, getters, stateProps} =
               generateStrings(componentName, state);
 
+            const imports = getLocalImports(state);
+
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+            imports.forEach(allImports.add, allImports);
+
             return StateTemplate({
               stateName: componentName,
               ctorParams,
@@ -208,7 +230,11 @@ module.exports = {
       .filter(Boolean)
       .join('\n\n');
 
-    const template = FileTemplate({libraryName, stateClasses});
+    const template = FileTemplate({
+      libraryName,
+      imports: Array.from(allImports).sort().join('\n'),
+      stateClasses,
+    });
     return new Map([[fileName, template]]);
   },
 };
