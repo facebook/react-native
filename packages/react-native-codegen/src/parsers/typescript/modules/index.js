@@ -33,6 +33,7 @@ const {
   isModuleRegistryCall,
 } = require('../utils.js');
 const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
+const {emitNumber} = require('../../parsers-primitives');
 const {
   IncorrectlyParameterizedTypeScriptGenericParserError,
   MisnamedModuleTypeScriptInterfaceParserError,
@@ -402,9 +403,7 @@ function translateTypeAnnotation(
       });
     }
     case 'TSNumberKeyword': {
-      return wrapNullable(nullable, {
-        type: 'NumberTypeAnnotation',
-      });
+      return emitNumber(nullable);
     }
     case 'TSVoidKeyword': {
       return wrapNullable(nullable, {

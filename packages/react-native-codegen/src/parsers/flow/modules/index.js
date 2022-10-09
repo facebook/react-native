@@ -34,6 +34,9 @@ const {
 } = require('../utils.js');
 const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
 const {
+  emitNumber,
+} = require('../../parsers-primitives');
+const {
   IncorrectlyParameterizedFlowGenericParserError,
   MisnamedModuleFlowInterfaceParserError,
   ModuleFlowInterfaceNotFoundParserError,
@@ -367,9 +370,7 @@ function translateTypeAnnotation(
       });
     }
     case 'NumberTypeAnnotation': {
-      return wrapNullable(nullable, {
-        type: 'NumberTypeAnnotation',
-      });
+      return emitNumber(nullable);
     }
     case 'VoidTypeAnnotation': {
       return wrapNullable(nullable, {
