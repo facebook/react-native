@@ -10,7 +10,11 @@
 
 'use strict';
 
-import type {BooleanTypeAnnotation, Nullable} from '../CodegenSchema';
+import type {
+  BooleanTypeAnnotation,
+  Int32TypeAnnotation,
+  Nullable,
+} from '../CodegenSchema';
 
 const {wrapNullable} = require('./parsers-commons');
 
@@ -20,6 +24,13 @@ function emitBoolean(nullable: boolean): Nullable<BooleanTypeAnnotation> {
   });
 }
 
+function emitInt32(nullable: boolean): Nullable<Int32TypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'Int32TypeAnnotation',
+  });
+}
+
 module.exports = {
   emitBoolean,
+  emitInt32,
 };
