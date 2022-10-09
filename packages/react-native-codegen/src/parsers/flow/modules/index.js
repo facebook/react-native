@@ -33,9 +33,7 @@ const {
   isModuleRegistryCall,
 } = require('../utils.js');
 const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
-const {
-  emitNumber,
-} = require('../../parsers-primitives');
+const {emitNumber} = require('../../parsers-primitives');
 const {
   IncorrectlyParameterizedFlowGenericParserError,
   MisnamedModuleFlowInterfaceParserError,
