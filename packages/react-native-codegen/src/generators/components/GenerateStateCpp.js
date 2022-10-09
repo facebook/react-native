@@ -16,7 +16,11 @@ import type {
   StateTypeAnnotation,
 } from '../../CodegenSchema';
 const {capitalize} = require('../Utils.js');
-const {getStateConstituents} = require('./ComponentsGeneratorUtils.js');
+const {
+  getStateConstituents,
+  convertGettersReturnTypeToAddressType,
+  convertVarValueToPointer,
+} = require('./ComponentsGeneratorUtils.js');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -59,8 +63,10 @@ function generateStrings(
     );
 
     getters += `
-${type} ${componentName}::get${capitalize(name)}() const {
-  return ${varName};
+${convertGettersReturnTypeToAddressType(
+  type,
+)} ${componentName}State::get${capitalize(name)}() const {
+  return ${convertVarValueToPointer(type, varName)};
 }
 `;
   });

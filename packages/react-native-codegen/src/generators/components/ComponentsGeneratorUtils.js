@@ -32,6 +32,7 @@ const {
   getEnumMaskName,
   getEnumName,
   generateStructName,
+  getImports,
 } = require('./CppHelpers.js');
 
 function getNativeTypeFromAnnotation(
@@ -77,6 +78,8 @@ function getNativeTypeFromAnnotation(
           return 'SharedColor';
         case 'ImageSourcePrimitive':
           return 'ImageSource';
+        case 'ImageRequestPrimitive':
+          return 'ImageRequest';
         case 'PointPrimitive':
           return 'Point';
         case 'EdgeInsetsPrimitive':
@@ -152,7 +155,181 @@ function getStateConstituents(
   };
 }
 
+/// This function process some types if we need to customize them
+/// For example, the ImageSource and the reserved types could be trasformed into
+/// const address instead of using them as plain types.
+function convertTypesToConstAddressIfNeeded(
+  type: string,
+  convertibleTypes: Set<string>,
+): string {
+  if (convertibleTypes.has(type)) {
+    return `${type} const &`;
+  }
+  return type;
+}
+
+function convertValueToSharedPointerWithMove(
+  type: string,
+  value: string,
+  convertibleTypes: Set<string>,
+): string {
+  if (convertibleTypes.has(type)) {
+    return `std::make_shared<${type}>(std::move(${value}))`;
+  }
+  return value;
+}
+
+function convertVariableToSharedPointer(
+  type: string,
+  convertibleTypes: Set<string>,
+): string {
+  if (convertibleTypes.has(type)) {
+    return `std::shared_ptr<${type}>`;
+  }
+  return type;
+}
+
+function convertVariableToPointer(
+  type: string,
+  value: string,
+  convertibleTypes: Set<string>,
+): string {
+  if (convertibleTypes.has(type)) {
+    return `*${value}`;
+  }
+  return value;
+}
+
+const convertCtorParamToAddressType = (type: string): string => {
+  const typesToConvert: Set<string> = new Set();
+  typesToConvert.add('ImageSource');
+
+  return convertTypesToConstAddressIfNeeded(type, typesToConvert);
+};
+
+const convertCtorInitToSharedPointers = (
+  type: string,
+  value: string,
+): string => {
+  const typesToConvert: Set<string> = new Set();
+  typesToConvert.add('ImageRequest');
+
+  return convertValueToSharedPointerWithMove(type, value, typesToConvert);
+};
+
+const convertGettersReturnTypeToAddressType = (type: string): string => {
+  const typesToConvert: Set<string> = new Set();
+  typesToConvert.add('ImageRequest');
+
+  return convertTypesToConstAddressIfNeeded(type, typesToConvert);
+};
+
+const convertVarTypeToSharedPointer = (type: string): string => {
+  const typesToConvert: Set<string> = new Set();
+  typesToConvert.add('ImageRequest');
+
+  return convertVariableToSharedPointer(type, typesToConvert);
+};
+
+const convertVarValueToPointer = (type: string, value: string): string => {
+  const typesToConvert: Set<string> = new Set();
+  typesToConvert.add('ImageRequest');
+
+  return convertVariableToPointer(type, value, typesToConvert);
+};
+
+function getLocalImports(
+  properties:
+    | $ReadOnlyArray<NamedShape<PropTypeAnnotation>>
+    | $ReadOnlyArray<NamedShape<StateTypeAnnotation>>,
+): Set<string> {
+  const imports: Set<string> = new Set();
+
+  function addImportsForNativeName(
+    name:
+      | 'ColorPrimitive'
+      | 'EdgeInsetsPrimitive'
+      | 'ImageSourcePrimitive'
+      | 'PointPrimitive'
+      | 'ImageRequestPrimitive',
+  ) {
+    switch (name) {
+      case 'ColorPrimitive':
+        imports.add('#include <react/renderer/graphics/Color.h>');
+        return;
+      case 'ImageSourcePrimitive':
+        imports.add('#include <react/renderer/imagemanager/primitives.h>');
+        return;
+      case 'ImageRequestPrimitive':
+        imports.add('#include <react/renderer/imagemanager/ImageRequest.h>');
+        return;
+      case 'PointPrimitive':
+        imports.add('#include <react/renderer/graphics/Geometry.h>');
+        return;
+      case 'EdgeInsetsPrimitive':
+        imports.add('#include <react/renderer/graphics/Geometry.h>');
+        return;
+      default:
+        (name: empty);
+        throw new Error(`Invalid ReservedPropTypeAnnotation name, got ${name}`);
+    }
+  }
+
+  properties.forEach(prop => {
+    const typeAnnotation = prop.typeAnnotation;
+
+    if (typeAnnotation.type === 'ReservedPropTypeAnnotation') {
+      addImportsForNativeName(typeAnnotation.name);
+    }
+
+    if (typeAnnotation.type === 'ArrayTypeAnnotation') {
+      imports.add('#include <vector>');
+      if (typeAnnotation.elementType.type === 'StringEnumTypeAnnotation') {
+        imports.add('#include <cinttypes>');
+      }
+    }
+
+    if (
+      typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      typeAnnotation.elementType.type === 'ReservedPropTypeAnnotation'
+    ) {
+      addImportsForNativeName(typeAnnotation.elementType.name);
+    }
+
+    if (
+      typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      typeAnnotation.elementType.type === 'ObjectTypeAnnotation'
+    ) {
+      const objectProps = typeAnnotation.elementType.properties;
+      const objectImports = getImports(objectProps);
+      const localImports = getLocalImports(objectProps);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      objectImports.forEach(imports.add, imports);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      localImports.forEach(imports.add, imports);
+    }
+
+    if (typeAnnotation.type === 'ObjectTypeAnnotation') {
+      imports.add('#include <react/renderer/core/propsConversions.h>');
+      const objectImports = getImports(typeAnnotation.properties);
+      const localImports = getLocalImports(typeAnnotation.properties);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      objectImports.forEach(imports.add, imports);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      localImports.forEach(imports.add, imports);
+    }
+  });
+
+  return imports;
+}
+
 module.exports = {
   getNativeTypeFromAnnotation,
   getStateConstituents,
+  convertCtorParamToAddressType,
+  convertGettersReturnTypeToAddressType,
+  convertCtorInitToSharedPointers,
+  convertVarTypeToSharedPointer,
+  convertVarValueToPointer,
+  getLocalImports,
 };
