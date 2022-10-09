@@ -216,7 +216,7 @@ function handleLibrariesFromReactNativeConfig(
     `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${rnConfigFileName}`,
   );
 
-  const rnConfigFilePath = path.join(appRootDir, rnConfigFileName);
+  const rnConfigFilePath = path.resolve(appRootDir, rnConfigFileName);
 
   if (fs.existsSync(rnConfigFilePath)) {
     const rnConfig = require(rnConfigFilePath);
