@@ -217,5 +217,8 @@ if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
   exit(1);
 } else {
   echo(`Published to npm ${releaseVersion}`);
+  const releaseVersionFile = path.join('build', 'version');
+  makeDirSync(path.dirname('build'));
+  fs.writeFileSync(releaseVersionFile, releaseVersion);
   exit(0);
 }
