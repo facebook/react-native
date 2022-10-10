@@ -587,7 +587,7 @@ function buildModuleSchema(
     moduleSpecs.length,
     hasteModuleName,
     ast,
-    'Flow',
+    language,
   );
 
   if (moduleSpecs.length > 1) {

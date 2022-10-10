@@ -620,7 +620,7 @@ function buildModuleSchema(
     moduleSpecs.length,
     hasteModuleName,
     ast,
-    'TypeScript',
+    language,
   );
 
   if (moduleSpecs.length > 1) {
