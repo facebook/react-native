@@ -26,6 +26,7 @@ import type {TypeDeclarationMap} from '../utils.js';
 import type {ParserErrorCapturer} from '../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 
+const {throwIfModuleInterfaceIsMisnamed} = require('../../error-utils');
 const {
   resolveTypeAnnotation,
   getTypes,
@@ -62,8 +63,6 @@ const {
 } = require('./errors.js');
 
 const invariant = require('invariant');
-
-import {throwIfModuleInterfaceIsMisnamed} from '../../error-utils';
 
 function nullGuard<T>(fn: () => T): ?T {
   return fn();

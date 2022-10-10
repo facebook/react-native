@@ -13,7 +13,7 @@
 import type {ParserType} from './errors';
 const {MisnamedModuleInterfaceParserError} = require('./errors.js');
 
-export function throwIfModuleInterfaceIsMisnamed(
+function throwIfModuleInterfaceIsMisnamed(
   nativeModuleName: string,
   moduleSpecId: $FlowFixMe,
   parserType: ParserType,
@@ -26,3 +26,7 @@ export function throwIfModuleInterfaceIsMisnamed(
     );
   }
 }
+
+module.exports = {
+  throwIfModuleInterfaceIsMisnamed,
+};
