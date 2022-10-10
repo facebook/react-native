@@ -54,6 +54,7 @@ const {
 } = require('../../parsers-primitives');
 const {
   MoreThanOneModuleInterfaceParserError,
+  ModuleInterfaceNotFoundParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedGenericParserError,
@@ -66,6 +67,9 @@ const {
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
+const {
+  throwIfMoreThanOneModuleInterfaceParserError,
+} = require('../../error-utils');
 
 const {
   throwIfUntypedModule,
@@ -616,14 +620,11 @@ function buildModuleSchema(
     language,
   );
 
-  if (moduleSpecs.length > 1) {
-    throw new MoreThanOneModuleInterfaceParserError(
-      hasteModuleName,
-      moduleSpecs,
-      moduleSpecs.map(node => node.id.name),
-      language,
-    );
-  }
+  throwIfMoreThanOneModuleInterfaceParserError(
+    hasteModuleName,
+    moduleSpecs,
+    'TypeScript',
+  );
 
   const [moduleSpec] = moduleSpecs;
 

@@ -15,6 +15,7 @@ import type {ParserType} from './errors';
 const {
   MisnamedModuleInterfaceParserError,
   ModuleInterfaceNotFoundParserError,
+  MoreThanOneModuleInterfaceParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
@@ -47,6 +48,21 @@ function throwIfModuleInterfaceNotFound(
     throw new ModuleInterfaceNotFoundParserError(
       nativeModuleName,
       ast,
+      parserType,
+    );
+  }
+}
+
+function throwIfMoreThanOneModuleInterfaceParserError(
+  nativeModuleName: string,
+  moduleSpecs: ASTNode[],
+  parserType: ParserType,
+) {
+  if (moduleSpecs.length > 1) {
+    throw new MoreThanOneModuleInterfaceParserError(
+      nativeModuleName,
+      moduleSpecs,
+      moduleSpecs.map(node => node.id.name),
       parserType,
     );
   }
@@ -191,6 +207,7 @@ function throwIfModuleTypeIsUnsupported(
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfModuleInterfaceNotFound,
+  throwIfMoreThanOneModuleInterfaceParserError,
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
