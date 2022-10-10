@@ -35,6 +35,7 @@ const {
 const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
 const {
   emitBoolean,
+  emitDouble,
   emitNumber,
   emitInt32,
   emitRootTag,
@@ -204,9 +205,7 @@ function translateTypeAnnotation(
           return emitInt32(nullable);
         }
         case 'Double': {
-          return wrapNullable(nullable, {
-            type: 'DoubleTypeAnnotation',
-          });
+          return emitDouble(nullable);
         }
         case 'Float': {
           return wrapNullable(nullable, {

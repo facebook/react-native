@@ -12,6 +12,7 @@
 
 import type {
   BooleanTypeAnnotation,
+  DoubleTypeAnnotation,
   Int32TypeAnnotation,
   NativeModuleNumberTypeAnnotation,
   Nullable,
@@ -47,8 +48,15 @@ function emitRootTag(nullable: boolean): Nullable<ReservedTypeAnnotation> {
   });
 }
 
+function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'DoubleTypeAnnotation',
+  });
+}
+
 module.exports = {
   emitBoolean,
+  emitDouble,
   emitInt32,
   emitNumber,
   emitRootTag,
