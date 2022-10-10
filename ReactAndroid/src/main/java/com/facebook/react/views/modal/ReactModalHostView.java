@@ -328,11 +328,14 @@ public class ReactModalHostView extends ViewGroup
       mDialog.show();
       if (context instanceof Activity) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+          int appearance = ((Activity) context)
+              .getWindow()
+              .getInsetsController()
+              .getSystemBarsAppearance();
           mDialog
               .getWindow()
               .getInsetsController()
-              .setSystemBarsAppearance(
-                  ((Activity) context).getWindow().getInsetsController().getSystemBarsAppearance());
+              .setSystemBarsAppearance(appearance, appearance);
         } else {
           mDialog
               .getWindow()
