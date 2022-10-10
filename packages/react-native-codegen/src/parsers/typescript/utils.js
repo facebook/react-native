@@ -50,7 +50,7 @@ export type ASTNode = Object;
 
 const invariant = require('invariant');
 
-type TypeAliasResolutionStatus =
+export type TypeAliasResolutionStatus =
   | $ReadOnly<{
       successful: true,
       aliasName: string,
