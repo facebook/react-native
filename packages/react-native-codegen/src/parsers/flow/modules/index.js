@@ -609,7 +609,7 @@ function buildModuleSchema(
   throwIfMoreThanOneModuleInterfaceParserError(
     hasteModuleName,
     moduleSpecs,
-    'Flow',
+    language,
   );
 
   const [moduleSpec] = moduleSpecs;

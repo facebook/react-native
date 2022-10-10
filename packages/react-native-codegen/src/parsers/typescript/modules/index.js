@@ -623,7 +623,7 @@ function buildModuleSchema(
   throwIfMoreThanOneModuleInterfaceParserError(
     hasteModuleName,
     moduleSpecs,
-    'TypeScript',
+    language,
   );
 
   const [moduleSpec] = moduleSpecs;
