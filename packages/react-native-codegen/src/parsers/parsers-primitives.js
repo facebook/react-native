@@ -22,7 +22,7 @@ import type {
   ReservedTypeAnnotation,
   ObjectTypeAnnotation,
 } from '../CodegenSchema';
-import type {TypeAliasResolutionStatus} from './typescript/utils';
+import type {TypeAliasResolutionStatus} from './utils';
 
 const {wrapNullable} = require('./parsers-commons');
 
