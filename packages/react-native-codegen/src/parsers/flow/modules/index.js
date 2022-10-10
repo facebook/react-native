@@ -38,9 +38,9 @@ const {
   emitNumber,
   emitInt32,
 } = require('../../parsers-primitives');
+const {MisnamedModuleInterfaceParserError} = require('../../error-utils.js');
 const {
   IncorrectlyParameterizedFlowGenericParserError,
-  MisnamedModuleFlowInterfaceParserError,
   ModuleFlowInterfaceNotFoundParserError,
   MoreThanOneModuleFlowInterfaceParserError,
   UnnamedFunctionParamParserError,
@@ -639,9 +639,10 @@ function buildModuleSchema(
   const [moduleSpec] = moduleSpecs;
 
   if (moduleSpec.id.name !== 'Spec') {
-    throw new MisnamedModuleFlowInterfaceParserError(
+    throw new MisnamedModuleInterfaceParserError(
       hasteModuleName,
       moduleSpec.id,
+      'Flow',
     );
   }
 

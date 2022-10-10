@@ -13,16 +13,6 @@
 const invariant = require('invariant');
 const {ParserError} = require('../../errors');
 
-class MisnamedModuleTypeScriptInterfaceParserError extends ParserError {
-  constructor(hasteModuleName: string, id: $FlowFixMe) {
-    super(
-      hasteModuleName,
-      id,
-      `All TypeScript interfaces extending TurboModule must be called 'Spec'. Please rename TypeScript interface '${id.name}' to 'Spec'.`,
-    );
-  }
-}
-
 class ModuleTypeScriptInterfaceNotFoundParserError extends ParserError {
   constructor(hasteModuleName: string, ast: $FlowFixMe) {
     super(
@@ -353,7 +343,6 @@ class IncorrectModuleRegistryCallArgumentTypeParserError extends ParserError {
 
 module.exports = {
   IncorrectlyParameterizedTypeScriptGenericParserError,
-  MisnamedModuleTypeScriptInterfaceParserError,
   ModuleTypeScriptInterfaceNotFoundParserError,
   MoreThanOneModuleTypeScriptInterfaceParserError,
   UnnamedFunctionParamParserError,
