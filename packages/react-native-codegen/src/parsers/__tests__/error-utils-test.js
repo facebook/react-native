@@ -13,6 +13,7 @@
 
 const {
   throwIfModuleInterfaceNotFound,
+  throwIfMoreThanOneModuleInterfaceParserError,
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnusedModuleInterfaceParserError,
@@ -541,5 +542,34 @@ describe('throwIfMoreThanOneModuleRegistryCalls', () => {
         language,
       );
     }).toThrow(UnsupportedModulePropertyParserError);
+  });
+});
+describe('throwIfMoreThanOneModuleInterfaceParserError', () => {
+  const {MoreThanOneModuleInterfaceParserError} = require('../errors.js');
+  it("don't throw error if module specs length is <= 1", () => {
+    const nativeModuleName = 'moduleName';
+    const moduleSpecs = [];
+    const parserType = 'Flow';
+
+    expect(() => {
+      throwIfMoreThanOneModuleInterfaceParserError(
+        nativeModuleName,
+        moduleSpecs,
+        parserType,
+      );
+    }).not.toThrow(MoreThanOneModuleInterfaceParserError);
+  });
+  it('throw error if module specs is > 1 ', () => {
+    const nativeModuleName = 'moduleName';
+    const moduleSpecs = [{id: {name: 'Name-1'}}, {id: {name: 'Name-2'}}];
+    const parserType = 'TypeScript';
+
+    expect(() => {
+      throwIfMoreThanOneModuleInterfaceParserError(
+        nativeModuleName,
+        moduleSpecs,
+        parserType,
+      );
+    }).toThrow(MoreThanOneModuleInterfaceParserError);
   });
 });
