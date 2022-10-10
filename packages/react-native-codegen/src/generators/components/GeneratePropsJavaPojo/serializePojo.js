@@ -81,6 +81,12 @@ function toJavaType(
           importReadableMap();
           return '@Nullable ReadableMap';
 
+        // TODO: Make ImageRequestPrimitive type-safe
+        case 'ImageRequestPrimitive':
+          importNullable();
+          importReadableMap();
+          return '@Nullable ReadableMap';
+
         // TODO: Make PointPrimitive type-safe
         case 'PointPrimitive':
           importNullable();
@@ -159,6 +165,11 @@ function toJavaType(
 
               // TODO: Make ImageSourcePrimitive type-safe
               case 'ImageSourcePrimitive':
+                importReadableMap();
+                return 'ReadableMap';
+
+              // TODO: Make ImageRequestPrimitive type-safe
+              case 'ImageRequestPrimitive':
                 importReadableMap();
                 return 'ReadableMap';
 

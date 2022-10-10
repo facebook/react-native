@@ -1701,6 +1701,36 @@ export default codegenNativeComponent<ModuleProps>(
 ) as HostComponent<ModuleProps>;
 `;
 
+const STATE_WITH_IMAGES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow strict-local
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+import type {ImageSource} from 'ImageSource';
+
+export interface ModuleProps extends ViewProps {
+  imageSource: ImageSource;
+}
+
+interface ModuleNativeState {
+  imageSource: ImageSource,
+  imageRequest: ImageRequest,
+}
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as HostComponent<ModuleProps>;
+`;
+
 module.exports = {
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,
@@ -1723,4 +1753,5 @@ module.exports = {
   ARRAY2_STATE_TYPES,
   OBJECT_STATE_TYPES,
   STATE_NEGATIVE_DEFAULTS,
+  STATE_WITH_IMAGES,
 };
