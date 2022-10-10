@@ -529,6 +529,25 @@
 
 - Encode URL params in URLSearchParams.toString() ([1042a8012f](https://github.com/facebook/react-native/commit/1042a8012fb472bd5c882b469fe507dd6279d562) by [@sshic](https://github.com/sshic))
 
+## v0.68.4
+
+### Changed
+
+- Bump version of `promise` from 8.0.3 to 8.2.0, enabling `Promise.allSettled` ([951538c080](https://github.com/facebook/react-native/commit/951538c080ef745da304fb308fa91d597e0dd98a) by [@retyui](https://github.com/retyui))
+- Bump react-native-codegen to 0.0.18 ([40a3ae3613](https://github.com/facebook/react-native/commit/40a3ae3613394fe5f0d728bada538d2d5b78a8a4) by [@dmytrorykun](https://github.com/dmytrorykun))
+
+#### Android specific
+
+- Correctly resolve classes with FindClass(..) ([361b310bcc](https://github.com/facebook/react-native/commit/361b310bcc8dddbff42cf63495649291c894d661) by [@evancharlton](https://github.com/evancharlton))
+
+### Fixed
+
+- Codegen should ignore `.d.ts` files ([0f0d52067c](https://github.com/facebook/react-native/commit/0f0d52067cb89fdb39a99021f0745282ce087fc2) by [@tido64](https://github.com/tido64))
+
+#### iOS specific
+
+- Fix the way the orientation events are published ([7d42106d4c](https://github.com/facebook/react-native/commit/7d42106d4ce20c644bda4d928fb0abc163580cee) by [lbaldy](https://github.com/lbaldy))
+
 ## v0.68.3
 
 ### Changed
