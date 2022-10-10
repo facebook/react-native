@@ -46,9 +46,7 @@ export default class AnimatedProps extends AnimatedNode {
         // as they may not be up to date, so we use the initial value to ensure that values of
         // native animated nodes do not impact rerenders.
         if (value instanceof AnimatedStyle) {
-          props[key] = value.__getValue(
-            initialProps ? initialProps.style : null,
-          );
+          props[key] = value.__getValue(initialProps?.style);
         } else if (!initialProps || !value.__isNative) {
           props[key] = value.__getValue();
         } else if (initialProps.hasOwnProperty(key)) {
