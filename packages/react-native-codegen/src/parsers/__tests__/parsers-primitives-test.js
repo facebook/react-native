@@ -15,7 +15,8 @@ const {
   emitBoolean,
   emitNumber,
   emitInt32,
-} = require('../parsers-primitives.js');
+  emitRootTag,
+} = require('../parsers-primitives');
 
 describe('emitBoolean', () => {
   describe('when nullable is true', () => {
@@ -91,6 +92,32 @@ describe('emitNumber', () => {
       };
 
       expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitRootTag', () => {
+  const reservedTypeAnnotation = {
+    type: 'ReservedTypeAnnotation',
+    name: 'RootTag',
+  };
+
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitRootTag(true);
+
+      expect(result).toEqual({
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: reservedTypeAnnotation,
+      });
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitRootTag(false);
+
+      expect(result).toEqual(reservedTypeAnnotation);
     });
   });
 });

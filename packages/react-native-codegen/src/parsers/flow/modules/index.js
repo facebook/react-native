@@ -37,6 +37,7 @@ const {
   emitBoolean,
   emitNumber,
   emitInt32,
+  emitRootTag,
 } = require('../../parsers-primitives');
 const {
   IncorrectlyParameterizedGenericParserError,
@@ -87,10 +88,7 @@ function translateTypeAnnotation(
     case 'GenericTypeAnnotation': {
       switch (typeAnnotation.id.name) {
         case 'RootTag': {
-          return wrapNullable(nullable, {
-            type: 'ReservedTypeAnnotation',
-            name: 'RootTag',
-          });
+          return emitRootTag(nullable);
         }
         case 'Promise': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
