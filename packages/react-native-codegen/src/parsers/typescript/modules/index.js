@@ -347,7 +347,7 @@ function translateTypeAnnotation(
 
                   throwUnsupportedObjectPropertyValueTypeAnnotationParserError(
                     hasteModuleName,
-                    property.value,
+                    property.typeAnnotation.typeAnnotation,
                     property.key,
                     invalidPropertyValueType,
                   );
