@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
   }
 
-  s.source_files    = "ios/**/*.{h,m,mm,cpp}"
+  s.source_files    = "{ios,cxx}/**/*.{h,m,mm,cpp}"
   s.requires_arc    = true
 
   install_modules_dependencies(s)
