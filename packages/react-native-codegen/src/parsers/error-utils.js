@@ -55,7 +55,7 @@ function throwIfModuleInterfaceNotFound(
 
 function throwIfMoreThanOneModuleInterfaceParserError(
   nativeModuleName: string,
-  moduleSpecs: ASTNode[],
+  moduleSpecs: $ReadOnlyArray<$FlowFixMe>,
   parserType: ParserType,
 ) {
   if (moduleSpecs.length > 1) {
