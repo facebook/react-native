@@ -38,7 +38,6 @@ const {
   emitNumber,
   emitInt32,
 } = require('../../parsers-primitives');
-const {MisnamedModuleInterfaceParserError} = require('../../error-utils.js');
 const {
   IncorrectlyParameterizedTypeScriptGenericParserError,
   ModuleTypeScriptInterfaceNotFoundParserError,
@@ -63,6 +62,8 @@ const {
 } = require('./errors.js');
 
 const invariant = require('invariant');
+
+import {throwIfModuleInterfaceIsMisnamed} from '../../error-utils';
 
 function nullGuard<T>(fn: () => T): ?T {
   return fn();
@@ -678,13 +679,11 @@ function buildModuleSchema(
 
   const [moduleSpec] = moduleSpecs;
 
-  if (moduleSpec.id.name !== 'Spec') {
-    throw new MisnamedModuleInterfaceParserError(
-      hasteModuleName,
-      moduleSpec.id,
-      'TypeScript',
-    );
-  }
+  throwIfModuleInterfaceIsMisnamed(
+    hasteModuleName,
+    moduleSpec.id,
+    'TypeScript',
+  );
 
   // Parse Module Names
   const moduleName = tryParse((): string => {

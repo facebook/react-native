@@ -10,6 +10,8 @@
 
 'use strict';
 
+export type ParserType = 'Flow' | 'TypeScript';
+
 class ParserError extends Error {
   nodes: $ReadOnlyArray<$FlowFixMe>;
   constructor(
@@ -30,7 +32,17 @@ class ParserError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
+class MisnamedModuleInterfaceParserError extends ParserError {
+  constructor(nativeModuleName: string, id: $FlowFixMe, language: ParserType) {
+    super(
+      nativeModuleName,
+      id,
+      `All ${language} interfaces extending TurboModule must be called 'Spec'. Please rename ${language} interface '${id.name}' to 'Spec'.`,
+    );
+  }
+}
 
 module.exports = {
   ParserError,
+  MisnamedModuleInterfaceParserError,
 };

@@ -10,23 +10,19 @@
 
 'use strict';
 
-const {ParserError} = require('./errors');
+import type {ParserType} from './errors';
+const {MisnamedModuleInterfaceParserError} = require('./errors.js');
 
-type ParserTypes = 'Flow' | 'TypeScript';
-
-class MisnamedModuleInterfaceParserError extends ParserError {
-  constructor(
-    hasteModuleName: string,
-    id: $FlowFixMe,
-    parserType: ParserTypes,
-  ) {
-    super(
-      hasteModuleName,
-      id,
-      `All ${parserType} interfaces extending TurboModule must be called 'Spec'. Please rename ${parserType} interface '${id.name}' to 'Spec'.`,
+export function throwIfModuleInterfaceIsMisnamed(
+  nativeModuleName: string,
+  moduleSpecId: $FlowFixMe,
+  parserType: ParserType,
+) {
+  if (moduleSpecId.name !== 'Spec') {
+    throw new MisnamedModuleInterfaceParserError(
+      nativeModuleName,
+      moduleSpecId,
+      parserType,
     );
   }
 }
-module.exports = {
-  MisnamedModuleInterfaceParserError,
-};
