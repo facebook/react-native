@@ -68,6 +68,26 @@ function nullGuard<T>(fn: () => T): ?T {
   return fn();
 }
 
+const UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap = {
+  FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+  VoidTypeAnnotation: 'void',
+  PromiseTypeAnnotation: 'Promise',
+};
+
+function throwUnsupportedObjectPropertyValueTypeAnnotationParserError(
+  moduleName,
+  propertyValue,
+  propertyKey,
+  type,
+) {
+  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+    moduleName,
+    propertyValue,
+    propertyKey,
+    type,
+  );
+}
+
 function translateArrayTypeAnnotation(
   hasteModuleName: string,
   types: TypeDeclarationMap,
@@ -315,41 +335,32 @@ function translateTypeAnnotation(
                     ),
                   );
 
-                if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                    hasteModuleName,
-                    property.typeAnnotation.typeAnnotation,
-                    property.key,
-                    propertyTypeAnnotation.type,
-                  );
-                }
+                if (
+                  propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+                  propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
+                  propertyTypeAnnotation.type === 'VoidTypeAnnotation'
+                ) {
+                  const invalidPropertyValueType =
+                    UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap[
+                      propertyTypeAnnotation.type
+                    ];
 
-                if (propertyTypeAnnotation.type === 'VoidTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+                  throwUnsupportedObjectPropertyValueTypeAnnotationParserError(
                     hasteModuleName,
-                    property.typeAnnotation.typeAnnotation,
+                    property.value,
                     property.key,
-                    'void',
+                    invalidPropertyValueType,
                   );
+                } else {
+                  return {
+                    name: key.name,
+                    optional,
+                    typeAnnotation: wrapNullable(
+                      isPropertyNullable,
+                      propertyTypeAnnotation,
+                    ),
+                  };
                 }
-
-                if (propertyTypeAnnotation.type === 'PromiseTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                    hasteModuleName,
-                    property.typeAnnotation.typeAnnotation,
-                    property.key,
-                    'Promise',
-                  );
-                }
-
-                return {
-                  name: key.name,
-                  optional,
-                  typeAnnotation: wrapNullable(
-                    isPropertyNullable,
-                    propertyTypeAnnotation,
-                  ),
-                };
               });
             },
           )
