@@ -39,6 +39,7 @@ const {
   emitNumber,
   emitInt32,
   emitRootTag,
+  emitVoid,
   typeAliasResolution,
 } = require('../../parsers-primitives');
 const {
@@ -343,9 +344,7 @@ function translateTypeAnnotation(
       return emitNumber(nullable);
     }
     case 'VoidTypeAnnotation': {
-      return wrapNullable(nullable, {
-        type: 'VoidTypeAnnotation',
-      });
+      return emitVoid(nullable);
     }
     case 'StringTypeAnnotation': {
       return wrapNullable(nullable, {

@@ -21,6 +21,7 @@ import type {
   Int32TypeAnnotation,
   ReservedTypeAnnotation,
   ObjectTypeAnnotation,
+  VoidTypeAnnotation,
 } from '../CodegenSchema';
 import type {TypeAliasResolutionStatus} from './utils';
 
@@ -56,6 +57,12 @@ function emitRootTag(nullable: boolean): Nullable<ReservedTypeAnnotation> {
 function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'DoubleTypeAnnotation',
+  });
+}
+
+function emitVoid(nullable: boolean): Nullable<VoidTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'VoidTypeAnnotation',
   });
 }
 
@@ -119,5 +126,6 @@ module.exports = {
   emitInt32,
   emitNumber,
   emitRootTag,
+  emitVoid,
   typeAliasResolution,
 };
