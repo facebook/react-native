@@ -12,6 +12,15 @@
 
 const path = require('path');
 
+export type TypeAliasResolutionStatus =
+  | $ReadOnly<{
+      successful: true,
+      aliasName: string,
+    }>
+  | $ReadOnly<{
+      successful: false,
+    }>;
+
 function extractNativeModuleName(filename: string): string {
   // this should drop everything after the file name. For Example it will drop:
   // .android.js, .android.ts, .android.tsx, .ios.js, .ios.ts, .ios.tsx, .js, .ts, .tsx

@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {TypeAliasResolutionStatus} from '../utils';
+
 const {ParserError} = require('../errors');
 
 /**
@@ -54,15 +56,6 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
 export type ASTNode = Object;
 
 const invariant = require('invariant');
-
-type TypeAliasResolutionStatus =
-  | $ReadOnly<{
-      successful: true,
-      aliasName: string,
-    }>
-  | $ReadOnly<{
-      successful: false,
-    }>;
 
 function resolveTypeAnnotation(
   // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this

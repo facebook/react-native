@@ -17,6 +17,7 @@ const {
   emitNumber,
   emitInt32,
   emitRootTag,
+  typeAliasResolution,
 } = require('../parsers-primitives.js');
 
 describe('emitBoolean', () => {
@@ -145,6 +146,101 @@ describe('emitDouble', () => {
       };
 
       expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('typeAliasResolution', () => {
+  const objectTypeAnnotation = {
+    type: 'ObjectTypeAnnotation',
+    properties: [
+      {
+        name: 'Foo',
+        optional: false,
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
+      },
+    ],
+  };
+
+  describe('when typeAliasResolutionStatus is successful', () => {
+    const typeAliasResolutionStatus = {successful: true, aliasName: 'Foo'};
+
+    describe('when nullable is true', () => {
+      it('returns nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
+        const aliasMap = {};
+        const result = typeAliasResolution(
+          typeAliasResolutionStatus,
+          objectTypeAnnotation,
+          aliasMap,
+          true,
+        );
+
+        expect(aliasMap).toEqual({Foo: objectTypeAnnotation});
+        expect(result).toEqual({
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: {
+            type: 'TypeAliasTypeAnnotation',
+            name: 'Foo',
+          },
+        });
+      });
+    });
+
+    describe('when nullable is false', () => {
+      it('returns non nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
+        const aliasMap = {};
+        const result = typeAliasResolution(
+          typeAliasResolutionStatus,
+          objectTypeAnnotation,
+          aliasMap,
+          false,
+        );
+
+        expect(aliasMap).toEqual({Foo: objectTypeAnnotation});
+        expect(result).toEqual({
+          type: 'TypeAliasTypeAnnotation',
+          name: 'Foo',
+        });
+      });
+    });
+  });
+
+  describe('when typeAliasResolutionStatus is not successful', () => {
+    const typeAliasResolutionStatus = {successful: false};
+
+    describe('when nullable is true', () => {
+      it('returns nullable ObjectTypeAnnotation', () => {
+        const aliasMap = {};
+        const result = typeAliasResolution(
+          typeAliasResolutionStatus,
+          objectTypeAnnotation,
+          aliasMap,
+          true,
+        );
+
+        expect(aliasMap).toEqual({});
+        expect(result).toEqual({
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: objectTypeAnnotation,
+        });
+      });
+    });
+
+    describe('when nullable is false', () => {
+      it('returns non nullable ObjectTypeAnnotation', () => {
+        const aliasMap = {};
+        const result = typeAliasResolution(
+          typeAliasResolutionStatus,
+          objectTypeAnnotation,
+          aliasMap,
+          false,
+        );
+
+        expect(aliasMap).toEqual({});
+        expect(result).toEqual(objectTypeAnnotation);
+      });
     });
   });
 });

@@ -39,6 +39,7 @@ const {
   emitNumber,
   emitInt32,
   emitRootTag,
+  typeAliasResolution,
 } = require('../../parsers-primitives');
 const {
   IncorrectlyParameterizedGenericParserError,
@@ -328,48 +329,12 @@ function translateTypeAnnotation(
           .filter(Boolean),
       };
 
-      if (!typeAliasResolutionStatus.successful) {
-        return wrapNullable(nullable, objectTypeAnnotation);
-      }
-
-      /**
-       * All aliases RHS are required.
-       */
-      aliasMap[typeAliasResolutionStatus.aliasName] = objectTypeAnnotation;
-
-      /**
-       * Nullability of type aliases is transitive.
-       *
-       * Consider this case:
-       *
-       * type Animal = ?{
-       *   name: string,
-       * };
-       *
-       * type B = Animal
-       *
-       * export interface Spec extends TurboModule {
-       *   +greet: (animal: B) => void;
-       * }
-       *
-       * In this case, we follow B to Animal, and then Animal to ?{name: string}.
-       *
-       * We:
-       *   1. Replace `+greet: (animal: B) => void;` with `+greet: (animal: ?Animal) => void;`,
-       *   2. Pretend that Animal = {name: string}.
-       *
-       * Why do we do this?
-       *  1. In ObjC, we need to generate a struct called Animal, not B.
-       *  2. This design is simpler than managing nullability within both the type alias usage, and the type alias RHS.
-       *  3. What does it mean for a C++ struct, which is what this type alias RHS will generate, to be nullable? ¯\_(ツ)_/¯
-       *     Nullability is a concept that only makes sense when talking about instances (i.e: usages) of the C++ structs.
-       *     Hence, it's better to manage nullability within the actual TypeAliasTypeAnnotation nodes, and not the
-       *     associated ObjectTypeAnnotations.
-       */
-      return wrapNullable(nullable, {
-        type: 'TypeAliasTypeAnnotation',
-        name: typeAliasResolutionStatus.aliasName,
-      });
+      return typeAliasResolution(
+        typeAliasResolutionStatus,
+        objectTypeAnnotation,
+        aliasMap,
+        nullable,
+      );
     }
     case 'BooleanTypeAnnotation': {
       return emitBoolean(nullable);
