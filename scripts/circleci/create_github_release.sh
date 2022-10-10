@@ -4,6 +4,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# RELEASE_TYPE can be --nightly or --release, trim out -- prefix with :2
+RELEASE_TYPE="${1:2}"; shift
 GIT_TAG="$1"; shift
 GITHUB_OWNER="$1"; shift
 GITHUB_REPO="$1"; shift
@@ -26,8 +28,14 @@ RN_VERSION=${GIT_TAG:1}
 RN_SHORT_VERSION=${RN_VERSION//[.-]/}
 
 PRERELEASE=false
-if [[ "$RN_VERSION" == *"rc"* ]]; then
-    PRERELEASE=true
+DRAFTRELEASE=true
+if [[ "$RELEASE_TYPE" == "nightly" ]]; then
+  # Nightlies are cut once a day and should be published automatically as a pre-release
+  PRERELEASE=true
+  DRAFTRELEASE=false
+elif [[ "$RN_VERSION" == *"rc"* ]]; then
+  # RCs should be marked as pre-release
+  PRERELEASE=true
 fi
 
 RELEASE_TEMPLATE_PATH=../../.github/RELEASE_TEMPLATE.md
@@ -36,9 +44,9 @@ RELEASE_TEMPLATE_PATH=../../.github/RELEASE_TEMPLATE.md
 RELEASE_BODY=$(sed -e "s/__VERSION__/$RN_VERSION/g" -e "s/__SHORT_VERSION__/$RN_SHORT_VERSION/g" $RELEASE_TEMPLATE_PATH)
 
 # Format and encode JSON payload
-RELEASE_DATA=$(jo tag_name="$GIT_TAG" name="$RN_VERSION" body="$RELEASE_BODY" draft=true prerelease="$PRERELEASE" generate_release_notes=false)
+RELEASE_DATA=$(jo tag_name="$GIT_TAG" name="$RN_VERSION" body="$RELEASE_BODY" draft="$DRAFTRELEASE" prerelease="$PRERELEASE" generate_release_notes=false)
 
-# Create prerelease GitHub Release draft
+# Create GitHub Release
 describe_header "Creating GitHub release."
 describe "Release payload: $RELEASE_DATA"
 

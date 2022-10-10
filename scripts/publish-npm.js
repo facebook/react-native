@@ -185,6 +185,10 @@ if (isCommitly) {
 
 generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
 
+// Write version number to the build folder for use by Circle CI when distributing release artifacts
+const releaseVersionFile = path.join('build', 'version');
+fs.writeFileSync(releaseVersionFile, releaseVersion);
+
 if (dryRunBuild) {
   echo('Skipping `npm publish` because --dry-run is set.');
   exit(0);

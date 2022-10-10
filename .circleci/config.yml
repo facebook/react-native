@@ -504,7 +504,7 @@ jobs:
           name: "Brew: Tap wix/brew"
           command: brew tap wix/brew >/dev/null
       - brew_install:
-          package: applesimutils watchman cmake
+          package: applesimutils watchman
 
       - run:
           name: Configure Watchman
@@ -516,14 +516,6 @@ jobs:
             - run:
                 name: Set USE_FRAMEWORKS=1
                 command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
-
-      - run:
-          name: Set USE_HERMES=1
-          command: echo "export USE_HERMES=1" >> $BASH_ENV
-
-      - run:
-          name: Set BUILD_HERMES_SOURCE=1
-          command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
 
       - run:
           name: Setup the CocoaPods environment
@@ -848,17 +840,6 @@ jobs:
           name: Delete iOS Simulators
           background: true
           command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
-
-      - run:
-          name: Set USE_HERMES=1
-          command: echo "export USE_HERMES=1" >> $BASH_ENV
-
-      - run:
-          name: Set BUILD_HERMES_SOURCE=1
-          command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
-
-      - brew_install:
-          package: cmake
 
       - with_hermes_tarball_cache_span:
           set_tarball_path: True
@@ -1295,6 +1276,8 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "1c:98:e0:3a:52:79:95:29:12:cd:b4:87:5b:41:e2:bb"
+      - brew_install:
+          package: cmake
       - run:
           name: "Set new react-native version and commit changes"
           command: |
@@ -1396,15 +1379,25 @@ jobs:
                     -H "Accept: application/vnd.github.v3+json" \
                     -u "$PAT_USERNAME:$PAT_TOKEN" \
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
+      # END: Stable releases
+
+      # START: Stables and nightlies
+      - when:
+          condition:
+            or:
+              - equal: [ --release, << parameters.publish_npm_args >> ]
+              - equal: [ --nightly, << parameters.publish_npm_args >> ]
+          steps:
             - run:
                 name: Install dependencies
                 command: apt update && apt install -y jq jo
             - run:
-                name: Create draft GitHub Release and upload Hermes binaries
+                name: Create GitHub Release and upload Hermes binaries as artifacts
                 command: |
-                  ARTIFACTS=("$HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-$CIRCLE_TAG.tar.gz")
-                  ./scripts/circleci/create_github_release.sh $CIRCLE_TAG $CIRCLE_PROJECT_USERNAME $CIRCLE_PROJECT_REPONAME $GITHUB_TOKEN "${ARTIFACTS[@]}"
-      # END: Stable releases
+                  RELEASE_VERSION=$(cat build/version)
+                  ARTIFACTS=("$HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-$RELEASE_VERSION.tar.gz")
+                  ./scripts/circleci/create_github_release.sh << parameters.publish_npm_args >> $RELEASE_VERSION $CIRCLE_PROJECT_USERNAME $CIRCLE_PROJECT_REPONAME $GITHUB_TOKEN "${ARTIFACTS[@]}"
+      # END: Stables and nightlies
 
   # -------------------------
   #    JOBS: Nightly
@@ -1542,7 +1535,7 @@ workflows:
             - prepare_hermes_workspace
       # This job will trigger when a version tag is pushed (by package_release)
       - build_npm_package:
-          name: build_and_publish_npm_package
+          name: build_package_and_publish_npm_release
           context: react-native-bot
           publish_npm_args: --release
           filters: *only_release_tags
@@ -1586,6 +1579,8 @@ workflows:
           requires:
             - prepare_hermes_workspace
       - build_npm_package:
+          name: build_package_and_publish_npm_nightly
+          context: react-native-bot
           publish_npm_args: --nightly
           requires:
             - build_hermesc_linux
