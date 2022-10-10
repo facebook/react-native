@@ -39,6 +39,7 @@ const {
   emitNumber,
   emitInt32,
   emitRootTag,
+  emitObject,
 } = require('../../parsers-primitives');
 const {
   IncorrectlyParameterizedGenericParserError,
@@ -248,9 +249,7 @@ function translateTypeAnnotation(
         }
         case 'UnsafeObject':
         case 'Object': {
-          return wrapNullable(nullable, {
-            type: 'GenericObjectTypeAnnotation',
-          });
+          return emitObject(nullable);
         }
         default: {
           const maybeEumDeclaration = types[typeAnnotation.typeName.name];
