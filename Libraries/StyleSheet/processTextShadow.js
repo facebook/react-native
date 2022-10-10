@@ -18,30 +18,7 @@ function processTextShadow(textShadow: string): {
   blurRadius?: number,
   color?: ColorValue,
 } {
-  const offsetRegex = '(?:[-+]?\\d+(?:\\.\\d+)?[a-z]*)';
-  const valueSeparator = '\\s+';
-  const twoOrThreeOffsetRegex = `(${offsetRegex}(?:${valueSeparator}${offsetRegex}){1,2})`;
-
-  const colorRegexStrings = getColorRegExStrings();
-  const hex8 = colorRegexStrings.hex8;
-  const hex6 = colorRegexStrings.hex6;
-  const hex4 = colorRegexStrings.hex4;
-  const hex3 = colorRegexStrings.hex3;
-  const hexColor = `(?:(?:${hex8}|${hex6}|${hex3}|${hex4}))\\b`;
-  const colorFunction = `(?:${colorRegexStrings.rgb}|${colorRegexStrings.rgba}|${colorRegexStrings.hsl}|${colorRegexStrings.hsla}|${colorRegexStrings.hwb})`;
-  const namedColor = '\\b[a-z]+\\b';
-  const colorRegex = `(${hexColor}|${colorFunction}|${namedColor})`;
-
-  const numberWithoutUnitRegex = /[+-]?\d+(\.\d+)?/g;
-
-  const shadowColorFirst = new RegExp(
-    `${colorRegex}${valueSeparator}${twoOrThreeOffsetRegex}`,
-    'gi',
-  );
-  const shadowOffsetFirst = new RegExp(
-    `${twoOrThreeOffsetRegex}(?:${valueSeparator}${colorRegex})?`,
-    'gi',
-  );
+  const matchers = getMatchers();
 
   let match;
   let xOffset;
@@ -50,20 +27,20 @@ function processTextShadow(textShadow: string): {
   let color;
   let numbers;
 
-  if ((match = shadowColorFirst.exec(textShadow))) {
+  if ((match = matchers.shadowColorFirst.exec(textShadow))) {
     // Index is really 38 due to the use of many capturing groups.
     numbers = match[38];
     color = match[1];
 
-    if (shadowColorFirst.exec(textShadow)) {
+    if (matchers.shadowColorFirst.exec(textShadow)) {
       console.warn(
         'Currently multiple shadows are not supported in React Native. Only the first shadow will be applied',
       );
     }
-  } else if ((match = shadowOffsetFirst.exec(textShadow))) {
+  } else if ((match = matchers.shadowOffsetFirst.exec(textShadow))) {
     numbers = match[1];
     color = match[2];
-    if (shadowOffsetFirst.exec(textShadow)) {
+    if (matchers.shadowOffsetFirst.exec(textShadow)) {
       console.warn(
         'Currently multiple shadows are not supported in React Native. Only the first shadow will be applied',
       );
@@ -74,7 +51,9 @@ function processTextShadow(textShadow: string): {
       ?.trim()
       .split(' ')
       .map(number => {
-        return Number(number.trim().match(numberWithoutUnitRegex)?.[0]);
+        return Number(
+          number.trim().match(matchers.numberWithoutUnitRegex)?.[0],
+        );
       }) || [];
 
   return {
@@ -83,6 +62,42 @@ function processTextShadow(textShadow: string): {
     blurRadius: blurRadius,
     color: color,
   };
+}
+
+let cachedMatchers;
+function getMatchers() {
+  if (!cachedMatchers) {
+    const offsetRegex = '(?:[-+]?\\d+(?:\\.\\d+)?[a-z]*)';
+    const valueSeparator = '\\s+';
+    const twoOrThreeOffsetRegex = `(${offsetRegex}(?:${valueSeparator}${offsetRegex}){1,2})`;
+
+    const colorRegexStrings = getColorRegExStrings();
+    const hex8 = colorRegexStrings.hex8;
+    const hex6 = colorRegexStrings.hex6;
+    const hex4 = colorRegexStrings.hex4;
+    const hex3 = colorRegexStrings.hex3;
+    const hexColor = `(?:(?:${hex8}|${hex6}|${hex3}|${hex4}))\\b`;
+    const colorFunction = `(?:${colorRegexStrings.rgb}|${colorRegexStrings.rgba}|${colorRegexStrings.hsl}|${colorRegexStrings.hsla}|${colorRegexStrings.hwb})`;
+    const namedColor = '\\b[a-z]+\\b';
+    const colorRegex = `(${hexColor}|${colorFunction}|${namedColor})`;
+
+    const numberWithoutUnitRegex = /[+-]?\d+(\.\d+)?/g;
+    const shadowColorFirst = new RegExp(
+      `${colorRegex}${valueSeparator}${twoOrThreeOffsetRegex}`,
+      'gi',
+    );
+    const shadowOffsetFirst = new RegExp(
+      `${twoOrThreeOffsetRegex}(?:${valueSeparator}${colorRegex})?`,
+      'gi',
+    );
+    cachedMatchers = {
+      numberWithoutUnitRegex,
+      shadowColorFirst,
+      shadowOffsetFirst,
+    };
+  }
+
+  return cachedMatchers;
 }
 
 module.exports = processTextShadow;

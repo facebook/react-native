@@ -15,7 +15,7 @@ const normalizeColor = require('../normalizeColor');
 
 it('forwards calls to @react-native/normalize-color', () => {
   jest.resetModules().mock('@react-native/normalize-color').normalizeColor =
-    () => jest.fn();
+    jest.fn();
   expect(require('../normalizeColor')('#abc')).not.toBe(null);
   expect(require('@react-native/normalize-color').normalizeColor).toBeCalled();
 });
