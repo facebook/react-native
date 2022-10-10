@@ -48,7 +48,6 @@ const {
 } = require('../../parsers-primitives');
 const {
   MisnamedModuleInterfaceParserError,
-  ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
@@ -68,6 +67,7 @@ const {
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
+const {throwIfModuleInterfaceNotFound} = require('../../error-utils');
 
 const language = 'TypeScript';
 
@@ -616,13 +616,12 @@ function buildModuleSchema(
     isModuleInterface,
   );
 
-  if (moduleSpecs.length === 0) {
-    throw new ModuleInterfaceNotFoundParserError(
-      hasteModuleName,
-      ast,
-      language,
-    );
-  }
+  throwIfModuleInterfaceNotFound(
+    moduleSpecs.length,
+    hasteModuleName,
+    ast,
+    'TypeScript',
+  );
 
   if (moduleSpecs.length > 1) {
     throw new MoreThanOneModuleInterfaceParserError(
