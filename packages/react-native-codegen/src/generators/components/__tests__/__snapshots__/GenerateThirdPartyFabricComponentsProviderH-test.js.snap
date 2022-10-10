@@ -66,6 +66,7 @@ Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); 
 Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_ARRAY_OF_OBJECTS_STATE
 Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_STRING_ENUM_STATE_PROPS
 Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_INT_ENUM_STATE
+Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENTS_WITH_IMAGES_IN_STATE
 
 #ifdef __cplusplus
 }

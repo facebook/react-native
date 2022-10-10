@@ -20,28 +20,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class ArrayPropsNativeComponentState {
-    public:
-    
-    ArrayPropsNativeComponentState() = default;
+public:
+  
+  ArrayPropsNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    ArrayPropsNativeComponentState(ArrayPropsNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  ArrayPropsNativeComponentState(ArrayPropsNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -69,28 +71,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class ArrayPropsNativeComponentState {
-    public:
-    
-    ArrayPropsNativeComponentState() = default;
+public:
+  
+  ArrayPropsNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    ArrayPropsNativeComponentState(ArrayPropsNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  ArrayPropsNativeComponentState(ArrayPropsNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -118,28 +122,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class BooleanPropNativeComponentState {
-    public:
-    
-    BooleanPropNativeComponentState() = default;
+public:
+  
+  BooleanPropNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    BooleanPropNativeComponentState(BooleanPropNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  BooleanPropNativeComponentState(BooleanPropNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -167,28 +173,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class ColorPropNativeComponentState {
-    public:
-    
-    ColorPropNativeComponentState() = default;
+public:
+  
+  ColorPropNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    ColorPropNativeComponentState(ColorPropNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  ColorPropNativeComponentState(ColorPropNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -216,28 +224,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class CommandNativeComponentState {
-    public:
-    
-    CommandNativeComponentState() = default;
+public:
+  
+  CommandNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    CommandNativeComponentState(CommandNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  CommandNativeComponentState(CommandNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -265,28 +275,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class CommandNativeComponentState {
-    public:
-    
-    CommandNativeComponentState() = default;
+public:
+  
+  CommandNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    CommandNativeComponentState(CommandNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  CommandNativeComponentState(CommandNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -314,35 +326,38 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+#include <react/renderer/components/image/conversions.h>
+#include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/imagemanager/primitives.h>
+#include <vector>
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        std::vector<SimpleComponentArrayStateStruct> arrayState
-      )
-      : arrayState_(arrayState){};
-    
-    SimpleComponentState() = default;
+public:
+  SimpleComponentState(
+      std::vector<SimpleComponentArrayStateStruct> arrayState)
+    : arrayState_(arrayState){};
+  SimpleComponentState() = default;
 
-    std::vector<SimpleComponentArrayStateStruct> getArrayState() const;
-    
+  std::vector<SimpleComponentArrayStateStruct> getArrayState() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      std::vector<SimpleComponentArrayStateStruct> arrayState_;
-    
+private:
+    std::vector<SimpleComponentArrayStateStruct> arrayState_;
+  
 };
 
 } // namespace react
@@ -370,14 +385,19 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+#include <cinttypes>
+#include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/imagemanager/primitives.h>
+#include <vector>
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        std::vector<std::string> names,
+public:
+  SimpleComponentState(
+      std::vector<std::string> names,
       std::vector<bool> disableds,
       std::vector<int> progress,
       std::vector<Float> radii,
@@ -387,9 +407,8 @@ class SimpleComponentState {
       SimpleComponentSizesMask sizes,
       std::vector<SimpleComponentObjectStruct> object,
       std::vector<SimpleComponentArrayStruct> array,
-      std::vector<std::vector<SimpleComponentArrayOfArrayOfObjectStruct>> arrayOfArrayOfObject
-      )
-      : names_(names),
+      std::vector<std::vector<SimpleComponentArrayOfArrayOfObjectStruct>> arrayOfArrayOfObject)
+    : names_(names),
       disableds_(disableds),
       progress_(progress),
       radii_(radii),
@@ -400,45 +419,44 @@ class SimpleComponentState {
       object_(object),
       array_(array),
       arrayOfArrayOfObject_(arrayOfArrayOfObject){};
-    
-    SimpleComponentState() = default;
+  SimpleComponentState() = default;
 
-    std::vector<std::string> getNames() const;
-    std::vector<bool> getDisableds() const;
-    std::vector<int> getProgress() const;
-    std::vector<Float> getRadii() const;
-    std::vector<SharedColor> getColors() const;
-    std::vector<ImageSource> getSrcs() const;
-    std::vector<Point> getPoints() const;
-    SimpleComponentSizesMask getSizes() const;
-    std::vector<SimpleComponentObjectStruct> getObject() const;
-    std::vector<SimpleComponentArrayStruct> getArray() const;
-    std::vector<std::vector<SimpleComponentArrayOfArrayOfObjectStruct>> getArrayOfArrayOfObject() const;
-    
+  std::vector<std::string> getNames() const;
+  std::vector<bool> getDisableds() const;
+  std::vector<int> getProgress() const;
+  std::vector<Float> getRadii() const;
+  std::vector<SharedColor> getColors() const;
+  std::vector<ImageSource> getSrcs() const;
+  std::vector<Point> getPoints() const;
+  SimpleComponentSizesMask getSizes() const;
+  std::vector<SimpleComponentObjectStruct> getObject() const;
+  std::vector<SimpleComponentArrayStruct> getArray() const;
+  std::vector<std::vector<SimpleComponentArrayOfArrayOfObjectStruct>> getArrayOfArrayOfObject() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      std::vector<std::string> names_;
-      std::vector<bool> disableds_;
-      std::vector<int> progress_;
-      std::vector<Float> radii_;
-      std::vector<SharedColor> colors_;
-      std::vector<ImageSource> srcs_;
-      std::vector<Point> points_;
-      SimpleComponentSizesMask sizes_{static_cast<SimpleComponentSizesMask>(SimpleComponentSizes::Small)};
-      std::vector<SimpleComponentObjectStruct> object_;
-      std::vector<SimpleComponentArrayStruct> array_;
-      std::vector<std::vector<SimpleComponentArrayOfArrayOfObjectStruct>> arrayOfArrayOfObject_;
-    
+private:
+    std::vector<std::string> names_;
+    std::vector<bool> disableds_;
+    std::vector<int> progress_;
+    std::vector<Float> radii_;
+    std::vector<SharedColor> colors_;
+    std::vector<ImageSource> srcs_;
+    std::vector<Point> points_;
+    SimpleComponentSizesMask sizes_{static_cast<SimpleComponentSizesMask>(SimpleComponentSizes::Small)};
+    std::vector<SimpleComponentObjectStruct> object_;
+    std::vector<SimpleComponentArrayStruct> array_;
+    std::vector<std::vector<SimpleComponentArrayOfArrayOfObjectStruct>> arrayOfArrayOfObject_;
+  
 };
 
 } // namespace react
@@ -466,35 +484,34 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        bool disabled
-      )
-      : disabled_(disabled){};
-    
-    SimpleComponentState() = default;
+public:
+  SimpleComponentState(
+      bool disabled)
+    : disabled_(disabled){};
+  SimpleComponentState() = default;
 
-    bool getDisabled() const;
-    
+  bool getDisabled() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      bool disabled_{false};
-    
+private:
+    bool disabled_{false};
+  
 };
 
 } // namespace react
@@ -522,35 +539,34 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+#include <react/renderer/graphics/Color.h>
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        SharedColor tintColor
-      )
-      : tintColor_(tintColor){};
-    
-    SimpleComponentState() = default;
+public:
+  SimpleComponentState(
+      SharedColor tintColor)
+    : tintColor_(tintColor){};
+  SimpleComponentState() = default;
 
-    SharedColor getTintColor() const;
-    
+  SharedColor getTintColor() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      SharedColor tintColor_;
-    
+private:
+    SharedColor tintColor_;
+  
 };
 
 } // namespace react
@@ -578,43 +594,42 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        double d_blurRadius,
+public:
+  SimpleComponentState(
+      double d_blurRadius,
       double d_blurRadius2,
-      double d_blurRadius3
-      )
-      : d_blurRadius_(d_blurRadius),
+      double d_blurRadius3)
+    : d_blurRadius_(d_blurRadius),
       d_blurRadius2_(d_blurRadius2),
       d_blurRadius3_(d_blurRadius3){};
-    
-    SimpleComponentState() = default;
+  SimpleComponentState() = default;
 
-    double getD_blurRadius() const;
-    double getD_blurRadius2() const;
-    double getD_blurRadius3() const;
-    
+  double getD_blurRadius() const;
+  double getD_blurRadius2() const;
+  double getD_blurRadius3() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      double d_blurRadius_{0.0};
-      double d_blurRadius2_{8.9};
-      double d_blurRadius3_{-0.5};
-    
+private:
+    double d_blurRadius_{0.0};
+    double d_blurRadius2_{8.9};
+    double d_blurRadius3_{-0.5};
+  
 };
 
 } // namespace react
@@ -642,35 +657,34 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+#include <react/renderer/graphics/Geometry.h>
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        EdgeInsets contentInset
-      )
-      : contentInset_(contentInset){};
-    
-    SimpleComponentState() = default;
+public:
+  SimpleComponentState(
+      EdgeInsets contentInset)
+    : contentInset_(contentInset){};
+  SimpleComponentState() = default;
 
-    EdgeInsets getContentInset() const;
-    
+  EdgeInsets getContentInset() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      EdgeInsets contentInset_;
-    
+private:
+    EdgeInsets contentInset_;
+  
 };
 
 } // namespace react
@@ -698,43 +712,42 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        Float blurRadius,
+public:
+  SimpleComponentState(
+      Float blurRadius,
       Float blurRadius2,
-      Float blurRadius3
-      )
-      : blurRadius_(blurRadius),
+      Float blurRadius3)
+    : blurRadius_(blurRadius),
       blurRadius2_(blurRadius2),
       blurRadius3_(blurRadius3){};
-    
-    SimpleComponentState() = default;
+  SimpleComponentState() = default;
 
-    Float getBlurRadius() const;
-    Float getBlurRadius2() const;
-    Float getBlurRadius3() const;
-    
+  Float getBlurRadius() const;
+  Float getBlurRadius2() const;
+  Float getBlurRadius3() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      Float blurRadius_{0.0};
-      Float blurRadius2_{7.5};
-      Float blurRadius3_{-2.1};
-    
+private:
+    Float blurRadius_{0.0};
+    Float blurRadius2_{7.5};
+    Float blurRadius3_{-2.1};
+  
 };
 
 } // namespace react
@@ -762,35 +775,34 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+#include <react/renderer/imagemanager/primitives.h>
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        ImageSource thumbImage
-      )
-      : thumbImage_(thumbImage){};
-    
-    SimpleComponentState() = default;
+public:
+  SimpleComponentState(
+      ImageSource const & thumbImage)
+    : thumbImage_(thumbImage){};
+  SimpleComponentState() = default;
 
-    ImageSource getThumbImage() const;
-    
+  ImageSource getThumbImage() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      ImageSource thumbImage_;
-    
+private:
+    ImageSource thumbImage_;
+  
 };
 
 } // namespace react
@@ -818,35 +830,34 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        SimpleComponentMaxInterval maxInterval
-      )
-      : maxInterval_(maxInterval){};
-    
-    SimpleComponentState() = default;
+public:
+  SimpleComponentState(
+      SimpleComponentMaxInterval maxInterval)
+    : maxInterval_(maxInterval){};
+  SimpleComponentState() = default;
 
-    SimpleComponentMaxInterval getMaxInterval() const;
-    
+  SimpleComponentMaxInterval getMaxInterval() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      SimpleComponentMaxInterval maxInterval_{SimpleComponentMaxInterval::MaxInterval0};
-    
+private:
+    SimpleComponentMaxInterval maxInterval_{SimpleComponentMaxInterval::MaxInterval0};
+  
 };
 
 } // namespace react
@@ -874,43 +885,42 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        int progress1,
+public:
+  SimpleComponentState(
+      int progress1,
       int progress2,
-      int progress3
-      )
-      : progress1_(progress1),
+      int progress3)
+    : progress1_(progress1),
       progress2_(progress2),
       progress3_(progress3){};
-    
-    SimpleComponentState() = default;
+  SimpleComponentState() = default;
 
-    int getProgress1() const;
-    int getProgress2() const;
-    int getProgress3() const;
-    
+  int getProgress1() const;
+  int getProgress2() const;
+  int getProgress3() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      int progress1_{0};
-      int progress2_{-1};
-      int progress3_{10};
-    
+private:
+    int progress1_{0};
+    int progress2_{-1};
+    int progress3_{10};
+  
 };
 
 } // namespace react
@@ -938,35 +948,39 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+#include <react/renderer/components/image/conversions.h>
+#include <react/renderer/core/propsConversions.h>
+#include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/imagemanager/primitives.h>
+#include <vector>
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        SimpleComponentObjectPropStruct objectProp
-      )
-      : objectProp_(objectProp){};
-    
-    SimpleComponentState() = default;
+public:
+  SimpleComponentState(
+      SimpleComponentObjectPropStruct objectProp)
+    : objectProp_(objectProp){};
+  SimpleComponentState() = default;
 
-    SimpleComponentObjectPropStruct getObjectProp() const;
-    
+  SimpleComponentObjectPropStruct getObjectProp() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      SimpleComponentObjectPropStruct objectProp_;
-    
+private:
+    SimpleComponentObjectPropStruct objectProp_;
+  
 };
 
 } // namespace react
@@ -994,35 +1008,34 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+#include <react/renderer/graphics/Geometry.h>
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        Point startPoint
-      )
-      : startPoint_(startPoint){};
-    
-    SimpleComponentState() = default;
+public:
+  SimpleComponentState(
+      Point startPoint)
+    : startPoint_(startPoint){};
+  SimpleComponentState() = default;
 
-    Point getStartPoint() const;
-    
+  Point getStartPoint() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      Point startPoint_;
-    
+private:
+    Point startPoint_;
+  
 };
 
 } // namespace react
@@ -1050,35 +1063,34 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        SimpleComponentAlignment alignment
-      )
-      : alignment_(alignment){};
-    
-    SimpleComponentState() = default;
+public:
+  SimpleComponentState(
+      SimpleComponentAlignment alignment)
+    : alignment_(alignment){};
+  SimpleComponentState() = default;
 
-    SimpleComponentAlignment getAlignment() const;
-    
+  SimpleComponentAlignment getAlignment() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      SimpleComponentAlignment alignment_{SimpleComponentAlignment::Center};
-    
+private:
+    SimpleComponentAlignment alignment_{SimpleComponentAlignment::Center};
+  
 };
 
 } // namespace react
@@ -1106,39 +1118,98 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class SimpleComponentState {
-    public:
-    
-      SimpleComponentState(
-        std::string accessibilityHint,
-      std::string accessibilityRole
-      )
-      : accessibilityHint_(accessibilityHint),
+public:
+  SimpleComponentState(
+      std::string accessibilityHint,
+      std::string accessibilityRole)
+    : accessibilityHint_(accessibilityHint),
       accessibilityRole_(accessibilityRole){};
-    
-    SimpleComponentState() = default;
+  SimpleComponentState() = default;
 
-    std::string getAccessibilityHint() const;
-    std::string getAccessibilityRole() const;
-    
+  std::string getAccessibilityHint() const;
+  std::string getAccessibilityRole() const;
+  
 
 #ifdef ANDROID
-    SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-      std::string accessibilityHint_{\\"\\"};
-      std::string accessibilityRole_;
-    
+private:
+    std::string accessibilityHint_{\\"\\"};
+    std::string accessibilityRole_;
+  
+};
+
+} // namespace react
+} // namespace facebook",
+}
+`;
+
+exports[`GenerateStateH can generate fixture COMPONENTS_WITH_IMAGES_IN_STATE 1`] = `
+Map {
+  "States.h" => "/**
+ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
+ *
+ * Do not edit this file as changes may cause incorrect behavior and will be lost
+ * once the code is regenerated.
+ *
+ * @generated by codegen project: GenerateStateH.js
+ */
+#pragma once
+
+#include <react/renderer/components/COMPONENTS_WITH_IMAGES_IN_STATE/Props.h>
+
+#ifdef ANDROID
+#include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#endif
+
+#include <react/renderer/imagemanager/ImageRequest.h>
+#include <react/renderer/imagemanager/primitives.h>
+
+namespace facebook {
+namespace react {
+
+class SimpleComponentState {
+public:
+  SimpleComponentState(
+      ImageSource const & imageSource,
+      ImageRequest imageRequest)
+    : imageSource_(imageSource),
+      imageRequest_(std::make_shared<ImageRequest>(std::move(imageRequest))){};
+  SimpleComponentState() = default;
+
+  ImageSource getImageSource() const;
+  ImageRequest const & getImageRequest() const;
+  
+
+#ifdef ANDROID
+  SimpleComponentState(SimpleComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
+#endif
+
+private:
+    ImageSource imageSource_;
+    std::shared_ptr<ImageRequest> imageRequest_;
+  
 };
 
 } // namespace react
@@ -1166,28 +1237,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class DoublePropNativeComponentState {
-    public:
-    
-    DoublePropNativeComponentState() = default;
+public:
+  
+  DoublePropNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    DoublePropNativeComponentState(DoublePropNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  DoublePropNativeComponentState(DoublePropNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1215,28 +1288,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class EventsNestedObjectNativeComponentState {
-    public:
-    
-    EventsNestedObjectNativeComponentState() = default;
+public:
+  
+  EventsNestedObjectNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    EventsNestedObjectNativeComponentState(EventsNestedObjectNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  EventsNestedObjectNativeComponentState(EventsNestedObjectNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1264,28 +1339,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class EventsNativeComponentState {
-    public:
-    
-    EventsNativeComponentState() = default;
+public:
+  
+  EventsNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    EventsNativeComponentState(EventsNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  EventsNativeComponentState(EventsNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1312,6 +1389,8 @@ Map {
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
+
+
 
 namespace facebook {
 namespace react {
@@ -1343,28 +1422,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class ExcludedAndroidComponentState {
-    public:
-    
-    ExcludedAndroidComponentState() = default;
+public:
+  
+  ExcludedAndroidComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    ExcludedAndroidComponentState(ExcludedAndroidComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  ExcludedAndroidComponentState(ExcludedAndroidComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1392,28 +1473,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class ExcludedAndroidIosComponentState {
-    public:
-    
-    ExcludedAndroidIosComponentState() = default;
+public:
+  
+  ExcludedAndroidIosComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    ExcludedAndroidIosComponentState(ExcludedAndroidIosComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  ExcludedAndroidIosComponentState(ExcludedAndroidIosComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1441,49 +1524,51 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class ExcludedIosComponentState {
-    public:
-    
-    ExcludedIosComponentState() = default;
+public:
+  
+  ExcludedIosComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    ExcludedIosComponentState(ExcludedIosComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  ExcludedIosComponentState(ExcludedIosComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 class MultiFileIncludedNativeComponentState {
-    public:
-    
-    MultiFileIncludedNativeComponentState() = default;
+public:
+  
+  MultiFileIncludedNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    MultiFileIncludedNativeComponentState(MultiFileIncludedNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  MultiFileIncludedNativeComponentState(MultiFileIncludedNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1511,28 +1596,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class FloatPropNativeComponentState {
-    public:
-    
-    FloatPropNativeComponentState() = default;
+public:
+  
+  FloatPropNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    FloatPropNativeComponentState(FloatPropNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  FloatPropNativeComponentState(FloatPropNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1560,28 +1647,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class ImagePropNativeComponentState {
-    public:
-    
-    ImagePropNativeComponentState() = default;
+public:
+  
+  ImagePropNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    ImagePropNativeComponentState(ImagePropNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  ImagePropNativeComponentState(ImagePropNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1609,28 +1698,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class InsetsPropNativeComponentState {
-    public:
-    
-    InsetsPropNativeComponentState() = default;
+public:
+  
+  InsetsPropNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    InsetsPropNativeComponentState(InsetsPropNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  InsetsPropNativeComponentState(InsetsPropNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1658,28 +1749,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class Int32EnumPropsNativeComponentState {
-    public:
-    
-    Int32EnumPropsNativeComponentState() = default;
+public:
+  
+  Int32EnumPropsNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    Int32EnumPropsNativeComponentState(Int32EnumPropsNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  Int32EnumPropsNativeComponentState(Int32EnumPropsNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1707,28 +1800,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class IntegerPropNativeComponentState {
-    public:
-    
-    IntegerPropNativeComponentState() = default;
+public:
+  
+  IntegerPropNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    IntegerPropNativeComponentState(IntegerPropNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  IntegerPropNativeComponentState(IntegerPropNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1755,6 +1850,8 @@ Map {
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
+
+
 
 namespace facebook {
 namespace react {
@@ -1786,28 +1883,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class ImageColorPropNativeComponentState {
-    public:
-    
-    ImageColorPropNativeComponentState() = default;
+public:
+  
+  ImageColorPropNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    ImageColorPropNativeComponentState(ImageColorPropNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  ImageColorPropNativeComponentState(ImageColorPropNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1835,28 +1934,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class NoPropsNoEventsComponentState {
-    public:
-    
-    NoPropsNoEventsComponentState() = default;
+public:
+  
+  NoPropsNoEventsComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    NoPropsNoEventsComponentState(NoPropsNoEventsComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  NoPropsNoEventsComponentState(NoPropsNoEventsComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1884,28 +1985,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class ObjectPropsState {
-    public:
-    
-    ObjectPropsState() = default;
+public:
+  
+  ObjectPropsState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    ObjectPropsState(ObjectPropsState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  ObjectPropsState(ObjectPropsState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1933,28 +2036,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class PointPropNativeComponentState {
-    public:
-    
-    PointPropNativeComponentState() = default;
+public:
+  
+  PointPropNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    PointPropNativeComponentState(PointPropNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  PointPropNativeComponentState(PointPropNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -1982,28 +2087,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class StringEnumPropsNativeComponentState {
-    public:
-    
-    StringEnumPropsNativeComponentState() = default;
+public:
+  
+  StringEnumPropsNativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    StringEnumPropsNativeComponentState(StringEnumPropsNativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  StringEnumPropsNativeComponentState(StringEnumPropsNativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -2031,28 +2138,30 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class StringPropComponentState {
-    public:
-    
-    StringPropComponentState() = default;
+public:
+  
+  StringPropComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    StringPropComponentState(StringPropComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  StringPropComponentState(StringPropComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -2080,49 +2189,51 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class MultiFile1NativeComponentState {
-    public:
-    
-    MultiFile1NativeComponentState() = default;
+public:
+  
+  MultiFile1NativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    MultiFile1NativeComponentState(MultiFile1NativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  MultiFile1NativeComponentState(MultiFile1NativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 class MultiFile2NativeComponentState {
-    public:
-    
-    MultiFile2NativeComponentState() = default;
+public:
+  
+  MultiFile2NativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    MultiFile2NativeComponentState(MultiFile2NativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  MultiFile2NativeComponentState(MultiFile2NativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react
@@ -2150,49 +2261,51 @@ Map {
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
+
+
 namespace facebook {
 namespace react {
 
 class MultiComponent1NativeComponentState {
-    public:
-    
-    MultiComponent1NativeComponentState() = default;
+public:
+  
+  MultiComponent1NativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    MultiComponent1NativeComponentState(MultiComponent1NativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  MultiComponent1NativeComponentState(MultiComponent1NativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 class MultiComponent2NativeComponentState {
-    public:
-    
-    MultiComponent2NativeComponentState() = default;
+public:
+  
+  MultiComponent2NativeComponentState() = default;
 
-    
+  
 
 #ifdef ANDROID
-    MultiComponent2NativeComponentState(MultiComponent2NativeComponentState const &previousState, folly::dynamic data){};
-    folly::dynamic getDynamic() const {
-      return {};
-    };
-    MapBuffer getMapBuffer() const {
-      return MapBufferBuilder::EMPTY();
-    };
+  MultiComponent2NativeComponentState(MultiComponent2NativeComponentState const &previousState, folly::dynamic data){};
+  folly::dynamic getDynamic() const {
+    return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 #endif
 
-    private:
-    
+private:
+  
 };
 
 } // namespace react

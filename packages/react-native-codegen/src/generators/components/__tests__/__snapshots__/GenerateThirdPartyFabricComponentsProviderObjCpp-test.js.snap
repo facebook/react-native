@@ -104,6 +104,8 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
     {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_STRING_ENUM_STATE_PROPS
 
     {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_INT_ENUM_STATE
+
+    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENTS_WITH_IMAGES_IN_STATE
   };
 
   auto p = sFabricComponentsClassMap.find(name);

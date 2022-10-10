@@ -102,6 +102,11 @@ function getTypeAnnotationForArray<+T>(
         type: 'ReservedPropTypeAnnotation',
         name: 'ImageSourcePrimitive',
       };
+    case 'ImageRequest':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'ImageRequestPrimitive',
+      };
     case 'ColorValue':
     case 'ProcessedColorValue':
       return {
@@ -268,6 +273,11 @@ function getTypeAnnotation<+T>(
       return {
         type: 'ReservedPropTypeAnnotation',
         name: 'ImageSourcePrimitive',
+      };
+    case 'ImageRequest':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'ImageRequestPrimitive',
       };
     case 'ColorValue':
     case 'ProcessedColorValue':
