@@ -15,7 +15,7 @@ import type {
   DoubleTypeAnnotation,
   Int32TypeAnnotation,
   NativeModuleNumberTypeAnnotation,
-  ObjectTypeAnnotation,
+  NativeModuleGenericObjectTypeAnnotation,
   Nullable,
   ReservedTypeAnnotation,
 } from '../CodegenSchema';
@@ -55,7 +55,9 @@ function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
   });
 }
 
-function emitObject(nullable: boolean): Nullable<ObjectTypeAnnotation> {
+function emitObject(
+  nullable: boolean,
+): Nullable<NativeModuleGenericObjectTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'GenericObjectTypeAnnotation',
   });
