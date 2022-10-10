@@ -11,7 +11,11 @@
 
 'use-strict';
 
-const {emitBoolean, emitInt32} = require('../parsers-primitives.js');
+const {
+  emitBoolean,
+  emitNumber,
+  emitInt32,
+} = require('../parsers-primitives.js');
 
 describe('emitBoolean', () => {
   describe('when nullable is true', () => {
@@ -58,6 +62,32 @@ describe('emitInt32', () => {
       const result = emitInt32(false);
       const expected = {
         type: 'Int32TypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitNumber', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitNumber(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'NumberTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitNumber(false);
+      const expected = {
+        type: 'NumberTypeAnnotation',
       };
 
       expect(result).toEqual(expected);

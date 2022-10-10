@@ -33,7 +33,11 @@ const {
   isModuleRegistryCall,
 } = require('../utils.js');
 const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
-const {emitBoolean, emitInt32} = require('../../parsers-primitives');
+const {
+  emitBoolean,
+  emitNumber,
+  emitInt32,
+} = require('../../parsers-primitives');
 const {
   IncorrectlyParameterizedFlowGenericParserError,
   MisnamedModuleFlowInterfaceParserError,
@@ -364,9 +368,7 @@ function translateTypeAnnotation(
       return emitBoolean(nullable);
     }
     case 'NumberTypeAnnotation': {
-      return wrapNullable(nullable, {
-        type: 'NumberTypeAnnotation',
-      });
+      return emitNumber(nullable);
     }
     case 'VoidTypeAnnotation': {
       return wrapNullable(nullable, {
