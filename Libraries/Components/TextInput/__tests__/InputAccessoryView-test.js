@@ -11,10 +11,10 @@
 
 'use strict';
 
-const React = require('react');
+const render = require('../../../../jest/renderer');
 const View = require('../../View/View');
 const InputAccessoryView = require('../InputAccessoryView');
-const render = require('../../../../jest/renderer');
+const React = require('react');
 
 describe('<InputAccessoryView />', () => {
   it('should render as <RCTInputAccessoryView> when mocked', () => {

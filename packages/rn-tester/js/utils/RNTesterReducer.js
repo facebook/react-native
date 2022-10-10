@@ -24,7 +24,7 @@ const getUpdatedBookmarks = ({
   key,
   bookmarks,
 }: {
-  exampleType: string,
+  exampleType: 'apis' | 'components',
   key: string,
   bookmarks: ComponentList,
 }) => {
@@ -47,7 +47,7 @@ const getUpdatedRecentlyUsed = ({
   key,
   recentlyUsed,
 }: {
-  exampleType: string,
+  exampleType: 'apis' | 'components',
   key: string,
   recentlyUsed: ComponentList,
 }) => {

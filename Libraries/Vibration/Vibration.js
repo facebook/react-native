@@ -10,6 +10,7 @@
  */
 
 import NativeVibration from './NativeVibration';
+
 const Platform = require('../Utilities/Platform');
 
 /**

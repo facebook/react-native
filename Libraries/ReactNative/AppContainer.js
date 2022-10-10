@@ -8,12 +8,13 @@
  * @flow
  */
 
+import type {RootTag} from './RootTag';
+
 import View from '../Components/View/View';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import {RootTagContext, createRootTag} from './RootTag';
-import type {RootTag} from './RootTag';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|
@@ -49,10 +50,7 @@ class AppContainer extends React.Component<Props, State> {
 
   componentDidMount(): void {
     if (__DEV__) {
-      if (
-        !global.__RCTProfileIsProfiling &&
-        !this.props.internal_excludeInspector
-      ) {
+      if (!this.props.internal_excludeInspector) {
         this._subscription = RCTDeviceEventEmitter.addListener(
           'toggleElementInspector',
           () => {
@@ -92,12 +90,10 @@ class AppContainer extends React.Component<Props, State> {
   render(): React.Node {
     let logBox = null;
     if (__DEV__) {
-      if (!global.__RCTProfileIsProfiling) {
-        if (!this.props.internal_excludeLogBox) {
-          const LogBoxNotificationContainer =
-            require('../LogBox/LogBoxNotificationContainer').default;
-          logBox = <LogBoxNotificationContainer />;
-        }
+      if (!this.props.internal_excludeLogBox) {
+        const LogBoxNotificationContainer =
+          require('../LogBox/LogBoxNotificationContainer').default;
+        logBox = <LogBoxNotificationContainer />;
       }
     }
 

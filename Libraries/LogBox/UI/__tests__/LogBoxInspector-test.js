@@ -11,10 +11,10 @@
 
 'use strict';
 
-const React = require('react');
-const LogBoxInspector = require('../LogBoxInspector').default;
-const LogBoxLog = require('../../Data/LogBoxLog').default;
 const render = require('../../../../jest/renderer');
+const LogBoxLog = require('../../Data/LogBoxLog').default;
+const LogBoxInspector = require('../LogBoxInspector').default;
+const React = require('react');
 
 const logs = [
   new LogBoxLog({

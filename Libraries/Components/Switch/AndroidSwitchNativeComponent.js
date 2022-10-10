@@ -8,16 +8,14 @@
  * @format
  */
 
-import * as React from 'react';
-
-import type {WithDefault, BubblingEventHandler} from '../../Types/CodegenTypes';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {ViewProps} from '../View/ViewPropTypes';
+import * as React from 'react';
 
 type SwitchChangeEvent = $ReadOnly<{|
   value: boolean,

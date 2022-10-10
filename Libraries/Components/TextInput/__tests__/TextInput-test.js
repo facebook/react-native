@@ -9,15 +9,14 @@
  * @oncall react_native
  */
 
-const React = require('react');
-const ReactTestRenderer = require('react-test-renderer');
-const TextInput = require('../TextInput');
 const ReactNative = require('../../../ReactNative/RendererProxy');
-
 const {
   enter,
   expectRendersMatchingSnapshot,
 } = require('../../../Utilities/ReactNativeTestTools');
+const TextInput = require('../TextInput');
+const React = require('react');
+const ReactTestRenderer = require('react-test-renderer');
 
 jest.unmock('../TextInput');
 

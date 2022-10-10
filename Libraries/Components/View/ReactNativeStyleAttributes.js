@@ -9,6 +9,7 @@
  */
 
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
+
 import processAspectRatio from '../../StyleSheet/processAspectRatio';
 import processColor from '../../StyleSheet/processColor';
 import processFontVariant from '../../StyleSheet/processFontVariant';
@@ -137,6 +138,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   textShadowRadius: true,
   textTransform: true,
   userSelect: true,
+  verticalAlign: true,
   writingDirection: true,
 
   /**

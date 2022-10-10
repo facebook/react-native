@@ -8,16 +8,16 @@
  * @flow strict-local
  */
 
-const BatchedBridge = require('../BatchedBridge/BatchedBridge');
-const TaskQueue = require('./TaskQueue');
-
-const infoLog = require('../Utilities/infoLog');
-const invariant = require('invariant');
+import type {Task} from './TaskQueue';
 
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+const infoLog = require('../Utilities/infoLog');
+const TaskQueue = require('./TaskQueue');
+const invariant = require('invariant');
+
 export type Handle = number;
-import type {Task} from './TaskQueue';
 
 const _emitter = new EventEmitter<{
   interactionComplete: [],

@@ -32,7 +32,12 @@ const {
   visit,
   isModuleRegistryCall,
 } = require('../utils.js');
-const {unwrapNullable, wrapNullable} = require('./utils');
+const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
+const {
+  emitBoolean,
+  emitNumber,
+  emitInt32,
+} = require('../../parsers-primitives');
 const {
   IncorrectlyParameterizedTypeScriptGenericParserError,
   MisnamedModuleTypeScriptInterfaceParserError,
@@ -154,16 +159,6 @@ function translateTypeAnnotation(
     resolveTypeAnnotation(typeScriptTypeAnnotation, types);
 
   switch (typeAnnotation.type) {
-    case 'TSParenthesizedType': {
-      return translateTypeAnnotation(
-        hasteModuleName,
-        typeAnnotation.typeAnnotation,
-        types,
-        aliasMap,
-        tryParse,
-        cxxOnly,
-      );
-    }
     case 'TSArrayType': {
       return translateArrayTypeAnnotation(
         hasteModuleName,
@@ -231,34 +226,13 @@ function translateTypeAnnotation(
             nullable,
           );
         }
-        case 'Readonly': {
-          assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-            hasteModuleName,
-            typeAnnotation,
-          );
-
-          const [paramType, isParamNullable] = unwrapNullable(
-            translateTypeAnnotation(
-              hasteModuleName,
-              typeAnnotation.typeParameters.params[0],
-              types,
-              aliasMap,
-              tryParse,
-              cxxOnly,
-            ),
-          );
-
-          return wrapNullable(nullable || isParamNullable, paramType);
-        }
         case 'Stringish': {
           return wrapNullable(nullable, {
             type: 'StringTypeAnnotation',
           });
         }
         case 'Int32': {
-          return wrapNullable(nullable, {
-            type: 'Int32TypeAnnotation',
-          });
+          return emitInt32(nullable);
         }
         case 'Double': {
           return wrapNullable(nullable, {
@@ -426,14 +400,10 @@ function translateTypeAnnotation(
       });
     }
     case 'TSBooleanKeyword': {
-      return wrapNullable(nullable, {
-        type: 'BooleanTypeAnnotation',
-      });
+      return emitBoolean(nullable);
     }
     case 'TSNumberKeyword': {
-      return wrapNullable(nullable, {
-        type: 'NumberTypeAnnotation',
-      });
+      return emitNumber(nullable);
     }
     case 'TSVoidKeyword': {
       return wrapNullable(nullable, {

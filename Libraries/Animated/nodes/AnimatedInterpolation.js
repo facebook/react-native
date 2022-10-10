@@ -12,15 +12,13 @@
 
 'use strict';
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from './AnimatedNode';
 
-import AnimatedWithChildren from './AnimatedWithChildren';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
-
-import invariant from 'invariant';
 import normalizeColor from '../../StyleSheet/normalizeColor';
-
-import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedWithChildren from './AnimatedWithChildren';
+import invariant from 'invariant';
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 

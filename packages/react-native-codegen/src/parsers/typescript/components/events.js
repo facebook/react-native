@@ -16,19 +16,21 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 const {flattenProperties} = require('./componentsUtils');
+const {parseTopLevelType} = require('../parseTopLevelType');
+import type {TypeDeclarationMap} from '../utils.js';
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
   name,
-  optional: boolean,
+  optionalProperty: boolean,
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
-  typeAnnotation,
+  annotation,
 ): NamedShape<EventTypeAnnotation> {
-  if (typeAnnotation.type === 'TSParenthesizedType') {
-    return getPropertyType(name, optional, typeAnnotation.typeAnnotation);
-  }
+  const topLevelType = parseTopLevelType(annotation);
+  const typeAnnotation = topLevelType.type;
+  const optional = optionalProperty || topLevelType.optional;
   const type =
     typeAnnotation.type === 'TSTypeReference'
       ? typeAnnotation.typeName.name
@@ -75,13 +77,6 @@ function getPropertyType(
           type: 'FloatTypeAnnotation',
         },
       };
-    case 'Readonly':
-      return getPropertyType(
-        name,
-        optional,
-        typeAnnotation.typeParameters.params[0],
-      );
-
     case 'TSTypeLiteral':
       return {
         name,
@@ -93,20 +88,6 @@ function getPropertyType(
       };
 
     case 'TSUnionType':
-      // Check for <T | null | undefined>
-      if (
-        typeAnnotation.types.some(
-          t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-        )
-      ) {
-        const optionalType = typeAnnotation.types.filter(
-          t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
-        )[0];
-
-        // Check for <(T | T2) | null | undefined>
-        return getPropertyType(name, true, optionalType);
-      }
-
       return {
         name,
         optional,
@@ -123,7 +104,7 @@ function getPropertyType(
 
 function findEventArgumentsAndType(
   typeAnnotation: $FlowFixMe,
-  types: TypeMap,
+  types: TypeDeclarationMap,
   bubblingType: void | 'direct' | 'bubble',
   paperName: ?$FlowFixMe,
 ) {
@@ -216,49 +197,38 @@ function getEventArgument(argumentProps, name: $FlowFixMe) {
   };
 }
 
-function findEvent(typeAnnotation: $FlowFixMe, optional: boolean) {
+function isEvent(typeAnnotation: $FlowFixMe) {
   switch (typeAnnotation.type) {
-    // Check for T | null | undefined
-    case 'TSUnionType':
-      return findEvent(
-        typeAnnotation.types.filter(
-          t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
-        )[0],
-        optional ||
-          typeAnnotation.types.some(
-            t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-          ),
-      );
-    // Check for (T)
-    case 'TSParenthesizedType':
-      return findEvent(typeAnnotation.typeAnnotation, optional);
     case 'TSTypeReference':
       if (
         typeAnnotation.typeName.name !== 'BubblingEventHandler' &&
         typeAnnotation.typeName.name !== 'DirectEventHandler'
       ) {
-        return null;
+        return false;
       } else {
-        return {typeAnnotation, optional};
+        return true;
       }
     default:
-      return null;
+      return false;
   }
 }
 
 function buildEventSchema(
-  types: TypeMap,
+  types: TypeDeclarationMap,
   property: EventTypeAST,
 ): ?EventTypeShape {
-  const name = property.key.name;
-  const foundEvent = findEvent(
+  // unpack WithDefault, (T) or T|U
+  const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,
-    property.optional || false,
+    types,
   );
-  if (!foundEvent) {
+  if (!isEvent(topLevelType.type)) {
     return null;
   }
-  const {typeAnnotation, optional} = foundEvent;
+
+  const name = property.key.name;
+  const typeAnnotation = topLevelType.type;
+  const optional = property.optional || topLevelType.optional;
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(typeAnnotation, types);
 
@@ -299,15 +269,9 @@ function buildEventSchema(
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type EventTypeAST = Object;
 
-type TypeMap = {
-  // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
-  [string]: Object,
-  ...
-};
-
 function getEvents(
   eventTypeAST: $ReadOnlyArray<EventTypeAST>,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ): $ReadOnlyArray<EventTypeShape> {
   return eventTypeAST
     .filter(property => property.type === 'TSPropertySignature')

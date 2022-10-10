@@ -8,11 +8,11 @@
  * @format
  */
 
-import * as React from 'react';
-import {useMemo, useState, useRef, useImperativeHandle} from 'react';
-import useAndroidRippleForView, {
-  type RippleConfig,
-} from './useAndroidRippleForView';
+import type {
+  LayoutEvent,
+  MouseEvent,
+  PressEvent,
+} from '../../Types/CoreEventTypes';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
@@ -20,15 +20,16 @@ import type {
   AccessibilityState,
   AccessibilityValue,
 } from '../View/ViewAccessibility';
+
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
 import {type RectOrSize} from '../../StyleSheet/Rect';
-import type {
-  LayoutEvent,
-  MouseEvent,
-  PressEvent,
-} from '../../Types/CoreEventTypes';
 import View from '../View/View';
+import useAndroidRippleForView, {
+  type RippleConfig,
+} from './useAndroidRippleForView';
+import * as React from 'react';
+import {useImperativeHandle, useMemo, useRef, useState} from 'react';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
 

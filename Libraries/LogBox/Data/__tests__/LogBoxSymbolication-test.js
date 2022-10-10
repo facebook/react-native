@@ -11,12 +11,12 @@
 
 'use strict';
 
-import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 import type {SymbolicatedStackTrace} from '../../../Core/Devtools/symbolicateStackTrace';
-
-jest.mock('../../../Core/Devtools/symbolicateStackTrace');
+import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 
 const LogBoxSymbolication = require('../LogBoxSymbolication');
+
+jest.mock('../../../Core/Devtools/symbolicateStackTrace');
 
 const symbolicateStackTrace: JestMockFn<
   $ReadOnlyArray<Array<StackFrame>>,

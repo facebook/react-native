@@ -8,14 +8,14 @@
  * @flow
  */
 
-import * as React from 'react';
-import Platform from '../../Utilities/Platform';
-import invariant from 'invariant';
-import processColor from '../../StyleSheet/processColor';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
+import processColor from '../../StyleSheet/processColor';
+import Platform from '../../Utilities/Platform';
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
+import invariant from 'invariant';
+import * as React from 'react';
 
 /**
  * Status bar style

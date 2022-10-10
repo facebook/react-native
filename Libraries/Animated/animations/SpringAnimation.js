@@ -10,21 +10,17 @@
 
 'use strict';
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
 import type AnimatedValue from '../nodes/AnimatedValue';
 import type AnimatedValueXY from '../nodes/AnimatedValueXY';
-import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
-
-import Animation from './Animation';
-import * as SpringConfig from '../SpringConfig';
-
-import invariant from 'invariant';
-
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
-
-import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimationConfig, EndCallback} from './Animation';
 
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedColor from '../nodes/AnimatedColor';
+import * as SpringConfig from '../SpringConfig';
+import Animation from './Animation';
+import invariant from 'invariant';
 
 export type SpringAnimationConfig = {
   ...AnimationConfig,

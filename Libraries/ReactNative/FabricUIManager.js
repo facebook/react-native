@@ -11,10 +11,10 @@
 'use strict';
 
 import type {
-  MeasureOnSuccessCallback,
+  LayoutAnimationConfig,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
-  LayoutAnimationConfig,
+  MeasureOnSuccessCallback,
 } from '../Renderer/shims/ReactNativeTypes';
 import type {RootTag} from '../Types/RootTagTypes';
 

@@ -9,53 +9,36 @@
   <!-- tag is used to store the nativeID tag -->
   <item type="id" name="view_tag_instance_handle"/>
 
-  <!--tag is used to store accessibilityHint tag-->
+  <!-- tag is used to store accessibilityHint tag-->
   <item type="id" name="accessibility_hint"/>
 
-  <!--tag is used to store accessibilityRole tag-->
+  <!-- tag is used to store accessibilityRole tag-->
   <item type="id" name="accessibility_role"/>
 
-  <!--tag is used to store accessibilityCollection -->
+  <!-- tag is used to store accessibilityCollection -->
   <item type="id" name="accessibility_collection"/>
 
-  <!--tag is used to store accessibilityCollectionItem -->
+  <!-- tag is used to store accessibilityCollectionItem -->
   <item type="id" name="accessibility_collection_item"/>
 
-  <!--tag is used to store accessibilityState -->
+  <!-- tag is used to store accessibilityState -->
   <item type="id" name="accessibility_state"/>
 
-  <!--tag is used to store accessibilityLabel tag-->
+  <!-- tag is used to store accessibilityLabel tag-->
   <item type="id" name="accessibility_label"/>
 
-  <!--tag is used to store accessibilityActions tag-->
+  <!-- tag is used to store accessibilityActions tag-->
   <item type="id" name="accessibility_actions"/>
 
-  <!--tag is used to store accessibilityValue tag -->
+  <!-- tag is used to store accessibilityValue tag -->
   <item type="id" name="accessibility_value"/>
 
-  <!--tag is used to store accessibilityLinks tag -->
+  <!-- tag is used to store accessibilityLinks tag -->
   <item type="id" name="accessibility_links"/>
-  <!--tag is used to store accessibilityLabelledBy tag -->
+
+  <!-- tag is used to store accessibilityLabelledBy tag -->
   <item type="id" name="labelled_by"/>
 
-  <!-- tag is used to store if a view is subscribed to the pointerenter event -->
-  <item type="id" name="pointer_enter"/>
-  <item type="id" name="pointer_enter_capture"/>
-
-  <!-- tag is used to store if a view is subscribed to the pointerleave event -->
-  <item type="id" name="pointer_leave"/>
-  <item type="id" name="pointer_leave_capture"/>
-
-  <!-- tag is used to store if a view is subscribed to the pointermove event -->
-  <item type="id" name="pointer_move"/>
-  <item type="id" name="pointer_move_capture"/>
-
-  <!-- tag is used to store if a view is subscribed to the pointerout event -->
-  <item type="id" name="pointer_out"/>
-  <item type="id" name="pointer_out_capture"/>
-
-  <!-- tag is used to store if a view is subscribed to the pointerover event -->
-  <item type="id" name="pointer_over"/>
-  <item type="id" name="pointer_over_capture"/>
-
+  <!-- tag is used store bitset of pointer events observed -->
+  <item type="id" name="pointer_events"/>
 </resources>

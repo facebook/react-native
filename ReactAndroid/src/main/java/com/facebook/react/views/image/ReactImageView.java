@@ -19,7 +19,6 @@ import android.graphics.Shader;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.facebook.common.internal.Objects;
 import com.facebook.common.references.CloseableReference;
@@ -51,6 +50,7 @@ import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.util.RNLog;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
@@ -597,11 +597,9 @@ public class ReactImageView extends GenericDraweeView {
 
   private void warnImageSource(String uri) {
     if (ReactBuildConfig.DEBUG) {
-      Toast.makeText(
-              getContext(),
-              "Warning: Image source \"" + uri + "\" doesn't exist",
-              Toast.LENGTH_SHORT)
-          .show();
+      RNLog.w(
+          (ReactContext) getContext(),
+          "ReactImageView: Image source \"" + uri + "\" doesn't exist");
     }
   }
 }

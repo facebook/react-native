@@ -10,11 +10,10 @@
 
 'use strict';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
-
-import invariant from 'invariant';
-
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import invariant from 'invariant';
 
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 

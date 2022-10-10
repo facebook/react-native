@@ -8,14 +8,14 @@
  * @flow
  */
 
+import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import EventEmitter, {
   type EventSubscription,
 } from '../vendor/emitter/EventEmitter';
-import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import NativeDeviceInfo, {
+  type DimensionsPayload,
   type DisplayMetrics,
   type DisplayMetricsAndroid,
-  type DimensionsPayload,
 } from './NativeDeviceInfo';
 import invariant from 'invariant';
 

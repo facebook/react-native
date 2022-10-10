@@ -191,13 +191,6 @@ android {
             ]
         }
     }
-    buildFeatures {
-        prefab true
-    }
-    packagingOptions {
-        pickFirst '**/libhermes.so'
-        pickFirst '**/libjsc.so'
-    }
 }
 
 dependencies {
@@ -205,23 +198,13 @@ dependencies {
     implementation project(':ReactAndroid')
 
     // Consume Hermes as built from source only for the Hermes variant.
-    hermesImplementation(project(":ReactAndroid:hermes-engine")) {
-        exclude group:'com.facebook.fbjni'
-    }
+    hermesImplementation(project(":ReactAndroid:hermes-engine"))
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.fbjni'
-    }
-
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
-    }
-
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
-    }
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}")
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
 
     if (useIntlJsc) {
         jscImplementation 'org.webkit:android-jsc-intl:+'
@@ -232,50 +215,17 @@ dependencies {
     androidTestImplementation 'junit:junit:4.12'
 }
 
-// TODO: Move all this logic to CodegenPlugin.java.
-def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
-def reactAndroidBuildDir = project(':ReactAndroid').buildDir;
-
 android {
-    defaultConfig {
-        externalNativeBuild {
-            cmake {
-                arguments "-DGENERATED_SRC_DIR=$buildDir/generated/source",
-                    "-DPROJECT_BUILD_DIR=$buildDir",
-                    "-DREACT_ANDROID_DIR=$reactAndroidProjectDir",
-                    "-DREACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir",
-                    "-DANDROID_STL=c++_shared"
-            }
-        }
-    }
     externalNativeBuild {
         cmake {
+            // RN Tester is doing custom linking of C++ libraries therefore needs
+            // a dedicated CMakeLists.txt file.
             path "src/main/jni/CMakeLists.txt"
         }
     }
 }
 
-def packageReactDebugNdkLibs = tasks.register("packageReactDebugNdkLibs", Copy) {
-    // TODO: handle extracting .so from prebuilt :ReactAndroid.
-    dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
-    dependsOn("generateCodegenArtifactsFromSchema")
-    from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
-    into("$buildDir/react-ndk/exported")
-}
-def packageReactReleaseNdkLibs = tasks.register("packageReactReleaseNdkLibs", Copy) {
-    // TODO: handle extracting .so from prebuilt :ReactAndroid.
-    dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
-    dependsOn("generateCodegenArtifactsFromSchema")
-    from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
-    into("$buildDir/react-ndk/exported")
-}
-
 afterEvaluate {
-    preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
-    preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
-    preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
-    preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
-
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
     emitHermesDebugHermesResources.dependsOn(":ReactAndroid:hermes-engine:buildHermes")

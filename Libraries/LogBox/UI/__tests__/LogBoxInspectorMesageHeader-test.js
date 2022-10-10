@@ -11,10 +11,10 @@
 
 'use strict';
 
-const React = require('react');
+const render = require('../../../../jest/renderer');
 const LogBoxInspectorMessageHeader =
   require('../LogBoxInspectorMessageHeader').default;
-const render = require('../../../../jest/renderer');
+const React = require('react');
 
 describe('LogBoxInspectorMessageHeader', () => {
   it('should render error', () => {

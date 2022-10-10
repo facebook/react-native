@@ -8,8 +8,11 @@
  * @oncall react_native
  */
 
-import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
+import TestRenderer from 'react-test-renderer';
+
+let Animated = require('../Animated').default;
+let AnimatedProps = require('../nodes/AnimatedProps').default;
 
 jest.mock('../../BatchedBridge/NativeModules', () => ({
   NativeAnimatedModule: {},
@@ -19,9 +22,6 @@ jest.mock('../../BatchedBridge/NativeModules', () => ({
     },
   },
 }));
-
-let AnimatedProps = require('../nodes/AnimatedProps').default;
-let Animated = require('../Animated').default;
 
 describe('Animated tests', () => {
   beforeEach(() => {

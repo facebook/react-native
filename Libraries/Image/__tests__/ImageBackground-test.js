@@ -11,9 +11,9 @@
 
 'use strict';
 
-const React = require('react');
-const ImageBackground = require('../ImageBackground');
 const render = require('../../../jest/renderer');
+const ImageBackground = require('../ImageBackground');
+const React = require('react');
 
 describe('<ImageBackground />', () => {
   it('should render as <ImageBackground> when mocked', () => {

@@ -8,10 +8,10 @@
  * @format
  */
 
-import symbolicateStackTrace from '../../Core/Devtools/symbolicateStackTrace';
-
-import type {StackFrame} from '../../Core/NativeExceptionsManager';
 import type {SymbolicatedStackTrace} from '../../Core/Devtools/symbolicateStackTrace';
+import type {StackFrame} from '../../Core/NativeExceptionsManager';
+
+import symbolicateStackTrace from '../../Core/Devtools/symbolicateStackTrace';
 
 export type Stack = Array<StackFrame>;
 

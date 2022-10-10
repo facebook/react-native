@@ -9,10 +9,10 @@
 #include "CppViewMutationsWrapper.h"
 #include "EventEmitterWrapper.h"
 #include "StateWrapperImpl.h"
-#include "viewPropConversions.h"
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
@@ -51,9 +51,9 @@ FabricMountingManager::FabricMountingManager(
           "react_fabric:disable_revision_check_for_preallocation")),
       useOverflowInset_(getFeatureFlagValue("useOverflowInset")),
       shouldRememberAllocatedViews_(
-          getFeatureFlagValue("shouldRememberAllocatedViews")),
-      useMapBufferForViewProps_(config->getBool(
-          "react_native_new_architecture:use_mapbuffer_for_viewprops")) {}
+          getFeatureFlagValue("shouldRememberAllocatedViews")) {
+  CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
+}
 
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
@@ -258,17 +258,17 @@ static inline float scale(Float value, Float pointScaleFactor) {
 local_ref<jobject> FabricMountingManager::getProps(
     ShadowView const &oldShadowView,
     ShadowView const &newShadowView) {
-  if (useMapBufferForViewProps_ &&
-      newShadowView.traits.check(ShadowNodeTraits::Trait::View)) {
+  if (CoreFeatures::enableMapBuffer &&
+      newShadowView.traits.check(
+          ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported)) {
     react_native_assert(
         newShadowView.props->rawProps.empty() &&
         "Raw props must be empty when views are using mapbuffer");
-    auto oldProps = oldShadowView.props != nullptr
-        ? static_cast<ViewProps const &>(*oldShadowView.props)
-        : ViewProps{};
-    auto newProps = static_cast<ViewProps const &>(*newShadowView.props);
-    return JReadableMapBuffer::createWithContents(
-        viewPropsDiff(oldProps, newProps));
+
+    // MapBufferBuilder must be constructed and live in this scope,
+    MapBufferBuilder builder;
+    newShadowView.props->propsDiffMapBuffer(&*oldShadowView.props, builder);
+    return JReadableMapBuffer::createWithContents(builder.build());
   } else {
     return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
   }

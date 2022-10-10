@@ -127,7 +127,6 @@ public class PointerEventHelper {
       return false;
     }
 
-    Object value = null;
     switch (event) {
       case DOWN:
       case DOWN_CAPTURE:
@@ -136,44 +135,11 @@ public class PointerEventHelper {
       case CANCEL:
       case CANCEL_CAPTURE:
         return true;
-      case ENTER:
-        value = view.getTag(R.id.pointer_enter);
-        break;
-      case ENTER_CAPTURE:
-        value = view.getTag(R.id.pointer_enter_capture);
-        break;
-      case LEAVE:
-        value = view.getTag(R.id.pointer_leave);
-        break;
-      case LEAVE_CAPTURE:
-        value = view.getTag(R.id.pointer_leave_capture);
-        break;
-      case MOVE:
-        value = view.getTag(R.id.pointer_move);
-        break;
-      case MOVE_CAPTURE:
-        value = view.getTag(R.id.pointer_move_capture);
-        break;
-      case OVER:
-        value = view.getTag(R.id.pointer_over);
-        break;
-      case OVER_CAPTURE:
-        value = view.getTag(R.id.pointer_over_capture);
-        break;
-      case OUT:
-        value = view.getTag(R.id.pointer_out);
-        break;
-      case OUT_CAPTURE:
-        value = view.getTag(R.id.pointer_out_capture);
-        break;
     }
 
-    if (value == null) {
-      return false;
-    }
-
-    if (value instanceof Boolean) {
-      return (Boolean) value;
+    Integer pointerEvents = (Integer) view.getTag(R.id.pointer_events);
+    if (pointerEvents != null) {
+      return (pointerEvents.intValue() & (1 << event.ordinal())) != 0;
     }
     return false;
   }

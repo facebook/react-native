@@ -9,9 +9,9 @@
  */
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import Platform from '../Utilities/Platform';
 import NativePushNotificationManagerIOS from './NativePushNotificationManagerIOS';
 import invariant from 'invariant';
-import Platform from '../Utilities/Platform';
 
 type NativePushNotificationIOSEventDefinitions = {
   remoteNotificationReceived: [

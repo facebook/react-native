@@ -14,7 +14,6 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import AnimatedValue from './AnimatedValue';
 import AnimatedWithChildren from './AnimatedWithChildren';
-
 import invariant from 'invariant';
 
 export type AnimatedValueXYConfig = $ReadOnly<{

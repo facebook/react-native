@@ -10,11 +10,11 @@
 
 'use strict';
 
-const InteractionManager = require('./InteractionManager');
-const TouchHistoryMath = require('./TouchHistoryMath');
-
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {PanResponderType} from './PanResponder.flow.js';
+
+const InteractionManager = require('./InteractionManager');
+const TouchHistoryMath = require('./TouchHistoryMath');
 
 const currentCentroidXOfTouchesChangedAfter =
   TouchHistoryMath.currentCentroidXOfTouchesChangedAfter;

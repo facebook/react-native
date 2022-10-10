@@ -16,6 +16,7 @@ import {FlatList, StyleSheet, Text, View} from 'react-native';
 
 import RNTesterPage from '../../components/RNTesterPage';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {ViewToken} from '../../../../../Libraries/Lists/ViewabilityHelper';
 
 type OuterItem = 'head' | 'vertical' | 'horizontal' | 'filler';
 
@@ -78,7 +79,13 @@ function NestedListExample(): React.Node {
   const [inner, dispatchInner] = useReducer(reducer, initialItemsState);
 
   const onViewableItemsChanged = useCallback(
-    ({changed}) => {
+    ({
+      changed,
+    }: {
+      changed: Array<ViewToken>,
+      viewableItems: Array<ViewToken>,
+      ...
+    }) => {
       for (const token of changed) {
         dispatchOuter({
           type: token.isViewable ? 'add-viewable' : 'remove-viewable',
@@ -162,7 +169,13 @@ function OuterItemRenderer({
   }, [dispatchOuter, index]);
 
   const onViewableItemsChanged = useCallback(
-    ({changed}) => {
+    ({
+      changed,
+    }: {
+      changed: Array<ViewToken>,
+      viewableItems: Array<ViewToken>,
+      ...
+    }) => {
       for (const token of changed) {
         dispatchInner({
           type: token.isViewable ? 'add-viewable' : 'remove-viewable',

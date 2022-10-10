@@ -8,8 +8,8 @@
  * @format
  */
 
-import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import type {RootTag} from '../Types/RootTagTypes';
+import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 import BatchedBridge from '../BatchedBridge/BatchedBridge';
 import BugReporting from '../BugReporting/BugReporting';
@@ -19,8 +19,8 @@ import SceneTracker from '../Utilities/SceneTracker';
 import {coerceDisplayMode} from './DisplayMode';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
 import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
-import {unmountComponentAtNodeAndRemoveContainer} from './RendererProxy';
 import renderApplication from './renderApplication';
+import {unmountComponentAtNodeAndRemoveContainer} from './RendererProxy';
 import invariant from 'invariant';
 
 type Task = (taskData: any) => Promise<void>;

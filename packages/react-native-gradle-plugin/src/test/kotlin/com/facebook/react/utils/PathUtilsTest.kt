@@ -124,16 +124,17 @@ class PathUtilsTest {
   fun detectedCliPath_withCliFromNodeModules() {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)
-    extension.root.set(tempFolder.root)
     val expected =
         File(tempFolder.root, "node_modules/react-native/cli.js").apply {
           parentFile.mkdirs()
           writeText("<!-- nothing to see here -->")
         }
+    val locationToResolveFrom = File(tempFolder.root, "a-subdirectory").apply { mkdirs() }
+    extension.root.set(locationToResolveFrom)
 
     val actual = detectedCliPath(project.projectDir, extension)
 
-    assertEquals(expected.toString(), actual)
+    assertEquals(expected.canonicalPath, actual)
   }
 
   @Test(expected = IllegalStateException::class)

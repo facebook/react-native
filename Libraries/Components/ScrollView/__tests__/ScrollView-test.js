@@ -11,12 +11,12 @@
 
 'use strict';
 
-const React = require('react');
-const ScrollView = require('../ScrollView');
-const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
-const ReactTestRenderer = require('react-test-renderer');
-const View = require('../../View/View');
 const Text = require('../../../Text/Text');
+const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
+const View = require('../../View/View');
+const ScrollView = require('../ScrollView');
+const React = require('react');
+const ReactTestRenderer = require('react-test-renderer');
 
 describe('<ScrollView />', () => {
   it('should render as expected', () => {

@@ -27,15 +27,15 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
   auto transformedFrames = LayoutableSmallVector<Rect>{size};
   auto transformation = Transform::Identity();
 
-  for (int i = size - 1; i >= 0; --i) {
+  for (auto i = size; i > 0; --i) {
     auto currentShadowNode =
-        traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
+        traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i - 1));
     auto currentFrame = currentShadowNode->getLayoutMetrics().frame;
 
     if (policy.includeTransform) {
       if (Transform::isVerticalInversion(transformation)) {
         auto parentShadowNode =
-            traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i + 1));
+            traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
         currentFrame.origin.y =
             parentShadowNode->getLayoutMetrics().frame.size.height -
             currentFrame.size.height - currentFrame.origin.y;
@@ -43,15 +43,15 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
 
       if (Transform::isHorizontalInversion(transformation)) {
         auto parentShadowNode =
-            traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i + 1));
+            traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
         currentFrame.origin.x =
             parentShadowNode->getLayoutMetrics().frame.size.width -
             currentFrame.size.width - currentFrame.origin.x;
       }
 
-      if (i != size - 1) {
+      if (i != size) {
         auto parentShadowNode =
-            traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i + 1));
+            traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
         auto contentOritinOffset = parentShadowNode->getContentOriginOffset();
         if (Transform::isVerticalInversion(transformation)) {
           contentOritinOffset.y = -contentOritinOffset.y;
@@ -65,7 +65,7 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
       transformation = transformation * currentShadowNode->getTransform();
     }
 
-    transformedFrames[i] = currentFrame;
+    transformedFrames[i - 1] = currentFrame;
   }
 
   return transformedFrames;

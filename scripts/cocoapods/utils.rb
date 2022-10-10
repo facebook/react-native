@@ -39,6 +39,20 @@ class ReactNativePodsUtils
         installer.pods_project.pod_group(name) != nil
     end
 
+    def self.turn_off_resource_bundle_react_core(installer)
+        # this is needed for Xcode 14, see more details here https://github.com/facebook/react-native/issues/34673
+        # we should be able to remove this once CocoaPods catches up to it, see more details here https://github.com/CocoaPods/CocoaPods/issues/11402
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            if pod_name.to_s == 'React-Core'
+                target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+                    resource_bundle_target.build_configurations.each do |config|
+                        config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+                    end
+                end
+            end
+        end
+    end
+
     def self.exclude_i386_architecture_while_using_hermes(installer)
         projects = installer.aggregate_targets
             .map{ |t| t.user_project }

@@ -8,8 +8,8 @@
  * @format
  */
 
-import * as React from 'react';
 import invariant from 'invariant';
+import * as React from 'react';
 
 /**
  * `setState` is called asynchronously, and should not rely on the value of

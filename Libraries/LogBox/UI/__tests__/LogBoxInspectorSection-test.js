@@ -9,10 +9,11 @@
  * @oncall react_native
  */
 
-const React = require('react');
 import Text from '../../../Text/Text';
-const LogBoxInspectorSection = require('../LogBoxInspectorSection').default;
+
 const render = require('../../../../jest/renderer');
+const LogBoxInspectorSection = require('../LogBoxInspectorSection').default;
+const React = require('react');
 
 describe('LogBoxInspectorSection', () => {
   it('should render with only heading', () => {

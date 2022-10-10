@@ -9,10 +9,11 @@
  * @oncall react_native
  */
 
-const React = require('react');
-const LogBoxButton = require('../LogBoxButton').default;
-const render = require('../../../../jest/renderer');
 import Text from '../../../Text/Text';
+
+const render = require('../../../../jest/renderer');
+const LogBoxButton = require('../LogBoxButton').default;
+const React = require('react');
 
 describe('LogBoxButton', () => {
   it('should render only a view without an onPress', () => {

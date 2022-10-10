@@ -30,7 +30,10 @@ class AccessibilityProps {
       const char *propName,
       RawValue const &value);
 
-  static bool enablePropIteratorSetter;
+#ifdef ANDROID
+  void propsDiffMapBuffer(Props const *oldProps, MapBufferBuilder &builder)
+      const;
+#endif
 
 #pragma mark - Props
 

@@ -8,15 +8,15 @@
  * @format
  */
 
-import * as LogBoxSymbolication from './LogBoxSymbolication';
-
+import type {Stack} from './LogBoxSymbolication';
 import type {
   Category,
-  Message,
-  ComponentStack,
   CodeFrame,
+  ComponentStack,
+  Message,
 } from './parseLogBoxLog';
-import type {Stack} from './LogBoxSymbolication';
+
+import * as LogBoxSymbolication from './LogBoxSymbolication';
 
 type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 

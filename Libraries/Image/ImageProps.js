@@ -10,17 +10,17 @@
 
 'use strict';
 
-import type {SyntheticEvent, LayoutEvent} from '../Types/CoreEventTypes';
+import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {EdgeInsetsProp} from '../StyleSheet/EdgeInsetsPropType';
-import type {ImageSource} from './ImageSource';
 import type {
   ColorValue,
-  ViewStyleProp,
   ImageStyleProp,
+  ViewStyleProp,
 } from '../StyleSheet/StyleSheet';
-import type {ViewProps} from '../Components/View/ViewPropTypes';
-import type {Node, Ref} from 'react';
+import type {LayoutEvent, SyntheticEvent} from '../Types/CoreEventTypes';
 import typeof Image from './Image';
+import type {ImageSource} from './ImageSource';
+import type {Node, Ref} from 'react';
 
 export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|

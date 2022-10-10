@@ -19,6 +19,8 @@ import PointerEventPrimaryTouchPointer from './W3CPointerEventPlatformTests/Poin
 import PointerEventAttributesNoHoverPointers from './W3CPointerEventPlatformTests/PointerEventAttributesNoHoverPointers';
 import PointerEventPointerMoveOnChordedMouseButton from './W3CPointerEventPlatformTests/PointerEventPointerMoveOnChordedMouseButton';
 import PointerEventPointerMoveAcross from './W3CPointerEventPlatformTests/PointerEventPointerMoveAcross';
+import PointerEventPointerMoveEventOrder from './W3CPointerEventPlatformTests/PointerEventPointerMoveEventOrder';
+import PointerEventPointerMoveBetween from './W3CPointerEventPlatformTests/PointerEventPointerMoveBetween';
 import EventfulView from './W3CPointerEventsEventfulView';
 
 function AbsoluteChildExample({log}: {log: string => void}) {
@@ -209,6 +211,22 @@ export default {
       title: 'Pointermove handling across elements',
       render(): React.Node {
         return <PointerEventPointerMoveAcross />;
+      },
+    },
+    {
+      name: 'pointerevent_pointermove_between',
+      description: '',
+      title: 'Pointermove handling between elements',
+      render(): React.Node {
+        return <PointerEventPointerMoveBetween />;
+      },
+    },
+    {
+      name: 'pointerevent_pointermove_event_order',
+      description: '',
+      title: 'PointerEvent - pointermove event order',
+      render(): React.Node {
+        return <PointerEventPointerMoveEventOrder />;
       },
     },
     CompatibilityAnimatedPointerMove,

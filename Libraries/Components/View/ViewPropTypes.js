@@ -10,26 +10,26 @@
 
 'use strict';
 
+import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BlurEvent,
   FocusEvent,
+  Layout,
+  LayoutEvent,
   MouseEvent,
   PointerEvent,
   PressEvent,
-  Layout,
-  LayoutEvent,
 } from '../../Types/CoreEventTypes';
-import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
-import type {Node} from 'react';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
-  Role,
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
   AccessibilityRole,
   AccessibilityState,
   AccessibilityValue,
-  AccessibilityActionEvent,
-  AccessibilityActionInfo,
+  Role,
 } from './ViewAccessibility';
+import type {Node} from 'react';
 
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;

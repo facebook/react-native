@@ -10,9 +10,9 @@
 
 import type {ViewProps} from './ViewPropTypes';
 
-import ViewNativeComponent from './ViewNativeComponent';
-import TextAncestor from '../../Text/TextAncestor';
 import flattenStyle from '../../StyleSheet/flattenStyle';
+import TextAncestor from '../../Text/TextAncestor';
+import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 
 export type Props = ViewProps;

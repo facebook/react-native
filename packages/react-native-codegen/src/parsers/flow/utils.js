@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {ParserError} = require('./errors');
+const {ParserError} = require('../errors');
 
 /**
  * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
@@ -26,8 +26,9 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
     if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
       if (
-        node.declaration.type === 'TypeAlias' ||
-        node.declaration.type === 'InterfaceDeclaration'
+        node.declaration != null &&
+        (node.declaration.type === 'TypeAlias' ||
+          node.declaration.type === 'InterfaceDeclaration')
       ) {
         types[node.declaration.id.name] = node.declaration;
       }

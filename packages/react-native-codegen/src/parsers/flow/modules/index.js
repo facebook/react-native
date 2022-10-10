@@ -32,7 +32,12 @@ const {
   visit,
   isModuleRegistryCall,
 } = require('../utils.js');
-const {unwrapNullable, wrapNullable} = require('./utils');
+const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
+const {
+  emitBoolean,
+  emitNumber,
+  emitInt32,
+} = require('../../parsers-primitives');
 const {
   IncorrectlyParameterizedFlowGenericParserError,
   MisnamedModuleFlowInterfaceParserError,
@@ -194,9 +199,7 @@ function translateTypeAnnotation(
           });
         }
         case 'Int32': {
-          return wrapNullable(nullable, {
-            type: 'Int32TypeAnnotation',
-          });
+          return emitInt32(nullable);
         }
         case 'Double': {
           return wrapNullable(nullable, {
@@ -362,14 +365,10 @@ function translateTypeAnnotation(
       });
     }
     case 'BooleanTypeAnnotation': {
-      return wrapNullable(nullable, {
-        type: 'BooleanTypeAnnotation',
-      });
+      return emitBoolean(nullable);
     }
     case 'NumberTypeAnnotation': {
-      return wrapNullable(nullable, {
-        type: 'NumberTypeAnnotation',
-      });
+      return emitNumber(nullable);
     }
     case 'VoidTypeAnnotation': {
       return wrapNullable(nullable, {

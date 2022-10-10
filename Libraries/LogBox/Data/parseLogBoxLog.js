@@ -8,11 +8,12 @@
  * @format
  */
 
-import UTFSequence from '../../UTFSequence';
-import stringifySafe from '../../Utilities/stringifySafe';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {LogBoxLogData} from './LogBoxLog';
+
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
+import UTFSequence from '../../UTFSequence';
+import stringifySafe from '../../Utilities/stringifySafe';
 
 const BABEL_TRANSFORM_ERROR_FORMAT =
   /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;

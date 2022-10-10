@@ -10,18 +10,19 @@
 
 'use strict';
 
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+
+import SafeAreaView from '../Components/SafeAreaView/SafeAreaView';
+
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
+const View = require('../Components/View/View');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Text = require('../Text/Text');
 const ElementProperties = require('./ElementProperties');
 const NetworkOverlay = require('./NetworkOverlay');
 const PerformanceOverlay = require('./PerformanceOverlay');
 const React = require('react');
-const ScrollView = require('../Components/ScrollView/ScrollView');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text');
-const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
-const View = require('../Components/View/View');
-import SafeAreaView from '../Components/SafeAreaView/SafeAreaView';
-
-import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
 type Props = $ReadOnly<{|
   devtoolsIsOpen: boolean,

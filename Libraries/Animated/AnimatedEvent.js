@@ -10,14 +10,13 @@
 
 'use strict';
 
+import type {PlatformConfig} from './AnimatedPlatformConfig';
+
+import {findNodeHandle} from '../ReactNative/RendererProxy';
+import NativeAnimatedHelper from './NativeAnimatedHelper';
 import AnimatedValue from './nodes/AnimatedValue';
 import AnimatedValueXY from './nodes/AnimatedValueXY';
-import NativeAnimatedHelper from './NativeAnimatedHelper';
-import {findNodeHandle} from '../ReactNative/RendererProxy';
-
 import invariant from 'invariant';
-
-import type {PlatformConfig} from './AnimatedPlatformConfig';
 
 export type Mapping =
   | {[key: string]: Mapping, ...}
