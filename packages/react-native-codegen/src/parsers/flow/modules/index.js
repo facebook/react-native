@@ -44,6 +44,7 @@ const {
   emitInt32,
   emitRootTag,
   typeAliasResolution,
+  emitPromise,
 } = require('../../parsers-primitives');
 const {
   MisnamedModuleInterfaceParserError,
@@ -95,15 +96,12 @@ function translateTypeAnnotation(
           return emitRootTag(nullable);
         }
         case 'Promise': {
-          assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+          return emitPromise(
             hasteModuleName,
             typeAnnotation,
             language,
+            nullable,
           );
-
-          return wrapNullable(nullable, {
-            type: 'PromiseTypeAnnotation',
-          });
         }
         case 'Array':
         case '$ReadOnlyArray': {
