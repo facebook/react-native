@@ -50,13 +50,17 @@ RELEASE_DATA=$(jo tag_name="$GIT_TAG" name="$RN_VERSION" body="$RELEASE_BODY" dr
 describe_header "Creating GitHub release."
 describe "Release payload: $RELEASE_DATA"
 
-CREATE_RELEASE_RESPONSE=$(curl -X POST \
+DEBUG_RELEASE_REQUEST="curl -X POST \
     -H "Accept: application/vnd.github.v3+json" \
-    -H "Authorization: Bearer $GITHUB_TOKEN" \
+    -H "Authorization: Bearer __GITHUB_TOKEN__" \
     -d "$RELEASE_DATA" \
     "https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/releases"
-)
-STATUS=$?
+
+echo "Would have run: $DEBUG_RELEASE_REQUEST"
+exit 0
+
+# Just testing, we won't actually post to GH
+
 if [ $STATUS == 0 ]; then
   describe "Created GitHub release successfully."
 else
