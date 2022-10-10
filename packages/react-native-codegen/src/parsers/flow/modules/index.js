@@ -35,18 +35,20 @@ const {
 const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
 const {
   emitBoolean,
+  emitDouble,
   emitNumber,
   emitInt32,
+  emitRootTag,
 } = require('../../parsers-primitives');
 const {
-  IncorrectlyParameterizedFlowGenericParserError,
-  MisnamedModuleFlowInterfaceParserError,
-  ModuleFlowInterfaceNotFoundParserError,
-  MoreThanOneModuleFlowInterfaceParserError,
+  IncorrectlyParameterizedGenericParserError,
+  MisnamedModuleInterfaceParserError,
+  ModuleInterfaceNotFoundParserError,
+  MoreThanOneModuleInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
-  UnsupportedFlowGenericParserError,
-  UnsupportedFlowTypeAnnotationParserError,
+  UnsupportedGenericParserError,
+  UnsupportedTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
@@ -54,15 +56,16 @@ const {
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
-  UnusedModuleFlowInterfaceParserError,
+  UnusedModuleInterfaceParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UntypedModuleRegistryCallParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
-} = require('./errors.js');
+} = require('../../errors.js');
 
 const invariant = require('invariant');
+const language = 'Flow';
 
 function nullGuard<T>(fn: () => T): ?T {
   return fn();
@@ -106,10 +109,7 @@ function translateTypeAnnotation(
     case 'GenericTypeAnnotation': {
       switch (typeAnnotation.id.name) {
         case 'RootTag': {
-          return wrapNullable(nullable, {
-            type: 'ReservedTypeAnnotation',
-            name: 'RootTag',
-          });
+          return emitRootTag(nullable);
         }
         case 'Promise': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
@@ -159,6 +159,7 @@ function translateTypeAnnotation(
                 typeAnnotation.typeParameters.params[0],
                 typeAnnotation.type,
                 'void',
+                language,
               );
             }
 
@@ -168,6 +169,7 @@ function translateTypeAnnotation(
                 typeAnnotation.typeParameters.params[0],
                 typeAnnotation.type,
                 'Promise',
+                language,
               );
             }
 
@@ -177,6 +179,7 @@ function translateTypeAnnotation(
                 typeAnnotation.typeParameters.params[0],
                 typeAnnotation.type,
                 'FunctionTypeAnnotation',
+                language,
               );
             }
 
@@ -222,9 +225,7 @@ function translateTypeAnnotation(
           return emitInt32(nullable);
         }
         case 'Double': {
-          return wrapNullable(nullable, {
-            type: 'DoubleTypeAnnotation',
-          });
+          return emitDouble(nullable);
         }
         case 'Float': {
           return wrapNullable(nullable, {
@@ -260,12 +261,14 @@ function translateTypeAnnotation(
                 hasteModuleName,
                 typeAnnotation,
                 memberType,
+                language,
               );
             }
           }
-          throw new UnsupportedFlowGenericParserError(
+          throw new UnsupportedGenericParserError(
             hasteModuleName,
             typeAnnotation,
+            language,
           );
         }
       }
@@ -283,6 +286,7 @@ function translateTypeAnnotation(
                     hasteModuleName,
                     property,
                     property.type,
+                    language,
                   );
                 }
 
@@ -422,6 +426,7 @@ function translateTypeAnnotation(
             hasteModuleName,
             typeAnnotation,
             unionTypes,
+            language,
           );
         }
         return wrapNullable(nullable, {
@@ -440,9 +445,10 @@ function translateTypeAnnotation(
       // Fallthrough
     }
     default: {
-      throw new UnsupportedFlowTypeAnnotationParserError(
+      throw new UnsupportedTypeAnnotationParserError(
         hasteModuleName,
         typeAnnotation,
+        language,
       );
     }
   }
@@ -456,9 +462,10 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
   typeAnnotation: $FlowFixMe,
 ) {
   if (typeAnnotation.typeParameters == null) {
-    throw new IncorrectlyParameterizedFlowGenericParserError(
+    throw new IncorrectlyParameterizedGenericParserError(
       moduleName,
       typeAnnotation,
+      language,
     );
   }
 
@@ -468,9 +475,10 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
   );
 
   if (typeAnnotation.typeParameters.params.length !== 1) {
-    throw new IncorrectlyParameterizedFlowGenericParserError(
+    throw new IncorrectlyParameterizedGenericParserError(
       moduleName,
       typeAnnotation,
+      language,
     );
   }
 }
@@ -490,7 +498,11 @@ function translateFunctionTypeAnnotation(
   for (const flowParam of (flowFunctionTypeAnnotation.params: $ReadOnlyArray<$FlowFixMe>)) {
     const parsedParam = tryParse(() => {
       if (flowParam.name == null) {
-        throw new UnnamedFunctionParamParserError(flowParam, hasteModuleName);
+        throw new UnnamedFunctionParamParserError(
+          flowParam,
+          hasteModuleName,
+          language,
+        );
       }
 
       const paramName = flowParam.name.name;
@@ -512,6 +524,7 @@ function translateFunctionTypeAnnotation(
           flowParam.typeAnnotation,
           paramName,
           'void',
+          language,
         );
       }
 
@@ -521,6 +534,7 @@ function translateFunctionTypeAnnotation(
           flowParam.typeAnnotation,
           paramName,
           'Promise',
+          language,
         );
       }
 
@@ -555,6 +569,7 @@ function translateFunctionTypeAnnotation(
       hasteModuleName,
       flowFunctionTypeAnnotation.returnType,
       'FunctionTypeAnnotation',
+      language,
     );
   }
 
@@ -593,6 +608,7 @@ function buildPropertySchema(
       property.value,
       property.key.name,
       value.type,
+      language,
     );
   }
 
@@ -636,23 +652,29 @@ function buildModuleSchema(
   );
 
   if (moduleSpecs.length === 0) {
-    throw new ModuleFlowInterfaceNotFoundParserError(hasteModuleName, ast);
+    throw new ModuleInterfaceNotFoundParserError(
+      hasteModuleName,
+      ast,
+      language,
+    );
   }
 
   if (moduleSpecs.length > 1) {
-    throw new MoreThanOneModuleFlowInterfaceParserError(
+    throw new MoreThanOneModuleInterfaceParserError(
       hasteModuleName,
       moduleSpecs,
       moduleSpecs.map(node => node.id.name),
+      language,
     );
   }
 
   const [moduleSpec] = moduleSpecs;
 
   if (moduleSpec.id.name !== 'Spec') {
-    throw new MisnamedModuleFlowInterfaceParserError(
+    throw new MisnamedModuleInterfaceParserError(
       hasteModuleName,
       moduleSpec.id,
+      language,
     );
   }
 
@@ -668,9 +690,10 @@ function buildModuleSchema(
     });
 
     if (callExpressions.length === 0) {
-      throw new UnusedModuleFlowInterfaceParserError(
+      throw new UnusedModuleInterfaceParserError(
         hasteModuleName,
         moduleSpec,
+        language,
       );
     }
 
@@ -679,6 +702,7 @@ function buildModuleSchema(
         hasteModuleName,
         callExpressions,
         callExpressions.length,
+        language,
       );
     }
 
@@ -692,6 +716,7 @@ function buildModuleSchema(
         callExpression,
         methodName,
         callExpression.arguments.length,
+        language,
       );
     }
 
@@ -702,6 +727,7 @@ function buildModuleSchema(
         callExpression.arguments[0],
         methodName,
         type,
+        language,
       );
     }
 
@@ -713,6 +739,7 @@ function buildModuleSchema(
         callExpression,
         methodName,
         $moduleName,
+        language,
       );
     }
 
@@ -727,6 +754,7 @@ function buildModuleSchema(
         typeArguments,
         methodName,
         $moduleName,
+        language,
       );
     }
 

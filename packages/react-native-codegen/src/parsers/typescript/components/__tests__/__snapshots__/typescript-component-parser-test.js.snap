@@ -13052,3 +13052,53 @@ exports[`RN Codegen TypeScript Parser can generate fixture STATE_NEGATIVE_DEFAUL
   }
 }"
 `;
+
+exports[`RN Codegen TypeScript Parser can generate fixture STATE_WITH_IMAGES 1`] = `
+"{
+  'modules': {
+    'Module': {
+      'type': 'Component',
+      'components': {
+        'Module': {
+          'extendsProps': [
+            {
+              'type': 'ReactNativeBuiltInType',
+              'knownTypeName': 'ReactNativeCoreViewProps'
+            }
+          ],
+          'events': [],
+          'props': [
+            {
+              'name': 'imageSource',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ReservedPropTypeAnnotation',
+                'name': 'ImageSourcePrimitive'
+              }
+            }
+          ],
+          'commands': [],
+          'state': [
+            {
+              'name': 'imageSource',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ReservedPropTypeAnnotation',
+                'name': 'ImageSourcePrimitive'
+              }
+            },
+            {
+              'name': 'imageRequest',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ReservedPropTypeAnnotation',
+                'name': 'ImageRequestPrimitive'
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}"
+`;

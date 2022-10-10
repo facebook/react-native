@@ -35,34 +35,37 @@ const {
 const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
 const {
   emitBoolean,
+  emitDouble,
   emitNumber,
   emitInt32,
+  emitRootTag,
 } = require('../../parsers-primitives');
 const {
-  IncorrectlyParameterizedTypeScriptGenericParserError,
-  MisnamedModuleTypeScriptInterfaceParserError,
-  ModuleTypeScriptInterfaceNotFoundParserError,
-  MoreThanOneModuleTypeScriptInterfaceParserError,
+  IncorrectlyParameterizedGenericParserError,
+  MisnamedModuleInterfaceParserError,
+  ModuleInterfaceNotFoundParserError,
+  MoreThanOneModuleInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
-  UnsupportedTypeScriptGenericParserError,
-  UnsupportedTypeScriptTypeAnnotationParserError,
+  UnsupportedGenericParserError,
+  UnsupportedTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
-  UnsupportedTypeScriptEnumDeclarationParserError,
-  UnsupportedTypeScriptUnionTypeAnnotationParserError,
+  UnsupportedEnumDeclarationParserError,
+  UnsupportedUnionTypeAnnotationParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
-  UnusedModuleTypeScriptInterfaceParserError,
+  UnusedModuleInterfaceParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UntypedModuleRegistryCallParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
-} = require('./errors.js');
+} = require('../../errors.js');
 
 const invariant = require('invariant');
+const language = 'TypeScript';
 
 function nullGuard<T>(fn: () => T): ?T {
   return fn();
@@ -128,6 +131,7 @@ function translateArrayTypeAnnotation(
         tsElementType,
         tsArrayType,
         'void',
+        language,
       );
     }
 
@@ -137,6 +141,7 @@ function translateArrayTypeAnnotation(
         tsElementType,
         tsArrayType,
         'Promise',
+        language,
       );
     }
 
@@ -146,6 +151,7 @@ function translateArrayTypeAnnotation(
         tsElementType,
         tsArrayType,
         'FunctionTypeAnnotation',
+        language,
       );
     }
 
@@ -205,19 +211,17 @@ function translateTypeAnnotation(
           nullable,
         );
       } else {
-        throw new UnsupportedTypeScriptGenericParserError(
+        throw new UnsupportedGenericParserError(
           hasteModuleName,
           typeAnnotation,
+          language,
         );
       }
     }
     case 'TSTypeReference': {
       switch (typeAnnotation.typeName.name) {
         case 'RootTag': {
-          return wrapNullable(nullable, {
-            type: 'ReservedTypeAnnotation',
-            name: 'RootTag',
-          });
+          return emitRootTag(nullable);
         }
         case 'Promise': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
@@ -255,9 +259,7 @@ function translateTypeAnnotation(
           return emitInt32(nullable);
         }
         case 'Double': {
-          return wrapNullable(nullable, {
-            type: 'DoubleTypeAnnotation',
-          });
+          return emitDouble(nullable);
         }
         case 'Float': {
           return wrapNullable(nullable, {
@@ -291,16 +293,18 @@ function translateTypeAnnotation(
                 memberType: memberType,
               });
             } else {
-              throw new UnsupportedTypeScriptEnumDeclarationParserError(
+              throw new UnsupportedEnumDeclarationParserError(
                 hasteModuleName,
                 typeAnnotation,
                 memberType,
+                language,
               );
             }
           }
-          throw new UnsupportedTypeScriptGenericParserError(
+          throw new UnsupportedGenericParserError(
             hasteModuleName,
             typeAnnotation,
+            language,
           );
         }
       }
@@ -318,6 +322,7 @@ function translateTypeAnnotation(
                     hasteModuleName,
                     property,
                     property.type,
+                    language,
                   );
                 }
 
@@ -453,10 +458,11 @@ function translateTypeAnnotation(
           .filter((value, index, self) => self.indexOf(value) === index);
         // Only support unionTypes of the same kind
         if (unionTypes.length > 1) {
-          throw new UnsupportedTypeScriptUnionTypeAnnotationParserError(
+          throw new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
             unionTypes,
+            language,
           );
         }
         return wrapNullable(nullable, {
@@ -475,9 +481,10 @@ function translateTypeAnnotation(
       // Fallthrough
     }
     default: {
-      throw new UnsupportedTypeScriptTypeAnnotationParserError(
+      throw new UnsupportedTypeAnnotationParserError(
         hasteModuleName,
         typeAnnotation,
+        language,
       );
     }
   }
@@ -491,9 +498,10 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
   typeAnnotation: $FlowFixMe,
 ) {
   if (typeAnnotation.typeParameters == null) {
-    throw new IncorrectlyParameterizedTypeScriptGenericParserError(
+    throw new IncorrectlyParameterizedGenericParserError(
       moduleName,
       typeAnnotation,
+      language,
     );
   }
 
@@ -503,9 +511,10 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
   );
 
   if (typeAnnotation.typeParameters.params.length !== 1) {
-    throw new IncorrectlyParameterizedTypeScriptGenericParserError(
+    throw new IncorrectlyParameterizedGenericParserError(
       moduleName,
       typeAnnotation,
+      language,
     );
   }
 }
@@ -528,6 +537,7 @@ function translateFunctionTypeAnnotation(
         throw new UnnamedFunctionParamParserError(
           typeScriptParam,
           hasteModuleName,
+          language,
         );
       }
 
@@ -550,6 +560,7 @@ function translateFunctionTypeAnnotation(
           typeScriptParam.typeAnnotation,
           paramName,
           'void',
+          language,
         );
       }
 
@@ -559,6 +570,7 @@ function translateFunctionTypeAnnotation(
           typeScriptParam.typeAnnotation,
           paramName,
           'Promise',
+          language,
         );
       }
 
@@ -593,6 +605,7 @@ function translateFunctionTypeAnnotation(
       hasteModuleName,
       typescriptFunctionTypeAnnotation.returnType,
       'FunctionTypeAnnotation',
+      language,
     );
   }
 
@@ -630,6 +643,7 @@ function buildPropertySchema(
       property.value,
       property.key.name,
       value.type,
+      language,
     );
   }
 
@@ -673,26 +687,29 @@ function buildModuleSchema(
   );
 
   if (moduleSpecs.length === 0) {
-    throw new ModuleTypeScriptInterfaceNotFoundParserError(
+    throw new ModuleInterfaceNotFoundParserError(
       hasteModuleName,
       ast,
+      language,
     );
   }
 
   if (moduleSpecs.length > 1) {
-    throw new MoreThanOneModuleTypeScriptInterfaceParserError(
+    throw new MoreThanOneModuleInterfaceParserError(
       hasteModuleName,
       moduleSpecs,
       moduleSpecs.map(node => node.id.name),
+      language,
     );
   }
 
   const [moduleSpec] = moduleSpecs;
 
   if (moduleSpec.id.name !== 'Spec') {
-    throw new MisnamedModuleTypeScriptInterfaceParserError(
+    throw new MisnamedModuleInterfaceParserError(
       hasteModuleName,
       moduleSpec.id,
+      language,
     );
   }
 
@@ -708,9 +725,10 @@ function buildModuleSchema(
     });
 
     if (callExpressions.length === 0) {
-      throw new UnusedModuleTypeScriptInterfaceParserError(
+      throw new UnusedModuleInterfaceParserError(
         hasteModuleName,
         moduleSpec,
+        language,
       );
     }
 
@@ -719,6 +737,7 @@ function buildModuleSchema(
         hasteModuleName,
         callExpressions,
         callExpressions.length,
+        language,
       );
     }
 
@@ -732,6 +751,7 @@ function buildModuleSchema(
         callExpression,
         methodName,
         callExpression.arguments.length,
+        language,
       );
     }
 
@@ -742,6 +762,7 @@ function buildModuleSchema(
         callExpression.arguments[0],
         methodName,
         type,
+        language,
       );
     }
 
@@ -753,6 +774,7 @@ function buildModuleSchema(
         callExpression,
         methodName,
         $moduleName,
+        language,
       );
     }
 
@@ -767,6 +789,7 @@ function buildModuleSchema(
         typeParameters,
         methodName,
         $moduleName,
+        language,
       );
     }
 

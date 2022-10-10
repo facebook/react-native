@@ -13,8 +13,10 @@
 
 const {
   emitBoolean,
+  emitDouble,
   emitNumber,
   emitInt32,
+  emitRootTag,
 } = require('../parsers-primitives.js');
 
 describe('emitBoolean', () => {
@@ -88,6 +90,58 @@ describe('emitNumber', () => {
       const result = emitNumber(false);
       const expected = {
         type: 'NumberTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitRootTag', () => {
+  const reservedTypeAnnotation = {
+    type: 'ReservedTypeAnnotation',
+    name: 'RootTag',
+  };
+
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitRootTag(true);
+
+      expect(result).toEqual({
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: reservedTypeAnnotation,
+      });
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitRootTag(false);
+
+      expect(result).toEqual(reservedTypeAnnotation);
+    });
+  });
+});
+
+describe('emitDouble', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitDouble(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'DoubleTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitDouble(false);
+      const expected = {
+        type: 'DoubleTypeAnnotation',
       };
 
       expect(result).toEqual(expected);
