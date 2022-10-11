@@ -61,9 +61,12 @@ const {
   MoreThanOneModuleRegistryCallsParserError,
   UntypedModuleRegistryCallParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
-  IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
+
+const {
+  throwIfIncorrectModuleRegistryCallArityParserError,
+} = require('../../error-utils');
 
 const invariant = require('invariant');
 const language = 'TypeScript';
@@ -702,15 +705,13 @@ function buildModuleSchema(
     const {typeParameters} = callExpression;
     const methodName = callExpression.callee.property.name;
 
-    if (callExpression.arguments.length !== 1) {
-      throw new IncorrectModuleRegistryCallArityParserError(
-        hasteModuleName,
-        callExpression,
-        methodName,
-        callExpression.arguments.length,
-        language,
-      );
-    }
+    throwIfIncorrectModuleRegistryCallArityParserError(
+      hasteModuleName,
+      callExpression,
+      methodName,
+      callExpression.arguments.length,
+      language,
+    );
 
     if (callExpression.arguments[0].type !== 'StringLiteral') {
       const {type} = callExpression.arguments[0];

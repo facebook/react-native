@@ -12,7 +12,7 @@
 
 const invariant = require('invariant');
 
-type ParserType = 'Flow' | 'TypeScript';
+export type ParserType = 'Flow' | 'TypeScript';
 
 class ParserError extends Error {
   nodes: $ReadOnlyArray<$FlowFixMe>;
