@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {ParserError} = require('../errors');
+import type {TypeAliasResolutionStatus} from '../utils';
 
 /**
  * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
@@ -54,15 +54,6 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
 export type ASTNode = Object;
 
 const invariant = require('invariant');
-
-type TypeAliasResolutionStatus =
-  | $ReadOnly<{
-      successful: true,
-      aliasName: string,
-    }>
-  | $ReadOnly<{
-      successful: false,
-    }>;
 
 function resolveTypeAnnotation(
   // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this
@@ -124,29 +115,6 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
     return getValueFromTypes(types[value.id.name].right, types);
   }
   return value;
-}
-
-export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
-
-function createParserErrorCapturer(): [
-  Array<ParserError>,
-  ParserErrorCapturer,
-] {
-  const errors = [];
-  function guard<T>(fn: () => T): ?T {
-    try {
-      return fn();
-    } catch (error) {
-      if (!(error instanceof ParserError)) {
-        throw error;
-      }
-      errors.push(error);
-
-      return null;
-    }
-  }
-
-  return [errors, guard];
 }
 
 // TODO(T71778680): Flow-type ASTNodes.
@@ -220,7 +188,6 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
-  createParserErrorCapturer,
   getTypes,
   visit,
   isModuleRegistryCall,

@@ -23,7 +23,7 @@ import type {
 } from '../../../CodegenSchema.js';
 
 import type {TypeDeclarationMap} from '../utils.js';
-import type {ParserErrorCapturer} from '../utils';
+import type {ParserErrorCapturer} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 
 const {throwIfMoreThanOneModuleRegistryCalls} = require('../../error-utils');
@@ -33,16 +33,21 @@ const {
   visit,
   isModuleRegistryCall,
 } = require('../utils.js');
-const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
+const {
+  unwrapNullable,
+  wrapNullable,
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+} = require('../../parsers-commons');
 const {
   emitBoolean,
   emitDouble,
   emitNumber,
   emitInt32,
   emitRootTag,
+  typeAliasResolution,
+  emitPromise,
 } = require('../../parsers-primitives');
 const {
-  IncorrectlyParameterizedGenericParserError,
   MisnamedModuleInterfaceParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleInterfaceParserError,
@@ -64,7 +69,6 @@ const {
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
-const invariant = require('invariant');
 const language = 'TypeScript';
 
 function nullGuard<T>(fn: () => T): ?T {
@@ -204,20 +208,19 @@ function translateTypeAnnotation(
           return emitRootTag(nullable);
         }
         case 'Promise': {
-          assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+          return emitPromise(
             hasteModuleName,
             typeAnnotation,
+            language,
+            nullable,
           );
-
-          return wrapNullable(nullable, {
-            type: 'PromiseTypeAnnotation',
-          });
         }
         case 'Array':
         case 'ReadonlyArray': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
             hasteModuleName,
             typeAnnotation,
+            language,
           );
 
           return translateArrayTypeAnnotation(
@@ -364,48 +367,12 @@ function translateTypeAnnotation(
           .filter(Boolean),
       };
 
-      if (!typeAliasResolutionStatus.successful) {
-        return wrapNullable(nullable, objectTypeAnnotation);
-      }
-
-      /**
-       * All aliases RHS are required.
-       */
-      aliasMap[typeAliasResolutionStatus.aliasName] = objectTypeAnnotation;
-
-      /**
-       * Nullability of type aliases is transitive.
-       *
-       * Consider this case:
-       *
-       * type Animal = ?{
-       *   name: string,
-       * };
-       *
-       * type B = Animal
-       *
-       * export interface Spec extends TurboModule {
-       *   +greet: (animal: B) => void;
-       * }
-       *
-       * In this case, we follow B to Animal, and then Animal to ?{name: string}.
-       *
-       * We:
-       *   1. Replace `+greet: (animal: B) => void;` with `+greet: (animal: ?Animal) => void;`,
-       *   2. Pretend that Animal = {name: string}.
-       *
-       * Why do we do this?
-       *  1. In ObjC, we need to generate a struct called Animal, not B.
-       *  2. This design is simpler than managing nullability within both the type alias usage, and the type alias RHS.
-       *  3. What does it mean for a C++ struct, which is what this type alias RHS will generate, to be nullable? ¯\_(ツ)_/¯
-       *     Nullability is a concept that only makes sense when talking about instances (i.e: usages) of the C++ structs.
-       *     Hence, it's better to manage nullability within the actual TypeAliasTypeAnnotation nodes, and not the
-       *     associated ObjectTypeAnnotations.
-       */
-      return wrapNullable(nullable, {
-        type: 'TypeAliasTypeAnnotation',
-        name: typeAliasResolutionStatus.aliasName,
-      });
+      return typeAliasResolution(
+        typeAliasResolutionStatus,
+        objectTypeAnnotation,
+        aliasMap,
+        nullable,
+      );
     }
     case 'TSBooleanKeyword': {
       return emitBoolean(nullable);
@@ -479,35 +446,6 @@ function translateTypeAnnotation(
         language,
       );
     }
-  }
-}
-
-function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-  moduleName: string,
-  /**
-   * TODO(T108222691): Use flow-types for @babel/parser
-   */
-  typeAnnotation: $FlowFixMe,
-) {
-  if (typeAnnotation.typeParameters == null) {
-    throw new IncorrectlyParameterizedGenericParserError(
-      moduleName,
-      typeAnnotation,
-      language,
-    );
-  }
-
-  invariant(
-    typeAnnotation.typeParameters.type === 'TSTypeParameterInstantiation',
-    "assertGenericTypeAnnotationHasExactlyOneTypeParameter: Type parameters must be an AST node of type 'TSTypeParameterInstantiation'",
-  );
-
-  if (typeAnnotation.typeParameters.params.length !== 1) {
-    throw new IncorrectlyParameterizedGenericParserError(
-      moduleName,
-      typeAnnotation,
-      language,
-    );
   }
 }
 

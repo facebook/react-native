@@ -14,16 +14,15 @@ import type {SchemaType} from '../../CodegenSchema.js';
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 const fs = require('fs');
-const {extractNativeModuleName} = require('../utils.js');
+const {
+  extractNativeModuleName,
+  createParserErrorCapturer,
+} = require('../utils.js');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
 const {wrapModuleSchema} = require('../parsers-commons');
-const {
-  createParserErrorCapturer,
-  visit,
-  isModuleRegistryCall,
-} = require('./utils');
+const {visit, isModuleRegistryCall} = require('./utils');
 const invariant = require('invariant');
 
 function getConfigType(
