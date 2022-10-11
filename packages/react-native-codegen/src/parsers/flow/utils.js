@@ -12,8 +12,6 @@
 
 import type {TypeAliasResolutionStatus} from '../utils';
 
-const {ParserError} = require('../errors');
-
 /**
  * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
  * declaration type. Unfortunately, we don't have those types, because flow-parser
@@ -119,29 +117,6 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
   return value;
 }
 
-export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
-
-function createParserErrorCapturer(): [
-  Array<ParserError>,
-  ParserErrorCapturer,
-] {
-  const errors = [];
-  function guard<T>(fn: () => T): ?T {
-    try {
-      return fn();
-    } catch (error) {
-      if (!(error instanceof ParserError)) {
-        throw error;
-      }
-      errors.push(error);
-
-      return null;
-    }
-  }
-
-  return [errors, guard];
-}
-
 // TODO(T71778680): Flow-type ASTNodes.
 function visit(
   astNode: $FlowFixMe,
@@ -213,7 +188,6 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
-  createParserErrorCapturer,
   getTypes,
   visit,
   isModuleRegistryCall,

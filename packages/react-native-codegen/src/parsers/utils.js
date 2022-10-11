@@ -10,6 +10,8 @@
 
 'use strict';
 
+const {ParserError} = require('./errors');
+
 const path = require('path');
 
 export type TypeAliasResolutionStatus =
@@ -27,6 +29,30 @@ function extractNativeModuleName(filename: string): string {
   return path.basename(filename).split('.')[0];
 }
 
+export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
+
+function createParserErrorCapturer(): [
+  Array<ParserError>,
+  ParserErrorCapturer,
+] {
+  const errors = [];
+  function guard<T>(fn: () => T): ?T {
+    try {
+      return fn();
+    } catch (error) {
+      if (!(error instanceof ParserError)) {
+        throw error;
+      }
+      errors.push(error);
+
+      return null;
+    }
+  }
+
+  return [errors, guard];
+}
+
 module.exports = {
   extractNativeModuleName,
+  createParserErrorCapturer,
 };

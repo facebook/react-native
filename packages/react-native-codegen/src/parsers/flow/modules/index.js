@@ -23,7 +23,7 @@ import type {
 } from '../../../CodegenSchema.js';
 
 import type {TypeDeclarationMap} from '../utils.js';
-import type {ParserErrorCapturer} from '../utils';
+import type {ParserErrorCapturer} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 
 const {

@@ -4,12 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
 
 'use strict';
-const {extractNativeModuleName} = require('../utils.js');
+
+const {
+  extractNativeModuleName,
+  createParserErrorCapturer,
+} = require('../utils.js');
+const {ParserError} = require('../errors');
 
 describe('extractnativeModuleName', () => {
   it('return filename when it ends with .js', () => {
@@ -61,5 +67,51 @@ describe('extractnativeModuleName', () => {
     const filename = '/some_folder/NativeModule.windows.js';
     const nativeModuleName = extractNativeModuleName(filename);
     expect(nativeModuleName).toBe('NativeModule');
+  });
+});
+
+describe('createParserErrorCapturer', () => {
+  describe("when function doesn't throw", () => {
+    it("returns result and doesn't change errors array", () => {
+      const [errors, guard] = createParserErrorCapturer();
+      const fn = () => 'result';
+
+      const result = guard(fn);
+      expect(result).toBe('result');
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('when function throws a ParserError', () => {
+    it('returns null and adds the error in errors array instead of throwing it', () => {
+      const [errors, guard] = createParserErrorCapturer();
+      const ErrorThrown = new ParserError(
+        'moduleName',
+        null,
+        'Something went wrong :(',
+      );
+      const fn = () => {
+        throw ErrorThrown;
+      };
+
+      const result = guard(fn);
+      expect(result).toBe(null);
+      expect(errors).toHaveLength(1);
+      expect(errors[0]).toEqual(ErrorThrown);
+      expect(() => guard(fn)).not.toThrow();
+    });
+  });
+
+  describe('when function throws another error', () => {
+    it("throws the error and doesn't change errors array", () => {
+      const [errors, guard] = createParserErrorCapturer();
+      const errorMessage = 'Something else went wrong :(';
+      const fn = () => {
+        throw new Error(errorMessage);
+      };
+
+      expect(() => guard(fn)).toThrow(errorMessage);
+      expect(errors).toHaveLength(0);
+    });
   });
 });
