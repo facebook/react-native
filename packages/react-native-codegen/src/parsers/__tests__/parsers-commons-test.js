@@ -11,6 +11,9 @@
 
 'use-strict';
 
+import {IncorrectlyParameterizedGenericParserError} from '../errors';
+import {assertGenericTypeAnnotationHasExactlyOneTypeParameter} from '../parsers-commons';
+
 const {wrapNullable, unwrapNullable} = require('../parsers-commons.js');
 
 describe('wrapNullable', () => {
@@ -76,5 +79,96 @@ describe('unwrapNullable', () => {
 
       expect(result).toEqual(expected);
     });
+  });
+});
+
+describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
+  it('throws an IncorrectlyParameterizedGenericParserError if typeParameters is null', () => {
+    const moduleName = 'testModuleName';
+    const typeAnnotation = {
+      typeParameters: null,
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+    expect(() =>
+      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+        moduleName,
+        typeAnnotation,
+        'Flow',
+      ),
+    ).toThrow(IncorrectlyParameterizedGenericParserError);
+  });
+
+  it("throws an error if typeAnnotation.typeParameters.type doesn't have the correct value depending on language", () => {
+    const moduleName = 'testModuleName';
+    const flowTypeAnnotation = {
+      typeParameters: {
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+    expect(() =>
+      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+        moduleName,
+        flowTypeAnnotation,
+        'Flow',
+      ),
+    ).toThrow(Error);
+
+    const typeScriptTypeAnnotation = {
+      typeParameters: {
+        type: 'TypeParameterInstantiation',
+      },
+      typeName: {
+        name: 'typeAnnotationName',
+      },
+    };
+    expect(() =>
+      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+        moduleName,
+        typeScriptTypeAnnotation,
+        'TypeScript',
+      ),
+    ).toThrow(Error);
+  });
+
+  it("throws an IncorrectlyParameterizedGenericParserError if typeParameters don't have 1 exactly parameter", () => {
+    const moduleName = 'testModuleName';
+    const typeAnnotationWithTwoParams = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+    expect(() =>
+      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+        moduleName,
+        typeAnnotationWithTwoParams,
+        'Flow',
+      ),
+    ).toThrow(IncorrectlyParameterizedGenericParserError);
+
+    const typeAnnotationWithNoParams = {
+      typeParameters: {
+        params: [],
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+    expect(() =>
+      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+        moduleName,
+        typeAnnotationWithNoParams,
+        'Flow',
+      ),
+    ).toThrow(IncorrectlyParameterizedGenericParserError);
   });
 });
