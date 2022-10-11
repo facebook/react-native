@@ -136,7 +136,7 @@ bool AttributedString::isContentEqual(const AttributedString &rhs) const {
     return false;
   }
 
-  for (auto i = 0; i < fragments_.size(); i++) {
+  for (unsigned i = 0; i < fragments_.size(); i++) {
     if (!fragments_[i].isContentEqual(rhs.fragments_[i])) {
       return false;
     }
