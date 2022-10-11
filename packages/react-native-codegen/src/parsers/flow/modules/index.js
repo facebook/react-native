@@ -57,7 +57,6 @@ const {
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
-  UnusedModuleInterfaceParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UntypedModuleRegistryCallParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
@@ -66,6 +65,7 @@ const {
 } = require('../../errors.js');
 
 const invariant = require('invariant');
+const {throwIfUnusedModuleInterfaceParserError} = require('../../error-utils');
 const language = 'Flow';
 
 function nullGuard<T>(fn: () => T): ?T {
@@ -646,13 +646,12 @@ function buildModuleSchema(
       },
     });
 
-    if (callExpressions.length === 0) {
-      throw new UnusedModuleInterfaceParserError(
-        hasteModuleName,
-        moduleSpec,
-        language,
-      );
-    }
+    throwIfUnusedModuleInterfaceParserError(
+      hasteModuleName,
+      moduleSpec,
+      callExpressions,
+      language,
+    );
 
     if (callExpressions.length > 1) {
       throw new MoreThanOneModuleRegistryCallsParserError(
