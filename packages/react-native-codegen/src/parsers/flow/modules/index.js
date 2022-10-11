@@ -68,7 +68,6 @@ const {
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
-const invariant = require('invariant');
 const language = 'Flow';
 
 function nullGuard<T>(fn: () => T): ?T {
