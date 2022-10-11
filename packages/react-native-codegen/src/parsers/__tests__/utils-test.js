@@ -14,6 +14,7 @@
 const {
   extractNativeModuleName,
   createParserErrorCapturer,
+  visit,
 } = require('../utils.js');
 const {ParserError} = require('../errors');
 
@@ -112,6 +113,110 @@ describe('createParserErrorCapturer', () => {
 
       expect(() => guard(fn)).toThrow(errorMessage);
       expect(errors).toHaveLength(0);
+    });
+  });
+});
+
+describe('visit', () => {
+  describe('when the astNode is null', () => {
+    it("doesn't call the visitor function", () => {
+      const visitorFunction = jest.fn();
+      const visitor = {
+        itemType: visitorFunction,
+      };
+
+      const astNode = null;
+
+      visit(astNode, visitor);
+
+      expect(visitorFunction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when the astNode is not an object', () => {
+    it("doesn't call the visitor function", () => {
+      const visitorFunction = jest.fn();
+      const visitor = {
+        itemType: visitorFunction,
+      };
+
+      const astNode = 'astNode';
+
+      visit(astNode, visitor);
+
+      expect(visitorFunction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when the astNode is an object', () => {
+    describe("when the astNode has a string type that doesn't exist in the visitor object", () => {
+      it("doesn't call the visitor function", () => {
+        const visitorFunction = jest.fn();
+        const visitor = {
+          itemType: visitorFunction,
+        };
+
+        const astNode = {type: 'itemTypeNotInVisitor'};
+
+        visit(astNode, visitor);
+
+        expect(visitorFunction).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when the astNode has a string type that exists in the visitor object', () => {
+      it("doesn't call the visitor function", () => {
+        const visitorFunction = jest.fn();
+        const visitor = {
+          itemType: visitorFunction,
+        };
+
+        const astNode = {type: 'itemType'};
+
+        visit(astNode, visitor);
+
+        expect(visitorFunction).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe("when the astNode doesn't have a string type", () => {
+      it('iterates on every values of the astNode', () => {
+        const visitorFunction = jest.fn();
+        const visitor = {
+          itemType1: visitorFunction,
+          itemType2: visitorFunction,
+        };
+
+        const astNode = {
+          firstChildNode: {type: 'itemType1'},
+          secondChildNode: {type: 'itemType2'},
+          thirdChildNode: {type: 'itemType3'},
+        };
+
+        visit(astNode, visitor);
+
+        expect(visitorFunction).toHaveBeenCalledTimes(2);
+      });
+    });
+  });
+
+  describe('when the astNode is an array', () => {
+    it('iterates on every values of the astNode', () => {
+      const visitorFunction = jest.fn();
+      const visitor = {
+        itemType1: visitorFunction,
+        itemType2: visitorFunction,
+      };
+
+      const astNode = [
+        {type: 'itemType1'},
+        {type: 'itemType2'},
+        {type: 'itemType3'},
+      ];
+
+      visit(astNode, visitor);
+
+      expect(visitorFunction).toHaveBeenCalledTimes(2);
     });
   });
 });
