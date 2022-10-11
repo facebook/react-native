@@ -19,6 +19,7 @@ const {
   emitRootTag,
   emitVoid,
   typeAliasResolution,
+  emitPromise,
 } = require('../parsers-primitives.js');
 
 describe('emitBoolean', () => {
@@ -267,6 +268,76 @@ describe('typeAliasResolution', () => {
 
         expect(aliasMap).toEqual({});
         expect(result).toEqual(objectTypeAnnotation);
+      });
+    });
+  });
+});
+
+describe('emitPromise', () => {
+  const moduleName = 'testModuleName';
+  const language = 'Flow';
+  describe("when typeAnnotation doesn't have exactly one typeParameter", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+    it('throws an IncorrectlyParameterizedGenericParserError error', () => {
+      const nullable = false;
+      expect(() =>
+        emitPromise(moduleName, typeAnnotation, language, nullable),
+      ).toThrow();
+    });
+  });
+
+  describe("when typeAnnotation doesn't has exactly one typeParameter", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1],
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+
+    describe('when nullable is true', () => {
+      const nullable = true;
+      it('returns nullable type annotation', () => {
+        const result = emitPromise(
+          moduleName,
+          typeAnnotation,
+          language,
+          nullable,
+        );
+        const expected = {
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: {
+            type: 'PromiseTypeAnnotation',
+          },
+        };
+
+        expect(result).toEqual(expected);
+      });
+    });
+    describe('when nullable is false', () => {
+      const nullable = false;
+      it('returns non nullable type annotation', () => {
+        const result = emitPromise(
+          moduleName,
+          typeAnnotation,
+          language,
+          nullable,
+        );
+        const expected = {
+          type: 'PromiseTypeAnnotation',
+        };
+
+        expect(result).toEqual(expected);
       });
     });
   });

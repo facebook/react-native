@@ -23,7 +23,7 @@ import type {
 } from '../../../CodegenSchema.js';
 
 import type {TypeDeclarationMap} from '../utils.js';
-import type {ParserErrorCapturer} from '../utils';
+import type {ParserErrorCapturer} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 
 const {
@@ -32,7 +32,11 @@ const {
   visit,
   isModuleRegistryCall,
 } = require('../utils.js');
-const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
+const {
+  unwrapNullable,
+  wrapNullable,
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+} = require('../../parsers-commons');
 const {
   emitBoolean,
   emitDouble,
@@ -41,9 +45,9 @@ const {
   emitRootTag,
   emitVoid,
   typeAliasResolution,
+  emitPromise,
 } = require('../../parsers-primitives');
 const {
-  IncorrectlyParameterizedGenericParserError,
   MisnamedModuleInterfaceParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleInterfaceParserError,
@@ -66,7 +70,6 @@ const {
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
-const invariant = require('invariant');
 const language = 'Flow';
 
 function nullGuard<T>(fn: () => T): ?T {
@@ -94,20 +97,19 @@ function translateTypeAnnotation(
           return emitRootTag(nullable);
         }
         case 'Promise': {
-          assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+          return emitPromise(
             hasteModuleName,
             typeAnnotation,
+            language,
+            nullable,
           );
-
-          return wrapNullable(nullable, {
-            type: 'PromiseTypeAnnotation',
-          });
         }
         case 'Array':
         case '$ReadOnlyArray': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
             hasteModuleName,
             typeAnnotation,
+            language,
           );
 
           try {
@@ -183,6 +185,7 @@ function translateTypeAnnotation(
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
             hasteModuleName,
             typeAnnotation,
+            language,
           );
 
           const [paramType, isParamNullable] = unwrapNullable(
@@ -407,35 +410,6 @@ function translateTypeAnnotation(
         language,
       );
     }
-  }
-}
-
-function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-  moduleName: string,
-  /**
-   * TODO(T71778680): This is a GenericTypeAnnotation. Flow type this node
-   */
-  typeAnnotation: $FlowFixMe,
-) {
-  if (typeAnnotation.typeParameters == null) {
-    throw new IncorrectlyParameterizedGenericParserError(
-      moduleName,
-      typeAnnotation,
-      language,
-    );
-  }
-
-  invariant(
-    typeAnnotation.typeParameters.type === 'TypeParameterInstantiation',
-    "assertGenericTypeAnnotationHasExactlyOneTypeParameter: Type parameters must be an AST node of type 'TypeParameterInstantiation'",
-  );
-
-  if (typeAnnotation.typeParameters.params.length !== 1) {
-    throw new IncorrectlyParameterizedGenericParserError(
-      moduleName,
-      typeAnnotation,
-      language,
-    );
   }
 }
 

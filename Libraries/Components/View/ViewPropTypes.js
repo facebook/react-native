@@ -543,6 +543,13 @@ export type ViewProps = $ReadOnly<{|
   'aria-hidden'?: ?boolean,
 
   /**
+   * It reperesents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   *
+   * @platform android
+   */
+  'aria-labelledby'?: ?string,
+
+  /**
    * Views that are only used to layout their children or otherwise don't draw
    * anything may be automatically removed from the native hierarchy as an
    * optimization. Set this property to `false` to disable this optimization and
