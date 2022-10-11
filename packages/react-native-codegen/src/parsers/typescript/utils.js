@@ -10,7 +10,8 @@
 
 'use strict';
 
-const {ParserError} = require('../errors');
+import type {TypeAliasResolutionStatus} from '../utils';
+
 const {parseTopLevelType} = require('./parseTopLevelType');
 
 /**
@@ -49,15 +50,6 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
 export type ASTNode = Object;
 
 const invariant = require('invariant');
-
-type TypeAliasResolutionStatus =
-  | $ReadOnly<{
-      successful: true,
-      aliasName: string,
-    }>
-  | $ReadOnly<{
-      successful: false,
-    }>;
 
 function resolveTypeAnnotation(
   // TODO(T108222691): Use flow-types for @babel/parser
@@ -116,29 +108,6 @@ function resolveTypeAnnotation(
     typeAnnotation: node,
     typeAliasResolutionStatus,
   };
-}
-
-export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
-
-function createParserErrorCapturer(): [
-  Array<ParserError>,
-  ParserErrorCapturer,
-] {
-  const errors = [];
-  function guard<T>(fn: () => T): ?T {
-    try {
-      return fn();
-    } catch (error) {
-      if (!(error instanceof ParserError)) {
-        throw error;
-      }
-      errors.push(error);
-
-      return null;
-    }
-  }
-
-  return [errors, guard];
 }
 
 // TODO(T108222691): Use flow-types for @babel/parser
@@ -211,7 +180,6 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
 
 module.exports = {
   resolveTypeAnnotation,
-  createParserErrorCapturer,
   getTypes,
   visit,
   isModuleRegistryCall,

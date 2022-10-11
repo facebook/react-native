@@ -13,8 +13,12 @@
 
 const {
   emitBoolean,
+  emitDouble,
   emitNumber,
   emitInt32,
+  emitRootTag,
+  typeAliasResolution,
+  emitPromise,
 } = require('../parsers-primitives.js');
 
 describe('emitBoolean', () => {
@@ -91,6 +95,223 @@ describe('emitNumber', () => {
       };
 
       expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitRootTag', () => {
+  const reservedTypeAnnotation = {
+    type: 'ReservedTypeAnnotation',
+    name: 'RootTag',
+  };
+
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitRootTag(true);
+
+      expect(result).toEqual({
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: reservedTypeAnnotation,
+      });
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitRootTag(false);
+
+      expect(result).toEqual(reservedTypeAnnotation);
+    });
+  });
+});
+
+describe('emitDouble', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitDouble(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'DoubleTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitDouble(false);
+      const expected = {
+        type: 'DoubleTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('typeAliasResolution', () => {
+  const objectTypeAnnotation = {
+    type: 'ObjectTypeAnnotation',
+    properties: [
+      {
+        name: 'Foo',
+        optional: false,
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
+      },
+    ],
+  };
+
+  describe('when typeAliasResolutionStatus is successful', () => {
+    const typeAliasResolutionStatus = {successful: true, aliasName: 'Foo'};
+
+    describe('when nullable is true', () => {
+      it('returns nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
+        const aliasMap = {};
+        const result = typeAliasResolution(
+          typeAliasResolutionStatus,
+          objectTypeAnnotation,
+          aliasMap,
+          true,
+        );
+
+        expect(aliasMap).toEqual({Foo: objectTypeAnnotation});
+        expect(result).toEqual({
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: {
+            type: 'TypeAliasTypeAnnotation',
+            name: 'Foo',
+          },
+        });
+      });
+    });
+
+    describe('when nullable is false', () => {
+      it('returns non nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
+        const aliasMap = {};
+        const result = typeAliasResolution(
+          typeAliasResolutionStatus,
+          objectTypeAnnotation,
+          aliasMap,
+          false,
+        );
+
+        expect(aliasMap).toEqual({Foo: objectTypeAnnotation});
+        expect(result).toEqual({
+          type: 'TypeAliasTypeAnnotation',
+          name: 'Foo',
+        });
+      });
+    });
+  });
+
+  describe('when typeAliasResolutionStatus is not successful', () => {
+    const typeAliasResolutionStatus = {successful: false};
+
+    describe('when nullable is true', () => {
+      it('returns nullable ObjectTypeAnnotation', () => {
+        const aliasMap = {};
+        const result = typeAliasResolution(
+          typeAliasResolutionStatus,
+          objectTypeAnnotation,
+          aliasMap,
+          true,
+        );
+
+        expect(aliasMap).toEqual({});
+        expect(result).toEqual({
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: objectTypeAnnotation,
+        });
+      });
+    });
+
+    describe('when nullable is false', () => {
+      it('returns non nullable ObjectTypeAnnotation', () => {
+        const aliasMap = {};
+        const result = typeAliasResolution(
+          typeAliasResolutionStatus,
+          objectTypeAnnotation,
+          aliasMap,
+          false,
+        );
+
+        expect(aliasMap).toEqual({});
+        expect(result).toEqual(objectTypeAnnotation);
+      });
+    });
+  });
+});
+
+describe('emitPromise', () => {
+  const moduleName = 'testModuleName';
+  const language = 'Flow';
+  describe("when typeAnnotation doesn't have exactly one typeParameter", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+    it('throws an IncorrectlyParameterizedGenericParserError error', () => {
+      const nullable = false;
+      expect(() =>
+        emitPromise(moduleName, typeAnnotation, language, nullable),
+      ).toThrow();
+    });
+  });
+
+  describe("when typeAnnotation doesn't has exactly one typeParameter", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1],
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+
+    describe('when nullable is true', () => {
+      const nullable = true;
+      it('returns nullable type annotation', () => {
+        const result = emitPromise(
+          moduleName,
+          typeAnnotation,
+          language,
+          nullable,
+        );
+        const expected = {
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: {
+            type: 'PromiseTypeAnnotation',
+          },
+        };
+
+        expect(result).toEqual(expected);
+      });
+    });
+    describe('when nullable is false', () => {
+      const nullable = false;
+      it('returns non nullable type annotation', () => {
+        const result = emitPromise(
+          moduleName,
+          typeAnnotation,
+          language,
+          nullable,
+        );
+        const expected = {
+          type: 'PromiseTypeAnnotation',
+        };
+
+        expect(result).toEqual(expected);
+      });
     });
   });
 });

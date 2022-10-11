@@ -52,6 +52,8 @@ ANDROID = "Android"
 
 APPLE = "Apple"
 
+WINDOWS = "Windows"
+
 # Apple SDK Definitions
 IOS = "ios"
 
@@ -162,6 +164,9 @@ def react_native_root_target(path):
 
 def react_native_xplat_shared_library_target(path):
     return react_native_xplat_target(path)
+
+def react_native_desktop_root_target(path):
+    return "//" + path
 
 # Example: react_native_tests_target('java/com/facebook/react/modules:modules')
 def react_native_tests_target(path):

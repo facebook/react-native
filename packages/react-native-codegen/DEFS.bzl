@@ -13,12 +13,14 @@ load(
     "IOS",
     "IS_OSS_BUILD",
     "MACOSX",
+    "WINDOWS",
     "YOGA_CXX_TARGET",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
     "get_preprocessor_flags_for_build_mode",
     "react_native_dep",
+    "react_native_desktop_root_target",
     "react_native_root_target",
     "react_native_target",
     "react_native_xplat_shared_library_target",
@@ -563,14 +565,23 @@ def rn_codegen_cxx_modules(
             fbobjc_compiler_flags = get_apple_compiler_flags(),
             fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
             labels = library_labels + ["codegen_rule"],
-            platforms = (ANDROID, APPLE, CXX),
+            platforms = (ANDROID, APPLE, CXX, WINDOWS),
             preprocessor_flags = [
                 "-DLOG_TAG=\"ReactNative\"",
                 "-DWITH_FBSYSTRACE=1",
             ],
             visibility = ["PUBLIC"],
-            exported_deps = [
+            fbandroid_exported_deps = [
                 react_native_xplat_target("react/nativemodule/core:core"),
+            ],
+            ios_exported_deps = [
+                react_native_xplat_target("react/nativemodule/core:core"),
+            ],
+            macosx_exported_deps = [
+                react_native_desktop_root_target(":bridging"),
+            ],
+            windows_exported_deps = [
+                react_native_desktop_root_target(":bridging"),
             ],
         )
 
