@@ -43,6 +43,7 @@ const {
   emitNumber,
   emitInt32,
   emitRootTag,
+  emitStringish,
   typeAliasResolution,
   emitPromise,
 } = require('../../parsers-primitives');
@@ -201,9 +202,7 @@ function translateTypeAnnotation(
           return wrapNullable(nullable || isParamNullable, paramType);
         }
         case 'Stringish': {
-          return wrapNullable(nullable, {
-            type: 'StringTypeAnnotation',
-          });
+          return emitStringish(nullable);
         }
         case 'Int32': {
           return emitInt32(nullable);
