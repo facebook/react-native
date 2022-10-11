@@ -11,41 +11,39 @@
 
 'use strict';
 
-const {
-  throwIfIncorrectModuleRegistryCallArityParserError,
-} = require('../error-utils');
+const {throwIfWrongNumberOfCallExpressionArgs} = require('../error-utils');
 const {IncorrectModuleRegistryCallArityParserError} = require('../errors');
 
-describe('throwIfIncorrectModuleRegistryCallArityParserError', () => {
-  it('throw error if incorrect module registry call arity is used', () => {
+describe('throwErrorIfWrongNumberOfCallExpressionArgs', () => {
+  it('throw error if wrong number of call expression args is used', () => {
     const nativeModuleName = 'moduleName';
     const flowCallExpression = {argument: []};
     const methodName = 'methodName';
-    const incorrectArity = flowCallExpression.argument.length;
+    const numberOfCallExpressionArgs = flowCallExpression.argument.length;
     const language = 'Flow';
     expect(() => {
-      throwIfIncorrectModuleRegistryCallArityParserError(
+      throwIfWrongNumberOfCallExpressionArgs(
         nativeModuleName,
         flowCallExpression,
         methodName,
-        incorrectArity,
+        numberOfCallExpressionArgs,
         language,
       );
     }).toThrow(IncorrectModuleRegistryCallArityParserError);
   });
 
-  it("don't throw error if correct module registry call arity is used", () => {
+  it("don't throw error if correct number of call expression args is used", () => {
     const nativeModuleName = 'moduleName';
     const flowCallExpression = {argument: ['argument']};
     const methodName = 'methodName';
-    const incorrectArity = flowCallExpression.argument.length;
+    const numberOfCallExpressionArgs = flowCallExpression.argument.length;
     const language = 'Flow';
     expect(() => {
-      throwIfIncorrectModuleRegistryCallArityParserError(
+      throwIfWrongNumberOfCallExpressionArgs(
         nativeModuleName,
         flowCallExpression,
         methodName,
-        incorrectArity,
+        numberOfCallExpressionArgs,
         language,
       );
     }).not.toThrow(IncorrectModuleRegistryCallArityParserError);

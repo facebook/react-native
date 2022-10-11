@@ -14,24 +14,24 @@ import type {ParserType} from './errors';
 
 const {IncorrectModuleRegistryCallArityParserError} = require('./errors');
 
-function throwIfIncorrectModuleRegistryCallArityParserError(
+function throwIfWrongNumberOfCallExpressionArgs(
   nativeModuleName: string,
   flowCallExpression: $FlowFixMe,
   methodName: string,
-  incorrectArity: number,
+  numberOfCallExpressionArgs: number,
   language: ParserType,
 ) {
-  if (incorrectArity !== 1) {
+  if (numberOfCallExpressionArgs !== 1) {
     throw new IncorrectModuleRegistryCallArityParserError(
       nativeModuleName,
       flowCallExpression,
       methodName,
-      incorrectArity,
+      numberOfCallExpressionArgs,
       language,
     );
   }
 }
 
 module.exports = {
-  throwIfIncorrectModuleRegistryCallArityParserError,
+  throwIfWrongNumberOfCallExpressionArgs,
 };

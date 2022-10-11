@@ -64,9 +64,7 @@ const {
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
-const {
-  throwIfIncorrectModuleRegistryCallArityParserError,
-} = require('../../error-utils');
+const {throwIfWrongNumberOfCallExpressionArgs} = require('../../error-utils');
 
 const invariant = require('invariant');
 const language = 'Flow';
@@ -670,7 +668,7 @@ function buildModuleSchema(
     const {typeArguments} = callExpression;
     const methodName = callExpression.callee.property.name;
 
-    throwIfIncorrectModuleRegistryCallArityParserError(
+    throwIfWrongNumberOfCallExpressionArgs(
       hasteModuleName,
       callExpression,
       methodName,
