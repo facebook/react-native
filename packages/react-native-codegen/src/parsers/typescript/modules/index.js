@@ -72,7 +72,6 @@ const {
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
 } = require('../../error-utils');
 
-const invariant = require('invariant');
 const language = 'TypeScript';
 
 function nullGuard<T>(fn: () => T): ?T {

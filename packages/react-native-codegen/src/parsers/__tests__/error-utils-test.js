@@ -120,7 +120,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('dont throw error if flowTypeArguments are correct', () => {
+  it('do not throw error if flowTypeArguments are correct', () => {
     const flowTypeArguments = {
       type: 'TypeParameterInstantiation',
       params: [
@@ -145,8 +145,9 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
       );
     }).not.toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
-  it('throw error if flowTypeArguments type not correct', () => {
-    const flowTypeArguments = {
+
+  it('throw error if typeScriptTypeArguments type not correct', () => {
+    const typeScriptTypeArguments = {
       type: '',
       params: [
         {
@@ -163,7 +164,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
-        flowTypeArguments,
+        typeScriptTypeArguments,
         methodName,
         moduleName,
         parserType,
@@ -171,8 +172,8 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('throw error if flowTypeArguments params length is not equal to 1', () => {
-    const flowTypeArguments = {
+  it('throw error if typeScriptTypeArguments params length is not equal to 1', () => {
+    const typeScriptTypeArguments = {
       type: 'TSTypeParameterInstantiation',
       params: [],
     };
@@ -182,7 +183,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
-        flowTypeArguments,
+        typeScriptTypeArguments,
         methodName,
         moduleName,
         parserType,
@@ -190,8 +191,8 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('throw error if flowTypeArguments params type is not TSTypeReference', () => {
-    const flowTypeArguments = {
+  it('throw error if typeScriptTypeArguments params type is not TSTypeReference', () => {
+    const typeScriptTypeArguments = {
       type: 'TSTypeParameterInstantiation',
       params: [
         {
@@ -208,7 +209,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
-        flowTypeArguments,
+        typeScriptTypeArguments,
         methodName,
         moduleName,
         parserType,
@@ -216,8 +217,8 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('throw error if flowTypeArguments params typeName name is not Spec', () => {
-    const flowTypeArguments = {
+  it('throw error if typeScriptTypeArguments params typeName name is not Spec', () => {
+    const typeScriptTypeArguments = {
       type: 'TSTypeParameterInstantiation',
       params: [
         {
@@ -234,7 +235,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
-        flowTypeArguments,
+        typeScriptTypeArguments,
         methodName,
         moduleName,
         parserType,
@@ -242,8 +243,8 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('dont throw error if typeArguments are correct', () => {
-    const flowTypeArguments = {
+  it('do not throw error if typeScriptTypeArguments are correct', () => {
+    const typeScriptTypeArguments = {
       type: 'TSTypeParameterInstantiation',
       params: [
         {
@@ -260,7 +261,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
-        flowTypeArguments,
+        typeScriptTypeArguments,
         methodName,
         moduleName,
         parserType,

@@ -17,7 +17,7 @@ const {
 
 function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
   nativeModuleName: string,
-  flowTypeArguments: $FlowFixMe,
+  typeArguments: $FlowFixMe,
   methodName: string,
   moduleName: string,
   language: ParserType,
@@ -25,7 +25,7 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
   function throwError() {
     throw new IncorrectModuleRegistryCallTypeParameterParserError(
       nativeModuleName,
-      flowTypeArguments,
+      typeArguments,
       methodName,
       moduleName,
       language,
@@ -34,19 +34,19 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
 
   if (language === 'Flow') {
     if (
-      flowTypeArguments.type !== 'TypeParameterInstantiation' ||
-      flowTypeArguments.params.length !== 1 ||
-      flowTypeArguments.params[0].type !== 'GenericTypeAnnotation' ||
-      flowTypeArguments.params[0].id.name !== 'Spec'
+      typeArguments.type !== 'TypeParameterInstantiation' ||
+      typeArguments.params.length !== 1 ||
+      typeArguments.params[0].type !== 'GenericTypeAnnotation' ||
+      typeArguments.params[0].id.name !== 'Spec'
     ) {
       throwError();
     }
   } else if (language === 'TypeScript') {
     if (
-      flowTypeArguments.type !== 'TSTypeParameterInstantiation' ||
-      flowTypeArguments.params.length !== 1 ||
-      flowTypeArguments.params[0].type !== 'TSTypeReference' ||
-      flowTypeArguments.params[0].typeName.name !== 'Spec'
+      typeArguments.type !== 'TSTypeParameterInstantiation' ||
+      typeArguments.params.length !== 1 ||
+      typeArguments.params[0].type !== 'TSTypeReference' ||
+      typeArguments.params[0].typeName.name !== 'Spec'
     ) {
       throwError();
     }
