@@ -23,7 +23,7 @@ import type {
 } from '../../../CodegenSchema.js';
 
 import type {TypeDeclarationMap} from '../utils.js';
-import type {ParserErrorCapturer} from '../utils';
+import type {ParserErrorCapturer} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 
 const {
@@ -32,7 +32,11 @@ const {
   visit,
   isModuleRegistryCall,
 } = require('../utils.js');
-const {unwrapNullable, wrapNullable} = require('../../parsers-commons');
+const {
+  unwrapNullable,
+  wrapNullable,
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+} = require('../../parsers-commons');
 const {
   emitBoolean,
   emitDouble,
@@ -40,9 +44,9 @@ const {
   emitInt32,
   emitRootTag,
   typeAliasResolution,
+  emitPromise,
 } = require('../../parsers-primitives');
 const {
-  IncorrectlyParameterizedGenericParserError,
   MisnamedModuleInterfaceParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleInterfaceParserError,
@@ -64,7 +68,6 @@ const {
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
-const invariant = require('invariant');
 const {throwIfUnusedModuleInterfaceParserError} = require('../../error-utils');
 const language = 'TypeScript';
 
@@ -205,20 +208,19 @@ function translateTypeAnnotation(
           return emitRootTag(nullable);
         }
         case 'Promise': {
-          assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+          return emitPromise(
             hasteModuleName,
             typeAnnotation,
+            language,
+            nullable,
           );
-
-          return wrapNullable(nullable, {
-            type: 'PromiseTypeAnnotation',
-          });
         }
         case 'Array':
         case 'ReadonlyArray': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
             hasteModuleName,
             typeAnnotation,
+            language,
           );
 
           return translateArrayTypeAnnotation(
@@ -444,35 +446,6 @@ function translateTypeAnnotation(
         language,
       );
     }
-  }
-}
-
-function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-  moduleName: string,
-  /**
-   * TODO(T108222691): Use flow-types for @babel/parser
-   */
-  typeAnnotation: $FlowFixMe,
-) {
-  if (typeAnnotation.typeParameters == null) {
-    throw new IncorrectlyParameterizedGenericParserError(
-      moduleName,
-      typeAnnotation,
-      language,
-    );
-  }
-
-  invariant(
-    typeAnnotation.typeParameters.type === 'TSTypeParameterInstantiation',
-    "assertGenericTypeAnnotationHasExactlyOneTypeParameter: Type parameters must be an AST node of type 'TSTypeParameterInstantiation'",
-  );
-
-  if (typeAnnotation.typeParameters.params.length !== 1) {
-    throw new IncorrectlyParameterizedGenericParserError(
-      moduleName,
-      typeAnnotation,
-      language,
-    );
   }
 }
 
