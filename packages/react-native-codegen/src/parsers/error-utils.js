@@ -12,7 +12,7 @@
 
 import type {ParserType} from './errors';
 
-import {UnusedModuleInterfaceParserError} from './errors';
+const {UnusedModuleInterfaceParserError} = require('./errors');
 
 function throwIfUnusedModuleInterfaceParserError(
   nativeModuleName: string,
