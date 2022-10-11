@@ -60,10 +60,13 @@ const {
   UnusedModuleInterfaceParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UntypedModuleRegistryCallParserError,
-  IncorrectModuleRegistryCallTypeParameterParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
+
+const {
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+} = require('../../error-utils');
 
 const invariant = require('invariant');
 const language = 'Flow';
@@ -700,20 +703,13 @@ function buildModuleSchema(
       );
     }
 
-    if (
-      typeArguments.type !== 'TypeParameterInstantiation' ||
-      typeArguments.params.length !== 1 ||
-      typeArguments.params[0].type !== 'GenericTypeAnnotation' ||
-      typeArguments.params[0].id.name !== 'Spec'
-    ) {
-      throw new IncorrectModuleRegistryCallTypeParameterParserError(
-        hasteModuleName,
-        typeArguments,
-        methodName,
-        $moduleName,
-        language,
-      );
-    }
+    throwIfIncorrectModuleRegistryCallTypeParameterParserError(
+      hasteModuleName,
+      typeArguments,
+      methodName,
+      $moduleName,
+      language,
+    );
 
     return $moduleName;
   });
