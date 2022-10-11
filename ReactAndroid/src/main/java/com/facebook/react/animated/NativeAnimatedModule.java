@@ -871,7 +871,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     if (ANIMATED_MODULE_DEBUG) {
       FLog.d(
           NAME,
-          "queue: disconnectAnimatedNodeFromView: " + animatedNodeTag + " viewTag: " + viewTag);
+          "queue disconnectAnimatedNodeFromView: " + animatedNodeTag + " viewTag: " + viewTag);
     }
 
     decrementInFlightAnimationsForViewTag(viewTag);
@@ -883,7 +883,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  "execute: disconnectAnimatedNodeFromView: "
+                  "execute disconnectAnimatedNodeFromView: "
                       + animatedNodeTag
                       + " viewTag: "
                       + viewTag);
@@ -897,8 +897,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   public void restoreDefaultValues(final double animatedNodeTagDouble) {
     final int animatedNodeTag = (int) animatedNodeTagDouble;
     if (ANIMATED_MODULE_DEBUG) {
-      FLog.d(
-          NAME, "queue restoreDefaultValues: disconnectAnimatedNodeFromView: " + animatedNodeTag);
+      FLog.d(NAME, "queue restoreDefaultValues: " + animatedNodeTag);
     }
 
     addPreOperation(
@@ -906,10 +905,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
             if (ANIMATED_MODULE_DEBUG) {
-              FLog.d(
-                  NAME,
-                  "execute restoreDefaultValues: disconnectAnimatedNodeFromView: "
-                      + animatedNodeTag);
+              FLog.d(NAME, "execute restoreDefaultValues: " + animatedNodeTag);
             }
             animatedNodesManager.restoreDefaultValues(animatedNodeTag);
           }

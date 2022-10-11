@@ -21,10 +21,15 @@ import type {
   Int32TypeAnnotation,
   ReservedTypeAnnotation,
   ObjectTypeAnnotation,
+  NativeModulePromiseTypeAnnotation,
 } from '../CodegenSchema';
+import type {ParserType} from './errors';
 import type {TypeAliasResolutionStatus} from './utils';
 
-const {wrapNullable} = require('./parsers-commons');
+const {
+  wrapNullable,
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+} = require('./parsers-commons');
 
 function emitBoolean(nullable: boolean): Nullable<BooleanTypeAnnotation> {
   return wrapNullable(nullable, {
@@ -113,6 +118,23 @@ function typeAliasResolution(
   });
 }
 
+function emitPromise(
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  language: ParserType,
+  nullable: boolean,
+): Nullable<NativeModulePromiseTypeAnnotation> {
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+    hasteModuleName,
+    typeAnnotation,
+    language,
+  );
+
+  return wrapNullable(nullable, {
+    type: 'PromiseTypeAnnotation',
+  });
+}
+
 module.exports = {
   emitBoolean,
   emitDouble,
@@ -120,4 +142,5 @@ module.exports = {
   emitNumber,
   emitRootTag,
   typeAliasResolution,
+  emitPromise,
 };
