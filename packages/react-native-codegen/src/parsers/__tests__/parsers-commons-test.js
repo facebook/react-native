@@ -11,7 +11,6 @@
 
 'use-strict';
 
-import {IncorrectlyParameterizedGenericParserError} from '../errors';
 import {assertGenericTypeAnnotationHasExactlyOneTypeParameter} from '../parsers-commons';
 
 const {wrapNullable, unwrapNullable} = require('../parsers-commons.js');
