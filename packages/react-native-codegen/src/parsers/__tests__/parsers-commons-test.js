@@ -135,7 +135,7 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
     ).toThrow(Error);
   });
 
-  it("throws an IncorrectlyParameterizedGenericParserError if typeParameters don't have 1 exactly parameter", () => {
+  it('throws an IncorrectlyParameterizedGenericParserError if TypeAnnotation has more than one type parameter', () => {
     const moduleName = 'testModuleName';
     const typeAnnotationWithTwoParams = {
       typeParameters: {
@@ -153,7 +153,10 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
         'Flow',
       ),
     ).toThrow(IncorrectlyParameterizedGenericParserError);
+  });
 
+  it('throws an IncorrectlyParameterizedGenericParserError if TypeAnnotation has no type parameter', () => {
+    const moduleName = 'testModuleName';
     const typeAnnotationWithNoParams = {
       typeParameters: {
         params: [],
