@@ -83,8 +83,25 @@ describe('unwrapNullable', () => {
 });
 
 describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
+  const moduleName = 'testModuleName';
+
+  it("doesn't throw any Error when typeAnnotation has exactly one typeParameter", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        type: 'TypeParameterInstantiation',
+        params: [1],
+      },
+    };
+    expect(() =>
+      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+        moduleName,
+        typeAnnotation,
+        'Flow',
+      ),
+    ).not.toThrow(Error);
+  });
+
   it('throws an IncorrectlyParameterizedGenericParserError if typeParameters is null', () => {
-    const moduleName = 'testModuleName';
     const typeAnnotation = {
       typeParameters: null,
       id: {
@@ -100,11 +117,11 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
     ).toThrow(IncorrectlyParameterizedGenericParserError);
   });
 
-  it("throws an error if typeAnnotation.typeParameters.type doesn't have the correct value depending on language", () => {
-    const moduleName = 'testModuleName';
+  it('throws an error if typeAnnotation.typeParameters.type is not TypeParameterInstantiation when language is Flow', () => {
     const flowTypeAnnotation = {
       typeParameters: {
-        type: 'TypeParameterInstantiation',
+        type: 'wrongType',
+        params: [1],
       },
       id: {
         name: 'typeAnnotationName',
@@ -117,10 +134,13 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
         'Flow',
       ),
     ).toThrow(Error);
+  });
 
+  it('throws an error if typeAnnotation.typeParameters.type is not TSTypeParameterInstantiation when language is TypeScript', () => {
     const typeScriptTypeAnnotation = {
       typeParameters: {
-        type: 'TypeParameterInstantiation',
+        type: 'wrongType',
+        params: [1],
       },
       typeName: {
         name: 'typeAnnotationName',
@@ -136,7 +156,6 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
   });
 
   it("throws an IncorrectlyParameterizedGenericParserError if typeParameters don't have 1 exactly parameter", () => {
-    const moduleName = 'testModuleName';
     const typeAnnotationWithTwoParams = {
       typeParameters: {
         params: [1, 2],
