@@ -42,9 +42,10 @@ const {
   emitDouble,
   emitNumber,
   emitInt32,
+  emitObject,
+  emitPromise,
   emitRootTag,
   typeAliasResolution,
-  emitPromise,
 } = require('../../parsers-primitives');
 const {
   MisnamedModuleInterfaceParserError,
@@ -218,9 +219,7 @@ function translateTypeAnnotation(
         }
         case 'UnsafeObject':
         case 'Object': {
-          return wrapNullable(nullable, {
-            type: 'GenericObjectTypeAnnotation',
-          });
+          return emitObject(nullable);
         }
         default: {
           const maybeEumDeclaration = types[typeAnnotation.id.name];
