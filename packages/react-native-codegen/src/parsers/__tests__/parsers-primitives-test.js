@@ -20,6 +20,7 @@ const {
   emitPromise,
   emitRootTag,
   emitVoid,
+  emitStringish,
   typeAliasResolution,
 } = require('../parsers-primitives.js');
 
@@ -123,6 +124,33 @@ describe('emitRootTag', () => {
       const result = emitRootTag(false);
 
       expect(result).toEqual(reservedTypeAnnotation);
+    });
+  });
+});
+
+describe('emitStringish', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitStringish(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitStringish(false);
+      const expected = {
+        type: 'StringTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
     });
   });
 });
