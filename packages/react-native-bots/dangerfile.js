@@ -12,6 +12,8 @@
 const {danger, fail, /*message,*/ warn} = require('danger');
 const includes = require('lodash.includes');
 const eslint = require('@seadub/danger-plugin-eslint');
+const {execSync} = require('child_process');
+const path = require('path');
 
 const isFromPhabricator =
   danger.github.pr.body &&
@@ -110,3 +112,25 @@ if (isMergeRefStable) {
 }
 
 eslint.default();
+
+// Run ClangFormat
+const extensions = new Set(['h', 'cpp', 'm', 'mm']);
+const clangFiles = danger.git.modified_files.filter(filename => {
+  const fileExt = filename.split('.').pop();
+  return extensions.has(fileExt);
+});
+if (clangFiles.length > 0) {
+  const clangFilesString = clangFiles
+    .map(filename => path.resolve('../..', filename))
+    .join(' ');
+  const dryRunCommand = `npx clang-format -n ${clangFilesString} 2>&1`;
+  const inPlaceCommand = `npx clang-format -i ${clangFilesString}`;
+  const output = execSync(dryRunCommand);
+
+  if (output.length > 0) {
+    fail(`
+    There are some C++ or Objective-C files that are malformed.
+    Please run the following command and amend your commit:
+    \`${inPlaceCommand}\``);
+  }
+}
