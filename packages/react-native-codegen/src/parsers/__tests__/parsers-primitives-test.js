@@ -19,6 +19,7 @@ const {
   emitObject,
   emitPromise,
   emitRootTag,
+  emitVoid,
   typeAliasResolution,
 } = require('../parsers-primitives.js');
 
@@ -145,6 +146,32 @@ describe('emitDouble', () => {
       const result = emitDouble(false);
       const expected = {
         type: 'DoubleTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitVoid', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitVoid(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'VoidTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitVoid(false);
+      const expected = {
+        type: 'VoidTypeAnnotation',
       };
 
       expect(result).toEqual(expected);

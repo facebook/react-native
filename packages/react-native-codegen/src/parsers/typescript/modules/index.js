@@ -45,6 +45,7 @@ const {
   emitObject,
   emitPromise,
   emitRootTag,
+  emitVoid,
   typeAliasResolution,
 } = require('../../parsers-primitives');
 const {
@@ -380,9 +381,7 @@ function translateTypeAnnotation(
       return emitNumber(nullable);
     }
     case 'TSVoidKeyword': {
-      return wrapNullable(nullable, {
-        type: 'VoidTypeAnnotation',
-      });
+      return emitVoid(nullable);
     }
     case 'TSStringKeyword': {
       return wrapNullable(nullable, {
