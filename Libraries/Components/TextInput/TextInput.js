@@ -1206,12 +1206,12 @@ function InternalTextInput(props: Props): React.Node {
     }
   }
 
-  function setText(text: string): void {
+  function setText(newText: string): void {
     if (inputRef.current != null) {
       viewCommands.setTextAndSelection(
         inputRef.current,
         mostRecentEventCount,
-        text,
+        newText,
         selection?.start ?? 0,
         selection?.end ?? 0,
       );
