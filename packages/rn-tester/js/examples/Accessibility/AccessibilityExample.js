@@ -1446,4 +1446,18 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'TextInput with aria-labelledby attribute"',
+    render(): React.Element<typeof View> {
+      return (
+        <View>
+          <Text nativeID="testAriaLabelledBy">Phone Number</Text>
+          <TextInput
+            aria-labelledby={'testAriaLabelledBy'}
+            style={styles.default}
+          />
+        </View>
+      );
+    },
+  },
 ];
