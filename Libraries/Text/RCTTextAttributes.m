@@ -55,6 +55,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _fontStyle = textAttributes->_fontStyle ?: _fontStyle;
   _fontVariant = textAttributes->_fontVariant ?: _fontVariant;
   _allowFontScaling = textAttributes->_allowFontScaling || _allowFontScaling;  // *
+  _dynamicTypeRamp = textAttributes->_dynamicTypeRamp != RCTDynamicTypeRampUndefined ? textAttributes->_dynamicTypeRamp : _dynamicTypeRamp;
   _letterSpacing = !isnan(textAttributes->_letterSpacing) ? textAttributes->_letterSpacing : _letterSpacing;
 
   // Paragraph Styles
@@ -208,6 +209,11 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
   if (fontScalingEnabled) {
     CGFloat fontSizeMultiplier = !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
+    if (_dynamicTypeRamp != RCTDynamicTypeRampUndefined) {
+      UIFontMetrics *fontMetrics = RCTUIFontMetricsForDynamicTypeRamp(_dynamicTypeRamp);
+      CGFloat baseSize = RCTUIBaseSizeForDynamicTypeRamp(_dynamicTypeRamp);
+      fontSizeMultiplier = [fontMetrics scaledValueForValue:baseSize] / baseSize;
+    }
     CGFloat maxFontSizeMultiplier = !isnan(_maxFontSizeMultiplier) ? _maxFontSizeMultiplier : 0.0;
     return maxFontSizeMultiplier >= 1.0 ? fminf(maxFontSizeMultiplier, fontSizeMultiplier) : fontSizeMultiplier;
   } else {
@@ -306,6 +312,7 @@ static NSString *capitalizeText(NSString *text)
     RCTTextAttributesCompareObjects(_fontStyle) &&
     RCTTextAttributesCompareObjects(_fontVariant) &&
     RCTTextAttributesCompareOthers(_allowFontScaling) &&
+    RCTTextAttributesCompareOthers(_dynamicTypeRamp) &&
     RCTTextAttributesCompareFloats(_letterSpacing) &&
     // Paragraph Styles
     RCTTextAttributesCompareFloats(_lineHeight) &&

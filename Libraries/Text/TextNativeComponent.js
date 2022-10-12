@@ -34,6 +34,7 @@ const textViewConfig = {
     numberOfLines: true,
     ellipsizeMode: true,
     allowFontScaling: true,
+    dynamicTypeRamp: true,
     maxFontSizeMultiplier: true,
     disabled: true,
     selectable: true,
