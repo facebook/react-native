@@ -517,6 +517,11 @@ jobs:
         description: Specifies whether disabled tests should run. Set this to true to debug failing tests.
         type: boolean
         default: false
+      jsengine:
+        default: "Hermes"
+        description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
+        type: enum
+        enum: ["Hermes", "JSC"]
     environment:
       - REPORTS_DIR: "./reports/junit"
     steps:
@@ -547,7 +552,7 @@ jobs:
           name: "Brew: Tap wix/brew"
           command: brew tap wix/brew >/dev/null
       - brew_install:
-          package: applesimutils watchman cmake
+          package: applesimutils watchman
 
       - run:
           name: Configure Watchman
@@ -561,14 +566,6 @@ jobs:
                 command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
 
       - run:
-          name: Set USE_HERMES=1
-          command: echo "export USE_HERMES=1" >> $BASH_ENV
-
-      - run:
-          name: Set BUILD_HERMES_SOURCE=1
-          command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
-
-      - run:
           name: Setup the CocoaPods environment
           command: bundle exec pod setup
 
@@ -579,7 +576,12 @@ jobs:
                 steps:
                   - run:
                       name: Generate RNTesterPods Workspace
-                      command: cd packages/rn-tester && bundle exec pod install --verbose
+                      command: |
+                        if [[ << parameters.jsengine >> == "JSC" ]]; then
+                          export USE_HERMES=0
+                        fi
+
+                        cd packages/rn-tester && bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -879,6 +881,11 @@ jobs:
       architecture:
         type: string
         default: "OldArch"
+      jsengine:
+        default: "Hermes"
+        description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
+        type: enum
+        enum: ["Hermes", "JSC"]
     steps:
       - checkout_code_with_cache
       - run_yarn
@@ -892,17 +899,6 @@ jobs:
           background: true
           command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
 
-      - run:
-          name: Set USE_HERMES=1
-          command: echo "export USE_HERMES=1" >> $BASH_ENV
-
-      - run:
-          name: Set BUILD_HERMES_SOURCE=1
-          command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
-
-      - brew_install:
-          package: cmake
-
       - with_hermes_tarball_cache_span:
           set_tarball_path: True
           steps:
@@ -913,6 +909,10 @@ jobs:
 
                   if [[ << parameters.architecture >> == "NewArch" ]]; then
                     export RCT_NEW_ARCH_ENABLED=1
+                  fi
+
+                  if [[ << parameters.jsengine >> == "JSC" ]]; then
+                    export USE_HERMES=0
                   fi
 
                   cd packages/rn-tester && bundle exec pod install
@@ -1538,10 +1538,14 @@ workflows:
           matrix:
             parameters:
               architecture: ["NewArch", "OldArch"]
+              jsengine: ["Hermes", "JSC"]
       - test_ios:
           run_unit_tests: true
           requires:
             - build_hermes_macos
+          matrix:
+            parameters:
+              jsengine: ["Hermes", "JSC"]
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_frameworks
