@@ -81,6 +81,8 @@ const Text: React.AbstractComponent<
 
   const isPressable =
     (onPress != null ||
+      onPressIn != null ||
+      onPressOut != null ||
       onLongPress != null ||
       onStartShouldSetResponder != null) &&
     _disabled !== true;
