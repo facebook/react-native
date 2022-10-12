@@ -14,6 +14,7 @@ import type {
   Nullable,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
+  NativeModuleFunctionTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   NativeModuleNumberTypeAnnotation,
   BooleanTypeAnnotation,
@@ -62,6 +63,12 @@ function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'DoubleTypeAnnotation',
   });
+}
+function emitFunction(
+  nullable: boolean,
+  translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation,
+): Nullable<NativeModuleFunctionTypeAnnotation> {
+  return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
 }
 
 function typeAliasResolution(
@@ -138,6 +145,7 @@ function emitPromise(
 module.exports = {
   emitBoolean,
   emitDouble,
+  emitFunction,
   emitInt32,
   emitNumber,
   emitRootTag,
