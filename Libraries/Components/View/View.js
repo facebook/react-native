@@ -31,12 +31,25 @@ const View: React.AbstractComponent<
   (
     {
       accessibilityElementsHidden,
-      accessibilityLiveRegion,
-      'aria-live': ariaLive,
       accessibilityLabel,
+      accessibilityLabelledBy,
+      accessibilityLiveRegion,
       accessibilityRole,
-      'aria-label': ariaLabel,
+      accessibilityState,
+      accessibilityValue,
+      'aria-busy': ariaBusy,
+      'aria-checked': ariaChecked,
+      'aria-disabled': ariaDisabled,
+      'aria-expanded': ariaExpanded,
       'aria-hidden': ariaHidden,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
+      'aria-live': ariaLive,
+      'aria-selected': ariaSelected,
+      'aria-valuemax': ariaValueMax,
+      'aria-valuemin': ariaValueMin,
+      'aria-valuenow': ariaValueNow,
+      'aria-valuetext': ariaValueText,
       focusable,
       id,
       importantForAccessibility,
@@ -49,14 +62,8 @@ const View: React.AbstractComponent<
     }: ViewProps,
     forwardedRef,
   ) => {
-    const {
-      accessibilityState,
-      'aria-busy': ariaBusy,
-      'aria-checked': ariaChecked,
-      'aria-disabled': ariaDisabled,
-      'aria-expanded': ariaExpanded,
-      'aria-selected': ariaSelected,
-    } = otherProps;
+    const _accessibilityLabelledBy =
+      ariaLabelledBy?.split(/\s*,\s*/g) ?? accessibilityLabelledBy;
 
     const _accessibilityState = {
       busy: ariaBusy ?? accessibilityState?.busy,
@@ -64,6 +71,13 @@ const View: React.AbstractComponent<
       disabled: ariaDisabled ?? accessibilityState?.disabled,
       expanded: ariaExpanded ?? accessibilityState?.expanded,
       selected: ariaSelected ?? accessibilityState?.selected,
+    };
+
+    const _accessibilityValue = {
+      max: ariaValueMax ?? accessibilityValue?.max,
+      min: ariaValueMin ?? accessibilityValue?.min,
+      now: ariaValueNow ?? accessibilityValue?.now,
+      text: ariaValueText ?? accessibilityValue?.text,
     };
 
     // Map role values to AccessibilityRole values
@@ -134,20 +148,13 @@ const View: React.AbstractComponent<
       treeitem: undefined,
     };
 
-    const accessibilityValue = {
-      max: otherProps['aria-valuemax'] ?? otherProps.accessibilityValue?.max,
-      min: otherProps['aria-valuemin'] ?? otherProps.accessibilityValue?.min,
-      now: otherProps['aria-valuenow'] ?? otherProps.accessibilityValue?.now,
-      text: otherProps['aria-valuetext'] ?? otherProps.accessibilityValue?.text,
-    };
-    const restWithDefaultProps = {...otherProps, accessibilityValue};
-
     const flattenedStyle = flattenStyle(style);
     const newPointerEvents = flattenedStyle?.pointerEvents || pointerEvents;
 
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
+          {...otherProps}
           accessibilityLiveRegion={
             ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
           }
@@ -160,13 +167,14 @@ const View: React.AbstractComponent<
           accessibilityElementsHidden={
             ariaHidden ?? accessibilityElementsHidden
           }
+          accessibilityLabelledBy={_accessibilityLabelledBy}
+          accessibilityValue={_accessibilityValue}
           importantForAccessibility={
             ariaHidden === true
               ? 'no-hide-descendants'
               : importantForAccessibility
           }
           nativeID={id ?? nativeID}
-          {...restWithDefaultProps}
           style={style}
           pointerEvents={newPointerEvents}
           ref={forwardedRef}

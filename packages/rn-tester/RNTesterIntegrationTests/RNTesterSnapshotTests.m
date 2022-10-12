@@ -24,6 +24,9 @@
   if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10) {
     _runner.testSuffix = [NSString stringWithFormat:@"-iOS%d", UIDevice.currentDevice.systemVersion.intValue];
   }
+
+  // To update snapshots, set recordMode to YES and re-run RNTesterSnapshotTests.
+  // Do not forget to set back to NO before committing your changes.
   _runner.recordMode = NO;
 }
 

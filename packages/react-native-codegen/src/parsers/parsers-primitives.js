@@ -19,6 +19,7 @@ import type {
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   Int32TypeAnnotation,
+  NativeModuleGenericObjectTypeAnnotation,
   ReservedTypeAnnotation,
   ObjectTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
@@ -135,12 +136,21 @@ function emitPromise(
   });
 }
 
+function emitObject(
+  nullable: boolean,
+): Nullable<NativeModuleGenericObjectTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'GenericObjectTypeAnnotation',
+  });
+}
+
 module.exports = {
   emitBoolean,
   emitDouble,
   emitInt32,
   emitNumber,
+  emitObject,
+  emitPromise,
   emitRootTag,
   typeAliasResolution,
-  emitPromise,
 };

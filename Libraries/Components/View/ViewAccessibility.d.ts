@@ -59,6 +59,13 @@ export interface AccessibilityProps
   'aria-selected'?: boolean | undefined;
 
   /**
+   * Represents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   *
+   * @platform android
+   */
+  'aria-labelledby'?: string | undefined;
+
+  /**
    * An accessibility hint helps users understand what will happen when they perform an action on the accessibility element when that result is not obvious from the accessibility label.
    */
   accessibilityHint?: string | undefined;
