@@ -28,6 +28,8 @@ references:
     /tmp/hermes
   hermes_tarball_artifacts_dir: &hermes_tarball_artifacts_dir
     /tmp/hermes/hermes-runtime-darwin
+  hermes_osxbin_artifacts_dir: &hermes_osxbin_artifacts_dir
+    /tmp/hermes/osx-bin
   attach_hermes_workspace: &attach_hermes_workspace
     attach_workspace:
       at: *hermes_workspace_root
@@ -50,8 +52,8 @@ references:
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_workspace_cache_key: &hermes_workspace_cache_key v4-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v3-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
     hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v2-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v1-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}
@@ -61,10 +63,6 @@ references:
 
   cache_paths:
     hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths
-      - ~/react-native/sdks/hermes/build_host_hermesc
-      - ~/react-native/sdks/hermes/build_iphoneos
-      - ~/react-native/sdks/hermes/build_catalyst
-      - ~/react-native/sdks/hermes/build_iphonesimulator
       - ~/react-native/sdks/hermes/build_macosx
       - ~/react-native/sdks/hermes/destroot
     hermes_tarball_cache_paths: &hermes_tarball_cache_paths
@@ -334,6 +332,51 @@ commands:
             - save_cache:
                 key: *hermes_tarball_release_cache_key
                 paths: *hermes_tarball_cache_paths
+
+  with_hermesc_span:
+    description: "Makes hermesc available to the provided steps, if hermesc is present."
+    parameters:
+      steps:
+        type: steps
+    steps:
+      - export_hermesc
+      - steps: << parameters.steps >>
+      - export_hermesc
+
+  export_hermesc:
+    description: "Configures hermesc for use in Hermes builds when possible. The binary is built by either of the macOS or iOS builds, and may be cached by previous builds."
+    parameters:
+      artifacts_dir:
+        type: string
+        default: *hermes_osxbin_artifacts_dir
+    steps:
+      - run:
+          name: "Export HermesC if available"
+          command: |
+            hermesc_artifacts_path=<< parameters.artifacts_dir >>/hermesc
+            hermesc_bin_path=bin/hermesc
+            hermes_build_dir_macos=$(pwd)/sdks/hermes/build_macosx
+            hermes_build_dir_ios=$(pwd)/sdks/hermes/build_iphoneos
+
+            function export_hermesc_cmake_path {
+              build_dir=$1
+              hermesc_bin=$build_dir/$hermesc_bin_path
+              cmake_path=$build_dir/ImportHermesc.cmake
+
+              if [[ -f $cmake_path ]]; then
+                echo "export HERMES_OVERRIDE_HERMESC_PATH=$cmake_path" >> $BASH_ENV
+              fi
+
+              if [[ ! -f $hermesc_artifacts_path ]]; then
+                cp $hermesc_bin $hermesc_artifacts_path
+              fi
+            }
+
+            if [[ -f $hermes_build_dir_macos/$hermesc_bin_path ]]; then
+              export_hermesc_cmake_path $hermes_build_dir_macos
+            elif [[ -f $hermes_build_dir_ios/$hermesc_bin_path ]]; then
+              export_hermesc_cmake_path $hermes_build_dir_ios
+            fi
 
 # -------------------------
 #          JOBS
@@ -994,7 +1037,7 @@ jobs:
           path: ~/react-native/coverage/
 
   # -------------------------
-  #      JOBS: Build hermesc
+  #      JOBS: Build Hermes
   # -------------------------
   prepare_hermes_workspace:
     docker:
@@ -1100,6 +1143,7 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_TARBALL_ARTIFACTS_DIR: *hermes_tarball_artifacts_dir
+      - HERMES_OSXBIN_ARTIFACTS_DIR: *hermes_osxbin_artifacts_dir
     steps:
       - checkout_code_with_cache
       - run_yarn
@@ -1121,25 +1165,27 @@ jobs:
       - run:
           name: Set up workspace
           command: |
-            mkdir -p /tmp/hermes/osx-bin
-            mkdir -p ~/react-native/sdks/hermes
-            cp -r $HERMES_WS_DIR/hermes/* ~/react-native/sdks/hermes/.
+            mkdir -p $HERMES_OSXBIN_ARTIFACTS_DIR ./sdks/hermes
+            cp -r $HERMES_WS_DIR/hermes/* ./sdks/hermes/.
       - brew_install:
           package: cmake
       - with_hermes_tarball_cache_span:
           flavor: << parameters.flavor >>
           steps:
-            - run:
-                name: Build the Hermes iOS frameworks
-                command: |
-                  cd ~/react-native/sdks/hermes
-                  BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh
-            - run:
-                name: Build the Hermes Mac frameworks
-                command: |
-                  cd ~/react-native/sdks/hermes
-                  BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
-                  cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
+            - with_hermesc_span:
+                steps:
+                  - run:
+                      name: Build the Hermes Mac frameworks
+                      command: |
+                        cd ./sdks/hermes || exit 1
+                        BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
+            - with_hermesc_span:
+                steps:
+                  - run:
+                      name: Build the Hermes iOS frameworks
+                      command: |
+                        cd ./sdks/hermes || exit 1
+                        BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh
             - run:
                 name: Package the Hermes Apple frameworks
                 command: |
@@ -1149,26 +1195,25 @@ jobs:
                   TARBALL_OUTPUT_DIR=$(mktemp -d /tmp/hermes-tarball-output-XXXXXXXX)
 
                   # get_release_version() is defined in build-apple-framework.sh
-                  cd ~/react-native/sdks/hermes
-                  BUILD_TYPE=$BUILD_TYPE source ./utils/build-apple-framework.sh
-                  RELEASE_VERSION=$(get_release_version)
-
-                  cd ~/react-native
+                  pushd ./sdks/hermes || exit 1
+                    BUILD_TYPE=$BUILD_TYPE source ./utils/build-apple-framework.sh
+                    RELEASE_VERSION=$(get_release_version)
+                  popd
 
                   TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE" --releaseVersion "$RELEASE_VERSION")
 
                   echo "Packaging Hermes Apple frameworks for $BUILD_TYPE build type"
 
                   TARBALL_OUTPUT_PATH=$(node ./scripts/hermes/create-tarball.js \
-                    --inputDir ~/react-native/sdks/hermes \
+                    --inputDir ./sdks/hermes \
                     --buildType "$BUILD_TYPE" \
                     --releaseVersion "$RELEASE_VERSION" \
-                    --outputDir "$TARBALL_OUTPUT_DIR")
+                    --outputDir $TARBALL_OUTPUT_DIR)
 
                   echo "Hermes tarball saved to $TARBALL_OUTPUT_PATH"
 
-                  mkdir -p "$HERMES_TARBALL_ARTIFACTS_DIR"
-                  cp "$TARBALL_OUTPUT_PATH" "$HERMES_TARBALL_ARTIFACTS_DIR/."
+                  mkdir -p $HERMES_TARBALL_ARTIFACTS_DIR
+                  cp $TARBALL_OUTPUT_PATH $HERMES_TARBALL_ARTIFACTS_DIR/.
 
                   # Make a copy of the debug tarball and use the old filename.
                   # This is necessary to support patch releases in versions of
@@ -1176,8 +1221,8 @@ jobs:
                   # TODO: Remove once 0.70.x and 0.69.x are no longer being patched.
                   if [[ $BUILD_TYPE == "Debug" ]]; then
                     OLD_TARBALL_FILENAME="hermes-runtime-darwin-v$RELEASE_VERSION.tar.gz"
-                    cp "$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME" "$HERMES_TARBALL_ARTIFACTS_DIR/$OLD_TARBALL_FILENAME"
-                    echo "$OLD_TARBALL_FILENAME is a copy of $TARBALL_FILENAME, provided for backward compatibility." >> "$HERMES_TARBALL_ARTIFACTS_DIR/README.txt"
+                    cp $HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME $HERMES_TARBALL_ARTIFACTS_DIR/$OLD_TARBALL_FILENAME
+                    echo "$OLD_TARBALL_FILENAME is a copy of $TARBALL_FILENAME, provided for backward compatibility." >> $HERMES_TARBALL_ARTIFACTS_DIR/README.txt
                   fi
             - when:
                 condition:
@@ -1196,7 +1241,7 @@ jobs:
             - store_artifacts:
                 path: *hermes_tarball_artifacts_dir
             - store_artifacts:
-                path: /tmp/hermes/osx-bin/
+                path: *hermes_osxbin_artifacts_dir
             - persist_to_workspace:
                 root: /tmp/hermes/
                 paths:
