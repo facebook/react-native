@@ -23,6 +23,7 @@ import type {
   ReservedTypeAnnotation,
   ObjectTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
+  VoidTypeAnnotation,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {TypeAliasResolutionStatus} from './utils';
@@ -62,6 +63,12 @@ function emitRootTag(nullable: boolean): Nullable<ReservedTypeAnnotation> {
 function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'DoubleTypeAnnotation',
+  });
+}
+
+function emitVoid(nullable: boolean): Nullable<VoidTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'VoidTypeAnnotation',
   });
 }
 
@@ -152,5 +159,6 @@ module.exports = {
   emitObject,
   emitPromise,
   emitRootTag,
+  emitVoid,
   typeAliasResolution,
 };
