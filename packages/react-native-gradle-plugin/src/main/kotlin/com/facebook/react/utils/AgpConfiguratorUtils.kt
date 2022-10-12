@@ -14,8 +14,9 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.AppliedPlugin
 
+@Suppress("UnstableApiUsage")
 internal object AgpConfiguratorUtils {
-  @Suppress("UnstableApiUsage")
+
   fun configureBuildConfigFields(project: Project) {
     val action =
         Action<AppliedPlugin> {
@@ -29,4 +30,25 @@ internal object AgpConfiguratorUtils {
     project.pluginManager.withPlugin("com.android.application", action)
     project.pluginManager.withPlugin("com.android.library", action)
   }
+
+  fun configureDevPorts(project: Project) {
+    val devServerPort =
+        project.properties["reactNativeDevServerPort"]?.toString() ?: DEFAULT_DEV_SERVER_PORT
+    val inspectorProxyPort =
+        project.properties["reactNativeInspectorProxyPort"]?.toString() ?: devServerPort
+
+    val action =
+        Action<AppliedPlugin> {
+          project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
+            ext.defaultConfig.resValue("integer", "react_native_dev_server_port", devServerPort)
+            ext.defaultConfig.resValue(
+                "integer", "react_native_inspector_proxy_port", inspectorProxyPort)
+          }
+        }
+
+    project.pluginManager.withPlugin("com.android.application", action)
+    project.pluginManager.withPlugin("com.android.library", action)
+  }
 }
+
+const val DEFAULT_DEV_SERVER_PORT = "8081"
