@@ -36,7 +36,7 @@ references:
   #        Dependency Anchors
   # -------------------------
   dependency_versions:
-    xcode_version: &xcode_version "13.3.1"
+    xcode_version: &xcode_version "14.0.1"
     nodelts_image: &nodelts_image "cimg/node:16.14"
     nodeprevlts_image: &nodeprevlts_image "cimg/node:14.19"
 
