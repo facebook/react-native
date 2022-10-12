@@ -25,7 +25,7 @@ import type {
 import type {TypeDeclarationMap} from '../utils.js';
 import type {ParserErrorCapturer} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
-import {nullGuard} from '../../parsers-utils';
+const {nullGuard} = require('../../parsers-utils');
 
 const {
   resolveTypeAnnotation,
