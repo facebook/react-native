@@ -37,7 +37,7 @@ class BugReporting {
   static _extraSources: Map<string, SourceCallback> = new Map();
   static _fileSources: Map<string, SourceCallback> = new Map();
   static _subscription: ?EventSubscription = null;
-  static _redboxSubscription: ?EventSubscription = null;
+  static _redBoxSubscription: ?EventSubscription = null;
 
   static _maybeInit() {
     if (!BugReporting._subscription) {
@@ -50,8 +50,8 @@ class BugReporting {
       defaultExtras();
     }
 
-    if (!BugReporting._redboxSubscription) {
-      BugReporting._redboxSubscription = RCTDeviceEventEmitter.addListener(
+    if (!BugReporting._redBoxSubscription) {
+      BugReporting._redBoxSubscription = RCTDeviceEventEmitter.addListener(
         'collectRedBoxExtraData',
         // $FlowFixMe[method-unbinding]
         BugReporting.collectExtraData,

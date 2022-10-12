@@ -209,8 +209,8 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         ReactMarkerConstants.RELOAD,
         getDevSettings().getPackagerConnectionSettings().getDebugServerHost());
 
-    // dismiss redbox if exists
-    hideRedboxDialog();
+    // dismiss RedBox if exists
+    hideRedBoxDialog();
 
     if (getDevSettings().isRemoteJSDebugEnabled()) {
       PrinterHolder.getPrinter()

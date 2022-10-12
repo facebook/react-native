@@ -191,7 +191,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       return;
     }
 
-    // redboxes early, e.g. for 'arraybuffer' on ios 7
+    // RedBoxes early, e.g. for 'arraybuffer' on ios 7
     invariant(
       SUPPORTED_RESPONSE_TYPES[responseType] || responseType === 'document',
       `The provided value '${responseType}' is unsupported in this environment.`,

@@ -169,7 +169,7 @@ public class RedBoxContentView extends LinearLayout implements AdapterView.OnIte
                 ? (TextView) convertView
                 : (TextView)
                     LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.redbox_item_title, parent, false);
+                        .inflate(R.layout.redBox_item_title, parent, false);
         // Remove ANSI color codes from the title
         String titleSafe = (mTitle == null ? "<unknown title>" : mTitle);
         title.setText(titleSafe.replaceAll("\\x1b\\[[0-9;]*m", ""));
@@ -178,7 +178,7 @@ public class RedBoxContentView extends LinearLayout implements AdapterView.OnIte
         if (convertView == null) {
           convertView =
               LayoutInflater.from(parent.getContext())
-                  .inflate(R.layout.redbox_item_frame, parent, false);
+                  .inflate(R.layout.redBox_item_frame, parent, false);
           convertView.setTag(new FrameViewHolder(convertView));
         }
         StackFrame frame = mStack[position - 1];
@@ -249,12 +249,12 @@ public class RedBoxContentView extends LinearLayout implements AdapterView.OnIte
   }
 
   public void init() {
-    LayoutInflater.from(getContext()).inflate(R.layout.redbox_view, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.redBox_view, this);
 
-    mStackView = (ListView) findViewById(R.id.rn_redbox_stack);
+    mStackView = (ListView) findViewById(R.id.rn_redBox_stack);
     mStackView.setOnItemClickListener(this);
 
-    mReloadJsButton = (Button) findViewById(R.id.rn_redbox_reload_button);
+    mReloadJsButton = (Button) findViewById(R.id.rn_redBox_reload_button);
     mReloadJsButton.setOnClickListener(
         new View.OnClickListener() {
           @Override
@@ -262,22 +262,22 @@ public class RedBoxContentView extends LinearLayout implements AdapterView.OnIte
             Assertions.assertNotNull(mDevSupportManager).handleReloadJS();
           }
         });
-    mDismissButton = (Button) findViewById(R.id.rn_redbox_dismiss_button);
+    mDismissButton = (Button) findViewById(R.id.rn_redBox_dismiss_button);
     mDismissButton.setOnClickListener(
         new View.OnClickListener() {
           @Override
           public void onClick(View v) {
-            Assertions.assertNotNull(mDevSupportManager).hideRedboxDialog();
+            Assertions.assertNotNull(mDevSupportManager).hideRedBoxDialog();
           }
         });
 
     if (mRedBoxHandler != null && mRedBoxHandler.isReportEnabled()) {
-      mLoadingIndicator = (ProgressBar) findViewById(R.id.rn_redbox_loading_indicator);
-      mLineSeparator = (View) findViewById(R.id.rn_redbox_line_separator);
-      mReportTextView = (TextView) findViewById(R.id.rn_redbox_report_label);
+      mLoadingIndicator = (ProgressBar) findViewById(R.id.rn_redBox_loading_indicator);
+      mLineSeparator = (View) findViewById(R.id.rn_redBox_line_separator);
+      mReportTextView = (TextView) findViewById(R.id.rn_redBox_report_label);
       mReportTextView.setMovementMethod(LinkMovementMethod.getInstance());
       mReportTextView.setHighlightColor(Color.TRANSPARENT);
-      mReportButton = (Button) findViewById(R.id.rn_redbox_report_button);
+      mReportButton = (Button) findViewById(R.id.rn_redBox_report_button);
       mReportButton.setOnClickListener(mReportButtonOnClickListener);
     }
   }

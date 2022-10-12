@@ -46,8 +46,8 @@ public class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
       @Nullable String message = mDevSupportManager.getLastErrorTitle();
       FLog.e(
           ReactConstants.TAG,
-          "Unable to launch redbox because react activity "
-              + "is not available, here is the error that redbox would've displayed: "
+          "Unable to launch RedBox because react activity "
+              + "is not available, here is the error that RedBox would've displayed: "
               + (message != null ? message : "N/A"));
       return;
     }
@@ -76,8 +76,8 @@ public class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
     if (context == null || context.isFinishing()) {
       FLog.e(
           ReactConstants.TAG,
-          "Unable to launch redbox because react activity "
-              + "is not available, here is the error that redbox would've displayed: "
+          "Unable to launch RedBox because react activity "
+              + "is not available, here is the error that RedBox would've displayed: "
               + (message != null ? message : "N/A"));
       return;
     }
@@ -111,7 +111,7 @@ public class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
 
   @Override
   public void hide() {
-    // dismiss redbox if exists
+    // dismiss RedBox if exists
     if (mDialog != null) {
       mDialog.dismiss();
       destroyContentView();

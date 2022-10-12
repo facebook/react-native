@@ -211,7 +211,7 @@ Error: ${e.message}`;
 
     client.on('update', ({isInitialUpdate}) => {
       if (client.isEnabled() && !isInitialUpdate) {
-        dismissRedbox();
+        dismissRedBox();
         LogBox.clearAllLogs();
       }
     });
@@ -301,7 +301,7 @@ function flushEarlyLogs(client: MetroHMRClient) {
   }
 }
 
-function dismissRedbox() {
+function dismissRedBox() {
   if (
     Platform.OS === 'ios' &&
     NativeRedBox != null &&
@@ -312,8 +312,8 @@ function dismissRedbox() {
     const NativeExceptionsManager =
       require('../Core/NativeExceptionsManager').default;
     NativeExceptionsManager &&
-      NativeExceptionsManager.dismissRedbox &&
-      NativeExceptionsManager.dismissRedbox();
+      NativeExceptionsManager.dismissRedBox &&
+      NativeExceptionsManager.dismissRedBox();
   }
 }
 
@@ -322,9 +322,9 @@ function showCompileError() {
     return;
   }
 
-  // Even if there is already a redbox, syntax errors are more important.
+  // Even if there is already a RedBox, syntax errors are more important.
   // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
-  dismissRedbox();
+  dismissRedBox();
 
   const message = currentCompileErrorMessage;
   currentCompileErrorMessage = null;

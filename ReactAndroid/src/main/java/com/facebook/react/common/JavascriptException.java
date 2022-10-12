@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 /**
  * A JS exception that was propagated to native. In debug mode, these exceptions are normally shown
- * to developers in a redbox.
+ * to developers in a RedBox.
  */
 public class JavascriptException extends RuntimeException
     implements HasJavascriptExceptionMetadata {

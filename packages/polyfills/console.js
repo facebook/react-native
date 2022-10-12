@@ -423,7 +423,7 @@ function getNativeLogFunction(level) {
       logLevel >= LOG_LEVELS.error
     ) {
       // React warnings use console.error so that a stack trace is shown,
-      // but we don't (currently) want these to show a redbox
+      // but we don't (currently) want these to show a RedBox
       // (Note: Logic duplicated in ExceptionsManager.js.)
       logLevel = LOG_LEVELS.warn;
     }

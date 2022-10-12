@@ -662,7 +662,7 @@ describe('LogBoxData', () => {
     expect(observer.mock.calls.length).toBe(3);
   });
 
-  it('reportLogBoxError creates a native redbox with a componentStack', () => {
+  it('reportLogBoxError creates a native RedBox with a componentStack', () => {
     LogBoxData.reportLogBoxError(
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
@@ -677,7 +677,7 @@ describe('LogBoxData', () => {
     );
   });
 
-  it('reportLogBoxError creates a native redbox without a componentStack', () => {
+  it('reportLogBoxError creates a native RedBox without a componentStack', () => {
     /* $FlowFixMe[class-object-subtyping] added when improving typing for this
      * parameters */
     LogBoxData.reportLogBoxError(new Error('Simulated Error'));

@@ -22,7 +22,7 @@ export type CapturedError = {
 const ReactFiberErrorDialog = {
   /**
    * Intercept lifecycle errors and ensure they are shown with the correct stack
-   * trace within the native redbox component.
+   * trace within the native RedBox component.
    */
   showErrorDialog({componentStack, error: errorValue}: CapturedError): boolean {
     let error: ?ExtendedError;
@@ -53,7 +53,7 @@ const ReactFiberErrorDialog = {
 
     // Return false here to prevent ReactFiberErrorLogger default behavior of
     // logging error details to console.error. Calls to console.error are
-    // automatically routed to the native redbox controller, which we've already
+    // automatically routed to the native RedBox controller, which we've already
     // done above by calling ExceptionsManager.
     return false;
   },

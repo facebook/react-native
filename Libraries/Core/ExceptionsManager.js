@@ -201,7 +201,7 @@ function reactConsoleErrorHandler(...args) {
     const stringifySafe = require('../Utilities/stringifySafe').default;
     if (typeof firstArg === 'string' && firstArg.startsWith('Warning: ')) {
       // React warnings use console.error so that a stack trace is shown, but
-      // we don't (currently) want these to show a redbox
+      // we don't (currently) want these to show a RedBox
       // (Note: Logic duplicated in polyfills/console.js.)
       return;
     }
@@ -223,7 +223,7 @@ function reactConsoleErrorHandler(...args) {
 }
 
 /**
- * Shows a redbox with stacktrace for all console.error messages.  Disable by
+ * Shows a RedBox with stacktrace for all console.error messages.  Disable by
  * setting `console.reportErrorsAsExceptions = false;` in your app.
  */
 function installConsoleErrorReporter() {

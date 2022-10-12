@@ -11,7 +11,7 @@
 'use strict';
 
 /**
- * Sets up the console and exception handling (redbox) for React Native.
+ * Sets up the console and exception handling (RedBox) for React Native.
  * You can use this module directly, or just require InitializeCore.
  */
 const ExceptionsManager = require('./ExceptionsManager');

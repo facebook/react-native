@@ -423,7 +423,7 @@ export function withSubscription(
 
     render(): React.Node {
       if (this.state.hasError) {
-        // This happens when the component failed to render, in which case we delegate to the native redbox.
+        // This happens when the component failed to render, in which case we delegate to the native RedBox.
         // We can't show anyback fallback UI here, because the error may be with <View> or <Text>.
         return null;
       }

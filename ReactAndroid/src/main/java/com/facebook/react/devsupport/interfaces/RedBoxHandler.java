@@ -12,26 +12,26 @@ import android.text.SpannedString;
 import androidx.annotation.Nullable;
 
 /**
- * Interface used by {@link BridgeDevSupportManager} to allow interception on any redboxes during
- * development and handling the information from the redbox. The implementation should be passed by
+ * Interface used by {@link BridgeDevSupportManager} to allow interception on any RedBoxes during
+ * development and handling the information from the RedBox. The implementation should be passed by
  * setRedBoxHandler in ReactInstanceManager.
  */
 public interface RedBoxHandler {
-  /** Callback interface for {@link #reportRedbox}. */
+  /** Callback interface for {@link #reportRedBox}. */
   interface ReportCompletedListener {
     void onReportSuccess(SpannedString spannedString);
 
     void onReportError(SpannedString spannedString);
   }
 
-  /** Handle the information from the redbox. */
-  void handleRedbox(@Nullable String title, StackFrame[] stack, ErrorType errorType);
+  /** Handle the information from the RedBox. */
+  void handleRedBox(@Nullable String title, StackFrame[] stack, ErrorType errorType);
 
   /** Whether the report feature is enabled. */
   boolean isReportEnabled();
 
-  /** Report the information from the redbox and set up a callback listener. */
-  void reportRedbox(
+  /** Report the information from the RedBox and set up a callback listener. */
+  void reportRedBox(
       Context context,
       String title,
       StackFrame[] stack,

@@ -241,7 +241,7 @@ public class ReactInstanceManagerBuilder {
 
   /**
    * Set the exception handler for all native module calls. If not set, the default {@link
-   * DevSupportManager} will be used, which shows a redbox in dev mode and rethrows (crashes the
+   * DevSupportManager} will be used, which shows a RedBox in dev mode and rethrows (crashes the
    * app) in prod mode.
    */
   public ReactInstanceManagerBuilder setJSExceptionHandler(JSExceptionHandler handler) {

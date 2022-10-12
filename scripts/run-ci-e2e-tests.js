@@ -12,8 +12,8 @@
 /**
  * This script tests that React Native end to end installation/bootstrap works for different platforms
  * Available arguments:
- * --ios - 'react-native init' and check iOS app doesn't redbox
- * --android - 'react-native init' and check Android app doesn't redbox
+ * --ios - 'react-native init' and check iOS app doesn't RedBox
+ * --android - 'react-native init' and check Android app doesn't RedBox
  * --js - 'react-native init' and only check the packager returns a bundle
  * --skip-cli-install - to skip react-native-cli global installation (for local debugging)
  * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1

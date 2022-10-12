@@ -157,8 +157,8 @@ function PlatformColorsExample() {
           color: PlatformColor('@android:color/holo_green_light'),
         },
         {
-          label: '@color/catalyst_redbox_background',
-          color: PlatformColor('@color/catalyst_redbox_background'),
+          label: '@color/catalyst_redBox_background',
+          color: PlatformColor('@color/catalyst_redBox_background'),
         },
         {
           label: '@color/catalyst_logbox_background',
@@ -196,8 +196,8 @@ function FallbackColorsExample() {
     };
   } else if (Platform.OS === 'android') {
     color = {
-      label: "PlatformColor('bogus', '@color/catalyst_redbox_background')",
-      color: PlatformColor('bogus', '@color/catalyst_redbox_background'),
+      label: "PlatformColor('bogus', '@color/catalyst_redBox_background')",
+      color: PlatformColor('bogus', '@color/catalyst_redBox_background'),
     };
   } else {
     color = {

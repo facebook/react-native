@@ -311,7 +311,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   @Override
-  public void hideRedboxDialog() {
+  public void hideRedBoxDialog() {
     if (mRedBoxSurfaceDelegate == null) {
       return;
     }
@@ -1178,8 +1178,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         mIsReceiverRegistered = false;
       }
 
-      // hide redbox dialog
-      hideRedboxDialog();
+      // hide RedBox dialog
+      hideRedBoxDialog();
 
       // hide dev options dialog
       hideDevOptionsDialog();

@@ -122,19 +122,19 @@
 #endif
 
     UIButton *dismissButton = [self redBoxButton:dismissText
-                         accessibilityIdentifier:@"redbox-dismiss"
+                         accessibilityIdentifier:@"redBox-dismiss"
                                         selector:@selector(dismiss)
                                            block:nil];
     UIButton *reloadButton = [self redBoxButton:reloadText
-                        accessibilityIdentifier:@"redbox-reload"
+                        accessibilityIdentifier:@"redBox-reload"
                                        selector:@selector(reload)
                                           block:nil];
     UIButton *copyButton = [self redBoxButton:copyText
-                      accessibilityIdentifier:@"redbox-copy"
+                      accessibilityIdentifier:@"redBox-copy"
                                      selector:@selector(copyStack)
                                         block:nil];
     UIButton *extraButton = [self redBoxButton:extraText
-                       accessibilityIdentifier:@"redbox-extra"
+                       accessibilityIdentifier:@"redBox-extra"
                                       selector:@selector(showExtraDataViewController)
                                          block:nil];
 
@@ -326,7 +326,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   if (!cell) {
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"msg-cell"];
-    cell.textLabel.accessibilityIdentifier = @"redbox-error";
+    cell.textLabel.accessibilityIdentifier = @"redBox-error";
     cell.textLabel.textColor = [UIColor whiteColor];
     if (@available(iOS 13.0, *)) {
       // Prefer a monofont for formatting messages that were designed

@@ -13249,7 +13249,7 @@ function showErrorDialog(boundary, errorInfo) {
 function logCapturedError(boundary, errorInfo) {
   try {
     var logError = showErrorDialog(boundary, errorInfo); // Allow injected showErrorDialog() to prevent default console.error logging.
-    // This enables renderers like ReactNative to better manage redbox behavior.
+    // This enables renderers like ReactNative to better manage RedBox behavior.
 
     if (logError === false) {
       return;
@@ -24752,6 +24752,6 @@ if (
 ) {
   __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
 }
-        
+
   })();
 }

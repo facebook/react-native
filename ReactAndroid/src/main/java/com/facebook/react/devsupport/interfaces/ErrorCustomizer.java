@@ -9,7 +9,7 @@ package com.facebook.react.devsupport.interfaces;
 
 import android.util.Pair;
 
-/** Interface that lets parts of the app process the errors before showing the redbox */
+/** Interface that lets parts of the app process the errors before showing the RedBox */
 public interface ErrorCustomizer {
 
   /**

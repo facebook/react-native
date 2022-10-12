@@ -238,8 +238,8 @@ public class ReactAppTestActivity extends FragmentActivity
     builder
         .addPackage(new InstanceSpecForTestPackage(spec))
         // By not setting a JS module name, we force the bundle to be always loaded from
-        // assets, not the devserver, even if dev mode is enabled (such as when testing redboxes).
-        // This makes sense because we never run the devserver in tests.
+        // assets, not the dev server, even if dev mode is enabled (such as when testing RedBoxes).
+        // This makes sense because we never run the dev server in tests.
         // .setJSMainModuleName()
         .setUseDeveloperSupport(useDevSupport)
         .setBridgeIdleDebugListener(mBridgeIdleSignaler)

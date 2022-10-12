@@ -92,7 +92,7 @@
 
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
     dismissButton.translatesAutoresizingMaskIntoConstraints = NO;
-    dismissButton.accessibilityIdentifier = @"redbox-extra-data-dismiss";
+    dismissButton.accessibilityIdentifier = @"redBox-extra-data-dismiss";
     dismissButton.titleLabel.font = [UIFont systemFontOfSize:13];
     [dismissButton setTitle:dismissText forState:UIControlStateNormal];
     [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
@@ -100,7 +100,7 @@
     [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
 
     UIButton *reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    reloadButton.accessibilityIdentifier = @"redbox-reload";
+    reloadButton.accessibilityIdentifier = @"redBox-reload";
     reloadButton.titleLabel.font = [UIFont systemFontOfSize:13];
     [reloadButton setTitle:reloadText forState:UIControlStateNormal];
     [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];

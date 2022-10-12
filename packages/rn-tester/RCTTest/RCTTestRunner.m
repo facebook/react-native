@@ -159,7 +159,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   __weak RCTBridge *batchedBridge;
   NSNumber *rootTag;
   RCTLogFunction defaultLogFunction = RCTGetLogFunction();
-  // Catch all error logs, that are equivalent to redboxes in dev mode.
+  // Catch all error logs, that are equivalent to RedBoxes in dev mode.
   __block NSMutableArray<NSString *> *errors = nil;
   RCTSetLogFunction(
       ^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {

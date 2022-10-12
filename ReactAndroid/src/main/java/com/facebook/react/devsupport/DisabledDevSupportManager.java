@@ -60,7 +60,7 @@ public class DisabledDevSupportManager implements DevSupportManager {
   public void updateJSError(String message, ReadableArray details, int errorCookie) {}
 
   @Override
-  public void hideRedboxDialog() {}
+  public void hideRedBoxDialog() {}
 
   @Override
   public void showDevOptionsDialog() {}

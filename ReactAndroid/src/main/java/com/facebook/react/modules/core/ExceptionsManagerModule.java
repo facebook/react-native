@@ -90,9 +90,9 @@ public class ExceptionsManagerModule extends NativeExceptionsManagerSpec {
   }
 
   @Override
-  public void dismissRedbox() {
+  public void dismissRedBox() {
     if (mDevSupportManager.getDevSupportEnabled()) {
-      mDevSupportManager.hideRedboxDialog();
+      mDevSupportManager.hideRedBoxDialog();
     }
   }
 }

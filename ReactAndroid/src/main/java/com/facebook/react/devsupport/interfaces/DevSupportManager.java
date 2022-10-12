@@ -38,7 +38,7 @@ public interface DevSupportManager extends JSExceptionHandler {
 
   void updateJSError(final String message, final ReadableArray details, final int errorCookie);
 
-  void hideRedboxDialog();
+  void hideRedBoxDialog();
 
   void showDevOptionsDialog();
 

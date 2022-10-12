@@ -456,7 +456,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     jclass cls = env->GetObjectClass(instance);
     methodID = env->GetMethodID(cls, methodName, methodSignature.c_str());
 
-    // If the method signature doesn't match, show a redbox here instead of
+    // If the method signature doesn't match, show a RedBox here instead of
     // crashing later.
     checkJNIErrorForMethodCall();
   }

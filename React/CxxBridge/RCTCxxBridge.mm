@@ -1152,7 +1152,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 
   // Hack: once the bridge is invalidated below, it won't initialize any new native
-  // modules. Initialize the redbox module now so we can still report this error.
+  // modules. Initialize the RedBox module now so we can still report this error.
   RCTRedBox *redBox = [self redBox];
 
   _loading = NO;

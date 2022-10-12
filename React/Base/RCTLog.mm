@@ -301,14 +301,14 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
         // red box is thread safe, but by deferring to main queue we avoid a startup
         // race condition that causes the module to be accessed before it has loaded
         RCTModuleRegistry *moduleRegistry = RCTLogBridgeModuleRegistry ?: RCTLogBridgelessModuleRegistry;
-        id redbox = [moduleRegistry moduleForName:"RedBox" lazilyLoadIfNecessary:YES];
-        if (redbox) {
+        id redBox = [moduleRegistry moduleForName:"RedBox" lazilyLoadIfNecessary:YES];
+        if (redBox) {
           void (*showErrorMessage)(id, SEL, NSString *, NSMutableArray<NSDictionary *> *) =
               (__typeof__(showErrorMessage))objc_msgSend;
           SEL showErrorMessageSEL = NSSelectorFromString(@"showErrorMessage:withStack:");
 
-          if ([redbox respondsToSelector:showErrorMessageSEL]) {
-            showErrorMessage(redbox, showErrorMessageSEL, message, stack);
+          if ([redBox respondsToSelector:showErrorMessageSEL]) {
+            showErrorMessage(redBox, showErrorMessageSEL, message, stack);
           }
         }
       });

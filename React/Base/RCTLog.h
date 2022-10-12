@@ -19,7 +19,7 @@
 #endif
 
 /**
- * Thresholds for logs to display a redbox. You can override these values when debugging
+ * Thresholds for logs to display a RedBox. You can override these values when debugging
  * in order to tweak the default logging behavior.
  */
 #ifndef RCTLOG_REDBOX_LEVEL
