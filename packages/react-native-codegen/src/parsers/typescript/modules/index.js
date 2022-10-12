@@ -64,11 +64,11 @@ const {
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UnusedModuleInterfaceParserError,
   MoreThanOneModuleRegistryCallsParserError,
-  UntypedModuleRegistryCallParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
+const {throwIfUntypedModule} = require('../../error-utils');
 
 const language = 'TypeScript';
 
@@ -697,15 +697,14 @@ function buildModuleSchema(
 
     const $moduleName = callExpression.arguments[0].value;
 
-    if (typeParameters == null) {
-      throw new UntypedModuleRegistryCallParserError(
-        hasteModuleName,
-        callExpression,
-        methodName,
-        $moduleName,
-        language,
-      );
-    }
+    throwIfUntypedModule(
+      typeParameters,
+      hasteModuleName,
+      callExpression,
+      methodName,
+      $moduleName,
+      language,
+    );
 
     if (
       typeParameters.type !== 'TSTypeParameterInstantiation' ||

@@ -64,11 +64,11 @@ const {
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UnusedModuleInterfaceParserError,
   MoreThanOneModuleRegistryCallsParserError,
-  UntypedModuleRegistryCallParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
+const {throwIfUntypedModule} = require('../../error-utils');
 
 const language = 'Flow';
 
@@ -663,15 +663,14 @@ function buildModuleSchema(
 
     const $moduleName = callExpression.arguments[0].value;
 
-    if (typeArguments == null) {
-      throw new UntypedModuleRegistryCallParserError(
-        hasteModuleName,
-        callExpression,
-        methodName,
-        $moduleName,
-        language,
-      );
-    }
+    throwIfUntypedModule(
+      typeArguments,
+      hasteModuleName,
+      callExpression,
+      methodName,
+      $moduleName,
+      language,
+    );
 
     if (
       typeArguments.type !== 'TypeParameterInstantiation' ||
