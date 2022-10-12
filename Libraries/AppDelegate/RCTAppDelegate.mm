@@ -32,7 +32,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   RCTAppSetupPrepareApp(application);
 
   if (!self.bridge) {
-    self.bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+    self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
   }
 #if RCT_NEW_ARCH_ENABLED
   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
@@ -43,7 +43,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #endif
 
   NSDictionary *initProps = [self prepareInitialProps];
-  UIView *rootView = RCTAppSetupDefaultRootView(self.bridge, self.moduleName, initProps);
+  UIView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
 
   if (@available(iOS 13.0, *)) {
     rootView.backgroundColor = [UIColor systemBackgroundColor];
@@ -52,7 +52,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   }
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
+  UIViewController *rootViewController = [self createRootViewController];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
@@ -86,6 +86,21 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #endif
 
   return initProps;
+}
+
+- (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
+{
+  return [[RCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
+}
+
+- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge moduleName:(NSString*)moduleName initProps:(NSDictionary *)initProps
+{
+  return RCTAppSetupDefaultRootView(bridge, moduleName, initProps);
+}
+
+- (UIViewController *)createRootViewController
+{
+  return [UIViewController new];
 }
 
 #if RCT_NEW_ARCH_ENABLED
