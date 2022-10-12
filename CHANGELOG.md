@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.70.3
+
+### Fixed
+
+- Stop styles from being reset when detaching Animated.Values in old renderer ([2f58e52006](https://github.com/facebook/react-native/commit/2f58e520061a31ab90f7bbeef59e2bf723605106) by [@javache](https://github.com/javache))
+- Revert "Fix TextInput dropping text when used as uncontrolled component with `defaultValue`" to fix TextInputs not being settable to undefined programmatically ([e2645a5](https://github.com/facebook/react-native/commit/e2645a59f6211116d2069967443502910c167d6f)) by Garrett Forbes Monroe
+
+#### Android specific
+
+- Use NMake generator for Hermes build on Windows ([9d08d55bbe](https://github.com/facebook/react-native/commit/9d08d55bbef4e79a8843deef90bef828f7b9a6ef) by [@mganandraj](https://github.com/mganandraj))
+- Fixing failure building RN codegen CLI on Windows ([85c0c0f21f](https://github.com/facebook/react-native/commit/85c0c0f21fdb52543e603687a3c42dc40dff572b) by [@mganandraj](https://github.com/mganandraj))
+
+#### iOS specific
+
+- Add xcode 14 workaround (turn off signing resource bundles) for `React-Core` ([967de03f30](https://github.com/facebook/react-native/commit/967de03f304404ac8817936da37ca39514a09e33) by [@kelset](https://github.com/kelset))
+
 ## v0.70.2
 
 ### Added
