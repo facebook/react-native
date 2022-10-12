@@ -24,6 +24,7 @@ import type {
   ObjectTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
   VoidTypeAnnotation,
+  StringTypeAnnotation,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {TypeAliasResolutionStatus} from './utils';
@@ -69,6 +70,12 @@ function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
 function emitVoid(nullable: boolean): Nullable<VoidTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'VoidTypeAnnotation',
+  });
+}
+
+function emitStringish(nullable: boolean): Nullable<StringTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'StringTypeAnnotation',
   });
 }
 
@@ -160,5 +167,6 @@ module.exports = {
   emitPromise,
   emitRootTag,
   emitVoid,
+  emitStringish,
   typeAliasResolution,
 };
