@@ -1429,7 +1429,7 @@ const SwitchOnChangePromiseTest = () => (
   <Switch
     onChange={event => {
       const e: SwitchChangeEvent = event;
-      return new Promise(() => e.value);
+      return new Promise(() => e.nativeEvent.value);
     }}
   />
 );

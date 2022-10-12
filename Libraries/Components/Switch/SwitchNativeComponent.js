@@ -10,7 +10,11 @@
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
+import type {
+  BubblingEventHandler,
+  Int32,
+  WithDefault,
+} from '../../Types/CodegenTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
@@ -19,6 +23,7 @@ import * as React from 'react';
 
 type SwitchChangeEvent = $ReadOnly<{|
   value: boolean,
+  target: Int32,
 |}>;
 
 type NativeProps = $ReadOnly<{|
