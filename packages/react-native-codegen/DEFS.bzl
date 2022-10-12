@@ -536,6 +536,7 @@ def rn_codegen_cxx_modules(
     fb_native.genrule(
         name = generate_module_h_name,
         cmd = "cp $(location :{})/{}JSI.h $OUT".format(generate_fixtures_rule_name, name),
+        cmd_exe = "copy $(location :{})\\{}JSI.h $OUT".format(generate_fixtures_rule_name, name),
         out = "{}JSI.h".format(name),
         labels = ["codegen_rule"],
     )
@@ -543,6 +544,7 @@ def rn_codegen_cxx_modules(
     fb_native.genrule(
         name = generate_module_cpp_name,
         cmd = "cp $(location :{})/{}JSI-generated.cpp $OUT".format(generate_fixtures_rule_name, name),
+        cmd_exe = "copy $(location :{})\\{}JSI-generated.cpp $OUT".format(generate_fixtures_rule_name, name),
         out = "{}JSI-generated.cpp".format(name),
         labels = ["codegen_rule"],
     )
