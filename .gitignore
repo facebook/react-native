@@ -105,7 +105,6 @@ package-lock.json
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*
-!/packages/rn-tester/Pods/__offline_mirrors__
 !/packages/rn-tester/Pods/__offline_mirrors_hermes__
 !/packages/rn-tester/Pods/__offline_mirrors_jsc__
 
