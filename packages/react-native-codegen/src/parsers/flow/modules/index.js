@@ -25,6 +25,7 @@ import type {
 import type {TypeDeclarationMap} from '../utils.js';
 import type {ParserErrorCapturer} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
+import {nullGuard} from '../../parsers-utils';
 
 const {
   resolveTypeAnnotation,
@@ -71,10 +72,6 @@ const {
 } = require('../../errors.js');
 
 const language = 'Flow';
-
-function nullGuard<T>(fn: () => T): ?T {
-  return fn();
-}
 
 function translateTypeAnnotation(
   hasteModuleName: string,
