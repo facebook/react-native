@@ -17,8 +17,7 @@
 
 #include "conversions.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 YogaStylableProps::YogaStylableProps(
     const PropsParserContext &context,
@@ -194,5 +193,4 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -7,8 +7,7 @@
 
 #include "MountingTransaction.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using Number = MountingTransaction::Number;
 
@@ -42,5 +41,4 @@ Number MountingTransaction::getNumber() const {
   return number_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

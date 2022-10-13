@@ -7,8 +7,7 @@
 
 #include "ComponentDescriptor.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ComponentDescriptor::ComponentDescriptor(
     ComponentDescriptorParameters const &parameters)
@@ -21,5 +20,4 @@ ContextContainer::Shared const &ComponentDescriptor::getContextContainer()
   return contextContainer_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

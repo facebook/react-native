@@ -19,8 +19,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Size measureAndroidComponent(
     ContextContainer::Shared const &contextContainer,
@@ -446,5 +445,4 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
   return TextMeasurement{size, attachments};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

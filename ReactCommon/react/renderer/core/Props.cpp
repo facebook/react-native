@@ -12,8 +12,7 @@
 #include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Props::Props(
     const PropsParserContext &context,
@@ -50,5 +49,4 @@ void Props::setProp(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

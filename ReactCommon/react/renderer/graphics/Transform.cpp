@@ -12,8 +12,7 @@
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef RN_DEBUG_STRING_CONVERTIBLE
 void Transform::print(Transform const &t, std::string prefix) {
@@ -421,5 +420,4 @@ Size operator*(Size const &size, Transform const &transform) {
   return result;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

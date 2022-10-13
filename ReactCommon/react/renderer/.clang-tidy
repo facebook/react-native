@@ -4,6 +4,7 @@ Checks: '>
 clang-diagnostic-*,
 modernize-avoid-bind,
 modernize-avoid-c-arrays,
+modernize-concat-nested-namespaces,
 modernize-deprecated-headers,
 modernize-deprecated-ios-base-aliases,
 modernize-loop-convert,
@@ -182,5 +183,6 @@ clang-analyzer-unix.cstring.NullArg,
 clang-analyzer-valist.CopyToSelf,
 clang-analyzer-valist.Uninitialized,
 clang-analyzer-valist.Unterminated,
+google-build-using-namespace,
 '
 ...

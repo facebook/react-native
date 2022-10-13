@@ -14,8 +14,7 @@
 
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ScrollViewProps::ScrollViewProps(
     const PropsParserContext &context,
@@ -483,5 +482,4 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
