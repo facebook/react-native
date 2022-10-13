@@ -14,8 +14,8 @@ buildscript {
 plugins {
     id("com.android.library")
     id("com.facebook.react")
-    id("maven-publish")
     id("de.undercouch.download")
+    id("maven-publish")
 }
 
 import com.facebook.react.tasks.internal.*
@@ -26,10 +26,10 @@ import java.nio.file.Paths
 import kotlin.Pair
 
 import de.undercouch.gradle.tasks.download.Download
-import org.apache.tools.ant.taskdefs.condition.Os
-import org.apache.tools.ant.filters.ReplaceTokens
 
-def AAR_OUTPUT_URL = "file://${projectDir}/../android"
+version = VERSION_NAME
+group = "com.facebook.react"
+
 // We download various C++ open-source dependencies into downloads.
 // We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
 // After that we build native code from src/main/jni with module path pointing at third-party-ndk.
@@ -349,7 +349,7 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-tasks.register("packageReactNdkLibsForBuck") {
+task packageReactNdkLibsForBuck(type: Copy) {
     dependsOn("mergeDebugNativeLibs")
     // Shared libraries (.so) are copied from the merged_native_libs folder instead
     from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
@@ -396,11 +396,11 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DREACT_COMMON_DIR=${reactNativeRootDir}/ReactCommon",
-                        "-DREACT_ANDROID_DIR=$projectDir",
-                        "-DREACT_BUILD_DIR=$buildDir",
-                        "-DANDROID_STL=c++_shared",
-                        "-DANDROID_TOOLCHAIN=clang",
-                        "-DANDROID_PLATFORM=android-21"
+                    "-DREACT_ANDROID_DIR=$projectDir",
+                    "-DREACT_BUILD_DIR=$buildDir",
+                    "-DANDROID_STL=c++_shared",
+                    "-DANDROID_TOOLCHAIN=clang",
+                    "-DANDROID_PLATFORM=android-21"
 
                 targets "reactnativejni",
                     "jscexecutor",
@@ -430,7 +430,7 @@ android {
             }
         }
         ndk {
-            abiFilters (*reactNativeArchitectures())
+            abiFilters(*reactNativeArchitectures())
         }
     }
 
@@ -554,7 +554,7 @@ android {
     publishing {
         multipleVariants {
             withSourcesJar()
-            allVariants()
+            includeBuildTypeValues('debug', 'release')
         }
     }
 }
@@ -611,54 +611,17 @@ react {
     codegenDir = file(findNodeModulePath(projectDir, "react-native-codegen") ?: "../packages/react-native-codegen/")
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                // We do a multi variant release
-                from components.default
+apply plugin: "org.jetbrains.kotlin.android"
 
-                // You can then customize attributes of the publication as shown below.
-                artifactId = POM_ARTIFACT_ID
-                groupId = GROUP
-                version = VERSION_NAME
+/* Publishing Configuration */
+apply from: "./publish.gradle"
 
-                pom {
-                    name = POM_NAME
-                    description = "A framework for building native apps with React"
-                    url = "https://github.com/facebook/react-native"
-
-                    developers {
-                        developer {
-                            id = "facebook"
-                            name = "Facebook"
-                        }
-                    }
-
-                    licenses {
-                        license {
-                            name = "MIT License"
-                            url = "https://github.com/facebook/react-native/blob/HEAD/LICENSE"
-                            distribution = "repo"
-                        }
-                    }
-
-                    scm {
-                        url = "https://github.com/facebook/react-native.git"
-                        connection = "scm:git:https://github.com/facebook/react-native.git"
-                        developerConnection = "scm:git:git@github.com:facebook/react-native.git"
-                    }
-                }
-            }
-        }
-
-        repositories {
-            maven {
-                name = "npm"
-                url = AAR_OUTPUT_URL
-            }
+// We need to override the artifact ID as this project is called `ReactAndroid` but
+// the maven coordinates are on `react-native`.
+publishing {
+    publications {
+        getByName("release") {
+            artifactId 'react-native'
         }
     }
 }
-
-apply plugin: "org.jetbrains.kotlin.android"
