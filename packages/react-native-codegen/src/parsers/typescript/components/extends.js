@@ -60,12 +60,6 @@ function isProp(name: string, typeAnnotation: $FlowFixMe) {
   if (typeAnnotation.type === 'TSTypeReference') {
     // Remove unwanted types
     if (
-      typeAnnotation.typeName.name === 'DirectEventHandler' ||
-      typeAnnotation.typeName.name === 'BubblingEventHandler'
-    ) {
-      return false;
-    }
-    if (
       name === 'style' &&
       typeAnnotation.type === 'GenericTypeAnnotation' &&
       typeAnnotation.typeName.name === 'ViewStyleProp'
