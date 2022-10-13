@@ -49,9 +49,7 @@ FabricMountingManager::FabricMountingManager(
           config->getBool("react_fabric:disabled_view_preallocation_android")),
       disableRevisionCheckForPreallocation_(config->getBool(
           "react_fabric:disable_revision_check_for_preallocation")),
-      useOverflowInset_(getFeatureFlagValue("useOverflowInset")),
-      shouldRememberAllocatedViews_(
-          getFeatureFlagValue("shouldRememberAllocatedViews")) {
+      useOverflowInset_(getFeatureFlagValue("useOverflowInset")) {
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
 }
 
@@ -317,9 +315,6 @@ void FabricMountingManager::executeMount(
       LOG(ERROR) << "Executing commit after surface was stopped!";
     }
 
-    bool noRevisionCheck =
-        disablePreallocateViews_ || disableRevisionCheckForPreallocation_;
-
     for (const auto &mutation : mutations) {
       const auto &parentShadowView = mutation.parentShadowView;
       const auto &oldChildShadowView = mutation.oldChildShadowView;
@@ -350,13 +345,9 @@ void FabricMountingManager::executeMount(
 
       switch (mutationType) {
         case ShadowViewMutation::Create: {
-          bool revisionCheck =
-              noRevisionCheck || newChildShadowView.props->revision > 1;
           bool allocationCheck =
               !allocatedViewTags.contains(newChildShadowView.tag);
-          bool shouldCreateView =
-              shouldRememberAllocatedViews_ ? allocationCheck : revisionCheck;
-
+          bool shouldCreateView = allocationCheck;
           if (shouldCreateView) {
             cppCommonMountItems.push_back(
                 CppMountItem::CreateMountItem(newChildShadowView));
@@ -441,13 +432,10 @@ void FabricMountingManager::executeMount(
             cppCommonMountItems.push_back(CppMountItem::InsertMountItem(
                 parentShadowView, newChildShadowView, index));
 
-            bool revisionCheck =
-                noRevisionCheck || newChildShadowView.props->revision > 1;
             bool allocationCheck =
                 allocatedViewTags.find(newChildShadowView.tag) ==
                 allocatedViewTags.end();
-            bool shouldCreateView =
-                shouldRememberAllocatedViews_ ? allocationCheck : revisionCheck;
+            bool shouldCreateView = allocationCheck;
             if (shouldCreateView) {
               cppUpdatePropsMountItems.push_back(
                   CppMountItem::UpdatePropsMountItem({}, newChildShadowView));
@@ -500,8 +488,7 @@ void FabricMountingManager::executeMount(
       }
     }
 
-    if (shouldRememberAllocatedViews_ &&
-        allocatedViewsIterator != allocatedViewRegistry_.end()) {
+    if (allocatedViewsIterator != allocatedViewRegistry_.end()) {
       auto &views = allocatedViewsIterator->second;
       for (auto const &mutation : mutations) {
         switch (mutation.type) {
@@ -899,7 +886,7 @@ void FabricMountingManager::executeMount(
 void FabricMountingManager::preallocateShadowView(
     SurfaceId surfaceId,
     ShadowView const &shadowView) {
-  if (shouldRememberAllocatedViews_) {
+  {
     std::lock_guard lock(allocatedViewsMutex_);
     auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {

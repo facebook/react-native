@@ -97,7 +97,6 @@ public class ReactFeatureFlags {
   /** Feature Flag for mitigatin concurrent root crashes */
   public static boolean disablePreallocationOnClone = false;
 
-  public static boolean shouldRememberAllocatedViews = false;
   /**
    * Feature Flag to control the size of the cache used by TextLayoutManager in Fabric. Used from
    * JNI.
