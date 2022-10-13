@@ -87,6 +87,11 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   }
 
   @Override
+  @ReactProp(name = "accessibilityTitle")
+  public void setAccessibilityTitle(ReactModalHostView view, String accessibilityTitle) {
+    view.setAccessibilityTitle(accessibilityTitle);
+  }
+
   @ReactProp(name = "hardwareAccelerated")
   public void setHardwareAccelerated(ReactModalHostView view, boolean hardwareAccelerated) {
     view.setHardwareAccelerated(hardwareAccelerated);

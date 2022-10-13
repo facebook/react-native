@@ -131,6 +131,7 @@ type NativeProps = $ReadOnly<{|
    * The `identifier` is the unique number for identifying Modal components.
    */
   identifier?: WithDefault<Int32, 0>,
+  accessibilityTitle?: WithDefault<string, null>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>('ModalHostView', {
