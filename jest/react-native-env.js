@@ -7,7 +7,7 @@
  * @format
  */
 
- 'use strict';
+'use strict';
 
 const NodeEnv = require('jest-environment-node').TestEnvironment;
 
