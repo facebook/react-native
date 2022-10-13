@@ -21,6 +21,7 @@ import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
+import {roleToAccessibilityRoleMapping} from '../Utilities/AcessibilityMapping';
 
 /**
  * Text is the fundamental component for displaying text.
@@ -34,6 +35,7 @@ const Text: React.AbstractComponent<
   const {
     accessible,
     accessibilityLabel,
+    accessibilityRole,
     allowFontScaling,
     'aria-busy': ariaBusy,
     'aria-checked': ariaChecked,
@@ -55,6 +57,7 @@ const Text: React.AbstractComponent<
     onResponderTerminationRequest,
     onStartShouldSetResponder,
     pressRetentionOffset,
+    role,
     suppressHighlighting,
     ...restProps
   } = props;
@@ -223,6 +226,9 @@ const Text: React.AbstractComponent<
       accessibilityState={_accessibilityState}
       {...eventHandlersForText}
       accessibilityLabel={ariaLabel ?? accessibilityLabel}
+      accessibilityRole={
+        role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
+      }
       isHighlighted={isHighlighted}
       isPressable={isPressable}
       selectable={_selectable}
@@ -246,6 +252,9 @@ const Text: React.AbstractComponent<
         }
         accessibilityLabel={ariaLabel ?? accessibilityLabel}
         accessibilityState={nativeTextAccessibilityState}
+        accessibilityRole={
+          role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
+        }
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}

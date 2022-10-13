@@ -101,6 +101,11 @@ export interface AccessibilityProps
 
   'aria-live'?: ('polite' | 'assertive' | 'off') | undefined;
   'aria-modal'?: boolean | undefined;
+
+  /**
+   * Indicates to accessibility services to treat UI component like a specific role.
+   */
+  role?: Role;
 }
 
 export type AccessibilityActionInfo = Readonly<{
@@ -286,3 +291,69 @@ export interface AccessibilityPropsIOS {
    */
   accessibilityIgnoresInvertColors?: boolean | undefined;
 }
+
+export type Role =
+  | 'alert'
+  | 'alertdialog'
+  | 'application'
+  | 'article'
+  | 'banner'
+  | 'button'
+  | 'cell'
+  | 'checkbox'
+  | 'columnheader'
+  | 'combobox'
+  | 'complementary'
+  | 'contentinfo'
+  | 'definition'
+  | 'dialog'
+  | 'directory'
+  | 'document'
+  | 'feed'
+  | 'figure'
+  | 'form'
+  | 'grid'
+  | 'group'
+  | 'heading'
+  | 'img'
+  | 'link'
+  | 'list'
+  | 'listitem'
+  | 'log'
+  | 'main'
+  | 'marquee'
+  | 'math'
+  | 'menu'
+  | 'menubar'
+  | 'menuitem'
+  | 'meter'
+  | 'navigation'
+  | 'none'
+  | 'note'
+  | 'presentation'
+  | 'progressbar'
+  | 'radio'
+  | 'radiogroup'
+  | 'region'
+  | 'row'
+  | 'rowgroup'
+  | 'rowheader'
+  | 'scrollbar'
+  | 'searchbox'
+  | 'separator'
+  | 'slider'
+  | 'spinbutton'
+  | 'status'
+  | 'summary'
+  | 'switch'
+  | 'tab'
+  | 'table'
+  | 'tablist'
+  | 'tabpanel'
+  | 'term'
+  | 'timer'
+  | 'toolbar'
+  | 'tooltip'
+  | 'tree'
+  | 'treegrid'
+  | 'treeitem';
