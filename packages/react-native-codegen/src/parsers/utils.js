@@ -61,39 +61,33 @@ function verifyPlatforms(
   cxxOnly: boolean,
   excludedPlatforms: Array<'iOS' | 'android'>,
 }> {
-  let cxxOnly = false,
-    excludeIOS = false,
-    excludeAndroid = false;
-
+  let cxxOnly = false;
+  const excludedPlatforms = new Set<'iOS' | 'android'>();
   const namesToValidate = [...moduleNames, hasteModuleName];
 
   namesToValidate.forEach(name => {
     if (name.endsWith('Android')) {
-      excludeIOS = true;
+      excludedPlatforms.add('iOS');
+      return;
     }
 
     if (name.endsWith('IOS')) {
-      excludeAndroid = true;
+      excludedPlatforms.add('android');
+      return;
     }
 
     if (name.endsWith('Cxx')) {
       cxxOnly = true;
-      excludeIOS = true;
-      excludeAndroid = true;
+      excludedPlatforms.add('iOS');
+      excludedPlatforms.add('android');
+      return;
     }
   });
 
-  const excludedPlatforms = [];
-
-  if (excludeIOS) {
-    excludedPlatforms.push('iOS');
-  }
-
-  if (excludeAndroid) {
-    excludedPlatforms.push('android');
-  }
-
-  return {cxxOnly, excludedPlatforms};
+  return {
+    cxxOnly,
+    excludedPlatforms: Array.from(excludedPlatforms),
+  };
 }
 
 // TODO(T108222691): Use flow-types for @babel/parser
