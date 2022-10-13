@@ -209,10 +209,16 @@ function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
 
   const options = getOptions(optionsExpression);
 
-  const extendsProps : Array<ExtendsPropsShape> = [];
-  const componentPropAsts : Array<PropsAST> = [];
-  const componentEventAsts : Array<PropsAST> = [];
-  categorizeProps(propProperties, types, extendsProps, componentPropAsts, componentEventAsts);
+  const extendsProps: Array<ExtendsPropsShape> = [];
+  const componentPropAsts: Array<PropsAST> = [];
+  const componentEventAsts: Array<PropsAST> = [];
+  categorizeProps(
+    propProperties,
+    types,
+    extendsProps,
+    componentPropAsts,
+    componentEventAsts,
+  );
   const props = getProps(componentPropAsts, types);
   const events = getEvents(componentEventAsts, types);
   const commands = getCommands(commandProperties, types);

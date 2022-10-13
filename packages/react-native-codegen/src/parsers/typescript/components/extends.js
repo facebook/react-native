@@ -13,9 +13,7 @@
 import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
 const {parseTopLevelType} = require('../parseTopLevelType');
-const {
-  flattenProperties,
-} = require('./componentsUtils.js');
+const {flattenProperties} = require('./componentsUtils.js');
 
 function extendsForProp(prop: PropsAST, types: TypeDeclarationMap) {
   if (!prop.expression) {
@@ -80,9 +78,8 @@ function categorizeProps(
   props: Array<PropsAST>,
   events: Array<PropsAST>,
 ): void {
-  const remaining:Array<PropsAST> = [];
+  const remaining: Array<PropsAST> = [];
   for (const prop of typeDefinition) {
-
     // find extends
     if (prop.type === 'TSExpressionWithTypeArguments') {
       const extend = extendsForProp(prop, types);
@@ -109,7 +106,7 @@ function categorizeProps(
   }
 
   // find props
-  for(const prop of flattenProperties(remaining, types)) {
+  for (const prop of flattenProperties(remaining, types)) {
     if (isProp(prop.key.name, prop)) {
       props.push(prop);
     }

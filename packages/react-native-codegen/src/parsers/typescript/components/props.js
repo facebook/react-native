@@ -9,12 +9,13 @@
  */
 
 'use strict';
-const {
-  getSchemaInfo,
-  getTypeAnnotation,
-} = require('./componentsUtils.js');
+const {getSchemaInfo, getTypeAnnotation} = require('./componentsUtils.js');
 
-import type {NamedShape, StateTypeAnnotation, PropTypeAnnotation} from '../../../CodegenSchema.js';
+import type {
+  NamedShape,
+  StateTypeAnnotation,
+  PropTypeAnnotation,
+} from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
 
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
@@ -43,16 +44,14 @@ function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
-  return typeDefinition
-    .map(property => buildPropSchema(property, types));
+  return typeDefinition.map(property => buildPropSchema(property, types));
 }
 
 function getState(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<StateTypeAnnotation>> {
-  return typeDefinition
-    .map(property => buildPropSchema(property, types));
+  return typeDefinition.map(property => buildPropSchema(property, types));
 }
 
 module.exports = {
