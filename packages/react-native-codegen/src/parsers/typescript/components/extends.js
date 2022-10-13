@@ -36,31 +36,27 @@ function extendsForProp(prop: PropsAST, types: TypeDeclarationMap) {
   }
 }
 
-function removeKnownExtends(
-  typeDefinition: $ReadOnlyArray<PropsAST>,
-  types: TypeDeclarationMap,
-): $ReadOnlyArray<PropsAST> {
-  return typeDefinition.filter(
-    prop =>
-      prop.type !== 'TSExpressionWithTypeArguments' ||
-      extendsForProp(prop, types) === null,
-  );
-}
-
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type PropsAST = Object;
 
-function getExtendsProps(
+function categorizeProps(
   typeDefinition: $ReadOnlyArray<PropsAST>,
   types: TypeDeclarationMap,
-): $ReadOnlyArray<ExtendsPropsShape> {
-  return typeDefinition
-    .filter(prop => prop.type === 'TSExpressionWithTypeArguments')
-    .map(prop => extendsForProp(prop, types))
-    .filter(Boolean);
+  extendsProps: Array<ExtendsPropsShape>,
+  nonExtendsProps: Array<PropsAST>,
+): void {
+  for (const prop of typeDefinition) {
+    if (prop.type === 'TSExpressionWithTypeArguments') {
+      const extend = extendsForProp(prop, types);
+      if (extend) {
+        extendsProps.push(extend);
+        continue;
+      }
+    }
+    nonExtendsProps.push(prop);
+  }
 }
 
 module.exports = {
-  getExtendsProps,
-  removeKnownExtends,
+  categorizeProps,
 };
