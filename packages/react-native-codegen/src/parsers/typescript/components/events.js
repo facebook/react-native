@@ -200,7 +200,7 @@ function getEventArgument(argumentProps, name: $FlowFixMe) {
 function buildEventSchema(
   types: TypeDeclarationMap,
   property: EventTypeAST,
-): ?EventTypeShape {
+): EventTypeShape {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,

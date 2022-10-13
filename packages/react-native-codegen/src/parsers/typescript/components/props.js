@@ -24,7 +24,7 @@ type PropAST = Object;
 function buildPropSchema<T>(
   property: PropAST,
   types: TypeDeclarationMap,
-): ?NamedShape<T> {
+): NamedShape<T> {
   const info = getSchemaInfo(property, types);
   const {name, optional, typeAnnotation, defaultValue} = info;
   return {
@@ -44,14 +44,18 @@ function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
-  return typeDefinition.map(property => buildPropSchema(property, types));
+  return typeDefinition.map(property =>
+    buildPropSchema<PropTypeAnnotation>(property, types),
+  );
 }
 
 function getState(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<StateTypeAnnotation>> {
-  return typeDefinition.map(property => buildPropSchema(property, types));
+  return typeDefinition.map(property =>
+    buildPropSchema<StateTypeAnnotation>(property, types),
+  );
 }
 
 module.exports = {

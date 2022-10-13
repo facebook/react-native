@@ -436,7 +436,7 @@ type SchemaInfo = {
 function getSchemaInfo(
   property: PropAST,
   types: TypeDeclarationMap,
-): ?SchemaInfo {
+): SchemaInfo {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,

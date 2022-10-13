@@ -89,7 +89,11 @@ function categorizeProps(
       }
     }
 
-    // find events
+    remaining.push(prop);
+  }
+
+  // find events and props
+  for (const prop of flattenProperties(remaining, types)) {
     if (prop.type === 'TSPropertySignature') {
       const topLevelType = parseTopLevelType(
         prop.typeAnnotation.typeAnnotation,
@@ -98,17 +102,9 @@ function categorizeProps(
 
       if (isEvent(topLevelType.type)) {
         events.push(prop);
-        continue;
+      } else if (isProp(prop.key.name, prop)) {
+        props.push(prop);
       }
-    }
-
-    remaining.push(prop);
-  }
-
-  // find props
-  for (const prop of flattenProperties(remaining, types)) {
-    if (isProp(prop.key.name, prop)) {
-      props.push(prop);
     }
   }
 }
