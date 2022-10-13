@@ -17,6 +17,7 @@ import type {
 import type {RenderItemProps, RenderItemType} from './VirtualizedList';
 
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
+import VirtualizedList from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import memoizeOne from 'memoize-one';
 
@@ -24,7 +25,6 @@ const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const deepDiffer = require('../Utilities/differ/deepDiffer');
 const Platform = require('../Utilities/Platform');
-const VirtualizedList = require('./VirtualizedList');
 const invariant = require('invariant');
 const React = require('react');
 

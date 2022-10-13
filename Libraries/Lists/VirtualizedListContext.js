@@ -4,10 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow strict-local
  * @format
  */
 
+import VirtualizedList from './VirtualizedList';
 import * as React from 'react';
 import {useContext, useMemo} from 'react';
 
@@ -24,13 +25,13 @@ type Context = $ReadOnly<{
     zoomScale: number,
   },
   horizontal: ?boolean,
-  getOutermostParentListRef: () => React.ElementRef<typeof React.Component>,
+  getOutermostParentListRef: () => React.ElementRef<typeof VirtualizedList>,
   registerAsNestedChild: ({
     cellKey: string,
-    ref: React.ElementRef<typeof React.Component>,
+    ref: React.ElementRef<typeof VirtualizedList>,
   }) => void,
   unregisterAsNestedChild: ({
-    ref: React.ElementRef<typeof React.Component>,
+    ref: React.ElementRef<typeof VirtualizedList>,
   }) => void,
 }>;
 
