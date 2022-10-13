@@ -232,7 +232,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     super.setRowGap(rowGap);
   }
 
-  @ReactProp(name = ViewProps.COLUMN_GAP,defaultFloat = YogaConstants.UNDEFINED)
+  @ReactProp(name = ViewProps.COLUMN_GAP, defaultFloat = YogaConstants.UNDEFINED)
   public void setColumnGap(float columnGap) {
     if (isVirtual()) {
       return;
@@ -240,7 +240,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     super.setColumnGap(columnGap);
   }
 
-  @ReactProp(name = ViewProps.GAP,defaultFloat = YogaConstants.UNDEFINED)
+  @ReactProp(name = ViewProps.GAP, defaultFloat = YogaConstants.UNDEFINED)
   public void setGap(float gap) {
     if (isVirtual()) {
       return;
