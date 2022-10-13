@@ -10,14 +10,13 @@
 
 'use strict';
 
-import type {TypeAliasResolutionStatus} from '../utils';
+import type {TypeAliasResolutionStatus, TypeDeclarationMap} from '../utils';
 
 const {parseTopLevelType} = require('./parseTopLevelType');
 
 /**
  * TODO(T108222691): Use flow-types for @babel/parser
  */
-export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
