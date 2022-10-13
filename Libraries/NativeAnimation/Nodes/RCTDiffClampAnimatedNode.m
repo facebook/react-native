@@ -9,16 +9,14 @@
 
 #import <React/RCTLog.h>
 
-@implementation RCTDiffClampAnimatedNode
-{
+@implementation RCTDiffClampAnimatedNode {
   NSNumber *_inputNodeTag;
   CGFloat _min;
   CGFloat _max;
   CGFloat _lastValue;
 }
 
-- (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config
+- (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
   if (self = [super initWithTag:tag config:config]) {
     _inputNodeTag = config[@"input"];

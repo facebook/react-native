@@ -5,16 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeDelegate.h>
+#import <UIKit/UIKit.h>
 
 #if RCT_NEW_ARCH_ENABLED
 // When the new architecture is enabled, the RCTAppDelegate imports some additional headers
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
-
 
 #endif
 
@@ -37,8 +36,10 @@
  *
  * Overridable methods
  * Shared:
- *   - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions;
- *   - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge moduleName:(NSString*)moduleName initProps:(NSDictionary *)initProps;
+ *   - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary
+ *)launchOptions;
+ *   - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge moduleName:(NSString*)moduleName initProps:(NSDictionary
+ *)initProps;
  *   - (UIViewController *)createRootViewController;
  * New Architecture:
  *   - (BOOL)concurrentRootEnabled
@@ -82,7 +83,9 @@
  *
  * @returns: a UIView properly configured with a bridge for React Native.
  */
-- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge moduleName:(NSString*)moduleName initProps:(NSDictionary *)initProps;
+- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
+                          moduleName:(NSString *)moduleName
+                           initProps:(NSDictionary *)initProps;
 
 /**
  * It creates the RootViewController.

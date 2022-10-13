@@ -10,11 +10,10 @@
 
 #import "RCTNetworkPlugins.h"
 
-@interface RCTDataRequestHandler() <RCTTurboModule>
+@interface RCTDataRequestHandler () <RCTTurboModule>
 @end
 
-@implementation RCTDataRequestHandler
-{
+@implementation RCTDataRequestHandler {
   NSOperationQueue *_queue;
 }
 
@@ -31,8 +30,7 @@ RCT_EXPORT_MODULE()
   return [request.URL.scheme caseInsensitiveCompare:@"data"] == NSOrderedSame;
 }
 
-- (NSOperation *)sendRequest:(NSURLRequest *)request
-                withDelegate:(id<RCTURLRequestDelegate>)delegate
+- (NSOperation *)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
   // Lazy setup
   if (!_queue) {
@@ -42,10 +40,10 @@ RCT_EXPORT_MODULE()
 
   __weak __block NSBlockOperation *weakOp;
   __block NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
-
     // Get mime type
     NSRange firstSemicolon = [request.URL.resourceSpecifier rangeOfString:@";"];
-    NSString *mimeType = firstSemicolon.length ? [request.URL.resourceSpecifier substringToIndex:firstSemicolon.location] : nil;
+    NSString *mimeType =
+        firstSemicolon.length ? [request.URL.resourceSpecifier substringToIndex:firstSemicolon.location] : nil;
 
     // Send response
     NSURLResponse *response = [[NSURLResponse alloc] initWithURL:request.URL
@@ -57,9 +55,7 @@ RCT_EXPORT_MODULE()
 
     // Load data
     NSError *error;
-    NSData *data = [NSData dataWithContentsOfURL:request.URL
-                                         options:NSDataReadingMappedIfSafe
-                                           error:&error];
+    NSData *data = [NSData dataWithContentsOfURL:request.URL options:NSDataReadingMappedIfSafe error:&error];
     if (data) {
       [delegate URLRequest:weakOp didReceiveData:data];
     }
@@ -84,6 +80,7 @@ RCT_EXPORT_MODULE()
 
 @end
 
-Class RCTDataRequestHandlerCls(void) {
+Class RCTDataRequestHandlerCls(void)
+{
   return RCTDataRequestHandler.class;
 }

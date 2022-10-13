@@ -14,11 +14,10 @@
 
 #import "RCTNetworkPlugins.h"
 
-@interface RCTFileRequestHandler() <RCTTurboModule>
+@interface RCTFileRequestHandler () <RCTTurboModule>
 @end
 
-@implementation RCTFileRequestHandler
-{
+@implementation RCTFileRequestHandler {
   NSOperationQueue *_fileQueue;
 }
 
@@ -32,13 +31,10 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return
-  [request.URL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame
-  && !RCTIsBundleAssetURL(request.URL);
+  return [request.URL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame && !RCTIsBundleAssetURL(request.URL);
 }
 
-- (NSOperation *)sendRequest:(NSURLRequest *)request
-                withDelegate:(id<RCTURLRequestDelegate>)delegate
+- (NSOperation *)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
   // Lazy setup
   if (!_fileQueue) {
@@ -48,7 +44,6 @@ RCT_EXPORT_MODULE()
 
   __weak __block NSBlockOperation *weakOp;
   __block NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
-
     // Get content length
     NSError *error = nil;
     NSFileManager *fileManager = [NSFileManager new];
@@ -61,9 +56,9 @@ RCT_EXPORT_MODULE()
     // Get mime type
     NSString *fileExtension = [request.URL pathExtension];
     NSString *UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(
-      kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
-    NSString *contentType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass(
-      (__bridge CFStringRef)UTI, kUTTagClassMIMEType);
+        kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
+    NSString *contentType =
+        (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)UTI, kUTTagClassMIMEType);
 
     // Send response
     NSURLResponse *response = [[NSURLResponse alloc] initWithURL:request.URL
@@ -74,9 +69,7 @@ RCT_EXPORT_MODULE()
     [delegate URLRequest:weakOp didReceiveResponse:response];
 
     // Load data
-    NSData *data = [NSData dataWithContentsOfURL:request.URL
-                                         options:NSDataReadingMappedIfSafe
-                                           error:&error];
+    NSData *data = [NSData dataWithContentsOfURL:request.URL options:NSDataReadingMappedIfSafe error:&error];
     if (data) {
       [delegate URLRequest:weakOp didReceiveData:data];
     }
@@ -101,6 +94,7 @@ RCT_EXPORT_MODULE()
 
 @end
 
-Class RCTFileRequestHandlerCls(void) {
+Class RCTFileRequestHandlerCls(void)
+{
   return RCTFileRequestHandler.class;
 }

@@ -17,7 +17,7 @@
 #import "RCTSurfaceHostingComponent.h"
 #import "RCTSurfaceHostingComponentState.h"
 
-@interface RCTSurfaceHostingComponentController() <RCTSurfaceDelegate>
+@interface RCTSurfaceHostingComponentController () <RCTSurfaceDelegate>
 @end
 
 @implementation RCTSurfaceHostingComponentController {
@@ -83,11 +83,12 @@
     if (!strongSelf) {
       return;
     }
-    
-    [strongSelf.component updateState:^(RCTSurfaceHostingComponentState *state) {
-      return [RCTSurfaceHostingComponentState newWithStage:state.stage
-                                             intrinsicSize:intrinsicSize];
-    } mode:[strongSelf suitableStateUpdateMode]];
+
+    [strongSelf.component
+        updateState:^(RCTSurfaceHostingComponentState *state) {
+          return [RCTSurfaceHostingComponentState newWithStage:state.stage intrinsicSize:intrinsicSize];
+        }
+               mode:[strongSelf suitableStateUpdateMode]];
   });
 }
 
@@ -99,17 +100,20 @@
     if (!strongSelf) {
       return;
     }
-    
-    [strongSelf.component updateState:^(RCTSurfaceHostingComponentState *state) {
-      return [RCTSurfaceHostingComponentState newWithStage:stage
-                                             intrinsicSize:state.intrinsicSize];
-    } mode:[strongSelf suitableStateUpdateMode]];
+
+    [strongSelf.component
+        updateState:^(RCTSurfaceHostingComponentState *state) {
+          return [RCTSurfaceHostingComponentState newWithStage:stage intrinsicSize:state.intrinsicSize];
+        }
+               mode:[strongSelf suitableStateUpdateMode]];
   });
 }
 
 - (CKUpdateMode)suitableStateUpdateMode
 {
-  return ((RCTSurfaceHostingComponent *)self.component).options.synchronousStateUpdates && RCTIsMainQueue() ? CKUpdateModeSynchronous : CKUpdateModeAsynchronous;
+  return ((RCTSurfaceHostingComponent *)self.component).options.synchronousStateUpdates && RCTIsMainQueue()
+      ? CKUpdateModeSynchronous
+      : CKUpdateModeAsynchronous;
 }
 
 - (void)mountSurfaceView
