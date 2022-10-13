@@ -24,11 +24,13 @@
 
 #pragma mark - NSDictionary subclass
 
-// See subclassing notes in https://developer.apple.com/documentation/foundation/nsdictionary#//apple_ref/occ/cl/NSDictionary
+// See subclassing notes in
+// https://developer.apple.com/documentation/foundation/nsdictionary#//apple_ref/occ/cl/NSDictionary
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithObjects:(id  _Nonnull const [])objects
-                                            forKeys:(id<NSCopying> _Nonnull const [])keys
-                                              count:(NSUInteger)count)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithObjects
+                    : (id _Nonnull const[])objects forKeys
+                    : (id<NSCopying> _Nonnull const[])keys count
+                    : (NSUInteger)count)
 
 - (NSUInteger)count
 {

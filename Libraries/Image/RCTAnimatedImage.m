@@ -49,7 +49,10 @@
     }
     self = [super initWithCGImage:image.CGImage scale:MAX(scale, 1) orientation:image.imageOrientation];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveMemoryWarning:)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
   }
 
   return self;
@@ -89,7 +92,7 @@
       loopCount = gifLoopCount.unsignedIntegerValue;
       if (@available(iOS 14, *)) {
       } else {
-      // A loop count of 1 means it should animate twice, 2 means, thrice, etc.
+        // A loop count of 1 means it should animate twice, 2 means, thrice, etc.
         if (loopCount != 0) {
           loopCount++;
         }

@@ -38,7 +38,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
   _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
   _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-  self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge contextContainer:_contextContainer];
+  self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
+                                                               contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 #endif
 
@@ -61,19 +62,15 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-  [NSException
-   raise:@"RCTBridgeDelegate::sourceURLForBridge not implemented"
-   format:@"Subclasses must implement a valid sourceURLForBridge method"
-  ];
+  [NSException raise:@"RCTBridgeDelegate::sourceURLForBridge not implemented"
+              format:@"Subclasses must implement a valid sourceURLForBridge method"];
   return nil;
 }
 
 - (BOOL)concurrentRootEnabled
 {
-  [NSException
-   raise:@"concurrentRootEnabled not implemented"
-   format:@"Subclasses must implement a valid concurrentRootEnabled method"
-  ];
+  [NSException raise:@"concurrentRootEnabled not implemented"
+              format:@"Subclasses must implement a valid concurrentRootEnabled method"];
   return true;
 }
 
@@ -93,7 +90,9 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return [[RCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
 }
 
-- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge moduleName:(NSString*)moduleName initProps:(NSDictionary *)initProps
+- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
+                          moduleName:(NSString *)moduleName
+                           initProps:(NSDictionary *)initProps
 {
   return RCTAppSetupDefaultRootView(bridge, moduleName, initProps);
 }

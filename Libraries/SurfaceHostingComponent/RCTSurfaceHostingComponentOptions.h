@@ -9,7 +9,7 @@
 
 #import <ComponentKit/CKComponent.h>
 
-typedef CKComponent *(^RCTSurfaceHostingComponentOptionsActivityIndicatorComponentFactory)();
+typedef CKComponent * (^RCTSurfaceHostingComponentOptionsActivityIndicatorComponentFactory)();
 
 struct RCTSurfaceHostingComponentOptions {
   NSTimeInterval synchronousLayoutingTimeout = 0.350;
