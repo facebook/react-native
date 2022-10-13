@@ -7,8 +7,7 @@
 
 #include "TouchEventEmitter.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #pragma mark - Touches
 
@@ -216,5 +215,4 @@ void TouchEventEmitter::onPointerOut(const PointerEvent &event) const {
       RawEvent::Category::ContinuousStart);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -15,8 +15,7 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ParagraphProps::ParagraphProps(
     const PropsParserContext &context,
@@ -143,5 +142,4 @@ SharedDebugStringConvertibleList ParagraphProps::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

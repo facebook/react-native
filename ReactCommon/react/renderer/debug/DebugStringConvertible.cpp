@@ -10,8 +10,7 @@
 #include <folly/Conv.h>
 #include <folly/Format.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
@@ -150,5 +149,4 @@ std::string toString(void const *value) {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -9,8 +9,7 @@
 
 #include <react/renderer/core/LayoutContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char SliderComponentName[] = "Slider";
 
@@ -98,5 +97,4 @@ void SliderShadowNode::layout(LayoutContext layoutContext) {
   ConcreteViewShadowNode::layout(layoutContext);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

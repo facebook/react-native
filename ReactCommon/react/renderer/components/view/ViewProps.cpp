@@ -16,8 +16,7 @@
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 #include <react/renderer/graphics/conversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ViewProps::ViewProps(
     const PropsParserContext &context,
@@ -469,5 +468,4 @@ SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

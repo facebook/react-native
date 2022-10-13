@@ -14,8 +14,7 @@
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/graphics/conversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 template <class T>
 using LayoutableSmallVector = butter::small_vector<T, 16>;
@@ -103,7 +102,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
 
   auto ancestors = descendantNodeFamily.getAncestors(ancestorNode);
 
-  if (ancestors.size() == 0) {
+  if (ancestors.empty()) {
     // Specified nodes do not form an ancestor-descender relationship
     // in the same tree. Aborting.
     return EmptyLayoutMetrics;
@@ -146,7 +145,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   auto descendantLayoutableNode =
       traitCast<LayoutableShadowNode const *>(descendantNode);
 
-  if (!descendantLayoutableNode) {
+  if (descendantLayoutableNode == nullptr) {
     return EmptyLayoutMetrics;
   }
 
@@ -177,7 +176,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     auto currentShadowNode =
         traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
 
-    if (!currentShadowNode) {
+    if (currentShadowNode == nullptr) {
       return EmptyLayoutMetrics;
     }
 
@@ -245,7 +244,7 @@ LayoutableShadowNode::getLayoutableChildNodes() const {
   for (const auto &childShadowNode : getChildren()) {
     auto layoutableChildShadowNode =
         traitCast<LayoutableShadowNode const *>(childShadowNode.get());
-    if (layoutableChildShadowNode) {
+    if (layoutableChildShadowNode != nullptr) {
       layoutableChildren.push_back(
           const_cast<LayoutableShadowNode *>(layoutableChildShadowNode));
     }
@@ -254,8 +253,8 @@ LayoutableShadowNode::getLayoutableChildNodes() const {
 }
 
 Size LayoutableShadowNode::measureContent(
-    LayoutContext const &layoutContext,
-    LayoutConstraints const &layoutConstraints) const {
+    LayoutContext const & /*layoutContext*/,
+    LayoutConstraints const & /*layoutConstraints*/) const {
   return {};
 }
 
@@ -274,11 +273,11 @@ Size LayoutableShadowNode::measure(
   return layoutableShadowNode.getLayoutMetrics().frame.size;
 }
 
-Float LayoutableShadowNode::firstBaseline(Size size) const {
+Float LayoutableShadowNode::firstBaseline(Size /*size*/) const {
   return 0;
 }
 
-Float LayoutableShadowNode::lastBaseline(Size size) const {
+Float LayoutableShadowNode::lastBaseline(Size /*size*/) const {
   return 0;
 }
 
@@ -288,7 +287,7 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
   auto layoutableShadowNode =
       traitCast<const LayoutableShadowNode *>(node.get());
 
-  if (!layoutableShadowNode) {
+  if (layoutableShadowNode == nullptr) {
     return nullptr;
   }
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
@@ -356,5 +355,4 @@ SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
