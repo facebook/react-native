@@ -214,7 +214,7 @@ function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const componentEventAsts : Array<PropsAST> = [];
   categorizeProps(propProperties, types, extendsProps, componentPropAsts, componentEventAsts);
   const props = getProps(componentPropAsts, types);
-  const events = getEvents(propProperties, types);
+  const events = getEvents(componentEventAsts, types);
   const commands = getCommands(commandProperties, types);
 
   return {

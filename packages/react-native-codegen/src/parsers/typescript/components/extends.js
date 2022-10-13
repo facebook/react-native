@@ -12,6 +12,7 @@
 
 import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
+const {parseTopLevelType} = require('../parseTopLevelType');
 
 function extendsForProp(prop: PropsAST, types: TypeDeclarationMap) {
   if (!prop.expression) {
@@ -74,7 +75,10 @@ function categorizeProps(
     }
 
     // find events
-    if (prop.type === 'TSPropertySignature' && isEvent(prop)) {
+    if (prop.type === 'TSPropertySignature' && isEvent(parseTopLevelType(
+      prop.typeAnnotation.typeAnnotation,
+      types,
+    ).type)) {
       events.push(prop);
       continue;
     }
