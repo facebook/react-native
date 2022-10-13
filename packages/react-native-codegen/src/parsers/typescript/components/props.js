@@ -14,16 +14,16 @@ const {
   getTypeAnnotation,
 } = require('./componentsUtils.js');
 
-import type {NamedShape, PropTypeAnnotation} from '../../../CodegenSchema.js';
+import type {NamedShape, StateTypeAnnotation, PropTypeAnnotation} from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
 
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type PropAST = Object;
 
-function buildPropSchema(
+function buildPropSchema<T>(
   property: PropAST,
   types: TypeDeclarationMap,
-): ?NamedShape<PropTypeAnnotation> {
+): ?NamedShape<T> {
   const info = getSchemaInfo(property, types);
   const {name, optional, typeAnnotation, defaultValue} = info;
   return {
@@ -47,6 +47,15 @@ function getProps(
     .map(property => buildPropSchema(property, types));
 }
 
+function getState(
+  typeDefinition: $ReadOnlyArray<PropAST>,
+  types: TypeDeclarationMap,
+): $ReadOnlyArray<NamedShape<StateTypeAnnotation>> {
+  return typeDefinition
+    .map(property => buildPropSchema(property, types));
+}
+
 module.exports = {
   getProps,
+  getState,
 };
