@@ -36,6 +36,22 @@ function extendsForProp(prop: PropsAST, types: TypeDeclarationMap) {
   }
 }
 
+function isEvent(typeAnnotation: $FlowFixMe) {
+  switch (typeAnnotation.type) {
+    case 'TSTypeReference':
+      if (
+        typeAnnotation.typeName.name !== 'BubblingEventHandler' &&
+        typeAnnotation.typeName.name !== 'DirectEventHandler'
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    default:
+      return false;
+  }
+}
+
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type PropsAST = Object;
 
@@ -43,9 +59,12 @@ function categorizeProps(
   typeDefinition: $ReadOnlyArray<PropsAST>,
   types: TypeDeclarationMap,
   extendsProps: Array<ExtendsPropsShape>,
-  nonExtendsProps: Array<PropsAST>,
+  props: Array<PropsAST>,
+  events: Array<PropsAST>,
 ): void {
   for (const prop of typeDefinition) {
+
+    // find extends
     if (prop.type === 'TSExpressionWithTypeArguments') {
       const extend = extendsForProp(prop, types);
       if (extend) {
@@ -53,7 +72,15 @@ function categorizeProps(
         continue;
       }
     }
-    nonExtendsProps.push(prop);
+
+    // find events
+    if (prop.type === 'TSPropertySignature' && isEvent(prop)) {
+      events.push(prop);
+      continue;
+    }
+
+    // the rest are props
+    props.push(prop);
   }
 }
 
