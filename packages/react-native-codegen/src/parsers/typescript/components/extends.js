@@ -53,6 +53,26 @@ function isEvent(typeAnnotation: $FlowFixMe) {
   }
 }
 
+function isProp(name: string, typeAnnotation: $FlowFixMe) {
+  if (typeAnnotation.type === 'TSTypeReference') {
+    // Remove unwanted types
+    if (
+      typeAnnotation.typeName.name === 'DirectEventHandler' ||
+      typeAnnotation.typeName.name === 'BubblingEventHandler'
+    ) {
+      return false;
+    }
+    if (
+      name === 'style' &&
+      typeAnnotation.type === 'GenericTypeAnnotation' &&
+      typeAnnotation.typeName.name === 'ViewStyleProp'
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type PropsAST = Object;
 
@@ -74,16 +94,18 @@ function categorizeProps(
       }
     }
 
-    // find events
-    if (prop.type === 'TSPropertySignature' && isEvent(parseTopLevelType(
-      prop.typeAnnotation.typeAnnotation,
-      types,
-    ).type)) {
-      events.push(prop);
-      continue;
-    }
+    // find events and props
+    if (prop.type === 'TSPropertySignature') {
+      const topLevelType = parseTopLevelType(
+        prop.typeAnnotation.typeAnnotation,
+        types,
+      );
 
-    // the rest are props
+      if (isEvent(topLevelType.type)) {
+        events.push(prop);
+        continue;
+      }
+    }
     props.push(prop);
   }
 }
