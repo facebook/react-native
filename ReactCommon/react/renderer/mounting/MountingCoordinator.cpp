@@ -17,10 +17,9 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-MountingCoordinator::MountingCoordinator(ShadowTreeRevision baseRevision)
+MountingCoordinator::MountingCoordinator(const ShadowTreeRevision &baseRevision)
     : surfaceId_(baseRevision.rootShadowNode->getSurfaceId()),
       baseRevision_(baseRevision),
       telemetryController_(*this) {
@@ -68,7 +67,7 @@ bool MountingCoordinator::waitForTransaction(
 
 void MountingCoordinator::updateBaseRevision(
     ShadowTreeRevision const &baseRevision) const {
-  baseRevision_ = std::move(baseRevision);
+  baseRevision_ = baseRevision;
 }
 
 void MountingCoordinator::resetLatestRevision() const {
@@ -186,5 +185,4 @@ void MountingCoordinator::setMountingOverrideDelegate(
   mountingOverrideDelegate_ = std::move(delegate);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -8,16 +8,17 @@
  * @format
  */
 
-import * as StaticViewConfigValidator from './StaticViewConfigValidator';
-import {createViewConfig} from './ViewConfig';
-import UIManager from '../ReactNative/UIManager';
 import type {
   HostComponent,
   PartialViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';
-import ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
+
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
+import UIManager from '../ReactNative/UIManager';
+import ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
 import verifyComponentAttributeEquivalence from '../Utilities/verifyComponentAttributeEquivalence';
+import * as StaticViewConfigValidator from './StaticViewConfigValidator';
+import {createViewConfig} from './ViewConfig';
 import invariant from 'invariant';
 import * as React from 'react';
 

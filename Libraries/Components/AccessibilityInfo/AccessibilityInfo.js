@@ -8,16 +8,17 @@
  * @format
  */
 
-import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
-import {sendAccessibilityEvent} from '../../Renderer/shims/ReactNative';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import Platform from '../../Utilities/Platform';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {AccessibilityInfoType} from './AccessibilityInfo.flow';
+import type {ElementRef} from 'react';
+
+import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
+import {sendAccessibilityEvent} from '../../ReactNative/RendererProxy';
+import Platform from '../../Utilities/Platform';
+import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
 import NativeAccessibilityInfoAndroid from './NativeAccessibilityInfo';
 import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
-import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
-import type {ElementRef} from 'react';
-import type {AccessibilityInfo as AccessibilityInfoType} from './AccessibilityInfo.flow';
 
 // Events that are only supported on Android.
 type AccessibilityEventDefinitionsAndroid = {
@@ -180,6 +181,34 @@ const AccessibilityInfo: AccessibilityInfoType = {
   },
 
   /**
+   * Query whether reduce motion and prefer cross-fade transitions settings are currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when  prefer cross-fade transitions is enabled and `false` otherwise.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo#prefersCrossFadeTransitions
+   */
+  prefersCrossFadeTransitions(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Platform.OS === 'android') {
+        return Promise.resolve(false);
+      } else {
+        if (
+          NativeAccessibilityManagerIOS?.getCurrentPrefersCrossFadeTransitionsState !=
+          null
+        ) {
+          NativeAccessibilityManagerIOS.getCurrentPrefersCrossFadeTransitionsState(
+            resolve,
+            reject,
+          );
+        } else {
+          reject(null);
+        }
+      }
+    });
+  },
+
+  /**
    * Query whether reduced transparency is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
@@ -302,7 +331,8 @@ const AccessibilityInfo: AccessibilityInfoType = {
     const deviceEventName = EventNames.get(eventName);
     return deviceEventName == null
       ? {remove(): void {}}
-      : RCTDeviceEventEmitter.addListener(deviceEventName, handler);
+      : // $FlowFixMe[incompatible-call]
+        RCTDeviceEventEmitter.addListener(deviceEventName, handler);
   },
 
   /**

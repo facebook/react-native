@@ -9,8 +9,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 RuntimeSchedulerCallInvoker::RuntimeSchedulerCallInvoker(
     std::weak_ptr<RuntimeScheduler> runtimeScheduler)
@@ -30,5 +29,4 @@ void RuntimeSchedulerCallInvoker::invokeSync(std::function<void()> &&func) {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

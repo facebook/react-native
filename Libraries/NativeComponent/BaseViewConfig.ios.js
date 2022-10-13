@@ -8,12 +8,13 @@
  * @flow strict-local
  */
 
-import {
-  DynamicallyInjectedByGestureHandler,
-  ConditionallyIgnoredEventHandlers,
-} from './ViewConfigIgnore';
-import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
+
+import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
+import {
+  ConditionallyIgnoredEventHandlers,
+  DynamicallyInjectedByGestureHandler,
+} from './ViewConfigIgnore';
 
 const bubblingEventTypes = {
   // Generic Events

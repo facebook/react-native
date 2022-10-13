@@ -6,12 +6,13 @@
  */
 
 #include "FabricMountingManager.h"
+#include "CppViewMutationsWrapper.h"
 #include "EventEmitterWrapper.h"
 #include "StateWrapperImpl.h"
-#include "viewPropConversions.h"
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
@@ -38,19 +39,19 @@ static bool getFeatureFlagValue(const char *name) {
 
 FabricMountingManager::FabricMountingManager(
     std::shared_ptr<const ReactNativeConfig> &config,
+    std::shared_ptr<const CppComponentRegistry> &cppComponentRegistry,
     global_ref<jobject> &javaUIManager)
     : javaUIManager_(javaUIManager),
+      cppComponentRegistry_(cppComponentRegistry),
       enableEarlyEventEmitterUpdate_(
           config->getBool("react_fabric:enable_early_event_emitter_update")),
       disablePreallocateViews_(
           config->getBool("react_fabric:disabled_view_preallocation_android")),
       disableRevisionCheckForPreallocation_(config->getBool(
           "react_fabric:disable_revision_check_for_preallocation")),
-      useOverflowInset_(getFeatureFlagValue("useOverflowInset")),
-      shouldRememberAllocatedViews_(
-          getFeatureFlagValue("shouldRememberAllocatedViews")),
-      useMapBufferForViewProps_(config->getBool(
-          "react_native_new_architecture:use_mapbuffer_for_viewprops")) {}
+      useOverflowInset_(getFeatureFlagValue("useOverflowInset")) {
+  CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
+}
 
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
@@ -82,6 +83,8 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
       return 7; // tag, parentTag, x, y, w, h, DisplayType
     case CppMountItem::Type::UpdateOverflowInset:
       return 5; // tag, left, top, right, bottom
+    case CppMountItem::Type::RunCPPMutations:
+      return 1;
     case CppMountItem::Undefined:
     case CppMountItem::Multiple:
       return -1;
@@ -124,7 +127,8 @@ static inline void computeBufferSizes(
     std::vector<CppMountItem> &cppUpdatePaddingMountItems,
     std::vector<CppMountItem> &cppUpdateLayoutMountItems,
     std::vector<CppMountItem> &cppUpdateOverflowInsetMountItems,
-    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems) {
+    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems,
+    ShadowViewMutationList &cppViewMutations) {
   CppMountItem::Type lastType = CppMountItem::Type::Undefined;
   int numSameType = 0;
   for (auto const &mountItem : cppCommonMountItems) {
@@ -183,6 +187,11 @@ static inline void computeBufferSizes(
       cppDeleteMountItems.size(),
       batchMountItemIntsSize,
       batchMountItemObjectsSize);
+
+  if (cppViewMutations.size() > 0) {
+    batchMountItemIntsSize++;
+    batchMountItemObjectsSize++;
+  }
 }
 
 static inline void writeIntBufferTypePreamble(
@@ -247,17 +256,17 @@ static inline float scale(Float value, Float pointScaleFactor) {
 local_ref<jobject> FabricMountingManager::getProps(
     ShadowView const &oldShadowView,
     ShadowView const &newShadowView) {
-  if (useMapBufferForViewProps_ &&
-      newShadowView.traits.check(ShadowNodeTraits::Trait::View)) {
+  if (CoreFeatures::enableMapBuffer &&
+      newShadowView.traits.check(
+          ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported)) {
     react_native_assert(
         newShadowView.props->rawProps.empty() &&
         "Raw props must be empty when views are using mapbuffer");
-    auto oldProps = oldShadowView.props != nullptr
-        ? static_cast<ViewProps const &>(*oldShadowView.props)
-        : ViewProps{};
-    auto newProps = static_cast<ViewProps const &>(*newShadowView.props);
-    return JReadableMapBuffer::createWithContents(
-        viewPropsDiff(oldProps, newProps));
+
+    // MapBufferBuilder must be constructed and live in this scope,
+    MapBufferBuilder builder;
+    newShadowView.props->propsDiffMapBuffer(&*oldShadowView.props, builder);
+    return JReadableMapBuffer::createWithContents(builder.build());
   } else {
     return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
   }
@@ -293,7 +302,7 @@ void FabricMountingManager::executeMount(
   std::vector<CppMountItem> cppUpdateLayoutMountItems;
   std::vector<CppMountItem> cppUpdateOverflowInsetMountItems;
   std::vector<CppMountItem> cppUpdateEventEmitterMountItems;
-
+  auto cppViewMutations = ShadowViewMutationList();
   {
     std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
 
@@ -306,9 +315,6 @@ void FabricMountingManager::executeMount(
       LOG(ERROR) << "Executing commit after surface was stopped!";
     }
 
-    bool noRevisionCheck =
-        disablePreallocateViews_ || disableRevisionCheckForPreallocation_;
-
     for (const auto &mutation : mutations) {
       const auto &parentShadowView = mutation.parentShadowView;
       const auto &oldChildShadowView = mutation.oldChildShadowView;
@@ -318,15 +324,30 @@ void FabricMountingManager::executeMount(
 
       bool isVirtual = mutation.mutatedViewIsVirtual();
 
+      // Detect if the mutation instruction belongs to C++ view managers
+      if (cppComponentRegistry_) {
+        auto componentName = newChildShadowView.componentName
+            ? newChildShadowView.componentName
+            : oldChildShadowView.componentName;
+        auto name = std::string(componentName);
+        if (cppComponentRegistry_->containsComponentManager(name)) {
+          // is this thread safe?
+          cppViewMutations.push_back(mutation);
+
+          // This is a hack that could be avoided by using Portals
+          // Only execute mutations instructions for Root C++ ViewManagers
+          // because Root C++ Components have a Android view counterpart.
+          if (!cppComponentRegistry_->isRootComponent(name)) {
+            continue;
+          }
+        }
+      }
+
       switch (mutationType) {
         case ShadowViewMutation::Create: {
-          bool revisionCheck =
-              noRevisionCheck || newChildShadowView.props->revision > 1;
           bool allocationCheck =
               !allocatedViewTags.contains(newChildShadowView.tag);
-          bool shouldCreateView =
-              shouldRememberAllocatedViews_ ? allocationCheck : revisionCheck;
-
+          bool shouldCreateView = allocationCheck;
           if (shouldCreateView) {
             cppCommonMountItems.push_back(
                 CppMountItem::CreateMountItem(newChildShadowView));
@@ -411,13 +432,10 @@ void FabricMountingManager::executeMount(
             cppCommonMountItems.push_back(CppMountItem::InsertMountItem(
                 parentShadowView, newChildShadowView, index));
 
-            bool revisionCheck =
-                noRevisionCheck || newChildShadowView.props->revision > 1;
             bool allocationCheck =
                 allocatedViewTags.find(newChildShadowView.tag) ==
                 allocatedViewTags.end();
-            bool shouldCreateView =
-                shouldRememberAllocatedViews_ ? allocationCheck : revisionCheck;
+            bool shouldCreateView = allocationCheck;
             if (shouldCreateView) {
               cppUpdatePropsMountItems.push_back(
                   CppMountItem::UpdatePropsMountItem({}, newChildShadowView));
@@ -470,8 +488,7 @@ void FabricMountingManager::executeMount(
       }
     }
 
-    if (shouldRememberAllocatedViews_ &&
-        allocatedViewsIterator != allocatedViewRegistry_.end()) {
+    if (allocatedViewsIterator != allocatedViewRegistry_.end()) {
       auto &views = allocatedViewsIterator->second;
       for (auto const &mutation : mutations) {
         switch (mutation.type) {
@@ -502,7 +519,8 @@ void FabricMountingManager::executeMount(
       cppUpdatePaddingMountItems,
       cppUpdateLayoutMountItems,
       cppUpdateOverflowInsetMountItems,
-      cppUpdateEventEmitterMountItems);
+      cppUpdateEventEmitterMountItems,
+      cppViewMutations);
 
   static auto createMountItemsIntBufferBatchContainer =
       jni::findClassStatic(UIManagerJavaDescriptor)
@@ -809,6 +827,36 @@ void FabricMountingManager::executeMount(
     }
   }
 
+  if (cppViewMutations.size() > 0) {
+    writeIntBufferTypePreamble(
+        CppMountItem::Type::RunCPPMutations,
+        1,
+        env,
+        intBufferArray,
+        intBufferPosition);
+
+    // TODO review this logic and memory mamangement
+    // this might not be necessary:
+    // temp[0] = 1234;
+    // env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
+    // intBufferPosition += 1;
+
+    // Do not hold a reference to javaCppMutations from the C++ side.
+    auto javaCppMutations = CppViewMutationsWrapper::newObjectJavaArgs();
+    CppViewMutationsWrapper *cppViewMutationsWrapper = cthis(javaCppMutations);
+
+    // TODO move this to init methods
+    cppViewMutationsWrapper->cppComponentRegistry = cppComponentRegistry_;
+    // TODO is moving the cppViewMutations safe / thread safe?
+    // cppViewMutations will be accessed from the UI Thread in a near future
+    // can they dissapear?
+    cppViewMutationsWrapper->cppViewMutations =
+        std::make_shared<std::vector<facebook::react::ShadowViewMutation>>(
+            std::move(cppViewMutations));
+
+    (*objBufferArray)[objBufferPosition++] = javaCppMutations.get();
+  }
+
   // If there are no items, we pass a nullptr instead of passing the object
   // through the JNI
   auto batch = createMountItemsIntBufferBatchContainer(
@@ -838,7 +886,7 @@ void FabricMountingManager::executeMount(
 void FabricMountingManager::preallocateShadowView(
     SurfaceId surfaceId,
     ShadowView const &shadowView) {
-  if (shouldRememberAllocatedViews_) {
+  {
     std::lock_guard lock(allocatedViewsMutex_);
     auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {

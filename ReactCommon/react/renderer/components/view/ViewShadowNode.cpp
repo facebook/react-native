@@ -8,32 +8,11 @@
 #include "ViewShadowNode.h"
 #include <react/config/ReactNativeConfig.h>
 #include <react/renderer/components/view/primitives.h>
+#include <react/renderer/core/CoreFeatures.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 char const ViewComponentName[] = "View";
-
-static inline bool keepRawValuesInViewProps(PropsParserContext const &context) {
-  static bool shouldUseRawProps = true;
-
-#ifdef ANDROID
-  static bool initialized = false;
-
-  if (!initialized) {
-    auto config =
-        context.contextContainer.find<std::shared_ptr<const ReactNativeConfig>>(
-            "ReactNativeConfig");
-    if (config.has_value()) {
-      initialized = true;
-      shouldUseRawProps = !config.value()->getBool(
-          "react_native_new_architecture:use_mapbuffer_for_viewprops");
-    }
-  }
-#endif
-
-  return shouldUseRawProps;
-}
 
 ViewShadowNodeProps::ViewShadowNodeProps(
     PropsParserContext const &context,
@@ -43,7 +22,7 @@ ViewShadowNodeProps::ViewShadowNodeProps(
           context,
           sourceProps,
           rawProps,
-          keepRawValuesInViewProps(context)){};
+          !CoreFeatures::enableMapBuffer){};
 
 ViewShadowNode::ViewShadowNode(
     ShadowNodeFragment const &fragment,
@@ -106,7 +85,10 @@ void ViewShadowNode::initialize() noexcept {
   } else {
     traits_.unset(ShadowNodeTraits::Trait::FormsStackingContext);
   }
+
+#ifdef ANDROID
+  traits_.set(ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported);
+#endif
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

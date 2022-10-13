@@ -40,6 +40,7 @@ namespace m = ::facebook::hermes::inspector::chrome::message;
 static const char *const kVirtualBreakpointPrefix = "virtualbreakpoint-";
 static const char *const kBeforeScriptWithSourceMapExecution =
     "beforeScriptWithSourceMapExecution";
+static const char *const kUserEnteredScriptPrefix = "userScript";
 
 /*
  * Connection::Impl
@@ -54,7 +55,7 @@ class Connection::Impl : public inspector::InspectorObserver,
       bool waitForDebugger);
   ~Impl();
 
-  jsi::Runtime &getRuntime();
+  HermesRuntime &getRuntime();
   std::string getTitle() const;
 
   bool connect(std::unique_ptr<IRemoteConnection> remoteConn);
@@ -104,6 +105,7 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::profiler::StartRequest &req) override;
   void handle(const m::profiler::StopRequest &req) override;
   void handle(const m::runtime::CallFunctionOnRequest &req) override;
+  void handle(const m::runtime::CompileScriptRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetHeapUsageRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
@@ -140,7 +142,7 @@ class Connection::Impl : public inspector::InspectorObserver,
 
   template <typename C>
   void runInExecutor(int id, C callback) {
-    folly::via(executor_.get(), [cb = std::move(callback)]() { cb(); });
+    executor_->add([cb = std::move(callback)]() { cb(); });
   }
 
   std::shared_ptr<RuntimeAdapter> runtimeAdapter_;
@@ -159,6 +161,10 @@ class Connection::Impl : public inspector::InspectorObserver,
   // Access is protected by parsedScriptsMutex_.
   std::mutex parsedScriptsMutex_;
   std::vector<std::string> parsedScripts_;
+
+  // preparedScripts_ stores user-entered scripts that have been prepared for
+  // execution, and may be invoked by a later command.
+  std::vector<std::shared_ptr<const jsi::PreparedJavaScript>> preparedScripts_;
 
   // Some events are represented as a mode in Hermes but a breakpoint in CDP,
   // e.g. "beforeScriptExecution" and "beforeScriptWithSourceMapExecution".
@@ -203,7 +209,7 @@ Connection::Impl::Impl(
 
 Connection::Impl::~Impl() = default;
 
-jsi::Runtime &Connection::Impl::getRuntime() {
+HermesRuntime &Connection::Impl::getRuntime() {
   return runtimeAdapter_->getRuntime();
 }
 
@@ -384,8 +390,7 @@ void Connection::Impl::onScriptParsed(
   m::debugger::ScriptParsedNotification note;
   note.scriptId = folly::to<std::string>(info.fileId);
   note.url = info.fileName;
-  // TODO(jpporto): fix test cases sending invalid context id.
-  // note.executionContextId = kHermesExecutionContextId;
+  note.executionContextId = kHermesExecutionContextId;
 
   if (!info.sourceMappingUrl.empty()) {
     note.sourceMapURL = info.sourceMappingUrl;
@@ -730,14 +735,6 @@ void Connection::Impl::handle(
 }
 
 void Connection::Impl::handle(const m::profiler::StartRequest &req) {
-  auto *hermesRT = dynamic_cast<HermesRuntime *>(&getRuntime());
-
-  if (!hermesRT) {
-    sendResponseToClientViaExecutor(m::makeErrorResponse(
-        req.id, m::ErrorCode::ServerError, "Unhandled Runtime kind."));
-    return;
-  }
-
   runInExecutor(req.id, [this, id = req.id]() {
     HermesRuntime::enableSamplingProfiler();
     sendResponseToClient(m::makeOkResponse(id));
@@ -745,13 +742,7 @@ void Connection::Impl::handle(const m::profiler::StartRequest &req) {
 }
 
 void Connection::Impl::handle(const m::profiler::StopRequest &req) {
-  auto *hermesRT = dynamic_cast<HermesRuntime *>(&getRuntime());
-
-  if (!hermesRT) {
-    sendResponseToClientViaExecutor(m::makeErrorResponse(
-        req.id, m::ErrorCode::ServerError, "Unhandled Runtime kind."));
-    return;
-  }
+  HermesRuntime *hermesRT = &getRuntime();
 
   runInExecutor(req.id, [this, id = req.id, hermesRT]() {
     HermesRuntime::disableSamplingProfiler();
@@ -1092,6 +1083,42 @@ void Connection::Impl::handle(const m::runtime::CallFunctionOnRequest &req) {
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
+void Connection::Impl::handle(const m::runtime::CompileScriptRequest &req) {
+  auto resp = std::make_shared<m::runtime::CompileScriptResponse>();
+  resp->id = req.id;
+
+  inspector_
+      ->executeIfEnabled(
+          "Runtime.compileScriptRequest",
+          [this, req, resp](const debugger::ProgramState &state) {
+            if (req.executionContextId.hasValue() &&
+                req.executionContextId.value() != kHermesExecutionContextId) {
+              throw std::invalid_argument("Invalid execution context");
+            }
+
+            auto source = std::make_shared<jsi::StringBuffer>(req.expression);
+            std::shared_ptr<const jsi::PreparedJavaScript> preparedScript;
+            try {
+              preparedScript =
+                  getRuntime().prepareJavaScript(source, req.sourceURL);
+            } catch (const facebook::jsi::JSIException &err) {
+              resp->exceptionDetails = m::runtime::ExceptionDetails();
+              resp->exceptionDetails->text = err.what();
+              return;
+            }
+
+            if (req.persistScript) {
+              auto scriptId = folly::to<std::string>(
+                  kUserEnteredScriptPrefix, preparedScripts_.size());
+              preparedScripts_.push_back(std::move(preparedScript));
+              resp->scriptId = scriptId;
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
 void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
   auto remoteObjPtr = std::make_shared<m::runtime::RemoteObject>();
 
@@ -1412,20 +1439,14 @@ Connection::Impl::makePropsFromValue(
 }
 
 void Connection::Impl::handle(const m::runtime::GetHeapUsageRequest &req) {
-  auto resp = std::make_shared<m::runtime::GetHeapUsageResponse>();
-  resp->id = req.id;
-
-  inspector_
-      ->executeIfEnabled(
-          "Runtime.getHeapUsage",
-          [this, req, resp](const debugger::ProgramState &state) {
-            auto heapInfo = getRuntime().instrumentation().getHeapInfo(false);
-            resp->usedSize = heapInfo["hermes_allocatedBytes"];
-            resp->totalSize = heapInfo["hermes_heapSize"];
-          })
-      .via(executor_.get())
-      .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
-      .thenError<std::exception>(sendErrorToClient(req.id));
+  runInExecutor(req.id, [this, req]() {
+    auto heapInfo = getRuntime().instrumentation().getHeapInfo(false);
+    auto resp = std::make_shared<m::runtime::GetHeapUsageResponse>();
+    resp->id = req.id;
+    resp->usedSize = heapInfo["hermes_allocatedBytes"];
+    resp->totalSize = heapInfo["hermes_heapSize"];
+    sendResponseToClient(*resp);
+  });
 }
 
 void Connection::Impl::handle(const m::runtime::GetPropertiesRequest &req) {
@@ -1579,7 +1600,7 @@ Connection::Connection(
 
 Connection::~Connection() = default;
 
-jsi::Runtime &Connection::getRuntime() {
+HermesRuntime &Connection::getRuntime() {
   return impl_->getRuntime();
 }
 

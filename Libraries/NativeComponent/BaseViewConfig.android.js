@@ -8,9 +8,10 @@
  * @flow strict-local
  */
 
-import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
-import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
+
+import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
+import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
 
 const bubblingEventTypes = {
   // Bubbling events from UIManagerModuleConstants.java
@@ -172,6 +173,8 @@ const validAttributesForNonEventProps = {
   accessibilityLabel: true,
   accessibilityHint: true,
   accessibilityRole: true,
+  accessibilityCollection: true,
+  accessibilityCollectionItem: true,
   accessibilityState: true,
   accessibilityActions: true,
   accessibilityValue: true,
@@ -182,7 +185,6 @@ const validAttributesForNonEventProps = {
   translateX: true,
   translateY: true,
   accessibilityLiveRegion: true,
-  needsOffscreenAlphaCompositing: true,
 
   // @ReactProps from LayoutShadowNode
   width: true,
@@ -273,8 +275,15 @@ const validAttributesForEventProps = {
 
   // Pointer events
   onPointerEnter: true,
+  onPointerEnterCapture: true,
   onPointerLeave: true,
+  onPointerLeaveCapture: true,
   onPointerMove: true,
+  onPointerMoveCapture: true,
+  onPointerOut: true,
+  onPointerOutCapture: true,
+  onPointerOver: true,
+  onPointerOverCapture: true,
 };
 
 /**

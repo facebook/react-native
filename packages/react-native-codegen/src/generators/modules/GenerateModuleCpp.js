@@ -22,7 +22,7 @@ import type {
 
 import type {AliasResolver} from './Utils';
 const {createAliasResolver, getModules} = require('./Utils');
-const {unwrapNullable} = require('../../parsers/flow/modules/utils');
+const {unwrapNullable} = require('../../parsers/parsers-commons');
 
 type FilesOutput = Map<string, string>;
 
@@ -153,6 +153,17 @@ function serializeArg(
       return wrap(val => `${val}.asString(rt)`);
     case 'BooleanTypeAnnotation':
       return wrap(val => `${val}.asBool()`);
+    case 'EnumDeclaration':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrap(val => `${val}.asNumber()`);
+        case 'StringTypeAnnotation':
+          return wrap(val => `${val}.asString(rt)`);
+        default:
+          throw new Error(
+            `Unknown enum type for "${arg.name}, found: ${realTypeAnnotation.type}"`,
+          );
+      }
     case 'NumberTypeAnnotation':
       return wrap(val => `${val}.asNumber()`);
     case 'FloatTypeAnnotation':
@@ -167,6 +178,19 @@ function serializeArg(
       return wrap(val => `${val}.asObject(rt).asFunction(rt)`);
     case 'GenericObjectTypeAnnotation':
       return wrap(val => `${val}.asObject(rt)`);
+    case 'UnionTypeAnnotation':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrap(val => `${val}.asNumber()`);
+        case 'ObjectTypeAnnotation':
+          return wrap(val => `${val}.asObject(rt)`);
+        case 'StringTypeAnnotation':
+          return wrap(val => `${val}.asString(rt)`);
+        default:
+          throw new Error(
+            `Unsupported union member type for param  "${arg.name}, found: ${realTypeAnnotation.memberType}"`,
+          );
+      }
     case 'ObjectTypeAnnotation':
       return wrap(val => `${val}.asObject(rt)`);
     case 'MixedTypeAnnotation':

@@ -32,8 +32,7 @@
 
 MockClock::time_point MockClock::time_ = {};
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static void testShadowNodeTreeLifeCycleLayoutAnimations(
     uint_fast32_t seed,
@@ -64,7 +63,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
   // Create a RuntimeExecutor
   RuntimeExecutor runtimeExecutor =
-      [](std::function<void(jsi::Runtime &)> const &) {};
+      [](std::function<void(jsi::Runtime &)> const & /*unused*/) {};
 
   // Create component descriptor registry for animation driver
   auto providerRegistry =
@@ -158,7 +157,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
       // If tree randomization produced no changes in the form of mutations,
       // don't bother trying to animate because this violates a bunch of our
       // assumptions in this test
-      if (originalMutations.size() == 0) {
+      if (originalMutations.empty()) {
         continue;
       }
 
@@ -309,8 +308,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
   SUCCEED();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 using namespace facebook::react;
 

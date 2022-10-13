@@ -6,14 +6,13 @@
  */
 
 #include "Props.h"
+#include "PropsMapBuffer.h"
 
 #include <folly/dynamic.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
-
-bool Props::enablePropIteratorSetter = false;
+namespace facebook::react {
 
 Props::Props(
     const PropsParserContext &context,
@@ -21,13 +20,13 @@ Props::Props(
     const RawProps &rawProps,
     const bool shouldSetRawProps)
     : nativeId(
-          enablePropIteratorSetter ? sourceProps.nativeId
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "nativeID",
-                                         sourceProps.nativeId,
-                                         {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.nativeId
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "nativeID",
+                                                       sourceProps.nativeId,
+                                                       {})),
       revision(sourceProps.revision + 1)
 #ifdef ANDROID
       ,
@@ -41,7 +40,7 @@ Props::Props(
 void Props::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
-    const char *propName,
+    const char * /*propName*/,
     RawValue const &value) {
   switch (hash) {
     case CONSTEXPR_RAW_PROPS_KEY_HASH("nativeID"):
@@ -50,5 +49,4 @@ void Props::setProp(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

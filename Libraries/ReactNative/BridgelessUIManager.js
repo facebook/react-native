@@ -10,8 +10,9 @@
 
 'use strict';
 
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
-import {unstable_hasComponent} from 'react-native/Libraries/NativeComponent/NativeComponentRegistryUnstable';
+import type {RootTag} from '../Types/RootTagTypes';
+
+import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
 
 const errorMessageForMethod = (methodName: string): string =>
   "[ReactNative Architecture][JS] '" +

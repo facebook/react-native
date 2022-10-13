@@ -1,11 +1,9 @@
 require_relative '../../scripts/react_native_pods'
 
 source 'https://cdn.cocoapods.org/'
-platform :ios, '12.4'
+platform :ios, min_ios_version_supported
 
-# Temporary solution to suppress duplicated GUID error.
-# Can be removed once we move to generate files outside pod install.
-install! 'cocoapods', :deterministic_uuids => false
+prepare_react_native_project!
 
 USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
 IN_CI = ENV['CI'] == 'true'
@@ -30,6 +28,7 @@ def pods(options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     # Custom fabric component is only supported when using codegen discovery.
     pod 'MyNativeView', :path => "NativeComponentExample"
+    pod 'NativeComponentWithState',  :path => "NativeComponentWithState"
   end
 
   use_react_native!(

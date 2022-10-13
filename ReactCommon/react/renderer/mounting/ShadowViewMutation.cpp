@@ -9,8 +9,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Initialize static feature flags for this module.
@@ -148,19 +147,19 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
     ShadowViewMutation const &mutation,
     DebugStringConvertibleOptions options) {
   return {
-      mutation.oldChildShadowView.componentHandle
+      mutation.oldChildShadowView.componentHandle != 0
           ? DebugStringConvertibleObject{"oldChild",
                                          getDebugDescription(
                                              mutation.oldChildShadowView,
                                              options)}
           : DebugStringConvertibleObject{},
-      mutation.newChildShadowView.componentHandle
+      mutation.newChildShadowView.componentHandle != 0
           ? DebugStringConvertibleObject{"newChild",
                                          getDebugDescription(
                                              mutation.newChildShadowView,
                                              options)}
           : DebugStringConvertibleObject{},
-      mutation.parentShadowView.componentHandle
+      mutation.parentShadowView.componentHandle != 0
           ? DebugStringConvertibleObject{"parent",
                                          getDebugDescription(
                                              mutation.parentShadowView,
@@ -176,5 +175,4 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

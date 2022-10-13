@@ -7,8 +7,7 @@
 
 #include "Color.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 bool isColorMeaningful(SharedColor const &color) noexcept {
   if (!color) {
@@ -20,11 +19,11 @@ bool isColorMeaningful(SharedColor const &color) noexcept {
 
 SharedColor colorFromComponents(ColorComponents components) {
   float ratio = 255;
-  return SharedColor(
+  return {
       ((int)round(components.alpha * ratio) & 0xff) << 24 |
       ((int)round(components.red * ratio) & 0xff) << 16 |
       ((int)round(components.green * ratio) & 0xff) << 8 |
-      ((int)round(components.blue * ratio) & 0xff));
+      ((int)round(components.blue * ratio) & 0xff)};
 }
 
 ColorComponents colorComponentsFromColor(SharedColor const &sharedColor) {
@@ -52,5 +51,4 @@ SharedColor whiteColor() {
   return color;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

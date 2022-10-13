@@ -24,8 +24,7 @@
 // #include <algorithm>
 // #include <random>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static void testShadowNodeTreeLifeCycle(
     uint_fast32_t seed,
@@ -328,8 +327,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
   SUCCEED();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 using namespace facebook::react;
 

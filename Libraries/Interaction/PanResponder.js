@@ -10,10 +10,11 @@
 
 'use strict';
 
+import type {PressEvent} from '../Types/CoreEventTypes';
+import type {PanResponderType} from './PanResponder.flow.js';
+
 const InteractionManager = require('./InteractionManager');
 const TouchHistoryMath = require('./TouchHistoryMath');
-
-import type {PressEvent} from '../Types/CoreEventTypes';
 
 const currentCentroidXOfTouchesChangedAfter =
   TouchHistoryMath.currentCentroidXOfTouchesChangedAfter;
@@ -226,7 +227,7 @@ type PanResponderConfig = $ReadOnly<{|
   onShouldBlockNativeResponder?: ?ActiveCallback,
 |}>;
 
-const PanResponder = {
+const PanResponder: PanResponderType = {
   /**
    *
    * A graphical explanation of the touch data flow:

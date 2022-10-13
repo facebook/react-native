@@ -20,7 +20,6 @@ if (global.RN$Bridgeless === true && global.RN$registerCallableModule) {
       | $TEMPORARY$string<'GlobalPerformanceLogger'>
       | $TEMPORARY$string<'HMRClient'>
       | $TEMPORARY$string<'HeapCapture'>
-      | $TEMPORARY$string<'JSDevSupportModule'>
       | $TEMPORARY$string<'JSTimers'>
       | $TEMPORARY$string<'RCTDeviceEventEmitter'>
       | $TEMPORARY$string<'RCTLog'>
@@ -52,11 +51,8 @@ registerModule('RCTNativeAppEventEmitter', () =>
 registerModule('GlobalPerformanceLogger', () =>
   require('../Utilities/GlobalPerformanceLogger'),
 );
-registerModule('JSDevSupportModule', () =>
-  require('../Utilities/JSDevSupportModule'),
-);
 
-if (__DEV__ && !global.__RCTProfileIsProfiling) {
+if (__DEV__) {
   registerModule('HMRClient', () => require('../Utilities/HMRClient'));
 } else {
   registerModule('HMRClient', () => require('../Utilities/HMRClientProdShim'));

@@ -14,7 +14,6 @@
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 
-#include <logger/react_native_log.h>
 #include <react/renderer/animations/conversions.h>
 #include <react/renderer/animations/utils.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
@@ -31,30 +30,17 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
 static std::string GetMutationInstructionString(
     ShadowViewMutation const &mutation) {
-  bool mutationIsRemove = mutation.type == ShadowViewMutation::Type::Remove;
-  bool mutationIsInsert = mutation.type == ShadowViewMutation::Type::Insert;
-  bool mutationIsDelete = mutation.type == ShadowViewMutation::Type::Delete;
-  bool mutationIsCreate = mutation.type == ShadowViewMutation::Type::Create;
-  std::string mutationType =
-      (mutationIsRemove
-           ? "REMOVE"
-           : (mutationIsInsert
-                  ? "INSERT"
-                  : (mutationIsDelete
-                         ? "DELETE"
-                         : (mutationIsCreate ? "CREATE" : "UPDATE"))));
-  return mutationType + " [" +
-      std::to_string(
-             mutationIsInsert || mutationIsCreate
-                 ? mutation.newChildShadowView.tag
-                 : mutation.oldChildShadowView.tag) +
-      "]->[" + std::to_string(mutation.parentShadowView.tag) + "] @" +
+  Tag tag = mutation.type == ShadowViewMutation::Type::Insert ||
+          mutation.type == ShadowViewMutation::Type::Create
+      ? mutation.newChildShadowView.tag
+      : mutation.oldChildShadowView.tag;
+  return getDebugName(mutation) + " [" + std::to_string(tag) + "]->[" +
+      std::to_string(mutation.parentShadowView.tag) + "] @" +
       std::to_string(mutation.index);
 }
 
@@ -1196,11 +1182,11 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     AnimationKeyFrame const &keyframe,
     ShadowViewMutation::List &mutationsList,
     bool interrupted,
-    const std::string &logPrefix) const {
+    const std::string & /*logPrefix*/) const {
   if (skipInvalidatedKeyFrames_ && keyframe.invalidated) {
     return;
   }
-  if (keyframe.finalMutationsForKeyFrame.size() > 0) {
+  if (!keyframe.finalMutationsForKeyFrame.empty()) {
     // TODO: modularize this segment, it is repeated 2x in KeyFrameManager
     // as well.
     ShadowView prev = keyframe.viewPrev;
@@ -1638,15 +1624,19 @@ void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
       surfaceIdsToStop_.clear();
     }
 
+#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
+    std::ostringstream surfaceIdsStr;
+    std::copy(
+        surfaceIdsToStop.begin(),
+        surfaceIdsToStop.end(),
+        std::ostream_iterator<SurfaceId>(surfaceIdsStr, ", "));
+    LOG(ERROR) << "LayoutAnimations: stopping animations due to stopSurface on "
+               << surfaceIdsStr.str();
+#endif
+
     for (auto it = inflightAnimations_.begin();
          it != inflightAnimations_.end();) {
       const auto &animation = *it;
-
-#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
-      LOG(ERROR)
-          << "LayoutAnimations: stopping animation due to stopSurface on "
-          << surfaceId;
-#endif
       if (surfaceIdsToStop.find(animation.surfaceId) !=
           surfaceIdsToStop.end()) {
         it = inflightAnimations_.erase(it);
@@ -1692,5 +1682,4 @@ void LayoutAnimationKeyFrameManager::simulateImagePropsMemoryAccess(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

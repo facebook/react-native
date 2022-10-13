@@ -124,16 +124,17 @@ class PathUtilsTest {
   fun detectedCliPath_withCliFromNodeModules() {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)
-    extension.root.set(tempFolder.root)
     val expected =
         File(tempFolder.root, "node_modules/react-native/cli.js").apply {
           parentFile.mkdirs()
           writeText("<!-- nothing to see here -->")
         }
+    val locationToResolveFrom = File(tempFolder.root, "a-subdirectory").apply { mkdirs() }
+    extension.root.set(locationToResolveFrom)
 
     val actual = detectedCliPath(project.projectDir, extension)
 
-    assertEquals(expected.toString(), actual)
+    assertEquals(expected.canonicalPath, actual)
   }
 
   @Test(expected = IllegalStateException::class)
@@ -261,14 +262,14 @@ class PathUtilsTest {
   }
 
   @Test
-  @WithOs(OS.UNIX)
-  fun getHermesCBin_onUnix_returnsHermesc() {
+  @WithOs(OS.LINUX)
+  fun getHermesCBin_onLinux_returnsHermesc() {
     assertEquals("hermesc", getHermesCBin())
   }
 
   @Test
   @WithOs(OS.MAC)
-  fun getHermesCBin_onMax_returnsHermesc() {
+  fun getHermesCBin_onMac_returnsHermesc() {
     assertEquals("hermesc", getHermesCBin())
   }
 
@@ -278,6 +279,7 @@ class PathUtilsTest {
     val moduleFolder = tempFolder.newFolder("awesome-module")
 
     val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.android.library")
     project.plugins.apply("com.facebook.react")
     val extension = project.extensions.getByType(ReactExtension::class.java)
 
@@ -290,6 +292,7 @@ class PathUtilsTest {
     val localFile = File(moduleFolder, "package.json").apply { writeText("{}") }
 
     val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.android.library")
     project.plugins.apply("com.facebook.react")
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }

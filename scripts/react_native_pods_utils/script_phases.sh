@@ -100,7 +100,7 @@ generateCodegenArtifactsFromSchema () {
 generateArtifacts () {
     describe "Generating codegen artifacts"
     pushd "$RCT_SCRIPT_RN_DIR" >/dev/null || exit 1
-        "$NODE_BINARY" "scripts/generate-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$TEMP_OUTPUT_DIR" --fabricEnabled "$RCT_SCRIPT_FABRIC_ENABLED" --configFileDir "$RCT_SCRIPT_CONFIG_FILE_DIR" --nodeBinary "$NODE_BINARY"
+        "$NODE_BINARY" "scripts/generate-codegen-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$TEMP_OUTPUT_DIR" --fabricEnabled "$RCT_SCRIPT_FABRIC_ENABLED" --configFileDir "$RCT_SCRIPT_CONFIG_FILE_DIR" --nodeBinary "$NODE_BINARY"
     popd >/dev/null || exit 1
 }
 

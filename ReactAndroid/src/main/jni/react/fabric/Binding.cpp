@@ -8,6 +8,7 @@
 #include "Binding.h"
 
 #include "AsyncEventBeat.h"
+#include "CppComponentRegistry.h"
 #include "EventEmitterWrapper.h"
 #include "JBackgroundExecutor.h"
 #include "ReactNativeConfigHolder.h"
@@ -22,6 +23,7 @@
 #include <react/renderer/animations/LayoutAnimationDriver.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
@@ -360,7 +362,8 @@ void Binding::installFabricUIManager(
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     ComponentFactory *componentsRegistry,
-    jni::alias_ref<jobject> reactNativeConfig) {
+    jni::alias_ref<jobject> reactNativeConfig,
+    CppComponentRegistry *cppComponentRegistry) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
   std::shared_ptr<const ReactNativeConfig> config =
@@ -380,13 +383,17 @@ void Binding::installFabricUIManager(
                  << this << ").";
   }
 
+  sharedCppComponentRegistry_ =
+      std::shared_ptr<const facebook::react::CppComponentRegistry>(
+          cppComponentRegistry ? cppComponentRegistry : nullptr);
+
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
   // at the same time
   std::unique_lock<butter::shared_mutex> lock(installMutex_);
 
   auto globalJavaUiManager = make_global(javaUIManager);
-  mountingManager_ =
-      std::make_shared<FabricMountingManager>(config, globalJavaUiManager);
+  mountingManager_ = std::make_shared<FabricMountingManager>(
+      config, sharedCppComponentRegistry_, globalJavaUiManager);
 
   ContextContainer::Shared contextContainer =
       std::make_shared<ContextContainer>();
@@ -449,11 +456,8 @@ void Binding::installFabricUIManager(
       getFeatureFlagValue("enableLargeTextMeasureCache"));
 
   // Props setter pattern feature
-  Props::enablePropIteratorSetter =
+  CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
-  AccessibilityProps::enablePropIteratorSetter =
-      Props::enablePropIteratorSetter;
-  BaseTextProps::enablePropIteratorSetter = Props::enablePropIteratorSetter;
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
@@ -462,12 +466,20 @@ void Binding::installFabricUIManager(
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
+
+  // TODO: (T130208323) runtimeExecutor should execute lambdas after
+  // main bundle eval, and bindingsInstallExecutor should execute before.
+  toolbox.bridgelessBindingsExecutor = std::nullopt;
   toolbox.runtimeExecutor = runtimeExecutor;
+
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
-  backgroundExecutor_ = JBackgroundExecutor::create("fabric_bg");
-  toolbox.backgroundExecutor = backgroundExecutor_;
+  if (reactNativeConfig_->getBool(
+          "react_fabric:enable_background_executor_android")) {
+    backgroundExecutor_ = JBackgroundExecutor::create("fabric_bg");
+    toolbox.backgroundExecutor = backgroundExecutor_;
+  }
 
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);
@@ -486,6 +498,7 @@ void Binding::uninstallFabricUIManager() {
   scheduler_ = nullptr;
   mountingManager_ = nullptr;
   reactNativeConfig_ = nullptr;
+  sharedCppComponentRegistry_ = nullptr;
 }
 
 std::shared_ptr<FabricMountingManager> Binding::verifyMountingManager(
@@ -556,6 +569,17 @@ void Binding::schedulerDidCloneShadowNode(
 void Binding::preallocateView(
     SurfaceId surfaceId,
     ShadowNode const &shadowNode) {
+  auto name = std::string(shadowNode.getComponentName());
+
+  // Disable preallocation in java for C++ view managers
+  // RootComponents that are implmented as C++ view managers are still
+  // preallocated (this could be avoided by using Portals)
+  if (sharedCppComponentRegistry_ && sharedCppComponentRegistry_.get() &&
+      sharedCppComponentRegistry_->containsComponentManager(name) &&
+      !sharedCppComponentRegistry_->isRootComponent(name)) {
+    return;
+  }
+
   auto shadowView = ShadowView(shadowNode);
   auto preallocationFunction = [this,
                                 surfaceId,

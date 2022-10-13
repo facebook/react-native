@@ -10,8 +10,7 @@
 
 using namespace facebook::react;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 constexpr uint32_t INT_SIZE = sizeof(uint32_t);
 constexpr uint32_t DOUBLE_SIZE = sizeof(double);
@@ -178,5 +177,4 @@ MapBuffer MapBufferBuilder::build() {
   return MapBuffer(std::move(buffer));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

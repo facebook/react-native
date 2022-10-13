@@ -153,7 +153,7 @@ class AccessibilityAndroidExample extends React.Component<
           <Text style={styles.paragraph}>
             In the following example, the words "test", "inline links", "another
             link", and "link that spans multiple lines because the text is so
-            long", should each be independantly focusable elements, announced as
+            long", should each be independently focusable elements, announced as
             their content followed by ", Link".
           </Text>
           <Text style={styles.paragraph}>
@@ -162,7 +162,7 @@ class AccessibilityAndroidExample extends React.Component<
           </Text>
           <Text style={styles.paragraph}>
             Focusing on the paragraph itself should also announce that there are
-            "links avaialable", and opening Talkback's links menu should show
+            "links available", and opening Talkback's links menu should show
             these same links.
           </Text>
           <Text style={styles.paragraph}>

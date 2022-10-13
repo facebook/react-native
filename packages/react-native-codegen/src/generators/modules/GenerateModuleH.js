@@ -21,7 +21,7 @@ import type {
 import type {AliasResolver} from './Utils';
 const {createAliasResolver, getModules} = require('./Utils');
 const {indent} = require('../Utils');
-const {unwrapNullable} = require('../../parsers/flow/modules/utils');
+const {unwrapNullable} = require('../../parsers/parsers-commons');
 
 type FilesOutput = Map<string, string>;
 
@@ -146,8 +146,28 @@ function translatePrimitiveJSTypeToCpp(
       return wrap('int');
     case 'BooleanTypeAnnotation':
       return wrap('bool');
+    case 'EnumDeclaration':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrap('double');
+        case 'StringTypeAnnotation':
+          return wrap('jsi::String');
+        default:
+          throw new Error(createErrorMessage(realTypeAnnotation.type));
+      }
     case 'GenericObjectTypeAnnotation':
       return wrap('jsi::Object');
+    case 'UnionTypeAnnotation':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrap('double');
+        case 'ObjectTypeAnnotation':
+          return wrap('jsi::Object');
+        case 'StringTypeAnnotation':
+          return wrap('jsi::String');
+        default:
+          throw new Error(createErrorMessage(realTypeAnnotation.type));
+      }
     case 'ObjectTypeAnnotation':
       return wrap('jsi::Object');
     case 'ArrayTypeAnnotation':

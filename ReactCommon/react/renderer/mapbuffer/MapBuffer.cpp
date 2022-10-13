@@ -9,8 +9,7 @@
 
 using namespace facebook::react;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static inline int32_t bucketOffset(int32_t index) {
   return sizeof(MapBuffer::Header) + sizeof(MapBuffer::Bucket) * index;
@@ -90,7 +89,7 @@ std::string MapBuffer::getString(Key key) const {
   uint8_t const *stringPtr =
       bytes_.data() + dynamicDataOffset + offset + sizeof(int);
 
-  return std::string(stringPtr, stringPtr + stringLength);
+  return {stringPtr, stringPtr + stringLength};
 }
 
 MapBuffer MapBuffer::getMapBuffer(Key key) const {
@@ -149,5 +148,4 @@ uint16_t MapBuffer::count() const {
   return count_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

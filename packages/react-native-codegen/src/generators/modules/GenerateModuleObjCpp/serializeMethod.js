@@ -27,7 +27,7 @@ const {capitalize} = require('../../Utils');
 const {
   wrapNullable,
   unwrapNullable,
-} = require('../../../parsers/flow/modules/utils');
+} = require('../../../parsers/parsers-commons');
 
 const ProtocolMethodTemplate = ({
   returnObjCType,
@@ -338,7 +338,10 @@ function getReturnObjCType(
     case 'GenericObjectTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSDictionary *');
     default:
-      (typeAnnotation.type: 'MixedTypeAnnotation');
+      (typeAnnotation.type:
+        | 'EnumDeclaration'
+        | 'MixedTypeAnnotation'
+        | 'UnionTypeAnnotation');
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );
@@ -378,7 +381,10 @@ function getReturnJSType(
     case 'GenericObjectTypeAnnotation':
       return 'ObjectKind';
     default:
-      (typeAnnotation.type: 'MixedTypeAnnotation');
+      (typeAnnotation.type:
+        | 'EnumDeclaration'
+        | 'MixedTypeAnnotation'
+        | 'UnionTypeAnnotation');
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );

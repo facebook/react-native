@@ -9,23 +9,42 @@
 
 'use strict';
 
-let flow, RNCodegen;
+let flowParser, typeScriptParser, RNCodegen;
 
 const {basename} = require('path');
 
 try {
-  flow = require('react-native-codegen/src/parsers/flow');
+  flowParser = require('react-native-codegen/src/parsers/flow');
+  typeScriptParser = require('react-native-codegen/src/parsers/typescript');
   RNCodegen = require('react-native-codegen/src/generators/RNCodegen');
 } catch (e) {
   // Fallback to lib when source doesn't exit (e.g. when installed as a dev dependency)
-  flow = require('react-native-codegen/lib/parsers/flow');
+  flowParser = require('react-native-codegen/lib/parsers/flow');
+  typeScriptParser = require('react-native-codegen/lib/parsers/typescript');
   RNCodegen = require('react-native-codegen/lib/generators/RNCodegen');
 }
 
-function generateViewConfig(filename, code) {
-  const schema = flow.parseString(code);
+function parseFile(filename, code) {
+  if (filename.endsWith('js')) {
+    return flowParser.parseString(code);
+  }
 
-  const libraryName = basename(filename).replace(/NativeComponent\.js$/, '');
+  if (filename.endsWith('ts')) {
+    return typeScriptParser.parseString(code);
+  }
+
+  throw new Error(
+    `Unable to parse file '${filename}'. Unsupported filename extension.`,
+  );
+}
+
+function generateViewConfig(filename, code) {
+  const schema = parseFile(filename, code);
+
+  const libraryName = basename(filename).replace(
+    /NativeComponent\.(js|ts)$/,
+    '',
+  );
   return RNCodegen.generateViewConfig({
     schema,
     libraryName,

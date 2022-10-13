@@ -8,15 +8,16 @@
  * @flow strict
  */
 
-const Platform = require('../Utilities/Platform');
-
-import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
-import NativePermissionsAndroid from './NativePermissionsAndroid';
 import type {
   PermissionStatus,
   PermissionType,
 } from './NativePermissionsAndroid';
+
+import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
+import NativePermissionsAndroid from './NativePermissionsAndroid';
 import invariant from 'invariant';
+
+const Platform = require('../Utilities/Platform');
 
 export type Rationale = {
   title: string,

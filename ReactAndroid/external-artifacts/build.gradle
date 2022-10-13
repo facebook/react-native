@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+plugins {
+    id("maven-publish")
+}
+
+group = "com.facebook.react"
+version = parent.publishing_version
+configurations.maybeCreate("default")
+
+// The artifact should be placed inside the `artifacts/hermes-ios.tar.gz` location.
+def hermesiOSArtifactFile = layout.projectDirectory.file('artifacts/hermes-ios.tar.gz')
+def hermesiOSArtifact = artifacts.add('default', hermesiOSArtifactFile) {
+    type 'tgz'
+    extension 'tar.gz'
+    classifier 'hermes-ios'
+}
+
+apply from: "../publish.gradle"
+
+publishing {
+    publications {
+        getByName("release") {
+            artifact hermesiOSArtifact
+        }
+    }
+}

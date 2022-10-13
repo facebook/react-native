@@ -9,12 +9,16 @@
 
 'use strict';
 
+const path = require('node:path');
+
+require('eslint-plugin-lint').load(path.join(__dirname, 'tools/eslint/rules'));
+
 module.exports = {
   root: true,
 
   extends: ['@react-native-community'],
 
-  plugins: ['@react-native/eslint-plugin-specs'],
+  plugins: ['@react-native/eslint-plugin-specs', 'lint'],
 
   overrides: [
     // overriding the JS config from eslint-config-react-native-community config to ensure
@@ -34,15 +38,19 @@ module.exports = {
     {
       files: ['Libraries/**/*.js'],
       rules: {
-        '@react-native-community/no-haste-imports': 2,
-        '@react-native-community/error-subclass-name': 2,
         '@react-native-community/platform-colors': 2,
         '@react-native/specs/react-native-modules': 2,
+        'lint/no-haste-imports': 2,
+        'lint/no-react-native-imports': 2,
+        'lint/require-extends-error': 2,
+        'lint/sort-imports': 1,
       },
     },
     {
       files: ['flow-typed/**/*.js'],
       rules: {
+        'lint/valid-flow-typed-signature': 2,
+        'no-unused-vars': 0,
         quotes: 0,
       },
     },
@@ -69,6 +77,18 @@ module.exports = {
       env: {
         jasmine: true,
         jest: true,
+      },
+    },
+    {
+      files: ['**/*.{ts,tsx}'],
+      parser: '@typescript-eslint/parser',
+      plugins: ['@typescript-eslint/eslint-plugin'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+        'react-native/no-inline-styles': 'off',
+        '@typescript-eslint/no-shadow': 'off',
+        'no-self-compare': 'off',
+        'react/self-closing-comp': 'off',
       },
     },
   ],

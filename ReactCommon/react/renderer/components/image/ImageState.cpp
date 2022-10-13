@@ -7,8 +7,7 @@
 
 #include "ImageState.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ImageSource ImageState::getImageSource() const {
   return imageSource_;
@@ -22,5 +21,4 @@ Float ImageState::getBlurRadius() const {
   return blurRadius_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

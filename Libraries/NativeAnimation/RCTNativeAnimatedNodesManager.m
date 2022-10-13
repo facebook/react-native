@@ -13,11 +13,11 @@
 #import <React/RCTAnimatedNode.h>
 #import <React/RCTAnimationDriver.h>
 #import <React/RCTColorAnimatedNode.h>
+#import <React/RCTDecayAnimation.h>
 #import <React/RCTDiffClampAnimatedNode.h>
 #import <React/RCTDivisionAnimatedNode.h>
 #import <React/RCTEventAnimation.h>
 #import <React/RCTFrameAnimation.h>
-#import <React/RCTDecayAnimation.h>
 #import <React/RCTInterpolationAnimatedNode.h>
 #import <React/RCTModuloAnimatedNode.h>
 #import <React/RCTMultiplicationAnimatedNode.h>
@@ -25,9 +25,9 @@
 #import <React/RCTSpringAnimation.h>
 #import <React/RCTStyleAnimatedNode.h>
 #import <React/RCTSubtractionAnimatedNode.h>
+#import <React/RCTTrackingAnimatedNode.h>
 #import <React/RCTTransformAnimatedNode.h>
 #import <React/RCTValueAnimatedNode.h>
-#import <React/RCTTrackingAnimatedNode.h>
 
 // We do some normalizing of the event names in RCTEventDispatcher#RCTNormalizeInputEventName.
 // To make things simpler just get rid of the parts we change in the event names we use here.
@@ -44,8 +44,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   return eventName;
 }
 
-@implementation RCTNativeAnimatedNodesManager
-{
+@implementation RCTNativeAnimatedNodesManager {
   __weak RCTBridge *_bridge;
   __weak id<RCTSurfacePresenterStub> _surfacePresenter;
   NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_animationNodes;
@@ -56,7 +55,8 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   CADisplayLink *_displayLink;
 }
 
-- (instancetype)initWithBridge:(nullable RCTBridge *)bridge surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
+- (instancetype)initWithBridge:(nullable RCTBridge *)bridge
+              surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 {
   if ((self = [super init])) {
     _bridge = bridge;
@@ -77,27 +77,28 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   return false;
 }
 
-#pragma mark -- Graph
+#pragma mark-- Graph
 
-- (void)createAnimatedNode:(NSNumber *)tag
-                    config:(NSDictionary<NSString *, id> *)config
+- (void)createAnimatedNode:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
   static NSDictionary *map;
   static dispatch_once_t mapToken;
   dispatch_once(&mapToken, ^{
-    map = @{@"style" : [RCTStyleAnimatedNode class],
-            @"value" : [RCTValueAnimatedNode class],
-            @"color" : [RCTColorAnimatedNode class],
-            @"props" : [RCTPropsAnimatedNode class],
-            @"interpolation" : [RCTInterpolationAnimatedNode class],
-            @"addition" : [RCTAdditionAnimatedNode class],
-            @"diffclamp": [RCTDiffClampAnimatedNode class],
-            @"division" : [RCTDivisionAnimatedNode class],
-            @"multiplication" : [RCTMultiplicationAnimatedNode class],
-            @"modulus" : [RCTModuloAnimatedNode class],
-            @"subtraction" : [RCTSubtractionAnimatedNode class],
-            @"transform" : [RCTTransformAnimatedNode class],
-            @"tracking" : [RCTTrackingAnimatedNode class]};
+    map = @{
+      @"style" : [RCTStyleAnimatedNode class],
+      @"value" : [RCTValueAnimatedNode class],
+      @"color" : [RCTColorAnimatedNode class],
+      @"props" : [RCTPropsAnimatedNode class],
+      @"interpolation" : [RCTInterpolationAnimatedNode class],
+      @"addition" : [RCTAdditionAnimatedNode class],
+      @"diffclamp" : [RCTDiffClampAnimatedNode class],
+      @"division" : [RCTDivisionAnimatedNode class],
+      @"multiplication" : [RCTMultiplicationAnimatedNode class],
+      @"modulus" : [RCTModuloAnimatedNode class],
+      @"subtraction" : [RCTSubtractionAnimatedNode class],
+      @"transform" : [RCTTransformAnimatedNode class],
+      @"tracking" : [RCTTrackingAnimatedNode class]
+    };
   });
 
   NSString *nodeType = [RCTConvert NSString:config[@"type"]];
@@ -114,8 +115,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   [node setNeedsUpdate];
 }
 
-- (void)connectAnimatedNodes:(NSNumber *)parentTag
-                    childTag:(NSNumber *)childTag
+- (void)connectAnimatedNodes:(NSNumber *)parentTag childTag:(NSNumber *)childTag
 {
   RCTAssertParam(parentTag);
   RCTAssertParam(childTag);
@@ -130,8 +130,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   [childNode setNeedsUpdate];
 }
 
-- (void)disconnectAnimatedNodes:(NSNumber *)parentTag
-                       childTag:(NSNumber *)childTag
+- (void)disconnectAnimatedNodes:(NSNumber *)parentTag childTag:(NSNumber *)childTag
 {
   RCTAssertParam(parentTag);
   RCTAssertParam(childTag);
@@ -146,9 +145,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   [childNode setNeedsUpdate];
 }
 
-- (void)connectAnimatedNodeToView:(NSNumber *)nodeTag
-                          viewTag:(NSNumber *)viewTag
-                         viewName:(nullable NSString *)viewName
+- (void)connectAnimatedNodeToView:(NSNumber *)nodeTag viewTag:(NSNumber *)viewTag viewName:(nullable NSString *)viewName
 {
   RCTAnimatedNode *node = _animationNodes[nodeTag];
   if ([node isKindOfClass:[RCTPropsAnimatedNode class]]) {
@@ -161,8 +158,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   [node setNeedsUpdate];
 }
 
-- (void)disconnectAnimatedNodeFromView:(NSNumber *)nodeTag
-                               viewTag:(NSNumber *)viewTag
+- (void)disconnectAnimatedNodeFromView:(NSNumber *)nodeTag viewTag:(NSNumber *)viewTag
 {
   RCTAnimatedNode *node = _animationNodes[nodeTag];
   if ([node isKindOfClass:[RCTPropsAnimatedNode class]]) {
@@ -195,10 +191,9 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   }
 }
 
-#pragma mark -- Mutations
+#pragma mark-- Mutations
 
-- (void)setAnimatedNodeValue:(NSNumber *)nodeTag
-                       value:(NSNumber *)value
+- (void)setAnimatedNodeValue:(NSNumber *)nodeTag value:(NSNumber *)value
 {
   RCTAnimatedNode *node = _animationNodes[nodeTag];
   if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
@@ -212,8 +207,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   [valueNode setNeedsUpdate];
 }
 
-- (void)setAnimatedNodeOffset:(NSNumber *)nodeTag
-                       offset:(NSNumber *)offset
+- (void)setAnimatedNodeOffset:(NSNumber *)nodeTag offset:(NSNumber *)offset
 {
   RCTAnimatedNode *node = _animationNodes[nodeTag];
   if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
@@ -252,22 +246,22 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
 
 - (void)getValue:(NSNumber *)nodeTag saveCallback:(RCTResponseSenderBlock)saveCallback
 {
-     RCTAnimatedNode *node = _animationNodes[nodeTag];
-     if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
-       RCTLogError(@"Not a value node.");
-       return;
-     }
-    RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;;
-    saveCallback(@[@(valueNode.value)]);
+  RCTAnimatedNode *node = _animationNodes[nodeTag];
+  if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
+    RCTLogError(@"Not a value node.");
+    return;
+  }
+  RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
+  ;
+  saveCallback(@[ @(valueNode.value) ]);
 }
 
-- (void)updateAnimatedNodeConfig:(NSNumber *)tag
-                    config:(NSDictionary<NSString *, id> *)config
+- (void)updateAnimatedNodeConfig:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
   // TODO (T111179606): Support platform colors for color animations
 }
 
-#pragma mark -- Drivers
+#pragma mark-- Drivers
 
 - (void)startAnimatingNode:(NSNumber *)animationId
                    nodeTag:(NSNumber *)nodeTag
@@ -328,19 +322,19 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
 
 - (void)stopAnimationsForNode:(RCTAnimatedNode *)node
 {
-    NSMutableArray<id<RCTAnimationDriver>> *discarded = [NSMutableArray new];
-    for (id<RCTAnimationDriver> driver in _activeAnimations) {
-        if ([driver.valueNode isEqual:node]) {
-            [discarded addObject:driver];
-        }
+  NSMutableArray<id<RCTAnimationDriver>> *discarded = [NSMutableArray new];
+  for (id<RCTAnimationDriver> driver in _activeAnimations) {
+    if ([driver.valueNode isEqual:node]) {
+      [discarded addObject:driver];
     }
-    for (id<RCTAnimationDriver> driver in discarded) {
-        [driver stopAnimation];
-        [_activeAnimations removeObject:driver];
-    }
+  }
+  for (id<RCTAnimationDriver> driver in discarded) {
+    [driver stopAnimation];
+    [_activeAnimations removeObject:driver];
+  }
 }
 
-#pragma mark -- Events
+#pragma mark-- Events
 
 - (void)addAnimatedEventToView:(NSNumber *)viewTag
                      eventName:(NSString *)eventName
@@ -361,8 +355,8 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
 
   NSArray<NSString *> *eventPath = [RCTConvert NSStringArray:eventMapping[@"nativeEventPath"]];
 
-  RCTEventAnimation *driver =
-    [[RCTEventAnimation alloc] initWithEventPath:eventPath valueNode:(RCTValueAnimatedNode *)node];
+  RCTEventAnimation *driver = [[RCTEventAnimation alloc] initWithEventPath:eventPath
+                                                                 valueNode:(RCTValueAnimatedNode *)node];
 
   NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, RCTNormalizeAnimatedEventName(eventName)];
   if (_eventDrivers[key] != nil) {
@@ -412,10 +406,9 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   }
 }
 
-#pragma mark -- Listeners
+#pragma mark-- Listeners
 
-- (void)startListeningToAnimatedNodeValue:(NSNumber *)tag
-                            valueObserver:(id<RCTValueAnimatedNodeObserver>)valueObserver
+- (void)startListeningToAnimatedNodeValue:(NSNumber *)tag valueObserver:(id<RCTValueAnimatedNodeObserver>)valueObserver
 {
   RCTAnimatedNode *node = _animationNodes[tag];
   if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
@@ -431,8 +424,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   }
 }
 
-
-#pragma mark -- Animation Loop
+#pragma mark-- Animation Loop
 
 - (void)startAnimationLoopIfNeeded
 {
@@ -476,8 +468,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   [self stopAnimationLoopIfNeeded];
 }
 
-
-#pragma mark -- Updates
+#pragma mark-- Updates
 
 - (void)updateAnimations
 {

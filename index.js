@@ -47,6 +47,7 @@ import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionL
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
 import typeof Alert from './Libraries/Alert/Alert';
 import typeof Animated from './Libraries/Animated/Animated';
+import typeof * as AnimatedModule from './Libraries/Animated/Animated';
 import typeof Appearance from './Libraries/Utilities/Appearance';
 import typeof AppRegistry from './Libraries/ReactNative/AppRegistry';
 import typeof AppState from './Libraries/AppState/AppState';
@@ -75,7 +76,7 @@ import typeof PushNotificationIOS from './Libraries/PushNotificationIOS/PushNoti
 import typeof Settings from './Libraries/Settings/Settings';
 import typeof Share from './Libraries/Share/Share';
 import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
-import typeof Systrace from './Libraries/Performance/Systrace';
+import typeof * as Systrace from './Libraries/Performance/Systrace';
 import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
 import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
 import typeof UIManager from './Libraries/ReactNative/UIManager';
@@ -222,7 +223,7 @@ module.exports = {
     return require('./Libraries/Components/View/View');
   },
   get VirtualizedList(): VirtualizedList {
-    return require('./Libraries/Lists/VirtualizedList');
+    return require('./Libraries/Lists/VirtualizedList').default;
   },
   get VirtualizedSectionList(): VirtualizedSectionList {
     return require('./Libraries/Lists/VirtualizedSectionList');
@@ -235,8 +236,11 @@ module.exports = {
   get Alert(): Alert {
     return require('./Libraries/Alert/Alert');
   },
-  get Animated(): Animated {
-    return require('./Libraries/Animated/Animated');
+  // Include any types exported in the Animated module together with its default export, so
+  // you can references types such as Animated.Numeric
+  get Animated(): {...$Diff<AnimatedModule, {default: any}>, ...Animated} {
+    // $FlowExpectedError[prop-missing]: we only return the default export, all other exports are types
+    return require('./Libraries/Animated/Animated').default;
   },
   get Appearance(): Appearance {
     return require('./Libraries/Utilities/Appearance');
@@ -279,10 +283,10 @@ module.exports = {
     return require('./Libraries/Utilities/Dimensions');
   },
   get Easing(): Easing {
-    return require('./Libraries/Animated/Easing');
+    return require('./Libraries/Animated/Easing').default;
   },
   get findNodeHandle(): $PropertyType<ReactNative, 'findNodeHandle'> {
-    return require('./Libraries/Renderer/shims/ReactNative').findNodeHandle;
+    return require('./Libraries/ReactNative/RendererProxy').findNodeHandle;
   },
   get I18nManager(): I18nManager {
     return require('./Libraries/ReactNative/I18nManager');
@@ -366,7 +370,7 @@ module.exports = {
     ReactNative,
     'unstable_batchedUpdates',
   > {
-    return require('./Libraries/Renderer/shims/ReactNative')
+    return require('./Libraries/ReactNative/RendererProxy')
       .unstable_batchedUpdates;
   },
   get useColorScheme(): useColorScheme {

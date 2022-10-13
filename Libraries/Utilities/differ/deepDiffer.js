@@ -98,4 +98,5 @@ const deepDiffer = function (
 };
 
 module.exports = deepDiffer;
+// $FlowFixMe[prop-missing]
 module.exports.unstable_setLogListeners = unstable_setLogListeners;

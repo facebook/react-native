@@ -10,16 +10,14 @@
 
 'use strict';
 
+import View from '../Components/View/View';
+import setAndForwardRef from '../Utilities/setAndForwardRef';
+import {AnimatedEvent} from './AnimatedEvent';
 import * as createAnimatedComponentInjection from './createAnimatedComponentInjection';
-
-const View = require('../Components/View/View');
-const {AnimatedEvent} = require('./AnimatedEvent');
-const AnimatedProps = require('./nodes/AnimatedProps');
-const React = require('react');
-const NativeAnimatedHelper = require('./NativeAnimatedHelper');
-
-const invariant = require('invariant');
-const setAndForwardRef = require('../Utilities/setAndForwardRef');
+import NativeAnimatedHelper from './NativeAnimatedHelper';
+import AnimatedProps from './nodes/AnimatedProps';
+import invariant from 'invariant';
+import * as React from 'react';
 
 let animatedComponentNextId = 1;
 
@@ -201,16 +199,23 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     });
 
     render(): React.Node {
+      // When rendering in Fabric and an AnimatedValue is used, we keep track of
+      // the initial value of that Value, to avoid additional prop updates when
+      // this component re-renders
+      const initialPropsIfFabric = this._isFabric()
+        ? this._initialAnimatedProps
+        : null;
+
       const animatedProps =
-        this._propsAnimated.__getValue(this._initialAnimatedProps) || {};
+        this._propsAnimated.__getValue(initialPropsIfFabric) || {};
+      if (!this._initialAnimatedProps) {
+        this._initialAnimatedProps = animatedProps;
+      }
+
       const {style = {}, ...props} = animatedProps;
       const {style: passthruStyle = {}, ...passthruProps} =
         this.props.passthroughAnimatedPropExplicitValues || {};
       const mergedStyle = {...style, ...passthruStyle};
-
-      if (!this._initialAnimatedProps) {
-        this._initialAnimatedProps = animatedProps;
-      }
 
       // Force `collapsable` to be false so that native view is not flattened.
       // Flattened views cannot be accurately referenced by a native driver.
@@ -277,5 +282,5 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
 }
 
 // $FlowIgnore[incompatible-cast] - Will be compatible after refactors.
-module.exports = (createAnimatedComponentInjection.recordAndRetrieve() ??
+export default (createAnimatedComponentInjection.recordAndRetrieve() ??
   createAnimatedComponent: typeof createAnimatedComponent);

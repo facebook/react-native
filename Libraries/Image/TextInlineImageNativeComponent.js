@@ -10,19 +10,20 @@
 
 'use strict';
 
+import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {
   HostComponent,
   PartialViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';
-import type {ViewProps} from '../Components/View/ViewPropTypes';
-import type {ImageResizeMode} from './ImageResizeMode';
-import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
+import type {ImageResizeMode} from './ImageResizeMode';
+
+import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 
 type NativeProps = $ReadOnly<{
   ...ViewProps,
   resizeMode?: ?ImageResizeMode,
-  src?: ?$ReadOnlyArray<?$ReadOnly<{uri: string, ...}>>,
+  src?: ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
   tintColor?: ?ColorValue,
   headers?: ?{[string]: string},
 }>;

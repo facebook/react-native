@@ -126,6 +126,11 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'UI',
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
   },
+  {
+    key: 'ComponentWithState',
+    category: 'UI',
+    module: require('../examples/NewArchitecture/ComponentWithState'),
+  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = [
@@ -279,15 +284,12 @@ const APIs: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     module: require('../examples/XHR/XHRExample'),
   },
-];
-
-if (global.__turboModuleProxy) {
-  APIs.push({
+  {
     key: 'TurboModuleExample',
     category: 'Basic',
     module: require('../examples/TurboModule/TurboModuleExample'),
-  });
-}
+  },
+];
 
 if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {
   APIs.push({

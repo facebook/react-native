@@ -14,8 +14,7 @@
 
 #include "RawEvent.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // TODO(T29874519): Get rid of "top" prefix once and for all.
 /*
@@ -44,7 +43,7 @@ ValueFactory EventEmitter::defaultPayloadFactory() {
 
 EventEmitter::EventEmitter(
     SharedEventTarget eventTarget,
-    Tag tag,
+    Tag /*tag*/,
     EventDispatcher::Weak eventDispatcher)
     : eventTarget_(std::move(eventTarget)),
       eventDispatcher_(std::move(eventDispatcher)) {}
@@ -132,5 +131,4 @@ void EventEmitter::setEnabled(bool enabled) const {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

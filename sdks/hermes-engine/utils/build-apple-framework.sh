@@ -4,38 +4,43 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-if [ "$DEBUG" = true ]; then
-  BUILD_TYPE="Debug"
-else
-  BUILD_TYPE="Release"
-fi
-
 NUM_CORES=$(sysctl -n hw.ncpu)
 IMPORT_HERMESC_PATH=${HERMES_OVERRIDE_HERMESC_PATH:-$PWD/build_host_hermesc/ImportHermesc.cmake}
 REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$PWD/../..}
-JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
+if [[ -z "$JSI_PATH" ]]; then
+  JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
+fi
+
+function use_env_var_or_ruby_prop {
+  if [[ -n "$1" ]]; then
+    echo "$1"
+  else
+    ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').$2"
+  fi
+}
 
 function get_release_version {
-  ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').version"
+  use_env_var_or_ruby_prop "${RELEASE_VERSION}" "version"
 }
 
 function get_ios_deployment_target {
-  ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').deployment_target('ios')"
+  use_env_var_or_ruby_prop "${IOS_DEPLOYMENT_TARGET}" "deployment_target('ios')"
 }
 
 function get_mac_deployment_target {
-  ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').deployment_target('osx')"
+  use_env_var_or_ruby_prop "${MAC_DEPLOYMENT_TARGET}" "deployment_target('osx')"
 }
 
 # Build host hermes compiler for internal bytecode
 function build_host_hermesc {
+  echo "Building hermesc"
   cmake -S . -B build_host_hermesc
   cmake --build ./build_host_hermesc --target hermesc -j ${NUM_CORES}
 }
 
 # Utility function to configure an Apple framework
 function configure_apple_framework {
-  local build_cli_tools enable_bitcode
+  local build_cli_tools enable_bitcode enable_debugger
 
   if [[ $1 == iphoneos || $1 == catalyst ]]; then
     enable_bitcode="true"
@@ -47,12 +52,17 @@ function configure_apple_framework {
   else
     build_cli_tools="false"
   fi
+  if [[ $BUILD_TYPE == "Debug" ]]; then
+    enable_debugger="true"
+  else
+    enable_debugger="false"
+  fi
 
   cmake -S . -B "build_$1" \
     -DHERMES_APPLE_TARGET_PLATFORM:STRING="$1" \
     -DCMAKE_OSX_ARCHITECTURES:STRING="$2" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$3" \
-    -DHERMES_ENABLE_DEBUGGER:BOOLEAN=true \
+    -DHERMES_ENABLE_DEBUGGER:BOOLEAN="$enable_debugger" \
     -DHERMES_ENABLE_INTL:BOOLEAN=true \
     -DHERMES_ENABLE_LIBFUZZER:BOOLEAN=false \
     -DHERMES_ENABLE_FUZZILLI:BOOLEAN=false \
@@ -70,7 +80,7 @@ function configure_apple_framework {
 
 # Utility function to build an Apple framework
 function build_apple_framework {
-  echo "Building framework for $1 with architectures: $2"
+  echo "Building $BUILD_TYPE framework for $1 with architectures: $2"
 
   # Only build host HermesC if no file found at $IMPORT_HERMESC_PATH
   [ ! -f "$IMPORT_HERMESC_PATH" ] &&

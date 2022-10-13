@@ -8,21 +8,20 @@
  * @format
  */
 
-const BatchedBridge = require('../BatchedBridge/BatchedBridge');
-const BugReporting = require('../BugReporting/BugReporting');
-const ReactNative = require('../Renderer/shims/ReactNative');
-const SceneTracker = require('../Utilities/SceneTracker');
-
-const infoLog = require('../Utilities/infoLog');
-const invariant = require('invariant');
-const renderApplication = require('./renderApplication');
+import type {RootTag} from '../Types/RootTagTypes';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
-import {coerceDisplayMode} from './DisplayMode';
+import BatchedBridge from '../BatchedBridge/BatchedBridge';
+import BugReporting from '../BugReporting/BugReporting';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
-import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
+import infoLog from '../Utilities/infoLog';
+import SceneTracker from '../Utilities/SceneTracker';
+import {coerceDisplayMode} from './DisplayMode';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
+import renderApplication from './renderApplication';
+import {unmountComponentAtNodeAndRemoveContainer} from './RendererProxy';
+import invariant from 'invariant';
 
 type Task = (taskData: any) => Promise<void>;
 export type TaskProvider = () => Task;
@@ -250,9 +249,7 @@ const AppRegistry = {
    * See https://reactnative.dev/docs/appregistry#unmountapplicationcomponentatroottag
    */
   unmountApplicationComponentAtRootTag(rootTag: RootTag): void {
-    // NOTE: RootTag type
-    // $FlowFixMe[incompatible-call] RootTag: RootTag is incompatible with number, needs an updated synced version of the ReactNativeTypes.js file
-    ReactNative.unmountComponentAtNodeAndRemoveContainer(rootTag);
+    unmountComponentAtNodeAndRemoveContainer(rootTag);
   },
 
   /**

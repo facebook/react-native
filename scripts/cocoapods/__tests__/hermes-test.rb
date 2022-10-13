@@ -24,6 +24,9 @@ class HermesTests < Test::Unit::TestCase
         podSpy_cleanUp()
     end
 
+    # ============================= #
+    # TEST - installHermesIfEnabled #
+    # ============================= #
     def test_installHermesIfEnabled_whenHermesIsDisabled_doesNothing
         # Arrange
 
@@ -80,6 +83,4 @@ class HermesTests < Test::Unit::TestCase
         assert_equal($podInvocation["libevent"][:version], "~> 2.1.12")
         assert_equal($podInvocation["hermes-engine"][:podspec], "../../sdks/hermes/hermes-engine.podspec")
     end
-
-
 end

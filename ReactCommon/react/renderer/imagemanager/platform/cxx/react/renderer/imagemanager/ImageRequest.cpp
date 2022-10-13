@@ -9,8 +9,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ImageRequest::ImageRequest(
     ImageSource imageSource,
@@ -42,5 +41,4 @@ const std::shared_ptr<const ImageResponseObserverCoordinator>
   abort();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -62,6 +62,7 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactRoot;
+import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -131,6 +132,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   private void init() {
+    setRootViewTag(ReactRootViewTagGenerator.getNextRootViewTag());
     setClipChildren(false);
   }
 

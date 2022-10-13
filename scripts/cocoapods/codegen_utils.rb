@@ -201,8 +201,8 @@ class CodegenUtils
       end
 
       # Generate input files for in-app libaraies which will be used to check if the script needs to be run.
-      # TODO: Ideally, we generate the input_files list from generate-artifacts.js and read the result here.
-      #       Or, generate this podspec in generate-artifacts.js as well.
+      # TODO: Ideally, we generate the input_files list from generate-codegen-artifacts.js and read the result here.
+      #       Or, generate this podspec in generate-codegen-artifacts.js as well.
       app_package_path = File.join(app_path, 'package.json')
       app_codegen_config = codegen_utils.get_codegen_config_from_file(app_package_path, config_key)
       input_files = codegen_utils.get_list_of_js_specs(app_codegen_config, app_path)
@@ -270,7 +270,7 @@ class CodegenUtils
       out = Pod::Executable.execute_command(
         'node',
         [
-          "#{relative_installation_root}/#{react_native_path}/scripts/generate-artifacts.js",
+          "#{relative_installation_root}/#{react_native_path}/scripts/generate-codegen-artifacts.js",
           "-p", "#{app_path}",
           "-o", Pod::Config.instance.installation_root,
           "-e", "#{fabric_enabled}",

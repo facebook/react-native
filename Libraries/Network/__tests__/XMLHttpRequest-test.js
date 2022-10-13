@@ -5,27 +5,26 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
 import createPerformanceLogger from '../../Utilities/createPerformanceLogger';
 
+const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
+const Platform = require('../../Utilities/Platform');
+const XMLHttpRequest = require('../XMLHttpRequest');
+
 jest.unmock('../../Utilities/Platform');
 jest.mock('../../Utilities/GlobalPerformanceLogger');
-
-const Platform = require('../../Utilities/Platform');
-const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
 let requestId = 1;
-
 function setRequestId(id) {
   if (Platform.OS === 'ios') {
     return;
   }
   requestId = id;
 }
-
 jest
   .dontMock('event-target-shim')
   .setMock('../../BatchedBridge/NativeModules', {
@@ -46,8 +45,6 @@ jest
       },
     },
   });
-
-const XMLHttpRequest = require('../XMLHttpRequest');
 
 describe('XMLHttpRequest', function () {
   let xhr;

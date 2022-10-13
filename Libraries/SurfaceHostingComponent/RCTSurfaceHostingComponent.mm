@@ -37,15 +37,13 @@
   RCTSurfaceHostingComponentState *const state = scope.state();
 
   RCTSurfaceHostingComponentState *const newState =
-    [RCTSurfaceHostingComponentState newWithStage:surface.stage
-                                     intrinsicSize:surface.intrinsicSize];
+      [RCTSurfaceHostingComponentState newWithStage:surface.stage intrinsicSize:surface.intrinsicSize];
 
   if (![state isEqual:newState]) {
     CKComponentScope::replaceState(scope, newState);
   }
 
-  RCTSurfaceHostingComponent *const component =
-    [super newWithView:{[UIView class]} size:{}];
+  RCTSurfaceHostingComponent *const component = [super newWithView:{[UIView class]} size:{}];
 
   if (component) {
     component->_state = scope.state();
@@ -72,15 +70,14 @@
   // interop compatibilities of React Native which will enable us granularly
   // control React Native mounting blocks and, as a result, implement
   // truly synchronous mounting stage between React Native and ComponentKit.
-  [_surface setMinimumSize:constrainedSize.min
-               maximumSize:constrainedSize.max];
+  [_surface setMinimumSize:constrainedSize.min maximumSize:constrainedSize.max];
 
   // Just in case of the very first building pass, we give React Native a chance
   // to prepare its internals for coming synchronous measuring.
   if ([_surface isKindOfClass:[RCTSurface class]]) {
     // Legacy Pre-Fabric Surface
     [(RCTSurface *)_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialLayout
-                                      timeout:_options.synchronousLayoutingTimeout];
+                                              timeout:_options.synchronousLayoutingTimeout];
   } else if ([_surface isKindOfClass:[RCTFabricSurface class]]) {
     // Fabric Surface
     // Hack: Increase timeout because RCTFabricSurface stage will be RCTSurfaceStageSurfaceDidInitialLayout
@@ -94,10 +91,8 @@
 
   CGSize fittingSize = CGSizeZero;
   if (_surface.stage & RCTSurfaceStageSurfaceDidInitialLayout) {
-    fittingSize = [_surface sizeThatFitsMinimumSize:constrainedSize.min
-                                        maximumSize:constrainedSize.max];
-  }
-  else {
+    fittingSize = [_surface sizeThatFitsMinimumSize:constrainedSize.min maximumSize:constrainedSize.max];
+  } else {
     fittingSize = _options.activityIndicatorSize;
   }
 
@@ -109,9 +104,9 @@
 {
   if (_options.boundsAnimations && (previousComponent->_state.stage != _state.stage)) {
     return {
-      .mode = CKComponentBoundsAnimationModeDefault,
-      .duration = 0.25,
-      .options = UIViewAnimationOptionCurveEaseInOut,
+        .mode = CKComponentBoundsAnimationModeDefault,
+        .duration = 0.25,
+        .options = UIViewAnimationOptionCurveEaseInOut,
     };
   }
 

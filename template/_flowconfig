@@ -2,9 +2,6 @@
 ; We fork some components by platform
 .*/*[.]android.js
 
-; Ignore "BUCK" generated dirs
-<PROJECT_ROOT>/\.buckd/
-
 ; Ignore polyfills
 node_modules/react-native/Libraries/polyfills/.*
 
@@ -63,4 +60,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.185.0
+^0.189.0

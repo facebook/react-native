@@ -4,15 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
- * @format
  * @flow
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
-import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 import type {SymbolicatedStackTrace} from '../../../Core/Devtools/symbolicateStackTrace';
+import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 
 jest.mock('../LogBoxSymbolication', () => {
   return {__esModule: true, symbolicate: jest.fn(), deleteStack: jest.fn()};
@@ -56,6 +56,10 @@ const createStack = (methodNames: Array<string>) =>
     lineNumber: 1,
     methodName,
   }));
+
+// Adds a new task to the end of the microtask queue, so that awaiting this
+// function will run all queued immediates
+const runMicrotasks = async () => {};
 
 describe('LogBoxLog', () => {
   beforeEach(() => {
@@ -132,7 +136,7 @@ describe('LogBoxLog', () => {
     expect(getLogBoxSymbolication().symbolicate).not.toBeCalled();
   });
 
-  it('updates when symbolication finishes', () => {
+  it('updates when symbolication finishes', async () => {
     const log = getLogBoxLog();
 
     const callback = jest.fn();
@@ -141,7 +145,7 @@ describe('LogBoxLog', () => {
     expect(callback).toBeCalledWith('PENDING');
     expect(getLogBoxSymbolication().symbolicate).toBeCalled();
 
-    jest.runAllTicks();
+    await runMicrotasks();
 
     expect(callback).toBeCalledTimes(2);
     expect(callback).toBeCalledWith('COMPLETE');
@@ -156,13 +160,14 @@ describe('LogBoxLog', () => {
     getLogBoxSymbolication().symbolicate.mockClear();
 
     log.symbolicate(callback);
-    jest.runAllTicks();
+
+    await runMicrotasks();
 
     expect(callback).toBeCalledTimes(0);
     expect(getLogBoxSymbolication().symbolicate).not.toBeCalled();
   });
 
-  it('updates when symbolication fails', () => {
+  it('updates when symbolication fails', async () => {
     const error = new Error('...');
     getLogBoxSymbolication().symbolicate.mockImplementation(async stack => {
       throw error;
@@ -176,7 +181,7 @@ describe('LogBoxLog', () => {
     expect(callback).toBeCalledWith('PENDING');
     expect(getLogBoxSymbolication().symbolicate).toBeCalled();
 
-    jest.runAllTicks();
+    await runMicrotasks();
 
     expect(callback).toBeCalledTimes(2);
     expect(callback).toBeCalledWith('FAILED');
@@ -191,7 +196,8 @@ describe('LogBoxLog', () => {
     getLogBoxSymbolication().symbolicate.mockClear();
 
     log.symbolicate(callback);
-    jest.runAllTicks();
+
+    await runMicrotasks();
 
     expect(callback).toBeCalledTimes(0);
     expect(getLogBoxSymbolication().symbolicate).not.toBeCalled();
@@ -221,7 +227,7 @@ describe('LogBoxLog', () => {
     expect(getLogBoxSymbolication().symbolicate).not.toBeCalled();
   });
 
-  it('retry updates when symbolication finishes', () => {
+  it('retry updates when symbolication finishes', async () => {
     const log = getLogBoxLog();
 
     const callback = jest.fn();
@@ -230,7 +236,7 @@ describe('LogBoxLog', () => {
     expect(callback).toBeCalledWith('PENDING');
     expect(getLogBoxSymbolication().symbolicate).toBeCalled();
 
-    jest.runAllTicks();
+    await runMicrotasks();
 
     expect(callback).toBeCalledTimes(2);
     expect(callback).toBeCalledWith('COMPLETE');
@@ -251,7 +257,7 @@ describe('LogBoxLog', () => {
     expect(getLogBoxSymbolication().symbolicate).not.toBeCalled();
   });
 
-  it('retry updates when symbolication fails', () => {
+  it('retry updates when symbolication fails', async () => {
     const error = new Error('...');
     getLogBoxSymbolication().symbolicate.mockImplementation(async stack => {
       throw error;
@@ -265,7 +271,7 @@ describe('LogBoxLog', () => {
     expect(callback).toBeCalledWith('PENDING');
     expect(getLogBoxSymbolication().symbolicate).toBeCalled();
 
-    jest.runAllTicks();
+    await runMicrotasks();
 
     expect(callback).toBeCalledTimes(2);
     expect(callback).toBeCalledWith('FAILED');
@@ -289,7 +295,7 @@ describe('LogBoxLog', () => {
     expect(callback).toBeCalledWith('PENDING');
     expect(getLogBoxSymbolication().symbolicate).toBeCalled();
 
-    jest.runAllTicks();
+    await runMicrotasks();
 
     expect(callback).toBeCalledTimes(2);
     expect(callback).toBeCalledWith('COMPLETE');

@@ -8,21 +8,22 @@
  * @format
  */
 
-import * as React from 'react';
-import StyleSheet from '../StyleSheet/StyleSheet';
-
-import ImageInjection from './ImageInjection';
-import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import flattenStyle from '../StyleSheet/flattenStyle';
-import resolveAssetSource from './resolveAssetSource';
-
+import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
+import type {RootTag} from '../Types/RootTagTypes';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
-import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
-import NativeImageLoaderIOS from './NativeImageLoaderIOS';
-
+import flattenStyle from '../StyleSheet/flattenStyle';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
+import ImageInjection from './ImageInjection';
+import {getImageSourcesFromImageProps} from './ImageSourceUtils';
+import {convertObjectFitToResizeMode} from './ImageUtils';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import NativeImageLoaderIOS from './NativeImageLoaderIOS';
+import resolveAssetSource from './resolveAssetSource';
+import * as React from 'react';
+
+import type {ImageIOS} from './Image.flow';
 
 function getSize(
   uri: string,
@@ -105,7 +106,7 @@ export type ImageComponentStatics = $ReadOnly<{|
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const BaseImage = (props: ImagePropsType, forwardedRef) => {
-  const source = resolveAssetSource(props.source) || {
+  const source = getImageSourcesFromImageProps(props) || {
     uri: undefined,
     width: undefined,
     height: undefined,
@@ -117,7 +118,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     style = flattenStyle([styles.base, props.style]) || {};
     sources = source;
   } else {
-    const {width, height, uri} = source;
+    const {width = props.width, height = props.height, uri} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]) || {};
     sources = [source];
 
@@ -126,29 +127,52 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     }
   }
 
+  const objectFit =
+    // $FlowFixMe[prop-missing]
+    style && style.objectFit
+      ? convertObjectFitToResizeMode(style.objectFit)
+      : null;
+  const resizeMode =
+    // $FlowFixMe[prop-missing]
+    objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
   // $FlowFixMe[prop-missing]
-  const resizeMode = props.resizeMode || style.resizeMode || 'cover';
-  // $FlowFixMe[prop-missing]
-  const tintColor = style.tintColor;
-
-  if (props.src != null) {
-    console.warn(
-      'The <Image> component requires a `source` property rather than `src`.',
-    );
-  }
+  const tintColor = props.tintColor || style.tintColor;
 
   if (props.children != null) {
     throw new Error(
       'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
     );
   }
+  const {
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-selected': ariaSelected,
+    height,
+    src,
+    width,
+    ...restProps
+  } = props;
+
+  const _accessibilityState = {
+    busy: ariaBusy ?? props.accessibilityState?.busy,
+    checked: ariaChecked ?? props.accessibilityState?.checked,
+    disabled: ariaDisabled ?? props.accessibilityState?.disabled,
+    expanded: ariaExpanded ?? props.accessibilityState?.expanded,
+    selected: ariaSelected ?? props.accessibilityState?.selected,
+  };
+  const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
   return (
     <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
         return (
           <ImageViewNativeComponent
-            {...props}
+            accessibilityState={_accessibilityState}
+            {...restProps}
+            accessible={props.alt !== undefined ? true : props.accessible}
+            accessibilityLabel={accessibilityLabel ?? props.alt}
             ref={forwardedRef}
             style={style}
             resizeMode={resizeMode}
@@ -243,8 +267,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((Image: any): React.AbstractComponent<
-  ImagePropsType,
-  React.ElementRef<typeof ImageViewNativeComponent>,
-> &
-  ImageComponentStatics);
+module.exports = ((Image: any): ImageIOS);

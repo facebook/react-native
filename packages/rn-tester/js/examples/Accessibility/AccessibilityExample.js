@@ -110,7 +110,7 @@ class AccessibilityExample extends React.Component<{}> {
           </View>
         </RNTesterBlock>
 
-        <RNTesterBlock title="Accessible view with TextViews wihout label">
+        <RNTesterBlock title="Accessible view with TextViews without label">
           <View accessible={true}>
             <Text style={{color: 'green'}}>This is text one.</Text>
             <Text style={{color: 'blue'}}>This is text two.</Text>
@@ -123,6 +123,14 @@ class AccessibilityExample extends React.Component<{}> {
             accessibilityLabel="I have label, so I read it instead of embedded text.">
             <Text style={{color: 'green'}}>This is text one.</Text>
             <Text style={{color: 'blue'}}>This is text two.</Text>
+          </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="View with hidden children from accessibility tree.">
+          <View aria-hidden>
+            <Text>
+              This view's children are hidden from the accessibility tree
+            </Text>
           </View>
         </RNTesterBlock>
 
@@ -207,6 +215,17 @@ class AccessibilityExample extends React.Component<{}> {
             accessibilityLabel="Accessibility label."
             accessibilityRole="button"
             accessibilityState={{selected: true}}
+            accessibilityHint="Accessibility hint.">
+            <Text>Accessible view with label, hint, role, and state</Text>
+          </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="View with label, hint, role, and state">
+          <View
+            accessible={true}
+            accessibilityLabel="Accessibility label."
+            accessibilityRole="button"
+            aria-selected={true}
             accessibilityHint="Accessibility hint.">
             <Text>Accessible view with label, hint, role, and state</Text>
           </View>
@@ -754,7 +773,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
             onAccessibilityAction={event => {
               switch (event.nativeEvent.actionName) {
                 case 'activate':
-                  Alert.alert('Alert', 'Activate accessiblity action');
+                  Alert.alert('Alert', 'Activate accessibility action');
                   break;
                 case 'copy':
                   Alert.alert('Alert', 'copy action success');
@@ -762,12 +781,29 @@ class AccessibilityActionsExample extends React.Component<{}> {
               }
             }}
             onPress={() => Alert.alert('Button has been pressed!')}
-            title="Button with accessiblity action"
+            title="Button with accessibility action"
           />
         </RNTesterBlock>
 
         <RNTesterBlock title="Text with custom accessibility actions">
-          <Text accessible={true}>Text</Text>
+          <Text
+            accessible={true}
+            accessibilityActions={[
+              {name: 'activate', label: 'activate label'},
+              {name: 'copy', label: 'copy label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'activate':
+                  Alert.alert('Alert', 'Activate accessibility action');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+              }
+            }}>
+            Text
+          </Text>
         </RNTesterBlock>
       </View>
     );
@@ -783,7 +819,7 @@ function SliderAccessibilityExample(): React.Node {
         <Slider value={25} maximumValue={100} minimumValue={0} disabled />
       </RNTesterBlock>
       <RNTesterBlock
-        title="Disabled Slider via accessibiltyState"
+        title="Disabled Slider via accessibilityState"
         description="Verify with TalkBack/VoiceOver announces Slider as disabled">
         <Slider
           value={75}
@@ -859,6 +895,92 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
             now: this.state.current,
             max: 100,
           }}>
+          <Text>Fake Slider</Text>
+        </View>
+        <TouchableWithoutFeedback
+          accessible={true}
+          accessibilityLabel="Equalizer"
+          accessibilityRole="adjustable"
+          accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
+          onAccessibilityAction={event => {
+            switch (event.nativeEvent.actionName) {
+              case 'increment':
+                if (this.state.textualValue === 'center') {
+                  this.setState({textualValue: 'right'});
+                } else if (this.state.textualValue === 'left') {
+                  this.setState({textualValue: 'center'});
+                }
+                break;
+              case 'decrement':
+                if (this.state.textualValue === 'center') {
+                  this.setState({textualValue: 'left'});
+                } else if (this.state.textualValue === 'right') {
+                  this.setState({textualValue: 'center'});
+                }
+                break;
+            }
+          }}
+          accessibilityValue={{text: this.state.textualValue}}>
+          <View>
+            <Text>Equalizer</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    );
+  }
+}
+
+class FakeSliderExampleForAccessibilityValue extends React.Component<
+  {},
+  FakeSliderExampleState,
+> {
+  state: FakeSliderExampleState = {
+    current: 50,
+    textualValue: 'center',
+  };
+
+  increment: () => void = () => {
+    let newValue = this.state.current + 2;
+    if (newValue > 100) {
+      newValue = 100;
+    }
+    this.setState({
+      current: newValue,
+    });
+  };
+
+  decrement: () => void = () => {
+    let newValue = this.state.current - 2;
+    if (newValue < 0) {
+      newValue = 0;
+    }
+    this.setState({
+      current: newValue,
+    });
+  };
+
+  render(): React.Node {
+    return (
+      <View>
+        <View
+          accessible={true}
+          accessibilityLabel="Fake Slider"
+          accessibilityRole="adjustable"
+          accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
+          onAccessibilityAction={event => {
+            switch (event.nativeEvent.actionName) {
+              case 'increment':
+                this.increment();
+                break;
+              case 'decrement':
+                this.decrement();
+                break;
+            }
+          }}
+          aria-valuemax={100}
+          aria-valuemin={0}
+          aria-valuetext={'slider aria value text'}
+          aria-valuenow={this.state.current}>
           <Text>Fake Slider</Text>
         </View>
         <TouchableWithoutFeedback
@@ -1167,6 +1289,11 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
           notification={'reduceMotionChanged'}
         />
         <DisplayOptionStatusExample
+          optionName={'Prefer Cross-Fade Transitions'}
+          optionChecker={AccessibilityInfo.prefersCrossFadeTransitions}
+          notification={'prefersCrossFadeTransitionsChanged'}
+        />
+        <DisplayOptionStatusExample
           optionName={'Screen Reader'}
           optionChecker={AccessibilityInfo.isScreenReaderEnabled}
           notification={'screenReaderChanged'}
@@ -1348,6 +1475,12 @@ exports.examples = [
     },
   },
   {
+    title: 'Fake SliderExample For AccessibilityValue',
+    render(): React.Element<typeof FakeSliderExampleForAccessibilityValue> {
+      return <FakeSliderExampleForAccessibilityValue />;
+    },
+  },
+  {
     title: 'Check if the display options are enabled',
     render(): React.Element<typeof DisplayOptionsStatusExample> {
       return <DisplayOptionsStatusExample />;
@@ -1402,6 +1535,20 @@ exports.examples = [
     title: 'accessibilityErrorMessage does not clear with text change',
     render: function (): React.Node {
       return <AccessibilityErrorDoesNotClear />;
+    },
+  },
+  {
+    title: 'TextInput with aria-labelledby attribute"',
+    render(): React.Element<typeof View> {
+      return (
+        <View>
+          <Text nativeID="testAriaLabelledBy">Phone Number</Text>
+          <TextInput
+            aria-labelledby={'testAriaLabelledBy'}
+            style={styles.default}
+          />
+        </View>
+      );
     },
   },
 ];

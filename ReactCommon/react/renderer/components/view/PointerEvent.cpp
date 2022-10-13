@@ -7,12 +7,11 @@
 
 #include "PointerEvent.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(PointerEvent const &pointerEvent) {
+std::string getDebugName(PointerEvent const & /*pointerEvent*/) {
   return "PointerEvent";
 }
 
@@ -46,5 +45,4 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

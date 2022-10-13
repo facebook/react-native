@@ -39,6 +39,20 @@ class ReactNativePodsUtils
         installer.pods_project.pod_group(name) != nil
     end
 
+    def self.turn_off_resource_bundle_react_core(installer)
+        # this is needed for Xcode 14, see more details here https://github.com/facebook/react-native/issues/34673
+        # we should be able to remove this once CocoaPods catches up to it, see more details here https://github.com/CocoaPods/CocoaPods/issues/11402
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            if pod_name.to_s == 'React-Core'
+                target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+                    resource_bundle_target.build_configurations.each do |config|
+                        config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+                    end
+                end
+            end
+        end
+    end
+
     def self.exclude_i386_architecture_while_using_hermes(installer)
         projects = installer.aggregate_targets
             .map{ |t| t.user_project }
@@ -139,10 +153,12 @@ class ReactNativePodsUtils
             return
         end
 
-        # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple M1)
-        # since the libraries there are only built for x86_64 and i386.
-        lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
-        lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+        if lib_search_paths.include?("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)") || lib_search_paths.include?("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+            # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple M1)
+            # since the libraries there are only built for x86_64 and i386.
+            lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
+            lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+        end
 
         if !(lib_search_paths.include?("$(SDKROOT)/usr/lib/swift") || lib_search_paths.include?("\"$(SDKROOT)/usr/lib/swift\""))
             # however, $(SDKROOT)/usr/lib/swift is required, at least if user is not running CocoaPods 1.11
@@ -150,5 +166,13 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.create_xcode_env_if_missing
+        relative_path = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+        file_path = File.join(relative_path, '.xcode.env')
+        if File.exist?(file_path)
+            return
+        end
 
+        system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
+    end
 end

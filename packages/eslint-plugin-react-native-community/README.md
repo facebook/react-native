@@ -22,16 +22,6 @@ Add to your eslint config (`.eslintrc`, or `eslintConfig` field in `package.json
 
 ## Rules
 
-### `error-subclass-name`
-
-**NOTE:** This rule is primarily used for developing React Native itself and is not generally applicable to other projects.
-
-Enforces that error classes ( = classes with PascalCase names ending with `Error`) only extend other error classes, and that regular functions don't have names that could be mistaken for those of error classes.
-
-### `no-haste-imports`
-
-Disallows Haste module names in `import` statements and `require()` calls.
-
 ### `platform-colors`
 
 Enforces that calls to `PlatformColor` and `DynamicColorIOS` are statically analyzable to enable performance optimizations.

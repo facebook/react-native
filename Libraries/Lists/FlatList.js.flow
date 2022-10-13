@@ -1,0 +1,115 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+const React = require('react');
+const View = require('../Components/View/View');
+
+import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
+import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {
+  ViewToken,
+  ViewabilityConfigCallbackPair,
+} from './ViewabilityHelper';
+import type {RenderItemType, RenderItemProps} from './VirtualizedList';
+import typeof VirtualizedList from './VirtualizedList';
+
+type RequiredProps<ItemT> = {|
+  /**
+   * For simplicity, data is just a plain array. If you want to use something else, like an
+   * immutable list, use the underlying `VirtualizedList` directly.
+   */
+  data: ?$ReadOnlyArray<ItemT>,
+|};
+type OptionalProps<ItemT> = {|
+  renderItem?: ?RenderItemType<ItemT>,
+  columnWrapperStyle?: ViewStyleProp,
+  extraData?: any,
+  getItemLayout?: (
+    data: ?Array<ItemT>,
+    index: number,
+  ) => {
+    length: number,
+    offset: number,
+    index: number,
+    ...
+  },
+  horizontal?: ?boolean,
+  initialNumToRender?: ?number,
+  initialScrollIndex?: ?number,
+  inverted?: ?boolean,
+  keyExtractor?: ?(item: ItemT, index: number) => string,
+  numColumns?: number,
+  removeClippedSubviews?: boolean,
+  fadingEdgeLength?: ?number,
+  strictMode?: boolean,
+|};
+
+/**
+ * Default Props Helper Functions
+ * Use the following helper functions for default values
+ */
+type FlatListProps<ItemT> = {|
+  ...RequiredProps<ItemT>,
+  ...OptionalProps<ItemT>,
+|};
+
+type VirtualizedListProps = React.ElementConfig<VirtualizedList>;
+
+export type Props<ItemT> = {
+  ...$Diff<
+    VirtualizedListProps,
+    {
+      getItem: $PropertyType<VirtualizedListProps, 'getItem'>,
+      getItemCount: $PropertyType<VirtualizedListProps, 'getItemCount'>,
+      getItemLayout: $PropertyType<VirtualizedListProps, 'getItemLayout'>,
+      renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
+      keyExtractor: $PropertyType<VirtualizedListProps, 'keyExtractor'>,
+      ...
+    },
+  >,
+  ...FlatListProps<ItemT>,
+  ...
+};
+
+declare class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
+  scrollToEnd(params?: ?{animated?: ?boolean, ...}): void;
+
+  scrollToIndex(params: {
+    animated?: ?boolean,
+    index: number,
+    viewOffset?: number,
+    viewPosition?: number,
+    ...
+  }): void;
+  scrollToItem(params: {
+    animated?: ?boolean,
+    item: ItemT,
+    viewPosition?: number,
+    ...
+  }): void;
+  scrollToOffset(params: {animated?: ?boolean, offset: number, ...}): void;
+  recordInteraction(): void;
+
+  /**
+   * Displays the scroll indicators momentarily.
+   *
+   * @platform ios
+   */
+  flashScrollIndicators(): void;
+  getScrollResponder(): ?ScrollResponderType;
+  getNativeScrollRef():
+    | ?React.ElementRef<typeof View>
+    | ?React.ElementRef<ScrollViewNativeComponent>;
+  getScrollableNode(): any;
+  setNativeProps(props: {[string]: mixed, ...}): void;
+}
+
+module.exports = FlatList;

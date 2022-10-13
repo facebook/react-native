@@ -21,8 +21,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char AndroidTextInputComponentName[] = "AndroidTextInput";
 
@@ -168,7 +167,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 #pragma mark - LayoutableShadowNode
 
 Size AndroidTextInputShadowNode::measureContent(
-    LayoutContext const &layoutContext,
+    LayoutContext const & /*layoutContext*/,
     LayoutConstraints const &layoutConstraints) const {
   if (getStateData().cachedAttributedStringId != 0) {
     return textLayoutManager_
@@ -207,5 +206,4 @@ void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {
   ConcreteViewShadowNode::layout(layoutContext);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

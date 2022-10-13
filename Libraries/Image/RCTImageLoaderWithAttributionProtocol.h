@@ -13,7 +13,7 @@
 RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
 RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
 
-@protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol, RCTImageLoaderLoggableProtocol>
+@protocol RCTImageLoaderWithAttributionProtocol <RCTImageLoaderProtocol, RCTImageLoaderLoggableProtocol>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -26,7 +26,7 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
                                                 scale:(CGFloat)scale
                                               clipped:(BOOL)clipped
                                            resizeMode:(RCTResizeMode)resizeMode
-                                             priority: (RCTImageLoaderPriority)priority
+                                             priority:(RCTImageLoaderPriority)priority
                                           attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
                                         progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                      partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock

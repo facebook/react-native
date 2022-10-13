@@ -10,29 +10,37 @@
 
 'use strict';
 
-const {ParserError} = require('./errors');
+import type {TypeAliasResolutionStatus, TypeDeclarationMap} from '../utils';
+
+const {parseTopLevelType} = require('./parseTopLevelType');
 
 /**
  * TODO(T108222691): Use flow-types for @babel/parser
  */
-export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
-    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
-      if (
-        node.declaration.type === 'TSTypeAliasDeclaration' ||
-        node.declaration.type === 'TSInterfaceDeclaration'
-      ) {
-        types[node.declaration.id.name] = node.declaration;
+    switch (node.type) {
+      case 'ExportNamedDeclaration': {
+        if (node.declaration) {
+          switch (node.declaration.type) {
+            case 'TSTypeAliasDeclaration':
+            case 'TSInterfaceDeclaration':
+            case 'TSEnumDeclaration': {
+              types[node.declaration.id.name] = node.declaration;
+              break;
+            }
+          }
+        }
+        break;
       }
-    } else if (
-      node.type === 'TSTypeAliasDeclaration' ||
-      node.type === 'TSInterfaceDeclaration'
-    ) {
-      types[node.id.name] = node;
+      case 'TSTypeAliasDeclaration':
+      case 'TSInterfaceDeclaration':
+      case 'TSEnumDeclaration': {
+        types[node.id.name] = node;
+        break;
+      }
     }
-
     return types;
   }, {});
 }
@@ -41,15 +49,6 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
 export type ASTNode = Object;
 
 const invariant = require('invariant');
-
-type TypeAliasResolutionStatus =
-  | $ReadOnly<{
-      successful: true,
-      aliasName: string,
-    }>
-  | $ReadOnly<{
-      successful: false,
-    }>;
 
 function resolveTypeAnnotation(
   // TODO(T108222691): Use flow-types for @babel/parser
@@ -75,24 +74,20 @@ function resolveTypeAnnotation(
   };
 
   for (;;) {
-    // Check for optional type in union e.g. T | null | undefined
-    if (
-      node.type === 'TSUnionType' &&
-      node.types.some(
-        t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
-      )
-    ) {
-      node = node.types.filter(
-        t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
-      )[0];
-      nullable = true;
-    } else if (node.type === 'TSTypeReference') {
+    const topLevelType = parseTopLevelType(node);
+    nullable = nullable || topLevelType.optional;
+    node = topLevelType.type;
+
+    if (node.type === 'TSTypeReference') {
       typeAliasResolutionStatus = {
         successful: true,
         aliasName: node.typeName.name,
       };
       const resolvedTypeAnnotation = types[node.typeName.name];
-      if (resolvedTypeAnnotation == null) {
+      if (
+        resolvedTypeAnnotation == null ||
+        resolvedTypeAnnotation.type === 'TSEnumDeclaration'
+      ) {
         break;
       }
 
@@ -112,41 +107,6 @@ function resolveTypeAnnotation(
     typeAnnotation: node,
     typeAliasResolutionStatus,
   };
-}
-
-function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
-  if (value.type === 'TSTypeReference' && types[value.typeName.name]) {
-    return getValueFromTypes(types[value.typeName.name], types);
-  }
-
-  if (value.type === 'TSTypeAliasDeclaration') {
-    return value.typeAnnotation;
-  }
-
-  return value;
-}
-
-export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
-
-function createParserErrorCapturer(): [
-  Array<ParserError>,
-  ParserErrorCapturer,
-] {
-  const errors = [];
-  function guard<T>(fn: () => T): ?T {
-    try {
-      return fn();
-    } catch (error) {
-      if (!(error instanceof ParserError)) {
-        throw error;
-      }
-      errors.push(error);
-
-      return null;
-    }
-  }
-
-  return [errors, guard];
 }
 
 // TODO(T108222691): Use flow-types for @babel/parser
@@ -218,9 +178,7 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
 }
 
 module.exports = {
-  getValueFromTypes,
   resolveTypeAnnotation,
-  createParserErrorCapturer,
   getTypes,
   visit,
   isModuleRegistryCall,

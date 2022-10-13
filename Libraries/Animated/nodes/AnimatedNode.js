@@ -10,12 +10,12 @@
 
 'use strict';
 
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import invariant from 'invariant';
 
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
-const invariant = require('invariant');
-
-import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 type ValueListenerCallback = (state: {value: number, ...}) => mixed;
 
@@ -23,7 +23,7 @@ let _uniqueId = 1;
 
 // Note(vjeux): this would be better as an interface but flow doesn't
 // support them yet
-class AnimatedNode {
+export default class AnimatedNode {
   _listeners: {[key: string]: ValueListenerCallback, ...};
   _platformConfig: ?PlatformConfig;
   __nativeAnimatedValueListener: ?any;
@@ -193,5 +193,3 @@ class AnimatedNode {
     this._platformConfig = platformConfig;
   }
 }
-
-module.exports = AnimatedNode;

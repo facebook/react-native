@@ -19,8 +19,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Size measureAndroidComponent(
     ContextContainer::Shared const &contextContainer,
@@ -166,9 +165,9 @@ TextMeasurement TextLayoutManager::measure(
 
   auto measurement = measureCache_.get(
       {attributedString, paragraphAttributes, layoutConstraints},
-      [&](TextMeasureCacheKey const &key) {
+      [&](TextMeasureCacheKey const & /*key*/) {
         auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-        if (telemetry) {
+        if (telemetry != nullptr) {
           telemetry->willMeasureText();
         }
 
@@ -178,7 +177,7 @@ TextMeasurement TextLayoutManager::measure(
             : doMeasure(
                   attributedString, paragraphAttributes, layoutConstraints);
 
-        if (telemetry) {
+        if (telemetry != nullptr) {
           telemetry->didMeasureText();
         }
 
@@ -446,5 +445,4 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
   return TextMeasurement{size, attachments};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

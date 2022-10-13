@@ -4,7 +4,6 @@ rn_android_library(
     name = "tests",
     srcs = glob(["*.java"]),
     autoglob = False,
-    is_androidx = True,
     language = "JAVA",
     visibility = [
         "PUBLIC",

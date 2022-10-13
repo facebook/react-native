@@ -73,6 +73,7 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
+  - hermes-engine (1000.0.0)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
@@ -91,6 +92,12 @@ PODS:
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
+  - RCT-Folly/Futures (2021.07.22.00):
+    - boost
+    - DoubleConversion
+    - fmt (~> 6.2.1)
+    - glog
+    - libevent
   - RCTRequired (1000.0.0)
   - RCTTypeSafety (1000.0.0):
     - FBLazyVector (= 1000.0.0)
@@ -295,6 +302,7 @@ PODS:
     - React-Fabric/debug_renderer (= 1000.0.0)
     - React-Fabric/imagemanager (= 1000.0.0)
     - React-Fabric/leakchecker (= 1000.0.0)
+    - React-Fabric/mapbuffer (= 1000.0.0)
     - React-Fabric/mounting (= 1000.0.0)
     - React-Fabric/runtimescheduler (= 1000.0.0)
     - React-Fabric/scheduler (= 1000.0.0)
@@ -522,6 +530,14 @@ PODS:
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/mapbuffer (1000.0.0):
+    - RCT-Folly/Fabric (= 2021.07.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-Fabric/mounting (1000.0.0):
     - RCT-Folly/Fabric (= 2021.07.22.00)
     - RCTRequired (= 1000.0.0)
@@ -590,6 +606,17 @@ PODS:
   - React-graphics (1000.0.0):
     - RCT-Folly/Fabric (= 2021.07.22.00)
     - React-Core/Default (= 1000.0.0)
+  - React-hermes (1000.0.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly/Futures (= 2021.07.22.00)
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - React-jsinspector (= 1000.0.0)
+    - React-perflogger (= 1000.0.0)
   - React-jsi (1000.0.0):
     - boost (= 1.76.0)
     - DoubleConversion
@@ -753,6 +780,8 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.125.0)
   - FlipperKit/SKIOSNetworkPlugin (= 0.125.0)
   - glog (from `../../third-party-podspecs/glog.podspec`)
+  - hermes-engine (from `../../sdks/hermes/hermes-engine.podspec`)
+  - libevent (~> 2.1.12)
   - OpenSSL-Universal (= 1.1.1100)
   - RCT-Folly (from `../../third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../../third-party-podspecs/RCT-Folly.podspec`)
@@ -769,6 +798,7 @@ DEPENDENCIES:
   - React-cxxreact (from `../../ReactCommon/cxxreact`)
   - React-Fabric (from `../../ReactCommon`)
   - React-graphics (from `../../ReactCommon/react/renderer/graphics`)
+  - React-hermes (from `../../ReactCommon/hermes`)
   - React-jsi (from `../../ReactCommon/jsi`)
   - React-jsi/Fabric (from `../../ReactCommon/jsi`)
   - React-jsiexecutor (from `../../ReactCommon/jsiexecutor`)
@@ -824,6 +854,8 @@ EXTERNAL SOURCES:
     :path: "../../React/FBReactNativeSpec"
   glog:
     :podspec: "../../third-party-podspecs/glog.podspec"
+  hermes-engine:
+    :podspec: "../../sdks/hermes/hermes-engine.podspec"
   RCT-Folly:
     :podspec: "../../third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -848,6 +880,8 @@ EXTERNAL SOURCES:
     :path: "../../ReactCommon"
   React-graphics:
     :path: "../../ReactCommon/react/renderer/graphics"
+  React-hermes:
+    :path: "../../ReactCommon/hermes"
   React-jsi:
     :path: "../../ReactCommon/jsi"
   React-jsiexecutor:
@@ -900,7 +934,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: 19e408e76fa9258dd32191a50d60c41444f52d29
-  FBReactNativeSpec: a9bf67b4be55c0819bc88e1721820286c1340710
+  FBReactNativeSpec: 27a89a8eea1b441a73a78f420dd18dad3ed13723
   Flipper: 26fc4b7382499f1281eb8cb921e5c3ad6de91fe0
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
@@ -912,20 +946,22 @@ SPEC CHECKSUMS:
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  hermes-engine: 8aa7846f48430e8517285eb0ddf8a614eee39cb3
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
   RCTRequired: 1c8808cf84569265784a6c33984bbb506ada8c6e
   RCTTypeSafety: b6dcb5036a808864ee8cad66ca15f263c24661cc
   React: 8d809d414723bb5763093ddec7658066a21ccabc
-  React-bridging: cc10a051eff1f03306a1d7659593d8aac3242bc3
+  React-bridging: c8806159f8ef90f27443857eed1efdb8c85940e1
   React-callinvoker: 5f16202ad4e45f0607b1fae0f6955a8f7c87eef1
   React-Codegen: 5adf19af97eb37a7d441c040521191e446255086
   React-Core: ce4282fb714ffbe444b84d296d1728eaee4d0e9f
   React-CoreModules: 675170bccf156da3a3348e04e2036ce401b2010d
   React-cxxreact: 7276467c246302fedf598cc40d7003896ddb20ba
-  React-Fabric: abfd61dc5498ce165634af85d65fcc42b82b5bf4
+  React-Fabric: a696c92be541f2015b9777956a3e7df8a8f34aed
   React-graphics: 5ccc9cc0d91794fd42bc1c693e9aea207554bbef
+  React-hermes: 7b9306aee1d58ba030614e54eb8041056119430f
   React-jsi: a042596cb558abea721ab5e23cb175647610a73d
   React-jsiexecutor: f7fbac5dff7e7ff110a66edf2626b4f4f4600ef5
   React-jsinspector: 7733dd522d044aef87caa39f3eda77593358a7eb
@@ -944,14 +980,14 @@ SPEC CHECKSUMS:
   React-RCTTest: 06c388632dc7b30df17af01c8f9e89e641b4d31c
   React-RCTText: a861fbf2835299d3cc4189697cddd8bd8602afb9
   React-RCTVibration: 0386f50996a153b3f39cecbe7d139763ac9a9fdf
-  React-rncore: 2a6ad37560e94cf7ff32e3f2ae1e708491b4c1f3
+  React-rncore: 665c70690f404bbfa3948148de72689672a906d2
   React-runtimeexecutor: 97dca9247f4d3cfe0733384b189c6930fbd402b7
-  ReactCommon: 6cef8ed13ee2a9d7d4cf9660dbe6dd2ea6ba7104
-  ScreenshotManager: 71d047abd38a77310985b87f8136b620c5c61e88
+  ReactCommon: 8e39c4b24da570ea2b631accbf779b5891befe0c
+  ScreenshotManager: 3fc534a218e7b8dde632158411d0f15b0ca8893c
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1b1a12ff3d86a10565ea7cbe057d42f5e5fb2a07
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: c3d82494e47e0adce02921f2ed9dba2427f0a9ff
+PODFILE CHECKSUM: 6e26aac84dafab208188a8c6e45de8b3cf2a9f62
 
 COCOAPODS: 1.11.3

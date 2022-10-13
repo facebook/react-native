@@ -16,8 +16,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
     ComponentDescriptorParameters parameters,
@@ -50,7 +49,7 @@ void ComponentDescriptorRegistry::add(
 }
 
 void ComponentDescriptorRegistry::registerComponentDescriptor(
-    SharedComponentDescriptor componentDescriptor) const {
+    const SharedComponentDescriptor &componentDescriptor) const {
   ComponentHandle componentHandle = componentDescriptor->getComponentHandle();
   _registryByHandle[componentHandle] = componentDescriptor;
 
@@ -119,11 +118,7 @@ bool ComponentDescriptorRegistry::hasComponentDescriptorAt(
   std::shared_lock<butter::shared_mutex> lock(mutex_);
 
   auto iterator = _registryByHandle.find(componentHandle);
-  if (iterator == _registryByHandle.end()) {
-    return false;
-  }
-
-  return true;
+  return iterator != _registryByHandle.end();
 }
 
 ShadowNode::Shared ComponentDescriptorRegistry::createNode(
@@ -136,8 +131,7 @@ ShadowNode::Shared ComponentDescriptorRegistry::createNode(
   auto const &componentDescriptor = this->at(unifiedComponentName);
 
   auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
-  auto family =
-      componentDescriptor.createFamily(fragment, std::move(eventTarget));
+  auto family = componentDescriptor.createFamily(fragment, eventTarget);
   auto const props = componentDescriptor.cloneProps(
       PropsParserContext{surfaceId, *contextContainer_.get()},
       nullptr,
@@ -155,7 +149,7 @@ ShadowNode::Shared ComponentDescriptorRegistry::createNode(
 }
 
 void ComponentDescriptorRegistry::setFallbackComponentDescriptor(
-    SharedComponentDescriptor descriptor) {
+    const SharedComponentDescriptor &descriptor) {
   _fallbackComponentDescriptor = descriptor;
   registerComponentDescriptor(descriptor);
 }
@@ -165,5 +159,4 @@ ComponentDescriptorRegistry::getFallbackComponentDescriptor() const {
   return _fallbackComponentDescriptor;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

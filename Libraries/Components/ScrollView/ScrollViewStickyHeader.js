@@ -8,17 +8,16 @@
  * @format
  */
 
+import type {LayoutEvent} from '../../Types/CoreEventTypes';
+
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import AnimatedAddition from '../../Animated/nodes/AnimatedAddition';
 import AnimatedDiffClamp from '../../Animated/nodes/AnimatedDiffClamp';
 import AnimatedNode from '../../Animated/nodes/AnimatedNode';
-
-import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
-import View from '../View/View';
 import Platform from '../../Utilities/Platform';
-
-import type {LayoutEvent} from '../../Types/CoreEventTypes';
+import View from '../View/View';
+import * as React from 'react';
 
 const AnimatedView = AnimatedImplementation.createAnimatedComponent(View);
 

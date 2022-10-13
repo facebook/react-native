@@ -10,15 +10,15 @@
 
 'use strict';
 
-const AnimatedInterpolation = require('./AnimatedInterpolation');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
-const InteractionManager = require('../../Interaction/InteractionManager');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-
-import type AnimatedNode from './AnimatedNode';
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
+import type AnimatedNode from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
+
+import InteractionManager from '../../Interaction/InteractionManager';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedInterpolation from './AnimatedInterpolation';
+import AnimatedWithChildren from './AnimatedWithChildren';
 
 export type AnimatedValueConfig = $ReadOnly<{
   useNativeDriver: boolean,
@@ -84,13 +84,14 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  *
  * See https://reactnative.dev/docs/animatedvalue
  */
-class AnimatedValue extends AnimatedWithChildren {
+export default class AnimatedValue extends AnimatedWithChildren {
   _value: number;
   _startingValue: number;
   _offset: number;
   _animation: ?Animation;
   _tracking: ?AnimatedTracking;
 
+  // $FlowFixMe[missing-local-annot]
   constructor(value: number, config?: ?AnimatedValueConfig) {
     super();
     if (typeof value !== 'number') {
@@ -303,5 +304,3 @@ class AnimatedValue extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedValue;

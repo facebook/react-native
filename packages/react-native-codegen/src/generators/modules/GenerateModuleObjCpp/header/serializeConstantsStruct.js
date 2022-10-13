@@ -17,7 +17,7 @@ import type {Nullable} from '../../../../CodegenSchema';
 import type {StructTypeAnnotation, ConstantsStruct} from '../StructCollector';
 import type {StructSerilizationOutput} from './serializeStruct';
 
-const {unwrapNullable} = require('../../../../parsers/flow/modules/utils');
+const {unwrapNullable} = require('../../../../parsers/parsers-commons');
 
 const StructTemplate = ({
   hasteModuleName,

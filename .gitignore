@@ -36,6 +36,8 @@ project.xcworkspace
 /ReactAndroid/gradle/
 /ReactAndroid/gradlew
 /ReactAndroid/gradlew.bat
+/ReactAndroid/external-artifacts/build/
+/ReactAndroid/external-artifacts/artifacts/
 /ReactAndroid/hermes-engine/build/
 /ReactAndroid/hermes-engine/.cxx/
 /template/android/app/build/
@@ -68,7 +70,6 @@ local.properties
 node_modules
 *.log
 .nvm
-/bots/node_modules/
 package-lock.json
 
 # OS X
@@ -106,13 +107,16 @@ package-lock.json
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*
-!/packages/rn-tester/Pods/__offline_mirrors__
+!/packages/rn-tester/Pods/__offline_mirrors_hermes__
+!/packages/rn-tester/Pods/__offline_mirrors_jsc__
 
 # react-native-codegen
 /React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
+/packages/react-native-codegen/tmp/
 /ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
+
 
 # Additional SDKs
 /sdks/download

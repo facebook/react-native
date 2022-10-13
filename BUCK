@@ -251,10 +251,12 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTBorderStyle.h": RCTVIEWS_PATH + "RCTBorderStyle.h",
     "React/RCTBridge+Private.h": RCTBASE_PATH + "RCTBridge+Private.h",
     "React/RCTBridge.h": RCTBASE_PATH + "RCTBridge.h",
+    "React/RCTBridgeConstants.h": RCTBASE_PATH + "RCTBridgeConstants.h",
     "React/RCTBridgeDelegate.h": RCTBASE_PATH + "RCTBridgeDelegate.h",
     "React/RCTBridgeMethod.h": RCTBASE_PATH + "RCTBridgeMethod.h",
     "React/RCTBridgeModule.h": RCTBASE_PATH + "RCTBridgeModule.h",
     "React/RCTBridgeModuleDecorator.h": RCTBASE_PATH + "RCTBridgeModuleDecorator.h",
+    "React/RCTBundleManager.h": RCTBASE_PATH + "RCTBundleManager.h",
     "React/RCTBundleURLProvider.h": RCTBASE_PATH + "RCTBundleURLProvider.h",
     "React/RCTComponent.h": RCTVIEWS_PATH + "RCTComponent.h",
     "React/RCTComponentData.h": RCTVIEWS_PATH + "RCTComponentData.h",
@@ -337,6 +339,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTSurfaceView.h": RCTBASE_PATH + "Surface/RCTSurfaceView.h",
     "React/RCTTextDecorationLineType.h": RCTVIEWS_PATH + "RCTTextDecorationLineType.h",
     "React/RCTTouchHandler.h": RCTBASE_PATH + "RCTTouchHandler.h",
+    "React/RCTTurboModuleRegistry.h": RCTBASE_PATH + "RCTTurboModuleRegistry.h",
     "React/RCTUIManager.h": RCTMODULES_PATH + "RCTUIManager.h",
     "React/RCTUIManagerObserverCoordinator.h": RCTMODULES_PATH + "RCTUIManagerObserverCoordinator.h",
     "React/RCTUIManagerUtils.h": RCTMODULES_PATH + "RCTUIManagerUtils.h",
@@ -602,8 +605,10 @@ rn_apple_library(
     ],
     inherited_buck_flags = get_static_library_ios_flags(),
     labels = [
+        "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
     reexport_all_header_dependencies = True,
@@ -827,8 +832,10 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
+        "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     plugins =
         react_module_plugin_providers(
@@ -877,6 +884,7 @@ rn_apple_library(
     labels = [
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
+        "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
@@ -936,8 +944,10 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
+        "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     plugins =
         react_module_plugin_providers(
@@ -984,8 +994,10 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
+        "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     plugins =
         react_module_plugin_providers(
@@ -1036,8 +1048,10 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
+        "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     plugins =
         react_module_plugin_providers(
@@ -1117,8 +1131,10 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
+        "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     plugins =
         react_module_plugin_providers(
@@ -1284,6 +1300,7 @@ rn_apple_library(
     labels = [
         "depslint_never_remove",
         "disable_plugins_only_validation",
+        "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],

@@ -9,100 +9,107 @@
 
 #include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/components/view/propsConversions.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 
-namespace facebook {
-namespace react {
-
-bool AccessibilityProps::enablePropIteratorSetter = false;
+namespace facebook::react {
 
 AccessibilityProps::AccessibilityProps(
     const PropsParserContext &context,
     AccessibilityProps const &sourceProps,
     RawProps const &rawProps)
     : accessible(
-          enablePropIteratorSetter ? sourceProps.accessible
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "accessible",
-                                         sourceProps.accessible,
-                                         false)),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.accessible
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "accessible",
+                                                       sourceProps.accessible,
+                                                       false)),
       accessibilityState(
-          enablePropIteratorSetter ? sourceProps.accessibilityState
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "accessibilityState",
-                                         sourceProps.accessibilityState,
-                                         {})),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityState
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityState",
+                    sourceProps.accessibilityState,
+                    {})),
       accessibilityLabel(
-          enablePropIteratorSetter ? sourceProps.accessibilityLabel
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "accessibilityLabel",
-                                         sourceProps.accessibilityLabel,
-                                         "")),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityLabel
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityLabel",
+                    sourceProps.accessibilityLabel,
+                    "")),
       accessibilityLabelledBy(
-          enablePropIteratorSetter ? sourceProps.accessibilityLabelledBy
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "accessibilityLabelledBy",
-                                         sourceProps.accessibilityLabelledBy,
-                                         {})),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityLabelledBy
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityLabelledBy",
+                    sourceProps.accessibilityLabelledBy,
+                    {})),
       accessibilityLiveRegion(
-          enablePropIteratorSetter ? sourceProps.accessibilityLiveRegion
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "accessibilityLiveRegion",
-                                         sourceProps.accessibilityLiveRegion,
-                                         AccessibilityLiveRegion::None)),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityLiveRegion
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityLiveRegion",
+                    sourceProps.accessibilityLiveRegion,
+                    AccessibilityLiveRegion::None)),
       accessibilityHint(
-          enablePropIteratorSetter ? sourceProps.accessibilityHint
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "accessibilityHint",
-                                         sourceProps.accessibilityHint,
-                                         "")),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityHint
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityHint",
+                    sourceProps.accessibilityHint,
+                    "")),
       accessibilityLanguage(
-          enablePropIteratorSetter ? sourceProps.accessibilityLanguage
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "accessibilityLanguage",
-                                         sourceProps.accessibilityLanguage,
-                                         "")),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityLanguage
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityLanguage",
+                    sourceProps.accessibilityLanguage,
+                    "")),
       accessibilityValue(
-          enablePropIteratorSetter ? sourceProps.accessibilityValue
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "accessibilityValue",
-                                         sourceProps.accessibilityValue,
-                                         {})),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityValue
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityValue",
+                    sourceProps.accessibilityValue,
+                    {})),
       accessibilityActions(
-          enablePropIteratorSetter ? sourceProps.accessibilityActions
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "accessibilityActions",
-                                         sourceProps.accessibilityActions,
-                                         {})),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityActions
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityActions",
+                    sourceProps.accessibilityActions,
+                    {})),
       accessibilityViewIsModal(
-          enablePropIteratorSetter ? sourceProps.accessibilityViewIsModal
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "accessibilityViewIsModal",
-                                         sourceProps.accessibilityViewIsModal,
-                                         false)),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityViewIsModal
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityViewIsModal",
+                    sourceProps.accessibilityViewIsModal,
+                    false)),
       accessibilityElementsHidden(
-          enablePropIteratorSetter
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.accessibilityElementsHidden
               : convertRawProp(
                     context,
@@ -111,7 +118,7 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityElementsHidden,
                     false)),
       accessibilityIgnoresInvertColors(
-          enablePropIteratorSetter
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.accessibilityIgnoresInvertColors
               : convertRawProp(
                     context,
@@ -120,53 +127,58 @@ AccessibilityProps::AccessibilityProps(
                     sourceProps.accessibilityIgnoresInvertColors,
                     false)),
       onAccessibilityTap(
-          enablePropIteratorSetter ? sourceProps.onAccessibilityTap
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "onAccessibilityTap",
-                                         sourceProps.onAccessibilityTap,
-                                         {})),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.onAccessibilityTap
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "onAccessibilityTap",
+                    sourceProps.onAccessibilityTap,
+                    {})),
       onAccessibilityMagicTap(
-          enablePropIteratorSetter ? sourceProps.onAccessibilityMagicTap
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "onAccessibilityMagicTap",
-                                         sourceProps.onAccessibilityMagicTap,
-                                         {})),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.onAccessibilityMagicTap
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "onAccessibilityMagicTap",
+                    sourceProps.onAccessibilityMagicTap,
+                    {})),
       onAccessibilityEscape(
-          enablePropIteratorSetter ? sourceProps.onAccessibilityEscape
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "onAccessibilityEscape",
-                                         sourceProps.onAccessibilityEscape,
-                                         {})),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.onAccessibilityEscape
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "onAccessibilityEscape",
+                    sourceProps.onAccessibilityEscape,
+                    {})),
       onAccessibilityAction(
-          enablePropIteratorSetter ? sourceProps.onAccessibilityAction
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "onAccessibilityAction",
-                                         sourceProps.onAccessibilityAction,
-                                         {})),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.onAccessibilityAction
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "onAccessibilityAction",
+                    sourceProps.onAccessibilityAction,
+                    {})),
       importantForAccessibility(
-          enablePropIteratorSetter ? sourceProps.importantForAccessibility
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "importantForAccessibility",
-                                         sourceProps.importantForAccessibility,
-                                         ImportantForAccessibility::Auto)),
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.importantForAccessibility
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "importantForAccessibility",
+                    sourceProps.importantForAccessibility,
+                    ImportantForAccessibility::Auto)),
       testId(
-          enablePropIteratorSetter ? sourceProps.testId
-                                   : convertRawProp(
-                                         context,
-                                         rawProps,
-                                         "testID",
-                                         sourceProps.testId,
-                                         "")) {
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.testId
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "testID",
+                                                       sourceProps.testId,
+                                                       "")) {
   // It is a (severe!) perf deoptimization to request props out-of-order.
   // Thus, since we need to request the same prop twice here
   // (accessibilityRole) we "must" do them subsequently here to prevent
@@ -174,7 +186,7 @@ AccessibilityProps::AccessibilityProps(
   // it probably can, but this is a fairly rare edge-case that (1) is easy-ish
   // to work around here, and (2) would require very careful work to address
   // this case and not regress the more common cases.
-  if (!enablePropIteratorSetter) {
+  if (!CoreFeatures::enablePropIteratorSetter) {
     const auto *rawPropValue =
         rawProps.at("accessibilityRole", nullptr, nullptr);
     AccessibilityTraits traits;
@@ -194,7 +206,7 @@ AccessibilityProps::AccessibilityProps(
 void AccessibilityProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
-    const char *propName,
+    const char * /*propName*/,
     RawValue const &value) {
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessible, false);
@@ -217,7 +229,7 @@ void AccessibilityProps::setProp(
     RAW_SET_PROP_SWITCH_CASE(testId, "testID", std::string{""});
     case CONSTEXPR_RAW_PROPS_KEY_HASH("accessibilityRole"): {
       AccessibilityTraits traits = AccessibilityTraits::None;
-      std::string roleString = "";
+      std::string roleString;
       if (value.hasValue()) {
         fromRawValue(context, value, traits);
         fromRawValue(context, value, roleString);
@@ -241,5 +253,4 @@ SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
 }
 #endif // RN_DEBUG_STRING_CONVERTIBLE
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

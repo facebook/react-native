@@ -11,21 +11,22 @@
 
 'use strict';
 
-import * as React from 'react';
-import Platform from '../Utilities/Platform';
+import type {PressEvent} from '../Types/CoreEventTypes';
+import type {Button as ButtonType} from './Button.flow';
+import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+  AccessibilityState,
+} from './View/ViewAccessibility';
+
 import StyleSheet, {type ColorValue} from '../StyleSheet/StyleSheet';
 import Text from '../Text/Text';
+import Platform from '../Utilities/Platform';
 import TouchableNativeFeedback from './Touchable/TouchableNativeFeedback';
 import TouchableOpacity from './Touchable/TouchableOpacity';
 import View from './View/View';
 import invariant from 'invariant';
-
-import type {
-  AccessibilityState,
-  AccessibilityActionEvent,
-  AccessibilityActionInfo,
-} from './View/ViewAccessibility';
-import type {PressEvent} from '../Types/CoreEventTypes';
+import * as React from 'react';
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -125,7 +126,11 @@ type ButtonProps = $ReadOnly<{|
     Text to display for blindness accessibility features.
    */
   accessibilityLabel?: ?string,
-
+  /**
+   * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
+   * https://github.com/facebook/react-native/issues/34424
+   */
+  'aria-label'?: ?string,
   /**
     If `true`, disable all interactions for this component.
 
@@ -145,6 +150,17 @@ type ButtonProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityState?: ?AccessibilityState,
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
 
   /**
    * [Android] Controlling if a view fires accessibility events and if it is reported to accessibility services.
@@ -269,6 +285,13 @@ class Button extends React.Component<ButtonProps> {
   render(): React.Node {
     const {
       accessibilityLabel,
+      accessibilityState,
+      'aria-busy': ariaBusy,
+      'aria-checked': ariaChecked,
+      'aria-disabled': ariaDisabled,
+      'aria-expanded': ariaExpanded,
+      'aria-label': ariaLabel,
+      'aria-selected': ariaSelected,
       importantForAccessibility,
       color,
       onPress,
@@ -297,15 +320,23 @@ class Button extends React.Component<ButtonProps> {
       }
     }
 
+    let _accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
+
     const disabled =
       this.props.disabled != null
         ? this.props.disabled
-        : this.props.accessibilityState?.disabled;
+        : _accessibilityState?.disabled;
 
-    const accessibilityState =
-      disabled !== this.props.accessibilityState?.disabled
-        ? {...this.props.accessibilityState, disabled}
-        : this.props.accessibilityState;
+    _accessibilityState =
+      disabled !== _accessibilityState?.disabled
+        ? {..._accessibilityState, disabled}
+        : _accessibilityState;
 
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
@@ -332,11 +363,11 @@ class Button extends React.Component<ButtonProps> {
         accessible={accessible}
         accessibilityActions={accessibilityActions}
         onAccessibilityAction={onAccessibilityAction}
-        accessibilityLabel={accessibilityLabel}
+        accessibilityLabel={ariaLabel || accessibilityLabel}
         accessibilityHint={accessibilityHint}
         accessibilityLanguage={accessibilityLanguage}
         accessibilityRole="button"
-        accessibilityState={accessibilityState}
+        accessibilityState={_accessibilityState}
         importantForAccessibility={_importantForAccessibility}
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}
@@ -400,4 +431,4 @@ const styles = StyleSheet.create({
   }),
 });
 
-module.exports = Button;
+module.exports = (Button: ButtonType);

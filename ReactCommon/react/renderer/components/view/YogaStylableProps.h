@@ -31,6 +31,11 @@ class YogaStylableProps : public Props {
       const char *propName,
       RawValue const &value);
 
+#ifdef ANDROID
+  void propsDiffMapBuffer(Props const *oldProps, MapBufferBuilder &builder)
+      const override;
+#endif
+
 #pragma mark - Props
 
   YGStyle yogaStyle{};
@@ -39,7 +44,7 @@ class YogaStylableProps : public Props {
 
 #pragma mark - DebugStringConvertible (Partial)
 
-  SharedDebugStringConvertibleList getDebugProps() const;
+  SharedDebugStringConvertibleList getDebugProps() const override;
 
 #endif
 };

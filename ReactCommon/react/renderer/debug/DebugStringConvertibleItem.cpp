@@ -9,8 +9,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
@@ -44,5 +43,4 @@ SharedDebugStringConvertibleList DebugStringConvertibleItem::getDebugChildren()
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

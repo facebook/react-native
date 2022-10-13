@@ -12,9 +12,9 @@
 #import <React/RCTConvert.h>
 #import <React/RCTImageSource.h>
 
+#import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTImageShadowView.h>
 #import <React/RCTImageView.h>
-#import <React/RCTImageLoaderProtocol.h>
 
 @implementation RCTImageViewManager
 
@@ -51,60 +51,64 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
   view.renderingMode = json ? UIImageRenderingModeAlwaysTemplate : defaultView.renderingMode;
 }
 
-RCT_EXPORT_METHOD(getSize:(NSURLRequest *)request
-                  successBlock:(RCTResponseSenderBlock)successBlock
-                  errorBlock:(RCTResponseErrorBlock)errorBlock)
+RCT_EXPORT_METHOD(getSize
+                  : (NSURLRequest *)request successBlock
+                  : (RCTResponseSenderBlock)successBlock errorBlock
+                  : (RCTResponseErrorBlock)errorBlock)
 {
-  [[self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
-   getImageSizeForURLRequest:request
-   block:^(NSError *error, CGSize size) {
-     if (error) {
-       errorBlock(error);
-     } else {
-       successBlock(@[@(size.width), @(size.height)]);
-     }
-   }];
+  [[self.bridge moduleForName:@"ImageLoader"
+        lazilyLoadIfNecessary:YES] getImageSizeForURLRequest:request
+                                                       block:^(NSError *error, CGSize size) {
+                                                         if (error) {
+                                                           errorBlock(error);
+                                                         } else {
+                                                           successBlock(@[ @(size.width), @(size.height) ]);
+                                                         }
+                                                       }];
 }
 
-RCT_EXPORT_METHOD(getSizeWithHeaders:(RCTImageSource *)source
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getSizeWithHeaders
+                  : (RCTImageSource *)source resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject)
 {
   [[self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
-   getImageSizeForURLRequest:source.request
-   block:^(NSError *error, CGSize size) {
-     if (error) {
-       reject(@"E_GET_SIZE_FAILURE", nil, error);
-       return;
-     }
-     resolve(@{@"width":@(size.width),@"height":@(size.height)});
-   }];
+      getImageSizeForURLRequest:source.request
+                          block:^(NSError *error, CGSize size) {
+                            if (error) {
+                              reject(@"E_GET_SIZE_FAILURE", nil, error);
+                              return;
+                            }
+                            resolve(@{@"width" : @(size.width), @"height" : @(size.height)});
+                          }];
 }
 
-RCT_EXPORT_METHOD(prefetchImage:(NSURLRequest *)request
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(prefetchImage
+                  : (NSURLRequest *)request resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject)
 {
   if (!request) {
     reject(@"E_INVALID_URI", @"Cannot prefetch an image for an empty URI", nil);
     return;
   }
-    id<RCTImageLoaderProtocol> imageLoader = (id<RCTImageLoaderProtocol>)[self.bridge
-                                                                          moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES];
-    [imageLoader loadImageWithURLRequest:request
-                                priority:RCTImageLoaderPriorityPrefetch
-                                callback:^(NSError *error, UIImage *image) {
-        if (error) {
-            reject(@"E_PREFETCH_FAILURE", nil, error);
-            return;
-        }
-        resolve(@YES);
-    }];
+  id<RCTImageLoaderProtocol> imageLoader = (id<RCTImageLoaderProtocol>)[self.bridge moduleForName:@"ImageLoader"
+                                                                            lazilyLoadIfNecessary:YES];
+  [imageLoader loadImageWithURLRequest:request
+                              priority:RCTImageLoaderPriorityPrefetch
+                              callback:^(NSError *error, UIImage *image) {
+                                if (error) {
+                                  reject(@"E_PREFETCH_FAILURE", nil, error);
+                                  return;
+                                }
+                                resolve(@YES);
+                              }];
 }
 
-RCT_EXPORT_METHOD(queryCache:(NSArray *)requests
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(queryCache
+                  : (NSArray *)requests resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject)
 {
   resolve([[self.bridge moduleForName:@"ImageLoader"] getImageCacheStatus:requests]);
 }

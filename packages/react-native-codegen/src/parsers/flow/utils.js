@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {ParserError} = require('./errors');
+import type {TypeAliasResolutionStatus, TypeDeclarationMap} from '../utils';
 
 /**
  * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
@@ -20,20 +20,28 @@ const {ParserError} = require('./errors');
  *
  * TODO(T71778680): Flow type AST Nodes
  */
-export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
     if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
       if (
-        node.declaration.type === 'TypeAlias' ||
-        node.declaration.type === 'InterfaceDeclaration'
+        node.declaration != null &&
+        (node.declaration.type === 'TypeAlias' ||
+          node.declaration.type === 'InterfaceDeclaration')
       ) {
         types[node.declaration.id.name] = node.declaration;
       }
     } else if (
+      node.type === 'ExportNamedDeclaration' &&
+      node.exportKind === 'value' &&
+      node.declaration &&
+      node.declaration.type === 'EnumDeclaration'
+    ) {
+      types[node.declaration.id.name] = node.declaration;
+    } else if (
       node.type === 'TypeAlias' ||
-      node.type === 'InterfaceDeclaration'
+      node.type === 'InterfaceDeclaration' ||
+      node.type === 'EnumDeclaration'
     ) {
       types[node.id.name] = node;
     }
@@ -45,15 +53,6 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
 export type ASTNode = Object;
 
 const invariant = require('invariant');
-
-type TypeAliasResolutionStatus =
-  | $ReadOnly<{
-      successful: true,
-      aliasName: string,
-    }>
-  | $ReadOnly<{
-      successful: false,
-    }>;
 
 function resolveTypeAnnotation(
   // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this
@@ -85,7 +84,10 @@ function resolveTypeAnnotation(
         aliasName: node.id.name,
       };
       const resolvedTypeAnnotation = types[node.id.name];
-      if (resolvedTypeAnnotation == null) {
+      if (
+        resolvedTypeAnnotation == null ||
+        resolvedTypeAnnotation.type === 'EnumDeclaration'
+      ) {
         break;
       }
 
@@ -112,29 +114,6 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
     return getValueFromTypes(types[value.id.name].right, types);
   }
   return value;
-}
-
-export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
-
-function createParserErrorCapturer(): [
-  Array<ParserError>,
-  ParserErrorCapturer,
-] {
-  const errors = [];
-  function guard<T>(fn: () => T): ?T {
-    try {
-      return fn();
-    } catch (error) {
-      if (!(error instanceof ParserError)) {
-        throw error;
-      }
-      errors.push(error);
-
-      return null;
-    }
-  }
-
-  return [errors, guard];
 }
 
 // TODO(T71778680): Flow-type ASTNodes.
@@ -208,7 +187,6 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
-  createParserErrorCapturer,
   getTypes,
   visit,
   isModuleRegistryCall,

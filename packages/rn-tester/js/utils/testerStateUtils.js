@@ -86,10 +86,12 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
   }));
 
   const recentlyUsedAPIs = recentlyUsed.apis
-    .map(recentAPIKey => apis.find(apiEample => apiEample.key === recentAPIKey))
+    .map(recentAPIKey =>
+      apis.find(apiExample => apiExample.key === recentAPIKey),
+    )
     .filter(Boolean);
 
-  const bookmarkedAPIs = apis.filter(apiEample => apiEample.isBookmarked);
+  const bookmarkedAPIs = apis.filter(apiExample => apiExample.isBookmarked);
 
   const examplesList: ExamplesList = {
     [Screens.COMPONENTS]: [

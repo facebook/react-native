@@ -19,7 +19,6 @@ import android.graphics.Shader;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.facebook.common.internal.Objects;
 import com.facebook.common.references.CloseableReference;
@@ -51,6 +50,7 @@ import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.util.RNLog;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
@@ -67,8 +67,6 @@ import java.util.List;
 public class ReactImageView extends GenericDraweeView {
 
   public static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
-  public static final String REMOTE_TRANSPARENT_BITMAP_URI =
-      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
   private static float[] sComputedCornerRadii = new float[4];
 
@@ -309,30 +307,30 @@ public class ReactImageView extends GenericDraweeView {
     List<ImageSource> tmpSources = new LinkedList<>();
 
     if (sources == null || sources.size() == 0) {
-      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
+      tmpSources.add(ImageSource.getTransparentBitmapImageSource(getContext()));
+    } else if (sources.size() == 1) {
+      // Optimize for the case where we have just one uri, case in which we don't need the sizes
+      ReadableMap source = sources.getMap(0);
+      ImageSource imageSource = new ImageSource(getContext(), source.getString("uri"));
+      if (Uri.EMPTY.equals(imageSource.getUri())) {
+        warnImageSource(source.getString("uri"));
+        imageSource = ImageSource.getTransparentBitmapImageSource(getContext());
+      }
       tmpSources.add(imageSource);
     } else {
-      // Optimize for the case where we have just one uri, case in which we don't need the sizes
-      if (sources.size() == 1) {
-        ReadableMap source = sources.getMap(0);
-        String uri = source.getString("uri");
-        ImageSource imageSource = new ImageSource(getContext(), uri);
-        tmpSources.add(imageSource);
+      for (int idx = 0; idx < sources.size(); idx++) {
+        ReadableMap source = sources.getMap(idx);
+        ImageSource imageSource =
+            new ImageSource(
+                getContext(),
+                source.getString("uri"),
+                source.getDouble("width"),
+                source.getDouble("height"));
         if (Uri.EMPTY.equals(imageSource.getUri())) {
-          warnImageSource(uri);
+          warnImageSource(source.getString("uri"));
+          imageSource = ImageSource.getTransparentBitmapImageSource(getContext());
         }
-      } else {
-        for (int idx = 0; idx < sources.size(); idx++) {
-          ReadableMap source = sources.getMap(idx);
-          String uri = source.getString("uri");
-          ImageSource imageSource =
-              new ImageSource(
-                  getContext(), uri, source.getDouble("width"), source.getDouble("height"));
-          tmpSources.add(imageSource);
-          if (Uri.EMPTY.equals(imageSource.getUri())) {
-            warnImageSource(uri);
-          }
-        }
+        tmpSources.add(imageSource);
       }
     }
 
@@ -568,8 +566,7 @@ public class ReactImageView extends GenericDraweeView {
   private void setSourceImage() {
     mImageSource = null;
     if (mSources.isEmpty()) {
-      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
-      mSources.add(imageSource);
+      mSources.add(ImageSource.getTransparentBitmapImageSource(getContext()));
     } else if (hasMultipleSources()) {
       MultiSourceResult multiSource =
           MultiSourceHelper.getBestSourceForSize(getWidth(), getHeight(), mSources);
@@ -597,11 +594,9 @@ public class ReactImageView extends GenericDraweeView {
 
   private void warnImageSource(String uri) {
     if (ReactBuildConfig.DEBUG) {
-      Toast.makeText(
-              getContext(),
-              "Warning: Image source \"" + uri + "\" doesn't exist",
-              Toast.LENGTH_SHORT)
-          .show();
+      RNLog.w(
+          (ReactContext) getContext(),
+          "ReactImageView: Image source \"" + uri + "\" doesn't exist");
     }
   }
 }

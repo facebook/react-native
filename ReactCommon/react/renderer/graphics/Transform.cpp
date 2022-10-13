@@ -12,8 +12,7 @@
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef RN_DEBUG_STRING_CONVERTIBLE
 void Transform::print(Transform const &t, std::string prefix) {
@@ -279,28 +278,40 @@ Transform Transform::operator*(Transform const &rhs) const {
   auto result = Transform{};
   for (const auto &op : this->operations) {
     if (op.type == TransformOperationType::Identity &&
-        result.operations.size() > 0) {
+        !result.operations.empty()) {
       continue;
     }
     result.operations.push_back(op);
   }
   for (const auto &op : rhs.operations) {
     if (op.type == TransformOperationType::Identity &&
-        result.operations.size() > 0) {
+        !result.operations.empty()) {
       continue;
     }
     result.operations.push_back(op);
   }
 
-  auto lhs00 = lhs.matrix[0], lhs01 = lhs.matrix[1], lhs02 = lhs.matrix[2],
-       lhs03 = lhs.matrix[3], lhs10 = lhs.matrix[4], lhs11 = lhs.matrix[5],
-       lhs12 = lhs.matrix[6], lhs13 = lhs.matrix[7], lhs20 = lhs.matrix[8],
-       lhs21 = lhs.matrix[9], lhs22 = lhs.matrix[10], lhs23 = lhs.matrix[11],
-       lhs30 = lhs.matrix[12], lhs31 = lhs.matrix[13], lhs32 = lhs.matrix[14],
-       lhs33 = lhs.matrix[15];
+  auto lhs00 = lhs.matrix[0];
+  auto lhs01 = lhs.matrix[1];
+  auto lhs02 = lhs.matrix[2];
+  auto lhs03 = lhs.matrix[3];
+  auto lhs10 = lhs.matrix[4];
+  auto lhs11 = lhs.matrix[5];
+  auto lhs12 = lhs.matrix[6];
+  auto lhs13 = lhs.matrix[7];
+  auto lhs20 = lhs.matrix[8];
+  auto lhs21 = lhs.matrix[9];
+  auto lhs22 = lhs.matrix[10];
+  auto lhs23 = lhs.matrix[11];
+  auto lhs30 = lhs.matrix[12];
+  auto lhs31 = lhs.matrix[13];
+  auto lhs32 = lhs.matrix[14];
+  auto lhs33 = lhs.matrix[15];
 
-  auto rhs0 = rhs.matrix[0], rhs1 = rhs.matrix[1], rhs2 = rhs.matrix[2],
-       rhs3 = rhs.matrix[3];
+  auto rhs0 = rhs.matrix[0];
+  auto rhs1 = rhs.matrix[1];
+  auto rhs2 = rhs.matrix[2];
+  auto rhs3 = rhs.matrix[3];
   result.matrix[0] = rhs0 * lhs00 + rhs1 * lhs10 + rhs2 * lhs20 + rhs3 * lhs30;
   result.matrix[1] = rhs0 * lhs01 + rhs1 * lhs11 + rhs2 * lhs21 + rhs3 * lhs31;
   result.matrix[2] = rhs0 * lhs02 + rhs1 * lhs12 + rhs2 * lhs22 + rhs3 * lhs32;
@@ -409,5 +420,4 @@ Size operator*(Size const &size, Transform const &transform) {
   return result;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

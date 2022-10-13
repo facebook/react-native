@@ -8,11 +8,13 @@
  * @format
  */
 
+import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
+
+import View from '../../Components/View/View';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
 import {ansiToJson} from 'anser';
 import * as React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-
-import type {TextStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 // Afterglow theme from https://iterm2colorschemes.com/
 const COLORS = {

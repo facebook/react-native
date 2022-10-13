@@ -193,8 +193,8 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
           it.into(jsBundleDirConfigValue.get())
         } else {
           it.into(mergeAssetsTask.map { mergeFoldersTask -> mergeFoldersTask.outputDir.get() })
-          // Workaround for Android Gradle Plugin 7.1 asset directory
-          it.into("$buildDir/intermediates/assets/${variant.name}/merge${targetName}Assets")
+          // Workaround for Android Gradle Plugin 7.3 asset directory
+          it.into("$buildDir/intermediates/assets/${variant.name}")
         }
 
         it.dependsOn(mergeAssetsTask)
