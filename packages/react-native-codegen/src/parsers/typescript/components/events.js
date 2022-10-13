@@ -197,22 +197,6 @@ function getEventArgument(argumentProps, name: $FlowFixMe) {
   };
 }
 
-function isEvent(typeAnnotation: $FlowFixMe) {
-  switch (typeAnnotation.type) {
-    case 'TSTypeReference':
-      if (
-        typeAnnotation.typeName.name !== 'BubblingEventHandler' &&
-        typeAnnotation.typeName.name !== 'DirectEventHandler'
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    default:
-      return false;
-  }
-}
-
 function buildEventSchema(
   types: TypeDeclarationMap,
   property: EventTypeAST,
@@ -222,9 +206,6 @@ function buildEventSchema(
     property.typeAnnotation.typeAnnotation,
     types,
   );
-  if (!isEvent(topLevelType.type)) {
-    return null;
-  }
 
   const name = property.key.name;
   const typeAnnotation = topLevelType.type;
@@ -275,8 +256,7 @@ function getEvents(
 ): $ReadOnlyArray<EventTypeShape> {
   return eventTypeAST
     .filter(property => property.type === 'TSPropertySignature')
-    .map(property => buildEventSchema(types, property))
-    .filter(Boolean);
+    .map(property => buildEventSchema(types, property));
 }
 
 module.exports = {
