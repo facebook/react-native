@@ -197,6 +197,9 @@ function getEventArgument(argumentProps, name: $FlowFixMe) {
   };
 }
 
+// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
+type EventTypeAST = Object;
+
 function buildEventSchema(
   types: TypeDeclarationMap,
   property: EventTypeAST,
@@ -213,31 +216,6 @@ function buildEventSchema(
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(typeAnnotation, types);
 
-  if (bubblingType && argumentProps) {
-    if (paperTopLevelNameDeprecated != null) {
-      return {
-        name,
-        optional,
-        bubblingType,
-        paperTopLevelNameDeprecated,
-        typeAnnotation: {
-          type: 'EventTypeAnnotation',
-          argument: getEventArgument(argumentProps, name),
-        },
-      };
-    }
-
-    return {
-      name,
-      optional,
-      bubblingType,
-      typeAnnotation: {
-        type: 'EventTypeAnnotation',
-        argument: getEventArgument(argumentProps, name),
-      },
-    };
-  }
-
   if (argumentProps === null) {
     throw new Error(`Unable to determine event arguments for "${name}"`);
   }
@@ -245,18 +223,36 @@ function buildEventSchema(
   if (bubblingType === null) {
     throw new Error(`Unable to determine event arguments for "${name}"`);
   }
-}
 
-// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
-type EventTypeAST = Object;
+  if (paperTopLevelNameDeprecated != null) {
+    return {
+      name,
+      optional,
+      bubblingType,
+      paperTopLevelNameDeprecated,
+      typeAnnotation: {
+        type: 'EventTypeAnnotation',
+        argument: getEventArgument(argumentProps, name),
+      },
+    };
+  }
+
+  return {
+    name,
+    optional,
+    bubblingType,
+    typeAnnotation: {
+      type: 'EventTypeAnnotation',
+      argument: getEventArgument(argumentProps, name),
+    },
+  };
+}
 
 function getEvents(
   eventTypeAST: $ReadOnlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<EventTypeShape> {
-  return eventTypeAST
-    .filter(property => property.type === 'TSPropertySignature')
-    .map(property => buildEventSchema(types, property));
+  return eventTypeAST.map(property => buildEventSchema(types, property));
 }
 
 module.exports = {
