@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {TypeAliasResolutionStatus} from '../utils';
+import type {TypeAliasResolutionStatus, TypeDeclarationMap} from '../utils';
 
 /**
  * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
@@ -20,7 +20,6 @@ import type {TypeAliasResolutionStatus} from '../utils';
  *
  * TODO(T71778680): Flow type AST Nodes
  */
-export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {

@@ -11,7 +11,7 @@
 'use strict';
 
 import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
-import type {TypeDeclarationMap} from '../utils.js';
+import type {TypeDeclarationMap} from '../../utils';
 
 function extendsForProp(prop: PropsAST, types: TypeDeclarationMap) {
   if (!prop.argument) {

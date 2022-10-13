@@ -17,7 +17,7 @@ const {
 } = require('./componentsUtils.js');
 
 import type {StateTypeAnnotation, NamedShape} from '../../../CodegenSchema.js';
-import type {TypeDeclarationMap} from '../utils.js';
+import type {TypeDeclarationMap} from '../../utils';
 
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type PropAST = Object;
