@@ -9,8 +9,6 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 def isNightly = findProperty("isNightly")?.toBoolean()
-def sonatypeUsername = findProperty("SONATYPE_USERNAME")
-def sonatypePassword = findProperty("SONATYPE_PASSWORD")
 def signingKey = findProperty("SIGNING_KEY")
 def signingPwd = findProperty("SIGNING_PWD")
 
@@ -69,24 +67,6 @@ publishing {
         maven {
             name = "npm"
             url = androidOutputUrl
-        }
-        if (sonatypeUsername && sonatypePassword) {
-            maven {
-                name = "mavenCentral"
-                url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-                credentials {
-                    username = sonatypeUsername
-                    password = sonatypePassword
-                }
-            }
-            maven {
-                name = "mavenSnapshots"
-                url = "https://oss.sonatype.org/content/repositories/snapshots/"
-                credentials {
-                    username = sonatypeUsername
-                    password = sonatypePassword
-                }
-            }
         }
     }
 
