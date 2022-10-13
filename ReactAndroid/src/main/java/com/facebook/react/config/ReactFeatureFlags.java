@@ -95,8 +95,6 @@ public class ReactFeatureFlags {
   public static boolean insertZReorderBarriersOnViewGroupChildren = true;
 
   /** Feature Flag for mitigatin concurrent root crashes */
-  public static boolean enableDelayedViewStateDeletion = false;
-
   public static boolean disablePreallocationOnClone = false;
 
   public static boolean shouldRememberAllocatedViews = false;
