@@ -1203,6 +1203,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   private class MountItemDispatchListener implements MountItemDispatcher.ItemDispatchListener {
     @Override
+    public void willMountItems() {
+      for (UIManagerListener listener : mListeners) {
+        listener.willMountItems(FabricUIManager.this);
+      }
+    }
+
+    @Override
+    public void didMountItems() {
+      for (UIManagerListener listener : mListeners) {
+        listener.didMountItems(FabricUIManager.this);
+      }
+    }
+
+    @Override
     public void didDispatchMountItems() {
       for (UIManagerListener listener : mListeners) {
         listener.didDispatchMountItems(FabricUIManager.this);
