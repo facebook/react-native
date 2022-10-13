@@ -10,7 +10,6 @@
 
 'use strict';
 const {
-  flattenProperties,
   getSchemaInfo,
   getTypeAnnotation,
 } = require('./componentsUtils.js');
@@ -26,9 +25,6 @@ function buildPropSchema(
   types: TypeDeclarationMap,
 ): ?NamedShape<PropTypeAnnotation> {
   const info = getSchemaInfo(property, types);
-  if (info == null) {
-    return null;
-  }
   const {name, optional, typeAnnotation, defaultValue} = info;
   return {
     name,
@@ -47,9 +43,8 @@ function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
-  return flattenProperties(typeDefinition, types)
-    .map(property => buildPropSchema(property, types))
-    .filter(Boolean);
+  return typeDefinition
+    .map(property => buildPropSchema(property, types));
 }
 
 module.exports = {

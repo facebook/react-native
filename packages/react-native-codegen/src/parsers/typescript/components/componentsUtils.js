@@ -426,26 +426,6 @@ function getTypeAnnotation<T>(
   }
 }
 
-function isProp(name: string, typeAnnotation: $FlowFixMe) {
-  if (typeAnnotation.type === 'TSTypeReference') {
-    // Remove unwanted types
-    if (
-      typeAnnotation.typeName.name === 'DirectEventHandler' ||
-      typeAnnotation.typeName.name === 'BubblingEventHandler'
-    ) {
-      return false;
-    }
-    if (
-      name === 'style' &&
-      typeAnnotation.type === 'GenericTypeAnnotation' &&
-      typeAnnotation.typeName.name === 'ViewStyleProp'
-    ) {
-      return false;
-    }
-  }
-  return true;
-}
-
 type SchemaInfo = {
   name: string,
   optional: boolean,
@@ -464,9 +444,6 @@ function getSchemaInfo(
   );
 
   const name = property.key.name;
-  if (!isProp(name, topLevelType.type)) {
-    return null;
-  }
 
   if (!property.optional && topLevelType.defaultValue !== undefined) {
     throw new Error(
