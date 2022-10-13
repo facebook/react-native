@@ -216,36 +216,34 @@ function buildEventSchema(
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(typeAnnotation, types);
 
-  if (argumentProps === null) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
+  if (argumentProps && bubblingType) {
+    if (paperTopLevelNameDeprecated != null) {
+      return {
+        name,
+        optional,
+        bubblingType,
+        paperTopLevelNameDeprecated,
+        typeAnnotation: {
+          type: 'EventTypeAnnotation',
+          argument: getEventArgument(argumentProps, name),
+        },
+      };
+    }
 
-  if (bubblingType === null) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
-
-  if (paperTopLevelNameDeprecated != null) {
     return {
       name,
       optional,
       bubblingType,
-      paperTopLevelNameDeprecated,
       typeAnnotation: {
         type: 'EventTypeAnnotation',
         argument: getEventArgument(argumentProps, name),
       },
     };
+  } else if (!argumentProps) {
+    throw new Error(`Unable to determine event arguments for "${name}"`);
+  } else {
+    throw new Error(`Unable to determine event bubbling type for "${name}"`);
   }
-
-  return {
-    name,
-    optional,
-    bubblingType,
-    typeAnnotation: {
-      type: 'EventTypeAnnotation',
-      argument: getEventArgument(argumentProps, name),
-    },
-  };
 }
 
 function getEvents(
