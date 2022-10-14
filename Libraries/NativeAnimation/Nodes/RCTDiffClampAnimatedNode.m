@@ -47,6 +47,11 @@
 
 - (CGFloat)inputNodeValue
 {
+  if (self.parentNodes == nil) {
+    RCTLogWarn(@"Animated.DiffClamp node has not been fully initialised.");
+    return 0;
+  }
+
   RCTValueAnimatedNode *inputNode = (RCTValueAnimatedNode *)[self.parentNodes objectForKey:_inputNodeTag];
   if (![inputNode isKindOfClass:[RCTValueAnimatedNode class]]) {
     RCTLogError(@"Illegal node ID set as an input for Animated.DiffClamp node");
