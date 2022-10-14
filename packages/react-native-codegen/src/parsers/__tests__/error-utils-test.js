@@ -443,3 +443,80 @@ describe('throwIfUntypedModule', () => {
     ).not.toThrowError(UntypedModuleRegistryCallParserError);
   });
 });
+
+describe('throwIfMoreThanOneModuleRegistryCalls', () => {
+  const {throwIfModuleTypeIsUnsupported} = require('../error-utils.js');
+  const {UnsupportedModulePropertyParserError} = require('../errors.js');
+  const hasteModuleName = 'moduleName';
+  const property = {value: 'value', key: {name: 'name'}};
+  it("don't throw error if module type is FunctionTypeAnnotation in Flow", () => {
+    const value = {type: 'FunctionTypeAnnotation'};
+    const language = 'Flow';
+
+    expect(() => {
+      throwIfModuleTypeIsUnsupported(
+        hasteModuleName,
+        property.value,
+        property.key.name,
+        value.type,
+        language,
+      );
+    }).not.toThrow(UnsupportedModulePropertyParserError);
+  });
+  it('throw error if module type is unsupported in Flow', () => {
+    const value = {type: ''};
+    const language = 'Flow';
+
+    expect(() => {
+      throwIfModuleTypeIsUnsupported(
+        hasteModuleName,
+        property.value,
+        property.key.name,
+        value.type,
+        language,
+      );
+    }).toThrow(UnsupportedModulePropertyParserError);
+  });
+  it("don't throw error if module type is TSFunctionType in TypeScript", () => {
+    const value = {type: 'TSFunctionType'};
+    const language = 'TypeScript';
+
+    expect(() => {
+      throwIfModuleTypeIsUnsupported(
+        hasteModuleName,
+        property.value,
+        property.key.name,
+        value.type,
+        language,
+      );
+    }).not.toThrow(UnsupportedModulePropertyParserError);
+  });
+  it("don't throw error if module type is TSMethodSignature in TypeScript", () => {
+    const value = {type: 'TSMethodSignature'};
+    const language = 'TypeScript';
+
+    expect(() => {
+      throwIfModuleTypeIsUnsupported(
+        hasteModuleName,
+        property.value,
+        property.key.name,
+        value.type,
+        language,
+      );
+    }).not.toThrow(UnsupportedModulePropertyParserError);
+  });
+  it('throw error if module type is unsupported in TypeScript', () => {
+    const value = {type: ''};
+    const language = 'TypeScript';
+
+    expect(() => {
+      throwIfModuleTypeIsUnsupported(
+        hasteModuleName,
+        property.value,
+        property.key.name,
+        value.type,
+        language,
+      );
+    }).toThrow(UnsupportedModulePropertyParserError);
+  });
+});

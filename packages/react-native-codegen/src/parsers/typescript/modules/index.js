@@ -63,14 +63,14 @@ const {
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedUnionTypeAnnotationParserError,
-  UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
-const {throwIfUntypedModule} = require('../../error-utils');
 
 const {
+  throwIfUntypedModule,
+  throwIfModuleTypeIsUnsupported,
   throwIfUnusedModuleInterfaceParserError,
   throwIfModuleInterfaceNotFound,
   throwIfWrongNumberOfCallExpressionArgs,
@@ -562,16 +562,13 @@ function buildPropertySchema(
   const methodName: string = key.name;
 
   ({nullable, typeAnnotation: value} = resolveTypeAnnotation(value, types));
-
-  if (value.type !== 'TSFunctionType' && value.type !== 'TSMethodSignature') {
-    throw new UnsupportedModulePropertyParserError(
-      hasteModuleName,
-      property.value,
-      property.key.name,
-      value.type,
-      language,
-    );
-  }
+  throwIfModuleTypeIsUnsupported(
+    hasteModuleName,
+    property.value,
+    property.key.name,
+    value.type,
+    language,
+  );
 
   return {
     name: methodName,
