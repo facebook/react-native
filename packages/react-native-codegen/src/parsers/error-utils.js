@@ -17,6 +17,7 @@ const {
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UnusedModuleInterfaceParserError,
+  IncorrectModuleRegistryCallArityParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -79,9 +80,28 @@ function throwIfUnusedModuleInterfaceParserError(
   }
 }
 
+function throwIfWrongNumberOfCallExpressionArgs(
+  nativeModuleName: string,
+  flowCallExpression: $FlowFixMe,
+  methodName: string,
+  numberOfCallExpressionArgs: number,
+  language: ParserType,
+) {
+  if (numberOfCallExpressionArgs !== 1) {
+    throw new IncorrectModuleRegistryCallArityParserError(
+      nativeModuleName,
+      flowCallExpression,
+      methodName,
+      numberOfCallExpressionArgs,
+      language,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfUnusedModuleInterfaceParserError,
+  throwIfWrongNumberOfCallExpressionArgs,
 };
