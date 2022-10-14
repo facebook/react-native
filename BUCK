@@ -745,7 +745,6 @@ rn_library(
     ),
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.core",
     ],
     visibility = ["PUBLIC"],
     deps = [
