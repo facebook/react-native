@@ -86,7 +86,7 @@ function translateArrayTypeAnnotation(
   cxxOnly: boolean,
   tsArrayType: 'Array' | 'ReadonlyArray',
   tsElementType: $FlowFixMe,
-  nullable: $FlowFixMe,
+  nullable: boolean,
 ): Nullable<NativeModuleTypeAnnotation> {
   try {
     /**
