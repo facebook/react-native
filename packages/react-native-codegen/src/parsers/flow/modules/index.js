@@ -37,6 +37,7 @@ const {
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  emitMixedTypeAnnotation,
 } = require('../../parsers-commons');
 const {
   emitBoolean,
@@ -414,9 +415,7 @@ function translateTypeAnnotation(
     }
     case 'MixedTypeAnnotation': {
       if (cxxOnly) {
-        return wrapNullable(nullable, {
-          type: 'MixedTypeAnnotation',
-        });
+        return emitMixedTypeAnnotation(nullable);
       }
       // Fallthrough
     }
