@@ -15,6 +15,8 @@
 namespace facebook {
 namespace react {
 
+using facebook::react::JSErrorHandlerKey;
+
 static MapBuffer
 parseErrorStack(const jsi::JSError &error, bool isFatal, bool isHermes) {
   /**
@@ -53,37 +55,37 @@ parseErrorStack(const jsi::JSError &error, bool isFatal, bool isHermes) {
       if (std::regex_search(line, searchResults, REGEX_HERMES)) {
         std::string str2 = std::string(searchResults[2]);
         if (str2.compare("native")) {
-          frame.putString(0, std::string(searchResults[4]));
-          frame.putString(1, std::string(searchResults[1]));
-          frame.putInt(2, std::stoi(searchResults[5]));
-          frame.putInt(3, std::stoi(searchResults[6]));
+          frame.putString(kFrameFileName, std::string(searchResults[4]));
+          frame.putString(kFrameMethodName, std::string(searchResults[1]));
+          frame.putInt(kFrameLineNumber, std::stoi(searchResults[5]));
+          frame.putInt(kFrameColumnNumber, std::stoi(searchResults[6]));
           frames.push_back(frame.build());
         }
       }
     } else {
       if (std::regex_search(line, searchResults, REGEX_GECKO)) {
-        frame.putString(0, std::string(searchResults[3]));
-        frame.putString(1, std::string(searchResults[1]));
-        frame.putInt(2, std::stoi(searchResults[4]));
-        frame.putInt(3, std::stoi(searchResults[5]));
+        frame.putString(kFrameFileName, std::string(searchResults[3]));
+        frame.putString(kFrameMethodName, std::string(searchResults[1]));
+        frame.putInt(kFrameLineNumber, std::stoi(searchResults[4]));
+        frame.putInt(kFrameColumnNumber, std::stoi(searchResults[5]));
       } else if (
           std::regex_search(line, searchResults, REGEX_CHROME) ||
           std::regex_search(line, searchResults, REGEX_NODE)) {
-        frame.putString(0, std::string(searchResults[2]));
-        frame.putString(1, std::string(searchResults[1]));
-        frame.putInt(2, std::stoi(searchResults[3]));
-        frame.putInt(3, std::stoi(searchResults[4]));
+        frame.putString(kFrameFileName, std::string(searchResults[2]));
+        frame.putString(kFrameMethodName, std::string(searchResults[1]));
+        frame.putInt(kFrameLineNumber, std::stoi(searchResults[3]));
+        frame.putInt(kFrameColumnNumber, std::stoi(searchResults[4]));
       } else {
         continue;
       }
       frames.push_back(frame.build());
     }
   }
-  errorObj.putMapBufferList(4, std::move(frames));
-  errorObj.putString(5, error.getMessage());
+  errorObj.putMapBufferList(kAllStackFrames, std::move(frames));
+  errorObj.putString(kErrorMessage, error.getMessage());
   // TODO: If needed, can increment exceptionId by 1 each time
-  errorObj.putInt(6, 0);
-  errorObj.putBool(7, isFatal);
+  errorObj.putInt(kExceptionId, 0);
+  errorObj.putBool(kIsFatal, isFatal);
   return errorObj.build();
 }
 
