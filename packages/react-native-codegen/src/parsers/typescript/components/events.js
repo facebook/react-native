@@ -216,7 +216,11 @@ function buildEventSchema(
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(typeAnnotation, types);
 
-  if (argumentProps && bubblingType) {
+  if (!argumentProps) {
+    throw new Error(`Unable to determine event arguments for "${name}"`);
+  } else if (!bubblingType) {
+    throw new Error(`Unable to determine event bubbling type for "${name}"`);
+  } else {
     if (paperTopLevelNameDeprecated != null) {
       return {
         name,
@@ -239,10 +243,6 @@ function buildEventSchema(
         argument: getEventArgument(argumentProps, name),
       },
     };
-  } else if (!argumentProps) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  } else {
-    throw new Error(`Unable to determine event bubbling type for "${name}"`);
   }
 }
 
