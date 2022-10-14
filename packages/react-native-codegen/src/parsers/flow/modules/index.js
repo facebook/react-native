@@ -65,14 +65,15 @@ const {
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
-  IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
 const {
   throwIfModuleInterfaceNotFound,
   throwIfUnusedModuleInterfaceParserError,
+  throwIfWrongNumberOfCallExpressionArgs,
 } = require('../../error-utils');
+
 const language = 'Flow';
 
 function nullGuard<T>(fn: () => T): ?T {
@@ -635,15 +636,13 @@ function buildModuleSchema(
     const {typeArguments} = callExpression;
     const methodName = callExpression.callee.property.name;
 
-    if (callExpression.arguments.length !== 1) {
-      throw new IncorrectModuleRegistryCallArityParserError(
-        hasteModuleName,
-        callExpression,
-        methodName,
-        callExpression.arguments.length,
-        language,
-      );
-    }
+    throwIfWrongNumberOfCallExpressionArgs(
+      hasteModuleName,
+      callExpression,
+      methodName,
+      callExpression.arguments.length,
+      language,
+    );
 
     if (callExpression.arguments[0].type !== 'Literal') {
       const {type} = callExpression.arguments[0];
