@@ -11,7 +11,11 @@
 'use strict';
 
 import type {ParserType} from './errors';
-const {ModuleInterfaceNotFoundParserError} = require('./errors.js');
+
+const {
+  ModuleInterfaceNotFoundParserError,
+  MoreThanOneModuleRegistryCallsParserError,
+} = require('./errors.js');
 
 function throwIfModuleInterfaceNotFound(
   numberOfModuleSpecs: number,
@@ -28,6 +32,23 @@ function throwIfModuleInterfaceNotFound(
   }
 }
 
+function throwIfMoreThanOneModuleRegistryCalls(
+  hasteModuleName: string,
+  callExpressions: $FlowFixMe,
+  callExpressionsLength: number,
+  language: ParserType,
+) {
+  if (callExpressions.length > 1) {
+    throw new MoreThanOneModuleRegistryCallsParserError(
+      hasteModuleName,
+      callExpressions,
+      callExpressionsLength,
+      language,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceNotFound,
+  throwIfMoreThanOneModuleRegistryCalls,
 };

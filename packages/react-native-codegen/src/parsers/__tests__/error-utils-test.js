@@ -11,8 +11,14 @@
 
 'use strict';
 
-const {throwIfModuleInterfaceNotFound} = require('../error-utils');
-const {ModuleInterfaceNotFoundParserError} = require('../errors');
+const {
+  throwIfModuleInterfaceNotFound,
+  throwIfMoreThanOneModuleRegistryCalls,
+} = require('../error-utils');
+const {
+  ModuleInterfaceNotFoundParserError,
+  MoreThanOneModuleRegistryCallsParserError,
+} = require('../errors');
 
 describe('throwIfModuleInterfaceNotFound', () => {
   it('throw error if there are zero module specs', () => {
@@ -33,5 +39,39 @@ describe('throwIfModuleInterfaceNotFound', () => {
     expect(() => {
       throwIfModuleInterfaceNotFound(1, nativeModuleName, specId, parserType);
     }).not.toThrow(ModuleInterfaceNotFoundParserError);
+  });
+});
+
+describe('throwIfMoreThanOneModuleRegistryCalls', () => {
+  it('throw error if module registry calls more than one', () => {
+    const nativeModuleName = 'moduleName';
+    const callExpressions = [
+      {name: 'callExpression1'},
+      {name: 'callExpression2'},
+    ];
+    const parserType = 'Flow';
+
+    expect(() => {
+      throwIfMoreThanOneModuleRegistryCalls(
+        nativeModuleName,
+        callExpressions,
+        callExpressions.length,
+        parserType,
+      );
+    }).toThrow(MoreThanOneModuleRegistryCallsParserError);
+  });
+  it("don't throw error if single module registry call", () => {
+    const nativeModuleName = 'moduleName';
+    const callExpressions = [{name: 'callExpression1'}];
+    const parserType = 'TypeScript';
+
+    expect(() => {
+      throwIfMoreThanOneModuleRegistryCalls(
+        nativeModuleName,
+        callExpressions,
+        callExpressions.length,
+        parserType,
+      );
+    }).not.toThrow(MoreThanOneModuleRegistryCallsParserError);
   });
 });
