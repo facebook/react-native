@@ -425,14 +425,17 @@ const SUPPORTED_INTERPOLATION_PARAMS = {
 };
 
 function addWhitelistedStyleProp(prop: string): void {
+  // $FlowFixMe[prop-missing]
   SUPPORTED_STYLES[prop] = true;
 }
 
 function addWhitelistedTransformProp(prop: string): void {
+  // $FlowFixMe[prop-missing]
   SUPPORTED_TRANSFORMS[prop] = true;
 }
 
 function addWhitelistedInterpolationParam(param: string): void {
+  // $FlowFixMe[prop-missing]
   SUPPORTED_INTERPOLATION_PARAMS[param] = true;
 }
 
