@@ -17,6 +17,7 @@ const {
   MoreThanOneModuleRegistryCallsParserError,
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
+  IncorrectModuleRegistryCallTypeParameterParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceNotFound(
@@ -83,9 +84,48 @@ function throwIfWrongNumberOfCallExpressionArgs(
   }
 }
 
+function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
+  nativeModuleName: string,
+  typeArguments: $FlowFixMe,
+  methodName: string,
+  moduleName: string,
+  language: ParserType,
+) {
+  function throwError() {
+    throw new IncorrectModuleRegistryCallTypeParameterParserError(
+      nativeModuleName,
+      typeArguments,
+      methodName,
+      moduleName,
+      language,
+    );
+  }
+
+  if (language === 'Flow') {
+    if (
+      typeArguments.type !== 'TypeParameterInstantiation' ||
+      typeArguments.params.length !== 1 ||
+      typeArguments.params[0].type !== 'GenericTypeAnnotation' ||
+      typeArguments.params[0].id.name !== 'Spec'
+    ) {
+      throwError();
+    }
+  } else if (language === 'TypeScript') {
+    if (
+      typeArguments.type !== 'TSTypeParameterInstantiation' ||
+      typeArguments.params.length !== 1 ||
+      typeArguments.params[0].type !== 'TSTypeReference' ||
+      typeArguments.params[0].typeName.name !== 'Spec'
+    ) {
+      throwError();
+    }
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
 };
