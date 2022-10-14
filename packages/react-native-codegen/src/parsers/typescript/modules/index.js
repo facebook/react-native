@@ -62,7 +62,6 @@ const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
-  IncorrectModuleRegistryCallTypeParameterParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 const {
@@ -71,6 +70,7 @@ const {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
 } = require('../../error-utils');
 
 const language = 'TypeScript';
@@ -694,20 +694,13 @@ function buildModuleSchema(
       );
     }
 
-    if (
-      typeParameters.type !== 'TSTypeParameterInstantiation' ||
-      typeParameters.params.length !== 1 ||
-      typeParameters.params[0].type !== 'TSTypeReference' ||
-      typeParameters.params[0].typeName.name !== 'Spec'
-    ) {
-      throw new IncorrectModuleRegistryCallTypeParameterParserError(
-        hasteModuleName,
-        typeParameters,
-        methodName,
-        $moduleName,
-        language,
-      );
-    }
+    throwIfIncorrectModuleRegistryCallTypeParameterParserError(
+      hasteModuleName,
+      typeParameters,
+      methodName,
+      $moduleName,
+      language,
+    );
 
     return $moduleName;
   });
