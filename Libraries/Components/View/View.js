@@ -12,7 +12,7 @@ import type {ViewProps} from './ViewPropTypes';
 
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import TextAncestor from '../../Text/TextAncestor';
-import {roleToAccessibilityRoleMapping} from '../../Utilities/AcessibilityMapping';
+import {getAccessibilityRoleFromRole} from '../../Utilities/AcessibilityMapping';
 import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 
@@ -95,7 +95,7 @@ const View: React.AbstractComponent<
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
           accessibilityState={_accessibilityState}
           accessibilityRole={
-            role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
+            role ? getAccessibilityRoleFromRole(role) : accessibilityRole
           }
           accessibilityElementsHidden={
             ariaHidden ?? accessibilityElementsHidden

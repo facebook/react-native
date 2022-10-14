@@ -15,13 +15,13 @@ import usePressability from '../Pressability/usePressability';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
 import StyleSheet from '../StyleSheet/StyleSheet';
+import {getAccessibilityRoleFromRole} from '../Utilities/AcessibilityMapping';
 import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
-import {roleToAccessibilityRoleMapping} from '../Utilities/AcessibilityMapping';
 
 /**
  * Text is the fundamental component for displaying text.
@@ -227,7 +227,7 @@ const Text: React.AbstractComponent<
       {...eventHandlersForText}
       accessibilityLabel={ariaLabel ?? accessibilityLabel}
       accessibilityRole={
-        role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
+        role ? getAccessibilityRoleFromRole(role) : accessibilityRole
       }
       isHighlighted={isHighlighted}
       isPressable={isPressable}
@@ -253,7 +253,7 @@ const Text: React.AbstractComponent<
         accessibilityLabel={ariaLabel ?? accessibilityLabel}
         accessibilityState={nativeTextAccessibilityState}
         accessibilityRole={
-          role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
+          role ? getAccessibilityRoleFromRole(role) : accessibilityRole
         }
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
