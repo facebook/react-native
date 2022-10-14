@@ -229,7 +229,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     if (isVirtual()) {
       return;
     }
-    super.setRowGap(rowGap);
+    super.setRowGap(PixelUtil.toPixelFromDIP(rowGap));
   }
 
   @ReactProp(name = ViewProps.COLUMN_GAP, defaultFloat = YogaConstants.UNDEFINED)
@@ -237,7 +237,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     if (isVirtual()) {
       return;
     }
-    super.setColumnGap(columnGap);
+    super.setColumnGap(PixelUtil.toPixelFromDIP(columnGap));
   }
 
   @ReactProp(name = ViewProps.GAP, defaultFloat = YogaConstants.UNDEFINED)
@@ -245,7 +245,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     if (isVirtual()) {
       return;
     }
-    super.setGap(gap);
+    super.setGap(PixelUtil.toPixelFromDIP(gap));
   }
 
   @ReactProp(name = ViewProps.FLEX_SHRINK, defaultFloat = 0f)
