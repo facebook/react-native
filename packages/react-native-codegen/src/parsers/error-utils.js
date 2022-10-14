@@ -20,6 +20,7 @@ const {
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
   UntypedModuleRegistryCallParserError,
+  UnsupportedModulePropertyParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -157,6 +158,36 @@ function throwIfUntypedModule(
   }
 }
 
+function throwIfModuleTypeIsUnsupported(
+  nativeModuleName: string,
+  propertyValue: $FlowFixMe,
+  propertyName: string,
+  propertyValueType: string,
+  language: ParserType,
+) {
+  if (language === 'Flow' && propertyValueType !== 'FunctionTypeAnnotation') {
+    throw new UnsupportedModulePropertyParserError(
+      nativeModuleName,
+      propertyValue,
+      propertyName,
+      propertyValueType,
+      language,
+    );
+  } else if (
+    language === 'TypeScript' &&
+    propertyValueType !== 'TSFunctionType' &&
+    propertyValueType !== 'TSMethodSignature'
+  ) {
+    throw new UnsupportedModulePropertyParserError(
+      nativeModuleName,
+      propertyValue,
+      propertyName,
+      propertyValueType,
+      language,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfModuleInterfaceNotFound,
@@ -165,4 +196,5 @@ module.exports = {
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfUntypedModule,
+  throwIfModuleTypeIsUnsupported,
 };

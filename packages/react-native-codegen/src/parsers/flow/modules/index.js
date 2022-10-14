@@ -61,12 +61,10 @@ const {
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedUnionTypeAnnotationParserError,
-  UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
-const {throwIfUntypedModule} = require('../../error-utils');
 
 const {
   throwIfModuleInterfaceNotFound,
@@ -75,6 +73,8 @@ const {
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfUntypedModule,
+  throwIfModuleTypeIsUnsupported,
 } = require('../../error-utils');
 
 const language = 'Flow';
@@ -548,15 +548,13 @@ function buildPropertySchema(
 
   ({nullable, typeAnnotation: value} = resolveTypeAnnotation(value, types));
 
-  if (value.type !== 'FunctionTypeAnnotation') {
-    throw new UnsupportedModulePropertyParserError(
-      hasteModuleName,
-      property.value,
-      property.key.name,
-      value.type,
-      language,
-    );
-  }
+  throwIfModuleTypeIsUnsupported(
+    hasteModuleName,
+    property.value,
+    property.key.name,
+    value.type,
+    language,
+  );
 
   return {
     name: methodName,
