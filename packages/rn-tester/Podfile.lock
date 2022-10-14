@@ -495,6 +495,7 @@ PODS:
     - RCTTypeSafety (= 1000.0.0)
     - React-graphics (= 1000.0.0)
     - React-jsi (= 1000.0.0)
+    - React-jsidynamic (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-Fabric/debug_core (1000.0.0):
@@ -593,6 +594,7 @@ PODS:
     - RCTTypeSafety (= 1000.0.0)
     - React-graphics (= 1000.0.0)
     - React-jsi (= 1000.0.0)
+    - React-jsidynamic (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-Fabric/utils (1000.0.0):
@@ -633,12 +635,19 @@ PODS:
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
+  - React-jsidynamic (1000.0.0):
+    - boost (= 1.76.0)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+    - React-jsi (= 1000.0.0)
   - React-jsiexecutor (1000.0.0):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
+    - React-jsidynamic (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
   - React-jsinspector (1000.0.0)
   - React-logger (1000.0.0):
@@ -731,6 +740,7 @@ PODS:
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
+    - React-jsidynamic (= 1000.0.0)
     - React-logger (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
   - ReactCommon/turbomodule/samples (1000.0.0):
@@ -801,6 +811,7 @@ DEPENDENCIES:
   - React-hermes (from `../../ReactCommon/hermes`)
   - React-jsi (from `../../ReactCommon/jsi`)
   - React-jsi/Fabric (from `../../ReactCommon/jsi`)
+  - React-jsidynamic (from `../../ReactCommon/jsi`)
   - React-jsiexecutor (from `../../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../ReactCommon/jsinspector`)
   - React-logger (from `../../ReactCommon/logger`)
@@ -884,6 +895,8 @@ EXTERNAL SOURCES:
     :path: "../../ReactCommon/hermes"
   React-jsi:
     :path: "../../ReactCommon/jsi"
+  React-jsidynamic:
+    :path: "../../ReactCommon/jsi"
   React-jsiexecutor:
     :path: "../../ReactCommon/jsiexecutor"
   React-jsinspector:
@@ -946,7 +959,7 @@ SPEC CHECKSUMS:
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: 8aa7846f48430e8517285eb0ddf8a614eee39cb3
+  hermes-engine: 34601a4ede336b281b66fbcc4ec113c7813dbc9d
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
@@ -959,11 +972,12 @@ SPEC CHECKSUMS:
   React-Core: ce4282fb714ffbe444b84d296d1728eaee4d0e9f
   React-CoreModules: 675170bccf156da3a3348e04e2036ce401b2010d
   React-cxxreact: 7276467c246302fedf598cc40d7003896ddb20ba
-  React-Fabric: a696c92be541f2015b9777956a3e7df8a8f34aed
+  React-Fabric: 141459e61c825acf02d26ece099acbd9cbd87b99
   React-graphics: 5ccc9cc0d91794fd42bc1c693e9aea207554bbef
   React-hermes: 7b9306aee1d58ba030614e54eb8041056119430f
-  React-jsi: a042596cb558abea721ab5e23cb175647610a73d
-  React-jsiexecutor: f7fbac5dff7e7ff110a66edf2626b4f4f4600ef5
+  React-jsi: c2a71fdc55642893768c517199fb8a71805159dc
+  React-jsidynamic: 2b14ac1b6d3a1b7daa1e5a424b98de87da981698
+  React-jsiexecutor: 14e899380e3fe9ca74c4e19727540a03e7574721
   React-jsinspector: 7733dd522d044aef87caa39f3eda77593358a7eb
   React-logger: c7960346b021767ed90971aff592a44e3d69f8bb
   React-perflogger: c4fdd48988c2d3047186fc1bc1772d634cfca2ea
@@ -982,7 +996,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 0386f50996a153b3f39cecbe7d139763ac9a9fdf
   React-rncore: 665c70690f404bbfa3948148de72689672a906d2
   React-runtimeexecutor: 97dca9247f4d3cfe0733384b189c6930fbd402b7
-  ReactCommon: 8e39c4b24da570ea2b631accbf779b5891befe0c
+  ReactCommon: b1f213aa09e3dfd0a89389b5023fdb1cd6528e96
   ScreenshotManager: 3fc534a218e7b8dde632158411d0f15b0ca8893c
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1b1a12ff3d86a10565ea7cbe057d42f5e5fb2a07
