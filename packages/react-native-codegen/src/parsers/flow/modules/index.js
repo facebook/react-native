@@ -61,7 +61,6 @@ const {
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
-  UnusedModuleInterfaceParserError,
   UntypedModuleRegistryCallParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
   IncorrectModuleRegistryCallArityParserError,
@@ -72,6 +71,7 @@ const {
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
   throwIfMoreThanOneModuleRegistryCalls,
+  throwIfUnusedModuleInterfaceParserError,
 } = require('../../error-utils');
 
 const language = 'Flow';
@@ -612,13 +612,12 @@ function buildModuleSchema(
       },
     });
 
-    if (callExpressions.length === 0) {
-      throw new UnusedModuleInterfaceParserError(
-        hasteModuleName,
-        moduleSpec,
-        language,
-      );
-    }
+    throwIfUnusedModuleInterfaceParserError(
+      hasteModuleName,
+      moduleSpec,
+      callExpressions,
+      language,
+    );
 
     throwIfMoreThanOneModuleRegistryCalls(
       hasteModuleName,

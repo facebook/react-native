@@ -16,6 +16,7 @@ const {
   MisnamedModuleInterfaceParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleRegistryCallsParserError,
+  UnusedModuleInterfaceParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -63,8 +64,24 @@ function throwIfMoreThanOneModuleRegistryCalls(
   }
 }
 
+function throwIfUnusedModuleInterfaceParserError(
+  nativeModuleName: string,
+  moduleSpec: $FlowFixMe,
+  callExpressions: $FlowFixMe,
+  language: ParserType,
+) {
+  if (callExpressions.length === 0) {
+    throw new UnusedModuleInterfaceParserError(
+      nativeModuleName,
+      moduleSpec,
+      language,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
+  throwIfUnusedModuleInterfaceParserError,
 };

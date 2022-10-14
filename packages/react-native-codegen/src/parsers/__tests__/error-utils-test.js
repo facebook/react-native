@@ -15,11 +15,13 @@ const {
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfModuleInterfaceIsMisnamed,
+  throwIfUnusedModuleInterfaceParserError,
 } = require('../error-utils');
 const {
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleRegistryCallsParserError,
   MisnamedModuleInterfaceParserError,
+  UnusedModuleInterfaceParserError,
 } = require('../errors');
 
 describe('throwIfModuleInterfaceIsMisnamed', () => {
@@ -96,5 +98,37 @@ describe('throwIfMoreThanOneModuleRegistryCalls', () => {
         parserType,
       );
     }).not.toThrow(MoreThanOneModuleRegistryCallsParserError);
+  });
+});
+
+describe('throwIfUnusedModuleInterfaceParserError', () => {
+  it('throw error if unused module', () => {
+    const nativeModuleName = 'moduleName';
+    const callExpressions = [];
+    const spec = {name: 'Spec'};
+    const parserType = 'Flow';
+    expect(() => {
+      throwIfUnusedModuleInterfaceParserError(
+        nativeModuleName,
+        spec,
+        callExpressions,
+        parserType,
+      );
+    }).toThrow(UnusedModuleInterfaceParserError);
+  });
+
+  it("don't throw error if module is used", () => {
+    const nativeModuleName = 'moduleName';
+    const callExpressions = [{name: 'callExpression1'}];
+    const spec = {name: 'Spec'};
+    const parserType = 'TypeScript';
+    expect(() => {
+      throwIfUnusedModuleInterfaceParserError(
+        nativeModuleName,
+        spec,
+        callExpressions,
+        parserType,
+      );
+    }).not.toThrow(UnusedModuleInterfaceParserError);
   });
 });
