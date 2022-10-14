@@ -15,6 +15,7 @@ import type {ParserType} from './errors';
 const {
   MisnamedModuleInterfaceParserError,
   ModuleInterfaceNotFoundParserError,
+  MoreThanOneModuleRegistryCallsParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -46,7 +47,24 @@ function throwIfModuleInterfaceNotFound(
   }
 }
 
+function throwIfMoreThanOneModuleRegistryCalls(
+  hasteModuleName: string,
+  callExpressions: $FlowFixMe,
+  callExpressionsLength: number,
+  language: ParserType,
+) {
+  if (callExpressions.length > 1) {
+    throw new MoreThanOneModuleRegistryCallsParserError(
+      hasteModuleName,
+      callExpressions,
+      callExpressionsLength,
+      language,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfModuleInterfaceNotFound,
+  throwIfMoreThanOneModuleRegistryCalls,
 };

@@ -25,7 +25,6 @@ import type {
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 
-const {throwIfModuleInterfaceIsMisnamed} = require('../../error-utils');
 const {
   resolveTypeAnnotation,
   getTypes,
@@ -63,14 +62,17 @@ const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UnusedModuleInterfaceParserError,
-  MoreThanOneModuleRegistryCallsParserError,
   UntypedModuleRegistryCallParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
-const {throwIfModuleInterfaceNotFound} = require('../../error-utils');
+const {
+  throwIfModuleInterfaceNotFound,
+  throwIfModuleInterfaceIsMisnamed,
+  throwIfMoreThanOneModuleRegistryCalls,
+} = require('../../error-utils');
 
 const language = 'Flow';
 
@@ -618,14 +620,12 @@ function buildModuleSchema(
       );
     }
 
-    if (callExpressions.length > 1) {
-      throw new MoreThanOneModuleRegistryCallsParserError(
-        hasteModuleName,
-        callExpressions,
-        callExpressions.length,
-        language,
-      );
-    }
+    throwIfMoreThanOneModuleRegistryCalls(
+      hasteModuleName,
+      callExpressions,
+      callExpressions.length,
+      language,
+    );
 
     const [callExpression] = callExpressions;
     const {typeArguments} = callExpression;
