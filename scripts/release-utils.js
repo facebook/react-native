@@ -76,7 +76,31 @@ function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
   });
 }
 
+function publishAndroidArtifactsToMaven(isNightly) {
+  // -------- Publish every artifact to Maven Central
+  if (exec('./gradlew publishAllToSonatype -PisNightly=' + isNightly).code) {
+    echo('Failed to publish artifacts to Sonatype (Maven Central)');
+    exit(1);
+  }
+
+  if (!isNightly) {
+    // -------- For stable releases, we also need to close and release the staging repository.
+    // TODO(ncor): Remove the --dry-run before RC0
+    if (
+      exec('./gradlew closeAndReleaseSonatypeStagingRepository --dry-run').code
+    ) {
+      echo(
+        'Failed to close and release the staging repository on Sonatype (Maven Central)',
+      );
+      exit(1);
+    }
+  }
+
+  echo('Published artifacts to Maven Central');
+}
+
 module.exports = {
   generateAndroidArtifacts,
+  publishAndroidArtifactsToMaven,
   saveFilesToRestore,
 };
