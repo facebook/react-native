@@ -41,6 +41,7 @@ const {
 const {
   emitBoolean,
   emitDouble,
+  emitFunction,
   emitNumber,
   emitInt32,
   emitObject,
@@ -372,8 +373,7 @@ function translateTypeAnnotation(
       });
     }
     case 'FunctionTypeAnnotation': {
-      return wrapNullable(
-        nullable,
+      const translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation =
         translateFunctionTypeAnnotation(
           hasteModuleName,
           typeAnnotation,
@@ -381,8 +381,8 @@ function translateTypeAnnotation(
           aliasMap,
           tryParse,
           cxxOnly,
-        ),
-      );
+        );
+      return emitFunction(nullable, translateFunctionTypeAnnotationValue);
     }
     case 'UnionTypeAnnotation': {
       if (cxxOnly) {
