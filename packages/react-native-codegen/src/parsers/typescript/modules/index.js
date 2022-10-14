@@ -24,6 +24,7 @@ import type {
 
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
+const {nullGuard} = require('../../parsers-utils');
 
 const {
   resolveTypeAnnotation,
@@ -74,10 +75,6 @@ const {
 } = require('../../error-utils');
 
 const language = 'TypeScript';
-
-function nullGuard<T>(fn: () => T): ?T {
-  return fn();
-}
 
 function translateArrayTypeAnnotation(
   hasteModuleName: string,
