@@ -744,14 +744,18 @@ jobs:
     executor: reactnativeandroid
     parameters:
       flavor:
-        type: string
         default: "Debug"
+        description: The Android build type. Must be one of "Debug", "Release".
+        type: enum
+        enum: ["Debug", "Release"]
       newarchitecture:
         type: boolean
         default: false
       jsengine:
-        type: string
         default: "Hermes"
+        description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
+        type: enum
+        enum: ["Hermes", "JSC"]
     environment:
       - PROJECT_NAME: "AndroidTemplateProject"
     steps:
@@ -790,17 +794,25 @@ jobs:
     executor: reactnativeios
     parameters:
       flavor:
-        type: string
         default: "Debug"
+        description: The Xcode build type. Must be one of "Debug", "Release".
+        type: enum
+        enum: ["Debug", "Release"]
       architecture:
-        type: string
         default: "OldArch"
+        description: Which React Native architecture to use. Must be one of "NewArch", "OldArch".
+        type: enum
+        enum: ["NewArch", "OldArch"]
       jsengine:
-        type: string
         default: "Hermes"
+        description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
+        type: enum
+        enum: ["Hermes", "JSC"]
       flipper:
-        type: string
         default: "WithFlipper"
+        description: Whether Flipper is enabled. Must be one of "WithFlipper", "WithoutFlipper".
+        type: enum
+        enum: ["WithFlipper", "WithoutFlipper"]
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -878,14 +890,16 @@ jobs:
   test_ios_rntester:
     executor: reactnativeios
     parameters:
-      architecture:
-        type: string
-        default: "OldArch"
       jsengine:
         default: "Hermes"
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
         type: enum
         enum: ["Hermes", "JSC"]
+      architecture:
+        default: "OldArch"
+        description: Which React Native architecture to use. Must be one of "OldArch", "NewArch".
+        type: enum
+        enum: ["NewArch", "OldArch"]
     steps:
       - checkout_code_with_cache
       - run_yarn

@@ -24,7 +24,9 @@ import type {
 
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
+const {nullGuard} = require('../../parsers-utils');
 
+const {throwIfMoreThanOneModuleRegistryCalls} = require('../../error-utils');
 const {
   resolveTypeAnnotation,
   getTypes,
@@ -35,10 +37,12 @@ const {
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  emitMixedTypeAnnotation,
 } = require('../../parsers-commons');
 const {
   emitBoolean,
   emitDouble,
+  emitFunction,
   emitNumber,
   emitInt32,
   emitObject,
@@ -50,7 +54,6 @@ const {
 } = require('../../parsers-primitives');
 const {
   MisnamedModuleInterfaceParserError,
-  ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
@@ -60,22 +63,21 @@ const {
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedUnionTypeAnnotationParserError,
-  UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
-  UnusedModuleInterfaceParserError,
-  MoreThanOneModuleRegistryCallsParserError,
-  UntypedModuleRegistryCallParserError,
-  IncorrectModuleRegistryCallTypeParameterParserError,
-  IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
-const language = 'TypeScript';
+const {
+  throwIfUntypedModule,
+  throwIfModuleTypeIsUnsupported,
+  throwIfUnusedModuleInterfaceParserError,
+  throwIfModuleInterfaceNotFound,
+  throwIfWrongNumberOfCallExpressionArgs,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+} = require('../../error-utils');
 
-function nullGuard<T>(fn: () => T): ?T {
-  return fn();
-}
+const language = 'TypeScript';
 
 function translateArrayTypeAnnotation(
   hasteModuleName: string,
@@ -84,7 +86,7 @@ function translateArrayTypeAnnotation(
   cxxOnly: boolean,
   tsArrayType: 'Array' | 'ReadonlyArray',
   tsElementType: $FlowFixMe,
-  nullable: $FlowFixMe,
+  nullable: boolean,
 ): Nullable<NativeModuleTypeAnnotation> {
   try {
     /**
@@ -387,8 +389,7 @@ function translateTypeAnnotation(
       });
     }
     case 'TSFunctionType': {
-      return wrapNullable(
-        nullable,
+      const translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation =
         translateFunctionTypeAnnotation(
           hasteModuleName,
           typeAnnotation,
@@ -396,8 +397,9 @@ function translateTypeAnnotation(
           aliasMap,
           tryParse,
           cxxOnly,
-        ),
-      );
+        );
+
+      return emitFunction(nullable, translateFunctionTypeAnnotationValue);
     }
     case 'TSUnionType': {
       if (cxxOnly) {
@@ -429,9 +431,7 @@ function translateTypeAnnotation(
     }
     case 'TSUnknownKeyword': {
       if (cxxOnly) {
-        return wrapNullable(nullable, {
-          type: 'MixedTypeAnnotation',
-        });
+        return emitMixedTypeAnnotation(nullable);
       }
       // Fallthrough
     }
@@ -562,16 +562,13 @@ function buildPropertySchema(
   const methodName: string = key.name;
 
   ({nullable, typeAnnotation: value} = resolveTypeAnnotation(value, types));
-
-  if (value.type !== 'TSFunctionType' && value.type !== 'TSMethodSignature') {
-    throw new UnsupportedModulePropertyParserError(
-      hasteModuleName,
-      property.value,
-      property.key.name,
-      value.type,
-      language,
-    );
-  }
+  throwIfModuleTypeIsUnsupported(
+    hasteModuleName,
+    property.value,
+    property.key.name,
+    value.type,
+    language,
+  );
 
   return {
     name: methodName,
@@ -612,13 +609,12 @@ function buildModuleSchema(
     isModuleInterface,
   );
 
-  if (moduleSpecs.length === 0) {
-    throw new ModuleInterfaceNotFoundParserError(
-      hasteModuleName,
-      ast,
-      language,
-    );
-  }
+  throwIfModuleInterfaceNotFound(
+    moduleSpecs.length,
+    hasteModuleName,
+    ast,
+    language,
+  );
 
   if (moduleSpecs.length > 1) {
     throw new MoreThanOneModuleInterfaceParserError(
@@ -650,36 +646,31 @@ function buildModuleSchema(
       },
     });
 
-    if (callExpressions.length === 0) {
-      throw new UnusedModuleInterfaceParserError(
-        hasteModuleName,
-        moduleSpec,
-        language,
-      );
-    }
+    throwIfUnusedModuleInterfaceParserError(
+      hasteModuleName,
+      moduleSpec,
+      callExpressions,
+      language,
+    );
 
-    if (callExpressions.length > 1) {
-      throw new MoreThanOneModuleRegistryCallsParserError(
-        hasteModuleName,
-        callExpressions,
-        callExpressions.length,
-        language,
-      );
-    }
+    throwIfMoreThanOneModuleRegistryCalls(
+      hasteModuleName,
+      callExpressions,
+      callExpressions.length,
+      language,
+    );
 
     const [callExpression] = callExpressions;
     const {typeParameters} = callExpression;
     const methodName = callExpression.callee.property.name;
 
-    if (callExpression.arguments.length !== 1) {
-      throw new IncorrectModuleRegistryCallArityParserError(
-        hasteModuleName,
-        callExpression,
-        methodName,
-        callExpression.arguments.length,
-        language,
-      );
-    }
+    throwIfWrongNumberOfCallExpressionArgs(
+      hasteModuleName,
+      callExpression,
+      methodName,
+      callExpression.arguments.length,
+      language,
+    );
 
     if (callExpression.arguments[0].type !== 'StringLiteral') {
       const {type} = callExpression.arguments[0];
@@ -694,30 +685,22 @@ function buildModuleSchema(
 
     const $moduleName = callExpression.arguments[0].value;
 
-    if (typeParameters == null) {
-      throw new UntypedModuleRegistryCallParserError(
-        hasteModuleName,
-        callExpression,
-        methodName,
-        $moduleName,
-        language,
-      );
-    }
+    throwIfUntypedModule(
+      typeParameters,
+      hasteModuleName,
+      callExpression,
+      methodName,
+      $moduleName,
+      language,
+    );
 
-    if (
-      typeParameters.type !== 'TSTypeParameterInstantiation' ||
-      typeParameters.params.length !== 1 ||
-      typeParameters.params[0].type !== 'TSTypeReference' ||
-      typeParameters.params[0].typeName.name !== 'Spec'
-    ) {
-      throw new IncorrectModuleRegistryCallTypeParameterParserError(
-        hasteModuleName,
-        typeParameters,
-        methodName,
-        $moduleName,
-        language,
-      );
-    }
+    throwIfIncorrectModuleRegistryCallTypeParameterParserError(
+      hasteModuleName,
+      typeParameters,
+      methodName,
+      $moduleName,
+      language,
+    );
 
     return $moduleName;
   });

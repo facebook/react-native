@@ -22,6 +22,7 @@ import PointerEventPointerMoveAcross from './W3CPointerEventPlatformTests/Pointe
 import PointerEventPointerMoveEventOrder from './W3CPointerEventPlatformTests/PointerEventPointerMoveEventOrder';
 import PointerEventPointerMoveBetween from './W3CPointerEventPlatformTests/PointerEventPointerMoveBetween';
 import EventfulView from './W3CPointerEventsEventfulView';
+import ManyPointersPropertiesExample from './Compatibility/ManyPointersPropertiesExample';
 
 function AbsoluteChildExample({log}: {log: string => void}) {
   return (
@@ -231,5 +232,6 @@ export default {
     },
     CompatibilityAnimatedPointerMove,
     CompatibilityNativeGestureHandling,
+    ManyPointersPropertiesExample,
   ],
 };
