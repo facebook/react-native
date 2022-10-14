@@ -79,6 +79,12 @@ function emitStringish(nullable: boolean): Nullable<StringTypeAnnotation> {
   });
 }
 
+function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'StringTypeAnnotation',
+  });
+}
+
 function typeAliasResolution(
   typeAliasResolutionStatus: TypeAliasResolutionStatus,
   objectTypeAnnotation: ObjectTypeAnnotation<
@@ -167,6 +173,7 @@ module.exports = {
   emitPromise,
   emitRootTag,
   emitVoid,
+  emitString,
   emitStringish,
   typeAliasResolution,
 };
