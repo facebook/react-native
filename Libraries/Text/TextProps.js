@@ -230,7 +230,7 @@ export type TextProps = $ReadOnly<{|
     | 'caption2'
     | 'caption1'
     | 'footnote'
-    | 'subhead'
+    | 'subheadline'
     | 'callout'
     | 'body'
     | 'headline'

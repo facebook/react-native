@@ -33,7 +33,7 @@ export interface TextPropsIOS {
     | 'caption2'
     | 'caption1'
     | 'footnote'
-    | 'subhead'
+    | 'subheadline'
     | 'callout'
     | 'body'
     | 'headline'
