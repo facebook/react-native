@@ -33,4 +33,4 @@ typedef NS_ENUM(NSInteger, RCTDynamicTypeRamp) {
 /// Generates a `UIFontMetrics` instance representing a particular Dynamic Type ramp.
 UIFontMetrics * _Nonnull RCTUIFontMetricsForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp);
 /// The "reference" size for a particular font scale ramp, equal to a text element's size under default text size settings.
-CGFloat RCTUIBaseSizeForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp);
+CGFloat RCTBaseSizeForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp);

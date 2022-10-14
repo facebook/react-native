@@ -211,7 +211,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     CGFloat fontSizeMultiplier = !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
     if (_dynamicTypeRamp != RCTDynamicTypeRampUndefined) {
       UIFontMetrics *fontMetrics = RCTUIFontMetricsForDynamicTypeRamp(_dynamicTypeRamp);
-      CGFloat baseSize = RCTUIBaseSizeForDynamicTypeRamp(_dynamicTypeRamp);
+      CGFloat baseSize = RCTBaseSizeForDynamicTypeRamp(_dynamicTypeRamp);
       fontSizeMultiplier = [fontMetrics scaledValueForValue:baseSize] / baseSize;
     }
     CGFloat maxFontSizeMultiplier = !isnan(_maxFontSizeMultiplier) ? _maxFontSizeMultiplier : 0.0;
