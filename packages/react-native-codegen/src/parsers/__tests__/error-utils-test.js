@@ -11,9 +11,16 @@
 
 'use strict';
 
+const {
+  throwIfModuleInterfaceNotFound,
+  throwIfModuleInterfaceIsMisnamed,
+} = require('../error-utils');
+const {
+  ModuleInterfaceNotFoundParserError,
+  MisnamedModuleInterfaceParserError,
+} = require('../errors');
+
 describe('throwIfModuleInterfaceIsMisnamed', () => {
-  const {throwIfModuleInterfaceIsMisnamed} = require('../error-utils.js');
-  const {MisnamedModuleInterfaceParserError} = require('../errors.js');
   it("don't throw error if module interface name is Spec", () => {
     const nativeModuleName = 'moduleName';
     const specId = {name: 'Spec'};
@@ -31,5 +38,27 @@ describe('throwIfModuleInterfaceIsMisnamed', () => {
     expect(() => {
       throwIfModuleInterfaceIsMisnamed(nativeModuleName, specId, parserType);
     }).toThrow(MisnamedModuleInterfaceParserError);
+  });
+});
+
+describe('throwIfModuleInterfaceNotFound', () => {
+  it('throw error if there are zero module specs', () => {
+    const nativeModuleName = 'moduleName';
+    const specId = {name: 'Name'};
+    const parserType = 'TypeScript';
+
+    expect(() => {
+      throwIfModuleInterfaceNotFound(0, nativeModuleName, specId, parserType);
+    }).toThrow(ModuleInterfaceNotFoundParserError);
+  });
+
+  it("don't throw error if there is at least one module spec", () => {
+    const nativeModuleName = 'moduleName';
+    const specId = {name: 'Spec'};
+    const parserType = 'Flow';
+
+    expect(() => {
+      throwIfModuleInterfaceNotFound(1, nativeModuleName, specId, parserType);
+    }).not.toThrow(ModuleInterfaceNotFoundParserError);
   });
 });

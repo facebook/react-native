@@ -11,7 +11,11 @@
 'use strict';
 
 import type {ParserType} from './errors';
-const {MisnamedModuleInterfaceParserError} = require('./errors.js');
+
+const {
+  MisnamedModuleInterfaceParserError,
+  ModuleInterfaceNotFoundParserError,
+} = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
   nativeModuleName: string,
@@ -27,6 +31,22 @@ function throwIfModuleInterfaceIsMisnamed(
   }
 }
 
+function throwIfModuleInterfaceNotFound(
+  numberOfModuleSpecs: number,
+  nativeModuleName: string,
+  ast: $FlowFixMe,
+  parserType: ParserType,
+) {
+  if (numberOfModuleSpecs === 0) {
+    throw new ModuleInterfaceNotFoundParserError(
+      nativeModuleName,
+      ast,
+      parserType,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
+  throwIfModuleInterfaceNotFound,
 };
