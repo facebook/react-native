@@ -18,6 +18,7 @@ const {
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
+  UntypedModuleRegistryCallParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceNotFound(
@@ -122,10 +123,30 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
   }
 }
 
+function throwIfUntypedModule(
+  typeArguments: $FlowFixMe,
+  hasteModuleName: string,
+  callExpression: $FlowFixMe,
+  methodName: string,
+  $moduleName: string,
+  language: ParserType,
+) {
+  if (typeArguments == null) {
+    throw new UntypedModuleRegistryCallParserError(
+      hasteModuleName,
+      callExpression,
+      methodName,
+      $moduleName,
+      language,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfUntypedModule,
 };

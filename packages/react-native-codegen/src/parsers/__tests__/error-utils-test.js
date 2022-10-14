@@ -400,3 +400,46 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).not.toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 });
+
+describe('throwIfUntypedModule', () => {
+  const {throwIfUntypedModule} = require('../error-utils');
+  const {UntypedModuleRegistryCallParserError} = require('../errors');
+  const hasteModuleName = 'moduleName';
+  const methodName = 'methodName';
+  const moduleName = 'moduleName';
+  const callExpressions = [];
+
+  it('should throw error if module does not have a type', () => {
+    const typeArguments = null;
+    const language = 'Flow';
+    expect(() =>
+      throwIfUntypedModule(
+        typeArguments,
+        hasteModuleName,
+        callExpressions,
+        methodName,
+        moduleName,
+        language,
+      ),
+    ).toThrowError(UntypedModuleRegistryCallParserError);
+  });
+
+  it('should not throw error if module have a type', () => {
+    const typeArguments = {
+      type: 'TSTypeParameterInstantiations',
+      params: [],
+    };
+
+    const language = 'TypeScript';
+    expect(() =>
+      throwIfUntypedModule(
+        typeArguments,
+        hasteModuleName,
+        callExpressions,
+        methodName,
+        moduleName,
+        language,
+      ),
+    ).not.toThrowError(UntypedModuleRegistryCallParserError);
+  });
+});
