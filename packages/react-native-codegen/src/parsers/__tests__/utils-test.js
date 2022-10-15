@@ -18,6 +18,10 @@ const {
 } = require('../utils.js');
 const {ParserError} = require('../errors');
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('extractnativeModuleName', () => {
   it('return filename when it ends with .js', () => {
     const filename = '/some_folder/NativeModule.js';
