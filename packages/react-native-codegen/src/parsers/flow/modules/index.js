@@ -314,12 +314,12 @@ function translateTypeAnnotation(
                   propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
                   propertyTypeAnnotation.type === 'VoidTypeAnnotation'
                 ) {
-                    throwIfPropertyValueTypeIsUnsupported(
+                  throwIfPropertyValueTypeIsUnsupported(
                     hasteModuleName,
                     property.value,
                     property.key,
                     propertyTypeAnnotation.type,
-                    language
+                    language,
                   );
                 } else {
                   return {
