@@ -11,20 +11,15 @@
 'use strict';
 
 import type {SchemaType} from '../../CodegenSchema.js';
+
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 const fs = require('fs');
-const {
-  extractNativeModuleName,
-  createParserErrorCapturer,
-  visit,
-} = require('../utils.js');
+const {visit, buildSchemaFromConfigType} = require('../utils');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
-const {wrapModuleSchema} = require('../parsers-commons');
 const {isModuleRegistryCall} = require('./utils');
-const invariant = require('invariant');
 
 function getConfigType(
   // TODO(T71778680): Flow-type this node.
@@ -80,43 +75,14 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
   const ast = flowParser.parse(contents, {enums: true});
   const configType = getConfigType(ast);
 
-  switch (configType) {
-    case 'component': {
-      return wrapComponentSchema(buildComponentSchema(ast));
-    }
-    case 'module': {
-      if (filename === undefined || filename === null) {
-        throw new Error('Filepath expected while parasing a module');
-      }
-      const nativeModuleName = extractNativeModuleName(filename);
-
-      const [parsingErrors, tryParse] = createParserErrorCapturer();
-      const schema = tryParse(() =>
-        buildModuleSchema(nativeModuleName, ast, tryParse),
-      );
-
-      if (parsingErrors.length > 0) {
-        /**
-         * TODO(T77968131): We have two options:
-         *  - Throw the first error, but indicate there are more then one errors.
-         *  - Display all errors, nicely formatted.
-         *
-         * For the time being, we're just throw the first error.
-         **/
-
-        throw parsingErrors[0];
-      }
-
-      invariant(
-        schema != null,
-        'When there are no parsing errors, the schema should not be null',
-      );
-
-      return wrapModuleSchema(schema, nativeModuleName);
-    }
-    default:
-      return {modules: {}};
-  }
+  return buildSchemaFromConfigType(
+    configType,
+    filename,
+    ast,
+    wrapComponentSchema,
+    buildComponentSchema,
+    buildModuleSchema,
+  );
 }
 
 function parseFile(filename: string): SchemaType {
