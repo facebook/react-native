@@ -64,12 +64,12 @@ const {
   UnsupportedEnumDeclarationParserError,
   UnsupportedUnionTypeAnnotationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
-  UnsupportedObjectPropertyValueTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
 const {
   throwIfUntypedModule,
+  throwIfPropertyValueTypeIsUnsupported,
   throwIfModuleTypeIsUnsupported,
   throwIfUnusedModuleInterfaceParserError,
   throwIfModuleInterfaceNotFound,
@@ -78,26 +78,6 @@ const {
 } = require('../../error-utils');
 
 const language = 'TypeScript';
-
-const UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap = {
-  FunctionTypeAnnotation: 'FunctionTypeAnnotation',
-  VoidTypeAnnotation: 'void',
-  PromiseTypeAnnotation: 'Promise',
-};
-
-function throwUnsupportedObjectPropertyValueTypeAnnotationParserError(
-  moduleName,
-  propertyValue,
-  propertyKey,
-  type,
-) {
-  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-    moduleName,
-    propertyValue,
-    propertyKey,
-    type,
-  );
-}
 
 function translateArrayTypeAnnotation(
   hasteModuleName: string,
@@ -348,16 +328,12 @@ function translateTypeAnnotation(
                   propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
                   propertyTypeAnnotation.type === 'VoidTypeAnnotation'
                 ) {
-                  const invalidPropertyValueType =
-                    UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap[
-                      propertyTypeAnnotation.type
-                    ];
-
-                  throwUnsupportedObjectPropertyValueTypeAnnotationParserError(
+                  throwIfPropertyValueTypeIsUnsupported(
                     hasteModuleName,
                     property.typeAnnotation.typeAnnotation,
                     property.key,
-                    invalidPropertyValueType,
+                    propertyTypeAnnotation.type,
+                    language,
                   );
                 } else {
                   return {
