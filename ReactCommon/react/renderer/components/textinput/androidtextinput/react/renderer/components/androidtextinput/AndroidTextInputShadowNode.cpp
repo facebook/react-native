@@ -21,8 +21,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char AndroidTextInputComponentName[] = "AndroidTextInput";
 
@@ -207,5 +206,4 @@ void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {
   ConcreteViewShadowNode::layout(layoutContext);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

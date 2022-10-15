@@ -9,8 +9,7 @@
 
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using Tag = EventTarget::Tag;
 
@@ -66,5 +65,4 @@ Tag EventTarget::getTag() const {
   return tag_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

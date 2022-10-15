@@ -10,8 +10,7 @@
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Note:
@@ -62,5 +61,4 @@ void Sealable::ensureUnsealed() const {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

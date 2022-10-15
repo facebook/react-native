@@ -10,16 +10,16 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConvert.h>
 #import <React/RCTImageLoader.h>
+#import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTImageStoreManager.h>
 #import <React/RCTImageUtils.h>
-#import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <UIKit/UIKit.h>
 
 #import "RCTImagePlugins.h"
 
-@interface RCTImageEditingManager() <NativeImageEditorSpec>
+@interface RCTImageEditingManager () <NativeImageEditorSpec>
 @end
 
 @implementation RCTImageEditingManager
@@ -38,19 +38,20 @@ RCT_EXPORT_MODULE()
  *        be scaled down to `displaySize` rather than `size`.
  *        All units are in px (not points).
  */
-RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
-                  cropData:(JS::NativeImageEditor::Options &)cropData
-                  successCallback:(RCTResponseSenderBlock)successCallback
-                  errorCallback:(RCTResponseSenderBlock)errorCallback)
+RCT_EXPORT_METHOD(cropImage
+                  : (NSURLRequest *)imageRequest cropData
+                  : (JS::NativeImageEditor::Options &)cropData successCallback
+                  : (RCTResponseSenderBlock)successCallback errorCallback
+                  : (RCTResponseSenderBlock)errorCallback)
 {
   CGRect rect = {
     [RCTConvert CGPoint:@{
-      @"x": @(cropData.offset().x()),
-      @"y": @(cropData.offset().y()),
+      @"x" : @(cropData.offset().x()),
+      @"y" : @(cropData.offset().y()),
     }],
     [RCTConvert CGSize:@{
-      @"width": @(cropData.size().width()),
-      @"height": @(cropData.size().height()),
+      @"width" : @(cropData.size().width()),
+      @"height" : @(cropData.size().height()),
     }]
   };
 
@@ -58,47 +59,55 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
   JS::NativeImageEditor::Options cropDataCopy = cropData;
 
   [[_moduleRegistry moduleForName:"ImageLoader"]
-   loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
-     if (error) {
-       errorCallback(@[RCTJSErrorFromNSError(error)]);
-       return;
-     }
+      loadImageWithURLRequest:imageRequest
+                     callback:^(NSError *error, UIImage *image) {
+                       if (error) {
+                         errorCallback(@[ RCTJSErrorFromNSError(error) ]);
+                         return;
+                       }
 
-     // Crop image
-     CGSize targetSize = rect.size;
-     CGRect targetRect = {{-rect.origin.x, -rect.origin.y}, image.size};
-     CGAffineTransform transform = RCTTransformFromTargetRect(image.size, targetRect);
-     UIImage *croppedImage = RCTTransformImage(image, targetSize, image.scale, transform);
+                       // Crop image
+                       CGSize targetSize = rect.size;
+                       CGRect targetRect = {{-rect.origin.x, -rect.origin.y}, image.size};
+                       CGAffineTransform transform = RCTTransformFromTargetRect(image.size, targetRect);
+                       UIImage *croppedImage = RCTTransformImage(image, targetSize, image.scale, transform);
 
-     // Scale image
-     if (cropDataCopy.displaySize()) {
-       targetSize = [RCTConvert CGSize:@{@"width": @(cropDataCopy.displaySize()->width()), @"height": @(cropDataCopy.displaySize()->height())}]; // in pixels
-       RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropDataCopy.resizeMode() ?: @"contain"];
-       targetRect = RCTTargetRect(croppedImage.size, targetSize, 1, resizeMode);
-       transform = RCTTransformFromTargetRect(croppedImage.size, targetRect);
-       croppedImage = RCTTransformImage(croppedImage, targetSize, image.scale, transform);
-     }
+                       // Scale image
+                       if (cropDataCopy.displaySize()) {
+                         targetSize = [RCTConvert CGSize:@{
+                           @"width" : @(cropDataCopy.displaySize()->width()),
+                           @"height" : @(cropDataCopy.displaySize()->height())
+                         }]; // in pixels
+                         RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropDataCopy.resizeMode() ?: @"contain"];
+                         targetRect = RCTTargetRect(croppedImage.size, targetSize, 1, resizeMode);
+                         transform = RCTTransformFromTargetRect(croppedImage.size, targetRect);
+                         croppedImage = RCTTransformImage(croppedImage, targetSize, image.scale, transform);
+                       }
 
-     // Store image
-     [[self->_moduleRegistry moduleForName:"ImageStoreManager"] storeImage:croppedImage withBlock:^(NSString *croppedImageTag) {
-       if (!croppedImageTag) {
-         NSString *errorMessage = @"Error storing cropped image in RCTImageStoreManager";
-         RCTLogWarn(@"%@", errorMessage);
-         errorCallback(@[RCTJSErrorFromNSError(RCTErrorWithMessage(errorMessage))]);
-         return;
-       }
-       successCallback(@[croppedImageTag]);
-     }];
-   }];
+                       // Store image
+                       [[self->_moduleRegistry moduleForName:"ImageStoreManager"]
+                           storeImage:croppedImage
+                            withBlock:^(NSString *croppedImageTag) {
+                              if (!croppedImageTag) {
+                                NSString *errorMessage = @"Error storing cropped image in RCTImageStoreManager";
+                                RCTLogWarn(@"%@", errorMessage);
+                                errorCallback(@[ RCTJSErrorFromNSError(RCTErrorWithMessage(errorMessage)) ]);
+                                return;
+                              }
+                              successCallback(@[ croppedImageTag ]);
+                            }];
+                     }];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<facebook::react::NativeImageEditorSpecJSI>(params);
 }
 
 @end
 
-Class RCTImageEditingManagerCls() {
+Class RCTImageEditingManagerCls()
+{
   return RCTImageEditingManager.class;
 }

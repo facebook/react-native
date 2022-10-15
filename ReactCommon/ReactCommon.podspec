@@ -54,6 +54,7 @@ Pod::Spec.new do |s|
     ss.subspec "core" do |sss|
       sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}",
                          "react/nativemodule/core/platform/ios/**/*.{mm,cpp,h}"
+      sss.dependency "React-jsidynamic", version
     end
 
     s.subspec "react_debug_core" do |sss|

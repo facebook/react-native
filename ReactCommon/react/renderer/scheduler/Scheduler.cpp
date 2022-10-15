@@ -27,8 +27,7 @@
 #include <iostream>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Scheduler::Scheduler(
     SchedulerToolbox const &schedulerToolbox,
@@ -379,5 +378,4 @@ void Scheduler::removeEventListener(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

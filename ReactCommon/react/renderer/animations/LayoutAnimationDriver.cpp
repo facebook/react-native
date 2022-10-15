@@ -12,8 +12,7 @@
 #include <react/renderer/animations/utils.h>
 #include <algorithm>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void LayoutAnimationDriver::animationMutationsForFrame(
     SurfaceId surfaceId,
@@ -107,5 +106,4 @@ void LayoutAnimationDriver::animationMutationsForFrame(
       &shouldFirstComeBeforeSecondMutation);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

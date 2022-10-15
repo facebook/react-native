@@ -11,8 +11,7 @@
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/conversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static bool hasValue(
     const RawProps &rawProps,
@@ -492,5 +491,4 @@ SharedDebugStringConvertibleList AndroidTextInputProps::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

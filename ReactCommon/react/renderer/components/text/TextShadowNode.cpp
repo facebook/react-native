@@ -7,10 +7,8 @@
 
 #include "TextShadowNode.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char TextComponentName[] = "Text";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

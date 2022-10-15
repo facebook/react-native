@@ -10,8 +10,7 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static LayoutMetrics layoutMetricsFromShadowNode(ShadowNode const &shadowNode) {
   auto layoutableShadowNode =
@@ -96,5 +95,4 @@ bool ShadowViewNodePairLegacy::operator!=(
   return !(*this == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -5,10 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall react_native
+ * @flow strict
  */
 
 'use strict';
 
-process.env.USE_EXPERIMENTAL_VIRTUALIZEDLIST = 'true';
-require('./VirtualizedList-test');
+function nullGuard<T>(fn: () => T): ?T {
+  return fn();
+}
+
+module.exports = {
+  nullGuard,
+};

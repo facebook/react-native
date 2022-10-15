@@ -608,6 +608,7 @@ rn_apple_library(
         "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
     reexport_all_header_dependencies = True,
@@ -744,7 +745,6 @@ rn_library(
     ),
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.core",
     ],
     visibility = ["PUBLIC"],
     deps = [
@@ -834,6 +834,7 @@ rn_apple_library(
         "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     plugins =
         react_module_plugin_providers(
@@ -945,6 +946,7 @@ rn_apple_library(
         "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     plugins =
         react_module_plugin_providers(
@@ -994,6 +996,7 @@ rn_apple_library(
         "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     plugins =
         react_module_plugin_providers(
@@ -1047,6 +1050,7 @@ rn_apple_library(
         "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     plugins =
         react_module_plugin_providers(
@@ -1129,6 +1133,7 @@ rn_apple_library(
         "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     plugins =
         react_module_plugin_providers(

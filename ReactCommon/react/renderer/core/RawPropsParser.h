@@ -82,8 +82,8 @@ class RawPropsParser final {
   void iterateOverValues(
       RawProps const &rawProps,
       std::function<
-          void(RawPropsPropNameHash, const char *, RawValue const &)> const &fn)
-      const;
+          void(RawPropsPropNameHash, const char *, RawValue const &)> const
+          &visit) const;
 
   mutable butter::small_vector<RawPropsKey, kNumberOfPropsPerComponentSoftCap>
       keys_{};

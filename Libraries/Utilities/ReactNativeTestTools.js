@@ -15,7 +15,7 @@ import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-render
 const Switch = require('../Components/Switch/Switch').default;
 const TextInput = require('../Components/TextInput/TextInput');
 const View = require('../Components/View/View');
-const VirtualizedList = require('../Lists/VirtualizedList');
+const VirtualizedList = require('../Lists/VirtualizedList').default;
 const Text = require('../Text/Text');
 const React = require('react');
 const ShallowRenderer = require('react-shallow-renderer');

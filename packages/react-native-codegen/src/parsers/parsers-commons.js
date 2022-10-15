@@ -15,7 +15,12 @@ import type {
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
   Nullable,
+  NativeModuleMixedTypeAnnotation,
 } from '../CodegenSchema.js';
+const {IncorrectlyParameterizedGenericParserError} = require('./errors');
+import type {ParserType} from './errors';
+
+const invariant = require('invariant');
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -52,8 +57,53 @@ function wrapNullable<+T: NativeModuleTypeAnnotation>(
   };
 }
 
+function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+  moduleName: string,
+  /**
+   * TODO(T108222691): Use flow-types for @babel/parser
+   */
+  typeAnnotation: $FlowFixMe,
+  language: ParserType,
+) {
+  if (typeAnnotation.typeParameters == null) {
+    throw new IncorrectlyParameterizedGenericParserError(
+      moduleName,
+      typeAnnotation,
+      language,
+    );
+  }
+
+  const typeAnnotationType =
+    language === 'TypeScript'
+      ? 'TSTypeParameterInstantiation'
+      : 'TypeParameterInstantiation';
+
+  invariant(
+    typeAnnotation.typeParameters.type === typeAnnotationType,
+    `assertGenericTypeAnnotationHasExactlyOneTypeParameter: Type parameters must be an AST node of type '${typeAnnotationType}'`,
+  );
+
+  if (typeAnnotation.typeParameters.params.length !== 1) {
+    throw new IncorrectlyParameterizedGenericParserError(
+      moduleName,
+      typeAnnotation,
+      language,
+    );
+  }
+}
+
+function emitMixedTypeAnnotation(
+  nullable: boolean,
+): Nullable<NativeModuleMixedTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'MixedTypeAnnotation',
+  });
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
   wrapNullable,
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  emitMixedTypeAnnotation,
 };

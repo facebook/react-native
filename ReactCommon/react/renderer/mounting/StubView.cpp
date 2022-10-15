@@ -11,8 +11,7 @@
 #include <glog/logging.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 StubView::operator ShadowView() const {
   auto shadowView = ShadowView{};
@@ -95,5 +94,4 @@ std::vector<StubView> getDebugChildren(
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
