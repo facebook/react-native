@@ -17,8 +17,8 @@ const {
   TextInput,
   View,
   StyleSheet,
-  Slider,
   Switch,
+  Button,
 } = require('react-native');
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
@@ -86,14 +86,29 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
     return (
       <View>
         <Text>Width:</Text>
-        <Slider
-          value={100}
-          minimumValue={0}
-          maximumValue={100}
-          step={10}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          onValueChange={value => this.setState({width: value})}
+        <Button
+          title="-"
+          onPress={() => {
+            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+             * when making Flow check .android.js files. */
+            this.setState(state => ({
+              /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+               * when making Flow check .android.js files. */
+              width: Math.max(0, state.width - 10),
+            }));
+          }}
+        />
+        <Button
+          title="+"
+          onPress={() => {
+            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+             * when making Flow check .android.js files. */
+            this.setState(state => ({
+              /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+               * when making Flow check .android.js files. */
+              width: Math.min(state.width + 10, 100),
+            }));
+          }}
         />
         <Text>Multiline:</Text>
         <Switch

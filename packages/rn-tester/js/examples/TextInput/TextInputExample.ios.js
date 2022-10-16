@@ -19,7 +19,6 @@ const {
   TextInput,
   View,
   StyleSheet,
-  Slider,
   Switch,
   Alert,
 } = require('react-native');
@@ -235,12 +234,21 @@ class AutogrowingTextInputExample extends React.Component<
     return (
       <View>
         <Text>Width:</Text>
-        <Slider
-          value={100}
-          minimumValue={0}
-          maximumValue={100}
-          step={10}
-          onValueChange={value => this.setState({width: value})}
+        <Button
+          title="-"
+          onPress={() => {
+            this.setState(state => ({
+              width: Math.max(0, state.width - 10),
+            }));
+          }}
+        />
+        <Button
+          title="+"
+          onPress={() => {
+            this.setState(state => ({
+              width: Math.min(state.width + 10, 100),
+            }));
+          }}
         />
         <Text>Multiline:</Text>
         <Switch
