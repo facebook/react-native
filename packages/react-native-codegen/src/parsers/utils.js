@@ -10,8 +10,11 @@
 
 'use strict';
 
+import type {SchemaType} from '../CodegenSchema';
+
 const {ParserError} = require('./errors');
 
+const fs = require('fs');
 const path = require('path');
 
 export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
@@ -52,6 +55,15 @@ function createParserErrorCapturer(): [
   }
 
   return [errors, guard];
+}
+
+function parseFile(
+  filename: string,
+  callback: (contents: string, filename: string) => SchemaType,
+): SchemaType {
+  const contents = fs.readFileSync(filename, 'utf8');
+
+  return callback(contents, filename);
 }
 
 function verifyPlatforms(
@@ -122,6 +134,7 @@ function visit(
 module.exports = {
   extractNativeModuleName,
   createParserErrorCapturer,
+  parseFile,
   verifyPlatforms,
   visit,
 };
