@@ -33,9 +33,6 @@ import {
   RefreshControlProps,
   RefreshControlPropsIOS,
   RefreshControlPropsAndroid,
-  SliderProps,
-  SliderPropsIOS,
-  SliderPropsAndroid,
   ImageSourcePropType,
   ImageProps,
   ImagePropsIOS,
@@ -138,15 +135,6 @@ declare module 'react-native' {
 
   /** @deprecated Use RefreshControlPropsAndroid */
   export type RefreshControlPropertiesAndroid = RefreshControlPropsAndroid;
-
-  /** @deprecated Use SliderProps */
-  export type SliderProperties = SliderProps;
-
-  /** @deprecated Use SliderPropsIOS */
-  export type SliderPropertiesIOS = SliderPropsIOS;
-
-  /** @deprecated Use SliderPropsAndroid */
-  export type SliderPropertiesAndroid = SliderPropsAndroid;
 
   /** @deprecated Use ImageSourcePropType */
   export type ImagePropertiesSourceOptions = ImageSourcePropType;
