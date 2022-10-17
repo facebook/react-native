@@ -11,4 +11,4 @@ steps:
   - task: CmdLine@2
     displayName: 'Verify Dependencies can be enumerated'
     inputs:
-      script: pip3 install maven-dependency-utils==1.22.0 requests && python3 .ado/downloadAndroidDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android
+      script: pip3 install maven-dependency-utils==1.24.0 && python3 .ado/downloadAndroidDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android

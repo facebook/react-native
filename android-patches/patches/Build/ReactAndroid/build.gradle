@@ -1,19 +1,8 @@
 diff --git a/ReactAndroid/build.gradle b/ReactAndroid/build.gradle
-index cae7d90ada9..f14559c03a8 100644
+index cae7d90ada9..c299dac0c5b 100644
 --- a/ReactAndroid/build.gradle
 +++ b/ReactAndroid/build.gradle
-@@ -12,6 +12,10 @@ plugins {
-     id("de.undercouch.download")
- }
- 
-+rootProject.ext {
-+    ndkVersion="21.4.7075529"
-+}
-+
- import com.facebook.react.tasks.internal.*
- 
- import java.nio.file.Paths
-@@ -41,6 +45,8 @@ def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
+@@ -41,6 +41,8 @@ def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
  // and the build will use that.
  def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
  
@@ -22,7 +11,7 @@ index cae7d90ada9..f14559c03a8 100644
  // Setup build type for NDK, supported values: {debug, release}
  def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
  
-@@ -86,11 +92,22 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
+@@ -86,11 +88,22 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
      dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
  }
  
@@ -45,7 +34,7 @@ index cae7d90ada9..f14559c03a8 100644
      includeEmptyDirs = false
      into("$thirdPartyNdkDir/folly")
  }
-@@ -144,6 +161,14 @@ task prepareHermes(dependsOn: createNativeDepsDirectories, type: Copy) {
+@@ -144,6 +157,14 @@ task prepareHermes(dependsOn: createNativeDepsDirectories, type: Copy) {
      into "$thirdPartyNdkDir/hermes"
  }
  
@@ -60,7 +49,21 @@ index cae7d90ada9..f14559c03a8 100644
  task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
      src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
      onlyIfNewer(true)
-@@ -312,6 +337,7 @@ android {
+@@ -280,12 +301,7 @@ task androidSourcesJar(type: Jar) {
+ 
+ android {
+     compileSdkVersion 31
+-
+-    // Used to override the NDK path & version on internal CI
+-    if (System.getenv("ANDROID_NDK") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
+-        ndkPath System.getenv("ANDROID_NDK")
+-        ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
+-    }
++    ndkVersion "25.0.8775105"
+ 
+     defaultConfig {
+         minSdkVersion(21)
+@@ -312,6 +328,7 @@ android {
                          "REACT_COMMON_DIR=$projectDir/../ReactCommon",
                          "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
                          "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
@@ -68,7 +71,7 @@ index cae7d90ada9..f14559c03a8 100644
                          "-j${ndkBuildJobs()}"
  
                  if (Os.isFamily(Os.FAMILY_MAC)) {
-@@ -331,7 +357,7 @@ android {
+@@ -331,7 +348,7 @@ android {
          }
      }
  
@@ -77,7 +80,7 @@ index cae7d90ada9..f14559c03a8 100644
      preBuild.dependsOn("generateCodegenArtifactsFromSchema")
  
      sourceSets.main {
-@@ -351,6 +377,10 @@ android {
+@@ -351,6 +368,10 @@ android {
      packagingOptions {
          exclude("META-INF/NOTICE")
          exclude("META-INF/LICENSE")
