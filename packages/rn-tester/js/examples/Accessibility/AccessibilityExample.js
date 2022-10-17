@@ -1397,7 +1397,7 @@ function AccessibilityErrorWithButtons(): React.Node {
         />
         <Button
           onPress={() => setError('')}
-          title={`Press to set an empty error message`}
+          title={'Press to set an empty error message'}
         />
       </RNTesterBlock>
     </View>
