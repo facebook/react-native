@@ -78,6 +78,9 @@ function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
 
 function publishAndroidArtifactsToMaven(isNightly) {
   // -------- Publish every artifact to Maven Central
+  // The GPG key is base64 encoded on CircleCI
+  let buff = Buffer.from(env.ORG_GRADLE_PROJECT_SIGNING_KEY_ENCODED, 'base64');
+  env.ORG_GRADLE_PROJECT_SIGNING_KEY = buff.toString('ascii');
   if (exec('./gradlew publishAllToSonatype -PisNightly=' + isNightly).code) {
     echo('Failed to publish artifacts to Sonatype (Maven Central)');
     exit(1);
