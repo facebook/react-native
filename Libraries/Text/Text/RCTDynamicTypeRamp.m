@@ -51,7 +51,7 @@ UIFontMetrics *RCTUIFontMetricsForDynamicTypeRamp(RCTDynamicTypeRamp dynamicType
   return [UIFontMetrics metricsForTextStyle:textStyle];
 }
 
-CGFloat RCTUIBaseSizeForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp) {
+CGFloat RCTBaseSizeForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp) {
   static NSDictionary<NSNumber *, NSNumber *> *mapping;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
