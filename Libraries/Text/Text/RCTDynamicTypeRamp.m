@@ -15,7 +15,7 @@ RCT_ENUM_CONVERTER(RCTDynamicTypeRamp, (@{
   @"caption2": @(RCTDynamicTypeRampCaption2),
   @"caption1": @(RCTDynamicTypeRampCaption1),
   @"footnote": @(RCTDynamicTypeRampFootnote),
-  @"subhead": @(RCTDynamicTypeRampSubhead),
+  @"subheadline": @(RCTDynamicTypeRampSubheadline),
   @"callout": @(RCTDynamicTypeRampCallout),
   @"body": @(RCTDynamicTypeRampBody),
   @"headline": @(RCTDynamicTypeRampHeadline),
@@ -36,7 +36,7 @@ UIFontMetrics *RCTUIFontMetricsForDynamicTypeRamp(RCTDynamicTypeRamp dynamicType
       @(RCTDynamicTypeRampCaption2): UIFontTextStyleCaption2,
       @(RCTDynamicTypeRampCaption1): UIFontTextStyleCaption1,
       @(RCTDynamicTypeRampFootnote): UIFontTextStyleFootnote,
-      @(RCTDynamicTypeRampSubhead): UIFontTextStyleSubheadline,
+      @(RCTDynamicTypeRampSubheadline): UIFontTextStyleSubheadline,
       @(RCTDynamicTypeRampCallout): UIFontTextStyleCallout,
       @(RCTDynamicTypeRampBody): UIFontTextStyleBody,
       @(RCTDynamicTypeRampHeadline): UIFontTextStyleHeadline,
@@ -51,7 +51,7 @@ UIFontMetrics *RCTUIFontMetricsForDynamicTypeRamp(RCTDynamicTypeRamp dynamicType
   return [UIFontMetrics metricsForTextStyle:textStyle];
 }
 
-CGFloat RCTUIBaseSizeForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp) {
+CGFloat RCTBaseSizeForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp) {
   static NSDictionary<NSNumber *, NSNumber *> *mapping;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -60,7 +60,7 @@ CGFloat RCTUIBaseSizeForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp) {
       @(RCTDynamicTypeRampCaption2): @11,
       @(RCTDynamicTypeRampCaption1): @12,
       @(RCTDynamicTypeRampFootnote): @13,
-      @(RCTDynamicTypeRampSubhead): @15,
+      @(RCTDynamicTypeRampSubheadline): @15,
       @(RCTDynamicTypeRampCallout): @16,
       @(RCTDynamicTypeRampBody): @17,
       @(RCTDynamicTypeRampHeadline): @17,

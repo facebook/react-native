@@ -234,7 +234,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
     if (_dynamicTypeRamp != RCTDynamicTypeRampUndefined) {
       UIFontMetrics *fontMetrics = RCTUIFontMetricsForDynamicTypeRamp(_dynamicTypeRamp);
-      CGFloat baseSize = RCTUIBaseSizeForDynamicTypeRamp(_dynamicTypeRamp);
+      CGFloat baseSize = RCTBaseSizeForDynamicTypeRamp(_dynamicTypeRamp);
       fontSizeMultiplier = [fontMetrics scaledValueForValue:baseSize] / baseSize;
     }
 #endif // ]TODO(macOS GH#774)
