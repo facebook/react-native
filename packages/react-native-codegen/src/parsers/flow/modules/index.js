@@ -26,6 +26,7 @@ import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 const {nullGuard} = require('../../parsers-utils');
 
+const {throwIfMoreThanOneModuleRegistryCalls} = require('../../error-utils');
 const {
   resolveTypeAnnotation,
   getTypes,
