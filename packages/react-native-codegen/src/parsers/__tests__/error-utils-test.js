@@ -153,7 +153,7 @@ describe('throwErrorIfWrongNumberOfCallExpressionArgs', () => {
 });
 
 describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
-  const flowReturnTypeAnnotation = {
+  const returnTypeAnnotation = {
       returnType: '',
     },
     nativeModuleName = 'moduleName',
@@ -162,54 +162,48 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
 
   it('do not throw error if cxxOnly is true', () => {
     const cxxOnly = true,
-      returnTypeAnnotation = {
-        type: 'FunctionTypeAnnotation',
-      };
+      returnType = 'FunctionTypeAnnotation';
 
     expect(() => {
       throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
         nativeModuleName,
-        flowReturnTypeAnnotation,
+        returnTypeAnnotation,
         invalidReturnType,
         language,
         cxxOnly,
-        returnTypeAnnotation,
+        returnType,
       );
     }).not.toThrow(UnsupportedFunctionReturnTypeAnnotationParserError);
   });
 
   it('do not throw error if returnTypeAnnotation type is not FunctionTypeAnnotation', () => {
     const cxxOnly = false,
-      returnTypeAnnotation = {
-        type: '',
-      };
+      returnType = '';
 
     expect(() => {
       throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
         nativeModuleName,
-        flowReturnTypeAnnotation,
+        returnTypeAnnotation,
         invalidReturnType,
         language,
         cxxOnly,
-        returnTypeAnnotation,
+        returnType,
       );
     }).not.toThrow(UnsupportedFunctionReturnTypeAnnotationParserError);
   });
 
   it('throw error if cxxOnly is false and returnTypeAnnotation type is FunctionTypeAnnotation', () => {
     const cxxOnly = false,
-      returnTypeAnnotation = {
-        type: 'FunctionTypeAnnotation',
-      };
+      returnType = 'FunctionTypeAnnotation';
 
     expect(() => {
       throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
         nativeModuleName,
-        flowReturnTypeAnnotation,
+        returnTypeAnnotation,
         invalidReturnType,
         language,
         cxxOnly,
-        returnTypeAnnotation,
+        returnType,
       );
     }).toThrow(UnsupportedFunctionReturnTypeAnnotationParserError);
   });
@@ -509,7 +503,7 @@ describe('throwIfUntypedModule', () => {
   });
 });
 
-describe('throwIfMoreThanOneModuleRegistryCalls', () => {
+describe('throwIfModuleTypeIsUnsupported', () => {
   const {throwIfModuleTypeIsUnsupported} = require('../error-utils.js');
   const {UnsupportedModulePropertyParserError} = require('../errors.js');
   const hasteModuleName = 'moduleName';

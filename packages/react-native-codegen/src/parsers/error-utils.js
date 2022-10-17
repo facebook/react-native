@@ -127,16 +127,16 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
 
 function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
   nativeModuleName: string,
-  flowReturnTypeAnnotation: $FlowFixMe,
+  returnTypeAnnotation: $FlowFixMe,
   invalidReturnType: string,
   language: ParserType,
   cxxOnly: boolean,
-  returnTypeAnnotation: $FlowFixMe,
+  returnType: string,
 ) {
-  if (!cxxOnly && returnTypeAnnotation.type === 'FunctionTypeAnnotation') {
+  if (!cxxOnly && returnType === 'FunctionTypeAnnotation') {
     throw new UnsupportedFunctionReturnTypeAnnotationParserError(
       nativeModuleName,
-      flowReturnTypeAnnotation.returnType,
+      returnTypeAnnotation.returnType,
       'FunctionTypeAnnotation',
       language,
     );

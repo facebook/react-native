@@ -516,7 +516,7 @@ function translateFunctionTypeAnnotation(
     'FunctionTypeAnnotation',
     language,
     cxxOnly,
-    returnTypeAnnotation,
+    returnTypeAnnotation.type,
   );
 
   return {
