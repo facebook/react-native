@@ -113,7 +113,7 @@ bool AttributedString::compareTextAttributesWithoutFrame(
     return false;
   }
 
-  for (unsigned i = 0; i < fragments_.size(); i++) {
+  for (size_t i = 0; i < fragments_.size(); i++) {
     if (fragments_[i].textAttributes != rhs.fragments_[i].textAttributes ||
         fragments_[i].string != rhs.fragments_[i].string) {
       return false;
@@ -136,7 +136,7 @@ bool AttributedString::isContentEqual(const AttributedString &rhs) const {
     return false;
   }
 
-  for (unsigned i = 0; i < fragments_.size(); i++) {
+  for (size_t i = 0; i < fragments_.size(); i++) {
     if (!fragments_[i].isContentEqual(rhs.fragments_[i])) {
       return false;
     }
