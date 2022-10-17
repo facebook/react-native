@@ -523,12 +523,6 @@ export type Props = $ReadOnly<{|
    * the error message. Setting accessibilityInvalid to false removes the error message.
    */
   accessibilityErrorMessage?: ?Stringish,
-
-  /**
-   * Setting accessibilityInvalid to true activates the error message. Setting accessibilityInvalid
-   * to false removes the error message.
-   * The default value is `false`.
-   */
   accessibilityInvalid?: ?boolean,
 
   /**
