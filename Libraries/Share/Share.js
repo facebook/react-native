@@ -31,6 +31,7 @@ type Options = {
   excludedActivityTypes?: Array<string>,
   tintColor?: string,
   subject?: string,
+  anchor?: number,
   ...
 };
 
@@ -131,6 +132,8 @@ class Share {
             url: typeof content.url === 'string' ? content.url : undefined,
             subject: options.subject,
             tintColor: typeof tintColor === 'number' ? tintColor : undefined,
+            anchor:
+              typeof options.anchor === 'number' ? options.anchor : undefined,
             excludedActivityTypes: options.excludedActivityTypes,
           },
           error => reject(error),

@@ -30,6 +30,7 @@ export interface ShareActionSheetIOSOptions {
   message?: string | undefined;
   url?: string | undefined;
   subject?: string | undefined;
+  anchor?: number | undefined;
   /** The activities to exclude from the ActionSheet.
    * For example: ['com.apple.UIKit.activity.PostToTwitter']
    */
