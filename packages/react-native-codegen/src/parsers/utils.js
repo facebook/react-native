@@ -54,6 +54,42 @@ function createParserErrorCapturer(): [
   return [errors, guard];
 }
 
+function verifyPlatforms(
+  hasteModuleName: string,
+  moduleNames: string[],
+): $ReadOnly<{
+  cxxOnly: boolean,
+  excludedPlatforms: Array<'iOS' | 'android'>,
+}> {
+  let cxxOnly = false;
+  const excludedPlatforms = new Set<'iOS' | 'android'>();
+  const namesToValidate = [...moduleNames, hasteModuleName];
+
+  namesToValidate.forEach(name => {
+    if (name.endsWith('Android')) {
+      excludedPlatforms.add('iOS');
+      return;
+    }
+
+    if (name.endsWith('IOS')) {
+      excludedPlatforms.add('android');
+      return;
+    }
+
+    if (name.endsWith('Cxx')) {
+      cxxOnly = true;
+      excludedPlatforms.add('iOS');
+      excludedPlatforms.add('android');
+      return;
+    }
+  });
+
+  return {
+    cxxOnly,
+    excludedPlatforms: Array.from(excludedPlatforms),
+  };
+}
+
 // TODO(T108222691): Use flow-types for @babel/parser
 function visit(
   astNode: $FlowFixMe,
@@ -86,5 +122,6 @@ function visit(
 module.exports = {
   extractNativeModuleName,
   createParserErrorCapturer,
+  verifyPlatforms,
   visit,
 };

@@ -14,6 +14,7 @@
 const {
   extractNativeModuleName,
   createParserErrorCapturer,
+  verifyPlatforms,
   visit,
 } = require('../utils.js');
 const {ParserError} = require('../errors');
@@ -114,6 +115,71 @@ describe('createParserErrorCapturer', () => {
       expect(() => guard(fn)).toThrow(errorMessage);
       expect(errors).toHaveLength(0);
     });
+  });
+});
+
+describe('verifyPlatforms', () => {
+  it('exclude android given an iOS only module', () => {
+    let result = verifyPlatforms('NativeSampleTurboModule', [
+      'SampleTurboModuleIOS',
+    ]);
+
+    expect(result.cxxOnly).toBe(false);
+    expect(result.excludedPlatforms).toEqual(['android']);
+
+    result = verifyPlatforms('NativeSampleTurboModuleIOS', [
+      'SampleTurboModule',
+    ]);
+    expect(result.cxxOnly).toBe(false);
+    expect(result.excludedPlatforms).toEqual(['android']);
+
+    result = verifyPlatforms('NativeSampleTurboModuleIOS', [
+      'SampleTurboModuleIOS',
+    ]);
+    expect(result.cxxOnly).toBe(false);
+    expect(result.excludedPlatforms).toEqual(['android']);
+  });
+
+  it('exclude iOS given an android only module', () => {
+    let result = verifyPlatforms('NativeSampleTurboModule', [
+      'SampleTurboModuleAndroid',
+    ]);
+
+    expect(result.cxxOnly).toBe(false);
+    expect(result.excludedPlatforms).toEqual(['iOS']);
+
+    result = verifyPlatforms('NativeSampleTurboModuleAndroid', [
+      'SampleTurboModule',
+    ]);
+    expect(result.cxxOnly).toBe(false);
+    expect(result.excludedPlatforms).toEqual(['iOS']);
+
+    result = verifyPlatforms('NativeSampleTurboModuleAndroid', [
+      'SampleTurboModuleAndroid',
+    ]);
+    expect(result.cxxOnly).toBe(false);
+    expect(result.excludedPlatforms).toEqual(['iOS']);
+  });
+
+  it('exclude iOS and android given a Cxx only module', () => {
+    let result = verifyPlatforms('NativeSampleTurboModule', [
+      'SampleTurboModuleCxx',
+    ]);
+
+    expect(result.cxxOnly).toBe(true);
+    expect(result.excludedPlatforms).toEqual(['iOS', 'android']);
+
+    result = verifyPlatforms('NativeSampleTurboModuleCxx', [
+      'SampleTurboModule',
+    ]);
+    expect(result.cxxOnly).toBe(true);
+    expect(result.excludedPlatforms).toEqual(['iOS', 'android']);
+
+    result = verifyPlatforms('NativeSampleTurboModuleCxx', [
+      'SampleTurboModuleCxx',
+    ]);
+    expect(result.cxxOnly).toBe(true);
+    expect(result.excludedPlatforms).toEqual(['iOS', 'android']);
   });
 });
 
