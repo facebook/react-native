@@ -13,6 +13,7 @@
 import type {ParserType} from './errors';
 
 const {
+  MisnamedModuleInterfaceParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UnusedModuleInterfaceParserError,
@@ -21,6 +22,20 @@ const {
   UntypedModuleRegistryCallParserError,
   UnsupportedModulePropertyParserError,
 } = require('./errors.js');
+
+function throwIfModuleInterfaceIsMisnamed(
+  nativeModuleName: string,
+  moduleSpecId: $FlowFixMe,
+  parserType: ParserType,
+) {
+  if (moduleSpecId.name !== 'Spec') {
+    throw new MisnamedModuleInterfaceParserError(
+      nativeModuleName,
+      moduleSpecId,
+      parserType,
+    );
+  }
+}
 
 function throwIfModuleInterfaceNotFound(
   numberOfModuleSpecs: number,
@@ -174,6 +189,7 @@ function throwIfModuleTypeIsUnsupported(
 }
 
 module.exports = {
+  throwIfModuleInterfaceIsMisnamed,
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfUnusedModuleInterfaceParserError,

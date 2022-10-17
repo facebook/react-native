@@ -14,6 +14,7 @@
 const {
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
+  throwIfModuleInterfaceIsMisnamed,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
@@ -21,10 +22,32 @@ const {
 const {
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleRegistryCallsParserError,
+  MisnamedModuleInterfaceParserError,
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
 } = require('../errors');
+
+describe('throwIfModuleInterfaceIsMisnamed', () => {
+  it("don't throw error if module interface name is Spec", () => {
+    const nativeModuleName = 'moduleName';
+    const specId = {name: 'Spec'};
+    const parserType = 'Flow';
+
+    expect(() => {
+      throwIfModuleInterfaceIsMisnamed(nativeModuleName, specId, parserType);
+    }).not.toThrow(MisnamedModuleInterfaceParserError);
+  });
+  it('throw error if module interface is misnamed', () => {
+    const nativeModuleName = 'moduleName';
+    const specId = {name: 'Name'};
+    const parserType = 'TypeScript';
+
+    expect(() => {
+      throwIfModuleInterfaceIsMisnamed(nativeModuleName, specId, parserType);
+    }).toThrow(MisnamedModuleInterfaceParserError);
+  });
+});
 
 describe('throwIfModuleInterfaceNotFound', () => {
   it('throw error if there are zero module specs', () => {

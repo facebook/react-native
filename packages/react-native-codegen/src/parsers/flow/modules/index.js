@@ -53,7 +53,6 @@ const {
   typeAliasResolution,
 } = require('../../parsers-primitives');
 const {
-  MisnamedModuleInterfaceParserError,
   MoreThanOneModuleInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
@@ -70,6 +69,7 @@ const {
 
 const {
   throwIfModuleInterfaceNotFound,
+  throwIfModuleInterfaceIsMisnamed,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
@@ -613,13 +613,7 @@ function buildModuleSchema(
 
   const [moduleSpec] = moduleSpecs;
 
-  if (moduleSpec.id.name !== 'Spec') {
-    throw new MisnamedModuleInterfaceParserError(
-      hasteModuleName,
-      moduleSpec.id,
-      language,
-    );
-  }
+  throwIfModuleInterfaceIsMisnamed(hasteModuleName, moduleSpec.id, language);
 
   // Parse Module Names
   const moduleName = tryParse((): string => {
