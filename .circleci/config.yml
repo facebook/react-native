@@ -1378,12 +1378,14 @@ jobs:
       - checkout
       - *attach_hermes_workspace
       - run:
-          name: Copy HermesC binaries
+          name: Copy Hermes binaries
           command: |
             mkdir -p ./sdks/hermesc ./sdks/hermesc/osx-bin ./sdks/hermesc/win64-bin ./sdks/hermesc/linux64-bin
             cp -r $HERMES_WS_DIR/osx-bin/* ./sdks/hermesc/osx-bin/.
             cp -r $HERMES_WS_DIR/win64-bin/* ./sdks/hermesc/win64-bin/.
             cp -r $HERMES_WS_DIR/linux64-bin/* ./sdks/hermesc/linux64-bin/.
+            mkdir -p ./ReactAndroid/external-artifacts/artifacts/
+            cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-debug-*.tar.gz ./ReactAndroid/external-artifacts/artifacts/hermes-ios.tar.gz
 
       - run_yarn
       - download_gradle_dependencies

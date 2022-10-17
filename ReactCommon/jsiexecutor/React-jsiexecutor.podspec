@@ -36,6 +36,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
+  s.dependency "React-jsidynamic", version
   s.dependency "React-perflogger", version
   s.dependency "RCT-Folly", folly_version
   s.dependency "DoubleConversion"

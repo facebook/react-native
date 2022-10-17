@@ -76,8 +76,25 @@ public class PointerEventHelper {
     }
   }
 
+  // https://w3c.github.io/pointerevents/#the-buttons-property
+  public static int getButtons(String eventName, String pointerType, int buttonState) {
+    if (isExitEvent(eventName)) {
+      return 0;
+    }
+    if (POINTER_TYPE_TOUCH.equals(pointerType)) {
+      return 1;
+    }
+    return buttonState;
+  }
+
   // https://w3c.github.io/pointerevents/#the-button-property
-  public static int getButtonChange(int lastButtonState, int currentButtonState) {
+  public static int getButtonChange(
+      String pointerType, int lastButtonState, int currentButtonState) {
+    // Always return 0 for touch
+    if (POINTER_TYPE_TOUCH.equals(pointerType)) {
+      return 0;
+    }
+
     int changedMask = currentButtonState ^ lastButtonState;
     if (changedMask == 0) {
       return -1;
@@ -169,5 +186,30 @@ public class PointerEventHelper {
   public static boolean supportsHover(MotionEvent motionEvent) {
     int source = motionEvent.getSource();
     return source == InputDevice.SOURCE_MOUSE || source == InputDevice.SOURCE_CLASS_POINTER;
+  }
+
+  public static boolean isExitEvent(String eventName) {
+    switch (eventName) {
+      case POINTER_UP:
+      case POINTER_LEAVE:
+      case POINTER_OUT:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  // https://w3c.github.io/pointerevents/#dom-pointerevent-pressure
+  public static double getPressure(int buttonState, String eventName) {
+    if (isExitEvent(eventName)) {
+      return 0;
+    }
+
+    // Assume  we don't support pressure on our platform for now
+    //  For hardware and platforms that do not support pressure,
+    //  the value MUST be 0.5 when in the active buttons state
+    //  and 0 otherwise.
+    boolean inActiveButtonState = buttonState != 0;
+    return inActiveButtonState ? 0.5 : 0;
   }
 }

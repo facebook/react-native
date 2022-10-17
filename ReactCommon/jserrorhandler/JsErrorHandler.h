@@ -11,14 +11,16 @@
 namespace facebook {
 namespace react {
 
-const int FILE_KEY_OF_JS_ERROR = 0;
-const int METHOD_NAME_KEY_OF_JS_ERROR = 1;
-const int LINE_NUMBER_KEY_OF_JS_ERROR = 2;
-const int COLUMN_KEY_OF_JS_ERROR = 3;
-const int FRAMES_KEY_OF_JS_ERROR = 4;
-const int MESSAGE_KEY_OF_JS_ERROR = 5;
-const int ID_KEY_OF_JS_ERROR = 6;
-const int IS_FATAL_KEY_OF_JS_ERROR = 7;
+enum JSErrorHandlerKey : uint16_t {
+  kFrameFileName = 0,
+  kFrameMethodName = 1,
+  kFrameLineNumber = 2,
+  kFrameColumnNumber = 3,
+  kAllStackFrames = 4,
+  kErrorMessage = 5,
+  kExceptionId = 6,
+  kIsFatal = 7
+};
 
 class JsErrorHandler {
  public:

@@ -154,7 +154,6 @@ public class PointerEvent extends Event<PointerEvent> {
 
     // https://www.w3.org/TR/pointerevents/#pointerevent-interface
     pointerEvent.putDouble("pointerId", pointerId);
-    pointerEvent.putDouble("pressure", mMotionEvent.getPressure(index));
 
     String pointerType = PointerEventHelper.getW3CPointerType(mMotionEvent.getToolType(index));
     pointerEvent.putString("pointerType", pointerType);
@@ -188,17 +187,29 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putInt("target", this.getViewTag());
     pointerEvent.putDouble("timestamp", this.getTimestampMs());
 
+    pointerEvent.putInt("detail", 0);
+    pointerEvent.putDouble("tiltX", 0);
+    pointerEvent.putDouble("tiltY", 0);
+
     if (pointerType.equals(PointerEventHelper.POINTER_TYPE_MOUSE)) {
       pointerEvent.putDouble("width", 1);
       pointerEvent.putDouble("height", 1);
-      pointerEvent.putDouble("tiltX", 0);
-      pointerEvent.putDouble("tiltY", 0);
+    } else {
+      float majorAxis = PixelUtil.toDIPFromPixel(mMotionEvent.getTouchMajor(index));
+      pointerEvent.putDouble("width", majorAxis);
+      pointerEvent.putDouble("height", majorAxis);
     }
 
-    int buttons = mMotionEvent.getButtonState();
-    pointerEvent.putInt("buttons", buttons);
+    int buttonState = mMotionEvent.getButtonState();
     pointerEvent.putInt(
-        "button", PointerEventHelper.getButtonChange(mEventState.getLastButtonState(), buttons));
+        "button",
+        PointerEventHelper.getButtonChange(
+            pointerType, mEventState.getLastButtonState(), buttonState));
+    pointerEvent.putInt(
+        "buttons", PointerEventHelper.getButtons(mEventName, pointerType, buttonState));
+
+    pointerEvent.putDouble(
+        "pressure", PointerEventHelper.getPressure(pointerEvent.getInt("buttons"), mEventName));
 
     return pointerEvent;
   }
