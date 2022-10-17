@@ -16,7 +16,7 @@ typedef NS_ENUM(NSInteger, RCTDynamicTypeRamp) {
   RCTDynamicTypeRampCaption2,
   RCTDynamicTypeRampCaption1,
   RCTDynamicTypeRampFootnote,
-  RCTDynamicTypeRampSubhead,
+  RCTDynamicTypeRampSubheadline,
   RCTDynamicTypeRampCallout,
   RCTDynamicTypeRampBody,
   RCTDynamicTypeRampHeadline,
