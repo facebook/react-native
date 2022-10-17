@@ -88,7 +88,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
 
   @Override
   @ReactProp(name = "accessibilityTitle")
-  public void setAccessibilityTitle(ReactModalHostView view, String accessibilityTitle) {
+  public void setAccessibilityTitle(ReactModalHostView view, @Nullable String accessibilityTitle) {
     view.setAccessibilityTitle(accessibilityTitle);
   }
 

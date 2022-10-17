@@ -79,7 +79,7 @@ public class ReactModalHostView extends ViewGroup
   private boolean mTransparent;
   private boolean mStatusBarTranslucent;
   private String mAnimationType;
-  private String mAccessibilityTitle;
+  private @Nullable String mAccessibilityTitle;
   private boolean mHardwareAccelerated;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created.  For instance, animation does since it affects Dialog creation through the theme

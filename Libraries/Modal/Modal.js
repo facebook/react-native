@@ -61,6 +61,13 @@ export type Props = $ReadOnly<{|
   ...ViewProps,
 
   /**
+   * The `accessibilityTitle` prop controls the title announced with the TalkBack screen reader.
+   *
+   * See https://reactnative.dev/docs/modal#
+   */
+  accessibilityTitle?: ?Stringish,
+
+  /**
    * The `animationType` prop controls how the modal animates.
    *
    * See https://reactnative.dev/docs/modal#animationtype
@@ -94,7 +101,6 @@ export type Props = $ReadOnly<{|
    * See https://reactnative.dev/docs/modal#transparent
    */
   statusBarTranslucent?: ?boolean,
-  accessibilityTitle?: ?string,
 
   /**
    * The `hardwareAccelerated` prop controls whether to force hardware

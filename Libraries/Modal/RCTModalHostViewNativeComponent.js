@@ -26,6 +26,13 @@ type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   /**
+   * The `accessibilityTitle` prop controls the title announced with the TalkBack screen reader.
+   *
+   * See https://reactnative.dev/docs/modal#
+   */
+  accessibilityTitle?: WithDefault<string, null>,
+
+  /**
    * The `animationType` prop controls how the modal animates.
    *
    * See https://reactnative.dev/docs/modal#animationtype
@@ -131,7 +138,6 @@ type NativeProps = $ReadOnly<{|
    * The `identifier` is the unique number for identifying Modal components.
    */
   identifier?: WithDefault<Int32, 0>,
-  accessibilityTitle?: WithDefault<string, null>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>('ModalHostView', {
