@@ -70,7 +70,6 @@ const {
 const {
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
-  throwIfMoreThanOneModuleRegistryCalls,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
