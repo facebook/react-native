@@ -27,10 +27,10 @@ import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 const {nullGuard} = require('../../parsers-utils');
 
 const {throwIfMoreThanOneModuleRegistryCalls} = require('../../error-utils');
+const {visit} = require('../../utils');
 const {
   resolveTypeAnnotation,
   getTypes,
-  visit,
   isModuleRegistryCall,
 } = require('../utils.js');
 const {
