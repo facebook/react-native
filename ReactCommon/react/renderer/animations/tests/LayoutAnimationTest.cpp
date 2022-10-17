@@ -32,8 +32,7 @@
 
 MockClock::time_point MockClock::time_ = {};
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static void testShadowNodeTreeLifeCycleLayoutAnimations(
     uint_fast32_t seed,
@@ -309,8 +308,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
   SUCCEED();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 using namespace facebook::react;
 

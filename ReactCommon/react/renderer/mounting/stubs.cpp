@@ -11,8 +11,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/mounting/Differentiator.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Sorting comparator for `reorderInPlaceIfNeeded`.
@@ -96,5 +95,4 @@ StubViewTree buildStubViewTreeUsingDifferentiator(
   return stubViewTree;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

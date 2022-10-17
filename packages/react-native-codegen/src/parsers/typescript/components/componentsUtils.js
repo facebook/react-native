@@ -10,9 +10,9 @@
 
 'use strict';
 import type {ASTNode} from '../utils';
-import type {TypeDeclarationMap} from '../utils.js';
 import type {NamedShape} from '../../../CodegenSchema.js';
 const {parseTopLevelType} = require('../parseTopLevelType');
+import type {TypeDeclarationMap} from '../../utils';
 
 function getProperties(
   typeName: string,

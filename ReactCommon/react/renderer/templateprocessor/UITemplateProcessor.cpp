@@ -18,8 +18,7 @@
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 bool constexpr DEBUG_FLY = false;
 
@@ -151,5 +150,4 @@ ShadowNode::Shared UITemplateProcessor::buildShadowTree(
   return ShadowNode::Shared{};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

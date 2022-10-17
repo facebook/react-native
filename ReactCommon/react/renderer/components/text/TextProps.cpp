@@ -7,8 +7,7 @@
 
 #include "TextProps.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 TextProps::TextProps(
     const PropsParserContext &context,
@@ -34,5 +33,4 @@ SharedDebugStringConvertibleList TextProps::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

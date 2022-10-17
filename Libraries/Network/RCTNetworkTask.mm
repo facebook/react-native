@@ -11,8 +11,7 @@
 #import <React/RCTNetworkTask.h>
 #import <React/RCTUtils.h>
 
-@implementation RCTNetworkTask
-{
+@implementation RCTNetworkTask {
   NSMutableData *_data;
   id<RCTURLRequestHandler> _handler;
   dispatch_queue_t _callbackQueue;
@@ -43,7 +42,7 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)invalidate
 {

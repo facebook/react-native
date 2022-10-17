@@ -15,8 +15,7 @@
 
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void TextAttributes::apply(TextAttributes textAttributes) {
   // Color
@@ -208,5 +207,4 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

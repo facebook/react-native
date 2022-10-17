@@ -14,6 +14,8 @@ const {ParserError} = require('./errors');
 
 const path = require('path');
 
+export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
+
 export type TypeAliasResolutionStatus =
   | $ReadOnly<{
       successful: true,

@@ -11,8 +11,7 @@
 
 #import <React/RCTUITextView.h>
 
-@implementation RCTMultilineTextInputView
-{
+@implementation RCTMultilineTextInputView {
   RCTUITextView *_backedTextInputView;
 }
 
@@ -47,25 +46,16 @@
     UIEdgeInsets contentInset = scrollView.contentInset;
 
     onScroll(@{
-      @"contentOffset": @{
-        @"x": @(contentOffset.x),
-        @"y": @(contentOffset.y)
+      @"contentOffset" : @{@"x" : @(contentOffset.x), @"y" : @(contentOffset.y)},
+      @"contentInset" : @{
+        @"top" : @(contentInset.top),
+        @"left" : @(contentInset.left),
+        @"bottom" : @(contentInset.bottom),
+        @"right" : @(contentInset.right)
       },
-      @"contentInset": @{
-        @"top": @(contentInset.top),
-        @"left": @(contentInset.left),
-        @"bottom": @(contentInset.bottom),
-        @"right": @(contentInset.right)
-      },
-      @"contentSize": @{
-        @"width": @(contentSize.width),
-        @"height": @(contentSize.height)
-      },
-      @"layoutMeasurement": @{
-        @"width": @(size.width),
-        @"height": @(size.height)
-      },
-      @"zoomScale": @(scrollView.zoomScale ?: 1),
+      @"contentSize" : @{@"width" : @(contentSize.width), @"height" : @(contentSize.height)},
+      @"layoutMeasurement" : @{@"width" : @(size.width), @"height" : @(size.height)},
+      @"zoomScale" : @(scrollView.zoomScale ?: 1),
     });
   }
 }

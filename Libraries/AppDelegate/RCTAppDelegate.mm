@@ -32,18 +32,19 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   RCTAppSetupPrepareApp(application);
 
   if (!self.bridge) {
-    self.bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+    self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
   }
 #if RCT_NEW_ARCH_ENABLED
   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
   _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
   _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-  self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge contextContainer:_contextContainer];
+  self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
+                                                               contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 #endif
 
   NSDictionary *initProps = [self prepareInitialProps];
-  UIView *rootView = RCTAppSetupDefaultRootView(self.bridge, self.moduleName, initProps);
+  UIView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
 
   if (@available(iOS 13.0, *)) {
     rootView.backgroundColor = [UIColor systemBackgroundColor];
@@ -52,7 +53,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   }
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
+  UIViewController *rootViewController = [self createRootViewController];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
@@ -61,19 +62,15 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-  [NSException
-   raise:@"RCTBridgeDelegate::sourceURLForBridge not implemented"
-   format:@"Subclasses must implement a valid sourceURLForBridge method"
-  ];
+  [NSException raise:@"RCTBridgeDelegate::sourceURLForBridge not implemented"
+              format:@"Subclasses must implement a valid sourceURLForBridge method"];
   return nil;
 }
 
 - (BOOL)concurrentRootEnabled
 {
-  [NSException
-   raise:@"concurrentRootEnabled not implemented"
-   format:@"Subclasses must implement a valid concurrentRootEnabled method"
-  ];
+  [NSException raise:@"concurrentRootEnabled not implemented"
+              format:@"Subclasses must implement a valid concurrentRootEnabled method"];
   return true;
 }
 
@@ -86,6 +83,23 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #endif
 
   return initProps;
+}
+
+- (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
+{
+  return [[RCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
+}
+
+- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
+                          moduleName:(NSString *)moduleName
+                           initProps:(NSDictionary *)initProps
+{
+  return RCTAppSetupDefaultRootView(bridge, moduleName, initProps);
+}
+
+- (UIViewController *)createRootViewController
+{
+  return [UIViewController new];
 }
 
 #if RCT_NEW_ARCH_ENABLED

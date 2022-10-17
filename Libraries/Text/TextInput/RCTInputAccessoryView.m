@@ -13,15 +13,14 @@
 
 #import <React/RCTInputAccessoryViewContent.h>
 
-@interface RCTInputAccessoryView()
+@interface RCTInputAccessoryView ()
 
 // Overriding `inputAccessoryView` to `readwrite`.
 @property (nonatomic, readwrite, retain) UIView *inputAccessoryView;
 
 @end
 
-@implementation RCTInputAccessoryView
-{
+@implementation RCTInputAccessoryView {
   BOOL _shouldBecomeFirstResponder;
 }
 

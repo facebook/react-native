@@ -128,6 +128,7 @@ class FillRateHelper {
         mostly_blank_time_frac: this._info.mostly_blank_ms / total_time_spent,
       };
       for (const key in derived) {
+        // $FlowFixMe[prop-missing]
         derived[key] = Math.round(1000 * derived[key]) / 1000;
       }
       console.debug('FillRateHelper deactivateAndFlush: ', {derived, info});

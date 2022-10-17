@@ -7,8 +7,7 @@
 
 #include <react/renderer/components/unimplementedview/UnimplementedViewProps.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void UnimplementedViewProps::setComponentName(ComponentName componentName) {
   componentName_ = componentName;
@@ -18,5 +17,4 @@ ComponentName UnimplementedViewProps::getComponentName() const {
   return componentName_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
