@@ -94,7 +94,7 @@ function mockEffectRegistry(): {
   mockEffectWithoutCleanup: string => () => void,
   registry: $ReadOnlyArray<TestEffect | TestEffectCleanup>,
 } {
-  const registry = [];
+  const registry: Array<TestEffect | TestEffectCleanup> = [];
   return {
     mockEffect(name: string): () => () => void {
       return instance => {
