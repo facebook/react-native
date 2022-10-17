@@ -309,17 +309,6 @@ void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {
   }
 }
 
-void Scheduler::uiManagerDidCloneShadowNode(
-    const ShadowNode &oldShadowNode,
-    const ShadowNode &newShadowNode) {
-  SystraceSection s("Scheduler::uiManagerDidCloneShadowNode");
-
-  if (delegate_ != nullptr) {
-    delegate_->schedulerDidCloneShadowNode(
-        newShadowNode.getSurfaceId(), oldShadowNode, newShadowNode);
-  }
-}
-
 void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,

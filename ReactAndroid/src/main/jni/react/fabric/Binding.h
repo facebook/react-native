@@ -102,11 +102,6 @@ class Binding : public jni::HybridClass<Binding>,
       const SurfaceId surfaceId,
       const ShadowNode &shadowNode) override;
 
-  void schedulerDidCloneShadowNode(
-      SurfaceId surfaceId,
-      const ShadowNode &oldShadowNode,
-      const ShadowNode &newShadowNode) override;
-
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       std::string const &commandName,
@@ -158,7 +153,6 @@ class Binding : public jni::HybridClass<Binding>,
   bool enableFabricLogs_{false};
   bool disableRevisionCheckForPreallocation_{false};
   bool dispatchPreallocationInBackground_{false};
-  bool disablePreallocationOnClone_{false};
 };
 
 } // namespace react
