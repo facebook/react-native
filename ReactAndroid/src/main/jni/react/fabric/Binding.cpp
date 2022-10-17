@@ -377,9 +377,11 @@ void Binding::installFabricUIManager(
                  << this << ").";
   }
 
-  sharedCppComponentRegistry_ =
-      std::shared_ptr<const facebook::react::CppComponentRegistry>(
-          cppComponentRegistry ? cppComponentRegistry : nullptr);
+  // TODO[T135327389]: Investigate why code relying on CppComponentRegistry
+  // crashing during hot reload restart.
+  // sharedCppComponentRegistry_ =
+  //     std::shared_ptr<const facebook::react::CppComponentRegistry>(
+  //         cppComponentRegistry ? cppComponentRegistry : nullptr);
 
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
   // at the same time
