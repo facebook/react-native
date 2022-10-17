@@ -372,9 +372,6 @@ void Binding::installFabricUIManager(
   enableFabricLogs_ =
       config->getBool("react_fabric:enabled_android_fabric_logs");
 
-  disableRevisionCheckForPreallocation_ =
-      config->getBool("react_fabric:disable_revision_check_for_preallocation");
-
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
                  << this << ").";
