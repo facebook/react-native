@@ -146,10 +146,7 @@ Size measureAndroidComponentMapBuffer(
 TextLayoutManager::TextLayoutManager(
     const ContextContainer::Shared &contextContainer)
     : contextContainer_(contextContainer),
-      measureCache_(
-          contextContainer->at<bool>("EnableLargeTextMeasureCache")
-              ? 1024
-              : kSimpleThreadSafeCacheSizeCap) {}
+      measureCache_(kSimpleThreadSafeCacheSizeCap) {}
 
 void *TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;

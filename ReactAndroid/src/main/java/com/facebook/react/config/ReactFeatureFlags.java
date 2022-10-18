@@ -84,12 +84,6 @@ public class ReactFeatureFlags {
 
   public static boolean insertZReorderBarriersOnViewGroupChildren = true;
 
-  /**
-   * Feature Flag to control the size of the cache used by TextLayoutManager in Fabric. Used from
-   * JNI.
-   */
-  public static boolean enableLargeTextMeasureCache = true;
-
   public static boolean dispatchPointerEvents = false;
 
   /** Feature Flag to enable the pending event queue in fabric before mounting views */

@@ -443,10 +443,6 @@ void Binding::installFabricUIManager(
   dispatchPreallocationInBackground_ = reactNativeConfig_->getBool(
       "react_native_new_architecture:dispatch_preallocation_in_bg");
 
-  contextContainer->insert(
-      "EnableLargeTextMeasureCache",
-      getFeatureFlagValue("enableLargeTextMeasureCache"));
-
   // Props setter pattern feature
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
