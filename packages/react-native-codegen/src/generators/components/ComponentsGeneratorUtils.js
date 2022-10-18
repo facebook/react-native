@@ -10,11 +10,7 @@
 
 'use strict';
 
-import type {
-  NamedShape,
-  PropTypeAnnotation,
-  StateTypeAnnotation,
-} from '../../CodegenSchema';
+import type {NamedShape, PropTypeAnnotation} from '../../CodegenSchema';
 
 import type {
   StringTypeAnnotation,
@@ -27,7 +23,6 @@ import type {
 } from '../../CodegenSchema';
 
 const {
-  convertDefaultTypeToString,
   getCppTypeForAnnotation,
   getEnumMaskName,
   getEnumName,
@@ -39,7 +34,6 @@ function getNativeTypeFromAnnotation(
   componentName: string,
   prop:
     | NamedShape<PropTypeAnnotation>
-    | NamedShape<StateTypeAnnotation>
     | {
         name: string,
         typeAnnotation:
@@ -133,28 +127,6 @@ function getNativeTypeFromAnnotation(
   }
 }
 
-function getStateConstituents(
-  componentName: string,
-  stateShape: NamedShape<StateTypeAnnotation>,
-): {
-  name: string,
-  varName: string,
-  type: string,
-  defaultValue: $FlowFixMe,
-} {
-  const name = stateShape.name;
-  const varName = `${name}_`;
-  const type = getNativeTypeFromAnnotation(componentName, stateShape, []);
-  const defaultValue = convertDefaultTypeToString(componentName, stateShape);
-
-  return {
-    name,
-    varName,
-    type,
-    defaultValue,
-  };
-}
-
 /// This function process some types if we need to customize them
 /// For example, the ImageSource and the reserved types could be trasformed into
 /// const address instead of using them as plain types.
@@ -239,9 +211,7 @@ const convertVarValueToPointer = (type: string, value: string): string => {
 };
 
 function getLocalImports(
-  properties:
-    | $ReadOnlyArray<NamedShape<PropTypeAnnotation>>
-    | $ReadOnlyArray<NamedShape<StateTypeAnnotation>>,
+  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
 ): Set<string> {
   const imports: Set<string> = new Set();
 
@@ -325,7 +295,6 @@ function getLocalImports(
 
 module.exports = {
   getNativeTypeFromAnnotation,
-  getStateConstituents,
   convertCtorParamToAddressType,
   convertGettersReturnTypeToAddressType,
   convertCtorInitToSharedPointers,

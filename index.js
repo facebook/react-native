@@ -80,6 +80,7 @@ import typeof * as Systrace from './Libraries/Performance/Systrace';
 import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
 import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
 import typeof UIManager from './Libraries/ReactNative/UIManager';
+import typeof useAnimatedValue from './Libraries/Animated/useAnimatedValue';
 import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof UTFSequence from './Libraries/UTFSequence';
@@ -372,6 +373,9 @@ module.exports = {
   > {
     return require('./Libraries/ReactNative/RendererProxy')
       .unstable_batchedUpdates;
+  },
+  get useAnimatedValue(): useAnimatedValue {
+    return require('./Libraries/Animated/useAnimatedValue').default;
   },
   get useColorScheme(): useColorScheme {
     return require('./Libraries/Utilities/useColorScheme').default;

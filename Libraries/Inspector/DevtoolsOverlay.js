@@ -51,6 +51,9 @@ export default function DevtoolsOverlay({
       clearTimeout(hideTimeoutId);
       // Shape of `node` is different in Fabric.
       const component = node.canonical ?? node;
+      if (!component) {
+        return;
+      }
 
       component.measure((x, y, width, height, left, top) => {
         setInspected({

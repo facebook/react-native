@@ -15,7 +15,6 @@ import type {
   NamedShape,
   CommandTypeAnnotation,
   PropTypeAnnotation,
-  StateTypeAnnotation,
   ExtendsPropsShape,
   SchemaType,
   OptionsShape,
@@ -28,7 +27,6 @@ export type ComponentSchemaBuilderConfig = $ReadOnly<{
   events: $ReadOnlyArray<EventTypeShape>,
   props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
   commands: $ReadOnlyArray<NamedShape<CommandTypeAnnotation>>,
-  state?: $ReadOnlyArray<NamedShape<StateTypeAnnotation>>,
   options?: ?OptionsShape,
 }>;
 
@@ -38,7 +36,6 @@ function wrapComponentSchema({
   extendsProps,
   events,
   props,
-  state,
   options,
   commands,
 }: ComponentSchemaBuilderConfig): SchemaType {
@@ -53,7 +50,6 @@ function wrapComponentSchema({
             events,
             props,
             commands,
-            state,
           },
         },
       },

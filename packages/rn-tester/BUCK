@@ -51,7 +51,6 @@ rn_library(
             "js",
             "NativeModuleExample",
             "NativeComponentExample",
-            "NativeComponentWithState",
             "RCTTest",
         ],
         excludes = [
@@ -85,7 +84,6 @@ fb_native.filegroup(
         ],
         exclude = [
             "NativeComponentExample/**/*",
-            "NativeComponentWithState/**/*",
         ],
     ),
     visibility = ["PUBLIC"],
@@ -313,45 +311,6 @@ rn_xplat_cxx_library2(
     ],
     plugins = [
         react_fabric_component_plugin_provider("RNTMyNativeView", "RNTMyNativeViewCls"),
-    ],
-    plugins_header = "RCTFabricComponentsPlugins.h",
-    reexport_all_header_dependencies = False,
-    visibility = ["PUBLIC"],
-    deps = [
-        ":generated_components-AppSpecs",
-        "//xplat/js/react-native-github:RCTFabricComponentViewsBase",
-    ],
-)
-
-rn_xplat_cxx_library2(
-    name = "NativeComponentWithState",
-    plugins_only = True,
-    srcs = glob(
-        [
-            "NativeComponentWithState/ios/*.m",
-            "NativeComponentWithState/ios/*.mm",
-            "NativeComponentWithState/ios/*.cpp",
-        ],
-    ),
-    headers = glob(
-        [
-            "NativeComponentWithState/ios/*.h",
-        ],
-    ),
-    header_namespace = "",
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
-    contacts = ["oncall+react_native@xmail.facebook.com"],
-    labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
-    ],
-    plugins = [
-        react_fabric_component_plugin_provider("RNTNativeComponentWithStateView", "RNTNativeComponentWithStateCls"),
     ],
     plugins_header = "RCTFabricComponentsPlugins.h",
     reexport_all_header_dependencies = False,

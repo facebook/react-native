@@ -16,7 +16,6 @@ import type {ComponentSchemaBuilderConfig} from './schema.js';
 const {getTypes} = require('../utils');
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
-const {getState} = require('./states');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
 const {getCommandOptions, getOptions} = require('./options');
 const {getProps} = require('./props');
@@ -113,33 +112,8 @@ function findComponentConfig(ast) {
     throw new Error('codegenNativeCommands may only be called once in a file');
   }
 
-  const unexportedStateTypes: Array<string> = ast.body
-    .filter(
-      node =>
-        node.type === 'TSInterfaceDeclaration' &&
-        node.id.name.indexOf('NativeState') >= 0,
-    )
-    .map(node => node.id.name);
-
-  const exportedStateTypes: Array<string> = namedExports
-    .filter(
-      node =>
-        node.declaration.id &&
-        node.declaration.id.name.indexOf('NativeState') >= 0,
-    )
-    .map(node => node.declaration.id.name);
-
-  const stateTypeName = exportedStateTypes.concat(unexportedStateTypes);
-
-  if (Array.isArray(stateTypeName) && stateTypeName.length > 1) {
-    throw new Error(
-      `Found ${stateTypeName.length} NativeStates for ${foundConfig.componentName}. Each component can have only 1 NativeState`,
-    );
-  }
-
   return {
     ...foundConfig,
-    stateTypeName: stateTypeName.length === 1 ? stateTypeName[0] : '',
     commandTypeName:
       commandsTypeNames[0] == null
         ? null
@@ -213,7 +187,6 @@ function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const {
     componentName,
     propsTypeName,
-    stateTypeName,
     commandTypeName,
     commandOptionsExpression,
     optionsExpression,
@@ -238,7 +211,7 @@ function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const events = getEvents(propProperties, types);
   const commands = getCommands(commandProperties, types);
 
-  const toRet = {
+  return {
     filename: componentName,
     componentName,
     options,
@@ -247,17 +220,6 @@ function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
     props,
     commands,
   };
-
-  if (stateTypeName) {
-    const stateProperties = getProperties(stateTypeName, types);
-    const state = getState(stateProperties, types);
-    return {
-      ...toRet,
-      state,
-    };
-  }
-
-  return toRet;
 }
 
 module.exports = {

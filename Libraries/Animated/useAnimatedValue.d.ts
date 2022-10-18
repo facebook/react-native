@@ -1,17 +1,15 @@
-/*
+/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
-#import <React/RCTViewComponentView.h>
-#import <UIKit/UIKit.h>
+import type {Animated} from './Animated';
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface RNTNativeComponentWithStateView : RCTViewComponentView
-
-@end
-
-NS_ASSUME_NONNULL_END
+export function useAnimatedValue(
+  initialValue: number,
+  config?: Animated.AnimatedConfig,
+): Animated.Value;

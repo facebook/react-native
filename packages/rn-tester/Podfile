@@ -28,7 +28,6 @@ def pods(options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     # Custom fabric component is only supported when using codegen discovery.
     pod 'MyNativeView', :path => "NativeComponentExample"
-    pod 'NativeComponentWithState',  :path => "NativeComponentWithState"
   end
 
   use_react_native!(
