@@ -82,8 +82,6 @@ public class ReactFeatureFlags {
   /** Feature Flag to use overflowInset values provided by Yoga */
   public static boolean useOverflowInset = false;
 
-  public static boolean enableAggressiveEventEmitterCleanup = false;
-
   public static boolean insertZReorderBarriersOnViewGroupChildren = true;
 
   /**
