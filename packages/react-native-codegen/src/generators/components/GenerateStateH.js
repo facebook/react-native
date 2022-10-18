@@ -10,31 +10,16 @@
 
 'use strict';
 
-import type {
-  NamedShape,
-  SchemaType,
-  StateTypeAnnotation,
-} from '../../CodegenSchema';
-const {capitalize} = require('../Utils.js');
-const {
-  getStateConstituents,
-  convertCtorParamToAddressType,
-  convertGettersReturnTypeToAddressType,
-  convertCtorInitToSharedPointers,
-  convertVarTypeToSharedPointer,
-  getLocalImports,
-} = require('./ComponentsGeneratorUtils.js');
+import type {SchemaType} from '../../CodegenSchema';
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
 const FileTemplate = ({
   libraryName,
-  imports,
   stateClasses,
 }: {
   libraryName: string,
-  imports: string,
   stateClasses: string,
 }) =>
   `
@@ -48,15 +33,11 @@ const FileTemplate = ({
  */
 #pragma once
 
-#include <react/renderer/components/${libraryName}/Props.h>
-
 #ifdef ANDROID
 #include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
-
-${imports}
 
 namespace facebook {
 namespace react {
@@ -67,33 +48,11 @@ ${stateClasses}
 } // namespace facebook
 `.trim();
 
-const StateTemplate = ({
-  stateName,
-  ctorParams,
-  ctorInits,
-  getters,
-  stateProps,
-}: {
-  stateName: string,
-  ctorParams: string,
-  ctorInits: string,
-  getters: string,
-  stateProps: string,
-}) => {
-  let stateWithParams = '';
-  if (ctorParams.length > 0) {
-    stateWithParams = `${stateName}State(
-      ${ctorParams})
-    : ${ctorInits}{};`;
-  }
-
-  return `
+const StateTemplate = ({stateName}: {stateName: string}) =>
+  `
 class ${stateName}State {
 public:
-  ${stateWithParams}
   ${stateName}State() = default;
-
-  ${getters}
 
 #ifdef ANDROID
   ${stateName}State(${stateName}State const &previousState, folly::dynamic data){};
@@ -104,68 +63,8 @@ public:
     return MapBufferBuilder::EMPTY();
   };
 #endif
-
-private:
-  ${stateProps}
 };
 `.trim();
-};
-
-function sanitize(stringToSanitize: string, endString: string) {
-  if (stringToSanitize.endsWith(endString)) {
-    return stringToSanitize.slice(0, -1 * endString.length);
-  }
-  return stringToSanitize;
-}
-
-function generateStrings(
-  componentName: string,
-  state: $ReadOnlyArray<NamedShape<StateTypeAnnotation>>,
-): {
-  ctorParams: string,
-  ctorInits: string,
-  getters: string,
-  stateProps: string,
-} {
-  let ctorParams = '';
-  let ctorInits = '';
-  let getters = '';
-  let stateProps = '';
-
-  state.forEach(stateShape => {
-    const {name, varName, type, defaultValue} = getStateConstituents(
-      componentName,
-      stateShape,
-    );
-
-    ctorParams += `${convertCtorParamToAddressType(type)} ${name},\n      `;
-    ctorInits += `${varName}(${convertCtorInitToSharedPointers(
-      type,
-      name,
-    )}),\n      `;
-    getters += `${convertGettersReturnTypeToAddressType(type)} get${capitalize(
-      name,
-    )}() const;\n  `;
-    let finalDefaultValue = defaultValue;
-    if (defaultValue.length > 0) {
-      finalDefaultValue = `{${defaultValue}}`;
-    }
-    stateProps += `  ${convertVarTypeToSharedPointer(
-      type,
-    )} ${varName}${finalDefaultValue};\n  `;
-  });
-
-  // Sanitize
-  ctorParams = sanitize(ctorParams.trim(), ',');
-  ctorInits = sanitize(ctorInits.trim(), ',');
-
-  return {
-    ctorParams,
-    ctorInits,
-    getters,
-    stateProps,
-  };
-}
 
 module.exports = {
   generate(
@@ -175,8 +74,6 @@ module.exports = {
     assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'States.h';
-
-    const allImports: Set<string> = new Set();
 
     const stateClasses = Object.keys(schema.modules)
       .map(moduleName => {
@@ -190,39 +87,14 @@ module.exports = {
         if (components == null) {
           return null;
         }
+
         return Object.keys(components)
           .map(componentName => {
             const component = components[componentName];
             if (component.interfaceOnly === true) {
               return null;
             }
-
-            const state = component.state;
-            if (!state) {
-              return StateTemplate({
-                stateName: componentName,
-                ctorParams: '',
-                ctorInits: '',
-                getters: '',
-                stateProps: '',
-              });
-            }
-
-            const {ctorParams, ctorInits, getters, stateProps} =
-              generateStrings(componentName, state);
-
-            const imports = getLocalImports(state);
-
-            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            imports.forEach(allImports.add, allImports);
-
-            return StateTemplate({
-              stateName: componentName,
-              ctorParams,
-              ctorInits,
-              getters,
-              stateProps,
-            });
+            return StateTemplate({stateName: componentName});
           })
           .filter(Boolean)
           .join('\n\n');
@@ -232,7 +104,6 @@ module.exports = {
 
     const template = FileTemplate({
       libraryName,
-      imports: Array.from(allImports).sort().join('\n'),
       stateClasses,
     });
     return new Map([[fileName, template]]);
