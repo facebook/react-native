@@ -445,34 +445,25 @@ module.exports = {
       );
   },
   // Deprecated Prop Types
-  get ColorPropType(): $FlowFixMe {
-    console.warn(
-      'ColorPropType will be removed from React Native. Migrate to ' +
-        "ColorPropType exported from 'deprecated-react-native-prop-types'.",
-    );
-    return require('deprecated-react-native-prop-types').ColorPropType;
-  },
-  get EdgeInsetsPropType(): $FlowFixMe {
-    console.warn(
-      'EdgeInsetsPropType will be removed from React Native. Migrate to ' +
-        "EdgeInsetsPropType exported from 'deprecated-react-native-prop-types'.",
-    );
-    return require('deprecated-react-native-prop-types').EdgeInsetsPropType;
-  },
-  get PointPropType(): $FlowFixMe {
-    console.warn(
-      'PointPropType will be removed from React Native. Migrate to ' +
-        "PointPropType exported from 'deprecated-react-native-prop-types'.",
-    );
-    return require('deprecated-react-native-prop-types').PointPropType;
-  },
-  get ViewPropTypes(): $FlowFixMe {
-    console.warn(
-      'ViewPropTypes will be removed from React Native. Migrate to ' +
-        "ViewPropTypes exported from 'deprecated-react-native-prop-types'.",
-    );
-    return require('deprecated-react-native-prop-types').ViewPropTypes;
-  },
+get ColorPropType(): $FlowFixMe {
+  console.warn('');
+  return require('deprecated-react-native-prop-types').ColorPropType;
+},
+
+get EdgeInsetsPropType(): $FlowFixMe {
+  console.warn('');
+  return require('deprecated-react-native-prop-types').EdgeInsetsPropType;
+},
+
+get PointPropType(): $FlowFixMe {
+  console.warn('');
+  return require('deprecated-react-native-prop-types').PointPropType;
+},
+
+get ViewPropTypes(): $FlowFixMe {
+  console.warn('');
+  return require('deprecated-react-native-prop-types').ViewPropTypes;
+},
 };
 
 if (__DEV__) {
