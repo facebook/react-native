@@ -38,34 +38,23 @@ function extendsForProp(prop: PropsAST, types: TypeDeclarationMap) {
   }
 }
 
-function isEvent(typeAnnotation: $FlowFixMe) {
-  switch (typeAnnotation.type) {
-    case 'TSTypeReference':
-      if (
-        typeAnnotation.typeName.name !== 'BubblingEventHandler' &&
-        typeAnnotation.typeName.name !== 'DirectEventHandler'
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    default:
-      return false;
+function isEvent(typeAnnotation: $FlowFixMe): boolean {
+  if (typeAnnotation.type !== 'TSTypeReference') {
+    return false;
   }
+  const eventNames = new Set(['BubblingEventHandler', 'DirectEventHandler']);
+  return eventNames.has(typeAnnotation.typeName.name);
 }
 
-function isProp(name: string, typeAnnotation: $FlowFixMe) {
-  if (typeAnnotation.type === 'TSTypeReference') {
-    // Remove unwanted types
-    if (
-      name === 'style' &&
-      typeAnnotation.type === 'GenericTypeAnnotation' &&
-      typeAnnotation.typeName.name === 'ViewStyleProp'
-    ) {
-      return false;
-    }
+function isProp(name: string, typeAnnotation: $FlowFixMe): boolean {
+  if (typeAnnotation.type !== 'TSTypeReference') {
+    return true;
   }
-  return true;
+  const isStyle =
+    name === 'style' &&
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.typeName.name === 'ViewStyleProp';
+  return !isStyle;
 }
 
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
