@@ -633,6 +633,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     // See https://code.google.com/p/android/issues/detail?id=191754 for more info
     Drawable background = view.getBackground();
     Drawable drawableToMutate = background;
+
+    if (background == null) {
+      return;
+    }
+
     if (background.getConstantState() != null) {
       try {
         drawableToMutate = background.mutate();
