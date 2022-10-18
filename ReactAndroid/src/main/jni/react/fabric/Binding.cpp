@@ -440,9 +440,6 @@ void Binding::installFabricUIManager(
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
 
-  dispatchPreallocationInBackground_ = reactNativeConfig_->getBool(
-      "react_native_new_architecture:dispatch_preallocation_in_bg");
-
   // Props setter pattern feature
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
@@ -549,11 +546,7 @@ void Binding::preallocateView(
     mountingManager->preallocateShadowView(surfaceId, shadowView);
   };
 
-  if (dispatchPreallocationInBackground_) {
-    backgroundExecutor_(preallocationFunction);
-  } else {
-    preallocationFunction();
-  }
+  preallocationFunction();
 }
 
 void Binding::schedulerDidDispatchCommand(
