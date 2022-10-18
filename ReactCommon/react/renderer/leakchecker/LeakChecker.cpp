@@ -12,8 +12,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 LeakChecker::LeakChecker(RuntimeExecutor runtimeExecutor)
     : runtimeExecutor_(std::move(runtimeExecutor)) {}
@@ -58,5 +57,4 @@ void LeakChecker::checkSurfaceForLeaks(SurfaceId surfaceId) const {
   registry_.removeFamiliesWithSurfaceId(surfaceId);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

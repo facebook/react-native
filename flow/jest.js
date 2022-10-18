@@ -810,7 +810,7 @@ type JestObjectType = {
    * Returns a new, unused mock function. Optionally takes a mock
    * implementation.
    */
-  fn<TArguments: $ReadOnlyArray<mixed>, TReturn>(
+  fn<TArguments: $ReadOnlyArray<mixed> = $ReadOnlyArray<mixed>, TReturn = any>(
     implementation?: (...args: TArguments) => TReturn,
   ): JestMockFn<TArguments, TReturn>,
   /**

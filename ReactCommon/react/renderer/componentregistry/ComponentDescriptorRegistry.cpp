@@ -16,8 +16,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
     ComponentDescriptorParameters parameters,
@@ -160,5 +159,4 @@ ComponentDescriptorRegistry::getFallbackComponentDescriptor() const {
   return _fallbackComponentDescriptor;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

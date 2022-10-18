@@ -8,7 +8,6 @@
 #include <AppSpecs.h>
 #include <DefaultComponentsRegistry.h>
 #include <DefaultTurboModuleManagerDelegate.h>
-#include <RNTNativeComponentWithStateCustomComponentDescriptor.h>
 #include <ReactCommon/SampleTurboModuleSpec.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
@@ -22,8 +21,6 @@ void registerComponents(
     std::shared_ptr<ComponentDescriptorProviderRegistry const> registry) {
   registry->add(concreteComponentDescriptorProvider<
                 RNTMyNativeViewComponentDescriptor>());
-  registry->add(concreteComponentDescriptorProvider<
-                RNTNativeComponentWithStateCustomComponentDescriptor>());
 }
 
 std::shared_ptr<TurboModule> provideModules(

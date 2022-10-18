@@ -38,8 +38,7 @@ enum class NoBreadcrumb {};
   {}
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Extremely simple and naive implementation of a map.
@@ -1638,5 +1637,4 @@ ShadowViewMutation::List calculateShadowViewMutations(
   return mutations;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

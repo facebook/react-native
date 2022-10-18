@@ -56,8 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Sets selection intext input if both start and end are within range of the text input.
  **/
-- (void)setSelectionStart:(NSInteger)start
-             selectionEnd:(NSInteger)end;
+- (void)setSelectionStart:(NSInteger)start selectionEnd:(NSInteger)end;
 
 @end
 

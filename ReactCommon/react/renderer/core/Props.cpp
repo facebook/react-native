@@ -12,8 +12,7 @@
 #include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Props::Props(
     const PropsParserContext &context,
@@ -27,8 +26,7 @@ Props::Props(
                                                        rawProps,
                                                        "nativeID",
                                                        sourceProps.nativeId,
-                                                       {})),
-      revision(sourceProps.revision + 1)
+                                                       {}))
 #ifdef ANDROID
       ,
       rawProps(
@@ -50,5 +48,4 @@ void Props::setProp(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -14,8 +14,7 @@
 #include <memory>
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::shared_ptr<RuntimeSchedulerBinding>
 RuntimeSchedulerBinding::createAndInstallIfNeeded(
@@ -201,5 +200,4 @@ jsi::Value RuntimeSchedulerBinding::get(
 #endif
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

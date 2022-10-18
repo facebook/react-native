@@ -173,7 +173,7 @@ class VirtualizedSectionList<
     const listHeaderOffset = this.props.ListHeaderComponent ? 1 : 0;
 
     const stickyHeaderIndices = this.props.stickySectionHeadersEnabled
-      ? []
+      ? ([]: Array<number>)
       : undefined;
 
     let itemCount = 0;

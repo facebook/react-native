@@ -30,7 +30,7 @@ export default function DevtoolsOverlay({
   inspectedView: ?HostRef,
 }): React.Node {
   const [inspected, setInspected] = useState<null | {
-    frame: {height: any, left: any, top: any, width: any},
+    frame: {+height: any, +left: any, +top: any, +width: any},
   }>(null);
   const [isInspecting, setIsInspecting] = useState(false);
   const devToolsAgentRef = useRef(null);
@@ -51,6 +51,9 @@ export default function DevtoolsOverlay({
       clearTimeout(hideTimeoutId);
       // Shape of `node` is different in Fabric.
       const component = node.canonical ?? node;
+      if (!component) {
+        return;
+      }
 
       component.measure((x, y, width, height, left, top) => {
         setInspected({
@@ -124,7 +127,7 @@ export default function DevtoolsOverlay({
         locationX,
         locationY,
         viewData => {
-          const {touchedViewTag, closestInstance} = viewData;
+          const {touchedViewTag, closestInstance, frame} = viewData;
           if (closestInstance != null || touchedViewTag != null) {
             if (closestInstance != null) {
               // Fabric
@@ -132,8 +135,9 @@ export default function DevtoolsOverlay({
             } else {
               agent.selectNode(findNodeHandle(touchedViewTag));
             }
-            agent.stopInspectingNative(true);
-            setIsInspecting(false);
+            setInspected({
+              frame,
+            });
             return true;
           }
           return false;
@@ -142,6 +146,16 @@ export default function DevtoolsOverlay({
     },
     [inspectedView],
   );
+
+  const onResponderRelease = useCallback(() => {
+    const agent = devToolsAgentRef.current;
+    if (agent == null) {
+      return;
+    }
+    agent.stopInspectingNative(true);
+    setIsInspecting(false);
+    setInspected(null);
+  }, []);
 
   const shouldSetResponser = useCallback(
     (e: PressEvent): boolean => {
@@ -157,6 +171,7 @@ export default function DevtoolsOverlay({
       <View
         onStartShouldSetResponder={shouldSetResponser}
         onResponderMove={findViewForTouchEvent}
+        onResponderRelease={onResponderRelease}
         nativeID="devToolsInspectorOverlay"
         style={[styles.inspector, {height: Dimensions.get('window').height}]}>
         {highlight}

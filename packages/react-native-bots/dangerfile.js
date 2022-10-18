@@ -109,4 +109,6 @@ if (isMergeRefStable) {
   });
 }
 
+// Ensures that eslint is run from root folder and that it can find .eslintrc
+process.chdir('../../');
 eslint.default();

@@ -352,6 +352,12 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   textContentType?: ?TextContentType,
+
+  /**
+   * Set line break strategy on iOS.
+   * @platform ios
+   */
+  lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
 |}>;
 
 type AndroidProps = $ReadOnly<{|

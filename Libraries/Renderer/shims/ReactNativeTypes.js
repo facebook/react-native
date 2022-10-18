@@ -6,7 +6,7 @@
  *
  * @noformat
  * @flow strict
- * @generated SignedSource<<d1711869276d3e52d184ac3230988ced>>
+ * @generated SignedSource<<81b3507b34f3a91f9bf71beb0f487340>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -141,6 +141,7 @@ type InspectorDataGetter = (
 }>;
 
 export type InspectorData = $ReadOnly<{
+  closestInstance?: mixed,
   hierarchy: Array<{
     name: ?string,
     getInspectorData: InspectorDataGetter,
@@ -153,7 +154,6 @@ export type InspectorData = $ReadOnly<{
 export type TouchedViewDataAtPoint = $ReadOnly<{
   pointerY: number,
   touchedViewTag?: number,
-  closestInstance?: mixed,
   frame: $ReadOnly<{
     top: number,
     left: number,

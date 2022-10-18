@@ -13,28 +13,27 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTNetworking.h>
-#import <React/RCTUtils.h>
 #import <React/RCTResizeMode.h>
+#import <React/RCTUtils.h>
 
 #import <React/RCTImageUtils.h>
 
-static NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2*1024*1024;
-static NSUInteger RCTImageCacheTotalCostLimit = 20*1024*1024;
+static NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2 * 1024 * 1024;
+static NSUInteger RCTImageCacheTotalCostLimit = 20 * 1024 * 1024;
 
-void RCTSetImageCacheLimits(NSUInteger maxCachableDecodedImageSizeInBytes, NSUInteger imageCacheTotalCostLimit) {
+void RCTSetImageCacheLimits(NSUInteger maxCachableDecodedImageSizeInBytes, NSUInteger imageCacheTotalCostLimit)
+{
   RCTMaxCachableDecodedImageSizeInBytes = maxCachableDecodedImageSizeInBytes;
   RCTImageCacheTotalCostLimit = imageCacheTotalCostLimit;
 }
 
-static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale,
-                                     RCTResizeMode resizeMode)
+static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale, RCTResizeMode resizeMode)
 {
-  return [NSString stringWithFormat:@"%@|%g|%g|%g|%lld",
-          imageTag, size.width, size.height, scale, (long long)resizeMode];
+  return
+      [NSString stringWithFormat:@"%@|%g|%g|%g|%lld", imageTag, size.width, size.height, scale, (long long)resizeMode];
 }
 
-@implementation RCTImageCache
-{
+@implementation RCTImageCache {
   NSOperationQueue *_imageDecodeQueue;
   NSCache *_decodedImageCache;
   NSMutableDictionary *_cacheStaleTimes;
@@ -68,24 +67,18 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   }
 }
 
-- (void)addImageToCache:(UIImage *)image
-                 forKey:(NSString *)cacheKey
+- (void)addImageToCache:(UIImage *)image forKey:(NSString *)cacheKey
 {
   if (!image) {
     return;
   }
   NSInteger bytes = image.reactDecodedImageBytes;
   if (bytes <= RCTMaxCachableDecodedImageSizeInBytes) {
-    [self->_decodedImageCache setObject:image
-                                 forKey:cacheKey
-                                   cost:bytes];
+    [self->_decodedImageCache setObject:image forKey:cacheKey cost:bytes];
   }
 }
 
-- (UIImage *)imageForUrl:(NSString *)url
-                    size:(CGSize)size
-                   scale:(CGFloat)scale
-              resizeMode:(RCTResizeMode)resizeMode
+- (UIImage *)imageForUrl:(NSString *)url size:(CGSize)size scale:(CGFloat)scale resizeMode:(RCTResizeMode)resizeMode
 {
   NSString *cacheKey = RCTCacheKeyForImage(url, size, scale, resizeMode);
   @synchronized(_cacheStaleTimes) {
@@ -118,7 +111,8 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
     NSDate *staleTime;
     NSArray<NSString *> *components = [cacheControl componentsSeparatedByString:@","];
     for (NSString *component in components) {
-      if ([component containsString:@"no-cache"] || [component containsString:@"no-store"] || [component hasSuffix:@"max-age=0"]) {
+      if ([component containsString:@"no-cache"] || [component containsString:@"no-store"] ||
+          [component hasSuffix:@"max-age=0"]) {
         shouldCache = NO;
         break;
       } else {
@@ -153,7 +147,8 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   }
 }
 
-- (NSDate *)dateWithHeaderString:(NSString *)headerDateString {
+- (NSDate *)dateWithHeaderString:(NSString *)headerDateString
+{
   static NSDateFormatter *formatter;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{

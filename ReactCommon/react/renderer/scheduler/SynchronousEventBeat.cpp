@@ -11,8 +11,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 SynchronousEventBeat::SynchronousEventBeat(
     RunLoopObserver::Unique uiRunLoopObserver,
@@ -57,5 +56,4 @@ void SynchronousEventBeat::lockExecutorAndBeat() const {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

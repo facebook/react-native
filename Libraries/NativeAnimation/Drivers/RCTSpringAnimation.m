@@ -26,8 +26,7 @@
 
 const NSTimeInterval MAX_DELTA_TIME = 0.064;
 
-@implementation RCTSpringAnimation
-{
+@implementation RCTSpringAnimation {
   CGFloat _toValue;
   CGFloat _fromValue;
   BOOL _overshootClamping;
@@ -87,7 +86,7 @@ const NSTimeInterval MAX_DELTA_TIME = 0.064;
   _animationHasBegun = YES;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)startAnimation
 {
@@ -99,9 +98,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   _valueNode = nil;
   if (_callback) {
-    _callback(@[@{
-      @"finished": @(_animationHasFinished)
-    }]);
+    _callback(@[ @{@"finished" : @(_animationHasFinished)} ]);
   }
 }
 
@@ -113,7 +110,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   // calculate delta time
-  if(_animationStartTime == -1) {
+  if (_animationStartTime == -1) {
     _t = 0.0;
     _animationStartTime = currentTime;
   } else {
@@ -140,27 +137,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (zeta < 1) {
     // Under damped
     CGFloat envelope = expf(-zeta * omega0 * _t);
-    position =
-      _toValue -
-      envelope *
-      ((v0 + zeta * omega0 * x0) / omega1 * sinf(omega1 * _t) +
-        x0 * cosf(omega1 * _t));
+    position = _toValue - envelope * ((v0 + zeta * omega0 * x0) / omega1 * sinf(omega1 * _t) + x0 * cosf(omega1 * _t));
     // This looks crazy -- it's actually just the derivative of the
     // oscillation function
     velocity =
-      zeta *
-        omega0 *
-        envelope *
-        (sinf(omega1 * _t) * (v0 + zeta * omega0 * x0) / omega1 +
-          x0 * cosf(omega1 * _t)) -
-      envelope *
-        (cosf(omega1 * _t) * (v0 + zeta * omega0 * x0) -
-          omega1 * x0 * sinf(omega1 * _t));
+        zeta * omega0 * envelope * (sinf(omega1 * _t) * (v0 + zeta * omega0 * x0) / omega1 + x0 * cosf(omega1 * _t)) -
+        envelope * (cosf(omega1 * _t) * (v0 + zeta * omega0 * x0) - omega1 * x0 * sinf(omega1 * _t));
   } else {
     CGFloat envelope = expf(-omega0 * _t);
     position = _toValue - envelope * (x0 + (v0 + omega0 * x0) * _t);
-    velocity =
-      envelope * (v0 * (_t * omega0 - 1) + _t * x0 * (omega0 * omega0));
+    velocity = envelope * (v0 * (_t * omega0 - 1) + _t * x0 * (omega0 * omega0));
   }
 
   _lastPosition = position;

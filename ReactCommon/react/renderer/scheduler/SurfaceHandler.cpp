@@ -12,8 +12,7 @@
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/uimanager/UIManager.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using Status = SurfaceHandler::Status;
 
@@ -316,5 +315,4 @@ SurfaceHandler::~SurfaceHandler() noexcept {
   //      deallocation.");
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

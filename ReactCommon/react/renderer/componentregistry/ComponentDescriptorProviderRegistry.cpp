@@ -7,8 +7,7 @@
 
 #include "ComponentDescriptorProviderRegistry.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void ComponentDescriptorProviderRegistry::add(
     const ComponentDescriptorProvider &provider) const {
@@ -81,5 +80,4 @@ ComponentDescriptorProviderRegistry::createComponentDescriptorRegistry(
   return registry;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

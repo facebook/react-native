@@ -13,8 +13,7 @@
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/graphics/conversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static TextAttributes convertRawProp(
     PropsParserContext const &context,
@@ -106,6 +105,12 @@ static TextAttributes convertRawProp(
       "baseWritingDirection",
       sourceTextAttributes.baseWritingDirection,
       defaultTextAttributes.baseWritingDirection);
+  textAttributes.lineBreakStrategy = convertRawProp(
+      context,
+      rawProps,
+      "lineBreakStrategyIOS",
+      sourceTextAttributes.lineBreakStrategy,
+      defaultTextAttributes.lineBreakStrategy);
 
   // Decoration
   textAttributes.textDecorationColor = convertRawProp(
@@ -248,6 +253,12 @@ void BaseTextProps::setProp(
         defaults,
         value,
         textAttributes,
+        lineBreakStrategy,
+        "lineBreakStrategyIOS");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
         textDecorationColor,
         "textDecorationColor");
     REBUILD_FIELD_SWITCH_CASE(
@@ -291,5 +302,4 @@ SharedDebugStringConvertibleList BaseTextProps::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

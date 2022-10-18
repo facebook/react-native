@@ -13,8 +13,7 @@
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 AccessibilityProps::AccessibilityProps(
     const PropsParserContext &context,
@@ -254,5 +253,4 @@ SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
 }
 #endif // RN_DEBUG_STRING_CONVERTIBLE
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
