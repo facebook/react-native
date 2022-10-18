@@ -82,8 +82,6 @@ public class ReactFeatureFlags {
   /** Feature Flag to use overflowInset values provided by Yoga */
   public static boolean useOverflowInset = false;
 
-  public static boolean insertZReorderBarriersOnViewGroupChildren = true;
-
   public static boolean dispatchPointerEvents = false;
 
   /** Feature Flag to enable the pending event queue in fabric before mounting views */
