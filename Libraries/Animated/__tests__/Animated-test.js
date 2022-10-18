@@ -31,6 +31,10 @@ describe('Animated tests', () => {
   describe('Animated', () => {
     it('works end to end', () => {
       const anim = new Animated.Value(0);
+      const translateAnim = anim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [100, 200],
+      });
 
       const callback = jest.fn();
 
@@ -41,10 +45,10 @@ describe('Animated tests', () => {
             opacity: anim,
             transform: [
               {
-                translateX: anim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [100, 200],
-                }),
+                translate: [translateAnim, translateAnim],
+              },
+              {
+                translateX: translateAnim,
               },
               {scale: anim},
             ],
@@ -61,7 +65,7 @@ describe('Animated tests', () => {
         style: {
           backgroundColor: 'red',
           opacity: 0,
-          transform: [{translateX: 100}, {scale: 0}],
+          transform: [{translate: [100, 100]}, {translateX: 100}, {scale: 0}],
           shadowOffset: {
             width: 0,
             height: 0,
@@ -83,7 +87,7 @@ describe('Animated tests', () => {
         style: {
           backgroundColor: 'red',
           opacity: 0.5,
-          transform: [{translateX: 150}, {scale: 0.5}],
+          transform: [{translate: [150, 150]}, {translateX: 150}, {scale: 0.5}],
           shadowOffset: {
             width: 0.5,
             height: 0.5,

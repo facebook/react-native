@@ -9,11 +9,11 @@
  */
 
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
-import type {DisplayModeType} from './DisplayMode';
 
 import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
 import AppContainer from './AppContainer';
+import DisplayMode, {type DisplayModeType} from './DisplayMode';
 import getCachedComponentWithDebugName from './getCachedComponentWithDebugName';
 import * as Renderer from './RendererProxy';
 import invariant from 'invariant';
@@ -21,6 +21,11 @@ import * as React from 'react';
 
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 import '../Utilities/BackHandler';
+
+type OffscreenType = React.AbstractComponent<{
+  mode: 'visible' | 'hidden',
+  children: React.Node,
+}>;
 
 export default function renderApplication<Props: Object>(
   RootComponent: React.ComponentType<Props>,
@@ -34,6 +39,7 @@ export default function renderApplication<Props: Object>(
   debugName?: string,
   displayMode?: ?DisplayModeType,
   useConcurrentRoot?: boolean,
+  useOffscreen?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
@@ -61,6 +67,19 @@ export default function renderApplication<Props: Object>(
       <RootComponentWithMeaningfulName>
         {renderable}
       </RootComponentWithMeaningfulName>
+    );
+  }
+
+  if (useOffscreen && displayMode != null) {
+    // $FlowFixMe[incompatible-type]
+    // $FlowFixMe[prop-missing]
+    const Offscreen: OffscreenType = React.unstable_Offscreen;
+
+    renderable = (
+      <Offscreen
+        mode={displayMode === DisplayMode.VISIBLE ? 'visible' : 'hidden'}>
+        {renderable}
+      </Offscreen>
     );
   }
 

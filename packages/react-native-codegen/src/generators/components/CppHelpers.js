@@ -61,6 +61,7 @@ function getImports(
     name:
       | 'ColorPrimitive'
       | 'EdgeInsetsPrimitive'
+      | 'ImageRequestPrimitive'
       | 'ImageSourcePrimitive'
       | 'PointPrimitive',
   ) {
@@ -70,6 +71,8 @@ function getImports(
       case 'PointPrimitive':
         return;
       case 'EdgeInsetsPrimitive':
+        return;
+      case 'ImageRequestPrimitive':
         return;
       case 'ImageSourcePrimitive':
         imports.add('#include <react/renderer/components/image/conversions.h>');
@@ -162,6 +165,8 @@ function convertDefaultTypeToString(
         case 'ColorPrimitive':
           return '';
         case 'ImageSourcePrimitive':
+          return '';
+        case 'ImageRequestPrimitive':
           return '';
         case 'PointPrimitive':
           return '';

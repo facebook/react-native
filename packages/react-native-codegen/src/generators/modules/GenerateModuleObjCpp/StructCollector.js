@@ -32,7 +32,7 @@ const {capitalize} = require('../../Utils');
 const {
   unwrapNullable,
   wrapNullable,
-} = require('../../../parsers/flow/modules/utils');
+} = require('../../../parsers/parsers-commons');
 
 type StructContext = 'CONSTANTS' | 'REGULAR';
 

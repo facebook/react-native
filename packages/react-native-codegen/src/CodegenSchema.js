@@ -183,7 +183,8 @@ export type ReservedPropTypeAnnotation = $ReadOnly<{
     | 'ColorPrimitive'
     | 'ImageSourcePrimitive'
     | 'PointPrimitive'
-    | 'EdgeInsetsPrimitive',
+    | 'EdgeInsetsPrimitive'
+    | 'ImageRequestPrimitive',
 }>;
 
 export type StateTypeAnnotation = PropTypeAnnotation;

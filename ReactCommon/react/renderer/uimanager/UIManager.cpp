@@ -121,10 +121,6 @@ ShadowNode::Shared UIManager::cloneNode(
           /* .children = */ children,
       });
 
-  if (delegate_ != nullptr) {
-    delegate_->uiManagerDidCloneShadowNode(shadowNode, *clonedShadowNode);
-  }
-
   return clonedShadowNode;
 }
 

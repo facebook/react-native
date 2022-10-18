@@ -12,8 +12,7 @@
 
 using namespace facebook;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Public API to install the NativeComponentRegistryBinding.
@@ -49,7 +48,7 @@ bool NativeComponentRegistryBinding::hasComponent(const std::string &name) {
 
 jsi::Value NativeComponentRegistryBinding::jsProxy(
     jsi::Runtime &runtime,
-    const jsi::Value &thisVal,
+    const jsi::Value & /*thisVal*/,
     const jsi::Value *args,
     size_t count) {
   if (count != 1) {
@@ -64,5 +63,4 @@ jsi::Value NativeComponentRegistryBinding::jsProxy(
   return {result};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -12,6 +12,7 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
+import ReactNativeFeatureFlags from '../../ReactNative/ReactNativeFeatureFlags';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import invariant from 'invariant';
 
@@ -29,6 +30,9 @@ export default class AnimatedNode {
   __nativeAnimatedValueListener: ?any;
   __attach(): void {}
   __detach(): void {
+    if (ReactNativeFeatureFlags.removeListenersOnDetach()) {
+      this.removeAllListeners();
+    }
     if (this.__isNative && this.__nativeTag != null) {
       NativeAnimatedHelper.API.dropAnimatedNode(this.__nativeTag);
       this.__nativeTag = undefined;

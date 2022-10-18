@@ -4905,10 +4905,10 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.2.tgz#64bfed5cb68fe3ca78b3eb214ad97b63bedce561"
   integrity sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==
 
-flow-bin@^0.188.1:
-  version "0.188.1"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.188.1.tgz#1043ec955eec8cd402ec9fb4c49054bf14368c06"
-  integrity sha512-tQehbFoeXKz/MZqEClBB2ezuT1HHKoBlv6t8mAoUdFk1PaFhqcEmjx+1Bn0xygykrqHy0FY6C3z+AGleOnFbdQ==
+flow-bin@^0.190.0:
+  version "0.190.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.190.0.tgz#cfc50e1474facf8150232a6c498fe66a6bb75969"
+  integrity sha512-Qo3bvN3cmGFXsq63ZxcHFZXQDvgx84fCuq8cXuKk5xbvuebBGwMqS+ku/rH+gEkciRrcTYrXqoSzb9b6ShcoJg==
 
 flow-parser@0.*, flow-parser@^0.185.0:
   version "0.185.0"
@@ -9460,7 +9460,7 @@ ws@>=7.4.6:
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.9.0.tgz#2a994bb67144be1b53fe2d23c53c028adeb7f45e"
   integrity sha512-Ja7nszREasGaYUYCI2k4lCKIRTt+y7XuqVoHR44YpI49TtryyqbqvDMn5eqfW7e6HzTukDRIsXqzVHScqRcafg==
 
-ws@^6.1.4:
+ws@^6.2.2:
   version "6.2.2"
   resolved "https://registry.yarnpkg.com/ws/-/ws-6.2.2.tgz#dd5cdbd57a9979916097652d78f1cc5faea0c32e"
   integrity sha512-zmhltoSR8u1cnDsD43TX59mzoMZsLKqUweyYBAIvTngR3shc0W6aOZylZmq/7hqyVxPdi+5Ud2QInblgyE72fw==

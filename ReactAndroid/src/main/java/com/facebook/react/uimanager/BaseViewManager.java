@@ -27,6 +27,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,9 +69,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, T view) {
     // Reset tags
     view.setTag(null);
-    view.setTag(R.id.pointer_enter, null);
-    view.setTag(R.id.pointer_leave, null);
-    view.setTag(R.id.pointer_move, null);
+    view.setTag(R.id.pointer_events, null);
     view.setTag(R.id.react_test_id, null);
     view.setTag(R.id.view_tag_native_id, null);
     view.setTag(R.id.labelled_by, null);
@@ -639,55 +638,63 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     FLog.w(ReactConstants.TAG, "%s doesn't support property '%s'", getName(), propName);
   }
 
+  private static void setPointerEventsFlag(
+      @NonNull View view, PointerEventHelper.EVENT event, boolean isListening) {
+    Integer tag = (Integer) view.getTag(R.id.pointer_events);
+    int currentValue = tag != null ? tag.intValue() : 0;
+    int flag = 1 << event.ordinal();
+    view.setTag(R.id.pointer_events, isListening ? (currentValue | flag) : (currentValue & ~flag));
+  }
+
   /* Experimental W3C Pointer events start */
   @ReactProp(name = "onPointerEnter")
   public void setPointerEnter(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_enter, value);
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.ENTER, value);
   }
 
   @ReactProp(name = "onPointerEnterCapture")
   public void setPointerEnterCapture(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_enter_capture, value);
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.ENTER_CAPTURE, value);
   }
 
   @ReactProp(name = "onPointerOver")
   public void setPointerOver(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_over, value);
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.OVER, value);
   }
 
   @ReactProp(name = "onPointerOverCapture")
   public void setPointerOverCapture(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_over_capture, value);
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.OVER_CAPTURE, value);
   }
 
   @ReactProp(name = "onPointerOut")
   public void setPointerOut(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_out, value);
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.OUT, value);
   }
 
   @ReactProp(name = "onPointerOutCapture")
   public void setPointerOutCapture(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_out_capture, value);
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.OUT_CAPTURE, value);
   }
 
   @ReactProp(name = "onPointerLeave")
   public void setPointerLeave(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_leave, value);
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.LEAVE, value);
   }
 
   @ReactProp(name = "onPointerLeaveCapture")
   public void setPointerLeaveCapture(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_leave_capture, value);
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.LEAVE_CAPTURE, value);
   }
 
   @ReactProp(name = "onPointerMove")
   public void setPointerMove(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_move, value);
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.MOVE, value);
   }
 
   @ReactProp(name = "onPointerMoveCapture")
   public void setPointerMoveCapture(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_move_capture, value);
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.MOVE_CAPTURE, value);
   }
 
   /* Experimental W3C Pointer events end */

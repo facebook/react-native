@@ -11,6 +11,8 @@
 
 'use strict';
 
+import type {StackFrame} from '../../../Core/NativeExceptionsManager';
+
 const {parseLogBoxException, parseLogBoxLog} = require('../parseLogBoxLog');
 
 describe('parseLogBoxLog', () => {
@@ -230,7 +232,7 @@ describe('parseLogBoxLog', () => {
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: [],
+      stack: ([]: Array<StackFrame>),
       id: 0,
       isFatal: true,
     };
@@ -267,7 +269,7 @@ describe('parseLogBoxLog', () => {
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: [],
+      stack: ([]: Array<StackFrame>),
       id: 0,
       isFatal: true,
     };
@@ -327,7 +329,7 @@ If you are sure the module exists, try these steps:
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: [],
+      stack: ([]: Array<StackFrame>),
       id: 0,
       isFatal: true,
     };
@@ -381,7 +383,7 @@ If you are sure the module exists, try these steps:
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: [],
+      stack: ([]: Array<StackFrame>),
       id: 0,
       isFatal: true,
     };
@@ -429,7 +431,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: [],
+      stack: ([]: Array<StackFrame>),
       id: 0,
       isFatal: true,
     };
@@ -475,7 +477,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets
       name: '',
       isComponentError: false,
       componentStack: '',
-      stack: [],
+      stack: ([]: Array<StackFrame>),
       id: 0,
       isFatal: true,
     };

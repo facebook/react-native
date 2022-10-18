@@ -216,7 +216,7 @@ function handleLibrariesFromReactNativeConfig(
     `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${rnConfigFileName}`,
   );
 
-  const rnConfigFilePath = path.join(appRootDir, rnConfigFileName);
+  const rnConfigFilePath = path.resolve(appRootDir, rnConfigFileName);
 
   if (fs.existsSync(rnConfigFilePath)) {
     const rnConfig = require(rnConfigFilePath);
@@ -311,6 +311,7 @@ function generateSchema(tmpDir, library, node, codegenCliPath) {
 
   console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
   // Generate one schema for the entire library...
+  // TODO: restore the `--platform ios` parameters as soon as we publish the codegen package.
   executeNodeScript(
     node,
     `${path.join(

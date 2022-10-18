@@ -74,12 +74,12 @@ if (argv.target === 'RNTester') {
     console.info(
       `We're going to test the ${
         argv.hermes ? 'Hermes' : 'JSC'
-      } version of RNTester iOS`,
+      } version of RNTester iOS with the new Architecture enabled`,
     );
     exec(
       `cd packages/rn-tester && USE_HERMES=${
         argv.hermes ? 1 : 0
-      } bundle exec pod install --ansi`,
+      } RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
 
     // if everything succeeded so far, we can launch Metro and the app
@@ -98,7 +98,7 @@ if (argv.target === 'RNTester') {
     console.info(
       `We're going to test the ${
         argv.hermes ? 'Hermes' : 'JSC'
-      } version of RNTester Android`,
+      } version of RNTester Android with the new Architecture enabled`,
     );
     exec(
       `./gradlew :packages:rn-tester:android:app:${

@@ -8,7 +8,7 @@
  * @format
  */
 
-import * as Systrace from './Systrace';
+import typeof * as SystraceModule from './Systrace';
 
 const TRACE_TAG_REACT_APPS = 1 << 17; // eslint-disable-line no-bitwise
 
@@ -123,6 +123,16 @@ export function counterEvent(eventName: EventName, value: number): void {
 }
 
 if (__DEV__) {
+  const Systrace: SystraceModule = {
+    isEnabled,
+    setEnabled,
+    beginEvent,
+    endEvent,
+    beginAsyncEvent,
+    endAsyncEvent,
+    counterEvent,
+  };
+
   // The metro require polyfill can not have dependencies (true for all polyfills).
   // Ensure that `Systrace` is available in polyfill by exposing it globally.
   global[(global.__METRO_GLOBAL_PREFIX__ || '') + '__SYSTRACE'] = Systrace;

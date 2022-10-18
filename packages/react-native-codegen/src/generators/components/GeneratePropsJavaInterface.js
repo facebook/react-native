@@ -97,6 +97,9 @@ function getJavaValueForProp(
         case 'ImageSourcePrimitive':
           addNullable(imports);
           return '@Nullable ReadableMap value';
+        case 'ImageRequestPrimitive':
+          addNullable(imports);
+          return '@Nullable ReadableMap value';
         case 'PointPrimitive':
           addNullable(imports);
           return '@Nullable ReadableMap value';

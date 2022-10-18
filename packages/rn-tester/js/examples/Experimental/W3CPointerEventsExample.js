@@ -20,7 +20,10 @@ import PointerEventAttributesNoHoverPointers from './W3CPointerEventPlatformTest
 import PointerEventPointerMoveOnChordedMouseButton from './W3CPointerEventPlatformTests/PointerEventPointerMoveOnChordedMouseButton';
 import PointerEventPointerMoveAcross from './W3CPointerEventPlatformTests/PointerEventPointerMoveAcross';
 import PointerEventPointerMoveEventOrder from './W3CPointerEventPlatformTests/PointerEventPointerMoveEventOrder';
+import PointerEventPointerMoveBetween from './W3CPointerEventPlatformTests/PointerEventPointerMoveBetween';
+import PointerEventPointerOverOut from './W3CPointerEventPlatformTests/PointerEventPointerOverOut';
 import EventfulView from './W3CPointerEventsEventfulView';
+import ManyPointersPropertiesExample from './Compatibility/ManyPointersPropertiesExample';
 
 function AbsoluteChildExample({log}: {log: string => void}) {
   return (
@@ -149,6 +152,78 @@ export default {
   showIndividualExamples: true,
   examples: [
     {
+      name: 'pointerevent_attributes_hoverable_pointers',
+      description: '',
+      title: 'WPT: Pointer Events hoverable pointer attributes test',
+      render(): React.Node {
+        return <PointerEventAttributesHoverablePointers />;
+      },
+    },
+    {
+      name: 'pointerevent_attributes_nohover_pointers',
+      description: '',
+      title: 'WPT: Pointer Events no-hover pointer attributes test',
+      render(): React.Node {
+        return <PointerEventAttributesNoHoverPointers />;
+      },
+    },
+    {
+      name: 'pointerevent_pointermove',
+      description: '',
+      title: 'WPT: PointerMove test',
+      render(): React.Node {
+        return <PointerEventPointerMove />;
+      },
+    },
+    {
+      name: 'pointerevent_primary_touch_pointer',
+      description: '',
+      title: 'WPT: Pointer Event primary touch pointer test',
+      render(): React.Node {
+        return <PointerEventPrimaryTouchPointer />;
+      },
+    },
+    {
+      name: 'pointerevent_pointermove_on_chorded_mouse_button',
+      description: '',
+      title: 'WPT: PointerEvents pointermove on button state changes',
+      render(): React.Node {
+        return <PointerEventPointerMoveOnChordedMouseButton />;
+      },
+    },
+    {
+      name: 'pointerevent_pointermove_across',
+      description: '',
+      title: 'WPT: Pointermove handling across elements',
+      render(): React.Node {
+        return <PointerEventPointerMoveAcross />;
+      },
+    },
+    {
+      name: 'pointerevent_pointermove_event_order',
+      description: '',
+      title: 'WPT: PointerEvent - pointermove event order',
+      render(): React.Node {
+        return <PointerEventPointerMoveEventOrder />;
+      },
+    },
+    {
+      name: 'pointerevent_pointermove_between',
+      description: '',
+      title: 'WPT: Pointermove handling between elements',
+      render(): React.Node {
+        return <PointerEventPointerMoveBetween />;
+      },
+    },
+    {
+      name: 'pointerevent_pointerover_out',
+      description: '',
+      title: 'WPT: PointerOver/PointerOut handling',
+      render(): React.Node {
+        return <PointerEventPointerOverOut />;
+      },
+    },
+    {
       name: 'relative',
       description: 'Children laid out using relative positioning',
       title: 'Relative Child',
@@ -164,63 +239,8 @@ export default {
         return <PointerEventScaffolding Example={AbsoluteChildExample} />;
       },
     },
-    {
-      name: 'pointerevent_attributes_hoverable_pointers',
-      description: '',
-      title: 'Pointer Events hoverable pointer attributes test',
-      render(): React.Node {
-        return <PointerEventAttributesHoverablePointers />;
-      },
-    },
-    {
-      name: 'pointerevent_attributes_nohover_pointers',
-      description: '',
-      title: 'Pointer Events no-hover pointer attributes test',
-      render(): React.Node {
-        return <PointerEventAttributesNoHoverPointers />;
-      },
-    },
-    {
-      name: 'pointerevent_pointermove',
-      description: '',
-      title: 'PointerMove test',
-      render(): React.Node {
-        return <PointerEventPointerMove />;
-      },
-    },
-    {
-      name: 'pointerevent_primary_touch_pointer',
-      description: '',
-      title: 'Pointer Event primary touch pointer test',
-      render(): React.Node {
-        return <PointerEventPrimaryTouchPointer />;
-      },
-    },
-    {
-      name: 'pointerevent_pointermove_on_chorded_mouse_button',
-      description: '',
-      title: 'PointerEvents pointermove on button state changes',
-      render(): React.Node {
-        return <PointerEventPointerMoveOnChordedMouseButton />;
-      },
-    },
-    {
-      name: 'pointerevent_pointermove_across',
-      description: '',
-      title: 'Pointermove handling across elements',
-      render(): React.Node {
-        return <PointerEventPointerMoveAcross />;
-      },
-    },
-    {
-      name: 'pointerevent_pointermove_event_order',
-      description: '',
-      title: 'PointerEvent - pointermove event order',
-      render(): React.Node {
-        return <PointerEventPointerMoveEventOrder />;
-      },
-    },
     CompatibilityAnimatedPointerMove,
     CompatibilityNativeGestureHandling,
+    ManyPointersPropertiesExample,
   ],
 };

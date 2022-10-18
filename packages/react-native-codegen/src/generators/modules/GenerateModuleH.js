@@ -21,7 +21,7 @@ import type {
 import type {AliasResolver} from './Utils';
 const {createAliasResolver, getModules} = require('./Utils');
 const {indent} = require('../Utils');
-const {unwrapNullable} = require('../../parsers/flow/modules/utils');
+const {unwrapNullable} = require('../../parsers/parsers-commons');
 
 type FilesOutput = Map<string, string>;
 

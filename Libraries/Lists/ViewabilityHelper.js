@@ -214,7 +214,7 @@ class ViewabilityHelper {
     ) {
       return;
     }
-    let viewableIndices = [];
+    let viewableIndices: Array<number> = [];
     if (itemCount) {
       viewableIndices = this.computeViewableItems(
         props,

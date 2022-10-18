@@ -7,8 +7,7 @@
 
 #include "Color.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 bool isColorMeaningful(SharedColor const &color) noexcept {
   if (!color) {
@@ -52,5 +51,4 @@ SharedColor whiteColor() {
   return color;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

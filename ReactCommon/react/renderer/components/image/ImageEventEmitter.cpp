@@ -7,8 +7,7 @@
 
 #include "ImageEventEmitter.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void ImageEventEmitter::onLoadStart() const {
   dispatchEvent("loadStart");
@@ -38,5 +37,4 @@ void ImageEventEmitter::onPartialLoad() const {
   dispatchEvent("partialLoad");
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

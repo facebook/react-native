@@ -89,6 +89,14 @@ export type TextProps = $ReadOnly<{|
   'aria-disabled'?: ?boolean,
   'aria-expanded'?: ?boolean,
   'aria-selected'?: ?boolean,
+
+  /**
+   * Reperesents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   *
+   * @platform android
+   */
+  'aria-labelledby'?: ?string,
+
   children?: ?Node,
 
   /**
@@ -228,4 +236,11 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text#supperhighlighting
    */
   suppressHighlighting?: ?boolean,
+
+  /**
+   * Set line break strategy on iOS.
+   *
+   * See https://reactnative.dev/docs/text.html#linebreakstrategyios
+   */
+  lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
 |}>;

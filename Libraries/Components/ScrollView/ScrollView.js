@@ -1382,6 +1382,7 @@ class ScrollView extends React.Component<Props, State> {
     // if another touch occurs outside of it
     const currentlyFocusedTextInput = TextInputState.currentlyFocusedInput();
     if (
+      currentlyFocusedTextInput != null &&
       this.props.keyboardShouldPersistTaps !== true &&
       this.props.keyboardShouldPersistTaps !== 'always' &&
       this._keyboardIsDismissible() &&
@@ -1457,7 +1458,6 @@ class ScrollView extends React.Component<Props, State> {
     }
 
     const currentlyFocusedInput = TextInputState.currentlyFocusedInput();
-
     if (
       this.props.keyboardShouldPersistTaps === 'handled' &&
       this._keyboardIsDismissible() &&
@@ -1583,12 +1583,16 @@ class ScrollView extends React.Component<Props, State> {
 
     // Dismiss the keyboard now if we didn't become responder in capture phase
     // to eat presses, but still want to dismiss on interaction.
+    // Don't do anything if the target of the touch event is the current input.
+    const currentlyFocusedTextInput = TextInputState.currentlyFocusedInput();
     if (
+      currentlyFocusedTextInput != null &&
+      e.target !== currentlyFocusedTextInput &&
       this._softKeyboardIsDetached() &&
       this._keyboardIsDismissible() &&
       keyboardNeverPersistsTaps
     ) {
-      TextInputState.blurTextInput(TextInputState.currentlyFocusedInput());
+      TextInputState.blurTextInput(currentlyFocusedTextInput);
     }
 
     this.props.onTouchEnd && this.props.onTouchEnd(e);

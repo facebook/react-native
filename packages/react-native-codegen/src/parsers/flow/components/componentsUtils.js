@@ -11,9 +11,9 @@
 'use strict';
 
 import type {ASTNode} from '../utils';
-import type {TypeDeclarationMap} from '../utils.js';
 import type {NamedShape} from '../../../CodegenSchema.js';
 const {getValueFromTypes} = require('../utils.js');
+import type {TypeDeclarationMap} from '../../utils';
 
 function getProperties(
   typeName: string,
@@ -101,6 +101,11 @@ function getTypeAnnotationForArray<+T>(
       return {
         type: 'ReservedPropTypeAnnotation',
         name: 'ImageSourcePrimitive',
+      };
+    case 'ImageRequest':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'ImageRequestPrimitive',
       };
     case 'ColorValue':
     case 'ProcessedColorValue':
@@ -268,6 +273,11 @@ function getTypeAnnotation<+T>(
       return {
         type: 'ReservedPropTypeAnnotation',
         name: 'ImageSourcePrimitive',
+      };
+    case 'ImageRequest':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'ImageRequestPrimitive',
       };
     case 'ColorValue':
     case 'ProcessedColorValue':

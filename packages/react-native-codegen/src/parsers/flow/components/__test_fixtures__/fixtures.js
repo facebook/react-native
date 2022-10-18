@@ -1421,6 +1421,37 @@ export default (codegenNativeComponent<ModuleProps>(
 ): HostComponent<ModuleProps>);
 `;
 
+const STATE_WITH_IMAGES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow strict-local
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+import type {ImageSource} from 'ImageSource';
+
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  imageSource: ImageSource,
+|}>;
+
+type ModuleNativeState = $ReadOnly<{|
+  imageSource: ImageSource,
+  imageRequest: ImageRequest,
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): HostComponent<ModuleProps>);
+`;
+
 //TODO: fix this. The code is the same as per the props, but it fails with the State.
 // const STATE_ALIASED_LOCALLY = `
 // /**
@@ -1488,5 +1519,6 @@ module.exports = {
   ARRAY_STATE_TYPES,
   OBJECT_STATE_TYPES,
   STATE_NEGATIVE_DEFAULTS,
+  STATE_WITH_IMAGES,
   // STATE_ALIASED_LOCALLY,
 };

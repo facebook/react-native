@@ -73,10 +73,8 @@ class FabricMountingManager final {
   std::shared_ptr<const CppComponentRegistry> cppComponentRegistry_;
 
   bool const enableEarlyEventEmitterUpdate_{false};
-  bool const disablePreallocateViews_{false};
   bool const disableRevisionCheckForPreallocation_{false};
   bool const useOverflowInset_{false};
-  bool const shouldRememberAllocatedViews_{false};
 
   jni::local_ref<jobject> getProps(
       ShadowView const &oldShadowView,

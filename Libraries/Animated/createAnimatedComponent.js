@@ -199,16 +199,23 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     });
 
     render(): React.Node {
+      // When rendering in Fabric and an AnimatedValue is used, we keep track of
+      // the initial value of that Value, to avoid additional prop updates when
+      // this component re-renders
+      const initialPropsIfFabric = this._isFabric()
+        ? this._initialAnimatedProps
+        : null;
+
       const animatedProps =
-        this._propsAnimated.__getValue(this._initialAnimatedProps) || {};
+        this._propsAnimated.__getValue(initialPropsIfFabric) || {};
+      if (!this._initialAnimatedProps) {
+        this._initialAnimatedProps = animatedProps;
+      }
+
       const {style = {}, ...props} = animatedProps;
       const {style: passthruStyle = {}, ...passthruProps} =
         this.props.passthroughAnimatedPropExplicitValues || {};
       const mergedStyle = {...style, ...passthruStyle};
-
-      if (!this._initialAnimatedProps) {
-        this._initialAnimatedProps = animatedProps;
-      }
 
       // Force `collapsable` to be false so that native view is not flattened.
       // Flattened views cannot be accurately referenced by a native driver.

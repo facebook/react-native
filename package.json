@@ -120,6 +120,7 @@
     "base64-js": "^1.1.2",
     "event-target-shim": "^5.0.1",
     "invariant": "^2.2.4",
+    "jest-environment-node": "^29.0.3",
     "jsc-android": "^250230.2.1",
     "memoize-one": "^5.0.0",
     "metro-react-native-babel-transformer": "0.72.3",
@@ -138,10 +139,10 @@
     "stacktrace-parser": "^0.1.3",
     "use-sync-external-store": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
-    "ws": "^6.1.4"
+    "ws": "^6.2.2"
   },
   "devDependencies": {
-    "flow-bin": "^0.188.1",
+    "flow-bin": "^0.190.0",
     "hermes-eslint": "0.8.0",
     "react": "18.2.0",
     "react-test-renderer": "^18.2.0"

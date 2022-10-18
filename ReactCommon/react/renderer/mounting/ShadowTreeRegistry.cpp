@@ -9,8 +9,7 @@
 
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ShadowTreeRegistry::~ShadowTreeRegistry() {
   react_native_assert(
@@ -60,5 +59,4 @@ void ShadowTreeRegistry::enumerate(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

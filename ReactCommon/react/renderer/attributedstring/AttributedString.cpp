@@ -9,8 +9,7 @@
 
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using Fragment = AttributedString::Fragment;
 using Fragments = AttributedString::Fragments;
@@ -166,5 +165,4 @@ SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

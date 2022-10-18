@@ -7,6 +7,4 @@
 
 #include "ShadowNodeTraits.h"
 
-namespace facebook {
-namespace react {} // namespace react
-} // namespace facebook
+namespace facebook::react {} // namespace facebook::react

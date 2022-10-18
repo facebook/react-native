@@ -14,8 +14,7 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // During parser initialization, Props structs are used to parse
 // "fake"/empty objects, and `at` is called repeatedly which tells us
@@ -221,5 +220,4 @@ void RawPropsParser::iterateOverValues(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

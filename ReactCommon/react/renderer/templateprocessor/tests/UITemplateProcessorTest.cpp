@@ -23,8 +23,7 @@ using namespace facebook::react;
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static ComponentRegistryFactory getComponentRegistryFactory() {
   return [](const EventDispatcher::Weak &eventDispatcher,
@@ -78,8 +77,7 @@ class MockReactNativeConfig : public ReactNativeConfig {
 std::shared_ptr<const ReactNativeConfig> mockReactNativeConfig_ =
     std::make_shared<const MockReactNativeConfig>();
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 TEST(UITemplateProcessorTest, testSimpleBytecode) {
   auto surfaceId = 11;

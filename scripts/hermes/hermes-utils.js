@@ -10,6 +10,7 @@
 'use strict';
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const {execSync} = require('child_process');
 
@@ -165,8 +166,8 @@ function shouldBuildHermesFromSource(isInCI) {
   return !isTestingAgainstLocalHermesTarball() && isInCI;
 }
 
-function shouldUsePrebuiltHermesC(os) {
-  if (os === 'macos') {
+function shouldUsePrebuiltHermesC(platform) {
+  if (platform === 'macos') {
     return fs.existsSync(MACOS_HERMESC_PATH);
   }
 
@@ -189,13 +190,82 @@ set_target_properties(native-hermesc PROPERTIES
   }
 }
 
+function getHermesTarballName(buildType, releaseVersion) {
+  if (!buildType) {
+    throw Error('Did not specify build type.');
+  }
+  if (!releaseVersion) {
+    throw Error('Did not specify release version.');
+  }
+  return `hermes-runtime-darwin-${buildType.toLowerCase()}-v${releaseVersion}.tar.gz`;
+}
+
+function createHermesTarball(
+  hermesDir,
+  buildType,
+  releaseVersion,
+  tarballOutputDir,
+) {
+  if (!hermesDir) {
+    hermesDir = HERMES_DIR;
+  }
+  if (!fs.existsSync(hermesDir)) {
+    throw new Error(`Path to Hermes does not exist at ${hermesDir}`);
+  }
+  if (!fs.existsSync(path.join(hermesDir, 'destroot'))) {
+    throw new Error(
+      `destroot not found at ${path.join(
+        hermesDir,
+        'destroot',
+      )}. Are you sure Hermes has been built?`,
+    );
+  }
+  if (!fs.existsSync(tarballOutputDir)) {
+    fs.mkdirSync(tarballOutputDir, {recursive: true});
+  }
+
+  let tarballTempDir;
+
+  try {
+    tarballTempDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), 'hermes-engine-destroot-'),
+    );
+
+    execSync(`cp -R ./destroot ${tarballTempDir}`, {cwd: hermesDir});
+    if (fs.existsSync(path.join(hermesDir, 'LICENSE'))) {
+      execSync(`cp LICENSE ${tarballTempDir}`, {cwd: hermesDir});
+    }
+  } catch (error) {
+    throw new Error(`Failed to copy destroot to tempdir: ${error}`);
+  }
+
+  const tarballFilename = getHermesTarballName(buildType, releaseVersion);
+  const tarballOutputPath = path.join(tarballOutputDir, tarballFilename);
+
+  try {
+    execSync(`tar -C ${tarballTempDir} -czvf ${tarballOutputPath} .`);
+  } catch (error) {
+    throw new Error(`[Hermes] Failed to create tarball: ${error}`);
+  }
+
+  if (!fs.existsSync(tarballOutputPath)) {
+    throw new Error(
+      `Tarball creation failed, could not locate tarball at ${tarballOutputPath}`,
+    );
+  }
+
+  return tarballOutputPath;
+}
+
 module.exports = {
   configureMakeForPrebuiltHermesC,
   copyBuildScripts,
   copyPodSpec,
+  createHermesTarball,
   downloadHermesTarball,
   expandHermesTarball,
   getHermesTagSHA,
+  getHermesTarballName,
   readHermesTag,
   setHermesTag,
   shouldBuildHermesFromSource,

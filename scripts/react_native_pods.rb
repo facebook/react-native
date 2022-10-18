@@ -95,6 +95,7 @@ def use_react_native! (
   pod 'React-bridging', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
+  pod 'React-jsidynamic', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
@@ -188,6 +189,8 @@ end
 # - react_native_path: path to React Native.
 # - mac_catalyst_enabled: whether we are running the Pod on a Mac Catalyst project or not.
 def react_native_post_install(installer, react_native_path = "../node_modules/react-native", mac_catalyst_enabled: false)
+  ReactNativePodsUtils.turn_off_resource_bundle_react_core(installer)
+
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
 
   if ReactNativePodsUtils.has_pod(installer, 'Flipper')

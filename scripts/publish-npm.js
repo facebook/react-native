@@ -40,6 +40,7 @@ const {
 } = require('./scm-utils');
 const {
   generateAndroidArtifacts,
+  publishAndroidArtifactsToMaven,
   saveFilesToRestore,
 } = require('./release-utils');
 const fs = require('fs');
@@ -195,6 +196,10 @@ const isLatest = exitIfNotOnGit(
   () => isTaggedLatest(currentCommit),
   'Not in git. We do not want to publish anything',
 );
+
+// We first publish on Maven Central all the necessary artifacts.
+// NPM publishing is done just after.
+publishAndroidArtifactsToMaven(nightlyBuild);
 
 const releaseBranch = `${major}.${minor}-stable`;
 

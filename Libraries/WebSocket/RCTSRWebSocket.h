@@ -18,23 +18,23 @@
 #import <Security/SecCertificate.h>
 
 typedef NS_ENUM(unsigned int, RCTSRReadyState) {
-    RCTSR_CONNECTING   = 0,
-    RCTSR_OPEN         = 1,
-    RCTSR_CLOSING      = 2,
-    RCTSR_CLOSED       = 3,
+  RCTSR_CONNECTING = 0,
+  RCTSR_OPEN = 1,
+  RCTSR_CLOSING = 2,
+  RCTSR_CLOSED = 3,
 };
 
 typedef NS_ENUM(NSInteger, RCTSRStatusCode) {
-    RCTSRStatusCodeNormal = 1000,
-    RCTSRStatusCodeGoingAway = 1001,
-    RCTSRStatusCodeProtocolError = 1002,
-    RCTSRStatusCodeUnhandledType = 1003,
-    // 1004 reserved.
-    RCTSRStatusNoStatusReceived = 1005,
-    // 1004-1006 reserved.
-    RCTSRStatusCodeInvalidUTF8 = 1007,
-    RCTSRStatusCodePolicyViolated = 1008,
-    RCTSRStatusCodeMessageTooBig = 1009,
+  RCTSRStatusCodeNormal = 1000,
+  RCTSRStatusCodeGoingAway = 1001,
+  RCTSRStatusCodeProtocolError = 1002,
+  RCTSRStatusCodeUnhandledType = 1003,
+  // 1004 reserved.
+  RCTSRStatusNoStatusReceived = 1005,
+  // 1004-1006 reserved.
+  RCTSRStatusCodeInvalidUTF8 = 1007,
+  RCTSRStatusCodePolicyViolated = 1008,
+  RCTSRStatusCodeMessageTooBig = 1009,
 };
 
 @class RCTSRWebSocket;
@@ -60,7 +60,8 @@ extern NSString *const RCTSRHTTPResponseErrorKey;
 @property (nonatomic, readonly, copy) NSString *protocol;
 
 // Protocols should be an array of strings that turn into Sec-WebSocket-Protocol.
-- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray<NSString *> *)protocols NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURLRequest:(NSURLRequest *)request
+                         protocols:(NSArray<NSString *> *)protocols NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithURLRequest:(NSURLRequest *)request;
 
 // Some helper constructors.
@@ -102,7 +103,10 @@ extern NSString *const RCTSRHTTPResponseErrorKey;
 
 - (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket;
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error;
-- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean;
+- (void)webSocket:(RCTSRWebSocket *)webSocket
+    didCloseWithCode:(NSInteger)code
+              reason:(NSString *)reason
+            wasClean:(BOOL)wasClean;
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload;
 
 @end

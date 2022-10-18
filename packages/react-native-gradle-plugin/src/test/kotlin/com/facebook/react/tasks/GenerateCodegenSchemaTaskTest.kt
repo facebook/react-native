@@ -142,11 +142,13 @@ class GenerateCodegenSchemaTaskTest {
         }
 
     task.setupCommandLine()
-
+    // TODO: restore the --platform android parameters as soon as we publish the codegen package.
     assertEquals(
         listOf(
             "--verbose",
             File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").toString(),
+            // "--platform",
+            // "android",
             File(outputDir, "schema.json").toString(),
             jsRootDir.toString(),
         ),
