@@ -74,6 +74,15 @@ enum class WritingDirection {
   RightToLeft // Right to left writing direction.
 };
 
+enum class LineBreakStrategy {
+  None, // Don't use any line break strategies
+  PushOut, // Use the push out line break strategy.
+  HangulWordPriority, // When specified, it prohibits breaking between Hangul
+                      // characters.
+  Standard // Use the same configuration of line break strategies that the
+           // system uses for standard UI labels.
+};
+
 enum class TextDecorationLineType {
   None,
   Underline,

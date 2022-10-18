@@ -571,8 +571,8 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       const numColumns = numColumnsOrDefault(this.props.numColumns);
       if (onViewableItemsChanged) {
         if (numColumns > 1) {
-          const changed = [];
-          const viewableItems = [];
+          const changed: Array<ViewToken> = [];
+          const viewableItems: Array<ViewToken> = [];
           info.viewableItems.forEach(v =>
             this._pushMultiColumnViewable(viewableItems, v),
           );

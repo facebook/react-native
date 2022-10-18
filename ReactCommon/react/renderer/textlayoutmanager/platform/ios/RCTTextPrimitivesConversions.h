@@ -40,6 +40,28 @@ inline static NSWritingDirection RCTNSWritingDirectionFromWritingDirection(Writi
   }
 }
 
+inline static NSLineBreakStrategy RCTNSLineBreakStrategyFromLineBreakStrategy(LineBreakStrategy lineBreakStrategy)
+{
+  switch (lineBreakStrategy) {
+    case LineBreakStrategy::None:
+      return NSLineBreakStrategyNone;
+    case LineBreakStrategy::PushOut:
+      return NSLineBreakStrategyPushOut;
+    case LineBreakStrategy::HangulWordPriority:
+      if (@available(iOS 14.0, *)) {
+        return NSLineBreakStrategyHangulWordPriority;
+      } else {
+        return NSLineBreakStrategyNone;
+      }
+    case LineBreakStrategy::Standard:
+      if (@available(iOS 14.0, *)) {
+        return NSLineBreakStrategyStandard;
+      } else {
+        return NSLineBreakStrategyNone;
+      }
+  }
+}
+
 inline static RCTFontStyle RCTFontStyleFromFontStyle(FontStyle fontStyle)
 {
   switch (fontStyle) {

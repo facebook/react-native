@@ -27,10 +27,10 @@ import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 const {nullGuard} = require('../../parsers-utils');
 
 const {throwIfMoreThanOneModuleRegistryCalls} = require('../../error-utils');
+const {visit} = require('../../utils');
 const {
   resolveTypeAnnotation,
   getTypes,
-  visit,
   isModuleRegistryCall,
 } = require('../utils.js');
 const {
@@ -53,7 +53,6 @@ const {
   typeAliasResolution,
 } = require('../../parsers-primitives');
 const {
-  MisnamedModuleInterfaceParserError,
   MoreThanOneModuleInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
@@ -66,10 +65,12 @@ const {
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
+const {verifyPlatforms} = require('../../utils');
 
 const {
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfModuleInterfaceNotFound,
+  throwIfModuleInterfaceIsMisnamed,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
@@ -613,13 +614,7 @@ function buildModuleSchema(
 
   const [moduleSpec] = moduleSpecs;
 
-  if (moduleSpec.id.name !== 'Spec') {
-    throw new MisnamedModuleInterfaceParserError(
-      hasteModuleName,
-      moduleSpec.id,
-      language,
-    );
-  }
+  throwIfModuleInterfaceIsMisnamed(hasteModuleName, moduleSpec.id, language);
 
   // Parse Module Names
   const moduleName = tryParse((): string => {
@@ -697,19 +692,10 @@ function buildModuleSchema(
   // Eventually this should be made explicit in the Flow type itself.
   // Also check the hasteModuleName for platform suffix.
   // Note: this shape is consistent with ComponentSchema.
-  let cxxOnly = false;
-  const excludedPlatforms = [];
-  const namesToValidate = [...moduleNames, hasteModuleName];
-  namesToValidate.forEach(name => {
-    if (name.endsWith('Android')) {
-      excludedPlatforms.push('iOS');
-    } else if (name.endsWith('IOS')) {
-      excludedPlatforms.push('android');
-    } else if (name.endsWith('Cxx')) {
-      cxxOnly = true;
-      excludedPlatforms.push('iOS', 'android');
-    }
-  });
+  const {cxxOnly, excludedPlatforms} = verifyPlatforms(
+    hasteModuleName,
+    moduleNames,
+  );
 
   // $FlowFixMe[missing-type-arg]
   return (moduleSpec.body.properties: $ReadOnlyArray<$FlowFixMe>)

@@ -33,15 +33,6 @@ class UIManagerDelegate {
   virtual void uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) = 0;
 
   /*
-   * Called each time when UIManager clones a Shadow Node. Receiver
-   * might use this to optimistically allocate a new native view
-   * instances.
-   */
-  virtual void uiManagerDidCloneShadowNode(
-      const ShadowNode &oldShadowNode,
-      const ShadowNode &newShadowNode) = 0;
-
-  /*
    * Called when UIManager wants to dispatch a command to the mounting layer.
    */
   virtual void uiManagerDidDispatchCommand(

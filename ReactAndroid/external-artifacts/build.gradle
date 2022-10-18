@@ -26,6 +26,7 @@ apply from: "../publish.gradle"
 publishing {
     publications {
         getByName("release") {
+            artifactId 'react-native-artifacts'
             artifact hermesiOSArtifact
         }
     }

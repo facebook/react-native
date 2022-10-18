@@ -7,6 +7,20 @@
 
 plugins { id("io.github.gradle-nexus.publish-plugin") version "1.1.0" }
 
+val reactAndroidProperties = java.util.Properties()
+
+File("./ReactAndroid/gradle.properties").inputStream().use { reactAndroidProperties.load(it) }
+
+version =
+    if (project.hasProperty("isNightly") &&
+        (project.property("isNightly") as? String).toBoolean()) {
+      "${reactAndroidProperties.getProperty("VERSION_NAME")}-SNAPSHOT"
+    } else {
+      reactAndroidProperties.getProperty("VERSION_NAME")
+    }
+
+group = "com.facebook.react"
+
 val ndkPath by extra(System.getenv("ANDROID_NDK"))
 val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION"))
 
@@ -27,7 +41,7 @@ val sonatypePassword = findProperty("SONATYPE_PASSWORD")?.toString()
 
 nexusPublishing {
   repositories {
-    create("sonatype") {
+    sonatype {
       username.set(sonatypeUsername)
       password.set(sonatypePassword)
     }

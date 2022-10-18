@@ -17,12 +17,13 @@ const fs = require('fs');
 const {
   extractNativeModuleName,
   createParserErrorCapturer,
+  visit,
 } = require('../utils.js');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
 const {wrapModuleSchema} = require('../parsers-commons');
-const {visit, isModuleRegistryCall} = require('./utils');
+const {isModuleRegistryCall} = require('./utils');
 const invariant = require('invariant');
 
 function getConfigType(

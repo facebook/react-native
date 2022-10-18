@@ -26,8 +26,7 @@ Props::Props(
                                                        rawProps,
                                                        "nativeID",
                                                        sourceProps.nativeId,
-                                                       {})),
-      revision(sourceProps.revision + 1)
+                                                       {}))
 #ifdef ANDROID
       ,
       rawProps(

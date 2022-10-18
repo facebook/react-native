@@ -811,7 +811,7 @@ export default class VirtualizedList extends StateSafePureComponent<
         ? styles.horizontallyInverted
         : styles.verticallyInverted
       : null;
-    const cells = [];
+    const cells: Array<any | React.Node> = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
 

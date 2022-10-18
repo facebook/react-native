@@ -21,6 +21,7 @@ import PointerEventPointerMoveOnChordedMouseButton from './W3CPointerEventPlatfo
 import PointerEventPointerMoveAcross from './W3CPointerEventPlatformTests/PointerEventPointerMoveAcross';
 import PointerEventPointerMoveEventOrder from './W3CPointerEventPlatformTests/PointerEventPointerMoveEventOrder';
 import PointerEventPointerMoveBetween from './W3CPointerEventPlatformTests/PointerEventPointerMoveBetween';
+import PointerEventPointerOverOut from './W3CPointerEventPlatformTests/PointerEventPointerOverOut';
 import EventfulView from './W3CPointerEventsEventfulView';
 import ManyPointersPropertiesExample from './Compatibility/ManyPointersPropertiesExample';
 
@@ -212,6 +213,14 @@ export default {
       title: 'WPT: Pointermove handling between elements',
       render(): React.Node {
         return <PointerEventPointerMoveBetween />;
+      },
+    },
+    {
+      name: 'pointerevent_pointerover_out',
+      description: '',
+      title: 'WPT: PointerOver/PointerOut handling',
+      render(): React.Node {
+        return <PointerEventPointerOverOut />;
       },
     },
     {

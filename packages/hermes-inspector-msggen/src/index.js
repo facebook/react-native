@@ -44,9 +44,9 @@ function parseDomains(
   includeExperimental: Set<string>,
 ): Descriptor {
   const desc = {
-    types: [],
-    commands: [],
-    events: [],
+    types: ([]: Array<Type>),
+    commands: ([]: Array<Command>),
+    events: ([]: Array<Event>),
   };
 
   for (const obj of domainObjs) {
