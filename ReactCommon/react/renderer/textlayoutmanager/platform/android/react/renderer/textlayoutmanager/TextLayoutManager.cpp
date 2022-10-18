@@ -146,8 +146,6 @@ Size measureAndroidComponentMapBuffer(
 TextLayoutManager::TextLayoutManager(
     const ContextContainer::Shared &contextContainer)
     : contextContainer_(contextContainer),
-      mapBufferSerializationEnabled_(
-          contextContainer->at<bool>("MapBufferSerializationEnabled")),
       measureCache_(
           contextContainer->at<bool>("EnableLargeTextMeasureCache")
               ? 1024
@@ -171,11 +169,8 @@ TextMeasurement TextLayoutManager::measure(
           telemetry->willMeasureText();
         }
 
-        auto measurement = mapBufferSerializationEnabled_
-            ? doMeasureMapBuffer(
-                  attributedString, paragraphAttributes, layoutConstraints)
-            : doMeasure(
-                  attributedString, paragraphAttributes, layoutConstraints);
+        auto measurement = doMeasureMapBuffer(
+            attributedString, paragraphAttributes, layoutConstraints);
 
         if (telemetry != nullptr) {
           telemetry->didMeasureText();
@@ -224,60 +219,6 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
-    AttributedString const &attributedString,
-    ParagraphAttributes const &paragraphAttributes,
-    Size size) const {
-  if (mapBufferSerializationEnabled_) {
-    return measureLinesMapBuffer(attributedString, paragraphAttributes, size);
-  }
-
-  const jni::global_ref<jobject> &fabricUIManager =
-      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-  static auto measureLines =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-          ->getMethod<NativeArray::javaobject(
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              jfloat,
-              jfloat)>("measureLines");
-
-  auto serializedAttributedString = toDynamic(attributedString);
-
-  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
-      ReadableNativeMap::newObjectCxxArgs(serializedAttributedString);
-  local_ref<ReadableNativeMap::javaobject> paragraphAttributesRNM =
-      ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes));
-
-  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
-      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
-  local_ref<ReadableMap::javaobject> paragraphAttributesRM = make_local(
-      reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
-
-  auto array = measureLines(
-      fabricUIManager,
-      attributedStringRM.get(),
-      paragraphAttributesRM.get(),
-      size.width,
-      size.height);
-
-  auto dynamicArray = cthis(array)->consume();
-  LinesMeasurements lineMeasurements;
-  lineMeasurements.reserve(dynamicArray.size());
-
-  for (auto const &data : dynamicArray) {
-    lineMeasurements.push_back(LineMeasurement(data));
-  }
-
-  // Explicitly release smart pointers to free up space faster in JNI tables
-  attributedStringRM.reset();
-  attributedStringRNM.reset();
-  paragraphAttributesRM.reset();
-  paragraphAttributesRNM.reset();
-
-  return lineMeasurements;
-}
-
-LinesMeasurements TextLayoutManager::measureLinesMapBuffer(
     AttributedString const &attributedString,
     ParagraphAttributes const &paragraphAttributes,
     Size size) const {

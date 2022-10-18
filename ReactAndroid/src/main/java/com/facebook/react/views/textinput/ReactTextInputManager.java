@@ -45,7 +45,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.mapbuffer.MapBuffer;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.FabricViewStateManager;
@@ -1295,11 +1294,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     stateManager.setStateWrapper(stateWrapper);
 
-    if (ReactFeatureFlags.mapBufferSerializationEnabled) {
-      MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
-      if (stateMapBuffer != null) {
-        return getReactTextUpdate(view, props, stateMapBuffer);
-      }
+    MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
+    if (stateMapBuffer != null) {
+      return getReactTextUpdate(view, props, stateMapBuffer);
     }
 
     ReadableNativeMap state = stateWrapper.getStateData();

@@ -434,10 +434,6 @@ void Binding::installFabricUIManager(
   reactNativeConfig_ = config;
 
   contextContainer->insert(
-      "MapBufferSerializationEnabled",
-      getFeatureFlagValue("mapBufferSerializationEnabled"));
-
-  contextContainer->insert(
       "CalculateTransformedFramesEnabled",
       getFeatureFlagValue("calculateTransformedFramesEnabled"));
 
