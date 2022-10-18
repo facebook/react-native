@@ -267,8 +267,10 @@ commands:
         type: boolean
         default: False
       flavor:
-        type: string
         default: "Debug"
+        description: The Hermes build type. Must be one of "Debug", "Release".
+        type: enum
+        enum: ["Debug", "Release"]
       hermes_tarball_artifacts_dir:
         type: string
         default: *hermes_tarball_artifacts_dir
@@ -336,24 +338,42 @@ commands:
   with_hermesc_span:
     description: "Makes hermesc available to the provided steps, if hermesc is present."
     parameters:
+      flavor:
+        default: "Debug"
+        description: The Hermes build type. Must be one of "Debug", "Release".
+        type: enum
+        enum: ["Debug", "Release"]
       steps:
         type: steps
     steps:
-      - export_hermesc
+      - export_hermesc:
+          flavor: << parameters.flavor >>
       - steps: << parameters.steps >>
-      - export_hermesc
+      - export_hermesc:
+          flavor: << parameters.flavor >>
 
   export_hermesc:
     description: "Configures hermesc for use in Hermes builds when possible. The binary is built by either of the macOS or iOS builds, and may be cached by previous builds."
     parameters:
+      flavor:
+        default: "Debug"
+        description: The Hermes build type. Must be one of "Debug", "Release".
+        type: enum
+        enum: ["Debug", "Release"]
       artifacts_dir:
         type: string
         default: *hermes_osxbin_artifacts_dir
     steps:
       - run:
-          name: "Export HermesC if available"
+          name: "Export path to HermesC if available"
           command: |
-            hermesc_artifacts_path=<< parameters.artifacts_dir >>/hermesc
+            # Although the hermesc binary built by debug and release jobs is
+            # identical, we need to store it in distinct paths as Circle CI
+            # cannot have two different jobs write to the same path in
+            # artifacts.
+            mkdir -p << parameters.artifacts_dir >>/Debug << parameters.artifacts_dir >>/Release
+            hermesc_artifacts_path=<< parameters.artifacts_dir >>/<< parameters.flavor >>/hermesc
+
             hermesc_bin_path=bin/hermesc
             hermes_build_dir_macos=$(pwd)/sdks/hermes/build_macosx
             hermes_build_dir_ios=$(pwd)/sdks/hermes/build_iphoneos
@@ -1151,8 +1171,10 @@ jobs:
   build_hermes_macos:
     parameters:
       flavor:
-        type: string
         default: "Debug"
+        description: The Hermes build type. Must be one of "Debug", "Release".
+        type: enum
+        enum: ["Debug", "Release"]
     executor: reactnativeios
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -1187,6 +1209,7 @@ jobs:
           flavor: << parameters.flavor >>
           steps:
             - with_hermesc_span:
+                flavor: << parameters.flavor >>
                 steps:
                   - run:
                       name: Build the Hermes Mac frameworks
@@ -1194,6 +1217,7 @@ jobs:
                         cd ./sdks/hermes || exit 1
                         BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
             - with_hermesc_span:
+                flavor: << parameters.flavor >>
                 steps:
                   - run:
                       name: Build the Hermes iOS frameworks
@@ -1228,16 +1252,6 @@ jobs:
 
                   mkdir -p $HERMES_TARBALL_ARTIFACTS_DIR
                   cp $TARBALL_OUTPUT_PATH $HERMES_TARBALL_ARTIFACTS_DIR/.
-
-                  # Make a copy of the debug tarball and use the old filename.
-                  # This is necessary to support patch releases in versions of
-                  # React Native that expect a single tarball.
-                  # TODO: Remove once 0.70.x and 0.69.x are no longer being patched.
-                  if [[ $BUILD_TYPE == "Debug" ]]; then
-                    OLD_TARBALL_FILENAME="hermes-runtime-darwin-v$RELEASE_VERSION.tar.gz"
-                    cp $HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME $HERMES_TARBALL_ARTIFACTS_DIR/$OLD_TARBALL_FILENAME
-                    echo "$OLD_TARBALL_FILENAME is a copy of $TARBALL_FILENAME, provided for backward compatibility." >> $HERMES_TARBALL_ARTIFACTS_DIR/README.txt
-                  fi
             - when:
                 condition:
                   equal: [ << parameters.flavor >>, "Debug"]
@@ -1381,7 +1395,17 @@ jobs:
           name: Copy Hermes binaries
           command: |
             mkdir -p ./sdks/hermesc ./sdks/hermesc/osx-bin ./sdks/hermesc/win64-bin ./sdks/hermesc/linux64-bin
-            cp -r $HERMES_WS_DIR/osx-bin/* ./sdks/hermesc/osx-bin/.
+
+            # When build_hermes_macos runs as a matrix, it outputs
+            if [[ -d $HERMES_WS_DIR/osx-bin/Release ]]; then
+              cp -r $HERMES_WS_DIR/osx-bin/Release/* ./sdks/hermesc/osx-bin/.
+            elif [[ -d $HERMES_WS_DIR/osx-bin/Debug ]]; then
+              cp -r $HERMES_WS_DIR/osx-bin/Debug/* ./sdks/hermesc/osx-bin/.
+            else
+              ls $HERMES_WS_DIR/osx-bin || echo "hermesc macOS artifacts directory missing."
+              echo "Could not locate macOS hermesc binary."; exit 1;
+            fi
+
             cp -r $HERMES_WS_DIR/win64-bin/* ./sdks/hermesc/win64-bin/.
             cp -r $HERMES_WS_DIR/linux64-bin/* ./sdks/hermesc/linux64-bin/.
             mkdir -p ./ReactAndroid/external-artifacts/artifacts/
@@ -1518,6 +1542,9 @@ workflows:
       - build_hermes_macos:
           requires:
             - prepare_hermes_workspace
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
       - build_hermesc_windows:
           requires:
             - prepare_hermes_workspace
@@ -1649,6 +1676,9 @@ workflows:
       - build_hermes_macos:
           requires:
             - prepare_hermes_workspace
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
       - build_hermesc_windows:
           requires:
             - prepare_hermes_workspace
