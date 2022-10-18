@@ -21,10 +21,10 @@ import type {TypeDeclarationMap} from '../../utils';
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type PropAST = Object;
 
-function buildPropSchema<T>(
+function buildPropSchema(
   property: PropAST,
   types: TypeDeclarationMap,
-): NamedShape<T> {
+): NamedShape<PropTypeAnnotation> {
   const info = getSchemaInfo(property, types);
   const {name, optional, typeAnnotation, defaultValue} = info;
   return {
@@ -44,21 +44,9 @@ function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
-  return typeDefinition.map(property =>
-    buildPropSchema<PropTypeAnnotation>(property, types),
-  );
-}
-
-function getState(
-  typeDefinition: $ReadOnlyArray<PropAST>,
-  types: TypeDeclarationMap,
-): $ReadOnlyArray<NamedShape<StateTypeAnnotation>> {
-  return typeDefinition.map(property =>
-    buildPropSchema<StateTypeAnnotation>(property, types),
-  );
+  return typeDefinition.map(property => buildPropSchema(property, types));
 }
 
 module.exports = {
   getProps,
-  getState,
 };
