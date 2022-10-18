@@ -108,7 +108,7 @@ describe('throwIfMoreThanOneModuleRegistryCalls', () => {
 describe('throwIfUnusedModuleInterfaceParserError', () => {
   it('throw error if unused module', () => {
     const nativeModuleName = 'moduleName';
-    const callExpressions = [];
+    const callExpressions: Array<$FlowFixMe> = [];
     const spec = {name: 'Spec'};
     const parserType = 'Flow';
     expect(() => {
@@ -140,7 +140,7 @@ describe('throwIfUnusedModuleInterfaceParserError', () => {
 describe('throwErrorIfWrongNumberOfCallExpressionArgs', () => {
   it('throw error if wrong number of call expression args is used', () => {
     const nativeModuleName = 'moduleName';
-    const flowCallExpression = {argument: []};
+    const flowCallExpression: {argument: Array<$FlowFixMe>} = {argument: []};
     const methodName = 'methodName';
     const numberOfCallExpressionArgs = flowCallExpression.argument.length;
     const language = 'Flow';
@@ -204,7 +204,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
   });
 
   it('throw error if flowTypeArguments params length is not 1', () => {
-    const flowTypeArguments = {
+    const flowTypeArguments: $FlowFixMe = {
       type: 'TypeParameterInstantiation',
       params: [],
     };
@@ -327,7 +327,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
   });
 
   it('throw error if typeScriptTypeArguments params length is not equal to 1', () => {
-    const typeScriptTypeArguments = {
+    const typeScriptTypeArguments: $FlowFixMe = {
       type: 'TSTypeParameterInstantiation',
       params: [],
     };
@@ -430,7 +430,7 @@ describe('throwIfUntypedModule', () => {
   const hasteModuleName = 'moduleName';
   const methodName = 'methodName';
   const moduleName = 'moduleName';
-  const callExpressions = [];
+  const callExpressions: Array<$FlowFixMe> = [];
 
   it('should throw error if module does not have a type', () => {
     const typeArguments = null;
@@ -448,7 +448,7 @@ describe('throwIfUntypedModule', () => {
   });
 
   it('should not throw error if module have a type', () => {
-    const typeArguments = {
+    const typeArguments: $FlowFixMe = {
       type: 'TSTypeParameterInstantiations',
       params: [],
     };
