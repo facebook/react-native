@@ -10,9 +10,14 @@
 
 'use strict';
 
+import type {ComponentSchemaBuilderConfig} from './flow/components/schema';
+import type {NativeModuleSchema, SchemaType} from '../CodegenSchema';
+
 const {ParserError} = require('./errors');
+const {wrapModuleSchema} = require('./parsers-commons');
 
 const path = require('path');
+const invariant = require('invariant');
 
 export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
@@ -119,9 +124,62 @@ function visit(
   }
 }
 
+function buildSchemaFromConfigType(
+  configType: 'module' | 'component' | 'none',
+  filename: ?string,
+  ast: $FlowFixMe,
+  wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
+  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildModuleSchema: (
+    hasteModuleName: string,
+    ast: $FlowFixMe,
+    tryParse: ParserErrorCapturer,
+  ) => NativeModuleSchema,
+): SchemaType {
+  switch (configType) {
+    case 'component': {
+      return wrapComponentSchema(buildComponentSchema(ast));
+    }
+    case 'module': {
+      if (filename === undefined || filename === null) {
+        throw new Error('Filepath expected while parasing a module');
+      }
+      const nativeModuleName = extractNativeModuleName(filename);
+
+      const [parsingErrors, tryParse] = createParserErrorCapturer();
+
+      const schema = tryParse(() =>
+        buildModuleSchema(nativeModuleName, ast, tryParse),
+      );
+
+      if (parsingErrors.length > 0) {
+        /**
+         * TODO(T77968131): We have two options:
+         *  - Throw the first error, but indicate there are more then one errors.
+         *  - Display all errors, nicely formatted.
+         *
+         * For the time being, we're just throw the first error.
+         **/
+
+        throw parsingErrors[0];
+      }
+
+      invariant(
+        schema != null,
+        'When there are no parsing errors, the schema should not be null',
+      );
+
+      return wrapModuleSchema(schema, nativeModuleName);
+    }
+    default:
+      return {modules: {}};
+  }
+}
+
 module.exports = {
   extractNativeModuleName,
   createParserErrorCapturer,
   verifyPlatforms,
   visit,
+  buildSchemaFromConfigType,
 };
