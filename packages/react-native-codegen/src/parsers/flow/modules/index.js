@@ -53,8 +53,8 @@ const {
   emitStringish,
   typeAliasResolution,
 } = require('../../parsers-primitives');
+
 const {
-  MoreThanOneModuleInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedGenericParserError,
@@ -65,6 +65,7 @@ const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
+
 const {verifyPlatforms} = require('../../utils');
 
 const {
@@ -77,6 +78,7 @@ const {
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfUntypedModule,
   throwIfModuleTypeIsUnsupported,
+  throwIfMoreThanOneModuleInterfaceParserError,
 } = require('../../error-utils');
 
 const language = 'Flow';
@@ -586,14 +588,11 @@ function buildModuleSchema(
     language,
   );
 
-  if (moduleSpecs.length > 1) {
-    throw new MoreThanOneModuleInterfaceParserError(
-      hasteModuleName,
-      moduleSpecs,
-      moduleSpecs.map(node => node.id.name),
-      language,
-    );
-  }
+  throwIfMoreThanOneModuleInterfaceParserError(
+    hasteModuleName,
+    moduleSpecs,
+    language,
+  );
 
   const [moduleSpec] = moduleSpecs;
 

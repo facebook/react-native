@@ -19,8 +19,12 @@ const {
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
+  throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfModuleTypeIsUnsupported,
+  throwIfUntypedModule,
 } = require('../error-utils');
 const {
+  UnsupportedModulePropertyParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleRegistryCallsParserError,
   MisnamedModuleInterfaceParserError,
@@ -28,6 +32,8 @@ const {
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
+  UntypedModuleRegistryCallParserError,
+  MoreThanOneModuleInterfaceParserError,
 } = require('../errors');
 
 describe('throwIfModuleInterfaceIsMisnamed', () => {
@@ -484,8 +490,6 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
 });
 
 describe('throwIfUntypedModule', () => {
-  const {throwIfUntypedModule} = require('../error-utils');
-  const {UntypedModuleRegistryCallParserError} = require('../errors');
   const hasteModuleName = 'moduleName';
   const methodName = 'methodName';
   const moduleName = 'moduleName';
@@ -527,8 +531,6 @@ describe('throwIfUntypedModule', () => {
 });
 
 describe('throwIfModuleTypeIsUnsupported', () => {
-  const {throwIfModuleTypeIsUnsupported} = require('../error-utils.js');
-  const {UnsupportedModulePropertyParserError} = require('../errors.js');
   const hasteModuleName = 'moduleName';
   const property = {value: 'value', key: {name: 'name'}};
   it("don't throw error if module type is FunctionTypeAnnotation in Flow", () => {
@@ -600,5 +602,34 @@ describe('throwIfModuleTypeIsUnsupported', () => {
         language,
       );
     }).toThrow(UnsupportedModulePropertyParserError);
+  });
+});
+
+describe('throwIfMoreThanOneModuleInterfaceParserError', () => {
+  it("don't throw error if module specs length is <= 1", () => {
+    const nativeModuleName = 'moduleName';
+    const moduleSpecs = [];
+    const parserType = 'Flow';
+
+    expect(() => {
+      throwIfMoreThanOneModuleInterfaceParserError(
+        nativeModuleName,
+        moduleSpecs,
+        parserType,
+      );
+    }).not.toThrow(MoreThanOneModuleInterfaceParserError);
+  });
+  it('throw error if module specs is > 1 ', () => {
+    const nativeModuleName = 'moduleName';
+    const moduleSpecs = [{id: {name: 'Name-1'}}, {id: {name: 'Name-2'}}];
+    const parserType = 'TypeScript';
+
+    expect(() => {
+      throwIfMoreThanOneModuleInterfaceParserError(
+        nativeModuleName,
+        moduleSpecs,
+        parserType,
+      );
+    }).toThrow(MoreThanOneModuleInterfaceParserError);
   });
 });

@@ -54,7 +54,6 @@ const {
   typeAliasResolution,
 } = require('../../parsers-primitives');
 const {
-  MoreThanOneModuleInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedGenericParserError,
@@ -65,6 +64,7 @@ const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
+
 const {verifyPlatforms} = require('../../utils');
 
 const {
@@ -75,6 +75,7 @@ const {
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
   throwIfWrongNumberOfCallExpressionArgs,
+  throwIfMoreThanOneModuleInterfaceParserError,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
 } = require('../../error-utils');
@@ -600,14 +601,11 @@ function buildModuleSchema(
     language,
   );
 
-  if (moduleSpecs.length > 1) {
-    throw new MoreThanOneModuleInterfaceParserError(
-      hasteModuleName,
-      moduleSpecs,
-      moduleSpecs.map(node => node.id.name),
-      language,
-    );
-  }
+  throwIfMoreThanOneModuleInterfaceParserError(
+    hasteModuleName,
+    moduleSpecs,
+    language,
+  );
 
   const [moduleSpec] = moduleSpecs;
 
