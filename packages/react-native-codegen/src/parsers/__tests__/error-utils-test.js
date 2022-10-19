@@ -18,6 +18,7 @@ const {
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
 } = require('../error-utils');
 const {
   ModuleInterfaceNotFoundParserError,
@@ -26,6 +27,7 @@ const {
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
+  UnsupportedFunctionReturnTypeAnnotationParserError,
 } = require('../errors');
 
 describe('throwIfModuleInterfaceIsMisnamed', () => {
@@ -170,6 +172,63 @@ describe('throwErrorIfWrongNumberOfCallExpressionArgs', () => {
         language,
       );
     }).not.toThrow(IncorrectModuleRegistryCallArityParserError);
+  });
+});
+
+describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
+  const returnTypeAnnotation = {
+      returnType: '',
+    },
+    nativeModuleName = 'moduleName',
+    invalidReturnType = 'FunctionTypeAnnotation',
+    language = 'Flow';
+
+  it('do not throw error if cxxOnly is true', () => {
+    const cxxOnly = true,
+      returnType = 'FunctionTypeAnnotation';
+
+    expect(() => {
+      throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
+        nativeModuleName,
+        returnTypeAnnotation,
+        invalidReturnType,
+        language,
+        cxxOnly,
+        returnType,
+      );
+    }).not.toThrow(UnsupportedFunctionReturnTypeAnnotationParserError);
+  });
+
+  it('do not throw error if returnTypeAnnotation type is not FunctionTypeAnnotation', () => {
+    const cxxOnly = false,
+      returnType = '';
+
+    expect(() => {
+      throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
+        nativeModuleName,
+        returnTypeAnnotation,
+        invalidReturnType,
+        language,
+        cxxOnly,
+        returnType,
+      );
+    }).not.toThrow(UnsupportedFunctionReturnTypeAnnotationParserError);
+  });
+
+  it('throw error if cxxOnly is false and returnTypeAnnotation type is FunctionTypeAnnotation', () => {
+    const cxxOnly = false,
+      returnType = 'FunctionTypeAnnotation';
+
+    expect(() => {
+      throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
+        nativeModuleName,
+        returnTypeAnnotation,
+        invalidReturnType,
+        language,
+        cxxOnly,
+        returnType,
+      );
+    }).toThrow(UnsupportedFunctionReturnTypeAnnotationParserError);
   });
 });
 

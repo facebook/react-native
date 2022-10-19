@@ -60,7 +60,6 @@ const {
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
-  UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedUnionTypeAnnotationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
@@ -69,6 +68,7 @@ const {
 const {verifyPlatforms} = require('../../utils');
 
 const {
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
   throwIfPropertyValueTypeIsUnsupported,
@@ -494,14 +494,14 @@ function translateFunctionTypeAnnotation(
     ),
   );
 
-  if (!cxxOnly && returnTypeAnnotation.type === 'FunctionTypeAnnotation') {
-    throw new UnsupportedFunctionReturnTypeAnnotationParserError(
-      hasteModuleName,
-      flowFunctionTypeAnnotation.returnType,
-      'FunctionTypeAnnotation',
-      language,
-    );
-  }
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
+    hasteModuleName,
+    flowFunctionTypeAnnotation,
+    'FunctionTypeAnnotation',
+    language,
+    cxxOnly,
+    returnTypeAnnotation.type,
+  );
 
   return {
     type: 'FunctionTypeAnnotation',

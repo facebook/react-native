@@ -14,6 +14,7 @@ import type {ParserType} from './errors';
 
 const {
   MisnamedModuleInterfaceParserError,
+  UnsupportedFunctionReturnTypeAnnotationParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UnusedModuleInterfaceParserError,
@@ -140,6 +141,24 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
   }
 }
 
+function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
+  nativeModuleName: string,
+  returnTypeAnnotation: $FlowFixMe,
+  invalidReturnType: string,
+  language: ParserType,
+  cxxOnly: boolean,
+  returnType: string,
+) {
+  if (!cxxOnly && returnType === 'FunctionTypeAnnotation') {
+    throw new UnsupportedFunctionReturnTypeAnnotationParserError(
+      nativeModuleName,
+      returnTypeAnnotation.returnType,
+      'FunctionTypeAnnotation',
+      language,
+    );
+  }
+}
+
 function throwIfUntypedModule(
   typeArguments: $FlowFixMe,
   hasteModuleName: string,
@@ -216,6 +235,7 @@ function throwIfPropertyValueTypeIsUnsupported(
 
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfPropertyValueTypeIsUnsupported,

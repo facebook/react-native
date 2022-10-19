@@ -60,7 +60,6 @@ const {
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
-  UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedUnionTypeAnnotationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
@@ -77,6 +76,7 @@ const {
   throwIfModuleInterfaceIsMisnamed,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
 } = require('../../error-utils');
 
 const language = 'TypeScript';
@@ -510,14 +510,14 @@ function translateFunctionTypeAnnotation(
     ),
   );
 
-  if (!cxxOnly && returnTypeAnnotation.type === 'FunctionTypeAnnotation') {
-    throw new UnsupportedFunctionReturnTypeAnnotationParserError(
-      hasteModuleName,
-      typescriptFunctionTypeAnnotation.returnType,
-      'FunctionTypeAnnotation',
-      language,
-    );
-  }
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
+    hasteModuleName,
+    typescriptFunctionTypeAnnotation,
+    'FunctionTypeAnnotation',
+    language,
+    cxxOnly,
+    returnTypeAnnotation.type,
+  );
 
   return {
     type: 'FunctionTypeAnnotation',
