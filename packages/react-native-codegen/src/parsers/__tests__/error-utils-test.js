@@ -467,7 +467,7 @@ describe('throwIfUntypedModule', () => {
   });
 });
 
-describe('throwIfMoreThanOneModuleRegistryCalls', () => {
+describe('throwIfModuleTypeIsUnsupported', () => {
   const {throwIfModuleTypeIsUnsupported} = require('../error-utils.js');
   const {UnsupportedModulePropertyParserError} = require('../errors.js');
   const hasteModuleName = 'moduleName';
