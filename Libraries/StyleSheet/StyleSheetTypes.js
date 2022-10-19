@@ -434,12 +434,13 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  `width` and `height`. However, if there's not enough space,
    *  the component will shrink to its `minWidth` and `minHeight`.
    *
-   * flexGrow, flexShrink, rowGap, columnGap, gap and flexBasis work the same as in CSS.
+   * flexGrow, flexShrink, and flexBasis work the same as in CSS.
    */
   flex?: number,
   flexGrow?: number,
   flexShrink?: number,
   flexBasis?: number | string,
+
   /**
    * Aspect ratio control the size of the undefined dimension of a node.
    *
@@ -517,6 +518,7 @@ export type ____ShadowStyle_InternalCore = $ReadOnly<{
    * @platform ios
    */
   shadowRadius?: number,
+
   /**
    * In React Native, gap works the same way it does in CSS.
    * If there are two or more children in a container, they will be separated from each other
