@@ -300,7 +300,7 @@ class DisplayNoneStyle extends React.Component<
   };
 }
 
-class FlexGapExample extends React.Component {
+class FlexGapExample extends React.Component<$ReadOnly<{||}>> {
   render(): React.Node {
     return (
       <View
@@ -331,10 +331,6 @@ class FlexGapExample extends React.Component {
       </View>
     );
   }
-
-  _handlePress = () => {
-    this.setState({index: this.state.index + 1});
-  };
 }
 
 exports.title = 'View';
