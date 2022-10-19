@@ -85,12 +85,6 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
   );
 }
 
-function parseFile(filename: string): SchemaType {
-  const contents = fs.readFileSync(filename, 'utf8');
-
-  return buildSchema(contents, filename);
-}
-
 function parseModuleFixture(filename: string): SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
@@ -102,7 +96,7 @@ function parseString(contents: string, filename: ?string): SchemaType {
 }
 
 module.exports = {
-  parseFile,
+  buildSchema,
   parseModuleFixture,
   parseString,
 };
