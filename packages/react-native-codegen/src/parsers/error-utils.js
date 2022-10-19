@@ -19,6 +19,7 @@ const {
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
+  UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   UnsupportedModulePropertyParserError,
 } = require('./errors.js');
@@ -188,10 +189,36 @@ function throwIfModuleTypeIsUnsupported(
   }
 }
 
+const UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap = {
+  FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+  VoidTypeAnnotation: 'void',
+  PromiseTypeAnnotation: 'Promise',
+};
+
+function throwIfPropertyValueTypeIsUnsupported(
+  moduleName: string,
+  propertyValue: $FlowFixMe,
+  propertyKey: string,
+  type: string,
+  language: ParserType,
+) {
+  const invalidPropertyValueType =
+    UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap[type];
+
+  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+    moduleName,
+    propertyValue,
+    propertyKey,
+    invalidPropertyValueType,
+    language,
+  );
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
+  throwIfPropertyValueTypeIsUnsupported,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,

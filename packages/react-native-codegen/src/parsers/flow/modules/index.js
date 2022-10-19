@@ -63,7 +63,6 @@ const {
   UnsupportedEnumDeclarationParserError,
   UnsupportedUnionTypeAnnotationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
-  UnsupportedObjectPropertyValueTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 const {verifyPlatforms} = require('../../utils');
@@ -71,6 +70,7 @@ const {verifyPlatforms} = require('../../utils');
 const {
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
+  throwIfPropertyValueTypeIsUnsupported,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
@@ -309,44 +309,28 @@ function translateTypeAnnotation(
                     ),
                   );
 
-                if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+                if (
+                  propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+                  propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
+                  propertyTypeAnnotation.type === 'VoidTypeAnnotation'
+                ) {
+                  throwIfPropertyValueTypeIsUnsupported(
                     hasteModuleName,
                     property.value,
                     property.key,
                     propertyTypeAnnotation.type,
                     language,
                   );
+                } else {
+                  return {
+                    name: key.name,
+                    optional,
+                    typeAnnotation: wrapNullable(
+                      isPropertyNullable,
+                      propertyTypeAnnotation,
+                    ),
+                  };
                 }
-
-                if (propertyTypeAnnotation.type === 'VoidTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                    hasteModuleName,
-                    property.value,
-                    property.key,
-                    'void',
-                    language,
-                  );
-                }
-
-                if (propertyTypeAnnotation.type === 'PromiseTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                    hasteModuleName,
-                    property.value,
-                    property.key,
-                    'Promise',
-                    language,
-                  );
-                }
-
-                return {
-                  name: key.name,
-                  optional,
-                  typeAnnotation: wrapNullable(
-                    isPropertyNullable,
-                    propertyTypeAnnotation,
-                  ),
-                };
               });
             },
           )
