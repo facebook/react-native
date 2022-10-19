@@ -37,6 +37,7 @@ const UIView = {
   // [TODO(macOS GH#774)
   acceptsFirstMouse: true,
   enableFocusRing: true,
+  focusable: true,
   onMouseEnter: true,
   onMouseLeave: true,
   onDragEnter: true,

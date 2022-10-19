@@ -42,11 +42,8 @@ const Text: React.AbstractComponent<
     onResponderTerminationRequest,
     onStartShouldSetResponder,
     pressRetentionOffset,
-    suppressHighlighting,
     ...restProps
   } = props;
-
-  const [isHighlighted, setHighlighted] = useState(false);
 
   const isPressable =
     (onPress != null ||
@@ -64,11 +61,9 @@ const Text: React.AbstractComponent<
             onLongPress,
             onPress,
             onPressIn(event) {
-              setHighlighted(!suppressHighlighting);
               onPressIn?.(event);
             },
             onPressOut(event) {
-              setHighlighted(false);
               onPressOut?.(event);
             },
             onResponderTerminationRequest_DEPRECATED:
@@ -86,7 +81,6 @@ const Text: React.AbstractComponent<
       onPressOut,
       onResponderTerminationRequest,
       onStartShouldSetResponder,
-      suppressHighlighting,
     ],
   );
 
@@ -162,7 +156,6 @@ const Text: React.AbstractComponent<
     <NativeVirtualText
       {...restProps}
       {...eventHandlersForText}
-      isHighlighted={isHighlighted}
       isPressable={isPressable}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
@@ -177,7 +170,6 @@ const Text: React.AbstractComponent<
         accessible={accessible !== false}
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
-        isHighlighted={isHighlighted}
         numberOfLines={numberOfLines}
         selectionColor={selectionColor}
         style={style}

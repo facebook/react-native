@@ -47,7 +47,8 @@ function KeyEventExample(): React.Node {
               validKeysDown={['g', 'Escape', 'Enter', 'ArrowLeft']}
               onKeyDown={e => appendLog('Key Down:' + e.nativeEvent.key)}
               validKeysUp={['c', 'd']}
-              onKeyUp={e => appendLog('Key Up:' + e.nativeEvent.key)}></View>
+              onKeyUp={e => appendLog('Key Up:' + e.nativeEvent.key)}
+            />
             <Text style={styles.title}>TextInput</Text>
             <Text style={styles.text}>
               validKeysDown: [ArrowRight, ArrowDown]{'\n'}
