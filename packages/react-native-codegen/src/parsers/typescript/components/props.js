@@ -13,7 +13,6 @@ const {getSchemaInfo, getTypeAnnotation} = require('./componentsUtils.js');
 
 import type {
   NamedShape,
-  StateTypeAnnotation,
   PropTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';

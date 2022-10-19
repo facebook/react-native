@@ -19,7 +19,7 @@ const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {categorizeProps} = require('./extends');
 const {getCommandOptions, getOptions} = require('./options');
-const {getProps, getState} = require('./props');
+const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
