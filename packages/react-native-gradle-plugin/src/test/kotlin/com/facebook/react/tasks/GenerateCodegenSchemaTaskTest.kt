@@ -70,6 +70,8 @@ class GenerateCodegenSchemaTaskTest {
     assertEquals(
         setOf(
             "**/generated/source/codegen/**/*",
+            "**/build/ASSETS/**/*",
+            "**/build/RES/**/*",
             "**/build/generated/assets/react/**/*",
             "**/build/generated/res/react/**/*",
             "**/build/generated/sourcemaps/react/**/*",
