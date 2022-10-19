@@ -2477,22 +2477,22 @@
   optionalDependencies:
     npmlog "2 || ^3.1.0 || ^4.0.0"
 
-"@react-native-community/cli-clean@^9.1.0":
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-clean/-/cli-clean-9.1.0.tgz#8d6c3591dbaa52a02bf345dcd79c3a997df6ade5"
-  integrity sha512-3HznNw8EBQtLsVyV8b8+h76M9EeJcJgYn5wZVGQ5mghAOhqnSWVbwRvpDdb8ITXaiTIXFGNOxXnGKMXsu0CYTw==
+"@react-native-community/cli-clean@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-clean/-/cli-clean-9.2.1.tgz#198c5dd39c432efb5374582073065ff75d67d018"
+  integrity sha512-dyNWFrqRe31UEvNO+OFWmQ4hmqA07bR9Ief/6NnGwx67IO9q83D5PEAf/o96ML6jhSbDwCmpPKhPwwBbsyM3mQ==
   dependencies:
-    "@react-native-community/cli-tools" "^9.1.0"
+    "@react-native-community/cli-tools" "^9.2.1"
     chalk "^4.1.2"
     execa "^1.0.0"
     prompts "^2.4.0"
 
-"@react-native-community/cli-config@^9.1.0":
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-config/-/cli-config-9.1.0.tgz#f5775b920742672e222e531c04ed3075a6465cf9"
-  integrity sha512-6G9d5weedQ6EMz37ZYXrFHCU2DG3yqvdLs4Jo2383cSxal+oO+kggaTgqLBKoMETz/S80KsMeC/l+MoRjc1pzw==
+"@react-native-community/cli-config@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-config/-/cli-config-9.2.1.tgz#54eb026d53621ccf3a9df8b189ac24f6e56b8750"
+  integrity sha512-gHJlBBXUgDN9vrr3aWkRqnYrPXZLztBDQoY97Mm5Yo6MidsEpYo2JIP6FH4N/N2p1TdjxJL4EFtdd/mBpiR2MQ==
   dependencies:
-    "@react-native-community/cli-tools" "^9.1.0"
+    "@react-native-community/cli-tools" "^9.2.1"
     cosmiconfig "^5.1.0"
     deepmerge "^3.2.0"
     glob "^7.1.3"
@@ -2505,14 +2505,14 @@
   dependencies:
     serve-static "^1.13.1"
 
-"@react-native-community/cli-doctor@^9.1.2":
-  version "9.1.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-doctor/-/cli-doctor-9.1.2.tgz#b82e5b709e2829d0fd3bbdd8f9d531b2886a0afe"
-  integrity sha512-BmacbikyaxR4s54kq17LE0bBK7g8bcjc679ee36DqkX+Xij2VHHynLzTpuDJ8y6iHI2v13vauEMjnh4j612u5w==
+"@react-native-community/cli-doctor@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-doctor/-/cli-doctor-9.2.1.tgz#04859a93f0ea87d78cc7050362b6ce2b1c54fd36"
+  integrity sha512-RpUax0pkKumXJ5hcRG0Qd+oYWsA2RFeMWKY+Npg8q05Cwd1rqDQfWGprkHC576vz26+FPuvwEagoAf6fR2bvJA==
   dependencies:
-    "@react-native-community/cli-config" "^9.1.0"
-    "@react-native-community/cli-platform-ios" "^9.1.2"
-    "@react-native-community/cli-tools" "^9.1.0"
+    "@react-native-community/cli-config" "^9.2.1"
+    "@react-native-community/cli-platform-ios" "^9.2.1"
+    "@react-native-community/cli-tools" "^9.2.1"
     chalk "^4.1.2"
     command-exists "^1.2.8"
     envinfo "^7.7.2"
@@ -2527,23 +2527,23 @@
     sudo-prompt "^9.0.0"
     wcwidth "^1.0.1"
 
-"@react-native-community/cli-hermes@^9.1.0":
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-hermes/-/cli-hermes-9.1.0.tgz#7e98f89767401dcf0be8c6fc8e36228557244014"
-  integrity sha512-Ly4dnlRZZ7FckFfSWnaD5BxszuEe9/WcJ6A7srW5UobqnnmEznDv1IY0oBTq1ggnmzIquM9dJQZ0UbcZeQjkoA==
+"@react-native-community/cli-hermes@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-hermes/-/cli-hermes-9.2.1.tgz#c4aeadc4aa2b55cd0dd931a1a1c1909fd426f31a"
+  integrity sha512-723/NMb7egXzJrbWT1uEkN2hOpw+OOtWTG2zKJ3j7KKgUd8u/pP+/z5jO8xVrq+eYJEMjDK0FBEo1Xj7maR4Sw==
   dependencies:
-    "@react-native-community/cli-platform-android" "^9.1.0"
-    "@react-native-community/cli-tools" "^9.1.0"
+    "@react-native-community/cli-platform-android" "^9.2.1"
+    "@react-native-community/cli-tools" "^9.2.1"
     chalk "^4.1.2"
     hermes-profile-transformer "^0.0.6"
     ip "^1.1.5"
 
-"@react-native-community/cli-platform-android@9.1.0", "@react-native-community/cli-platform-android@^9.1.0":
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-9.1.0.tgz#3f80c202196c3874b86395b7f3f5fc13093d2d9e"
-  integrity sha512-OZ/Krq0wH6T7LuAvwFdJYe47RrHG8IOcoab47H4QQdYGTmJgTS3SlVkr6gn79pZyBGyp7xVizD30QJrIIyDjnw==
+"@react-native-community/cli-platform-android@9.2.1", "@react-native-community/cli-platform-android@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-9.2.1.tgz#cd73cb6bbaeb478cafbed10bd12dfc01b484d488"
+  integrity sha512-VamCZ8nido3Q3Orhj6pBIx48itORNPLJ7iTfy3nucD1qISEDih3DOzCaQCtmqdEBgUkNkNl0O+cKgq5A3th3Zg==
   dependencies:
-    "@react-native-community/cli-tools" "^9.1.0"
+    "@react-native-community/cli-tools" "^9.2.1"
     chalk "^4.1.2"
     execa "^1.0.0"
     fs-extra "^8.1.0"
@@ -2551,24 +2551,24 @@
     logkitty "^0.7.1"
     slash "^3.0.0"
 
-"@react-native-community/cli-platform-ios@9.1.2", "@react-native-community/cli-platform-ios@^9.1.2":
-  version "9.1.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-9.1.2.tgz#fd59b2aadee8d54317f204b3c640767dca5e6225"
-  integrity sha512-XpgA9ymm76yjvtYPByqFF1LP7eM/lH5K3zpkZkV9MJLStOIo3mrzN2ywRDZ/xVOheh5LafS4YMmrjIajf11oIQ==
+"@react-native-community/cli-platform-ios@9.2.1", "@react-native-community/cli-platform-ios@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-9.2.1.tgz#d90740472216ffae5527dfc5f49063ede18a621f"
+  integrity sha512-dEgvkI6CFgPk3vs8IOR0toKVUjIFwe4AsXFvWWJL5qhrIzW9E5Owi0zPkSvzXsMlfYMbVX0COfVIK539ZxguSg==
   dependencies:
-    "@react-native-community/cli-tools" "^9.1.0"
+    "@react-native-community/cli-tools" "^9.2.1"
     chalk "^4.1.2"
     execa "^1.0.0"
     glob "^7.1.3"
     ora "^5.4.1"
 
-"@react-native-community/cli-plugin-metro@^9.1.3":
-  version "9.1.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-plugin-metro/-/cli-plugin-metro-9.1.3.tgz#3c701110dadded44cc2dcbd7067dcbf35a669779"
-  integrity sha512-eLZiGIMybNwkbfKRd8wfNP1u5pnsGYLD3YHlNQyRlfS7AMG7NCQN8bk2uWWJJmWAv632KFLConwJGcLhk6ZNMQ==
+"@react-native-community/cli-plugin-metro@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-plugin-metro/-/cli-plugin-metro-9.2.1.tgz#0ec207e78338e0cc0a3cbe1b43059c24afc66158"
+  integrity sha512-byBGBH6jDfUvcHGFA45W/sDwMlliv7flJ8Ns9foCh3VsIeYYPoDjjK7SawE9cPqRdMAD4SY7EVwqJnOtRbwLiQ==
   dependencies:
-    "@react-native-community/cli-server-api" "^9.1.0"
-    "@react-native-community/cli-tools" "^9.1.0"
+    "@react-native-community/cli-server-api" "^9.2.1"
+    "@react-native-community/cli-tools" "^9.2.1"
     chalk "^4.1.2"
     metro "0.72.3"
     metro-config "0.72.3"
@@ -2578,13 +2578,13 @@
     metro-runtime "0.72.3"
     readline "^1.3.0"
 
-"@react-native-community/cli-server-api@^9.1.0":
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-server-api/-/cli-server-api-9.1.0.tgz#efe04975ea6ea24f86a16d207288e8ac581e6509"
-  integrity sha512-Xf3hUqUc99hVmWOsmfNqUQ+sxhut9MIHlINzlo7Azxlmg9v9U/vtwJVJSIPD6iwPzvaPH1qeshzwy/r0GUR7fg==
+"@react-native-community/cli-server-api@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-server-api/-/cli-server-api-9.2.1.tgz#41ac5916b21d324bccef447f75600c03b2f54fbe"
+  integrity sha512-EI+9MUxEbWBQhWw2PkhejXfkcRqPl+58+whlXJvKHiiUd7oVbewFs0uLW0yZffUutt4FGx6Uh88JWEgwOzAdkw==
   dependencies:
     "@react-native-community/cli-debugger-ui" "^9.0.0"
-    "@react-native-community/cli-tools" "^9.1.0"
+    "@react-native-community/cli-tools" "^9.2.1"
     compression "^1.7.1"
     connect "^3.6.5"
     errorhandler "^1.5.0"
@@ -2593,10 +2593,10 @@
     serve-static "^1.13.1"
     ws "^7.5.1"
 
-"@react-native-community/cli-tools@^9.1.0":
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-9.1.0.tgz#81daf5c2aab2f7d681bb4a6a34246f043ef567c4"
-  integrity sha512-07Z1hyy4cYty84P9cGq+Xf8Vb0S/0ffxLVdVQEMmLjU71sC9YTUv1anJdZyt6f9uUPvA9+e/YIXw5Bu0rvuXIw==
+"@react-native-community/cli-tools@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-9.2.1.tgz#c332324b1ea99f9efdc3643649bce968aa98191c"
+  integrity sha512-bHmL/wrKmBphz25eMtoJQgwwmeCylbPxqFJnFSbkqJPXQz3ManQ6q/gVVMqFyz7D3v+riaus/VXz3sEDa97uiQ==
   dependencies:
     appdirsjs "^1.2.4"
     chalk "^4.1.2"
@@ -2615,19 +2615,19 @@
   dependencies:
     joi "^17.2.1"
 
-"@react-native-community/cli@9.1.3":
-  version "9.1.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-9.1.3.tgz#abe5e406214edb2ca828c51fbdaed7baf776298c"
-  integrity sha512-dfiBxNvqSwxkMduH0eAEJNS+LBbwxm1rOlTO7bN+FZvUwZNCCgIYrixfRo+ifqDUv8N5AbpQB5umnLbs0AjPaA==
+"@react-native-community/cli@9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-9.2.1.tgz#15cc32531fc323d4232d57b1f2d7c571816305ac"
+  integrity sha512-feMYS5WXXKF4TSWnCXozHxtWq36smyhGaENXlkiRESfYZ1mnCUlPfOanNCAvNvBqdyh9d4o0HxhYKX1g9l6DCQ==
   dependencies:
-    "@react-native-community/cli-clean" "^9.1.0"
-    "@react-native-community/cli-config" "^9.1.0"
+    "@react-native-community/cli-clean" "^9.2.1"
+    "@react-native-community/cli-config" "^9.2.1"
     "@react-native-community/cli-debugger-ui" "^9.0.0"
-    "@react-native-community/cli-doctor" "^9.1.2"
-    "@react-native-community/cli-hermes" "^9.1.0"
-    "@react-native-community/cli-plugin-metro" "^9.1.3"
-    "@react-native-community/cli-server-api" "^9.1.0"
-    "@react-native-community/cli-tools" "^9.1.0"
+    "@react-native-community/cli-doctor" "^9.2.1"
+    "@react-native-community/cli-hermes" "^9.2.1"
+    "@react-native-community/cli-plugin-metro" "^9.2.1"
+    "@react-native-community/cli-server-api" "^9.2.1"
+    "@react-native-community/cli-tools" "^9.2.1"
     "@react-native-community/cli-types" "^9.1.0"
     chalk "^4.1.2"
     commander "^9.4.0"
