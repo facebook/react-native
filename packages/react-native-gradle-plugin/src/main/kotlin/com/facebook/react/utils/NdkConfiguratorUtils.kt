@@ -60,8 +60,10 @@ internal object NdkConfiguratorUtils {
         // If the user has not provided a CmakeLists.txt path, let's provide
         // the default one from the framework
         if (ext.externalNativeBuild.cmake.path == null) {
-          System.err.println("NCOR: Patching cmake path file")
-          ext.externalNativeBuild.cmake.path = File("TODO")
+          ext.externalNativeBuild.cmake.path =
+              File(
+                  extension.reactNativeDir.get().asFile,
+                  "cmake-utils/default-app-setup/CMakeLists.txt")
         }
 
         // Parameters should be provided in an additive manner (do not override what
