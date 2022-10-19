@@ -186,6 +186,10 @@ if (isCommitly) {
 
 generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
 
+// Write version number to the build folder
+const releaseVersionFile = path.join('build', '.version');
+fs.writeFileSync(releaseVersionFile, releaseVersion);
+
 if (dryRunBuild) {
   echo('Skipping `npm publish` because --dry-run is set.');
   exit(0);
