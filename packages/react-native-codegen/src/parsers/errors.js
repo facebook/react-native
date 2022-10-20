@@ -11,7 +11,7 @@
 'use strict';
 
 const invariant = require('invariant');
-
+import type {Parser} from './parser';
 export type ParserType = 'Flow' | 'TypeScript';
 
 class ParserError extends Error {
@@ -114,12 +114,11 @@ class UnsupportedGenericParserError extends ParserError {
   constructor(
     nativeModuleName: string,
     genericTypeAnnotation: $FlowFixMe,
-    language: ParserType,
+    parser: Parser,
   ) {
-    const genericName =
-      language === 'TypeScript'
-        ? genericTypeAnnotation.typeName.name
-        : genericTypeAnnotation.id.name;
+    const genericName = parser.nameForGenericTypeAnnotation(
+      genericTypeAnnotation,
+    );
     super(
       nativeModuleName,
       genericTypeAnnotation,

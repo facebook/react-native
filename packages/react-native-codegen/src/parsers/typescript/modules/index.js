@@ -80,7 +80,10 @@ const {
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
 } = require('../../error-utils');
 
+const {TypeScriptParser} = require('../parser');
+
 const language = 'TypeScript';
+const parser = new TypeScriptParser();
 
 function translateArrayTypeAnnotation(
   hasteModuleName: string,
@@ -205,7 +208,7 @@ function translateTypeAnnotation(
         throw new UnsupportedGenericParserError(
           hasteModuleName,
           typeAnnotation,
-          language,
+          parser,
         );
       }
     }
@@ -290,7 +293,7 @@ function translateTypeAnnotation(
           throw new UnsupportedGenericParserError(
             hasteModuleName,
             typeAnnotation,
-            language,
+            parser,
           );
         }
       }
