@@ -124,6 +124,7 @@ def use_react_native! (
     :disable_codegen => ENV['DISABLE_CODEGEN'] == '1',
     :react_native_path => prefix,
     :fabric_enabled => fabric_enabled,
+    :hermes_enabled => hermes_enabled,
     :codegen_output_dir => $CODEGEN_OUTPUT_DIR,
     :package_json_file => File.join(__dir__, "..", "package.json"),
     :folly_version => $FOLLY_VERSION

@@ -29,7 +29,6 @@ Pod::Spec.new do |s|
   s.exclude_files          = "**/test/*"
   s.framework              = "JavaScriptCore"
   s.dependency "React-jsi", version
-
   s.default_subspec        = "Default"
 
   s.subspec "Default" do

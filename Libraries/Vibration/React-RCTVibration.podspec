@@ -44,6 +44,5 @@ Pod::Spec.new do |s|
   s.dependency "React-Codegen", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
-  s.dependency "React-jsc", version
   s.dependency "React-Core/RCTVibrationHeaders", version
 end

@@ -42,7 +42,6 @@ Pod::Spec.new do |s|
   s.dependency "RCTTypeSafety", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
-  s.dependency "React-jsc", version
 
   s.subspec "animations" do |ss|
     ss.dependency             folly_dep_name, folly_version

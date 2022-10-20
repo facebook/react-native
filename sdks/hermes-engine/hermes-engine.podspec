@@ -62,6 +62,10 @@ Pod::Spec.new do |spec|
 
   spec.preserve_paths      = ["destroot/bin/*"].concat(build_type == :debug ? ["**/*.{h,c,cpp}"] : [])
   spec.source_files        = "destroot/include/**/*.h"
+  spec.exclude_files       = [
+                               "destroot/include/jsi/jsi/JSIDynamic.{h,cpp}",
+                               "destroot/include/jsi/jsi/jsilib-*.{h,cpp}",
+                             ]
   spec.header_mappings_dir = "destroot/include"
 
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
