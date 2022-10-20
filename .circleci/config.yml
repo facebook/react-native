@@ -1361,6 +1361,9 @@ jobs:
       latest:
         type: boolean
         default: false
+      dryrun:
+        type: boolean
+        default: false
     executor: reactnativeios
     steps:
       - checkout_code_with_cache
@@ -1373,13 +1376,15 @@ jobs:
       - run:
           name: "Set new react-native version and commit changes"
           command: |
-            node ./scripts/prepare-package-for-release.js -v << parameters.version >> -l << parameters.latest >>
+            node ./scripts/prepare-package-for-release.js -v << parameters.version >> -l << parameters.latest >> --dry-run << parameters.dryrun >>
 
   build_npm_package:
     parameters:
-      publish_npm_args:
-        type: string
-        default: --dry-run
+      release_type:
+        description: The type of release to build. Must be one of "nightly", "release", "dry-run".
+        type: enum
+        enum: ["nightly", "release", "dry-run"]
+        default: "dry-run"
     executor: reactnativeandroid
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -1422,8 +1427,8 @@ jobs:
       - when:
           condition:
             or:
-              - equal: [ --release, << parameters.publish_npm_args >> ]
-              - equal: [ --nightly, << parameters.publish_npm_args >> ]
+              - equal: [ "release", << parameters.release_type >> ]
+              - equal: [ "nightly", << parameters.release_type >> ]
           steps:
             - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
             - run: |
@@ -1432,7 +1437,7 @@ jobs:
                 echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
       # END: Stables and nightlies
 
-      - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
+      - run: node ./scripts/publish-npm.js --<< parameters.release_type >>
       - run:
           name: Zip Hermes Native Symbols
           command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
@@ -1443,7 +1448,7 @@ jobs:
       # Provide a react-native package for this commit as a Circle CI release artifact.
       - when:
           condition:
-            equal: [ --dry-run, << parameters.publish_npm_args >> ]
+            equal: [ "dry-run", << parameters.release_type >> ]
           steps:
             - run:
                 name: Build release package as a job artifact
@@ -1475,7 +1480,7 @@ jobs:
       # START: Stable releases
       - when:
           condition:
-            equal: [ --release, << parameters.publish_npm_args >> ]
+            equal: [ "release", << parameters.release_type >> ]
           steps:
             - run:
                 name: Update rn-diff-purge to generate upgrade-support diff
@@ -1484,15 +1489,44 @@ jobs:
                     -H "Accept: application/vnd.github.v3+json" \
                     -u "$PAT_USERNAME:$PAT_TOKEN" \
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
+      # END: Stable releases
+
+      # START: Stables and commitlies
+      - when:
+          condition:
+            or:
+              - equal: [ "release", << parameters.release_type >> ]
+              - equal: [ "dry-run", << parameters.release_type >> ]
+          steps:
             - run:
                 name: Install dependencies
                 command: apt update && apt install -y jq jo
             - run:
                 name: Create draft GitHub Release and upload Hermes binaries
                 command: |
-                  ARTIFACTS=("$HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-$CIRCLE_TAG.tar.gz")
-                  ./scripts/circleci/create_github_release.sh $CIRCLE_TAG $CIRCLE_PROJECT_USERNAME $CIRCLE_PROJECT_REPONAME $GITHUB_TOKEN "${ARTIFACTS[@]}"
-      # END: Stable releases
+                  RELEASE_VERSION=$(cat build/.version)
+                  if [[ << parameters.release_type >> == "release" ]]; then
+                    GIT_TAG=$CIRCLE_TAG
+                  elif [[ << parameters.release_type >> == "dry-run" ]]; then
+                    GIT_TAG=v1000.0.0
+                  fi
+
+                  ARTIFACTS=("")
+                  for build_type in "Debug" "Release"; do
+                    TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js \
+                      --buildType $build_type \
+                      --releaseVersion $RELEASE_VERSION)
+
+                    ARTIFACTS+=("$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME")
+                  done
+
+                  ./scripts/circleci/create_github_release.sh \
+                    << parameters.release_type >> \
+                    $GIT_TAG \
+                    $RELEASE_VERSION \
+                    $GITHUB_TOKEN \
+                    "${ARTIFACTS[@]}"
+      # END: Stable and commitlies
 
   # -------------------------
   #    JOBS: Nightly
@@ -1551,7 +1585,7 @@ workflows:
             - prepare_hermes_workspace
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
-          publish_npm_args: --dry-run
+          release_type: "dry-run"
           requires:
             - build_hermesc_linux
             - build_hermes_macos
@@ -1639,8 +1673,39 @@ workflows:
       - build_npm_package:
           name: build_and_publish_npm_package
           context: react-native-bot
-          publish_npm_args: --release
+          release_type: "release"
           filters: *only_release_tags
+          requires:
+            - build_hermesc_linux
+            - build_hermes_macos
+            - build_hermesc_windows
+
+  package_and_publish_release_dryrun:
+    jobs:
+      - prepare_package_for_release:
+          name: prepare_package_for_release
+          version: 'v1000.0.1'
+          latest : false
+          dryrun: true
+      - prepare_hermes_workspace:
+          requires:
+            - prepare_package_for_release
+      - build_hermesc_linux:
+          requires:
+            - prepare_hermes_workspace
+      - build_hermes_macos:
+          requires:
+            - prepare_hermes_workspace
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
+      - build_hermesc_windows:
+          requires:
+            - prepare_hermes_workspace
+      - build_npm_package:
+          name: build_and_publish_npm_package
+          context: react-native-bot
+          release_type: "dry-run"
           requires:
             - build_hermesc_linux
             - build_hermes_macos
@@ -1684,7 +1749,7 @@ workflows:
           requires:
             - prepare_hermes_workspace
       - build_npm_package:
-          publish_npm_args: --nightly
+          release_type: "nightly"
           requires:
             - build_hermesc_linux
             - build_hermes_macos
