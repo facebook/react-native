@@ -23,6 +23,7 @@ const {
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   UnsupportedModulePropertyParserError,
+  MoreThanOneModuleInterfaceParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -233,6 +234,21 @@ function throwIfPropertyValueTypeIsUnsupported(
   );
 }
 
+function throwIfMoreThanOneModuleInterfaceParserError(
+  nativeModuleName: string,
+  moduleSpecs: $ReadOnlyArray<$FlowFixMe>,
+  parserType: ParserType,
+) {
+  if (moduleSpecs.length > 1) {
+    throw new MoreThanOneModuleInterfaceParserError(
+      nativeModuleName,
+      moduleSpecs,
+      moduleSpecs.map(node => node.id.name),
+      parserType,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -244,4 +260,5 @@ module.exports = {
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfUntypedModule,
   throwIfModuleTypeIsUnsupported,
+  throwIfMoreThanOneModuleInterfaceParserError,
 };

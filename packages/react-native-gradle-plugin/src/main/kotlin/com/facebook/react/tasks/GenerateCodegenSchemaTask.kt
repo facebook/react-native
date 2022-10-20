@@ -38,6 +38,8 @@ abstract class GenerateCodegenSchemaTask : Exec() {
         // .js files could be stored/generated. We want to make sure we don't pick them up
         // for execution avoidance.
         it.exclude("**/generated/source/codegen/**/*")
+        it.exclude("**/build/ASSETS/**/*")
+        it.exclude("**/build/RES/**/*")
         it.exclude("**/build/generated/assets/react/**/*")
         it.exclude("**/build/generated/res/react/**/*")
         it.exclude("**/build/generated/sourcemaps/react/**/*")
