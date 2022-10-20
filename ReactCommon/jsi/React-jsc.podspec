@@ -16,22 +16,27 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.07.22.00'
-boost_compiler_flags = '-Wno-documentation'
-
 Pod::Spec.new do |s|
-  s.name                   = "React-runtimeexecutor"
+  s.name                   = "React-jsc"
   s.version                = version
-  s.summary                = "-"  # TODO
+  s.summary                = "JavaScriptCore engine for React Native"
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "12.4" }
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h}"
-  s.header_dir             = "ReactCommon"
-
+  s.source_files           = "JSCRuntime.{cpp,h}"
+  s.exclude_files          = "**/test/*"
+  s.framework              = "JavaScriptCore"
   s.dependency "React-jsi", version
-  s.dependency "React-jsc", version
+
+  s.default_subspec        = "Default"
+
+  s.subspec "Default" do
+    # no-op
+  end
+
+  s.subspec "Fabric" do |ss|
+    ss.pod_target_xcconfig  = { "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" }
+  end
 end

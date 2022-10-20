@@ -95,6 +95,7 @@ Pod::Spec.new do |s|
   s.dependency "React-cxxreact", version
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
+  s.dependency "React-jsc", version
   s.dependency "React-jsiexecutor", version
   s.dependency "Yoga"
   s.dependency "glog"

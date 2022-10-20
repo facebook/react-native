@@ -40,4 +40,5 @@ Pod::Spec.new do |s|
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-jsi", version
+  s.dependency "React-jsc", version
 end

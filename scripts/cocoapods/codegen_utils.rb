@@ -104,6 +104,7 @@ class CodegenUtils
             "RCTTypeSafety": [version],
             "React-Core": [version],
             "React-jsi": [version],
+            "React-jsc": [version],
             "ReactCommon/turbomodule/core": [version]
           }
         }
