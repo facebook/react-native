@@ -23,12 +23,6 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   private val objects = project.objects
 
   /**
-   * Whether the React App plugin should apply its logic or not. Set it to false if you're still
-   * relying on `react.gradle` to configure your build. Default: false
-   */
-  val applyAppPlugin: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
-
-  /**
    * The path to the root of your project. This is the path to where the `package.json` lives. All
    * the CLI commands will be invoked from this folder as working directory.
    *
