@@ -7,7 +7,7 @@ require 'json'
 require 'open3'
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
-require_relative './cocoapods/hermes.rb'
+require_relative './cocoapods/jsengine.rb'
 require_relative './cocoapods/flipper.rb'
 require_relative './cocoapods/fabric.rb'
 require_relative './cocoapods/codegen.rb'
@@ -95,11 +95,16 @@ def use_react_native! (
 
   pod 'React-bridging', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
-  pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
-  pod 'React-jsc', :path => "#{prefix}/ReactCommon/jsi"
+
+  if hermes_enabled
+    setup_hermes!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
+  else
+    setup_jsc!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
+  end
   pod 'React-jsidynamic', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
+
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
@@ -128,10 +133,8 @@ def use_react_native! (
 
   if fabric_enabled
     checkAndGenerateEmptyThirdPartyProvider!(prefix, new_arch_enabled, $CODEGEN_OUTPUT_DIR)
-    setup_fabric!(prefix)
+    setup_fabric!(:react_native_path => prefix)
   end
-
-  install_hermes_if_enabled(hermes_enabled, prefix)
 
   # CocoaPods `configurations` option ensures that the target is copied only for the specified configurations,
   # but those dependencies are still built.
