@@ -43,5 +43,6 @@ Pod::Spec.new do |s|
   s.dependency "RCTTypeSafety", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
+  s.dependency "React-jsc", version
   s.dependency "React-Core/RCTAnimationHeaders", version
 end

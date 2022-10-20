@@ -27,7 +27,7 @@ boost_compiler_flags = '-Wno-documentation'
 Pod::Spec.new do |s|
   s.name                   = "React-hermes"
   s.version                = version
-  s.summary                = "-"  # TODO
+  s.summary                = "Hermes engine for React Native"
   s.homepage               = "https://reactnative.dev/"
   s.license                = package['license']
   s.author                 = "Facebook, Inc. and its affiliates"
