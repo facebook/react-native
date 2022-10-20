@@ -67,6 +67,7 @@ def use_react_native! (
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
   ENV['RCT_NEW_ARCH_ENABLED'] = new_arch_enabled ? "1" : "0"
   fabric_enabled = fabric_enabled || new_arch_enabled
+  ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
 
   prefix = path
 
