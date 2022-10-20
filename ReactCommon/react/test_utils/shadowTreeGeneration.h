@@ -8,6 +8,7 @@
 #pragma once
 
 #include <glog/logging.h>
+#include <gtest/gtest.h>
 #include <algorithm>
 #include <iostream>
 #include <memory>
@@ -232,6 +233,11 @@ static inline ShadowNode::Unshared messWithYogaStyles(
       "paddingRight", "paddingBottom", "width",       "height",
       "maxWidth",     "maxHeight",     "minWidth",    "minHeight",
   };
+
+  // It is not safe to add new Yoga properties to this list. Unit tests
+  // validate specific seeds, and what they test may change and cause unrelated
+  // failures if the size of properties also changes.
+  EXPECT_EQ(properties.size(), 20);
 
   for (auto const &property : properties) {
     if (entropy.random<bool>(0.1)) {
