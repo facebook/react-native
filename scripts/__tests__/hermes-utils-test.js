@@ -101,6 +101,10 @@ function populateMockFilesystem() {
     path.join(SDKS_DIR, 'hermes-engine', 'hermes-engine.podspec'),
     'Dummy file',
   );
+  fs.writeFileSync(
+    path.join(SDKS_DIR, 'hermes-engine', 'hermes-utils.rb'),
+    'Dummy file',
+  );
 }
 
 describe('hermes-utils', () => {
@@ -272,6 +276,23 @@ describe('hermes-utils', () => {
       ).toEqual(
         fs.readFileSync(
           path.join(SDKS_DIR, 'hermes-engine', 'hermes-engine.podspec'),
+          {
+            encoding: 'utf8',
+            flag: 'r',
+          },
+        ),
+      );
+    });
+    it('should copy hermes-utils.rb to Hermes source directory', () => {
+      copyPodSpec();
+      expect(
+        fs.readFileSync(path.join(SDKS_DIR, 'hermes', 'hermes-utils.rb'), {
+          encoding: 'utf8',
+          flag: 'r',
+        }),
+      ).toEqual(
+        fs.readFileSync(
+          path.join(SDKS_DIR, 'hermes-engine', 'hermes-utils.rb'),
           {
             encoding: 'utf8',
             flag: 'r',
