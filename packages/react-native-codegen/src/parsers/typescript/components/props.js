@@ -11,10 +11,7 @@
 'use strict';
 const {getSchemaInfo, getTypeAnnotation} = require('./componentsUtils.js');
 
-import type {
-  NamedShape,
-  PropTypeAnnotation,
-} from '../../../CodegenSchema.js';
+import type {NamedShape, PropTypeAnnotation} from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
 
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
