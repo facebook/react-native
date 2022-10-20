@@ -117,7 +117,6 @@ class ReactPlugin : Plugin<Project> {
             "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) {
               it.dependsOn(generateCodegenSchemaTask)
               it.reactNativeDir.set(extension.reactNativeDir)
-              @Suppress("DEPRECATION") it.deprecatedReactRoot.set(extension.reactRoot)
               it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
               it.codegenDir.set(extension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)
