@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 require "json"
+require_relative "./hermes-utils.rb"
 
 react_native_path = File.join(__dir__, "..", "..")
 
@@ -24,13 +25,21 @@ import_hermesc_file=File.join(react_native_path, "sdks", "hermesc", "osx-bin", "
 source = {}
 git = "https://github.com/facebook/hermes.git"
 
+isInMain = version.include?('1000.0.0')
+isNightly = version.start_with?('0.0.0-')
+
 if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
   Pod::UI.puts '[Hermes] Using pre-built Hermes binaries from local path.' if Object.const_defined?("Pod::UI")
   source[:http] = "file://#{ENV['HERMES_ENGINE_TARBALL_PATH']}"
-elsif version.include? '1000.0.0' || version.start_with?('0.0.0-')
+elsif isInMain
   Pod::UI.puts '[Hermes] Installing hermes-engine may take a while, building Hermes from source...'.yellow if Object.const_defined?("Pod::UI")
   source[:git] = git
   source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
+elsif isNightly
+  Pod::UI.puts '[Hermes] Nightly version, download pre-built for Hermes'.yellow if Object.const_defined?("Pod::UI")
+  destination_path = download_nightly_hermes(react_native_path, version)
+  # set tarball as hermes engine
+  source[:http] = "file://#{destination_path}"
 elsif File.exists?(hermestag_file) && isInCI
   Pod::UI.puts '[Hermes] Detected that you are on a React Native release branch, building Hermes from source...'.yellow if Object.const_defined?("Pod::UI")
   hermestag = File.read(hermestag_file).strip
