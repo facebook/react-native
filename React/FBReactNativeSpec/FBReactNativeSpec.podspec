@@ -47,6 +47,7 @@ Pod::Spec.new do |s|
   s.dependency "RCTTypeSafety", version
   s.dependency "React-Core", version
   s.dependency "React-jsi", version
+  s.dependency "React-jsc", version
   s.dependency "ReactCommon/turbomodule/core", version
 
   use_react_native_codegen!(s, {
