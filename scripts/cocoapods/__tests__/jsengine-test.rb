@@ -98,7 +98,7 @@ class JSEngineTests < Test::Unit::TestCase
             "returned by",
             "prepare-hermes-for-build",
         ])
-        assert_equal($podInvocationCount, 5)
+        assert_equal($podInvocationCount, 4)
         assert_equal($podInvocation["React-jsi"][:path], "../../ReactCommon/jsi")
         assert_equal($podInvocation["React-hermes"][:path], "../../ReactCommon/hermes")
         assert_equal($podInvocation["libevent"][:version], "~> 2.1.12")
@@ -113,10 +113,8 @@ class JSEngineTests < Test::Unit::TestCase
         setup_hermes!(:react_native_path => @react_native_path, :fabric_enabled => fabric_enabled)
 
         # Assert
-        assert_equal($podInvocationCount, 6)
+        assert_equal($podInvocationCount, 4)
         assert_equal($podInvocation["React-jsi"][:path], "../../ReactCommon/jsi")
-        assert_equal($podInvocation["React-jsc"][:path], "../../ReactCommon/jsi")
-        assert_equal($podInvocation["React-jsc/Fabric"][:path], "../../ReactCommon/jsi")
         assert_equal($podInvocation["hermes-engine"][:podspec], "../../sdks/hermes/hermes-engine.podspec")
         assert_equal($podInvocation["React-hermes"][:path], "../../ReactCommon/hermes")
         assert_equal($podInvocation["libevent"][:version], "~> 2.1.12")

@@ -5,6 +5,10 @@
 
 require "json"
 
+js_engine = ENV['USE_HERMES'] == "0" ?
+  :jsc :
+  :hermes
+
 package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
 version = package['version']
 
@@ -25,12 +29,19 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "12.4" }
   s.source                 = source
-  s.source_files           = "jsi/*.{cpp,h}"
-  s.exclude_files          = [
-                               "jsi/JSIDynamic.{h,cpp}",
-                               "jsi/jsilib-posix.cpp",
-                               "jsi/jsilib-windows.cpp",
-                               "**/test/*"
-                             ]
-  s.header_dir             = "jsi"
+
+  if js_engine == :jsc
+    s.source_files  = "**/*.{cpp,h}"
+    s.exclude_files = [
+                        "jsi/JSIDynamic.{h,cpp}",
+                        "jsi/jsilib-posix.cpp",
+                        "jsi/jsilib-windows.cpp",
+                        "**/test/*"
+                      ]
+    s.header_dir    = "jsi"
+  elsif js_engine == :hermes
+    # JSI is provided by hermes-engine when Hermes is enabled
+    s.source_files = ""
+    s.dependency "hermes-engine"
+  end
 end

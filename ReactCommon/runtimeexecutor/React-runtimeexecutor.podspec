@@ -33,5 +33,4 @@ Pod::Spec.new do |s|
   s.header_dir             = "ReactCommon"
 
   s.dependency "React-jsi", version
-  s.dependency "React-jsc", version
 end

@@ -39,9 +39,9 @@ class CodegenUtilsTests < Test::Unit::TestCase
         Dir.reset()
     end
 
-    # ================================== #
-    # Test - GenerateReactCodegenPodspec #
-    # ================================== #
+    # ================================== #
+    # Test - GenerateReactCodegenPodspec #
+    # ================================== #
 
     def testGenerateReactCodegenPodspec_whenItHasBeenAlreadyGenerated_doesNothing
         # Arrange
@@ -80,18 +80,19 @@ class CodegenUtilsTests < Test::Unit::TestCase
         assert_true(CodegenUtils.react_codegen_podspec_generated)
     end
 
-    # ========================== #
-    # Test - GetReactCodegenSpec #
-    # ========================== #
+    # ========================== #
+    # Test - GetReactCodegenSpec #
+    # ========================== #
 
     def testGetReactCodegenSpec_whenFabricDisabledAndNoScriptPhases_generatesAPodspec
-        # Arrange
+        # Arrange
         File.files_to_read('package.json' => '{ "version": "99.98.97"}')
 
-        # Act
+        # Act
         podspec = CodegenUtils.new().get_react_codegen_spec(
             'package.json',
             :fabric_enabled => false,
+            :hermes_enabled => true,
             :script_phases => nil
         )
 
@@ -101,13 +102,14 @@ class CodegenUtilsTests < Test::Unit::TestCase
     end
 
     def testGetReactCodegenSpec_whenFabricEnabledAndScriptPhases_generatesAPodspec
-        # Arrange
+        # Arrange
         File.files_to_read('package.json' => '{ "version": "99.98.97"}')
 
         # Act
         podspec = CodegenUtils.new().get_react_codegen_spec(
             'package.json',
             :fabric_enabled => true,
+            :hermes_enabled => true,
             :script_phases => "echo Test Script Phase"
         )
 
@@ -117,11 +119,11 @@ class CodegenUtilsTests < Test::Unit::TestCase
     end
 
     # =============================== #
-    # Test - GetCodegenConfigFromFile #
-    # =============================== #
+    # Test - GetCodegenConfigFromFile #
+    # =============================== #
 
     def testGetCodegenConfigFromFile_whenFileDoesNotExists_returnEmpty
-        # Arrange
+        # Arrange
 
         # Act
         codegen = CodegenUtils.new().get_codegen_config_from_file('package.json', 'codegenConfig')
@@ -131,7 +133,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
     end
 
     def testGetCodegenConfigFromFile_whenFileExistsButHasNoKey_returnEmpty
-        # Arrange
+        # Arrange
         File.mocked_existing_files(['package.json'])
         File.files_to_read('package.json' => '{ "codegenConfig": {}}')
 
@@ -143,7 +145,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
     end
 
     def testGetCodegenConfigFromFile_whenFileExistsAndHasKey_returnObject
-        # Arrange
+        # Arrange
         File.mocked_existing_files(['package.json'])
         File.files_to_read('package.json' => '{ "codegenConfig": {"name": "MySpec"}}')
 
@@ -217,7 +219,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
     # ================================== #
     # Test - GetReactCodegenScriptPhases #
-    # ================================== #
+    # ================================== #
 
     def testGetReactCodegenScriptPhases_whenAppPathNotDefined_abort
         # Arrange
@@ -370,9 +372,9 @@ class CodegenUtilsTests < Test::Unit::TestCase
         ])
     end
 
-    # ============================= #
-    # Test - CleanUpCodegenFolder #
-    # ============================= #
+    # ============================= #
+    # Test - CleanUpCodegenFolder #
+    # ============================= #
 
     def testCleanUpCodegenFolder_whenCleanupDone_doNothing
         # Arrange
@@ -463,7 +465,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "RCTTypeSafety": ["99.98.97"],
             "React-Core": ["99.98.97"],
             "React-jsi": ["99.98.97"],
-            "React-jsc": ["99.98.97"],
+            "hermes-engine": ["99.98.97"],
             "ReactCommon/turbomodule/core": ["99.98.97"]
           }
         }

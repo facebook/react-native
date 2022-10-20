@@ -30,10 +30,6 @@ def setup_hermes!(react_native_path: "../node_modules/react-native", fabric_enab
     abort unless prep_status == 0
 
     pod 'React-jsi', :path => "#{react_native_path}/ReactCommon/jsi"
-    pod 'React-jsc', :path => "#{react_native_path}/ReactCommon/jsi"
-    if fabric_enabled
-        pod 'React-jsc/Fabric', :path => "#{react_native_path}/ReactCommon/jsi"
-    end
     pod 'hermes-engine', :podspec => "#{react_native_path}/sdks/hermes/hermes-engine.podspec"
     pod 'React-hermes', :path => "#{react_native_path}/ReactCommon/hermes"
     pod 'libevent', '~> 2.1.12'
