@@ -11,7 +11,9 @@
 'use strict';
 
 import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
-import type {TypeDeclarationMap} from '../utils.js';
+import type {TypeDeclarationMap} from '../../utils';
+const {parseTopLevelType} = require('../parseTopLevelType');
+const {flattenProperties} = require('./componentsUtils.js');
 
 function extendsForProp(prop: PropsAST, types: TypeDeclarationMap) {
   if (!prop.expression) {
@@ -36,31 +38,66 @@ function extendsForProp(prop: PropsAST, types: TypeDeclarationMap) {
   }
 }
 
-function removeKnownExtends(
-  typeDefinition: $ReadOnlyArray<PropsAST>,
-  types: TypeDeclarationMap,
-): $ReadOnlyArray<PropsAST> {
-  return typeDefinition.filter(
-    prop =>
-      prop.type !== 'TSExpressionWithTypeArguments' ||
-      extendsForProp(prop, types) === null,
-  );
+function isEvent(typeAnnotation: $FlowFixMe): boolean {
+  if (typeAnnotation.type !== 'TSTypeReference') {
+    return false;
+  }
+  const eventNames = new Set(['BubblingEventHandler', 'DirectEventHandler']);
+  return eventNames.has(typeAnnotation.typeName.name);
+}
+
+function isProp(name: string, typeAnnotation: $FlowFixMe): boolean {
+  if (typeAnnotation.type !== 'TSTypeReference') {
+    return true;
+  }
+  const isStyle =
+    name === 'style' &&
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.typeName.name === 'ViewStyleProp';
+  return !isStyle;
 }
 
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type PropsAST = Object;
 
-function getExtendsProps(
+function categorizeProps(
   typeDefinition: $ReadOnlyArray<PropsAST>,
   types: TypeDeclarationMap,
-): $ReadOnlyArray<ExtendsPropsShape> {
-  return typeDefinition
-    .filter(prop => prop.type === 'TSExpressionWithTypeArguments')
-    .map(prop => extendsForProp(prop, types))
-    .filter(Boolean);
+  extendsProps: Array<ExtendsPropsShape>,
+  props: Array<PropsAST>,
+  events: Array<PropsAST>,
+): void {
+  const remaining: Array<PropsAST> = [];
+  for (const prop of typeDefinition) {
+    // find extends
+    if (prop.type === 'TSExpressionWithTypeArguments') {
+      const extend = extendsForProp(prop, types);
+      if (extend) {
+        extendsProps.push(extend);
+        continue;
+      }
+    }
+
+    remaining.push(prop);
+  }
+
+  // find events and props
+  for (const prop of flattenProperties(remaining, types)) {
+    if (prop.type === 'TSPropertySignature') {
+      const topLevelType = parseTopLevelType(
+        prop.typeAnnotation.typeAnnotation,
+        types,
+      );
+
+      if (isEvent(topLevelType.type)) {
+        events.push(prop);
+      } else if (isProp(prop.key.name, prop)) {
+        props.push(prop);
+      }
+    }
+  }
 }
 
 module.exports = {
-  getExtendsProps,
-  removeKnownExtends,
+  categorizeProps,
 };

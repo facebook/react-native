@@ -7,8 +7,7 @@
 
 #include "AndroidSwitchShadowNode.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char AndroidSwitchComponentName[] = "AndroidSwitch";
 
@@ -27,5 +26,4 @@ Size AndroidSwitchShadowNode::measureContent(
   return measurementsManager_->measure(getSurfaceId(), layoutConstraints);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

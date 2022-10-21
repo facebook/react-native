@@ -156,6 +156,12 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
     isParagraphStyleUsed = YES;
   }
 
+  if (textAttributes.lineBreakStrategy.has_value()) {
+    paragraphStyle.lineBreakStrategy =
+        RCTNSLineBreakStrategyFromLineBreakStrategy(textAttributes.lineBreakStrategy.value());
+    isParagraphStyleUsed = YES;
+  }
+
   if (!isnan(textAttributes.lineHeight)) {
     CGFloat lineHeight = textAttributes.lineHeight * RCTEffectiveFontSizeMultiplierFromTextAttributes(textAttributes);
     paragraphStyle.minimumLineHeight = lineHeight;
@@ -305,6 +311,50 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   return [attributes copy];
 }
 
+static void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
+{
+  __block CGFloat maximumLineHeight = 0;
+
+  [attributedText enumerateAttribute:NSParagraphStyleAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:^(NSParagraphStyle *paragraphStyle, __unused NSRange range, __unused BOOL *stop) {
+                            if (!paragraphStyle) {
+                              return;
+                            }
+
+                            maximumLineHeight = MAX(paragraphStyle.maximumLineHeight, maximumLineHeight);
+                          }];
+
+  if (maximumLineHeight == 0) {
+    // `lineHeight` was not specified, nothing to do.
+    return;
+  }
+
+  __block CGFloat maximumFontLineHeight = 0;
+
+  [attributedText enumerateAttribute:NSFontAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
+                            if (!font) {
+                              return;
+                            }
+
+                            maximumFontLineHeight = MAX(font.lineHeight, maximumFontLineHeight);
+                          }];
+
+  if (maximumLineHeight < maximumFontLineHeight) {
+    return;
+  }
+
+  CGFloat baseLineOffset = (maximumLineHeight - maximumFontLineHeight) / 2.0;
+
+  [attributedText addAttribute:NSBaselineOffsetAttributeName
+                         value:@(baseLineOffset)
+                         range:NSMakeRange(0, attributedText.length)];
+}
+
 NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedString &attributedString)
 {
   static UIImage *placeholderImage;
@@ -357,7 +407,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
 
     [nsAttributedString appendAttributedString:nsAttributedStringFragment];
   }
-
+  RCTApplyBaselineOffset(nsAttributedString);
   [nsAttributedString endEditing];
 
   return nsAttributedString;

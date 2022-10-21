@@ -30,8 +30,7 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
 static std::string GetMutationInstructionString(
@@ -1683,5 +1682,4 @@ void LayoutAnimationKeyFrameManager::simulateImagePropsMemoryAccess(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

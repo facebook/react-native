@@ -21,9 +21,10 @@ const {
 class AppPropertiesUpdateExample extends React.Component<{...}> {
   render(): React.Node {
     // Do not require this unless we are actually rendering.
-    const UpdatePropertiesExampleView = requireNativeComponent(
-      'UpdatePropertiesExampleView',
-    );
+    const UpdatePropertiesExampleView = requireNativeComponent<
+      | any
+      | {children: React.MixedElement, style: {height: number, width: number}},
+    >('UpdatePropertiesExampleView');
     return (
       <View style={styles.container}>
         <Text style={styles.text}>
@@ -43,9 +44,10 @@ class AppPropertiesUpdateExample extends React.Component<{...}> {
 class RootViewSizeFlexibilityExample extends React.Component<{...}> {
   render(): React.Node {
     // Do not require this unless we are actually rendering.
-    const FlexibleSizeExampleView = requireNativeComponent(
-      'FlexibleSizeExampleView',
-    );
+    const FlexibleSizeExampleView = requireNativeComponent<
+      | any
+      | {children: React.MixedElement, style: {height: number, width: number}},
+    >('FlexibleSizeExampleView');
     return (
       <View style={styles.container}>
         <Text style={styles.text}>

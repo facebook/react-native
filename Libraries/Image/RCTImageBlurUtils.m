@@ -18,17 +18,17 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
     return inputImage;
   }
 
-  //convert to ARGB if it isn't
-  if (CGImageGetBitsPerPixel(imageRef) != 32 ||
-      CGImageGetBitsPerComponent(imageRef) != 8 ||
+  // convert to ARGB if it isn't
+  if (CGImageGetBitsPerPixel(imageRef) != 32 || CGImageGetBitsPerComponent(imageRef) != 8 ||
       !((CGImageGetBitmapInfo(imageRef) & kCGBitmapAlphaInfoMask))) {
     UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
     rendererFormat.scale = inputImage.scale;
-    UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:inputImage.size format:rendererFormat];
+    UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:inputImage.size
+                                                                                     format:rendererFormat];
 
     imageRef = [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
-      [inputImage drawAtPoint:CGPointZero];
-    }].CGImage;
+                 [inputImage drawAtPoint:CGPointZero];
+               }].CGImage;
   }
 
   vImage_Buffer buffer1, buffer2;
@@ -52,9 +52,9 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   uint32_t boxSize = floor((radius * imageScale * 3 * sqrt(2 * M_PI) / 4 + 0.5) / 2);
   boxSize |= 1; // Ensure boxSize is odd
 
-  //create temp buffer
-  vImage_Error tempBufferSize = vImageBoxConvolve_ARGB8888(&buffer1, &buffer2, NULL, 0, 0, boxSize, boxSize,
-                                                           NULL, kvImageGetTempBufferSize | kvImageEdgeExtend);
+  // create temp buffer
+  vImage_Error tempBufferSize = vImageBoxConvolve_ARGB8888(
+      &buffer1, &buffer2, NULL, 0, 0, boxSize, boxSize, NULL, kvImageGetTempBufferSize | kvImageEdgeExtend);
   if (tempBufferSize < 0) {
     free(buffer1.data);
     free(buffer2.data);
@@ -67,26 +67,31 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
     return inputImage;
   }
 
-  //copy image data
+  // copy image data
   CFDataRef dataSource = CGDataProviderCopyData(CGImageGetDataProvider(imageRef));
   memcpy(buffer1.data, CFDataGetBytePtr(dataSource), bytes);
   CFRelease(dataSource);
 
-  //perform blur
+  // perform blur
   vImageBoxConvolve_ARGB8888(&buffer1, &buffer2, tempBuffer, 0, 0, boxSize, boxSize, NULL, kvImageEdgeExtend);
   vImageBoxConvolve_ARGB8888(&buffer2, &buffer1, tempBuffer, 0, 0, boxSize, boxSize, NULL, kvImageEdgeExtend);
   vImageBoxConvolve_ARGB8888(&buffer1, &buffer2, tempBuffer, 0, 0, boxSize, boxSize, NULL, kvImageEdgeExtend);
 
-  //free buffers
+  // free buffers
   free(buffer2.data);
   free(tempBuffer);
 
-  //create image context from buffer
-  CGContextRef ctx = CGBitmapContextCreate(buffer1.data, buffer1.width, buffer1.height,
-                                           8, buffer1.rowBytes, CGImageGetColorSpace(imageRef),
-                                           CGImageGetBitmapInfo(imageRef));
+  // create image context from buffer
+  CGContextRef ctx = CGBitmapContextCreate(
+      buffer1.data,
+      buffer1.width,
+      buffer1.height,
+      8,
+      buffer1.rowBytes,
+      CGImageGetColorSpace(imageRef),
+      CGImageGetBitmapInfo(imageRef));
 
-  //create image from context
+  // create image from context
   imageRef = CGBitmapContextCreateImage(ctx);
   UIImage *outputImage = [UIImage imageWithCGImage:imageRef scale:imageScale orientation:imageOrientation];
   CGImageRelease(imageRef);

@@ -43,6 +43,8 @@ export type FeatureFlags = {|
    * to render react components driven by classes written in C++.
    */
   enableCppRenderSystem: () => boolean,
+
+  removeListenersOnDetach: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -52,6 +54,7 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   animatedShouldDebounceQueueFlush: () => false,
   animatedShouldUseSingleOp: () => false,
   enableCppRenderSystem: () => false,
+  removeListenersOnDetach: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;

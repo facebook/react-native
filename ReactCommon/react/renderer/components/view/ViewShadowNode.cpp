@@ -10,8 +10,7 @@
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/core/CoreFeatures.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 char const ViewComponentName[] = "View";
 
@@ -92,5 +91,4 @@ void ViewShadowNode::initialize() noexcept {
 #endif
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

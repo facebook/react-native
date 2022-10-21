@@ -19,8 +19,7 @@
 
 #include "ShadowTreeDelegate.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using CommitStatus = ShadowTree::CommitStatus;
 using CommitMode = ShadowTree::CommitMode;
@@ -461,5 +460,4 @@ void ShadowTree::notifyDelegatesOfUpdates() const {
   delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

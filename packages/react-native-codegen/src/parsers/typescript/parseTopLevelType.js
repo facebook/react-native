@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {TypeDeclarationMap} from './utils.js';
+import type {TypeDeclarationMap} from '../utils';
 
 export type LegalDefaultValues = string | number | boolean | null;
 

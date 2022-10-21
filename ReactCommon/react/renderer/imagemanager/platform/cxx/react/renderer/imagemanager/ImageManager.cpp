@@ -7,8 +7,7 @@
 
 #include "ImageManager.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ImageManager::ImageManager(
     ContextContainer::Shared const & /*contextContainer*/) {
@@ -28,5 +27,4 @@ ImageRequest ImageManager::requestImage(
   return {imageSource, nullptr};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

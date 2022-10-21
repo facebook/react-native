@@ -373,7 +373,7 @@ module.exports = {
     packageName?: string,
     assumeNonnull: boolean = false,
   ): FilesOutput {
-    const files = new Map();
+    const files = new Map<string, string>();
     const nativeModules = getModules(schema);
 
     const normalizedPackageName =

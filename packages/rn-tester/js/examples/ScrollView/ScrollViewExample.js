@@ -219,21 +219,21 @@ const examples = ([
           <Button
             label="Scroll to top"
             onPress={() => {
-              nullthrows(_scrollView).scrollTo({y: 0});
+              nullthrows<$FlowFixMe>(_scrollView).scrollTo({y: 0});
             }}
             testID="scroll_to_top_button"
           />
           <Button
             label="Scroll to bottom"
             onPress={() => {
-              nullthrows(_scrollView).scrollToEnd({animated: true});
+              nullthrows<$FlowFixMe>(_scrollView).scrollToEnd({animated: true});
             }}
             testID="scroll_to_bottom_button"
           />
           <Button
             label="Flash scroll indicators"
             onPress={() => {
-              nullthrows(_scrollView).flashScrollIndicators();
+              nullthrows<$FlowFixMe>(_scrollView).flashScrollIndicators();
             }}
             testID="flash_scroll_indicators_button"
           />
@@ -520,14 +520,16 @@ const HorizontalScrollView = (props: {direction: 'ltr' | 'rtl'}) => {
       <Button
         label="Scroll to start"
         onPress={() => {
-          nullthrows(scrollRef.current).scrollTo({x: 0});
+          nullthrows<$FlowFixMe>(scrollRef.current).scrollTo({x: 0});
         }}
         testID={'scroll_to_start_button'}
       />
       <Button
         label="Scroll to end"
         onPress={() => {
-          nullthrows(scrollRef.current).scrollToEnd({animated: true});
+          nullthrows<$FlowFixMe>(scrollRef.current).scrollToEnd({
+            animated: true,
+          });
         }}
         testID={'scroll_to_end_button'}
       />
@@ -954,14 +956,16 @@ const InvertStickyHeaders = () => {
         <Button
           label="Scroll to top"
           onPress={() => {
-            nullthrows(_scrollView.current).scrollTo({y: 0});
+            nullthrows<$FlowFixMe>(_scrollView.current).scrollTo({y: 0});
           }}
           testID="scroll_to_top_button"
         />
         <Button
           label="Scroll to bottom"
           onPress={() => {
-            nullthrows(_scrollView.current).scrollToEnd({animated: true});
+            nullthrows<$FlowFixMe>(_scrollView.current).scrollToEnd({
+              animated: true,
+            });
           }}
           testID="scroll_to_bottom_button"
         />
@@ -992,14 +996,16 @@ const MultipleStickyHeaders = () => {
         <Button
           label="Scroll to top"
           onPress={() => {
-            nullthrows(_scrollView.current).scrollTo({y: 0});
+            nullthrows<$FlowFixMe>(_scrollView.current).scrollTo({y: 0});
           }}
           testID="scroll_to_top_button"
         />
         <Button
           label="Scroll to bottom"
           onPress={() => {
-            nullthrows(_scrollView.current).scrollToEnd({animated: true});
+            nullthrows<$FlowFixMe>(_scrollView.current).scrollToEnd({
+              animated: true,
+            });
           }}
           testID="scroll_to_bottom_button"
         />

@@ -14,14 +14,18 @@ import type {
   Nullable,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
+  NativeModuleFunctionTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   NativeModuleNumberTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   Int32TypeAnnotation,
+  NativeModuleGenericObjectTypeAnnotation,
   ReservedTypeAnnotation,
   ObjectTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
+  StringTypeAnnotation,
+  VoidTypeAnnotation,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {TypeAliasResolutionStatus} from './utils';
@@ -61,6 +65,30 @@ function emitRootTag(nullable: boolean): Nullable<ReservedTypeAnnotation> {
 function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'DoubleTypeAnnotation',
+  });
+}
+
+function emitVoid(nullable: boolean): Nullable<VoidTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'VoidTypeAnnotation',
+  });
+}
+
+function emitStringish(nullable: boolean): Nullable<StringTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'StringTypeAnnotation',
+  });
+}
+function emitFunction(
+  nullable: boolean,
+  translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation,
+): Nullable<NativeModuleFunctionTypeAnnotation> {
+  return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
+}
+
+function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'StringTypeAnnotation',
   });
 }
 
@@ -135,12 +163,25 @@ function emitPromise(
   });
 }
 
+function emitObject(
+  nullable: boolean,
+): Nullable<NativeModuleGenericObjectTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'GenericObjectTypeAnnotation',
+  });
+}
+
 module.exports = {
   emitBoolean,
   emitDouble,
+  emitFunction,
   emitInt32,
   emitNumber,
-  emitRootTag,
-  typeAliasResolution,
+  emitObject,
   emitPromise,
+  emitRootTag,
+  emitVoid,
+  emitString,
+  emitStringish,
+  typeAliasResolution,
 };

@@ -12,8 +12,7 @@
 #include <react/renderer/graphics/conversions.h>
 #include <react/utils/FloatComparison.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 bool ParagraphAttributes::operator==(const ParagraphAttributes &rhs) const {
   return std::tie(
@@ -55,5 +54,4 @@ SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

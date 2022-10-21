@@ -372,20 +372,16 @@ void Binding::installFabricUIManager(
   enableFabricLogs_ =
       config->getBool("react_fabric:enabled_android_fabric_logs");
 
-  disableRevisionCheckForPreallocation_ =
-      config->getBool("react_fabric:disable_revision_check_for_preallocation");
-
-  disablePreallocationOnClone_ =
-      getFeatureFlagValue("disablePreallocationOnClone");
-
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
                  << this << ").";
   }
 
-  sharedCppComponentRegistry_ =
-      std::shared_ptr<const facebook::react::CppComponentRegistry>(
-          cppComponentRegistry ? cppComponentRegistry : nullptr);
+  // TODO[T135327389]: Investigate why code relying on CppComponentRegistry
+  // crashing during hot reload restart.
+  // sharedCppComponentRegistry_ =
+  //     std::shared_ptr<const facebook::react::CppComponentRegistry>(
+  //         cppComponentRegistry ? cppComponentRegistry : nullptr);
 
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
   // at the same time
@@ -438,22 +434,11 @@ void Binding::installFabricUIManager(
   reactNativeConfig_ = config;
 
   contextContainer->insert(
-      "MapBufferSerializationEnabled",
-      getFeatureFlagValue("mapBufferSerializationEnabled"));
-
-  contextContainer->insert(
       "CalculateTransformedFramesEnabled",
       getFeatureFlagValue("calculateTransformedFramesEnabled"));
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
-
-  dispatchPreallocationInBackground_ = reactNativeConfig_->getBool(
-      "react_native_new_architecture:dispatch_preallocation_in_bg");
-
-  contextContainer->insert(
-      "EnableLargeTextMeasureCache",
-      getFeatureFlagValue("enableLargeTextMeasureCache"));
 
   // Props setter pattern feature
   CoreFeatures::enablePropIteratorSetter =
@@ -535,37 +520,6 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   preallocateView(surfaceId, shadowNode);
 }
 
-void Binding::schedulerDidCloneShadowNode(
-    SurfaceId surfaceId,
-    ShadowNode const &oldShadowNode,
-    ShadowNode const &newShadowNode) {
-  if (disablePreallocationOnClone_) {
-    return;
-  }
-  // This is only necessary if view preallocation was skipped during
-  // createShadowNode
-
-  // We may need to PreAllocate a ShadowNode at this point if this is the
-  // earliest point it is possible to do so:
-  // 1. The revision is exactly 1
-  // 2. At revision 0 (the old node), View Preallocation would have been skipped
-
-  if (!disableRevisionCheckForPreallocation_) {
-    if (newShadowNode.getProps()->revision != 1) {
-      return;
-    }
-    if (oldShadowNode.getProps()->revision != 0) {
-      return;
-    }
-  }
-
-  // If the new node is concrete and the old wasn't, we can preallocate
-  if (!oldShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView) &&
-      newShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
-    preallocateView(surfaceId, newShadowNode);
-  }
-}
-
 void Binding::preallocateView(
     SurfaceId surfaceId,
     ShadowNode const &shadowNode) {
@@ -592,11 +546,7 @@ void Binding::preallocateView(
     mountingManager->preallocateShadowView(surfaceId, shadowView);
   };
 
-  if (dispatchPreallocationInBackground_) {
-    backgroundExecutor_(preallocationFunction);
-  } else {
-    preallocationFunction();
-  }
+  preallocationFunction();
 }
 
 void Binding::schedulerDidDispatchCommand(

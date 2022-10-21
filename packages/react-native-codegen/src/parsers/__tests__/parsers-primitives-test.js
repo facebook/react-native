@@ -16,9 +16,13 @@ const {
   emitDouble,
   emitNumber,
   emitInt32,
-  emitRootTag,
-  typeAliasResolution,
+  emitObject,
   emitPromise,
+  emitRootTag,
+  emitVoid,
+  emitString,
+  emitStringish,
+  typeAliasResolution,
 } = require('../parsers-primitives.js');
 
 describe('emitBoolean', () => {
@@ -125,6 +129,60 @@ describe('emitRootTag', () => {
   });
 });
 
+describe('emitStringish', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitStringish(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitStringish(false);
+      const expected = {
+        type: 'StringTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitString', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitString(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitString(false);
+      const expected = {
+        type: 'StringTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
 describe('emitDouble', () => {
   describe('when nullable is true', () => {
     it('returns nullable type annotation', () => {
@@ -144,6 +202,32 @@ describe('emitDouble', () => {
       const result = emitDouble(false);
       const expected = {
         type: 'DoubleTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitVoid', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitVoid(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'VoidTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitVoid(false);
+      const expected = {
+        type: 'VoidTypeAnnotation',
       };
 
       expect(result).toEqual(expected);
@@ -312,6 +396,32 @@ describe('emitPromise', () => {
 
         expect(result).toEqual(expected);
       });
+    });
+  });
+});
+
+describe('emitObject', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitObject(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'GenericObjectTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitObject(false);
+      const expected = {
+        type: 'GenericObjectTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
     });
   });
 });

@@ -27,6 +27,7 @@ import * as React from 'react';
 type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     value: boolean,
+    target: number,
   |}>,
 >;
 

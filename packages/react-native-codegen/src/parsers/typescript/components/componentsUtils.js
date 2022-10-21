@@ -10,9 +10,9 @@
 
 'use strict';
 import type {ASTNode} from '../utils';
-import type {TypeDeclarationMap} from '../utils.js';
 import type {NamedShape} from '../../../CodegenSchema.js';
 const {parseTopLevelType} = require('../parseTopLevelType');
+import type {TypeDeclarationMap} from '../../utils';
 
 function getProperties(
   typeName: string,
@@ -426,26 +426,6 @@ function getTypeAnnotation<T>(
   }
 }
 
-function isProp(name: string, typeAnnotation: $FlowFixMe) {
-  if (typeAnnotation.type === 'TSTypeReference') {
-    // Remove unwanted types
-    if (
-      typeAnnotation.typeName.name === 'DirectEventHandler' ||
-      typeAnnotation.typeName.name === 'BubblingEventHandler'
-    ) {
-      return false;
-    }
-    if (
-      name === 'style' &&
-      typeAnnotation.type === 'GenericTypeAnnotation' &&
-      typeAnnotation.typeName.name === 'ViewStyleProp'
-    ) {
-      return false;
-    }
-  }
-  return true;
-}
-
 type SchemaInfo = {
   name: string,
   optional: boolean,
@@ -456,7 +436,7 @@ type SchemaInfo = {
 function getSchemaInfo(
   property: PropAST,
   types: TypeDeclarationMap,
-): ?SchemaInfo {
+): SchemaInfo {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,
@@ -464,9 +444,6 @@ function getSchemaInfo(
   );
 
   const name = property.key.name;
-  if (!isProp(name, topLevelType.type)) {
-    return null;
-  }
 
   if (!property.optional && topLevelType.defaultValue !== undefined) {
     throw new Error(

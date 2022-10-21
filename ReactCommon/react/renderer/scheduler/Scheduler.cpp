@@ -27,8 +27,7 @@
 #include <iostream>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Scheduler::Scheduler(
     SchedulerToolbox const &schedulerToolbox,
@@ -310,17 +309,6 @@ void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {
   }
 }
 
-void Scheduler::uiManagerDidCloneShadowNode(
-    const ShadowNode &oldShadowNode,
-    const ShadowNode &newShadowNode) {
-  SystraceSection s("Scheduler::uiManagerDidCloneShadowNode");
-
-  if (delegate_ != nullptr) {
-    delegate_->schedulerDidCloneShadowNode(
-        newShadowNode.getSurfaceId(), oldShadowNode, newShadowNode);
-  }
-}
-
 void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
@@ -379,5 +367,4 @@ void Scheduler::removeEventListener(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

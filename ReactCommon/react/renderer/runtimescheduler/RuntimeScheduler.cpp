@@ -10,8 +10,7 @@
 #include <utility>
 #include "ErrorUtils.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #pragma mark - Public
 
@@ -160,5 +159,4 @@ void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
   isPerformingWork_ = false;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

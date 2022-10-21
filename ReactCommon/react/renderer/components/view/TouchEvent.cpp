@@ -7,8 +7,7 @@
 
 #include "TouchEvent.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
@@ -29,5 +28,4 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

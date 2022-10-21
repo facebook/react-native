@@ -63,7 +63,6 @@
 // This list should be kept in sync with IntegrationTestsApp.js
 RCT_TEST(IntegrationTestHarnessTest)
 // RCT_TEST(TimersTest) // Disabled due to issue introduced in 61346d3
-// TODO(TD15973709) RCT_TEST(AsyncStorageTest)
 RCT_TEST(AppEventsTest)
 // RCT_TEST(ImageCachePolicyTest) // This test never passed.
 RCT_TEST(ImageSnapshotTest)

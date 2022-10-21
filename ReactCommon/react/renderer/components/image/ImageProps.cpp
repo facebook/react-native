@@ -10,8 +10,7 @@
 #include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ImageProps::ImageProps(
     const PropsParserContext &context,
@@ -99,5 +98,4 @@ void ImageProps::setProp(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -10,4 +10,3 @@
 @interface RCTSubtractionAnimatedNode : RCTValueAnimatedNode
 
 @end
-
