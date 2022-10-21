@@ -14,7 +14,7 @@ import type {SchemaType} from '../../CodegenSchema.js';
 
 const babelParser = require('@babel/parser');
 const fs = require('fs');
-const {buildSchemaFromConfigType, getConfigType} = require('../utils.js');
+const {buildSchemaFromConfigType, getConfigType} = require('../utils');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
