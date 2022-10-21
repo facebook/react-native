@@ -23,6 +23,8 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        "//xplat/folly:dynamic",
+        "//xplat/folly:json",
         "//xplat/jsi:jsi",
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
     ],

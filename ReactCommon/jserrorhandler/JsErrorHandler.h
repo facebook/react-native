@@ -26,9 +26,6 @@ class JsErrorHandler {
  public:
   using JsErrorHandlingFunc = std::function<void(MapBuffer errorMap)>;
 
-  static MapBuffer
-  parseErrorStack(const jsi::JSError &error, bool isFatal, bool isHermes);
-
   JsErrorHandler(JsErrorHandlingFunc jsErrorHandlingFunc);
   ~JsErrorHandler();
 
