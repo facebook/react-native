@@ -200,6 +200,7 @@ rn_xplat_cxx_library2(
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/folly:dynamic",
+        react_native_xplat_target("jserrorhandler:jserrorhandler"),
     ],
 )
 

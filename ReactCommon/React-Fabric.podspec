@@ -254,8 +254,6 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "mapbuffer" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/mapbuffer/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/mapbuffer/tests"
     ss.header_dir           = "react/renderer/mapbuffer"

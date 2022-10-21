@@ -17,8 +17,10 @@ namespace react {
 
 using facebook::react::JSErrorHandlerKey;
 
-static MapBuffer
-parseErrorStack(const jsi::JSError &error, bool isFatal, bool isHermes) {
+MapBuffer JsErrorHandler::parseErrorStack(
+    const jsi::JSError &error,
+    bool isFatal,
+    bool isHermes) {
   /**
    * This parses the different stack traces and puts them into one format
    * This borrows heavily from TraceKit (https://github.com/occ/TraceKit)
@@ -99,7 +101,7 @@ JsErrorHandler::~JsErrorHandler() {}
 void JsErrorHandler::handleJsError(const jsi::JSError &error, bool isFatal) {
   // TODO: Current error parsing works and is stable. Can investigate using
   // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
-  MapBuffer errorMap = parseErrorStack(error, isFatal, false);
+  MapBuffer errorMap = JsErrorHandler::parseErrorStack(error, isFatal, false);
   _jsErrorHandlingFunc(std::move(errorMap));
 }
 

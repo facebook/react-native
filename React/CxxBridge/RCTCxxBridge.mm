@@ -1137,10 +1137,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   // In state 3: do nothing.
 
   if (self->_valid && !self->_loading) {
-    if ([error userInfo][RCTJSRawStackTraceKey]) {
-      [self.redBox showErrorMessage:[error localizedDescription] withRawStack:[error userInfo][RCTJSRawStackTraceKey]];
-    }
-
+    [self showJsError:error onRedBox:self.redBox];
     RCTFatal(error);
 
     // RN will stop, but let the rest of the app keep going.
@@ -1171,13 +1168,18 @@ struct RCTInstanceCallback : public InstanceCallback {
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
                                                         object:self->_parentBridge
                                                       userInfo:@{@"bridge" : self, @"error" : error}];
-
-    if ([error userInfo][RCTJSRawStackTraceKey]) {
-      [redBox showErrorMessage:[error localizedDescription] withRawStack:[error userInfo][RCTJSRawStackTraceKey]];
-    }
-
+    [self showJsError:error onRedBox:redBox];
     RCTFatal(error);
   });
+}
+
+- (void)showJsError:(NSError *)error onRedBox:(RCTRedBox *)redbox
+{
+  if ([error userInfo][RCTJSStackTraceKey]) {
+    [redbox showErrorMessage:[error localizedDescription] withStack:[error userInfo][RCTJSStackTraceKey]];
+  } else if ([error userInfo][RCTJSRawStackTraceKey]) {
+    [redbox showErrorMessage:[error localizedDescription] withRawStack:[error userInfo][RCTJSRawStackTraceKey]];
+  }
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithDelegate
