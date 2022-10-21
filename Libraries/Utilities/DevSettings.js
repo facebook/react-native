@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeDevSettings from '../NativeModules/specs/NativeDevSettings';
 import Platform from '../Utilities/Platform';
@@ -32,7 +34,7 @@ if (__DEV__) {
     // If you want to use the native module on other platforms, please remove this condition and test its behavior
     Platform.OS !== 'ios' ? null : NativeDevSettings,
   );
-  const subscriptions = new Map();
+  const subscriptions = new Map<string, EventSubscription>();
 
   DevSettings = {
     addMenuItem(title: string, handler: () => mixed): void {
