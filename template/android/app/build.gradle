@@ -135,7 +135,10 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.helloworld"
+        if (plugins.hasPlugin("com.android.application")) {
+            applicationId "com.helloworld"
+        }
+
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -206,7 +209,8 @@ android {
     }
 
     // applicationVariants are e.g. debug, release
-    applicationVariants.all { variant ->
+    def variants = plugins.hasPlugin("com.android.library") ? libraryVariants : applicationVariants
+    variants.all { variant ->
         variant.outputs.each { output ->
             // For each separate APK per architecture, set a unique version code as described here:
             // https://developer.android.com/studio/build/configure-apk-splits.html
