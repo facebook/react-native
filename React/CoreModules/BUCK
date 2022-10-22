@@ -5,6 +5,8 @@ load(
     "react_module_plugin_providers",
 )
 
+oncall("react_native")
+
 rn_apple_library(
     name = "CoreModulesApple",
     srcs = glob(

@@ -9,6 +9,8 @@ load(
     "rn_xplat_cxx_library",
 )
 
+oncall("react_native")
+
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(

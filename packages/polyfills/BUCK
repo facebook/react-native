@@ -1,6 +1,8 @@
 load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 load("@fbsource//xplat/js:JS_DEFS.bzl", "relative_path_to_js_root", "rn_library")
 
+oncall("react_native")
+
 yarn_workspace(
     name = "yarn-workspace",
     srcs = glob(

@@ -1,5 +1,7 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "cxx_library", "react_native_xplat_dep", "react_native_xplat_target")
 
+oncall("react_native")
+
 cxx_library(
     name = "jsiexecutor",
     srcs = [

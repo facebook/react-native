@@ -3,6 +3,8 @@ load("@fbsource//tools/build_defs:platform_defs.bzl", "ANDROID", "APPLE", "CXX")
 load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
 load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "get_apple_inspector_flags", "rn_xplat_cxx_library")
 
+oncall("react_native")
+
 APPLE_COMPILER_FLAGS = flags.get_flag_value(
     get_static_library_ios_flags(),
     "compiler_flags",

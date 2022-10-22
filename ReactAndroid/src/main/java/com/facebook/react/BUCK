@@ -1,5 +1,7 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
 
+oncall("react_native")
+
 rn_android_library(
     name = "react",
     srcs = glob(["*.java"]),
