@@ -100,4 +100,25 @@
   XCTAssertFalse(RCTIsLocalAssetURL(otherAssetsURL));
 }
 
+- (void)testAssetCatalogNameForURL
+{
+  NSString *validAssetPath =
+      [NSString stringWithFormat:@"file://%@/assets/AwesomeModule/icon@2x.png", [[NSBundle mainBundle] resourcePath]];
+  NSString *result = RCTAssetCatalogNameForURL([NSURL URLWithString:validAssetPath]);
+  XCTAssertEqualObjects(result, @"awesomemodule_icon");
+
+  NSString *validAssetNoScalePath =
+      [NSString stringWithFormat:@"file://%@/assets/AwesomeModule/icon.png", [[NSBundle mainBundle] resourcePath]];
+  result = RCTAssetCatalogNameForURL([NSURL URLWithString:validAssetNoScalePath]);
+  XCTAssertEqualObjects(result, @"awesomemodule_icon");
+
+  NSString *notPackagerAssetPath =
+      [NSString stringWithFormat:@"file://%@/icon.png", [[NSBundle mainBundle] resourcePath]];
+  result = RCTAssetCatalogNameForURL([NSURL URLWithString:notPackagerAssetPath]);
+  XCTAssertNil(result);
+
+  result = RCTAssetCatalogNameForURL(nil);
+  XCTAssertNil(result);
+}
+
 @end

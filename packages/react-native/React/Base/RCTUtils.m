@@ -728,13 +728,66 @@ NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL)
   return RCTRelativePathForURL(RCTHomePath(), URL);
 }
 
+static NSRegularExpression *RCTAssetURLScaleRegex()
+{
+  static dispatch_once_t onceToken;
+  static NSRegularExpression *regex;
+  dispatch_once(&onceToken, ^{
+    regex = [NSRegularExpression regularExpressionWithPattern:@"@\\dx$" options:0 error:nil];
+  });
+  return regex;
+}
+
+static NSRegularExpression *RCTAssetURLCharactersRegex()
+{
+  static dispatch_once_t onceToken;
+  static NSRegularExpression *regex;
+  dispatch_once(&onceToken, ^{
+    regex = [NSRegularExpression regularExpressionWithPattern:@"[^a-z0-9_]" options:0 error:nil];
+  });
+  return regex;
+}
+
+NSString *__nullable RCTAssetCatalogNameForURL(NSURL *__nullable URL)
+{
+  NSString *path = RCTBundlePathForURL(URL);
+  // Packager assets always start with assets/
+  if (path == nil || ![path hasPrefix:@"assets/"]) {
+    return nil;
+  }
+
+  // Remove extension
+  path = [path stringByDeletingPathExtension];
+
+  // Remove scale suffix
+  path = [RCTAssetURLScaleRegex() stringByReplacingMatchesInString:path
+                                                           options:0
+                                                             range:NSMakeRange(0, [path length])
+                                                      withTemplate:@""];
+
+  path = [path lowercaseString];
+
+  // Encode folder structure in file name
+  path = [path stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
+
+  // Remove illegal chars
+  path = [RCTAssetURLCharactersRegex() stringByReplacingMatchesInString:path
+                                                                options:0
+                                                                  range:NSMakeRange(0, [path length])
+                                                           withTemplate:@""];
+
+  // Remove "assets_" prefix
+  if ([path hasPrefix:@"assets_"]) {
+    path = [path substringFromIndex:@"assets_".length];
+  }
+
+  return path;
+}
+
 static BOOL RCTIsImageAssetsPath(NSString *path)
 {
-  if (path == nil) {
-    return NO;
-  }
   NSString *extension = [path pathExtension];
-  return extension.length == 0 || [extension isEqualToString:@"png"] || [extension isEqualToString:@"jpg"];
+  return [extension isEqualToString:@"png"] || [extension isEqualToString:@"jpg"];
 }
 
 BOOL RCTIsBundleAssetURL(NSURL *__nullable imageURL)
@@ -803,6 +856,17 @@ UIImage *__nullable RCTImageFromLocalBundleAssetURL(NSURL *imageURL)
 
 UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 {
+  NSString *catalogName = RCTAssetCatalogNameForURL(imageURL);
+  if (catalogName) {
+    UIImage *image = [UIImage imageNamed:catalogName];
+    if (image) {
+      return image;
+    } else {
+      RCTLogWarn(
+          @"Image %@ not found in the asset catalog. Make sure your app template is updated correctly.", catalogName);
+    }
+  }
+
   NSString *imageName = RCTBundlePathForURL(imageURL);
 
   NSBundle *bundle = nil;

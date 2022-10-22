@@ -136,7 +136,7 @@ describe('resolveAssetSource', () => {
           __packager_asset: true,
           width: 100,
           height: 200,
-          uri: 'module_a_logo',
+          uri: 'file:///Path/To/Sample.app/assets/module/a/logo.png',
           scale: 1,
         },
       );
@@ -159,7 +159,7 @@ describe('resolveAssetSource', () => {
           __packager_asset: true,
           width: 100,
           height: 200,
-          uri: '__module_a_logo',
+          uri: 'file:///Path/To/Sample.app/assets/__module/a/logo.png',
           scale: 1,
         },
       );
