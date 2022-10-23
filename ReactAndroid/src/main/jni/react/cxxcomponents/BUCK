@@ -28,7 +28,6 @@ rn_xplat_cxx_library(
     force_static = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     platforms = (APPLE, ANDROID, CXX),
     preprocessor_flags = [

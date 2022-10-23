@@ -25,7 +25,6 @@ rn_android_library(
     autoglob = False,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     proguard_config = "reactnative.pro",
@@ -74,7 +73,6 @@ rn_android_library(
     autoglob = False,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     proguard_config = "reactnative.pro",
