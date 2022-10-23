@@ -132,6 +132,7 @@ exports.config = {
         ui: 'bdd',
         timeout: 60000,
     },
+	args: ['--base-path /wd/hub'],
     //
     // =====
     // Hooks

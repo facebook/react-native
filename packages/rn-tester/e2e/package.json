@@ -15,6 +15,7 @@
         "@wdio/local-runner": "^7.25.1",
         "@wdio/mocha-framework": "^7.25.1",
         "@wdio/spec-reporter": "^7.25.1",
+        "appium-xcuitest-driver": "^4.12.1",
         "wdio-wait-for": "^3.0.0"
     },
     "scripts": {
@@ -23,6 +24,6 @@
         "ios": "wdio ./config/wdio.ios.conf.js"
     },
     "dependencies": {
-        "appium": "^1.22.3"
+        "appium": "^2.0.0-beta.46"
     }
 }
