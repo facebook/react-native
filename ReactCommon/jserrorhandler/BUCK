@@ -4,8 +4,8 @@ load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "CXX", "react_nat
 rn_xplat_cxx_library(
     name = "jserrorhandler",
     srcs = glob(["*.cpp"]),
-    header_namespace = "",
-    exported_headers = {"JsErrorHandler/JsErrorHandler.h": "JsErrorHandler.h"},
+    header_namespace = "jserrorhandler",
+    exported_headers = ["JsErrorHandler.h"],
     compiler_flags = [
         "-fexceptions",
         "-frtti",
@@ -22,8 +22,6 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "//xplat/folly:dynamic",
-        "//xplat/folly:json",
         "//xplat/jsi:jsi",
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
     ],
