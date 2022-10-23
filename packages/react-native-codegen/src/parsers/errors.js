@@ -257,7 +257,6 @@ class UnsupportedFunctionParamTypeAnnotationParserError extends ParserError {
     flowParamTypeAnnotation: $FlowFixMe,
     paramName: string,
     invalidParamType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,

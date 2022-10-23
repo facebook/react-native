@@ -59,7 +59,6 @@ const {
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
-  UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedUnionTypeAnnotationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
@@ -79,6 +78,7 @@ const {
   throwIfUntypedModule,
   throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
 } = require('../../error-utils');
 
 const language = 'Flow';
@@ -450,25 +450,21 @@ function translateFunctionTypeAnnotation(
           ),
         );
 
-      if (paramTypeAnnotation.type === 'VoidTypeAnnotation') {
-        throw new UnsupportedFunctionParamTypeAnnotationParserError(
-          hasteModuleName,
-          flowParam.typeAnnotation,
-          paramName,
-          'void',
-          language,
-        );
-      }
+      throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+        hasteModuleName,
+        flowParam.typeAnnotation,
+        paramTypeAnnotation.type,
+        paramName,
+        'VoidTypeAnnotation',
+      );
 
-      if (paramTypeAnnotation.type === 'PromiseTypeAnnotation') {
-        throw new UnsupportedFunctionParamTypeAnnotationParserError(
-          hasteModuleName,
-          flowParam.typeAnnotation,
-          paramName,
-          'Promise',
-          language,
-        );
-      }
+      throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+        hasteModuleName,
+        flowParam.typeAnnotation,
+        paramTypeAnnotation.type,
+        paramName,
+        'PromiseTypeAnnotation',
+      );
 
       return {
         name: flowParam.name.name,

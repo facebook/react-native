@@ -22,6 +22,7 @@ const {
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfModuleTypeIsUnsupported,
   throwIfUntypedModule,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -34,6 +35,7 @@ const {
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   MoreThanOneModuleInterfaceParserError,
+  UnsupportedFunctionParamTypeAnnotationParserError,
 } = require('../errors');
 
 describe('throwIfModuleInterfaceIsMisnamed', () => {
@@ -631,5 +633,37 @@ describe('throwIfMoreThanOneModuleInterfaceParserError', () => {
         parserType,
       );
     }).toThrow(MoreThanOneModuleInterfaceParserError);
+  });
+});
+
+describe('throwIfUnsupportedFunctionParamTypeAnnotationParserError', () => {
+  const nativeModuleName = 'moduleName';
+  const languageParamTypeAnnotation = {type: 'DoubleTypeAnnotation'};
+  const paramName = 'paramName';
+  const expectedTypeAnnotation = 'VoidTypeAnnotation';
+  it('throws an UnsupportedFunctionParamTypeAnnotationParserError if paramTypeAnnotationType equals expectedTypeAnnotation', () => {
+    const paramTypeAnnotationType = 'VoidTypeAnnotation';
+    expect(() => {
+      throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+        nativeModuleName,
+        languageParamTypeAnnotation,
+        paramTypeAnnotationType,
+        paramName,
+        expectedTypeAnnotation,
+      );
+    }).toThrow(UnsupportedFunctionParamTypeAnnotationParserError);
+  });
+
+  it("doesn't throw an UnsupportedFunctionParamTypeAnnotationParserError if paramTypeAnnotationType equals expectedTypeAnnotation", () => {
+    const paramTypeAnnotationType = 'NumberTypeAnnotation';
+    expect(() => {
+      throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+        nativeModuleName,
+        languageParamTypeAnnotation,
+        paramTypeAnnotationType,
+        paramName,
+        expectedTypeAnnotation,
+      );
+    }).not.toThrow(UnsupportedFunctionParamTypeAnnotationParserError);
   });
 });
