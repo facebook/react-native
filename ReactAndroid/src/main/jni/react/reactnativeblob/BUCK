@@ -1,7 +1,5 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_target", "react_native_xplat_dep", "rn_xplat_cxx_library")
 
-oncall("react_native")
-
 rn_xplat_cxx_library(
     name = "jni",
     srcs = glob(["*.cpp"]),
