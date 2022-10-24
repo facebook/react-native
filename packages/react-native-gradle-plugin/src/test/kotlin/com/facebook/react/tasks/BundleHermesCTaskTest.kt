@@ -270,17 +270,17 @@ class BundleHermesCTaskTest {
   @Test
   fun getHermescCommand_returnsCorrectCommand() {
     val customHermesc = "hermesc"
+    val bytecodeFile = tempFolder.newFile("bundle.js.hbc")
     val bundleFile = tempFolder.newFile("bundle.js")
-    val outputFile = tempFolder.newFile("bundle.js.packager.map")
     val task =
         createTestTask<BundleHermesCTask> { it.hermesFlags.set(listOf("my-custom-hermes-flag")) }
 
-    val hermesCommand = task.getHermescCommand(customHermesc, bundleFile, outputFile)
+    val hermesCommand = task.getHermescCommand(customHermesc, bytecodeFile, bundleFile)
 
     assertEquals(customHermesc, hermesCommand[0])
     assertEquals("-emit-binary", hermesCommand[1])
     assertEquals("-out", hermesCommand[2])
-    assertEquals(outputFile.absolutePath, hermesCommand[3])
+    assertEquals(bytecodeFile.absolutePath, hermesCommand[3])
     assertEquals(bundleFile.absolutePath, hermesCommand[4])
     assertEquals("my-custom-hermes-flag", hermesCommand[5])
     assertEquals(6, hermesCommand.size)
