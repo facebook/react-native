@@ -1,7 +1,5 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_target", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
 
-oncall("react_native")
-
 EXPORTED_HEADERS = [
     "CxxModuleWrapper.h",
     "CxxModuleWrapperBase.h",
