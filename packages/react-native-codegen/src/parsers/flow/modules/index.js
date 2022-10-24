@@ -81,7 +81,10 @@ const {
   throwIfMoreThanOneModuleInterfaceParserError,
 } = require('../../error-utils');
 
+const {FlowParser} = require('../parser.js');
+
 const language = 'Flow';
+const parser = new FlowParser();
 
 function translateArrayTypeAnnotation(
   hasteModuleName: string,
@@ -276,7 +279,7 @@ function translateTypeAnnotation(
           throw new UnsupportedGenericParserError(
             hasteModuleName,
             typeAnnotation,
-            language,
+            parser,
           );
         }
       }
