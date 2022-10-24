@@ -7,9 +7,6 @@
 
 #import "RCTCxxUtils.h"
 
-#include <jserrorhandler/JsErrorHandler.h>
-
-#import <React/RCTConstants.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
@@ -22,6 +19,8 @@
 
 namespace facebook {
 namespace react {
+
+using facebook::jsi::JSError;
 
 std::vector<std::unique_ptr<NativeModule>>
 createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
@@ -43,34 +42,13 @@ createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const 
 
 static NSError *errorWithException(const std::exception &e)
 {
-  NSString *msg;
+  NSString *msg = @(e.what());
   NSMutableDictionary *errorInfo = [NSMutableDictionary dictionary];
 
-  const auto *jsError = dynamic_cast<const jsi::JSError *>(&e);
-  if (jsError && RCTGetParseUnhandledJSErrorStackNatively()) {
-    MapBuffer errorMap = JsErrorHandler::parseErrorStack(*jsError, true, false);
-
-    NSString *message = [NSString stringWithCString:errorMap.getString(JSErrorHandlerKey::kErrorMessage).c_str()
-                                           encoding:[NSString defaultCStringEncoding]];
-    auto frames = errorMap.getMapBufferList(JSErrorHandlerKey::kAllStackFrames);
-    NSMutableArray *stack = [[NSMutableArray alloc] init];
-    for (auto const &mapBuffer : frames) {
-      NSDictionary *frame = @{
-        @"file" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameFileName).c_str()
-                                     encoding:[NSString defaultCStringEncoding]],
-        @"methodName" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameMethodName).c_str()
-                                           encoding:[NSString defaultCStringEncoding]],
-        @"lineNumber" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameLineNumber)],
-        @"column" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameColumnNumber)],
-      };
-      [stack addObject:frame];
-    }
-
-    msg = [@"Unhandled JS Exception: " stringByAppendingString:message];
-    errorInfo[RCTJSStackTraceKey] = stack;
-    errorInfo[RCTJSRawStackTraceKey] = @(e.what());
-  } else {
-    msg = @(e.what());
+  const auto *jsError = dynamic_cast<const JSError *>(&e);
+  if (jsError) {
+    errorInfo[RCTJSRawStackTraceKey] = @(jsError->getStack().c_str());
+    msg = [@"Unhandled JS Exception: " stringByAppendingString:msg];
   }
 
   NSError *nestedError;
