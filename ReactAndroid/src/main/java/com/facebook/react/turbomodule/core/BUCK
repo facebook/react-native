@@ -1,5 +1,7 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
 
+oncall("react_native")
+
 rn_android_library(
     name = "core",
     srcs = glob(
@@ -11,7 +13,6 @@ rn_android_library(
     autoglob = False,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     required_for_source_only_abi = True,
@@ -47,7 +48,6 @@ rn_android_library(
     autoglob = False,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     required_for_source_only_abi = True,

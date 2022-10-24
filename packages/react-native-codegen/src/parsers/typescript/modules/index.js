@@ -24,58 +24,63 @@ import type {
 
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
+const {nullGuard} = require('../../parsers-utils');
 
+const {throwIfMoreThanOneModuleRegistryCalls} = require('../../error-utils');
+const {visit} = require('../../utils');
 const {
   resolveTypeAnnotation,
   getTypes,
-  visit,
   isModuleRegistryCall,
 } = require('../utils.js');
 const {
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  emitMixedTypeAnnotation,
 } = require('../../parsers-commons');
 const {
   emitBoolean,
   emitDouble,
+  emitFunction,
   emitNumber,
   emitInt32,
   emitObject,
   emitPromise,
   emitRootTag,
   emitVoid,
+  emitString,
   emitStringish,
   typeAliasResolution,
 } = require('../../parsers-primitives');
 const {
-  MisnamedModuleInterfaceParserError,
-  ModuleInterfaceNotFoundParserError,
-  MoreThanOneModuleInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
-  UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedUnionTypeAnnotationParserError,
-  UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
-  UnsupportedObjectPropertyValueTypeAnnotationParserError,
-  UnusedModuleInterfaceParserError,
-  MoreThanOneModuleRegistryCallsParserError,
-  UntypedModuleRegistryCallParserError,
-  IncorrectModuleRegistryCallTypeParameterParserError,
-  IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
-const language = 'TypeScript';
+const {verifyPlatforms} = require('../../utils');
 
-function nullGuard<T>(fn: () => T): ?T {
-  return fn();
-}
+const {
+  throwIfUntypedModule,
+  throwIfPropertyValueTypeIsUnsupported,
+  throwIfModuleTypeIsUnsupported,
+  throwIfUnusedModuleInterfaceParserError,
+  throwIfModuleInterfaceNotFound,
+  throwIfModuleInterfaceIsMisnamed,
+  throwIfWrongNumberOfCallExpressionArgs,
+  throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
+} = require('../../error-utils');
+
+const language = 'TypeScript';
 
 function translateArrayTypeAnnotation(
   hasteModuleName: string,
@@ -84,7 +89,7 @@ function translateArrayTypeAnnotation(
   cxxOnly: boolean,
   tsArrayType: 'Array' | 'ReadonlyArray',
   tsElementType: $FlowFixMe,
-  nullable: $FlowFixMe,
+  nullable: boolean,
 ): Nullable<NativeModuleTypeAnnotation> {
   try {
     /**
@@ -321,44 +326,28 @@ function translateTypeAnnotation(
                     ),
                   );
 
-                if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+                if (
+                  propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+                  propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
+                  propertyTypeAnnotation.type === 'VoidTypeAnnotation'
+                ) {
+                  throwIfPropertyValueTypeIsUnsupported(
                     hasteModuleName,
                     property.typeAnnotation.typeAnnotation,
                     property.key,
                     propertyTypeAnnotation.type,
                     language,
                   );
+                } else {
+                  return {
+                    name: key.name,
+                    optional,
+                    typeAnnotation: wrapNullable(
+                      isPropertyNullable,
+                      propertyTypeAnnotation,
+                    ),
+                  };
                 }
-
-                if (propertyTypeAnnotation.type === 'VoidTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                    hasteModuleName,
-                    property.typeAnnotation.typeAnnotation,
-                    property.key,
-                    'void',
-                    language,
-                  );
-                }
-
-                if (propertyTypeAnnotation.type === 'PromiseTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                    hasteModuleName,
-                    property.typeAnnotation.typeAnnotation,
-                    property.key,
-                    'Promise',
-                    language,
-                  );
-                }
-
-                return {
-                  name: key.name,
-                  optional,
-                  typeAnnotation: wrapNullable(
-                    isPropertyNullable,
-                    propertyTypeAnnotation,
-                  ),
-                };
               });
             },
           )
@@ -382,13 +371,10 @@ function translateTypeAnnotation(
       return emitVoid(nullable);
     }
     case 'TSStringKeyword': {
-      return wrapNullable(nullable, {
-        type: 'StringTypeAnnotation',
-      });
+      return emitString(nullable);
     }
     case 'TSFunctionType': {
-      return wrapNullable(
-        nullable,
+      const translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation =
         translateFunctionTypeAnnotation(
           hasteModuleName,
           typeAnnotation,
@@ -396,8 +382,9 @@ function translateTypeAnnotation(
           aliasMap,
           tryParse,
           cxxOnly,
-        ),
-      );
+        );
+
+      return emitFunction(nullable, translateFunctionTypeAnnotationValue);
     }
     case 'TSUnionType': {
       if (cxxOnly) {
@@ -429,9 +416,7 @@ function translateTypeAnnotation(
     }
     case 'TSUnknownKeyword': {
       if (cxxOnly) {
-        return wrapNullable(nullable, {
-          type: 'MixedTypeAnnotation',
-        });
+        return emitMixedTypeAnnotation(nullable);
       }
       // Fallthrough
     }
@@ -526,14 +511,14 @@ function translateFunctionTypeAnnotation(
     ),
   );
 
-  if (!cxxOnly && returnTypeAnnotation.type === 'FunctionTypeAnnotation') {
-    throw new UnsupportedFunctionReturnTypeAnnotationParserError(
-      hasteModuleName,
-      typescriptFunctionTypeAnnotation.returnType,
-      'FunctionTypeAnnotation',
-      language,
-    );
-  }
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
+    hasteModuleName,
+    typescriptFunctionTypeAnnotation,
+    'FunctionTypeAnnotation',
+    language,
+    cxxOnly,
+    returnTypeAnnotation.type,
+  );
 
   return {
     type: 'FunctionTypeAnnotation',
@@ -562,16 +547,13 @@ function buildPropertySchema(
   const methodName: string = key.name;
 
   ({nullable, typeAnnotation: value} = resolveTypeAnnotation(value, types));
-
-  if (value.type !== 'TSFunctionType' && value.type !== 'TSMethodSignature') {
-    throw new UnsupportedModulePropertyParserError(
-      hasteModuleName,
-      property.value,
-      property.key.name,
-      value.type,
-      language,
-    );
-  }
+  throwIfModuleTypeIsUnsupported(
+    hasteModuleName,
+    property.value,
+    property.key.name,
+    value.type,
+    language,
+  );
 
   return {
     name: methodName,
@@ -612,32 +594,22 @@ function buildModuleSchema(
     isModuleInterface,
   );
 
-  if (moduleSpecs.length === 0) {
-    throw new ModuleInterfaceNotFoundParserError(
-      hasteModuleName,
-      ast,
-      language,
-    );
-  }
+  throwIfModuleInterfaceNotFound(
+    moduleSpecs.length,
+    hasteModuleName,
+    ast,
+    language,
+  );
 
-  if (moduleSpecs.length > 1) {
-    throw new MoreThanOneModuleInterfaceParserError(
-      hasteModuleName,
-      moduleSpecs,
-      moduleSpecs.map(node => node.id.name),
-      language,
-    );
-  }
+  throwIfMoreThanOneModuleInterfaceParserError(
+    hasteModuleName,
+    moduleSpecs,
+    language,
+  );
 
   const [moduleSpec] = moduleSpecs;
 
-  if (moduleSpec.id.name !== 'Spec') {
-    throw new MisnamedModuleInterfaceParserError(
-      hasteModuleName,
-      moduleSpec.id,
-      language,
-    );
-  }
+  throwIfModuleInterfaceIsMisnamed(hasteModuleName, moduleSpec.id, language);
 
   // Parse Module Names
   const moduleName = tryParse((): string => {
@@ -650,36 +622,31 @@ function buildModuleSchema(
       },
     });
 
-    if (callExpressions.length === 0) {
-      throw new UnusedModuleInterfaceParserError(
-        hasteModuleName,
-        moduleSpec,
-        language,
-      );
-    }
+    throwIfUnusedModuleInterfaceParserError(
+      hasteModuleName,
+      moduleSpec,
+      callExpressions,
+      language,
+    );
 
-    if (callExpressions.length > 1) {
-      throw new MoreThanOneModuleRegistryCallsParserError(
-        hasteModuleName,
-        callExpressions,
-        callExpressions.length,
-        language,
-      );
-    }
+    throwIfMoreThanOneModuleRegistryCalls(
+      hasteModuleName,
+      callExpressions,
+      callExpressions.length,
+      language,
+    );
 
     const [callExpression] = callExpressions;
     const {typeParameters} = callExpression;
     const methodName = callExpression.callee.property.name;
 
-    if (callExpression.arguments.length !== 1) {
-      throw new IncorrectModuleRegistryCallArityParserError(
-        hasteModuleName,
-        callExpression,
-        methodName,
-        callExpression.arguments.length,
-        language,
-      );
-    }
+    throwIfWrongNumberOfCallExpressionArgs(
+      hasteModuleName,
+      callExpression,
+      methodName,
+      callExpression.arguments.length,
+      language,
+    );
 
     if (callExpression.arguments[0].type !== 'StringLiteral') {
       const {type} = callExpression.arguments[0];
@@ -694,30 +661,22 @@ function buildModuleSchema(
 
     const $moduleName = callExpression.arguments[0].value;
 
-    if (typeParameters == null) {
-      throw new UntypedModuleRegistryCallParserError(
-        hasteModuleName,
-        callExpression,
-        methodName,
-        $moduleName,
-        language,
-      );
-    }
+    throwIfUntypedModule(
+      typeParameters,
+      hasteModuleName,
+      callExpression,
+      methodName,
+      $moduleName,
+      language,
+    );
 
-    if (
-      typeParameters.type !== 'TSTypeParameterInstantiation' ||
-      typeParameters.params.length !== 1 ||
-      typeParameters.params[0].type !== 'TSTypeReference' ||
-      typeParameters.params[0].typeName.name !== 'Spec'
-    ) {
-      throw new IncorrectModuleRegistryCallTypeParameterParserError(
-        hasteModuleName,
-        typeParameters,
-        methodName,
-        $moduleName,
-        language,
-      );
-    }
+    throwIfIncorrectModuleRegistryCallTypeParameterParserError(
+      hasteModuleName,
+      typeParameters,
+      methodName,
+      $moduleName,
+      language,
+    );
 
     return $moduleName;
   });
@@ -728,19 +687,10 @@ function buildModuleSchema(
   // Eventually this should be made explicit in the Flow type itself.
   // Also check the hasteModuleName for platform suffix.
   // Note: this shape is consistent with ComponentSchema.
-  let cxxOnly = false;
-  const excludedPlatforms = [];
-  const namesToValidate = [...moduleNames, hasteModuleName];
-  namesToValidate.forEach(name => {
-    if (name.endsWith('Android')) {
-      excludedPlatforms.push('iOS');
-    } else if (name.endsWith('IOS')) {
-      excludedPlatforms.push('android');
-    } else if (name.endsWith('Cxx')) {
-      cxxOnly = true;
-      excludedPlatforms.push('iOS', 'android');
-    }
-  });
+  const {cxxOnly, excludedPlatforms} = verifyPlatforms(
+    hasteModuleName,
+    moduleNames,
+  );
 
   // $FlowFixMe[missing-type-arg]
   return (moduleSpec.body.body: $ReadOnlyArray<$FlowFixMe>)

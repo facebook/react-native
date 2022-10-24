@@ -10,9 +10,14 @@
 
 'use strict';
 
+import type {ComponentSchemaBuilderConfig} from './flow/components/schema';
+import type {NativeModuleSchema, SchemaType} from '../CodegenSchema';
 const {ParserError} = require('./errors');
+const {wrapModuleSchema} = require('./parsers-commons');
 
+const fs = require('fs');
 const path = require('path');
+const invariant = require('invariant');
 
 export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
@@ -54,7 +59,137 @@ function createParserErrorCapturer(): [
   return [errors, guard];
 }
 
+function verifyPlatforms(
+  hasteModuleName: string,
+  moduleNames: string[],
+): $ReadOnly<{
+  cxxOnly: boolean,
+  excludedPlatforms: Array<'iOS' | 'android'>,
+}> {
+  let cxxOnly = false;
+  const excludedPlatforms = new Set<'iOS' | 'android'>();
+  const namesToValidate = [...moduleNames, hasteModuleName];
+
+  namesToValidate.forEach(name => {
+    if (name.endsWith('Android')) {
+      excludedPlatforms.add('iOS');
+      return;
+    }
+
+    if (name.endsWith('IOS')) {
+      excludedPlatforms.add('android');
+      return;
+    }
+
+    if (name.endsWith('Cxx')) {
+      cxxOnly = true;
+      excludedPlatforms.add('iOS');
+      excludedPlatforms.add('android');
+      return;
+    }
+  });
+
+  return {
+    cxxOnly,
+    excludedPlatforms: Array.from(excludedPlatforms),
+  };
+}
+
+function parseFile(
+  filename: string,
+  callback: (contents: string, filename: string) => SchemaType,
+): SchemaType {
+  const contents = fs.readFileSync(filename, 'utf8');
+
+  return callback(contents, filename);
+}
+
+// TODO(T108222691): Use flow-types for @babel/parser
+function visit(
+  astNode: $FlowFixMe,
+  visitor: {
+    [type: string]: (node: $FlowFixMe) => void,
+  },
+) {
+  const queue = [astNode];
+  while (queue.length !== 0) {
+    let item = queue.shift();
+
+    if (!(typeof item === 'object' && item != null)) {
+      continue;
+    }
+
+    if (
+      typeof item.type === 'string' &&
+      typeof visitor[item.type] === 'function'
+    ) {
+      // Don't visit any children
+      visitor[item.type](item);
+    } else if (Array.isArray(item)) {
+      queue.push(...item);
+    } else {
+      queue.push(...Object.values(item));
+    }
+  }
+}
+
+function buildSchemaFromConfigType(
+  configType: 'module' | 'component' | 'none',
+  filename: ?string,
+  ast: $FlowFixMe,
+  wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
+  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildModuleSchema: (
+    hasteModuleName: string,
+    ast: $FlowFixMe,
+    tryParse: ParserErrorCapturer,
+  ) => NativeModuleSchema,
+): SchemaType {
+  switch (configType) {
+    case 'component': {
+      return wrapComponentSchema(buildComponentSchema(ast));
+    }
+    case 'module': {
+      if (filename === undefined || filename === null) {
+        throw new Error('Filepath expected while parasing a module');
+      }
+      const nativeModuleName = extractNativeModuleName(filename);
+
+      const [parsingErrors, tryParse] = createParserErrorCapturer();
+
+      const schema = tryParse(() =>
+        buildModuleSchema(nativeModuleName, ast, tryParse),
+      );
+
+      if (parsingErrors.length > 0) {
+        /**
+         * TODO(T77968131): We have two options:
+         *  - Throw the first error, but indicate there are more then one errors.
+         *  - Display all errors, nicely formatted.
+         *
+         * For the time being, we're just throw the first error.
+         **/
+
+        throw parsingErrors[0];
+      }
+
+      invariant(
+        schema != null,
+        'When there are no parsing errors, the schema should not be null',
+      );
+
+      return wrapModuleSchema(schema, nativeModuleName);
+    }
+    default:
+      return {modules: {}};
+  }
+}
+
 module.exports = {
   extractNativeModuleName,
   createParserErrorCapturer,
+  verifyPlatforms,
+  parseFile,
+  visit,
+  buildSchemaFromConfigType,
 };

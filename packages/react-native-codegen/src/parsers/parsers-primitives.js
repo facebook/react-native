@@ -14,6 +14,7 @@ import type {
   Nullable,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
+  NativeModuleFunctionTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   NativeModuleNumberTypeAnnotation,
   BooleanTypeAnnotation,
@@ -23,8 +24,8 @@ import type {
   ReservedTypeAnnotation,
   ObjectTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
-  VoidTypeAnnotation,
   StringTypeAnnotation,
+  VoidTypeAnnotation,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {TypeAliasResolutionStatus} from './utils';
@@ -74,6 +75,18 @@ function emitVoid(nullable: boolean): Nullable<VoidTypeAnnotation> {
 }
 
 function emitStringish(nullable: boolean): Nullable<StringTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'StringTypeAnnotation',
+  });
+}
+function emitFunction(
+  nullable: boolean,
+  translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation,
+): Nullable<NativeModuleFunctionTypeAnnotation> {
+  return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
+}
+
+function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'StringTypeAnnotation',
   });
@@ -161,12 +174,14 @@ function emitObject(
 module.exports = {
   emitBoolean,
   emitDouble,
+  emitFunction,
   emitInt32,
   emitNumber,
   emitObject,
   emitPromise,
   emitRootTag,
   emitVoid,
+  emitString,
   emitStringish,
   typeAliasResolution,
 };

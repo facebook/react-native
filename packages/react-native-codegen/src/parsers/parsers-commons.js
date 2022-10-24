@@ -15,6 +15,7 @@ import type {
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
   Nullable,
+  NativeModuleMixedTypeAnnotation,
 } from '../CodegenSchema.js';
 const {IncorrectlyParameterizedGenericParserError} = require('./errors');
 import type {ParserType} from './errors';
@@ -91,9 +92,18 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
   }
 }
 
+function emitMixedTypeAnnotation(
+  nullable: boolean,
+): Nullable<NativeModuleMixedTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'MixedTypeAnnotation',
+  });
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  emitMixedTypeAnnotation,
 };

@@ -152,9 +152,15 @@ function copyPodSpec() {
   if (!fs.existsSync(HERMES_DIR)) {
     fs.mkdirSync(HERMES_DIR, {recursive: true});
   }
+  const podspec = 'hermes-engine.podspec';
   fs.copyFileSync(
-    path.join(SDKS_DIR, 'hermes-engine', 'hermes-engine.podspec'),
-    path.join(HERMES_DIR, 'hermes-engine.podspec'),
+    path.join(SDKS_DIR, 'hermes-engine', podspec),
+    path.join(HERMES_DIR, podspec),
+  );
+  const utils = 'hermes-utils.rb';
+  fs.copyFileSync(
+    path.join(SDKS_DIR, 'hermes-engine', utils),
+    path.join(HERMES_DIR, utils),
   );
 }
 

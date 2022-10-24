@@ -34,7 +34,6 @@ class ParserError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
-
 class MisnamedModuleInterfaceParserError extends ParserError {
   constructor(nativeModuleName: string, id: $FlowFixMe, language: ParserType) {
     super(

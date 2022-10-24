@@ -40,14 +40,14 @@ class ReactPlugin : Plugin<Project> {
     if ((jvmVersion?.toIntOrNull() ?: 0) <= 8) {
       project.logger.error(
           """
-      
+
       ********************************************************************************
-      
+
       ERROR: requires JDK11 or higher.
       Incompatible major version detected: '$jvmVersion'
-      
+
       ********************************************************************************
-      
+
       """
               .trimIndent())
       exitProcess(1)
@@ -55,11 +55,11 @@ class ReactPlugin : Plugin<Project> {
   }
 
   private fun applyAppPlugin(project: Project, config: ReactExtension) {
-    configureReactNativeNdk(project, config)
-    configureBuildConfigFields(project)
-    configureDevPorts(project)
-    project.afterEvaluate {
-      if (config.applyAppPlugin.getOrElse(false)) {
+    project.pluginManager.withPlugin("com.android.application") {
+      configureReactNativeNdk(project, config)
+      configureBuildConfigFields(project)
+      configureDevPorts(project)
+      project.afterEvaluate {
         val isAndroidLibrary = project.plugins.hasPlugin("com.android.library")
         val variants =
             if (isAndroidLibrary) {
@@ -117,7 +117,6 @@ class ReactPlugin : Plugin<Project> {
             "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) {
               it.dependsOn(generateCodegenSchemaTask)
               it.reactNativeDir.set(extension.reactNativeDir)
-              @Suppress("DEPRECATION") it.deprecatedReactRoot.set(extension.reactRoot)
               it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
               it.codegenDir.set(extension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)

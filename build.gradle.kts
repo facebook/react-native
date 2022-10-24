@@ -5,6 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+plugins { id("io.github.gradle-nexus.publish-plugin") version "1.1.0" }
+
+val reactAndroidProperties = java.util.Properties()
+
+File("./ReactAndroid/gradle.properties").inputStream().use { reactAndroidProperties.load(it) }
+
+version =
+    if (project.hasProperty("isNightly") &&
+        (project.property("isNightly") as? String).toBoolean()) {
+      "${reactAndroidProperties.getProperty("VERSION_NAME")}-SNAPSHOT"
+    } else {
+      reactAndroidProperties.getProperty("VERSION_NAME")
+    }
+
+group = "com.facebook.react"
+
 val ndkPath by extra(System.getenv("ANDROID_NDK"))
 val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION"))
 
@@ -12,10 +28,23 @@ buildscript {
   repositories {
     google()
     mavenCentral()
+    gradlePluginPortal()
   }
   dependencies {
     classpath("com.android.tools.build:gradle:7.3.0")
     classpath("de.undercouch:gradle-download-task:5.0.1")
+  }
+}
+
+val sonatypeUsername = findProperty("SONATYPE_USERNAME")?.toString()
+val sonatypePassword = findProperty("SONATYPE_PASSWORD")?.toString()
+
+nexusPublishing {
+  repositories {
+    sonatype {
+      username.set(sonatypeUsername)
+      password.set(sonatypePassword)
+    }
   }
 }
 
@@ -91,17 +120,9 @@ tasks.register("publishAllToMavenLocal") {
   dependsOn(":ReactAndroid:hermes-engine:publishToMavenLocal")
 }
 
-tasks.register("publishAllToMavenSnapshots") {
-  description =
-      "Publish all the artifacts as a snapshot (used for testing/nightly) on Maven Central."
-  dependsOn(":ReactAndroid:publishAllPublicationsToMavenSnapshotsRepository")
-  dependsOn(":ReactAndroid:external-artifacts:publishAllPublicationsToMavenSnapshotsRepository")
-  dependsOn(":ReactAndroid:hermes-engine:publishAllPublicationsToMavenSnapshotsRepository")
-}
-
-tasks.register("publishAllToMavenCentral") {
-  description = "Publish all the artifacts as a release on Maven Central."
-  dependsOn(":ReactAndroid:publishAllPublicationsToMavenCentralRepository")
-  dependsOn(":ReactAndroid:external-artifacts:publishAllPublicationsToMavenCentralRepository")
-  dependsOn(":ReactAndroid:hermes-engine:publishAllPublicationsToMavenCentralRepository")
+tasks.register("publishAllToSonatype") {
+  description = "Publish all the artifacts to Sonatype (Maven Central or Snapshot repository)"
+  dependsOn(":ReactAndroid:publishToSonatype")
+  dependsOn(":ReactAndroid:external-artifacts:publishToSonatype")
+  dependsOn(":ReactAndroid:hermes-engine:publishToSonatype")
 }

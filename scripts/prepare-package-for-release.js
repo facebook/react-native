@@ -36,15 +36,24 @@ const argv = yargs
     alias: 'latest',
     type: 'boolean',
     default: false,
+  })
+  .option('d', {
+    alias: 'dry-run',
+    type: 'boolean',
+    default: false,
   }).argv;
 
 const branch = process.env.CIRCLE_BRANCH;
 const remote = argv.remote;
 const releaseVersion = argv.toVersion;
 const isLatest = argv.latest;
+const isDryRun = argv.dryRun;
 
-if (!isReleaseBranch(branch)) {
+if (branch && !isReleaseBranch(branch) && !isDryRun) {
   console.error(`This needs to be on a release branch. On branch: ${branch}`);
+  exit(1);
+} else if (!branch && !isDryRun) {
+  console.error('This needs to be on a release branch.');
   exit(1);
 }
 
@@ -65,6 +74,12 @@ if (exec('source scripts/update_podfile_lock.sh && update_pods').code) {
   echo('Failed to update RNTester Podfile.lock.');
   echo('Fix the issue, revert and try again.');
   exit(1);
+}
+
+echo(`Local checkout has been prepared for release version ${version}.`);
+if (isDryRun) {
+  echo('Changes will not be committed because --dry-run was set to true.');
+  exit(0);
 }
 
 // Make commit [0.21.0-rc] Bump version numbers

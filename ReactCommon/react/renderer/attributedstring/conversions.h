@@ -423,6 +423,52 @@ inline std::string toString(const WritingDirection &writingDirection) {
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
+    LineBreakStrategy &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = LineBreakStrategy::None;
+    } else if (string == "push-out") {
+      result = LineBreakStrategy::PushOut;
+    } else if (string == "hangul-word") {
+      result = LineBreakStrategy::HangulWordPriority;
+    } else if (string == "standard") {
+      result = LineBreakStrategy::Standard;
+    } else {
+      LOG(ERROR) << "Unsupported LineBreakStrategy value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = LineBreakStrategy::None;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported LineBreakStrategy type";
+  // sane default for prod
+  result = LineBreakStrategy::None;
+}
+
+inline std::string toString(const LineBreakStrategy &lineBreakStrategy) {
+  switch (lineBreakStrategy) {
+    case LineBreakStrategy::None:
+      return "none";
+    case LineBreakStrategy::PushOut:
+      return "push-out";
+    case LineBreakStrategy::HangulWordPriority:
+      return "hangul-word";
+    case LineBreakStrategy::Standard:
+      return "standard";
+  }
+
+  LOG(ERROR) << "Unsupported LineBreakStrategy value";
+  // sane default for prod
+  return "none";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
     TextDecorationLineType &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
@@ -873,6 +919,10 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "baseWritingDirection", toString(*textAttributes.baseWritingDirection));
   }
+  if (textAttributes.lineBreakStrategy.has_value()) {
+    _textAttributes(
+        "lineBreakStrategyIOS", toString(*textAttributes.lineBreakStrategy));
+  }
   // Decoration
   if (textAttributes.textDecorationColor) {
     _textAttributes(
@@ -982,6 +1032,7 @@ constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_COLOR = 19;
 constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 20;
 constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
 constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 22;
+constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 23;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1083,6 +1134,11 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
     builder.putString(
         TA_KEY_BEST_WRITING_DIRECTION,
         toString(*textAttributes.baseWritingDirection));
+  }
+  if (textAttributes.lineBreakStrategy.has_value()) {
+    builder.putString(
+        TA_KEY_LINE_BREAK_STRATEGY,
+        toString(*textAttributes.lineBreakStrategy));
   }
   // Decoration
   if (textAttributes.textDecorationColor) {

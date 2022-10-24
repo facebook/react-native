@@ -8,6 +8,9 @@
 package com.facebook.react.tests
 
 import java.io.*
+import java.net.URI
+import java.nio.file.FileSystems
+import java.nio.file.Files
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import org.gradle.api.Project
@@ -46,6 +49,21 @@ internal fun zipFiles(destination: File, contents: List<File>) {
           origin.copyTo(out, 1024)
         }
       }
+    }
+  }
+}
+
+/** A util function to create a zip given a list of dummy files path. */
+internal fun createZip(dest: File, paths: List<String>) {
+  val env = mapOf("create" to "true")
+  val uri = URI.create("jar:file:$dest")
+
+  FileSystems.newFileSystem(uri, env).use { zipfs ->
+    paths.forEach {
+      val zipEntryPath = zipfs.getPath(it)
+      val zipEntryFolder = zipEntryPath.subpath(0, zipEntryPath.nameCount - 1)
+      Files.createDirectories(zipEntryFolder)
+      Files.createFile(zipEntryPath)
     }
   }
 }

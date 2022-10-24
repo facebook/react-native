@@ -23,12 +23,6 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   private val objects = project.objects
 
   /**
-   * Whether the React App plugin should apply its logic or not. Set it to false if you're still
-   * relying on `react.gradle` to configure your build. Default: false
-   */
-  val applyAppPlugin: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
-
-  /**
    * The path to the root of your project. This is the path to where the `package.json` lives. All
    * the CLI commands will be invoked from this folder as working directory.
    *
@@ -227,39 +221,4 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    */
   val codegenJavaPackageName: Property<String> =
       objects.property(String::class.java).convention("com.facebook.fbreact.specs")
-
-  /**
-   * Whether the Java Generator (based on Javapoet) should be used or not. Please note that this is
-   * currently deprecated as the Java generator is not supported anymore. Default: false
-   */
-  @Deprecated(
-      level = DeprecationLevel.ERROR,
-      message =
-          "Please note that this is deprecated as the Java generator is not supported and react-native-codegen should be used instead.")
-  val useJavaGenerator: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
-
-  /**
-   * The `reactRoot` property was confusing and should not be used.
-   *
-   * You should instead use either:
-   * - [root] to point to your root project (where the package.json lives)
-   * - [reactNativeDir] to point to the NPM package of react native.
-   *
-   * A valid configuration would look like:
-   *
-   * ```
-   * react {
-   *    root = rootProject.file("..")
-   *    reactNativeDir = rootProject.file("../node_modules/react-native")
-   * }
-   * ```
-   *
-   * Please also note that those are the default value and you most likely don't need those at all.
-   */
-  @Deprecated(
-      "reactRoot was confusing and has been replace with root " +
-          "to point to your root project and reactNativeDir to point to " +
-          "the folder of the react-native NPM package",
-      replaceWith = ReplaceWith("reactNativeRoot"))
-  val reactRoot: DirectoryProperty = objects.directoryProperty()
 }

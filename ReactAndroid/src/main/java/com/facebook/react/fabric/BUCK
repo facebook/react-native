@@ -1,5 +1,7 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "IS_OSS_BUILD", "YOGA_TARGET", "react_native_android_toplevel_dep", "react_native_dep", "react_native_target", "rn_android_library")
 
+oncall("react_native")
+
 # TODO(T115916830): Remove when Kotlin files are used in this module
 KOTLIN_STDLIB_DEPS = [react_native_android_toplevel_dep("third-party/kotlin:kotlin-stdlib")] if IS_OSS_BUILD else []
 
@@ -14,7 +16,6 @@ rn_android_library(
     autoglob = False,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "KOTLIN",
     provided_deps = [

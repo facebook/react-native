@@ -10,6 +10,7 @@
 
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
+import type {ImageIOS} from './Image.flow';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
 import flattenStyle from '../StyleSheet/flattenStyle';
@@ -22,8 +23,6 @@ import ImageViewNativeComponent from './ImageViewNativeComponent';
 import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 import resolveAssetSource from './resolveAssetSource';
 import * as React from 'react';
-
-import type {ImageIOS} from './Image.flow';
 
 function getSize(
   uri: string,

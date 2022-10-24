@@ -9,11 +9,7 @@
  */
 
 'use strict';
-const {
-  flattenProperties,
-  getSchemaInfo,
-  getTypeAnnotation,
-} = require('./componentsUtils.js');
+const {getSchemaInfo, getTypeAnnotation} = require('./componentsUtils.js');
 
 import type {NamedShape, PropTypeAnnotation} from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
@@ -24,11 +20,8 @@ type PropAST = Object;
 function buildPropSchema(
   property: PropAST,
   types: TypeDeclarationMap,
-): ?NamedShape<PropTypeAnnotation> {
+): NamedShape<PropTypeAnnotation> {
   const info = getSchemaInfo(property, types);
-  if (info == null) {
-    return null;
-  }
   const {name, optional, typeAnnotation, defaultValue} = info;
   return {
     name,
@@ -47,9 +40,7 @@ function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
-  return flattenProperties(typeDefinition, types)
-    .map(property => buildPropSchema(property, types))
-    .filter(Boolean);
+  return typeDefinition.map(property => buildPropSchema(property, types));
 }
 
 module.exports = {

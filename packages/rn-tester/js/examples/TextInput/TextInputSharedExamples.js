@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {HostComponent} from 'react-native';
+
 const React = require('react');
 
 const {
@@ -192,17 +194,14 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
   }
 }
 
+type ExampleRef = {current: null | {focus(): void, ...}};
+
 class BlurOnSubmitExample extends React.Component<{...}> {
-  // $FlowFixMe[missing-local-annot]
-  ref1 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref2 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref3 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref4 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref5 = React.createRef();
+  ref1: ExampleRef = React.createRef();
+  ref2: ExampleRef = React.createRef();
+  ref3: ExampleRef = React.createRef();
+  ref4: ExampleRef = React.createRef();
+  ref5: ExampleRef = React.createRef();
 
   render(): React.Node {
     return (
@@ -254,28 +253,17 @@ class BlurOnSubmitExample extends React.Component<{...}> {
 }
 
 class SubmitBehaviorExample extends React.Component<{...}> {
-  // $FlowFixMe[missing-local-annot]
-  ref1 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref2 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref3 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref4 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref5 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref6 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref7 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref8 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref9 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref10 = React.createRef();
-  // $FlowFixMe[missing-local-annot]
-  ref11 = React.createRef();
+  ref1: ExampleRef = React.createRef();
+  ref2: ExampleRef = React.createRef();
+  ref3: ExampleRef = React.createRef();
+  ref4: ExampleRef = React.createRef();
+  ref5: ExampleRef = React.createRef();
+  ref6: ExampleRef = React.createRef();
+  ref7: ExampleRef = React.createRef();
+  ref8: ExampleRef = React.createRef();
+  ref9: ExampleRef = React.createRef();
+  ref10: ExampleRef = React.createRef();
+  ref11: ExampleRef = React.createRef();
 
   render(): React.Node {
     return (

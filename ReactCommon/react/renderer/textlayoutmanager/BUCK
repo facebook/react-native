@@ -14,6 +14,8 @@ load(
     "subdir_glob",
 )
 
+oncall("react_native")
+
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
@@ -106,7 +108,6 @@ rn_xplat_cxx_library(
     ),
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),

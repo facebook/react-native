@@ -1,12 +1,13 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library")
 
+oncall("react_native")
+
 rn_android_library(
     name = "tags",
     srcs = glob(["*.java"]),
     autoglob = False,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     visibility = [

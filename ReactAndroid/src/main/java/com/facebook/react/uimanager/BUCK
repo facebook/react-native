@@ -1,5 +1,7 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
 
+oncall("react_native")
+
 INTERFACES_FILES = [
     "BaseViewManagerDelegate.java",
     "BaseViewManagerInterface.java",
@@ -15,7 +17,6 @@ rn_android_library(
     autoglob = False,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     provided_deps = [
@@ -51,7 +52,6 @@ rn_android_library(
     ],
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     provided_deps = [
@@ -102,7 +102,6 @@ rn_android_library(
     autoglob = False,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     provided_deps = [

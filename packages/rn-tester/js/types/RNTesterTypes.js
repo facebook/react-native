@@ -59,11 +59,18 @@ export type ScreenTypes = 'components' | 'apis' | 'bookmarks' | null;
 
 export type ComponentList = null | {components: string[], apis: string[]};
 
-export type RNTesterState = {
+export type RNTesterNavigationState = {
   activeModuleKey: null | string,
   activeModuleTitle: null | string,
   activeModuleExampleKey: null | string,
   screen: ScreenTypes,
   bookmarks: ComponentList,
   recentlyUsed: ComponentList,
+};
+
+export type RNTesterJsStallsState = {
+  stallIntervalId: ?IntervalID,
+  busyTime: null | number,
+  filteredStall: number,
+  tracking: boolean,
 };

@@ -47,6 +47,6 @@ class OsRule : TestRule {
 
   companion object {
     const val OS_NAME_KEY = "os.name"
-    const val OS_ARCH_KEY = "os.arc"
+    const val OS_ARCH_KEY = "os.arch"
   }
 }

@@ -52,21 +52,6 @@ Class<RCTComponentViewProtocol> CommandNativeComponentCls(void) __attribute__((u
 Class<RCTComponentViewProtocol> ExcludedAndroidComponentCls(void) __attribute__((used)); // EXCLUDE_ANDROID
 
 Class<RCTComponentViewProtocol> MultiFileIncludedNativeComponentCls(void) __attribute__((used)); // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_BOOL_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_STRING_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_INT_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_FLOAT_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_DOUBLE_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_COLOR_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_POINT_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_IMAGE_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_EDGE_INSET_STATE_PROPS
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_ARRAY_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_OBJECT_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_ARRAY_OF_OBJECTS_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_STRING_ENUM_STATE_PROPS
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENT_WITH_INT_ENUM_STATE
-Class<RCTComponentViewProtocol> SimpleComponentCls(void) __attribute__((used)); // COMPONENTS_WITH_IMAGES_IN_STATE
 
 #ifdef __cplusplus
 }
