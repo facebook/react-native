@@ -8,7 +8,6 @@
 package com.facebook.react
 
 import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.gradle.AppExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.tasks.BuildCodegenCLITask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
@@ -47,10 +46,8 @@ class ReactPlugin : Plugin<Project> {
       configureBuildConfigFields(project)
       configureDevPorts(project)
 
-      project.afterEvaluate {
-        project.extensions.getByType(AppExtension::class.java).applicationVariants.all {
-          project.configureReactTasks(variant = it, config = extension)
-        }
+      project.extensions.getByType(AndroidComponentsExtension::class.java).onVariants { variant ->
+        project.configureReactTasks(variant = variant, config = extension)
       }
       configureCodegen(project, extension, isLibrary = false)
     }

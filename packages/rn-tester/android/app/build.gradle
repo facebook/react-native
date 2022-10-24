@@ -80,10 +80,10 @@ react {
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
     root = file("../../")
-    inputExcludes = ["android/**", "./**", ".gradle/**"]
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
     hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
-    enableHermesForVariant { def v -> v.name.contains("hermes") }
+    debuggableVariants = ["hermesDebug", "jscDebug"]
+    enableHermesOnlyInVariants = ["hermesDebug", "hermesRelease"]
 
     // Codegen Configs
     reactNativeDir = rootDir
@@ -228,6 +228,5 @@ android {
 afterEvaluate {
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
-    emitHermesDebugHermesResources.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
-    emitHermesReleaseHermesResources.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
+    createBundleHermesReleaseJsAndAssets.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
 }

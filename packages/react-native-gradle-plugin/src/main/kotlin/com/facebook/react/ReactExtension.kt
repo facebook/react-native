@@ -7,15 +7,12 @@
 
 package com.facebook.react
 
-import com.android.build.gradle.api.BaseVariant
 import com.facebook.react.utils.projectPathToLibraryName
-import java.io.File
 import javax.inject.Inject
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
-import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 
 abstract class ReactExtension @Inject constructor(project: Project) {
@@ -54,10 +51,10 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   val bundleCommand: Property<String> = objects.property(String::class.java).convention("bundle")
 
   /**
-   * Custom configuration for the [bundleCommand]. If provided it will be passed over with a
+   * Custom configuration file for the [bundleCommand]. If provided, it will be passed over with a
    * `--config` flag to the bundle command.
    */
-  val bundleConfig: Property<String> = objects.property(String::class.java)
+  val bundleConfig: RegularFileProperty = objects.fileProperty()
 
   /**
    * The Bundle Asset name. This name will be used also for deriving other bundle outputs such as
@@ -69,69 +66,24 @@ abstract class ReactExtension @Inject constructor(project: Project) {
       objects.property(String::class.java).convention("index.android.bundle")
 
   /**
-   * Variant Name to File destination map that allows to specify where is the resource dir for a
-   * specific variant. If a value is supplied, the plugin will copy the bundled resource for that
-   * variant from `generated/res/react/<variant>` into the custom specified location. Default: {}
+   * Toggles the .so Cleanup step. If enabled, we will clean up all the unnecessary files before the
+   * bundle task. If disabled, the developers will have to manually cleanup the files. Default: true
    */
-  val resourcesDir: MapProperty<String, File> =
-      objects.mapProperty(String::class.java, File::class.java).convention(emptyMap())
-
-  /**
-   * Variant Name to File destination map that allows to specify where is the asset dir for a
-   * specific variant. If a value is supplied, the plugin will copy the bundled JS for that variant
-   * from `generated/assets/react/<variant>` into the custom specified location. Default: {}
-   */
-  val jsBundleDir: MapProperty<String, File> =
-      objects.mapProperty(String::class.java, File::class.java).convention(emptyMap())
-
-  /** ANT-style excludes for the bundle command. Default: ["android / **", "ios / **"] */
-  val inputExcludes: ListProperty<String> =
-      objects.listProperty(String::class.java).convention(listOf("android/**", "ios/**"))
-
-  /**
-   * Toggles the VM Cleanup step. If enabled, before the bundle task we will clean up all the
-   * unnecessary files. If disabled, the developers will have to manually cleanup the files.
-   * Default: true
-   */
-  val enableVmCleanup: Property<Boolean> = objects.property(Boolean::class.java).convention(true)
+  val enableSoCleanup: Property<Boolean> = objects.property(Boolean::class.java).convention(true)
 
   /** Extra args that will be passed to the [bundleCommand] Default: [] */
   val extraPackagerArgs: ListProperty<String> =
       objects.listProperty(String::class.java).convention(emptyList())
 
   /**
-   * Allows to disable dev mode for certain variants. That's useful if you have a production variant
-   * (say `canary`) where you don't want dev mode to be enabled. Default: []
+   * Allows to specify the debuggable variants (by default just 'debug'). Variants in this list
+   * will:
+   * - Not be bundled (the bundle file will not be created and won't be copied over).
+   * - Have the Hermes Debug flags set. That's useful if you have another variant (say `canary`)
+   * where you want dev mode to be enabled. Default: ['debug']
    */
-  val devDisabledInVariants: ListProperty<String> =
-      objects.listProperty(String::class.java).convention(emptyList())
-
-  /**
-   * Functional interface to disable dev mode only on specific [BaseVariant] Default: will check
-   * [devDisabledInVariants] or return True for Release variants and False for Debug variants.
-   */
-  var disableDevForVariant: (BaseVariant) -> Boolean = { variant ->
-    variant.name in devDisabledInVariants.get() || variant.isRelease
-  }
-
-  /**
-   * Variant Name to Boolean map that allows to toggle the bundle command for a specific variant.
-   * Default: {}
-   */
-  // todo maybe lambda as for hermes?
-  val bundleIn: MapProperty<String, Boolean> =
-      objects.mapProperty(String::class.java, Boolean::class.java).convention(emptyMap())
-
-  /**
-   * Functional interface to toggle the bundle command only on specific [BaseVariant] Default: will
-   * check [bundleIn] or return True for Release variants and False for Debug variants.
-   */
-  var bundleForVariant: (BaseVariant) -> Boolean = { variant ->
-    if (bundleIn.getting(variant.name).isPresent) bundleIn.getting(variant.name).get()
-    else if (bundleIn.getting(variant.buildType.name).isPresent)
-        bundleIn.getting(variant.buildType.name).get()
-    else variant.isRelease
-  }
+  val debuggableVariants: ListProperty<String> =
+      objects.listProperty(String::class.java).convention(listOf("debug"))
 
   /** Hermes Config */
 
@@ -141,35 +93,18 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    */
   val hermesCommand: Property<String> = objects.property(String::class.java).convention("")
 
-  /** Toggle Hermes for the whole build. Default: false */
-  val enableHermes: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
-
   /**
-   * Functional interface to selectively enabled Hermes only on specific [BaseVariant] Default: will
-   * return [enableHermes] for all the variants.
+   * Whether to enable Hermes only on certain variants. If specified as a non-empty list, hermesc
+   * and the .so cleanup for Hermes will be executed only for variants in this list. An empty list
+   * assumes you're either using Hermes for all variants or not (see [enableHermes]).
+   *
+   * Default: []
    */
-  var enableHermesForVariant: (BaseVariant) -> Boolean = { enableHermes.get() }
-
-  /**
-   * Functional interface specify flags for Hermes on specific [BaseVariant] Default: will return
-   * [hermesFlagsRelease] for Release variants and [hermesFlagsDebug] for Debug variants.
-   */
-  var hermesFlagsForVariant: (BaseVariant) -> List<String> = { variant ->
-    if (variant.isRelease) hermesFlagsRelease.get() else hermesFlagsDebug.get()
-  }
-
-  /**
-   * Functional interface to delete debug files only on specific [BaseVariant] Default: will return
-   * True for Release variants and False for Debug variants.
-   */
-  var deleteDebugFilesForVariant: (BaseVariant) -> Boolean = { variant -> variant.isRelease }
-
-  /** Flags to pass to Hermes for Debug variants. Default: [] */
-  val hermesFlagsDebug: ListProperty<String> =
+  val enableHermesOnlyInVariants: ListProperty<String> =
       objects.listProperty(String::class.java).convention(emptyList())
 
-  /** Flags to pass to Hermes for Release variants. Default: ["-O", "-output-source-map"] */
-  val hermesFlagsRelease: ListProperty<String> =
+  /** Flags to pass to Hermesc. Default: ["-O", "-output-source-map"] */
+  val hermesFlags: ListProperty<String> =
       objects.listProperty(String::class.java).convention(listOf("-O", "-output-source-map"))
 
   /**
