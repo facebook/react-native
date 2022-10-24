@@ -26,13 +26,6 @@ type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   /**
-   * The `accessibilityTitle` prop controls the title announced with the TalkBack screen reader.
-   *
-   * See https://reactnative.dev/docs/modal#
-   */
-  accessibilityTitle?: WithDefault<string, null>,
-
-  /**
    * The `animationType` prop controls how the modal animates.
    *
    * See https://reactnative.dev/docs/modal#animationtype

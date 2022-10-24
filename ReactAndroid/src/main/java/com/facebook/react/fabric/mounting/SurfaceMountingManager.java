@@ -57,6 +57,9 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 public class SurfaceMountingManager {
@@ -963,7 +966,18 @@ public class SurfaceMountingManager {
           "Unable to find viewState view for tag " + reactTag);
     }
 
-    viewState.mView.sendAccessibilityEvent(eventType);
+    Runnable task =
+        new Runnable() {
+
+          @Override
+          public void run() {
+            viewState.mView.sendAccessibilityEvent(eventType);
+          }
+        };
+
+    final ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
+
+    worker.schedule(task, 1000, TimeUnit.MILLISECONDS);
   }
 
   @UiThread

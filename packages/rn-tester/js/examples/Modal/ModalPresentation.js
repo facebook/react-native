@@ -55,6 +55,22 @@ function ModalPresentation() {
     }
   };
 
+  const TitleComponent = React.forwardRef((props, forwardedRef) => {
+    return (
+      <Text
+        ref={forwardedRef}
+        style={{
+          width: '100%',
+          position: 'absolute',
+          top: 100,
+          textAlign: 'center',
+          backgroundColor: 'red',
+          zIndex: 20,
+        }}>
+        My custom title
+      </Text>
+    );
+  });
   const onShow = () => {
     if (action === 'onShow') {
       alert('onShow');
@@ -76,6 +92,7 @@ function ModalPresentation() {
         Show Modal
       </RNTesterButton>
       <Modal
+        TitleComponent={TitleComponent}
         animationType={animationType}
         presentationStyle={presentationStyle}
         transparent={transparent}

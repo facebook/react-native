@@ -18,6 +18,7 @@ import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import ModalInjection from './ModalInjection';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
+import AccessibilityInfo from '../Components/AccessibilityInfo/AccessibilityInfo';
 
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const View = require('../Components/View/View');
@@ -61,14 +62,15 @@ export type Props = $ReadOnly<{|
   ...ViewProps,
 
   /**
-   * The `accessibilityTitle` prop controls the title announced with the TalkBack screen reader.
+   * The `TitleComponent` represents the title of the Modal.
+   * The title is announced with TalkBack/VoiceOver screenreaders.
    *
    * See https://reactnative.dev/docs/modal#
    */
-  accessibilityTitle?: ?Stringish,
+  TitleComponent?: ?(React.ComponentType<any> | React.Element<any>),
 
   /**
-   * The `animationType` prop controls how the modal animates.
+    The `animationType` prop controls how the modal animates.
    *
    * See https://reactnative.dev/docs/modal#animationtype
    */
@@ -213,6 +215,13 @@ class Modal extends React.Component<Props> {
     }
   }
 
+  _captureRef = ref => {
+    if (ref) {
+      this._ref = ref;
+      AccessibilityInfo.sendAccessibilityEvent(ref, 'focus');
+    }
+  };
+
   componentWillUnmount() {
     if (this._eventSubscription) {
       this._eventSubscription.remove();
@@ -226,6 +235,14 @@ class Modal extends React.Component<Props> {
   }
 
   render(): React.Node {
+    const {TitleComponent} = this.props;
+    const element = React.isValidElement(TitleComponent) ? (
+      TitleComponent
+    ) : (
+      // $FlowFixMe[not-a-component]
+      // $FlowFixMe[incompatible-type-arg]
+      <TitleComponent />
+    );
     if (this.props.visible !== true) {
       return null;
     }
@@ -271,7 +288,6 @@ class Modal extends React.Component<Props> {
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
-        accessibilityTitle={this.props.accessibilityTitle}
         onOrientationChange={this.props.onOrientationChange}
         testID={this.props.testID}>
         <VirtualizedListContextResetter>
@@ -280,6 +296,7 @@ class Modal extends React.Component<Props> {
               style={[styles.container, containerStyles]}
               collapsable={false}>
               {innerChildren}
+              <TitleComponent ref={this._captureRef} />
             </View>
           </ScrollView.Context.Provider>
         </VirtualizedListContextResetter>
