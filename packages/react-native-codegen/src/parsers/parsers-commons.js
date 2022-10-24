@@ -4,29 +4,45 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
 import type {
   SchemaType,
+  NamedShape,
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
   Nullable,
+  NativeModuleAliasMap,
   UnionTypeAnnotationMemberType,
+  NativeModuleTypeAnnotation,
+  NativeModuleBaseTypeAnnotation,
   NativeModuleUnionTypeAnnotation,
+  NativeModuleMixedTypeAnnotation,
+  Nullable,
 } from '../CodegenSchema.js';
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
-  UnsupportedUnionTypeAnnotationParserError,
-} = require('./errors');
-import type {ParserType} from './errors';
-const {
+  IncorrectlyParameterizedGenericParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('./errors');
+const {throwIfPropertyValueTypeIsUnsupported} = require('./error-utils');
+import type {ParserType} from './errors';
+import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+
+type TranslateTypeAnnotation = (
+  hasteModuleName: string,
+  languageTypeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+) => Nullable<NativeModuleTypeAnnotation>;
+
 const invariant = require('invariant');
 import type {TypeDeclarationMap} from './utils';
 const {
@@ -104,6 +120,74 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
       language,
     );
   }
+}
+
+function parseObjectProperty(
+  property: NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>,
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  language: ParserType,
+  translateTypeAnnotation: TranslateTypeAnnotation,
+) {
+  if (
+    property.type !== 'ObjectTypeProperty' &&
+    property.type !== 'TSPropertySignature'
+  ) {
+    throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+      hasteModuleName,
+      property,
+      property.type,
+      language,
+    );
+  }
+
+  const {optional = false, key} = property;
+  const languageTypeAnnotation =
+    language === 'TypeScript'
+      ? property.typeAnnotation.typeAnnotation
+      : property.value;
+
+  const [propertyTypeAnnotation, isPropertyNullable] = unwrapNullable(
+    translateTypeAnnotation(
+      hasteModuleName,
+      languageTypeAnnotation,
+      types,
+      aliasMap,
+      tryParse,
+      cxxOnly,
+    ),
+  );
+
+  if (
+    propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+    propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
+    propertyTypeAnnotation.type === 'VoidTypeAnnotation'
+  ) {
+    throwIfPropertyValueTypeIsUnsupported(
+      hasteModuleName,
+      languageTypeAnnotation,
+      property.key,
+      propertyTypeAnnotation.type,
+      language,
+    );
+  } else {
+    return {
+      name: key.name,
+      optional,
+      typeAnnotation: wrapNullable(isPropertyNullable, propertyTypeAnnotation),
+    };
+  }
+}
+
+function emitMixedTypeAnnotation(
+  nullable: boolean,
+): Nullable<NativeModuleMixedTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'MixedTypeAnnotation',
+  });
 }
 
 function remapUnionTypeAnnotationMemberNames(
@@ -224,6 +308,8 @@ module.exports = {
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  parseObjectProperty,
+  emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
   getKeyName,
   translateDefault,
