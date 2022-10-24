@@ -33,6 +33,8 @@ const {
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  parseObjectProperty,
+  emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
   translateDefault,
 } = require('../../parsers-commons');
@@ -68,7 +70,6 @@ const {
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
-  throwIfPropertyValueTypeIsUnsupported,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
@@ -79,7 +80,6 @@ const {
 } = require('../../error-utils');
 
 const {FlowParser} = require('../parser.js');
-const {getKeyName} = require('../../parsers-commons');
 
 const language = 'Flow';
 const parser = new FlowParser();
@@ -267,61 +267,16 @@ function translateTypeAnnotation(
           .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
             property => {
               return tryParse(() => {
-                if (
-                  property.type !== 'ObjectTypeProperty' &&
-                  property.type !== 'ObjectTypeIndexer'
-                ) {
-                  throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-                    hasteModuleName,
-                    property,
-                    property.type,
-                    language,
-                  );
-                }
-
-                const {optional = false} = property;
-                const name = getKeyName(property, hasteModuleName, language);
-                if (property.type === 'ObjectTypeIndexer') {
-                  return {
-                    name,
-                    optional,
-                    typeAnnotation: emitObject(nullable),
-                  };
-                }
-                const [propertyTypeAnnotation, isPropertyNullable] =
-                  unwrapNullable(
-                    translateTypeAnnotation(
-                      hasteModuleName,
-                      property.value,
-                      types,
-                      aliasMap,
-                      tryParse,
-                      cxxOnly,
-                    ),
-                  );
-
-                if (
-                  propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
-                  propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
-                  propertyTypeAnnotation.type === 'VoidTypeAnnotation'
-                ) {
-                  throwIfPropertyValueTypeIsUnsupported(
-                    hasteModuleName,
-                    property.value,
-                    property.key,
-                    propertyTypeAnnotation.type,
-                    language,
-                  );
-                } else {
-                  return {
-                    name,
-                    optional,
-                    typeAnnotation: wrapNullable(
-                      isPropertyNullable,
-                      propertyTypeAnnotation,
-                    ),
-                  };
-                }
+                return parseObjectProperty(
+                  property,
+                  hasteModuleName,
+                  types,
+                  aliasMap,
+                  tryParse,
+                  cxxOnly,
+                  language,
+                  translateTypeAnnotation,
+                );
               });
             },
           )
