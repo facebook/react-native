@@ -15,6 +15,9 @@ import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFields
 import com.facebook.react.utils.AgpConfiguratorUtils.configureDevPorts
+import com.facebook.react.utils.DependencyUtils.configureDependencies
+import com.facebook.react.utils.DependencyUtils.configureRepositories
+import com.facebook.react.utils.DependencyUtils.readVersionString
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
 import com.facebook.react.utils.findPackageJsonFile
@@ -32,6 +35,14 @@ class ReactPlugin : Plugin<Project> {
 
     // App Only Configuration
     project.pluginManager.withPlugin("com.android.application") {
+      project.afterEvaluate {
+        val reactNativeDir = extension.reactNativeDir.get().asFile
+        val propertiesFile = File(reactNativeDir, "ReactAndroid/gradle.properties")
+        val versionString = readVersionString(propertiesFile)
+        configureDependencies(project, versionString)
+        configureRepositories(project, reactNativeDir)
+      }
+
       configureReactNativeNdk(project, extension)
       configureBuildConfigFields(project)
       configureDevPorts(project)
