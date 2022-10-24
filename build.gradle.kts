@@ -9,7 +9,9 @@ plugins { id("io.github.gradle-nexus.publish-plugin") version "1.1.0" }
 
 val reactAndroidProperties = java.util.Properties()
 
-File("./ReactAndroid/gradle.properties").inputStream().use { reactAndroidProperties.load(it) }
+File("$rootDir/ReactAndroid/gradle.properties").inputStream().use {
+  reactAndroidProperties.load(it)
+}
 
 version =
     if (project.hasProperty("isNightly") &&
