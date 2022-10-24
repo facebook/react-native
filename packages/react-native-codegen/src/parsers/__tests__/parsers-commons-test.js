@@ -249,6 +249,127 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
   });
 });
 
+describe('parseObjectProperty', () => {
+  const moduleName = 'testModuleName';
+  const types = {['wrongName']: 'wrongType'};
+  const aliasMap = {['wrongAlias']: 'wrongValue'};
+  const tryParse = () => null;
+  const cxxOnly = false;
+  let language = 'TypeScript';
+
+  it(`"throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'ObjectTypeProperty' or 'TSPropertySignature'."`, () => {
+    const property = {
+      type: 'notObjectTypeProperty',
+      typeAnnotation: {
+        typeAnnotation: 'wrongTypeAnnotation',
+      },
+      value: 'wrongValue',
+      key: 'wrongKey',
+    };
+    expect(() =>
+      parseObjectProperty(
+        property,
+        moduleName,
+        types,
+        aliasMap,
+        tryParse,
+        cxxOnly,
+        language,
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Module testModuleName: 'ObjectTypeAnnotation' cannot contain 'notObjectTypeProperty'."`,
+    );
+  });
+
+  it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'TSPropertySignature'.", () => {
+    const property = {
+      type: 'notTSPropertySignature',
+      typeAnnotation: {
+        typeAnnotation: 'wrongTypeAnnotation',
+      },
+      value: 'wrongValue',
+      key: 'wrongKey',
+    };
+    expect(() =>
+      parseObjectProperty(
+        property,
+        moduleName,
+        types,
+        aliasMap,
+        tryParse,
+        cxxOnly,
+        language,
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Module testModuleName: 'ObjectTypeAnnotation' cannot contain 'notTSPropertySignature'."`,
+    );
+  });
+
+  it("doesn't throw an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is 'TSPropertySignature'.", () => {
+    const property = {
+      type: 'TSPropertySignature',
+      typeAnnotation: {
+        type: 'FunctionTypeAnnotation',
+        typeAnnotation: 'wrongTypeAnnotation',
+      },
+      value: 'wrongValue',
+      key: 'wrongKey',
+      optional: false,
+    };
+    const languageTypeAnnotation =
+      language === 'TypeScript'
+        ? property.typeAnnotation.typeAnnotation
+        : property.value;
+    const translateTypeAnnotation = (
+      moduleName,
+      languageTypeAnnotation,
+      types,
+      aliasMap,
+      tryParse,
+      cxxOnly,
+    ) => {};
+
+    expect(() =>
+      parseObjectProperty(
+        property,
+        moduleName,
+        types,
+        aliasMap,
+        tryParse,
+        cxxOnly,
+        language,
+        translateTypeAnnotation,
+      ),
+    ).not.toThrow();
+  });
+});
+
+describe('emitMixedTypeAnnotation', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitMixedTypeAnnotation(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'MixedTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitMixedTypeAnnotation(false);
+      const expected = {
+        type: 'MixedTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
 describe('emitUnionTypeAnnotation', () => {
   const hasteModuleName = 'SampleTurboModule';
 
