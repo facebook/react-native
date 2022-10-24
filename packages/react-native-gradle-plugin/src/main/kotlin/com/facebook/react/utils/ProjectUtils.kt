@@ -19,8 +19,8 @@ internal object ProjectUtils {
 
   internal val Project.isHermesEnabled: Boolean
     get() =
-        if (project.hasProperty("enableHermes")) {
-          project.property("enableHermes").toString().lowercase().toBooleanStrictOrNull() ?: true
+        if (project.hasProperty("hermesEnabled")) {
+          project.property("hermesEnabled").toString().lowercase().toBooleanStrictOrNull() ?: true
         } else if (project.extensions.extraProperties.has("react")) {
           @Suppress("UNCHECKED_CAST")
           val reactMap = project.extensions.extraProperties.get("react") as? Map<String, Any?>
