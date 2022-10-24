@@ -1,7 +1,5 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "fb_apple_library")
 
-oncall("react_native")
-
 fb_apple_library(
     name = "RCTRequired",
     exported_headers = [

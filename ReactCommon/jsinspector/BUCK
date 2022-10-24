@@ -2,8 +2,6 @@ load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
 load("@fbsource//tools/build_defs:platform_defs.bzl", "ANDROID", "APPLE", "CXX", "FBCODE", "WINDOWS")
 load("//tools/build_defs/oss:rn_defs.bzl", "get_hermes_shared_library_preprocessor_flags", "rn_xplat_cxx_library")
 
-oncall("react_native")
-
 EXPORTED_HEADERS = [
     "InspectorInterfaces.h",
 ]
