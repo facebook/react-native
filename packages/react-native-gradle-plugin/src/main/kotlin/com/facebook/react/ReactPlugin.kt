@@ -9,7 +9,6 @@ package com.facebook.react
 
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.AppExtension
-import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.tasks.BuildCodegenCLITask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
@@ -21,7 +20,6 @@ import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
-import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -31,8 +29,25 @@ class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     checkJvmVersion(project)
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
-    applyAppPlugin(project, extension)
-    applyCodegenPlugin(project, extension)
+
+    // App Only Configuration
+    project.pluginManager.withPlugin("com.android.application") {
+      configureReactNativeNdk(project, extension)
+      configureBuildConfigFields(project)
+      configureDevPorts(project)
+
+      project.afterEvaluate {
+        project.extensions.getByType(AppExtension::class.java).applicationVariants.all {
+          project.configureReactTasks(variant = it, config = extension)
+        }
+      }
+      configureCodegen(project, extension, isLibrary = false)
+    }
+
+    // Library Only Configuration
+    project.pluginManager.withPlugin("com.android.library") {
+      configureCodegen(project, extension, isLibrary = true)
+    }
   }
 
   private fun checkJvmVersion(project: Project) {
@@ -54,30 +69,12 @@ class ReactPlugin : Plugin<Project> {
     }
   }
 
-  private fun applyAppPlugin(project: Project, config: ReactExtension) {
-    project.pluginManager.withPlugin("com.android.application") {
-      configureReactNativeNdk(project, config)
-      configureBuildConfigFields(project)
-      configureDevPorts(project)
-      project.afterEvaluate {
-        val isAndroidLibrary = project.plugins.hasPlugin("com.android.library")
-        val variants =
-            if (isAndroidLibrary) {
-              project.extensions.getByType(LibraryExtension::class.java).libraryVariants
-            } else {
-              project.extensions.getByType(AppExtension::class.java).applicationVariants
-            }
-        variants.all { project.configureReactTasks(variant = it, config = config) }
-      }
-    }
-  }
-
   /**
    * A plugin to enable react-native-codegen in Gradle environment. See the Gradle API docs for more
    * information: https://docs.gradle.org/current/javadoc/org/gradle/api/Project.html
    */
   @Suppress("UnstableApiUsage")
-  private fun applyCodegenPlugin(project: Project, extension: ReactExtension) {
+  private fun configureCodegen(project: Project, extension: ReactExtension, isLibrary: Boolean) {
     // First, we set up the output dir for the codegen.
     val generatedSrcDir = File(project.buildDir, "generated/source/codegen")
 
@@ -86,6 +83,7 @@ class ReactPlugin : Plugin<Project> {
           it.codegenDir.set(extension.codegenDir)
           val bashWindowsHome = project.findProperty("REACT_WINDOWS_BASH") as String?
           it.bashWindowsHome.set(bashWindowsHome)
+          it.onlyIf { isLibrary || extension.enableCodegenInApps.get() }
         }
 
     // We create the task to produce schema from JS files.
@@ -96,6 +94,7 @@ class ReactPlugin : Plugin<Project> {
               it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
               it.codegenDir.set(extension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)
+              it.onlyIf { isLibrary || extension.enableCodegenInApps.get() }
 
               // We're reading the package.json at configuration time to properly feed
               // the `jsRootDir` @Input property of this task. Therefore, the
@@ -123,6 +122,7 @@ class ReactPlugin : Plugin<Project> {
               it.packageJsonFile.set(findPackageJsonFile(project, extension))
               it.codegenJavaPackageName.set(extension.codegenJavaPackageName)
               it.libraryName.set(extension.libraryName)
+              it.onlyIf { isLibrary || extension.enableCodegenInApps.get() }
             }
 
     // We update the android configuration to include the generated sources.
@@ -133,12 +133,8 @@ class ReactPlugin : Plugin<Project> {
       ext.sourceSets.getByName("main").java.srcDir(File(generatedSrcDir, "java"))
     }
 
-    // `preBuild` is one of the base tasks automatically registered by Gradle.
+    // `preBuild` is one of the base tasks automatically registered by AGP.
     // This will invoke the codegen before compiling the entire project.
-    val androidPluginHandler = Action { _: Plugin<*> ->
-      project.tasks.named("preBuild", Task::class.java).dependsOn(generateCodegenArtifactsTask)
-    }
-    project.plugins.withId("com.android.application", androidPluginHandler)
-    project.plugins.withId("com.android.library", androidPluginHandler)
+    project.tasks.named("preBuild", Task::class.java).dependsOn(generateCodegenArtifactsTask)
   }
 }

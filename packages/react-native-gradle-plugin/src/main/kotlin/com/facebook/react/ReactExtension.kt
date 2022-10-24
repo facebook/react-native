@@ -221,4 +221,11 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    */
   val codegenJavaPackageName: Property<String> =
       objects.property(String::class.java).convention("com.facebook.fbreact.specs")
+
+  /**
+   * Toggles the Codegen for App modules. By default we enable the codegen only for library modules.
+   * If you want to enable codegen in your app, you will have to set this to true. Default: false
+   */
+  val enableCodegenInApps: Property<Boolean> =
+      objects.property(Boolean::class.java).convention(false)
 }
