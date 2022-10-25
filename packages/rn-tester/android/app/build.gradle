@@ -88,7 +88,6 @@ react {
     // Codegen Configs
     reactNativeDir = rootDir
     codegenDir = new File(rootDir, "node_modules/react-native-codegen")
-    enableCodegenInApps = true
 }
 
 /**

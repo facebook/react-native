@@ -91,7 +91,13 @@ class ReactPlugin : Plugin<Project> {
           it.codegenDir.set(extension.codegenDir)
           val bashWindowsHome = project.findProperty("REACT_WINDOWS_BASH") as String?
           it.bashWindowsHome.set(bashWindowsHome)
-          it.onlyIf { isLibrary || extension.enableCodegenInApps.get() }
+
+          // We're reading the package.json at configuration time to properly feed
+          // the onlyIf condition of this task. Therefore, the
+          // parsePackageJson should be invoked inside this lambda.
+          val packageJson = findPackageJsonFile(project, extension)
+          val parsedPackageJson = packageJson?.let { JsonUtils.fromCodegenJson(it) }
+          it.onlyIf { isLibrary || parsedPackageJson?.codegenConfig != null }
         }
 
     // We create the task to produce schema from JS files.
@@ -102,10 +108,9 @@ class ReactPlugin : Plugin<Project> {
               it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
               it.codegenDir.set(extension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)
-              it.onlyIf { isLibrary || extension.enableCodegenInApps.get() }
 
               // We're reading the package.json at configuration time to properly feed
-              // the `jsRootDir` @Input property of this task. Therefore, the
+              // the `jsRootDir` @Input property of this task & the onlyIf. Therefore, the
               // parsePackageJson should be invoked inside this lambda.
               val packageJson = findPackageJsonFile(project, extension)
               val parsedPackageJson = packageJson?.let { JsonUtils.fromCodegenJson(it) }
@@ -116,6 +121,7 @@ class ReactPlugin : Plugin<Project> {
               } else {
                 it.jsRootDir.set(extension.jsRootDir)
               }
+              it.onlyIf { isLibrary || parsedPackageJson?.codegenConfig != null }
             }
 
     // We create the task to generate Java code from schema.
@@ -130,7 +136,13 @@ class ReactPlugin : Plugin<Project> {
               it.packageJsonFile.set(findPackageJsonFile(project, extension))
               it.codegenJavaPackageName.set(extension.codegenJavaPackageName)
               it.libraryName.set(extension.libraryName)
-              it.onlyIf { isLibrary || extension.enableCodegenInApps.get() }
+
+              // We're reading the package.json at configuration time to properly feed
+              // the onlyIf condition of this task. Therefore, the
+              // parsePackageJson should be invoked inside this lambda.
+              val packageJson = findPackageJsonFile(project, extension)
+              val parsedPackageJson = packageJson?.let { JsonUtils.fromCodegenJson(it) }
+              it.onlyIf { isLibrary || parsedPackageJson?.codegenConfig != null }
             }
 
     // We update the android configuration to include the generated sources.
