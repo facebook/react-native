@@ -18,7 +18,6 @@ import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import ModalInjection from './ModalInjection';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
-import AccessibilityInfo from '../Components/AccessibilityInfo/AccessibilityInfo';
 
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const View = require('../Components/View/View');
@@ -62,7 +61,7 @@ export type Props = $ReadOnly<{|
   ...ViewProps,
 
   /**
-    The `animationType` prop controls how the modal animates.
+   * The `animationType` prop controls how the modal animates.
    *
    * See https://reactnative.dev/docs/modal#animationtype
    */
