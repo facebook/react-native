@@ -10,20 +10,19 @@
 
 import type {Node} from 'React';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
-import React, {useState} from 'react';
-import {useEffect} from 'react';
+import React, {useState, useCallback, useRef, useEffect} from 'react';
 
 function ToggleAnimatingActivityIndicator() {
-  let _timer;
+  let _timer = useRef();
 
   const [animating, setAnimating] = useState(true);
 
-  const setToggleTimeout = () => {
-    _timer = setTimeout(() => {
+  const setToggleTimeout = useCallback(() => {
+    _timer.current = setTimeout(() => {
       setAnimating(currentState => !currentState);
       setToggleTimeout();
     }, 2000);
-  };
+  }, []);
 
   useEffect(() => {
     setToggleTimeout();
@@ -31,8 +30,7 @@ function ToggleAnimatingActivityIndicator() {
     return () => {
       clearTimeout(_timer);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [_timer]);
+  }, [_timer, setToggleTimeout]);
 
   return (
     <ActivityIndicator
