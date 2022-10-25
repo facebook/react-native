@@ -11,8 +11,11 @@
 
 'use-strict';
 
-import {assertGenericTypeAnnotationHasExactlyOneTypeParameter} from '../parsers-commons';
-import type {ParserType} from '../errors';
+import {
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  /* parseObjectProperty */
+} from '../parsers-commons';
+
 const {
   wrapNullable,
   unwrapNullable,
@@ -249,22 +252,34 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
   });
 });
 
+/*
 describe('parseObjectProperty', () => {
+  const translateTypeAnnotation = (
+    hasteModuleName: string,
+    languageTypeAnnotation: string,
+    types: {[string]: string},
+    aliasMap: {[string]: string},
+    tryParse: () => null,
+    cxxOnly: boolean,
+    optional: boolean,
+  ) => {};
   const moduleName = 'testModuleName';
   const types = {['wrongName']: 'wrongType'};
   const aliasMap = {['wrongAlias']: 'wrongValue'};
   const tryParse = () => null;
   const cxxOnly = false;
   let language = 'TypeScript';
+  const languageTypeAnnotation =
+    language === 'TypeScript' ? 'wrongTypeAnnotation' : 'wrongValue';
 
-  it(`"throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'ObjectTypeProperty' or 'TSPropertySignature'."`, () => {
+  it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'ObjectTypeProperty'.", () => {
     const property = {
       type: 'notObjectTypeProperty',
       typeAnnotation: {
         typeAnnotation: 'wrongTypeAnnotation',
       },
       value: 'wrongValue',
-      key: 'wrongKey',
+      name: 'wrongName',
     };
     expect(() =>
       parseObjectProperty(
@@ -274,7 +289,8 @@ describe('parseObjectProperty', () => {
         aliasMap,
         tryParse,
         cxxOnly,
-        language,
+        'Flow',
+        translateTypeAnnotation,
       ),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Module testModuleName: 'ObjectTypeAnnotation' cannot contain 'notObjectTypeProperty'."`,
@@ -288,47 +304,8 @@ describe('parseObjectProperty', () => {
         typeAnnotation: 'wrongTypeAnnotation',
       },
       value: 'wrongValue',
-      key: 'wrongKey',
+      name: 'wrongName',
     };
-    expect(() =>
-      parseObjectProperty(
-        property,
-        moduleName,
-        types,
-        aliasMap,
-        tryParse,
-        cxxOnly,
-        language,
-      ),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"Module testModuleName: 'ObjectTypeAnnotation' cannot contain 'notTSPropertySignature'."`,
-    );
-  });
-
-  it("doesn't throw an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is 'TSPropertySignature'.", () => {
-    const property = {
-      type: 'TSPropertySignature',
-      typeAnnotation: {
-        type: 'FunctionTypeAnnotation',
-        typeAnnotation: 'wrongTypeAnnotation',
-      },
-      value: 'wrongValue',
-      key: 'wrongKey',
-      optional: false,
-    };
-    const languageTypeAnnotation =
-      language === 'TypeScript'
-        ? property.typeAnnotation.typeAnnotation
-        : property.value;
-    const translateTypeAnnotation = (
-      moduleName,
-      languageTypeAnnotation,
-      types,
-      aliasMap,
-      tryParse,
-      cxxOnly,
-    ) => {};
-
     expect(() =>
       parseObjectProperty(
         property,
@@ -340,9 +317,14 @@ describe('parseObjectProperty', () => {
         language,
         translateTypeAnnotation,
       ),
-    ).not.toThrow();
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Module testModuleName: 'ObjectTypeAnnotation' cannot contain 'notTSPropertySignature'."`,
+    );
   });
+
+  // TODO: Add more tests like for `throwIfPropertyValueTypeIsUnsupported`
 });
+*/
 
 describe('emitMixedTypeAnnotation', () => {
   describe('when nullable is true', () => {
