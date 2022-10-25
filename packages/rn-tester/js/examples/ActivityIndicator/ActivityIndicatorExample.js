@@ -13,7 +13,7 @@ import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import React, {useState, useCallback, useRef, useEffect} from 'react';
 
 function ToggleAnimatingActivityIndicator() {
-  let timer = useRef();
+  const timer = useRef();
 
   const [animating, setAnimating] = useState(true);
 
