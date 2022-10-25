@@ -129,7 +129,7 @@ const int64_t LOGGER_TIMEOUT = 10 * NSEC_PER_SEC;
   XCTAssertEqual(waitRet, 0, @"Timed out waiting for throwError");
 
   // For local bundles, we may first get a warning about symbolication
-  if (![_lastLogMessage isEqualToString:@"Error: Throwing an error"]) {
+  if (![_lastLogMessage containsString:@"Error: Throwing an error"]) {
     waitRet = dispatch_semaphore_wait(_logSem, dispatch_time(DISPATCH_TIME_NOW, LOGGER_TIMEOUT));
     XCTAssertEqual(waitRet, 0, @"Timed out waiting for throwError #2");
   }
