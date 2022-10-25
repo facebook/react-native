@@ -11,7 +11,16 @@
 /* eslint-disable no-alert */
 
 import * as React from 'react';
-import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
+import {
+  NativeMethods,
+  AccessibilityInfo,
+  Modal,
+  Platform,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import RNTOption from '../../components/RNTOption';
 const RNTesterButton = require('../../components/RNTesterButton');
@@ -47,6 +56,7 @@ function ModalPresentation() {
     React.useState('Portrait');
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
+  const ref = React.useRef(null);
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;
   const onDismiss = () => {
     setVisible(false);
@@ -71,11 +81,27 @@ function ModalPresentation() {
       </Text>
     );
   });
+
   const onShow = () => {
     if (action === 'onShow') {
       alert('onShow');
     }
   };
+
+  const _captureRef = (ref: NativeMethods | null) => {
+    if (ref != null) {
+      this._ref = ref;
+      setTimeout(
+        (AccessibilityInfo, ref) => {
+          AccessibilityInfo.sendAccessibilityEvent(ref, 'focus');
+        },
+        1000,
+        AccessibilityInfo,
+        ref,
+      );
+    }
+  };
+
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
   const onOrientationChange = event =>
@@ -92,7 +118,6 @@ function ModalPresentation() {
         Show Modal
       </RNTesterButton>
       <Modal
-        TitleComponent={TitleComponent}
         animationType={animationType}
         presentationStyle={presentationStyle}
         transparent={transparent}
@@ -104,6 +129,7 @@ function ModalPresentation() {
         onOrientationChange={onOrientationChange}
         onDismiss={onDismiss}
         onShow={onShow}>
+        {TitleComponent != null && <TitleComponent ref={this._captureRef} />}
         <View style={[styles.modalContainer, modalBackgroundStyle]}>
           <View
             style={[

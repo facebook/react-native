@@ -324,7 +324,6 @@ public class ReactModalHostView extends ViewGroup
     if (mHardwareAccelerated) {
       mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
     }
-
     if (currentActivity != null && !currentActivity.isFinishing()) {
       mDialog.show();
       if (context instanceof Activity) {
