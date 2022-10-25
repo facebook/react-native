@@ -71,6 +71,7 @@ function ModalPresentation() {
     React.useState('fullScreen');
   const [supportedOrientationKey, setSupportedOrientationKey] =
     React.useState('Portrait');
+  const [modalOpened, setModalOpened] = React.useState(null);
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
   let ref = React.useRef(null);
@@ -78,6 +79,7 @@ function ModalPresentation() {
   let accessibilityEventTimeout;
   const onDismiss = () => {
     setVisible(false);
+    setModalOpened(false);
     if (action === 'onDismiss') {
       alert('onDismiss');
     }
@@ -87,27 +89,34 @@ function ModalPresentation() {
     if (action === 'onShow') {
       alert('onShow');
     }
+    if (ref != null) {
+      setModalOpened(true);
+    }
   };
 
   const _captureRef = (localRef: NativeMethods | null) => {
     if (ref != null) {
       ref = localRef;
-      accessibilityEventTimeout = setTimeout(
+    }
+  };
+
+  React.useEffect(() => {
+    let timer;
+    if (ref != null && modalOpened) {
+      timer = setTimeout(
         (AI, elementRef) => {
           AI.sendAccessibilityEvent(elementRef, 'focus');
         },
         1000,
         AccessibilityInfo,
-        localRef,
+        ref,
       );
     }
-  };
 
-  React.useEffect(() => {
-    if (accessibilityEventTimeout) {
-      clearTimeout(accessibilityEventTimeout);
-    }
-  }, []);
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [modalOpened]);
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
