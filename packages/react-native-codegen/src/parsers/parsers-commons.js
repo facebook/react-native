@@ -43,6 +43,20 @@ type TranslateTypeAnnotation = (
   cxxOnly: boolean,
 ) => Nullable<NativeModuleTypeAnnotation>;
 
+function isObjectProperty(
+  property: NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>,
+  language: ParserType,
+): boolean {
+  switch (language) {
+    case 'Flow':
+      return property.type === 'ObjectTypeProperty';
+    case 'TypeScript':
+      return property.type === 'TSPropertySignature';
+    default:
+      return false;
+  }
+}
+
 const invariant = require('invariant');
 import type {TypeDeclarationMap} from './utils';
 const {
@@ -132,10 +146,7 @@ function parseObjectProperty(
   language: ParserType,
   translateTypeAnnotation: TranslateTypeAnnotation,
 ) {
-  if (
-    property.type !== 'ObjectTypeProperty' &&
-    property.type !== 'TSPropertySignature'
-  ) {
+  if (!isObjectProperty(property, language)) {
     throw new UnsupportedObjectPropertyTypeAnnotationParserError(
       hasteModuleName,
       property,
@@ -308,6 +319,7 @@ module.exports = {
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  isObjectProperty,
   parseObjectProperty,
   emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
