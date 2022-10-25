@@ -1,7 +1,7 @@
 apply plugin: "com.android.application"
+apply plugin: "com.facebook.react"
 
 import com.android.build.OutputFile
-import org.apache.tools.ant.taskdefs.condition.Os
 
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -82,8 +82,6 @@ project.ext.react = [
     enableHermes: true,  // clean and rebuild if changing
 ]
 
-apply from: "../../node_modules/react-native/react.gradle"
-
 /**
  * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
@@ -140,40 +138,6 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
-
-        if (isNewArchitectureEnabled()) {
-            // We configure the CMake build only if you decide to opt-in for the New Architecture.
-            externalNativeBuild {
-                cmake {
-                    arguments "-DPROJECT_BUILD_DIR=$buildDir",
-                        "-DREACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
-                        "-DREACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build",
-                        "-DANDROID_STL=c++_shared"
-                }
-            }
-            if (!enableSeparateBuildPerCPUArchitecture) {
-                ndk {
-                    abiFilters (*reactNativeArchitectures())
-                }
-            }
-        }
-    }
-
-    if (isNewArchitectureEnabled()) {
-        // We configure the CMake build only if you decide to opt-in for the New Architecture.
-        externalNativeBuild {
-            cmake {
-                path "$projectDir/src/main/jni/CMakeLists.txt"
-            }
-        }
-        buildFeatures {
-            prefab true
-        }
-    }
-    packagingOptions {
-        pickFirst '**/libc++_shared.so'
-        pickFirst '**/libfbjni.so'
     }
 
     splits {
@@ -225,10 +189,10 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
-    //noinspection GradleDynamicVersion
-    implementation "com.facebook.react:react-native:+"  // From node_modules
+    // The version of react-native is set by the React Native Gradle Plugin
+    implementation("com.facebook.react:react-native")
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
@@ -237,35 +201,10 @@ dependencies {
 
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
     if (enableHermes) {
-        //noinspection GradleDynamicVersion
-        implementation("com.facebook.react:hermes-engine:+") // From node_modules
+        implementation("com.facebook.react:hermes-engine")
     } else {
         implementation jscFlavor
     }
 }
 
-if (isNewArchitectureEnabled()) {
-    // If new architecture is enabled, we let you build RN from source
-    // Otherwise we fallback to a prebuilt .aar bundled in the NPM package.
-    // This will be applied to all the imported transitive dependency.
-    configurations.all {
-        resolutionStrategy.dependencySubstitution {
-            substitute(module("com.facebook.react:react-native"))
-                    .using(project(":ReactAndroid"))
-                    .because("On New Architecture we're building React Native from source")
-            substitute(module("com.facebook.react:hermes-engine"))
-                    .using(project(":ReactAndroid:hermes-engine"))
-                    .because("On New Architecture we're building Hermes from source")
-        }
-    }
-}
-
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
-
-def isNewArchitectureEnabled() {
-    // To opt-in for the New Architecture, you can either:
-    // - Set `newArchEnabled` to true inside the `gradle.properties` file
-    // - Invoke gradle with `-newArchEnabled=true`
-    // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
-    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
-}
