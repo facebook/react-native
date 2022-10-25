@@ -11,7 +11,7 @@
 'use strict';
 
 const invariant = require('invariant');
-
+import type {Parser} from './parser';
 export type ParserType = 'Flow' | 'TypeScript';
 
 class ParserError extends Error {
@@ -110,23 +110,22 @@ class UnsupportedTypeAnnotationParserError extends ParserError {
 }
 
 class UnsupportedGenericParserError extends ParserError {
-  +genericName: string;
+  // +genericName: string;
   constructor(
     nativeModuleName: string,
     genericTypeAnnotation: $FlowFixMe,
-    language: ParserType,
+    parser: Parser,
   ) {
-    const genericName =
-      language === 'TypeScript'
-        ? genericTypeAnnotation.typeName.name
-        : genericTypeAnnotation.id.name;
+    const genericName = parser.nameForGenericTypeAnnotation(
+      genericTypeAnnotation,
+    );
     super(
       nativeModuleName,
       genericTypeAnnotation,
       `Unrecognized generic type '${genericName}' in NativeModule spec.`,
     );
 
-    this.genericName = genericName;
+    // this.genericName = genericName;
   }
 }
 
