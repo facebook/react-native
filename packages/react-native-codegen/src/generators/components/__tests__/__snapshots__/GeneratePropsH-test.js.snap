@@ -17,6 +17,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -234,6 +235,7 @@ Map {
 #include <react/renderer/components/image/conversions.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -310,6 +312,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -346,6 +349,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 
 namespace facebook {
@@ -383,6 +387,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -419,6 +424,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -455,6 +461,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -496,6 +503,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -532,6 +540,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -568,6 +577,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -604,6 +614,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -640,6 +651,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -676,6 +688,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -722,6 +735,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -763,6 +777,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 #include <react/renderer/imagemanager/primitives.h>
 
 namespace facebook {
@@ -800,6 +815,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Geometry.h>
 
 namespace facebook {
@@ -837,6 +853,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -900,6 +917,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -938,6 +956,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -974,6 +993,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -1016,6 +1036,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -1308,6 +1329,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Geometry.h>
 
 namespace facebook {
@@ -1345,6 +1367,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -1399,6 +1422,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -1436,6 +1460,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -1482,6 +1507,7 @@ Map {
 #include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
 namespace react {

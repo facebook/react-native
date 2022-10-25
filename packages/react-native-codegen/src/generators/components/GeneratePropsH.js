@@ -478,6 +478,7 @@ function getExtendsImports(
   const imports: Set<string> = new Set();
 
   imports.add('#include <react/renderer/core/PropsParserContext.h>');
+  imports.add('#include <react/renderer/core/propsConversions.h>');
   imports.add('#include <jsi/jsi.h>');
 
   extendsProps.forEach(extendProps => {
