@@ -264,7 +264,6 @@ function translateTypeAnnotation(
         default: {
           const maybeEumDeclaration = types[typeAnnotation.typeName.name];
           if (
-            cxxOnly &&
             maybeEumDeclaration &&
             maybeEumDeclaration.type === 'TSEnumDeclaration'
           ) {
