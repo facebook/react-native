@@ -805,7 +805,9 @@ jobs:
 
       - run:
           name: Build the template application for << parameters.flavor >> with New Architecture set to << parameters.newarchitecture >>, and using the << parameters.jsengine>> JS engine.
-          command: cd /tmp/$PROJECT_NAME/android/ && ./gradlew assemble<< parameters.flavor >> -PnewArchEnabled=<< parameters.newarchitecture >>
+          command: |
+            cd /tmp/$PROJECT_NAME/android/
+            ./gradlew assemble<< parameters.flavor >> -PnewArchEnabled=<< parameters.newarchitecture >> -PREACT_NATIVE_MAVEN_LOCAL_REPO=/root/react-native/maven-local
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -1443,6 +1445,15 @@ jobs:
           command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
       - store_artifacts:
           path: /tmp/hermes-native-symbols.zip
+      - run:
+          name: Zip Maven Artifacts from /tmp/maven-local
+          command: zip -r /tmp/maven-local.zip /tmp/maven-local
+      - store_artifacts:
+          path: /tmp/maven-local.zip
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - maven-local
 
       # START: Commitlies
       # Provide a react-native package for this commit as a Circle CI release artifact.

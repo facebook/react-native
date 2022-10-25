@@ -33,15 +33,8 @@ function saveFilesToRestore(tmpPublishingFolder) {
 
 function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
   // -------- Generating Android Artifacts
-  env.REACT_NATIVE_SKIP_PREFAB = true;
-  if (exec('./gradlew :ReactAndroid:installArchives').code) {
-    echo('Could not generate artifacts');
-    exit(1);
-  }
-
-  // -------- Generating the Hermes Engine Artifacts
-  env.REACT_NATIVE_HERMES_SKIP_PREFAB = true;
-  if (exec('./gradlew :ReactAndroid:hermes-engine:installArchives').code) {
+  echo('Generating Android artifacts inside /tmp/maven-local');
+  if (exec('./gradlew publishAllToMavenTempLocal').code) {
     echo('Could not generate artifacts');
     exit(1);
   }
@@ -63,12 +56,12 @@ function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
     if (
       !test(
         '-e',
-        `./android/com/facebook/react/react-native/${releaseVersion}/${name}`,
+        `/tmp/maven-local/com/facebook/react/react-native/${releaseVersion}/${name}`,
       )
     ) {
       echo(
         `Failing as expected file: \n\
-      android/com/facebook/react/react-native/${releaseVersion}/${name}\n\
+      /tmp/maven-local/com/facebook/react/react-native/${releaseVersion}/${name}\n\
       was not correctly generated.`,
       );
       exit(1);
