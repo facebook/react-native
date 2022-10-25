@@ -102,7 +102,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:5.4
+      - image: reactnativecommunity/react-native-android:6.0
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
@@ -670,10 +670,6 @@ jobs:
             buck build ReactAndroid/src/main/java/com/facebook/react/shell
 
       - run:
-          name: Validate Android Test Environment
-          command: ./scripts/validate-android-test-env.sh
-
-      - run:
           name: Run Tests - Android Unit Tests with Buck
           command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
 
@@ -717,10 +713,6 @@ jobs:
       - checkout
       - setup_artifacts
       - run_yarn
-
-      - run:
-          name: Validate Android SDK Install
-          command: ./scripts/validate-android-sdk.sh
 
       # Starting emulator in advance as it takes some time to boot.
       - run:
