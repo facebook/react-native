@@ -13,12 +13,12 @@ import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import React, {useState, useCallback, useRef, useEffect} from 'react';
 
 function ToggleAnimatingActivityIndicator() {
-  let _timer = useRef();
+  let timer = useRef();
 
   const [animating, setAnimating] = useState(true);
 
   const setToggleTimeout = useCallback(() => {
-    _timer.current = setTimeout(() => {
+    timer.current = setTimeout(() => {
       setAnimating(currentState => !currentState);
       setToggleTimeout();
     }, 2000);
@@ -28,9 +28,9 @@ function ToggleAnimatingActivityIndicator() {
     setToggleTimeout();
 
     return () => {
-      clearTimeout(_timer);
+      clearTimeout(timer.current);
     };
-  }, [_timer, setToggleTimeout]);
+  }, [timer, setToggleTimeout]);
 
   return (
     <ActivityIndicator
