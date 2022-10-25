@@ -76,7 +76,6 @@ function ModalPresentation() {
   const [action, setAction] = React.useState('None');
   let ref = React.useRef(null);
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;
-  let accessibilityEventTimeout;
   const onDismiss = () => {
     setVisible(false);
     setModalOpened(false);
@@ -114,7 +113,9 @@ function ModalPresentation() {
     }
 
     return () => {
-      if (timer) clearTimeout(timer);
+      if (timer) {
+        clearTimeout(timer);
+      }
     };
   }, [modalOpened]);
 
