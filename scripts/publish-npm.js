@@ -40,6 +40,7 @@ const {
 } = require('./scm-utils');
 const {
   generateAndroidArtifacts,
+  publishAndroidArtifactsToMaven,
   saveFilesToRestore,
 } = require('./release-utils');
 const fs = require('fs');
@@ -185,6 +186,10 @@ if (isCommitly) {
 
 generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
 
+// Write version number to the build folder
+const releaseVersionFile = path.join('build', '.version');
+fs.writeFileSync(releaseVersionFile, releaseVersion);
+
 if (dryRunBuild) {
   echo('Skipping `npm publish` because --dry-run is set.');
   exit(0);
@@ -195,6 +200,10 @@ const isLatest = exitIfNotOnGit(
   () => isTaggedLatest(currentCommit),
   'Not in git. We do not want to publish anything',
 );
+
+// We first publish on Maven Central all the necessary artifacts.
+// NPM publishing is done just after.
+publishAndroidArtifactsToMaven(nightlyBuild);
 
 const releaseBranch = `${major}.${minor}-stable`;
 

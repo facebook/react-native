@@ -52,7 +52,7 @@ registerModule('GlobalPerformanceLogger', () =>
   require('../Utilities/GlobalPerformanceLogger'),
 );
 
-if (__DEV__ && !global.__RCTProfileIsProfiling) {
+if (__DEV__) {
   registerModule('HMRClient', () => require('../Utilities/HMRClient'));
 } else {
   registerModule('HMRClient', () => require('../Utilities/HMRClientProdShim'));

@@ -933,6 +933,9 @@ namespace JS {
 - (void)getValueWithPromise:(BOOL)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
+- (NSString *)getEnums:(double)enumInt
+             enumFloat:(double)enumFloat
+            enumString:(NSString *)enumString;
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)constantsToExport;
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
 

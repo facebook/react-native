@@ -136,6 +136,10 @@ class RNTesterPlatformTestEventRecorder {
     }, [callback, targetNames]);
   }
 
+  getRecords(): Array<EventRecord> {
+    return this.allRecords;
+  }
+
   checkRecords(
     expected: Array<{
       type: string,

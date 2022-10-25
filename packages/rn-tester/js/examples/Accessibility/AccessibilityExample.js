@@ -157,6 +157,10 @@ class AccessibilityExample extends React.Component<{}> {
           <Text accessibilityRole="header">This is a title.</Text>
         </RNTesterBlock>
 
+        <RNTesterBlock title="Text with role = heading">
+          <Text role="heading">This is a title.</Text>
+        </RNTesterBlock>
+
         <RNTesterBlock title="Touchable with accessibilityRole = link">
           <TouchableOpacity
             onPress={() => Alert.alert('Link has been clicked!')}
@@ -1443,6 +1447,20 @@ exports.examples = [
           source={require('../../assets/like.png')}
           style={styles.disabledImage}
         />
+      );
+    },
+  },
+  {
+    title: 'TextInput with aria-labelledby attribute"',
+    render(): React.Element<typeof View> {
+      return (
+        <View>
+          <Text nativeID="testAriaLabelledBy">Phone Number</Text>
+          <TextInput
+            aria-labelledby={'testAriaLabelledBy'}
+            style={styles.default}
+          />
+        </View>
       );
     },
   },

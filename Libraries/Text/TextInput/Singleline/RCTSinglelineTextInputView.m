@@ -11,8 +11,7 @@
 
 #import <React/RCTUITextField.h>
 
-@implementation RCTSinglelineTextInputView
-{
+@implementation RCTSinglelineTextInputView {
   RCTUITextField *_backedTextInputView;
 }
 

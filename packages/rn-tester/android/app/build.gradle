@@ -76,19 +76,19 @@ plugins {
  */
 
 react {
-    applyAppPlugin = true
     cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
     root = file("../../")
-    inputExcludes = ["android/**", "./**", ".gradle/**"]
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
     hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
-    enableHermesForVariant { def v -> v.name.contains("hermes") }
+    debuggableVariants = ["hermesDebug", "jscDebug"]
+    enableHermesOnlyInVariants = ["hermesDebug", "hermesRelease"]
 
     // Codegen Configs
     reactNativeDir = rootDir
     codegenDir = new File(rootDir, "node_modules/react-native-codegen")
+    enableCodegenInApps = true
 }
 
 /**
@@ -191,14 +191,6 @@ android {
             ]
         }
     }
-    buildFeatures {
-        prefab true
-    }
-    packagingOptions {
-        pickFirst '**/libhermes.so'
-        pickFirst '**/libjsc.so'
-        pickFirst '**/libc++_shared.so'
-    }
 }
 
 dependencies {
@@ -223,24 +215,11 @@ dependencies {
     androidTestImplementation 'junit:junit:4.12'
 }
 
-// TODO: Move all this logic to CodegenPlugin.java.
-def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
-def reactAndroidBuildDir = project(':ReactAndroid').buildDir;
-
 android {
-    defaultConfig {
-        externalNativeBuild {
-            cmake {
-                arguments "-DGENERATED_SRC_DIR=$buildDir/generated/source",
-                    "-DPROJECT_BUILD_DIR=$buildDir",
-                    "-DREACT_ANDROID_DIR=$reactAndroidProjectDir",
-                    "-DREACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir",
-                    "-DANDROID_STL=c++_shared"
-            }
-        }
-    }
     externalNativeBuild {
         cmake {
+            // RN Tester is doing custom linking of C++ libraries therefore needs
+            // a dedicated CMakeLists.txt file.
             path "src/main/jni/CMakeLists.txt"
         }
     }
@@ -249,6 +228,5 @@ android {
 afterEvaluate {
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
-    emitHermesDebugHermesResources.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
-    emitHermesReleaseHermesResources.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
+    createBundleHermesReleaseJsAndAssets.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
 }

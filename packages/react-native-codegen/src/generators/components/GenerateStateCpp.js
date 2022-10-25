@@ -67,9 +67,11 @@ module.exports = {
 
         return Object.keys(components)
           .map(componentName => {
-            if (components[componentName].interfaceOnly === true) {
+            const component = components[componentName];
+            if (component.interfaceOnly === true) {
               return null;
             }
+
             return StateTemplate({
               stateName: `${componentName}State`,
             });

@@ -7,10 +7,8 @@ rn_android_library(
         exclude = ["MultiSourceHelper.java"],
     ),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     visibility = [
@@ -27,10 +25,8 @@ rn_android_library(
     name = "withmultisource",
     srcs = ["MultiSourceHelper.java"],
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     visibility = [

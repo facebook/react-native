@@ -65,7 +65,7 @@ class ElementProperties extends React.Component<Props> {
           <View style={styles.breadcrumb}>
             {mapWithSeparator(
               this.props.hierarchy,
-              (hierarchyItem, i) => (
+              (hierarchyItem, i): React.MixedElement => (
                 <TouchableHighlight
                   key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
@@ -74,7 +74,7 @@ class ElementProperties extends React.Component<Props> {
                   <Text style={styles.breadItemText}>{hierarchyItem.name}</Text>
                 </TouchableHighlight>
               ),
-              i => (
+              (i): React.MixedElement => (
                 <Text key={'sep-' + i} style={styles.breadSep}>
                   &#9656;
                 </Text>

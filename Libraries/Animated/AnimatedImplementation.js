@@ -367,7 +367,7 @@ const parallel = function (
 ): CompositeAnimation {
   let doneCount = 0;
   // Make sure we only call stop() at most once for each animation
-  const hasEnded = {};
+  const hasEnded: {[number]: boolean} = {};
   const stopTogether = !(config && config.stopTogether === false);
 
   const result = {

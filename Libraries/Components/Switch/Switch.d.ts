@@ -13,6 +13,7 @@ import {NativeMethods} from '../../Renderer/shims/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
 import {ViewProps} from '../View/ViewPropTypes';
+import {NativeSyntheticEvent, TargetedEvent} from '../../Types/CoreEventTypes';
 
 export interface SwitchPropsIOS extends ViewProps {
   /**
@@ -37,9 +38,12 @@ export interface SwitchPropsIOS extends ViewProps {
   tintColor?: ColorValue | undefined;
 }
 
-export interface SwitchChangeEvent extends React.SyntheticEvent {
+export interface SwitchChangeEventData extends TargetedEvent {
   value: boolean;
 }
+
+export interface SwitchChangeEvent
+  extends NativeSyntheticEvent<SwitchChangeEventData> {}
 
 export interface SwitchProps extends SwitchPropsIOS {
   /**

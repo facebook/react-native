@@ -47,7 +47,7 @@ export function validate(
   nativeViewConfig: ViewConfig,
   staticViewConfig: ViewConfig,
 ): ValidationResult {
-  const differences = [];
+  const differences: Array<Difference> = [];
   accumulateDifferences(
     differences,
     [],

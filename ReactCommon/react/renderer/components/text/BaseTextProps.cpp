@@ -8,14 +8,12 @@
 #include "BaseTextProps.h"
 
 #include <react/renderer/attributedstring/conversions.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/graphics/conversions.h>
 
-namespace facebook {
-namespace react {
-
-bool BaseTextProps::enablePropIteratorSetter = false;
+namespace facebook::react {
 
 static TextAttributes convertRawProp(
     PropsParserContext const &context,
@@ -107,6 +105,12 @@ static TextAttributes convertRawProp(
       "baseWritingDirection",
       sourceTextAttributes.baseWritingDirection,
       defaultTextAttributes.baseWritingDirection);
+  textAttributes.lineBreakStrategy = convertRawProp(
+      context,
+      rawProps,
+      "lineBreakStrategyIOS",
+      sourceTextAttributes.lineBreakStrategy,
+      defaultTextAttributes.lineBreakStrategy);
 
   // Decoration
   textAttributes.textDecorationColor = convertRawProp(
@@ -195,7 +199,7 @@ BaseTextProps::BaseTextProps(
     const BaseTextProps &sourceProps,
     const RawProps &rawProps)
     : textAttributes(
-          BaseTextProps::enablePropIteratorSetter
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.textAttributes
               : convertRawProp(
                     context,
@@ -249,6 +253,12 @@ void BaseTextProps::setProp(
         defaults,
         value,
         textAttributes,
+        lineBreakStrategy,
+        "lineBreakStrategyIOS");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
         textDecorationColor,
         "textDecorationColor");
     REBUILD_FIELD_SWITCH_CASE(
@@ -292,5 +302,4 @@ SharedDebugStringConvertibleList BaseTextProps::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

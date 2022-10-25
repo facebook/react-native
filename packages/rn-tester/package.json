@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "connect": "^3.6.5",
-    "ws": "^6.1.4"
+    "ws": "^6.2.2"
   },
   "codegenConfig": {
     "name": "AppSpecs",

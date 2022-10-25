@@ -15,6 +15,7 @@ const {
   copyPodSpec,
   downloadHermesTarball,
   expandHermesTarball,
+  getHermesTarballName,
   getHermesTagSHA,
   readHermesTag,
   setHermesTag,
@@ -100,6 +101,10 @@ function populateMockFilesystem() {
     path.join(SDKS_DIR, 'hermes-engine', 'hermes-engine.podspec'),
     'Dummy file',
   );
+  fs.writeFileSync(
+    path.join(SDKS_DIR, 'hermes-engine', 'hermes-utils.rb'),
+    'Dummy file',
+  );
 }
 
 describe('hermes-utils', () => {
@@ -148,6 +153,33 @@ describe('hermes-utils', () => {
     it('should set Hermes tag and read it back', () => {
       setHermesTag(hermesTag);
       expect(readHermesTag()).toEqual(hermesTag);
+    });
+  });
+  describe('getHermesTarballName', () => {
+    it('should return Hermes tarball name', () => {
+      expect(getHermesTarballName('Debug', '1000.0.0')).toEqual(
+        'hermes-runtime-darwin-debug-v1000.0.0.tar.gz',
+      );
+    });
+    it('should throw if build type is undefined', () => {
+      expect(() => {
+        getHermesTarballName();
+      }).toThrow('Did not specify build type.');
+    });
+    it('should throw if release version is undefined', () => {
+      expect(() => {
+        getHermesTarballName('Release');
+      }).toThrow('Did not specify release version.');
+    });
+    it('should return debug Hermes tarball name for RN 0.70.0', () => {
+      expect(getHermesTarballName('Debug', '0.70.0')).toEqual(
+        'hermes-runtime-darwin-debug-v0.70.0.tar.gz',
+      );
+    });
+    it('should return a wildcard Hermes tarball name for any RN version', () => {
+      expect(getHermesTarballName('Debug', '*')).toEqual(
+        'hermes-runtime-darwin-debug-v*.tar.gz',
+      );
     });
   });
   describe('getHermesTagSHA', () => {
@@ -244,6 +276,23 @@ describe('hermes-utils', () => {
       ).toEqual(
         fs.readFileSync(
           path.join(SDKS_DIR, 'hermes-engine', 'hermes-engine.podspec'),
+          {
+            encoding: 'utf8',
+            flag: 'r',
+          },
+        ),
+      );
+    });
+    it('should copy hermes-utils.rb to Hermes source directory', () => {
+      copyPodSpec();
+      expect(
+        fs.readFileSync(path.join(SDKS_DIR, 'hermes', 'hermes-utils.rb'), {
+          encoding: 'utf8',
+          flag: 'r',
+        }),
+      ).toEqual(
+        fs.readFileSync(
+          path.join(SDKS_DIR, 'hermes-engine', 'hermes-utils.rb'),
           {
             encoding: 'utf8',
             flag: 'r',

@@ -17,7 +17,6 @@ rn_java_library(
     srcs = glob(["*.java"]),
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     source = "7",
     target = "7",

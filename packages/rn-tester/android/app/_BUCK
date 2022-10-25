@@ -12,7 +12,6 @@ rn_android_binary(
 rn_android_library(
     name = "rntester-lib",
     srcs = glob(["src/main/java/**/*.java"]),
-    is_androidx = True,
     deps = [
         ":res",
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),

@@ -34,8 +34,6 @@ class BaseTextProps {
       const char *propName,
       RawValue const &value);
 
-  static bool enablePropIteratorSetter;
-
 #pragma mark - Props
 
   TextAttributes textAttributes{};

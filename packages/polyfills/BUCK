@@ -26,7 +26,6 @@ rn_library(
     is_polyfill = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.core",
     ],
     node_modules_check_enabled = False,
     skip_processors = True,  #  Don't anticipate routes or fbicon here

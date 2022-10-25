@@ -76,8 +76,25 @@ public class PointerEventHelper {
     }
   }
 
+  // https://w3c.github.io/pointerevents/#the-buttons-property
+  public static int getButtons(String eventName, String pointerType, int buttonState) {
+    if (isExitEvent(eventName)) {
+      return 0;
+    }
+    if (POINTER_TYPE_TOUCH.equals(pointerType)) {
+      return 1;
+    }
+    return buttonState;
+  }
+
   // https://w3c.github.io/pointerevents/#the-button-property
-  public static int getButtonChange(int lastButtonState, int currentButtonState) {
+  public static int getButtonChange(
+      String pointerType, int lastButtonState, int currentButtonState) {
+    // Always return 0 for touch
+    if (POINTER_TYPE_TOUCH.equals(pointerType)) {
+      return 0;
+    }
+
     int changedMask = currentButtonState ^ lastButtonState;
     if (changedMask == 0) {
       return -1;
@@ -127,7 +144,6 @@ public class PointerEventHelper {
       return false;
     }
 
-    Object value = null;
     switch (event) {
       case DOWN:
       case DOWN_CAPTURE:
@@ -136,44 +152,11 @@ public class PointerEventHelper {
       case CANCEL:
       case CANCEL_CAPTURE:
         return true;
-      case ENTER:
-        value = view.getTag(R.id.pointer_enter);
-        break;
-      case ENTER_CAPTURE:
-        value = view.getTag(R.id.pointer_enter_capture);
-        break;
-      case LEAVE:
-        value = view.getTag(R.id.pointer_leave);
-        break;
-      case LEAVE_CAPTURE:
-        value = view.getTag(R.id.pointer_leave_capture);
-        break;
-      case MOVE:
-        value = view.getTag(R.id.pointer_move);
-        break;
-      case MOVE_CAPTURE:
-        value = view.getTag(R.id.pointer_move_capture);
-        break;
-      case OVER:
-        value = view.getTag(R.id.pointer_over);
-        break;
-      case OVER_CAPTURE:
-        value = view.getTag(R.id.pointer_over_capture);
-        break;
-      case OUT:
-        value = view.getTag(R.id.pointer_out);
-        break;
-      case OUT_CAPTURE:
-        value = view.getTag(R.id.pointer_out_capture);
-        break;
     }
 
-    if (value == null) {
-      return false;
-    }
-
-    if (value instanceof Boolean) {
-      return (Boolean) value;
+    Integer pointerEvents = (Integer) view.getTag(R.id.pointer_events);
+    if (pointerEvents != null) {
+      return (pointerEvents.intValue() & (1 << event.ordinal())) != 0;
     }
     return false;
   }
@@ -203,5 +186,30 @@ public class PointerEventHelper {
   public static boolean supportsHover(MotionEvent motionEvent) {
     int source = motionEvent.getSource();
     return source == InputDevice.SOURCE_MOUSE || source == InputDevice.SOURCE_CLASS_POINTER;
+  }
+
+  public static boolean isExitEvent(String eventName) {
+    switch (eventName) {
+      case POINTER_UP:
+      case POINTER_LEAVE:
+      case POINTER_OUT:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  // https://w3c.github.io/pointerevents/#dom-pointerevent-pressure
+  public static double getPressure(int buttonState, String eventName) {
+    if (isExitEvent(eventName)) {
+      return 0;
+    }
+
+    // Assume  we don't support pressure on our platform for now
+    //  For hardware and platforms that do not support pressure,
+    //  the value MUST be 0.5 when in the active buttons state
+    //  and 0 otherwise.
+    boolean inActiveButtonState = buttonState != 0;
+    return inActiveButtonState ? 0.5 : 0;
   }
 }

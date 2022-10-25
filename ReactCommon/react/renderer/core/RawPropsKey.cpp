@@ -14,8 +14,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length)
     const noexcept {
@@ -70,5 +69,4 @@ bool operator!=(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept {
   return !(lhs == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
