@@ -44,6 +44,23 @@ const presentationStyles = [
 const iOSActions = ['None', 'On Dismiss', 'On Show'];
 const noniOSActions = ['None', 'On Show'];
 
+const TitleComponent = React.forwardRef((props, forwardedRef) => {
+  return (
+    <Text
+      ref={forwardedRef}
+      style={{
+        width: '100%',
+        position: 'absolute',
+        top: 500,
+        textAlign: 'center',
+        backgroundColor: 'red',
+        zIndex: 20,
+      }}>
+      My custom title
+    </Text>
+  );
+});
+
 function ModalPresentation() {
   const [animationType, setAnimationType] = React.useState('none');
   const [transparent, setTransparent] = React.useState(false);
@@ -56,8 +73,9 @@ function ModalPresentation() {
     React.useState('Portrait');
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
-  const ref = React.useRef(null);
+  let ref = React.useRef(null);
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;
+  let accessibilityEventTimeout;
   const onDismiss = () => {
     setVisible(false);
     if (action === 'onDismiss') {
@@ -65,42 +83,31 @@ function ModalPresentation() {
     }
   };
 
-  const TitleComponent = React.forwardRef((props, forwardedRef) => {
-    return (
-      <Text
-        ref={forwardedRef}
-        style={{
-          width: '100%',
-          position: 'absolute',
-          top: 100,
-          textAlign: 'center',
-          backgroundColor: 'red',
-          zIndex: 20,
-        }}>
-        My custom title
-      </Text>
-    );
-  });
-
   const onShow = () => {
     if (action === 'onShow') {
       alert('onShow');
     }
   };
 
-  const _captureRef = (ref: NativeMethods | null) => {
+  const _captureRef = (localRef: NativeMethods | null) => {
     if (ref != null) {
-      this._ref = ref;
-      setTimeout(
-        (AccessibilityInfo, ref) => {
-          AccessibilityInfo.sendAccessibilityEvent(ref, 'focus');
+      ref = localRef;
+      accessibilityEventTimeout = setTimeout(
+        (AI, elementRef) => {
+          AI.sendAccessibilityEvent(elementRef, 'focus');
         },
         1000,
         AccessibilityInfo,
-        ref,
+        localRef,
       );
     }
   };
+
+  React.useEffect(() => {
+    if (accessibilityEventTimeout) {
+      clearTimeout(accessibilityEventTimeout);
+    }
+  }, []);
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
@@ -129,7 +136,7 @@ function ModalPresentation() {
         onOrientationChange={onOrientationChange}
         onDismiss={onDismiss}
         onShow={onShow}>
-        {TitleComponent != null && <TitleComponent ref={this._captureRef} />}
+        {TitleComponent != null && <TitleComponent ref={_captureRef} />}
         <View style={[styles.modalContainer, modalBackgroundStyle]}>
           <View
             style={[
