@@ -76,18 +76,17 @@ plugins {
  */
 
 react {
-    cliPath = "../../../../cli.js"
+    cliFile = file("$rootDir/cli.js")
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
     root = file("../../")
-    composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
     hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
     debuggableVariants = ["hermesDebug", "jscDebug"]
     enableHermesOnlyInVariants = ["hermesDebug", "hermesRelease"]
 
     // Codegen Configs
     reactNativeDir = rootDir
-    codegenDir = new File(rootDir, "node_modules/react-native-codegen")
+    codegenDir = file("$rootDir/node_modules/react-native-codegen")
 }
 
 /**

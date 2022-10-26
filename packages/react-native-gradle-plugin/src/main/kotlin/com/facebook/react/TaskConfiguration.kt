@@ -12,7 +12,7 @@ import com.facebook.react.tasks.BundleHermesCTask
 import com.facebook.react.utils.NdkConfiguratorUtils.configureJsEnginePackagingOptions
 import com.facebook.react.utils.NdkConfiguratorUtils.configureNewArchPackagingOptions
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
-import com.facebook.react.utils.detectedCliPath
+import com.facebook.react.utils.detectedCliFile
 import com.facebook.react.utils.detectedEntryFile
 import java.io.File
 import org.gradle.api.Project
@@ -32,8 +32,8 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
   // Intermediate compiler: intermediates/sourcemaps/react/path/index.android.bundle.compiler.map
   val jsIntermediateSourceMapsDir = File(buildDir, "intermediates/sourcemaps/react/$targetPath")
 
-  // Additional node and packager commandline arguments
-  val cliPath = detectedCliPath(project.projectDir, config)
+  // The location of the cli.js file for React Native
+  val cliFile = detectedCliFile(config)
 
   val isHermesEnabledInProject = project.isHermesEnabled
   val isHermesEnabledInThisVariant =
@@ -54,7 +54,7 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
         tasks.register("createBundle${targetName}JsAndAssets", BundleHermesCTask::class.java) {
           it.root.set(config.root)
           it.nodeExecutableAndArgs.set(config.nodeExecutableAndArgs)
-          it.cliPath.set(cliPath)
+          it.cliFile.set(cliFile)
           it.bundleCommand.set(config.bundleCommand)
           it.entryFile.set(detectedEntryFile(config))
           it.extraPackagerArgs.set(config.extraPackagerArgs)
@@ -69,7 +69,7 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
           it.jsSourceMapsDir.set(jsSourceMapsDir)
           it.hermesCommand.set(config.hermesCommand)
           it.hermesFlags.set(config.hermesFlags)
-          it.composeSourceMapsPath.set(config.composeSourceMapsPath)
+          it.reactNativeDir.set(config.reactNativeDir)
         }
     variant.sources.res?.addGeneratedSourceDirectory(bundleTask, BundleHermesCTask::resourcesDir)
     variant.sources.assets?.addGeneratedSourceDirectory(bundleTask, BundleHermesCTask::jsBundleDir)

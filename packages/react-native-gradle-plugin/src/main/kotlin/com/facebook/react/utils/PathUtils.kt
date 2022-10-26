@@ -28,20 +28,16 @@ internal fun detectedEntryFile(config: ReactExtension): File =
         entryFile = config.entryFile.orNull?.asFile, reactRoot = config.root.get().asFile)
 
 /**
- * Computes the CLI location for React Native. The Algo follows this order:
- * 1. The path provided by the `cliPath` config in the `reactApp` Gradle extension
+ * Computes the CLI file for React Native. The Algo follows this order:
+ * 1. The path provided by the `cliFile` config in the `react {}` Gradle extension
  * 2. The output of `node --print "require.resolve('react-native/cli');"` if not failing.
  * 3. The `node_modules/react-native/cli.js` file if exists
  * 4. Fails otherwise
  */
-internal fun detectedCliPath(
-    projectDir: File,
-    config: ReactExtension,
-): String =
-    detectCliPath(
-        projectDir = projectDir,
-        reactRoot = config.root.get().asFile,
-        preconfiguredCliPath = config.cliPath.orNull)
+internal fun detectedCliFile(config: ReactExtension): File =
+    detectCliFile(
+        reactNativeRoot = config.root.get().asFile,
+        preconfiguredCliFile = config.cliFile.asFile.orNull)
 
 /**
  * Computes the `hermesc` command location. The Algo follows this order:
@@ -64,24 +60,11 @@ private fun detectEntryFile(entryFile: File?, reactRoot: File): File =
       else -> File(reactRoot, "index.js")
     }
 
-private fun detectCliPath(
-    projectDir: File,
-    reactRoot: File,
-    preconfiguredCliPath: String?
-): String {
+private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): File {
   // 1. preconfigured path
-  if (preconfiguredCliPath != null) {
-    val preconfiguredCliJsAbsolute = File(preconfiguredCliPath)
-    if (preconfiguredCliJsAbsolute.exists()) {
-      return preconfiguredCliJsAbsolute.absolutePath
-    }
-    val preconfiguredCliJsRelativeToReactRoot = File(reactRoot, preconfiguredCliPath)
-    if (preconfiguredCliJsRelativeToReactRoot.exists()) {
-      return preconfiguredCliJsRelativeToReactRoot.absolutePath
-    }
-    val preconfiguredCliJsRelativeToProject = File(projectDir, preconfiguredCliPath)
-    if (preconfiguredCliJsRelativeToProject.exists()) {
-      return preconfiguredCliJsRelativeToProject.absolutePath
+  if (preconfiguredCliFile != null) {
+    if (preconfiguredCliFile.exists()) {
+      return preconfiguredCliFile
     }
   }
 
@@ -91,27 +74,32 @@ private fun detectCliPath(
           .exec(
               arrayOf("node", "--print", "require.resolve('react-native/cli');"),
               emptyArray(),
-              reactRoot)
+              reactNativeRoot)
 
   val nodeProcessOutput = nodeProcess.inputStream.use { it.bufferedReader().readText().trim() }
 
   if (nodeProcessOutput.isNotEmpty()) {
     val nodeModuleCliJs = File(nodeProcessOutput)
     if (nodeModuleCliJs.exists()) {
-      return nodeModuleCliJs.absolutePath
+      return nodeModuleCliJs
     }
   }
 
   // 3. cli.js in the root folder
-  val rootCliJs = File(reactRoot, "node_modules/react-native/cli.js")
+  val rootCliJs = File(reactNativeRoot, "node_modules/react-native/cli.js")
   if (rootCliJs.exists()) {
-    return rootCliJs.absolutePath
+    return rootCliJs
   }
 
   error(
-      "Couldn't determine CLI location. " +
-          "Please set `project.react.cliPath` to the path of the react-native cli.js file. " +
-          "This file typically resides in `node_modules/react-native/cli.js`")
+      """
+      Couldn't determine CLI location!
+      
+      Please set `react { cliFile = file(...) }` inside your 
+      build.gradle to the path of the react-native cli.js file.
+      This file typically resides in `node_modules/react-native/cli.js`
+    """
+          .trimIndent())
 }
 
 /**
