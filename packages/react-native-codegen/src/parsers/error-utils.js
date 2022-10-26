@@ -254,18 +254,15 @@ function throwIfMoreThanOneModuleInterfaceParserError(
 function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
   nativeModuleName: string,
   languageParamTypeAnnotation: $FlowFixMe,
-  paramTypeAnnotationType: NativeModuleTypeAnnotation['type'],
   paramName: string,
-  expectedTypeAnnotation: string,
+  paramTypeAnnotationType: NativeModuleTypeAnnotation['type'],
 ) {
-  if (paramTypeAnnotationType === expectedTypeAnnotation) {
-    throw new UnsupportedFunctionParamTypeAnnotationParserError(
-      nativeModuleName,
-      languageParamTypeAnnotation,
-      paramName,
-      expectedTypeAnnotation,
-    );
-  }
+  throw new UnsupportedFunctionParamTypeAnnotationParserError(
+    nativeModuleName,
+    languageParamTypeAnnotation,
+    paramName,
+    paramTypeAnnotationType,
+  );
 }
 
 module.exports = {

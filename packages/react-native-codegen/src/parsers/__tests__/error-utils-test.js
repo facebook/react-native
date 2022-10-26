@@ -638,32 +638,17 @@ describe('throwIfMoreThanOneModuleInterfaceParserError', () => {
 
 describe('throwIfUnsupportedFunctionParamTypeAnnotationParserError', () => {
   const nativeModuleName = 'moduleName';
-  const languageParamTypeAnnotation = {type: 'DoubleTypeAnnotation'};
+  const languageParamTypeAnnotation = {type: 'VoidTypeAnnotation'};
   const paramName = 'paramName';
-  const expectedTypeAnnotation = 'VoidTypeAnnotation';
-  it('throws an UnsupportedFunctionParamTypeAnnotationParserError if paramTypeAnnotationType equals expectedTypeAnnotation', () => {
+  it('throws an UnsupportedFunctionParamTypeAnnotationParserError', () => {
     const paramTypeAnnotationType = 'VoidTypeAnnotation';
     expect(() => {
       throwIfUnsupportedFunctionParamTypeAnnotationParserError(
         nativeModuleName,
         languageParamTypeAnnotation,
-        paramTypeAnnotationType,
         paramName,
-        expectedTypeAnnotation,
+        paramTypeAnnotationType,
       );
     }).toThrow(UnsupportedFunctionParamTypeAnnotationParserError);
-  });
-
-  it("doesn't throw an UnsupportedFunctionParamTypeAnnotationParserError if paramTypeAnnotationType equals expectedTypeAnnotation", () => {
-    const paramTypeAnnotationType = 'NumberTypeAnnotation';
-    expect(() => {
-      throwIfUnsupportedFunctionParamTypeAnnotationParserError(
-        nativeModuleName,
-        languageParamTypeAnnotation,
-        paramTypeAnnotationType,
-        paramName,
-        expectedTypeAnnotation,
-      );
-    }).not.toThrow(UnsupportedFunctionParamTypeAnnotationParserError);
   });
 });

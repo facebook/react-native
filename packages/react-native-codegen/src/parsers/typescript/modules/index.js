@@ -467,21 +467,19 @@ function translateFunctionTypeAnnotation(
           ),
         );
 
-      throwIfUnsupportedFunctionParamTypeAnnotationParserError(
-        hasteModuleName,
-        typeScriptParam.typeAnnotation,
-        paramTypeAnnotation.type,
-        paramName,
+      const forbiddenTypes = new Set([
         'VoidTypeAnnotation',
-      );
-
-      throwIfUnsupportedFunctionParamTypeAnnotationParserError(
-        hasteModuleName,
-        typeScriptParam.typeAnnotation,
-        paramTypeAnnotation.type,
-        paramName,
         'PromiseTypeAnnotation',
-      );
+      ]);
+
+      if (forbiddenTypes.has(paramTypeAnnotation.type)) {
+        return throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+          hasteModuleName,
+          typeScriptParam.typeAnnotation,
+          paramName,
+          paramTypeAnnotation.type,
+        );
+      }
 
       return {
         name: typeScriptParam.name,

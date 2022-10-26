@@ -450,21 +450,19 @@ function translateFunctionTypeAnnotation(
           ),
         );
 
-      throwIfUnsupportedFunctionParamTypeAnnotationParserError(
-        hasteModuleName,
-        flowParam.typeAnnotation,
-        paramTypeAnnotation.type,
-        paramName,
+      const forbiddenTypes = new Set([
         'VoidTypeAnnotation',
-      );
-
-      throwIfUnsupportedFunctionParamTypeAnnotationParserError(
-        hasteModuleName,
-        flowParam.typeAnnotation,
-        paramTypeAnnotation.type,
-        paramName,
         'PromiseTypeAnnotation',
-      );
+      ]);
+
+      if (forbiddenTypes.has(paramTypeAnnotation.type)) {
+        return throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+          hasteModuleName,
+          flowParam.typeAnnotation,
+          paramName,
+          paramTypeAnnotation.type,
+        );
+      }
 
       return {
         name: flowParam.name.name,
