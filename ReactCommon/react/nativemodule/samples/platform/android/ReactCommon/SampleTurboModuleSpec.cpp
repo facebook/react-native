@@ -37,18 +37,6 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getBool(
 }
 
 static facebook::jsi::Value
-__hostFunction_NativeSampleTurboModuleSpecJSI_getEnum(
-    facebook::jsi::Runtime &rt,
-    TurboModule &turboModule,
-    const facebook::jsi::Value *args,
-    size_t count) {
-  static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule)
-      .invokeJavaMethod(
-          rt, NumberKind, "getEnum", "(D)D", args, count, cachedMethodId);
-}
-
-static facebook::jsi::Value
 __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber(
     facebook::jsi::Runtime &rt,
     TurboModule &turboModule,
@@ -206,9 +194,6 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
 
   methodMap_["getBool"] =
       MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getBool};
-
-  methodMap_["getEnum"] =
-      MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getEnum};
 
   methodMap_["getNumber"] = MethodMetadata{
       1, __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber};

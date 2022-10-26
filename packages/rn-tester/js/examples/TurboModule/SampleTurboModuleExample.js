@@ -9,7 +9,6 @@
  */
 
 import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
-import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 import {
   StyleSheet,
@@ -58,10 +57,6 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     getConstants: () => NativeSampleTurboModule.getConstants(),
     voidFunc: () => NativeSampleTurboModule.voidFunc(),
     getBool: () => NativeSampleTurboModule.getBool(true),
-    getEnum: () =>
-      NativeSampleTurboModule.getEnum
-        ? NativeSampleTurboModule.getEnum(EnumInt.A)
-        : null,
     getNumber: () => NativeSampleTurboModule.getNumber(99.95),
     getString: () => NativeSampleTurboModule.getString('Hello'),
     getArray: () =>
@@ -85,7 +80,6 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       | 'callback'
       | 'getArray'
       | 'getBool'
-      | 'getEnum'
       | 'getConstants'
       | 'getNumber'
       | 'getObject'
@@ -126,7 +120,6 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       | 'callback'
       | 'getArray'
       | 'getBool'
-      | 'getEnum'
       | 'getConstants'
       | 'getNumber'
       | 'getObject'

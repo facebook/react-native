@@ -48,14 +48,6 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec {
     return arg;
   }
 
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  @Override
-  public double getEnum(double arg) {
-    log("getEnum", arg, arg);
-    return arg;
-  }
-
   @Override
   protected Map<String, Object> getTypedExportedConstants() {
     Map<String, Object> result = new HashMap<>();

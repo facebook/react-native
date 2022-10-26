@@ -66,9 +66,6 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   @ReactMethod(isBlockingSynchronousMethod = true)
   public abstract boolean getBool(boolean arg);
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract double getEnum(double arg);
-
   protected abstract Map<String, Object> getTypedExportedConstants();
 
   @Override

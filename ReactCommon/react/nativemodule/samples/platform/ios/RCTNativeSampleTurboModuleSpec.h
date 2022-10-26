@@ -22,7 +22,6 @@
 
 - (void)voidFunc;
 - (NSNumber *)getBool:(BOOL)arg;
-- (NSNumber *)getEnum:(double)arg;
 - (NSNumber *)getNumber:(double)arg;
 - (NSString *)getString:(NSString *)arg;
 - (NSArray<id<NSObject>> *)getArray:(NSArray *)arg;

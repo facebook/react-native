@@ -4909,11 +4909,6 @@ flow-bin@^0.190.1:
   resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.190.1.tgz#59ccbc9aaa2515fe32acc66117a05e7ef6a11061"
   integrity sha512-5c9/6eEkMTTfdNuK2WwssrKfsUXKMUXlZVJZnrlWiqJpDSVc70/Smwyi9sXict9k/oq0f+Mo5wVH0d7peBYREg==
 
-flow-enums-runtime@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/flow-enums-runtime/-/flow-enums-runtime-0.0.6.tgz#5bb0cd1b0a3e471330f4d109039b7eba5cb3e787"
-  integrity sha512-3PYnM29RFXwvAN6Pc/scUfkI7RwhQ/xqyLUyPNlXUp9S40zI8nup9tUSrTLSVnWGBN38FNiGWbwZOB6uR4OGdw==
-
 flow-parser@0.*, flow-parser@^0.185.0:
   version "0.185.0"
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.185.0.tgz#56bde60805bad19b2934ebfc50c9485e5c5424f9"

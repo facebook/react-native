@@ -40,12 +40,6 @@ std::vector<CxxModule::Method> SampleTurboCxxModuleLegacyImpl::getMethods() {
           },
           CxxModule::SyncTag),
       CxxModule::Method(
-          "getEnum",
-          [this](folly::dynamic args) {
-            return getEnum(xplat::jsArgAsDouble(args, 0));
-          },
-          CxxModule::SyncTag),
-      CxxModule::Method(
           "getNumber",
           [this](folly::dynamic args) {
             return getNumber(xplat::jsArgAsDouble(args, 0));
@@ -117,10 +111,6 @@ void SampleTurboCxxModuleLegacyImpl::voidFunc() {
 }
 
 bool SampleTurboCxxModuleLegacyImpl::getBool(bool arg) {
-  return arg;
-}
-
-double SampleTurboCxxModuleLegacyImpl::getEnum(double arg) {
   return arg;
 }
 
