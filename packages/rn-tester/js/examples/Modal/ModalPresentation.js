@@ -93,10 +93,10 @@ function ModalPresentation() {
 
   React.useEffect(() => {
     let timer;
-    if (ref != null && ref.current != null && modalOpened === true) {
+    if (ref != null && modalOpened === true) {
       timer = setTimeout(
         (AI, elementRef) => {
-          if (elementRef != null && elementRef.current != null) {
+          if (elementRef.current != null) {
             AI.sendAccessibilityEvent(elementRef.current, 'focus');
           }
         },
