@@ -11,7 +11,6 @@
 /* eslint-disable no-alert */
 
 import * as React from 'react';
-import type {ElementRef} from 'react';
 import {
   AccessibilityInfo,
   Modal,
@@ -21,8 +20,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import type {HostComponent} from 'react-native';
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import RNTOption from '../../components/RNTOption';
 const RNTesterButton = require('../../components/RNTesterButton');
 
@@ -91,12 +88,6 @@ function ModalPresentation() {
     }
     if (ref != null) {
       setModalOpened(true);
-    }
-  };
-
-  const _captureRef = (localRef: typeof ref) => {
-    if (ref != null && localRef != null) {
-      ref = localRef;
     }
   };
 
