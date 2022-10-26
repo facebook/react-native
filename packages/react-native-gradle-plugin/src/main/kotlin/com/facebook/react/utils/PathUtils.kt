@@ -10,6 +10,7 @@
 package com.facebook.react.utils
 
 import com.facebook.react.ReactExtension
+import com.facebook.react.model.ModelPackageJson
 import java.io.File
 import org.gradle.api.Project
 
@@ -205,6 +206,19 @@ internal fun findPackageJsonFile(project: Project, extension: ReactExtension): F
     } else {
       extension.root.file("package.json").orNull?.asFile
     }
+
+/**
+ * Function to look for the `package.json` and parse it. It returns a [ModelPackageJson] if found or
+ * null others.
+ *
+ * Please note that this function access the [ReactExtension] field properties and calls .get() on
+ * them, so calling this during apply() of the ReactPlugin is not recommended. It should be invoked
+ * inside lazy lambdas or at execution time.
+ */
+internal fun readPackageJsonFile(project: Project, extension: ReactExtension): ModelPackageJson? {
+  val packageJson = findPackageJsonFile(project, extension)
+  return packageJson?.let { JsonUtils.fromCodegenJson(it) }
+}
 
 private const val HERMESC_IN_REACT_NATIVE_DIR = "node_modules/react-native/sdks/hermesc/%OS-BIN%/"
 private const val HERMESC_BUILT_FROM_SOURCE_DIR =

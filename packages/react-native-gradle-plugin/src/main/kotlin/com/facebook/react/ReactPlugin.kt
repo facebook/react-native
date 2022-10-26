@@ -19,6 +19,7 @@ import com.facebook.react.utils.DependencyUtils.configureRepositories
 import com.facebook.react.utils.DependencyUtils.readVersionString
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
+import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
@@ -91,7 +92,11 @@ class ReactPlugin : Plugin<Project> {
           it.codegenDir.set(extension.codegenDir)
           val bashWindowsHome = project.findProperty("REACT_WINDOWS_BASH") as String?
           it.bashWindowsHome.set(bashWindowsHome)
-          it.onlyIf { isLibrary || extension.enableCodegenInApps.get() }
+
+          // Please note that appNeedsCodegen is triggering a read of the package.json at
+          // configuration time as we need to feed the onlyIf condition of this task.
+          // Therefore, the appNeedsCodegen needs to be invoked inside this lambda.
+          it.onlyIf { isLibrary || project.needsCodegenFromPackageJson(extension) }
         }
 
     // We create the task to produce schema from JS files.
@@ -102,10 +107,9 @@ class ReactPlugin : Plugin<Project> {
               it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
               it.codegenDir.set(extension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)
-              it.onlyIf { isLibrary || extension.enableCodegenInApps.get() }
 
               // We're reading the package.json at configuration time to properly feed
-              // the `jsRootDir` @Input property of this task. Therefore, the
+              // the `jsRootDir` @Input property of this task & the onlyIf. Therefore, the
               // parsePackageJson should be invoked inside this lambda.
               val packageJson = findPackageJsonFile(project, extension)
               val parsedPackageJson = packageJson?.let { JsonUtils.fromCodegenJson(it) }
@@ -116,6 +120,7 @@ class ReactPlugin : Plugin<Project> {
               } else {
                 it.jsRootDir.set(extension.jsRootDir)
               }
+              it.onlyIf { isLibrary || project.needsCodegenFromPackageJson(parsedPackageJson) }
             }
 
     // We create the task to generate Java code from schema.
@@ -130,7 +135,11 @@ class ReactPlugin : Plugin<Project> {
               it.packageJsonFile.set(findPackageJsonFile(project, extension))
               it.codegenJavaPackageName.set(extension.codegenJavaPackageName)
               it.libraryName.set(extension.libraryName)
-              it.onlyIf { isLibrary || extension.enableCodegenInApps.get() }
+
+              // Please note that appNeedsCodegen is triggering a read of the package.json at
+              // configuration time as we need to feed the onlyIf condition of this task.
+              // Therefore, the appNeedsCodegen needs to be invoked inside this lambda.
+              it.onlyIf { isLibrary || project.needsCodegenFromPackageJson(extension) }
             }
 
     // We update the android configuration to include the generated sources.

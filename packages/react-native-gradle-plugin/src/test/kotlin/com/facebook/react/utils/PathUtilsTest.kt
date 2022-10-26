@@ -13,6 +13,7 @@ import com.facebook.react.tests.OS
 import com.facebook.react.tests.OsRule
 import com.facebook.react.tests.WithOs
 import java.io.File
+import java.io.FileNotFoundException
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
 import org.junit.Assume.assumeTrue
@@ -298,5 +299,61 @@ class PathUtilsTest {
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
     assertEquals(localFile, findPackageJsonFile(project, extension))
+  }
+
+  @Test(expected = FileNotFoundException::class)
+  fun readPackageJsonFile_withMissingFile_returnsNull() {
+    val moduleFolder = tempFolder.newFolder("awesome-module")
+    val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.android.library")
+    project.plugins.apply("com.facebook.react")
+    val extension =
+        project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
+
+    val actual = readPackageJsonFile(project, extension)
+
+    assertNull(actual)
+  }
+
+  @Test
+  fun readPackageJsonFile_withFileConfiguredInExtension_andMissingCodegenConfig_returnsNullCodegenConfig() {
+    val moduleFolder = tempFolder.newFolder("awesome-module")
+    File(moduleFolder, "package.json").apply { writeText("{}") }
+    val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.android.library")
+    project.plugins.apply("com.facebook.react")
+    val extension =
+        project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
+
+    val actual = readPackageJsonFile(project, extension)
+
+    assertNotNull(actual)
+    assertNull(actual!!.codegenConfig)
+  }
+
+  @Test
+  fun readPackageJsonFile_withFileConfiguredInExtension_andHavingCodegenConfig_returnsValidCodegenConfig() {
+    val moduleFolder = tempFolder.newFolder("awesome-module")
+    File(moduleFolder, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "name": "a-library",
+        "codegenConfig": {}
+      }
+      """
+              .trimIndent())
+    }
+    val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.android.library")
+    project.plugins.apply("com.facebook.react")
+    val extension =
+        project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
+
+    val actual = readPackageJsonFile(project, extension)
+
+    assertNotNull(actual)
+    assertNotNull(actual!!.codegenConfig)
   }
 }
