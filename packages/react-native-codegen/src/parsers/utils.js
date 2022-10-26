@@ -185,7 +185,38 @@ function buildSchemaFromConfigType(
   }
 }
 
+function getConfigType(
+  // TODO(T71778680): Flow-type this node.
+  ast: $FlowFixMe,
+  Visitor: ({isComponent: boolean, isModule: boolean}) => {
+    [type: string]: (node: $FlowFixMe) => void,
+  },
+): 'module' | 'component' | 'none' {
+  let infoMap = {
+    isComponent: false,
+    isModule: false,
+  };
+
+  visit(ast, Visitor(infoMap));
+
+  const {isModule, isComponent} = infoMap;
+  if (isModule && isComponent) {
+    throw new Error(
+      'Found type extending "TurboModule" and exported "codegenNativeComponent" declaration in one file. Split them into separated files.',
+    );
+  }
+
+  if (isModule) {
+    return 'module';
+  } else if (isComponent) {
+    return 'component';
+  } else {
+    return 'none';
+  }
+}
+
 module.exports = {
+  getConfigType,
   extractNativeModuleName,
   createParserErrorCapturer,
   verifyPlatforms,
