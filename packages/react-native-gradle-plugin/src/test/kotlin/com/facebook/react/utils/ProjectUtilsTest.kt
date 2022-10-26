@@ -50,21 +50,21 @@ class ProjectUtilsTest {
   @Test
   fun isNewArchEnabled_withDisabledViaProperty_returnsFalse() {
     val project = createProject()
-    project.extensions.extraProperties.set("enableHermes", "false")
+    project.extensions.extraProperties.set("hermesEnabled", "false")
     assertFalse(project.isHermesEnabled)
   }
 
   @Test
   fun isHermesEnabled_withEnabledViaProperty_returnsTrue() {
     val project = createProject()
-    project.extensions.extraProperties.set("enableHermes", "true")
+    project.extensions.extraProperties.set("hermesEnabled", "true")
     assertTrue(project.isHermesEnabled)
   }
 
   @Test
   fun isHermesEnabled_withInvalidViaProperty_returnsTrue() {
     val project = createProject()
-    project.extensions.extraProperties.set("enableHermes", "¯\\_(ツ)_/¯")
+    project.extensions.extraProperties.set("hermesEnabled", "¯\\_(ツ)_/¯")
     assertTrue(project.isHermesEnabled)
   }
 
