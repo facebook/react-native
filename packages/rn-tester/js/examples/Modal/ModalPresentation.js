@@ -4,15 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow
  * @format
  */
 
 /* eslint-disable no-alert */
 
 import * as React from 'react';
+import type {ElementRef} from 'react';
 import {
-  NativeMethods,
   AccessibilityInfo,
   Modal,
   Platform,
@@ -21,6 +21,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import type {HostComponent} from 'react-native';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import RNTOption from '../../components/RNTOption';
 const RNTesterButton = require('../../components/RNTesterButton');
@@ -74,7 +75,7 @@ function ModalPresentation() {
   const [modalOpened, setModalOpened] = React.useState(null);
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
-  let ref = React.useRef(null);
+  let ref = React.useRef<?React.ElementRef<typeof Text>>(null);
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;
   const onDismiss = () => {
     setVisible(false);
@@ -93,18 +94,20 @@ function ModalPresentation() {
     }
   };
 
-  const _captureRef = (localRef: NativeMethods | null) => {
-    if (ref != null) {
+  const _captureRef = (localRef: typeof ref) => {
+    if (ref != null && localRef != null) {
       ref = localRef;
     }
   };
 
   React.useEffect(() => {
     let timer;
-    if (ref != null && modalOpened) {
+    if (ref != null && ref.current != null && modalOpened === true) {
       timer = setTimeout(
         (AI, elementRef) => {
-          AI.sendAccessibilityEvent(elementRef, 'focus');
+          if (elementRef != null && elementRef.current != null) {
+            AI.sendAccessibilityEvent(elementRef.current, 'focus');
+          }
         },
         1000,
         AccessibilityInfo,
@@ -146,7 +149,7 @@ function ModalPresentation() {
         onOrientationChange={onOrientationChange}
         onDismiss={onDismiss}
         onShow={onShow}>
-        {TitleComponent != null && <TitleComponent ref={_captureRef} />}
+        {TitleComponent != null && <TitleComponent ref={ref} />}
         <View style={[styles.modalContainer, modalBackgroundStyle]}>
           <View
             style={[
