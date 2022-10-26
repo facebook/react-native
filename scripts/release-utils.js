@@ -81,10 +81,7 @@ function publishAndroidArtifactsToMaven(isNightly) {
 
   if (!isNightly) {
     // -------- For stable releases, we also need to close and release the staging repository.
-    // TODO(ncor): Remove the --dry-run before RC0
-    if (
-      exec('./gradlew closeAndReleaseSonatypeStagingRepository --dry-run').code
-    ) {
+    if (exec('./gradlew closeAndReleaseSonatypeStagingRepository').code) {
       echo(
         'Failed to close and release the staging repository on Sonatype (Maven Central)',
       );
