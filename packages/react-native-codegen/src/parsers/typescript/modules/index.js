@@ -467,12 +467,10 @@ function translateFunctionTypeAnnotation(
           ),
         );
 
-      const forbiddenTypes = new Set([
-        'VoidTypeAnnotation',
-        'PromiseTypeAnnotation',
-      ]);
-
-      if (forbiddenTypes.has(paramTypeAnnotation.type)) {
+      if (
+        paramTypeAnnotation.type === 'VoidTypeAnnotation' ||
+        paramTypeAnnotation.type === 'PromiseTypeAnnotation'
+      ) {
         return throwIfUnsupportedFunctionParamTypeAnnotationParserError(
           hasteModuleName,
           typeScriptParam.typeAnnotation,
