@@ -37,6 +37,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/clipboard:clipboard"),
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/modules/debug:debug"),
+        react_native_target("java/com/facebook/react/modules/devtoolssettings:devtoolssettings"),
         react_native_target("java/com/facebook/react/modules/dialog:dialog"),
         react_native_target("java/com/facebook/react/modules/fresco:fresco"),
         react_native_target("java/com/facebook/react/modules/i18nmanager:i18nmanager"),
