@@ -9,7 +9,9 @@ plugins { id("io.github.gradle-nexus.publish-plugin") version "1.1.0" }
 
 val reactAndroidProperties = java.util.Properties()
 
-File("./ReactAndroid/gradle.properties").inputStream().use { reactAndroidProperties.load(it) }
+File("$rootDir/ReactAndroid/gradle.properties").inputStream().use {
+  reactAndroidProperties.load(it)
+}
 
 version =
     if (project.hasProperty("isNightly") &&
@@ -113,11 +115,11 @@ tasks.register("publishAllInsideNpmPackage") {
   dependsOn(":ReactAndroid:hermes-engine:installArchives")
 }
 
-tasks.register("publishAllToMavenLocal") {
-  description = "Publish all the artifacts to be available inside Maven Local."
-  dependsOn(":ReactAndroid:publishToMavenLocal")
-  dependsOn(":ReactAndroid:external-artifacts:publishToMavenLocal")
-  dependsOn(":ReactAndroid:hermes-engine:publishToMavenLocal")
+tasks.register("publishAllToMavenTempLocal") {
+  description = "Publish all the artifacts to be available inside a Maven Local repository on /tmp."
+  dependsOn(":ReactAndroid:publishAllPublicationsToMavenTempLocalRepository")
+  // We don't publish the external-artifacts to Maven Local as CircleCI is using it via workspace.
+  dependsOn(":ReactAndroid:hermes-engine:publishAllPublicationsToMavenTempLocalRepository")
 }
 
 tasks.register("publishAllToSonatype") {

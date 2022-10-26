@@ -15,7 +15,7 @@ const nullthrows = require('nullthrows');
 import type {SchemaType} from './CodegenSchema';
 
 function getErrors(schema: SchemaType): $ReadOnlyArray<string> {
-  const errors = new Set();
+  const errors = new Set<string>();
 
   // Map of component name -> Array of module names
   const componentModules: Map<string, Array<string>> = new Map();

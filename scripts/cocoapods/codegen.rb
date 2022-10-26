@@ -73,6 +73,7 @@ def run_codegen!(
   disable_codegen: false,
   react_native_path: "../node_modules/react-native",
   fabric_enabled: false,
+  hermes_enabled: true,
   codegen_output_dir: 'build/generated/ios',
   config_key: 'codegenConfig',
   package_json_file: '~/app/package.json',
@@ -86,6 +87,7 @@ def run_codegen!(
       app_path,
       :react_native_path => react_native_path,
       :fabric_enabled => fabric_enabled,
+      :hermes_enabled => hermes_enabled,
       :config_file_dir => config_file_dir,
       :codegen_output_dir => codegen_output_dir,
       :config_key => config_key,
@@ -96,7 +98,8 @@ def run_codegen!(
     # This gets generated in use_react_native_codegen_discovery when codegen discovery is enabled.
     react_codegen_spec = codegen_utils.get_react_codegen_spec(
       package_json_file,
-      :fabric_enabled => fabric_enabled
+      :fabric_enabled => fabric_enabled,
+      :hermes_enabled => hermes_enabled
     )
     codegen_utils.generate_react_codegen_podspec!(react_codegen_spec, codegen_output_dir)
   end

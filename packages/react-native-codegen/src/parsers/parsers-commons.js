@@ -16,8 +16,13 @@ import type {
   NativeModuleTypeAnnotation,
   Nullable,
   NativeModuleMixedTypeAnnotation,
+  UnionTypeAnnotationMemberType,
+  NativeModuleUnionTypeAnnotation,
 } from '../CodegenSchema.js';
-const {IncorrectlyParameterizedGenericParserError} = require('./errors');
+const {
+  IncorrectlyParameterizedGenericParserError,
+  UnsupportedUnionTypeAnnotationParserError,
+} = require('./errors');
 import type {ParserType} from './errors';
 
 const invariant = require('invariant');
@@ -100,10 +105,61 @@ function emitMixedTypeAnnotation(
   });
 }
 
+function remapUnionTypeAnnotationMemberNames(
+  types: $FlowFixMe,
+  language: ParserType,
+): UnionTypeAnnotationMemberType[] {
+  const remapLiteral = (item: $FlowFixMe) => {
+    if (language === 'Flow') {
+      return item.type
+        .replace('NumberLiteralTypeAnnotation', 'NumberTypeAnnotation')
+        .replace('StringLiteralTypeAnnotation', 'StringTypeAnnotation');
+    }
+
+    return item.literal
+      ? item.literal.type
+          .replace('NumericLiteral', 'NumberTypeAnnotation')
+          .replace('StringLiteral', 'StringTypeAnnotation')
+      : 'ObjectTypeAnnotation';
+  };
+
+  return types
+    .map(remapLiteral)
+    .filter((value, index, self) => self.indexOf(value) === index);
+}
+
+function emitUnionTypeAnnotation(
+  nullable: boolean,
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  language: ParserType,
+): Nullable<NativeModuleUnionTypeAnnotation> {
+  const unionTypes = remapUnionTypeAnnotationMemberNames(
+    typeAnnotation.types,
+    language,
+  );
+
+  // Only support unionTypes of the same kind
+  if (unionTypes.length > 1) {
+    throw new UnsupportedUnionTypeAnnotationParserError(
+      hasteModuleName,
+      typeAnnotation,
+      unionTypes,
+      language,
+    );
+  }
+
+  return wrapNullable(nullable, {
+    type: 'UnionTypeAnnotation',
+    memberType: unionTypes[0],
+  });
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   emitMixedTypeAnnotation,
+  emitUnionTypeAnnotation,
 };

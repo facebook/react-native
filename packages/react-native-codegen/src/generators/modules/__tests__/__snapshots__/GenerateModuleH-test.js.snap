@@ -668,6 +668,7 @@ public:
   virtual jsi::Object getValue(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) = 0;
   virtual void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) = 0;
   virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;
+  virtual jsi::String getEnums(jsi::Runtime &rt, double enumInt, double enumFloat, jsi::String enumString) = 0;
 
 };
 
@@ -776,6 +777,14 @@ private:
 
       return bridging::callFromJs<jsi::Value>(
           rt, &T::getValueWithPromise, jsInvoker_, instance_, std::move(error));
+    }
+    jsi::String getEnums(jsi::Runtime &rt, double enumInt, double enumFloat, jsi::String enumString) override {
+      static_assert(
+          bridging::getParameterCount(&T::getEnums) == 4,
+          \\"Expected getEnums(...) to have 4 parameters\\");
+
+      return bridging::callFromJs<jsi::String>(
+          rt, &T::getEnums, jsInvoker_, instance_, std::move(enumInt), std::move(enumFloat), std::move(enumString));
     }
 
   private:

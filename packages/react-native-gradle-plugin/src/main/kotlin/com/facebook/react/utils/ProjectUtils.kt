@@ -7,6 +7,8 @@
 
 package com.facebook.react.utils
 
+import com.facebook.react.ReactExtension
+import com.facebook.react.model.ModelPackageJson
 import org.gradle.api.Project
 
 internal object ProjectUtils {
@@ -19,8 +21,8 @@ internal object ProjectUtils {
 
   internal val Project.isHermesEnabled: Boolean
     get() =
-        if (project.hasProperty("enableHermes")) {
-          project.property("enableHermes").toString().lowercase().toBooleanStrictOrNull() ?: true
+        if (project.hasProperty("hermesEnabled")) {
+          project.property("hermesEnabled").toString().lowercase().toBooleanStrictOrNull() ?: true
         } else if (project.extensions.extraProperties.has("react")) {
           @Suppress("UNCHECKED_CAST")
           val reactMap = project.extensions.extraProperties.get("react") as? Map<String, Any?>
@@ -32,4 +34,13 @@ internal object ProjectUtils {
         } else {
           HERMES_FALLBACK
         }
+
+  internal fun Project.needsCodegenFromPackageJson(extension: ReactExtension): Boolean {
+    val parsedPackageJson = readPackageJsonFile(this, extension)
+    return needsCodegenFromPackageJson(parsedPackageJson)
+  }
+
+  internal fun Project.needsCodegenFromPackageJson(model: ModelPackageJson?): Boolean {
+    return model?.codegenConfig != null
+  }
 }

@@ -8,15 +8,13 @@
  * @format
  */
 
-import ImageViewNativeComponent from './ImageViewNativeComponent';
-import * as React from 'react';
-
-import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
-
-import type {ResolvedAssetSource} from './AssetSourceResolver';
-
-import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {RootTag} from '../Types/RootTagTypes';
+import type {ResolvedAssetSource} from './AssetSourceResolver';
+import type {ImageProps as ImagePropsType} from './ImageProps';
+
+import ImageViewNativeComponent from './ImageViewNativeComponent';
+import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
+import * as React from 'react';
 
 type ImageComponentStaticsIOS = $ReadOnly<{|
   getSize: (

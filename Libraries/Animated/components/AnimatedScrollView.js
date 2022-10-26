@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {____ViewStyle_Internal} from '../../StyleSheet/StyleSheetTypes';
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
 import RefreshControl from '../../Components/RefreshControl/RefreshControl';
@@ -80,9 +81,10 @@ const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
       }, [props]);
 
     // Handle animated props on `refreshControl`.
-    const [refreshControlAnimatedProps, refreshControlRef] = useAnimatedProps(
-      intermediatePropsForRefreshControl,
-    );
+    const [refreshControlAnimatedProps, refreshControlRef] = useAnimatedProps<
+      {style: ?____ViewStyle_Internal},
+      $FlowFixMe,
+    >(intermediatePropsForRefreshControl);
     // NOTE: Assumes that refreshControl.ref` and `refreshControl.style` can be
     // safely clobbered.
     const refreshControl: React.Element<typeof RefreshControl> =

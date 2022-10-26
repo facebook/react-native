@@ -8,10 +8,12 @@
  * @flow
  */
 
-import type {RNTesterState, ComponentList} from '../types/RNTesterTypes';
+import type {
+  RNTesterNavigationState,
+  ComponentList,
+} from '../types/RNTesterTypes';
 
-export const RNTesterActionsType = {
-  INIT_FROM_STORAGE: 'INIT_FROM_STORAGE',
+export const RNTesterNavigationActionsType = {
   NAVBAR_PRESS: 'NAVBAR_PRESS',
   BOOKMARK_PRESS: 'BOOKMARK_PRESS',
   BACK_BUTTON_PRESS: 'BACK_BUTTON_PRESS',
@@ -24,13 +26,17 @@ const getUpdatedBookmarks = ({
   key,
   bookmarks,
 }: {
-  exampleType: 'apis' | 'components',
-  key: string,
+  exampleType: 'apis' | 'components' | null,
+  key: string | null,
   bookmarks: ComponentList,
 }) => {
   const updatedBookmarks = bookmarks
     ? {...bookmarks}
     : {components: [], apis: []};
+
+  if (!exampleType || !key) {
+    return null;
+  }
 
   if (updatedBookmarks[exampleType].includes(key)) {
     updatedBookmarks[exampleType] = updatedBookmarks[exampleType].filter(
@@ -39,6 +45,7 @@ const getUpdatedBookmarks = ({
   } else {
     updatedBookmarks[exampleType].push(key);
   }
+
   return updatedBookmarks;
 };
 
@@ -47,13 +54,17 @@ const getUpdatedRecentlyUsed = ({
   key,
   recentlyUsed,
 }: {
-  exampleType: 'apis' | 'components',
-  key: string,
+  exampleType: 'apis' | 'components' | null,
+  key: string | null,
   recentlyUsed: ComponentList,
 }) => {
   const updatedRecentlyUsed = recentlyUsed
     ? {...recentlyUsed}
     : {components: [], apis: []};
+
+  if (!exampleType || !key) {
+    return updatedRecentlyUsed;
+  }
 
   let existingKeys = updatedRecentlyUsed[exampleType];
 
@@ -67,48 +78,54 @@ const getUpdatedRecentlyUsed = ({
   return updatedRecentlyUsed;
 };
 
-export const RNTesterReducer = (
-  state: RNTesterState,
-  action: {type: string, data: any},
-): RNTesterState => {
+export const RNTesterNavigationReducer = (
+  state: RNTesterNavigationState,
+  action: {type: $Keys<typeof RNTesterNavigationActionsType>, data?: any},
+): RNTesterNavigationState => {
+  const {
+    data: {key = null, title = null, exampleType = null, screen = null} = {},
+  } = action;
+
   switch (action.type) {
-    case RNTesterActionsType.INIT_FROM_STORAGE:
-      return action.data;
-    case RNTesterActionsType.NAVBAR_PRESS:
+    case RNTesterNavigationActionsType.NAVBAR_PRESS:
       return {
         ...state,
         activeModuleKey: null,
         activeModuleTitle: null,
         activeModuleExampleKey: null,
-        screen: action.data.screen,
+        screen,
       };
-    case RNTesterActionsType.MODULE_CARD_PRESS:
+
+    case RNTesterNavigationActionsType.MODULE_CARD_PRESS:
       return {
         ...state,
-        activeModuleKey: action.data.key,
-        activeModuleTitle: action.data.title,
+        activeModuleKey: key,
+        activeModuleTitle: title,
         activeModuleExampleKey: null,
         recentlyUsed: getUpdatedRecentlyUsed({
-          exampleType: action.data.exampleType,
-          key: action.data.key,
+          exampleType: exampleType,
+          key: key,
           recentlyUsed: state.recentlyUsed,
         }),
       };
-    case RNTesterActionsType.EXAMPLE_CARD_PRESS:
+
+    case RNTesterNavigationActionsType.EXAMPLE_CARD_PRESS:
       return {
         ...state,
-        activeModuleExampleKey: action.data.key,
+        activeModuleExampleKey: key,
       };
-    case RNTesterActionsType.BOOKMARK_PRESS:
+
+    case RNTesterNavigationActionsType.BOOKMARK_PRESS:
       return {
         ...state,
         bookmarks: getUpdatedBookmarks({
-          exampleType: action.data.exampleType,
-          key: action.data.key,
+          exampleType: exampleType,
+          key: key,
           bookmarks: state.bookmarks,
         }),
       };
-    case RNTesterActionsType.BACK_BUTTON_PRESS:
+
+    case RNTesterNavigationActionsType.BACK_BUTTON_PRESS:
       // Go back to module or list
       return {
         ...state,
@@ -118,6 +135,7 @@ export const RNTesterReducer = (
         activeModuleTitle:
           state.activeModuleExampleKey != null ? state.activeModuleTitle : null,
       };
+
     default:
       throw new Error(`Invalid action type ${action.type}`);
   }

@@ -52,6 +52,9 @@ export interface FlexStyle {
     | 'row-reverse'
     | 'column-reverse'
     | undefined;
+  rowGap?: number | undefined;
+  gap?: number | undefined;
+  columnGap?: number | undefined;
   flexGrow?: number | undefined;
   flexShrink?: number | undefined;
   flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;

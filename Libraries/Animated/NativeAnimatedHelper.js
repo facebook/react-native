@@ -37,7 +37,7 @@ let __nativeAnimationIdCount = 1; /* used for started animations */
 
 let nativeEventEmitter;
 
-let waitingForQueuedOperations = new Set();
+let waitingForQueuedOperations = new Set<string>();
 let queueOperations = false;
 let queue: Array<() => void> = [];
 // $FlowFixMe
@@ -527,15 +527,17 @@ function shouldUseNativeDriver(
   }
 
   if (config.useNativeDriver === true && !NativeAnimatedModule) {
-    if (!_warnedMissingNativeAnimated) {
-      console.warn(
-        'Animated: `useNativeDriver` is not supported because the native ' +
-          'animated module is missing. Falling back to JS-based animation. To ' +
-          'resolve this, add `RCTAnimation` module to this app, or remove ' +
-          '`useNativeDriver`. ' +
-          'Make sure to run `bundle exec pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md',
-      );
-      _warnedMissingNativeAnimated = true;
+    if (process.env.NODE_ENV !== 'test') {
+      if (!_warnedMissingNativeAnimated) {
+        console.warn(
+          'Animated: `useNativeDriver` is not supported because the native ' +
+            'animated module is missing. Falling back to JS-based animation. To ' +
+            'resolve this, add `RCTAnimation` module to this app, or remove ' +
+            '`useNativeDriver`. ' +
+            'Make sure to run `bundle exec pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md',
+        );
+        _warnedMissingNativeAnimated = true;
+      }
     }
     return false;
   }

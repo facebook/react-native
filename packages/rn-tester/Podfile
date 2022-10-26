@@ -15,7 +15,7 @@ if USE_FRAMEWORKS
   use_frameworks!
 end
 
-def pods(options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
+def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
@@ -23,7 +23,7 @@ def pods(options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   # Hermes is now enabled by default.
   # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
   hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
-  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
+  puts "Configuring #{target_name} with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     # Custom fabric component is only supported when using codegen discovery.
@@ -51,16 +51,16 @@ def pods(options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
 end
 
 target 'RNTester' do
-  pods()
+  pods('RNTester')
 end
 
 target 'RNTesterUnitTests' do
-  pods()
+  pods('RNTesterUnitTests')
   pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 target 'RNTesterIntegrationTests' do
-  pods()
+  pods('RNTesterIntegrationTests')
   pod 'React-RCTTest', :path => "./RCTTest"
 end
 

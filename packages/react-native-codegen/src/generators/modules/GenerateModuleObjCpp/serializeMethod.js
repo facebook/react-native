@@ -271,6 +271,17 @@ function getParamObjCType(
       return notStruct(notRequired ? 'NSNumber *' : 'double');
     case 'BooleanTypeAnnotation':
       return notStruct(notRequired ? 'NSNumber *' : 'BOOL');
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return notStruct(notRequired ? 'NSNumber *' : 'double');
+        case 'StringTypeAnnotation':
+          return notStruct(wrapIntoNullableIfNeeded('NSString *'));
+        default:
+          throw new Error(
+            `Unsupported enum type for param "${paramName}" in ${methodName}. Found: ${typeAnnotation.type}`,
+          );
+      }
     case 'GenericObjectTypeAnnotation':
       return notStruct(wrapIntoNullableIfNeeded('NSDictionary *'));
     default:
@@ -335,6 +346,17 @@ function getReturnObjCType(
       return wrapIntoNullableIfNeeded('NSNumber *');
     case 'BooleanTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSNumber *');
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrapIntoNullableIfNeeded('NSNumber *');
+        case 'StringTypeAnnotation':
+          return wrapIntoNullableIfNeeded('NSString *');
+        default:
+          throw new Error(
+            `Unsupported enum return type for ${methodName}. Found: ${typeAnnotation.type}`,
+          );
+      }
     case 'GenericObjectTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSDictionary *');
     default:
@@ -380,6 +402,17 @@ function getReturnJSType(
       return 'BooleanKind';
     case 'GenericObjectTypeAnnotation':
       return 'ObjectKind';
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return 'NumberKind';
+        case 'StringTypeAnnotation':
+          return 'StringKind';
+        default:
+          throw new Error(
+            `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
+          );
+      }
     default:
       (typeAnnotation.type:
         | 'EnumDeclaration'

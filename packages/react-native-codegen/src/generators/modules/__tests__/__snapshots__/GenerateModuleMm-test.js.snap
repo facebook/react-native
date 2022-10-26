@@ -453,6 +453,10 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:resolve:reject:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getEnums(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getEnums\\", @selector(getEnums:enumFloat:enumString:), args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
@@ -488,6 +492,9 @@ namespace facebook {
         
         
         methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise};
+        
+        
+        methodMap_[\\"getEnums\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleSpecJSI_getEnums};
         
         
         methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};

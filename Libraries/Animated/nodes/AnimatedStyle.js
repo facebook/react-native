@@ -34,26 +34,15 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   }
 
   // Recursively get values for nested styles (like iOS's shadowOffset)
-  _walkStyleAndGetValues(
-    style: any,
-    initialStyle: ?Object,
-  ): {[string]: any | {...}} {
+  _walkStyleAndGetValues(style: any): {[string]: any | {...}} {
     const updatedStyle: {[string]: any | {...}} = {};
     for (const key in style) {
       const value = style[key];
       if (value instanceof AnimatedNode) {
-        // During initial render we want to use the initial value of both natively and non-natively
-        // driven nodes. On subsequent renders, we cannot use the value of natively driven nodes
-        // as they may not be up to date, so we use the initial value to ensure that values of
-        // native animated nodes do not impact rerenders.
-        if (!initialStyle || !value.__isNative) {
-          updatedStyle[key] = value.__getValue();
-        } else if (initialStyle.hasOwnProperty(key)) {
-          updatedStyle[key] = initialStyle[key];
-        }
+        updatedStyle[key] = value.__getValue();
       } else if (value && !Array.isArray(value) && typeof value === 'object') {
         // Support animating nested values (for example: shadowOffset.height)
-        updatedStyle[key] = this._walkStyleAndGetValues(value, initialStyle);
+        updatedStyle[key] = this._walkStyleAndGetValues(value);
       } else {
         updatedStyle[key] = value;
       }
@@ -61,8 +50,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     return updatedStyle;
   }
 
-  __getValue(initialStyle: ?Object): Object {
-    return this._walkStyleAndGetValues(this._style, initialStyle);
+  __getValue(): Object {
+    return this._walkStyleAndGetValues(this._style);
   }
 
   // Recursively get animated values for nested styles (like iOS's shadowOffset)

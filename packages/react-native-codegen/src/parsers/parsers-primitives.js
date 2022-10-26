@@ -86,6 +86,12 @@ function emitFunction(
   return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
 }
 
+function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'StringTypeAnnotation',
+  });
+}
+
 function typeAliasResolution(
   typeAliasResolutionStatus: TypeAliasResolutionStatus,
   objectTypeAnnotation: ObjectTypeAnnotation<
@@ -174,7 +180,8 @@ module.exports = {
   emitObject,
   emitPromise,
   emitRootTag,
-  emitStringish,
   emitVoid,
+  emitString,
+  emitStringish,
   typeAliasResolution,
 };

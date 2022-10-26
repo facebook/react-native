@@ -203,7 +203,52 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
       'type': 'NativeModule',
       'aliases': {},
       'spec': {
-        'properties': []
+        'properties': [
+          {
+            'name': 'getEnums',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'quality',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'resolution',
+                  'optional': true,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'floppy',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'stringOptions',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          }
+        ]
       },
       'moduleNames': [
         'SampleTurboModuleIOS'

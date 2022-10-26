@@ -38,6 +38,7 @@ const {
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   emitMixedTypeAnnotation,
+  emitUnionTypeAnnotation,
 } = require('../../parsers-commons');
 const {
   emitBoolean,
@@ -49,36 +50,40 @@ const {
   emitPromise,
   emitRootTag,
   emitVoid,
+  emitString,
   emitStringish,
   typeAliasResolution,
 } = require('../../parsers-primitives');
 const {
-  MoreThanOneModuleInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
-  UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
-  UnsupportedUnionTypeAnnotationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
-  UnsupportedObjectPropertyValueTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
+
 const {verifyPlatforms} = require('../../utils');
 
 const {
   throwIfUntypedModule,
+  throwIfPropertyValueTypeIsUnsupported,
   throwIfModuleTypeIsUnsupported,
   throwIfUnusedModuleInterfaceParserError,
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
   throwIfWrongNumberOfCallExpressionArgs,
+  throwIfMoreThanOneModuleInterfaceParserError,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
 } = require('../../error-utils');
 
+const {TypeScriptParser} = require('../parser');
+
 const language = 'TypeScript';
+const parser = new TypeScriptParser();
 
 function translateArrayTypeAnnotation(
   hasteModuleName: string,
@@ -203,7 +208,7 @@ function translateTypeAnnotation(
         throw new UnsupportedGenericParserError(
           hasteModuleName,
           typeAnnotation,
-          language,
+          parser,
         );
       }
     }
@@ -259,7 +264,6 @@ function translateTypeAnnotation(
         default: {
           const maybeEumDeclaration = types[typeAnnotation.typeName.name];
           if (
-            cxxOnly &&
             maybeEumDeclaration &&
             maybeEumDeclaration.type === 'TSEnumDeclaration'
           ) {
@@ -288,7 +292,7 @@ function translateTypeAnnotation(
           throw new UnsupportedGenericParserError(
             hasteModuleName,
             typeAnnotation,
-            language,
+            parser,
           );
         }
       }
@@ -324,44 +328,28 @@ function translateTypeAnnotation(
                     ),
                   );
 
-                if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+                if (
+                  propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+                  propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
+                  propertyTypeAnnotation.type === 'VoidTypeAnnotation'
+                ) {
+                  throwIfPropertyValueTypeIsUnsupported(
                     hasteModuleName,
                     property.typeAnnotation.typeAnnotation,
                     property.key,
                     propertyTypeAnnotation.type,
                     language,
                   );
+                } else {
+                  return {
+                    name: key.name,
+                    optional,
+                    typeAnnotation: wrapNullable(
+                      isPropertyNullable,
+                      propertyTypeAnnotation,
+                    ),
+                  };
                 }
-
-                if (propertyTypeAnnotation.type === 'VoidTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                    hasteModuleName,
-                    property.typeAnnotation.typeAnnotation,
-                    property.key,
-                    'void',
-                    language,
-                  );
-                }
-
-                if (propertyTypeAnnotation.type === 'PromiseTypeAnnotation') {
-                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                    hasteModuleName,
-                    property.typeAnnotation.typeAnnotation,
-                    property.key,
-                    'Promise',
-                    language,
-                  );
-                }
-
-                return {
-                  name: key.name,
-                  optional,
-                  typeAnnotation: wrapNullable(
-                    isPropertyNullable,
-                    propertyTypeAnnotation,
-                  ),
-                };
               });
             },
           )
@@ -385,9 +373,7 @@ function translateTypeAnnotation(
       return emitVoid(nullable);
     }
     case 'TSStringKeyword': {
-      return wrapNullable(nullable, {
-        type: 'StringTypeAnnotation',
-      });
+      return emitString(nullable);
     }
     case 'TSFunctionType': {
       const translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation =
@@ -404,29 +390,12 @@ function translateTypeAnnotation(
     }
     case 'TSUnionType': {
       if (cxxOnly) {
-        // Remap literal names
-        const unionTypes = typeAnnotation.types
-          .map(item =>
-            item.literal
-              ? item.literal.type
-                  .replace('NumericLiteral', 'NumberTypeAnnotation')
-                  .replace('StringLiteral', 'StringTypeAnnotation')
-              : 'ObjectTypeAnnotation',
-          )
-          .filter((value, index, self) => self.indexOf(value) === index);
-        // Only support unionTypes of the same kind
-        if (unionTypes.length > 1) {
-          throw new UnsupportedUnionTypeAnnotationParserError(
-            hasteModuleName,
-            typeAnnotation,
-            unionTypes,
-            language,
-          );
-        }
-        return wrapNullable(nullable, {
-          type: 'UnionTypeAnnotation',
-          memberType: unionTypes[0],
-        });
+        return emitUnionTypeAnnotation(
+          nullable,
+          hasteModuleName,
+          typeAnnotation,
+          language,
+        );
       }
       // Fallthrough
     }
@@ -527,14 +496,14 @@ function translateFunctionTypeAnnotation(
     ),
   );
 
-  if (!cxxOnly && returnTypeAnnotation.type === 'FunctionTypeAnnotation') {
-    throw new UnsupportedFunctionReturnTypeAnnotationParserError(
-      hasteModuleName,
-      typescriptFunctionTypeAnnotation.returnType,
-      'FunctionTypeAnnotation',
-      language,
-    );
-  }
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
+    hasteModuleName,
+    typescriptFunctionTypeAnnotation,
+    'FunctionTypeAnnotation',
+    language,
+    cxxOnly,
+    returnTypeAnnotation.type,
+  );
 
   return {
     type: 'FunctionTypeAnnotation',
@@ -617,14 +586,11 @@ function buildModuleSchema(
     language,
   );
 
-  if (moduleSpecs.length > 1) {
-    throw new MoreThanOneModuleInterfaceParserError(
-      hasteModuleName,
-      moduleSpecs,
-      moduleSpecs.map(node => node.id.name),
-      language,
-    );
-  }
+  throwIfMoreThanOneModuleInterfaceParserError(
+    hasteModuleName,
+    moduleSpecs,
+    language,
+  );
 
   const [moduleSpec] = moduleSpecs;
 
