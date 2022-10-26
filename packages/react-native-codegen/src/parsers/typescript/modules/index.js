@@ -60,7 +60,6 @@ const {
   UnsupportedTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
-  UnsupportedUnionTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
