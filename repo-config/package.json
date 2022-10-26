@@ -16,7 +16,6 @@
     "@definitelytyped/dtslint": "^0.0.127",
     "@react-native-community/eslint-plugin": "*",
     "@react-native/eslint-plugin-specs": "^0.71.0",
-    "@reactions/component": "^2.0.2",
     "@types/react": "^18.0.18",
     "@typescript-eslint/parser": "^5.30.5",
     "async": "^3.2.2",
