@@ -17,6 +17,7 @@
     "yargs": "^17.5.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.14.0",
     "@babel/cli": "^7.14.0",
     "@babel/preset-env": "^7.14.0",
     "@babel/preset-flow": "^7.14.0",
