@@ -85,9 +85,6 @@ class BundleHermesCTaskTest {
     val task =
         createTestTask<BundleHermesCTask> {
           it.nodeExecutableAndArgs.set(listOf("node", "arg1", "arg2"))
-          it.cliPath.set("../node_modules/react-native/cli.js")
-          it.composeSourceMapsPath.set(
-              "../node_modules/react-native/scripts/compose-source-maps.js")
           it.bundleCommand.set("bundle")
           it.bundleAssetName.set("myassetname")
           it.minifyEnabled.set(true)
@@ -99,10 +96,6 @@ class BundleHermesCTaskTest {
         }
 
     assertEquals(listOf("node", "arg1", "arg2"), task.nodeExecutableAndArgs.get())
-    assertEquals("../node_modules/react-native/cli.js", task.cliPath.get())
-    assertEquals(
-        "../node_modules/react-native/scripts/compose-source-maps.js",
-        task.composeSourceMapsPath.get())
     assertEquals("bundle", task.bundleCommand.get())
     assertEquals("myassetname", task.bundleAssetName.get())
     assertTrue(task.minifyEnabled.get())
@@ -116,28 +109,34 @@ class BundleHermesCTaskTest {
   @Test
   fun bundleTask_filesInput_areSetCorrectly() {
     val entryFile = tempFolder.newFile("entry.js")
+    val cliFile = tempFolder.newFile("cli.js")
     val jsBundleDir = tempFolder.newFolder("jsbundle")
     val resourcesDir = tempFolder.newFolder("resources")
     val jsIntermediateSourceMapsDir = tempFolder.newFolder("jsIntermediateSourceMaps")
     val jsSourceMapsDir = tempFolder.newFolder("jsSourceMaps")
     val bundleConfig = tempFolder.newFile("bundle.config")
+    val reactNativeDir = tempFolder.newFolder("node_modules/react-native")
 
     val task =
         createTestTask<BundleHermesCTask> {
           it.entryFile.set(entryFile)
+          it.cliFile.set(cliFile)
           it.jsBundleDir.set(jsBundleDir)
           it.resourcesDir.set(resourcesDir)
           it.jsIntermediateSourceMapsDir.set(jsIntermediateSourceMapsDir)
           it.jsSourceMapsDir.set(jsSourceMapsDir)
           it.bundleConfig.set(bundleConfig)
+          it.reactNativeDir.set(reactNativeDir)
         }
 
     assertEquals(entryFile, task.entryFile.get().asFile)
+    assertEquals(cliFile, task.cliFile.get().asFile)
     assertEquals(jsBundleDir, task.jsBundleDir.get().asFile)
     assertEquals(resourcesDir, task.resourcesDir.get().asFile)
     assertEquals(jsIntermediateSourceMapsDir, task.jsIntermediateSourceMapsDir.get().asFile)
     assertEquals(jsSourceMapsDir, task.jsSourceMapsDir.get().asFile)
     assertEquals(bundleConfig, task.bundleConfig.get().asFile)
+    assertEquals(reactNativeDir, task.reactNativeDir.get().asFile)
   }
 
   @Test
@@ -198,6 +197,7 @@ class BundleHermesCTaskTest {
   @Test
   fun getBundleCommand_returnsCorrectCommand() {
     val entryFile = tempFolder.newFile("index.js")
+    val cliFile = tempFolder.newFile("cli.js")
     val bundleFile = tempFolder.newFile("bundle.js")
     val sourceMapFile = tempFolder.newFile("bundle.js.map")
     val resourcesDir = tempFolder.newFolder("res")
@@ -205,7 +205,7 @@ class BundleHermesCTaskTest {
     val task =
         createTestTask<BundleHermesCTask> {
           it.nodeExecutableAndArgs.set(listOf("node", "arg1", "arg2"))
-          it.cliPath.set("../node_modules/react-native/cli.js")
+          it.cliFile.set(cliFile)
           it.bundleCommand.set("bundle")
           it.devEnabled.set(true)
           it.entryFile.set(entryFile)
@@ -220,7 +220,7 @@ class BundleHermesCTaskTest {
     assertEquals("node", bundleCommand[0])
     assertEquals("arg1", bundleCommand[1])
     assertEquals("arg2", bundleCommand[2])
-    assertEquals("../node_modules/react-native/cli.js", bundleCommand[3])
+    assertEquals(cliFile.absolutePath, bundleCommand[3])
     assertEquals("bundle", bundleCommand[4])
     assertEquals("--platform", bundleCommand[5])
     assertEquals("android", bundleCommand[6])
@@ -247,13 +247,14 @@ class BundleHermesCTaskTest {
   @Test
   fun getBundleCommand_withoutConfig_returnsCommandWithoutConfig() {
     val entryFile = tempFolder.newFile("index.js")
+    val cliFile = tempFolder.newFile("cli.js")
     val bundleFile = tempFolder.newFile("bundle.js")
     val sourceMapFile = tempFolder.newFile("bundle.js.map")
     val resourcesDir = tempFolder.newFolder("res")
     val task =
         createTestTask<BundleHermesCTask> {
           it.nodeExecutableAndArgs.set(listOf("node", "arg1", "arg2"))
-          it.cliPath.set("../node_modules/react-native/cli.js")
+          it.cliFile.set(cliFile)
           it.bundleCommand.set("bundle")
           it.devEnabled.set(true)
           it.entryFile.set(entryFile)
@@ -291,21 +292,20 @@ class BundleHermesCTaskTest {
     val packagerMap = tempFolder.newFile("bundle.js.packager.map")
     val compilerMap = tempFolder.newFile("bundle.js.compiler.map")
     val outputMap = tempFolder.newFile("bundle.js.map")
+    val reactNativeDir = tempFolder.newFolder("node_modules/react-native")
+    val composeSourceMapsFile = File(reactNativeDir, "scripts/compose-source-maps.js")
     val task =
         createTestTask<BundleHermesCTask> {
           it.nodeExecutableAndArgs.set(listOf("node", "arg1", "arg2"))
-          it.composeSourceMapsPath.set(
-              "../node_modules/react-native/scripts/compose-source-maps.js")
         }
 
     val composeSourcemapCommand =
-        task.getComposeSourceMapsCommand(packagerMap, compilerMap, outputMap)
+        task.getComposeSourceMapsCommand(composeSourceMapsFile, packagerMap, compilerMap, outputMap)
 
     assertEquals("node", composeSourcemapCommand[0])
     assertEquals("arg1", composeSourcemapCommand[1])
     assertEquals("arg2", composeSourcemapCommand[2])
-    assertEquals(
-        "../node_modules/react-native/scripts/compose-source-maps.js", composeSourcemapCommand[3])
+    assertEquals(composeSourceMapsFile.absolutePath, composeSourcemapCommand[3])
     assertEquals(packagerMap.absolutePath, composeSourcemapCommand[4])
     assertEquals(compilerMap.absolutePath, composeSourcemapCommand[5])
     assertEquals("-o", composeSourcemapCommand[6])

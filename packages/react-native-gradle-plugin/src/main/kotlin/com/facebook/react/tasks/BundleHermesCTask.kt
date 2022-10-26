@@ -42,9 +42,9 @@ abstract class BundleHermesCTask : DefaultTask() {
 
   @get:Input abstract val nodeExecutableAndArgs: ListProperty<String>
 
-  @get:Input abstract val cliPath: Property<String>
+  @get:InputFile abstract val cliFile: RegularFileProperty
 
-  @get:Input abstract val composeSourceMapsPath: Property<String>
+  @get:Internal abstract val reactNativeDir: DirectoryProperty
 
   @get:Input abstract val bundleCommand: Property<String>
 
@@ -101,8 +101,12 @@ abstract class BundleHermesCTask : DefaultTask() {
       if (hermesFlags.get().contains("-output-source-map")) {
         val hermesTempSourceMapFile = File("$bytecodeFile.map")
         hermesTempSourceMapFile.moveTo(compilerSourceMap)
+
+        val reactNativeDir = reactNativeDir.get().asFile
+        val composeScriptFile = File(reactNativeDir, "scripts/compose-source-maps.js")
         val composeSourceMapsCommand =
-            getComposeSourceMapsCommand(packagerSourceMap, compilerSourceMap, outputSourceMap)
+            getComposeSourceMapsCommand(
+                composeScriptFile, packagerSourceMap, compilerSourceMap, outputSourceMap)
         runCommand(composeSourceMapsCommand)
       }
     }
@@ -132,7 +136,7 @@ abstract class BundleHermesCTask : DefaultTask() {
       windowsAwareCommandLine(
           buildList {
             addAll(nodeExecutableAndArgs.get())
-            add(cliPath.get())
+            add(cliFile.get().asFile.absolutePath)
             add(bundleCommand.get())
             add("--platform")
             add("android")
@@ -171,13 +175,14 @@ abstract class BundleHermesCTask : DefaultTask() {
           *hermesFlags.get().toTypedArray())
 
   internal fun getComposeSourceMapsCommand(
+      composeScript: File,
       packagerSourceMap: File,
       compilerSourceMap: File,
       outputSourceMap: File
   ): List<Any> =
       windowsAwareCommandLine(
           *nodeExecutableAndArgs.get().toTypedArray(),
-          composeSourceMapsPath.get(),
+          composeScript.absolutePath,
           packagerSourceMap.toString(),
           compilerSourceMap.toString(),
           "-o",

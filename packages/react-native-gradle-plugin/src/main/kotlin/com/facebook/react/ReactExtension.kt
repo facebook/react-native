@@ -29,16 +29,25 @@ abstract class ReactExtension @Inject constructor(project: Project) {
       objects.directoryProperty().convention(project.rootProject.layout.projectDirectory.dir("../"))
 
   /**
+   * The path to the react-native NPM package folder.
+   *
+   * Default: ${rootProject.dir}/../node_modules/react-native-codegen
+   */
+  val reactNativeDir: DirectoryProperty =
+      objects.directoryProperty().convention(root.dir("node_modules/react-native"))
+
+  /**
    * The path to the JS entry file. If not specified, the plugin will try to resolve it using a list
    * of known locations (e.g. `index.android.js`, `index.js`, etc.).
    */
   val entryFile: RegularFileProperty = objects.fileProperty()
 
   /**
-   * The path to the React Native CLI. If not specified, the plugin will try to resolve it looking
-   * for `react-native` CLI inside `node_modules` in [root].
+   * The reference to the React Native CLI. If not specified, the plugin will try to resolve it
+   * looking for `react-native` CLI inside `node_modules` in [root].
    */
-  val cliPath: Property<String> = objects.property(String::class.java)
+  val cliFile: RegularFileProperty =
+      objects.fileProperty().convention(reactNativeDir.file("cli.js"))
 
   /**
    * The path to the Node executable and extra args. By default it assumes that you have `node`
@@ -107,15 +116,6 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   val hermesFlags: ListProperty<String> =
       objects.listProperty(String::class.java).convention(listOf("-O", "-output-source-map"))
 
-  /**
-   * The path to the Compose Source Map script. Default:
-   * "node_modules/react-native/scripts/compose-source-maps.js"
-   */
-  val composeSourceMapsPath: Property<String> =
-      objects
-          .property(String::class.java)
-          .convention("node_modules/react-native/scripts/compose-source-maps.js")
-
   /** Codegen Config */
 
   /**
@@ -125,14 +125,6 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    */
   val codegenDir: DirectoryProperty =
       objects.directoryProperty().convention(root.dir("node_modules/react-native-codegen"))
-
-  /**
-   * The path to the react-native NPM package folder.
-   *
-   * Default: ${rootProject.dir}/../node_modules/react-native-codegen
-   */
-  val reactNativeDir: DirectoryProperty =
-      objects.directoryProperty().convention(root.dir("node_modules/react-native"))
 
   /**
    * The root directory for all JS files for the app.
