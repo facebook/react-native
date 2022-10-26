@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow strict-local
  */
 
 'use strict';
@@ -28,6 +28,13 @@ const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('./errors');
 const invariant = require('invariant');
+import type {TypeDeclarationMap} from './utils';
+const {
+  UnsupportedEnumDeclarationParserError,
+  UnsupportedGenericParserError,
+} = require('./errors');
+import type {Parser} from './parser';
+import type {NativeModuleEnumDeclaration} from '../CodegenSchema';
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -156,6 +163,67 @@ function emitUnionTypeAnnotation(
     memberType: unionTypes[0],
   });
 }
+function getTypeScriptMemberType(maybeEnumDeclaration: $FlowFixMe) {
+  if (maybeEnumDeclaration.members[0].initializer) {
+    return maybeEnumDeclaration.members[0].initializer.type
+      .replace('NumericLiteral', 'NumberTypeAnnotation')
+      .replace('StringLiteral', 'StringTypeAnnotation');
+  }
+
+  return 'StringTypeAnnotation';
+}
+
+function getFlowMemberType(maybeEnumDeclaration: $FlowFixMe) {
+  return maybeEnumDeclaration.body.type
+    .replace('EnumNumberBody', 'NumberTypeAnnotation')
+    .replace('EnumStringBody', 'StringTypeAnnotation');
+}
+
+function translateDefault(
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  nullable: boolean,
+  language: ParserType,
+  parser: Parser,
+): Nullable<NativeModuleEnumDeclaration> {
+  const maybeEnumDeclaration =
+    types[parser.nameForGenericTypeAnnotation(typeAnnotation)];
+
+  if (
+    maybeEnumDeclaration &&
+    (maybeEnumDeclaration.type === 'TSEnumDeclaration' ||
+      maybeEnumDeclaration.type === 'EnumDeclaration')
+  ) {
+    const memberType =
+      language === 'Flow'
+        ? getFlowMemberType(maybeEnumDeclaration)
+        : getTypeScriptMemberType(maybeEnumDeclaration);
+
+    if (
+      memberType === 'NumberTypeAnnotation' ||
+      memberType === 'StringTypeAnnotation'
+    ) {
+      return wrapNullable(nullable, {
+        type: 'EnumDeclaration',
+        memberType: memberType,
+      });
+    } else {
+      throw new UnsupportedEnumDeclarationParserError(
+        hasteModuleName,
+        typeAnnotation,
+        memberType,
+        language,
+      );
+    }
+  }
+
+  throw new UnsupportedGenericParserError(
+    hasteModuleName,
+    typeAnnotation,
+    parser,
+  );
+}
 
 function getKeyName(
   propertyOrIndex: $FlowFixMe,
@@ -190,4 +258,5 @@ module.exports = {
   emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
   getKeyName,
+  translateDefault,
 };
