@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
 
 class TypeScriptParser implements Parser {
@@ -25,6 +26,10 @@ class TypeScriptParser implements Parser {
 
   isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean {
     return maybeEnumDeclaration.type === 'TSEnumDeclaration';
+  }
+
+  language(): ParserType {
+    return 'TypeScript';
   }
 
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {

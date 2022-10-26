@@ -254,7 +254,6 @@ function translateTypeAnnotation(
             typeAnnotation,
             types,
             nullable,
-            language,
             parser,
           );
         }

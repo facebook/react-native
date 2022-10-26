@@ -169,7 +169,6 @@ function translateDefault(
   typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   nullable: boolean,
-  language: ParserType,
   parser: Parser,
 ): Nullable<NativeModuleEnumDeclaration> {
   const maybeEnumDeclaration =
@@ -191,7 +190,7 @@ function translateDefault(
         hasteModuleName,
         typeAnnotation,
         memberType,
-        language,
+        parser.language(),
       );
     }
   }

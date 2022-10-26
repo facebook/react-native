@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
 
 class FlowParser implements Parser {
@@ -21,6 +22,10 @@ class FlowParser implements Parser {
 
   isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean {
     return maybeEnumDeclaration.type === 'EnumDeclaration';
+  }
+
+  language(): ParserType {
+    return 'Flow';
   }
 
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
