@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {UnionTypeAnnotationMemberType} from '../CodegenSchema';
+
 const invariant = require('invariant');
 import type {Parser} from './parser';
 export type ParserType = 'Flow' | 'TypeScript';
@@ -308,7 +310,7 @@ class UnsupportedUnionTypeAnnotationParserError extends ParserError {
   constructor(
     nativeModuleName: string,
     arrayElementTypeAST: $FlowFixMe,
-    types: string[],
+    types: UnionTypeAnnotationMemberType[],
     language: ParserType,
   ) {
     super(

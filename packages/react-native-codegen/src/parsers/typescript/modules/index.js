@@ -38,6 +38,7 @@ const {
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   emitMixedTypeAnnotation,
+  emitUnionTypeAnnotation,
 } = require('../../parsers-commons');
 const {
   emitBoolean,
@@ -60,7 +61,6 @@ const {
   UnsupportedTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
-  UnsupportedUnionTypeAnnotationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
@@ -390,29 +390,12 @@ function translateTypeAnnotation(
     }
     case 'TSUnionType': {
       if (cxxOnly) {
-        // Remap literal names
-        const unionTypes = typeAnnotation.types
-          .map(item =>
-            item.literal
-              ? item.literal.type
-                  .replace('NumericLiteral', 'NumberTypeAnnotation')
-                  .replace('StringLiteral', 'StringTypeAnnotation')
-              : 'ObjectTypeAnnotation',
-          )
-          .filter((value, index, self) => self.indexOf(value) === index);
-        // Only support unionTypes of the same kind
-        if (unionTypes.length > 1) {
-          throw new UnsupportedUnionTypeAnnotationParserError(
-            hasteModuleName,
-            typeAnnotation,
-            unionTypes,
-            language,
-          );
-        }
-        return wrapNullable(nullable, {
-          type: 'UnionTypeAnnotation',
-          memberType: unionTypes[0],
-        });
+        return emitUnionTypeAnnotation(
+          nullable,
+          hasteModuleName,
+          typeAnnotation,
+          language,
+        );
       }
       // Fallthrough
     }
