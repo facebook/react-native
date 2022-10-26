@@ -53,7 +53,7 @@ export interface AccessibilityProps
    * see https://reactnative.dev/docs/accessibility#accessibilitystate
    */
   'aria-busy'?: boolean | undefined;
-  'aria-checked'?: boolean | undefined;
+  'aria-checked'?: boolean | 'mixed' | undefined;
   'aria-disabled'?: boolean | undefined;
   'aria-expanded'?: boolean | undefined;
   'aria-selected'?: boolean | undefined;
