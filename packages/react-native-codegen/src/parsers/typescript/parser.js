@@ -13,6 +13,20 @@
 import type {Parser} from '../parser';
 
 class TypeScriptParser implements Parser {
+  getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
+    if (maybeEnumDeclaration.members[0].initializer) {
+      return maybeEnumDeclaration.members[0].initializer.type
+        .replace('NumericLiteral', 'NumberTypeAnnotation')
+        .replace('StringLiteral', 'StringTypeAnnotation');
+    }
+
+    return 'StringTypeAnnotation';
+  }
+
+  isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean {
+    return maybeEnumDeclaration.type === 'TSEnumDeclaration';
+  }
+
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation.typeName.name;
   }

@@ -15,6 +15,8 @@
  * It exposes all the methods that contain language-specific logic.
  */
 export interface Parser {
+  getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string;
+  isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean;
   /**
    * Given a type annotation for a generic type, it returns the type name.
    * @parameter typeAnnotation: the annotation for a type in the AST.

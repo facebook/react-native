@@ -163,21 +163,6 @@ function emitUnionTypeAnnotation(
     memberType: unionTypes[0],
   });
 }
-function getTypeScriptMemberType(maybeEnumDeclaration: $FlowFixMe) {
-  if (maybeEnumDeclaration.members[0].initializer) {
-    return maybeEnumDeclaration.members[0].initializer.type
-      .replace('NumericLiteral', 'NumberTypeAnnotation')
-      .replace('StringLiteral', 'StringTypeAnnotation');
-  }
-
-  return 'StringTypeAnnotation';
-}
-
-function getFlowMemberType(maybeEnumDeclaration: $FlowFixMe) {
-  return maybeEnumDeclaration.body.type
-    .replace('EnumNumberBody', 'NumberTypeAnnotation')
-    .replace('EnumStringBody', 'StringTypeAnnotation');
-}
 
 function translateDefault(
   hasteModuleName: string,
@@ -190,15 +175,8 @@ function translateDefault(
   const maybeEnumDeclaration =
     types[parser.nameForGenericTypeAnnotation(typeAnnotation)];
 
-  if (
-    maybeEnumDeclaration &&
-    (maybeEnumDeclaration.type === 'TSEnumDeclaration' ||
-      maybeEnumDeclaration.type === 'EnumDeclaration')
-  ) {
-    const memberType =
-      language === 'Flow'
-        ? getFlowMemberType(maybeEnumDeclaration)
-        : getTypeScriptMemberType(maybeEnumDeclaration);
+  if (maybeEnumDeclaration && parser.isEnumDeclaration(maybeEnumDeclaration)) {
+    const memberType = parser.getMaybeEnumMemberType(maybeEnumDeclaration);
 
     if (
       memberType === 'NumberTypeAnnotation' ||

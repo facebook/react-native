@@ -13,6 +13,16 @@
 import type {Parser} from '../parser';
 
 class FlowParser implements Parser {
+  getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
+    return maybeEnumDeclaration.body.type
+      .replace('EnumNumberBody', 'NumberTypeAnnotation')
+      .replace('EnumStringBody', 'StringTypeAnnotation');
+  }
+
+  isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean {
+    return maybeEnumDeclaration.type === 'EnumDeclaration';
+  }
+
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation.id.name;
   }
