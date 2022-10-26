@@ -95,16 +95,11 @@ function ModalPresentation() {
   React.useEffect(() => {
     let timer;
     if (ref != null && modalOpened === true) {
-      timer = setTimeout(
-        (AI, elementRef) => {
-          if (elementRef.current != null) {
-            AI.sendAccessibilityEvent(elementRef.current, 'focus');
-          }
-        },
-        1000,
-        AccessibilityInfo,
-        ref,
-      );
+      timer = setTimeout(() => {
+        if (ref.current != null) {
+          AccessibilityInfo.sendAccessibilityEvent(ref.current, 'focus');
+        }
+      }, 1000);
     }
 
     return () => {
