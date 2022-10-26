@@ -27,8 +27,8 @@ import type {
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
-  IncorrectlyParameterizedGenericParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
+  UnsupportedUnionTypeAnnotationParserError,
 } = require('./errors');
 const {throwIfPropertyValueTypeIsUnsupported} = require('./error-utils');
 import type {ParserType} from './errors';
