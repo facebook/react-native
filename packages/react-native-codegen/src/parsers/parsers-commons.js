@@ -34,19 +34,7 @@ const {throwIfPropertyValueTypeIsUnsupported} = require('./error-utils');
 import type {ParserType} from './errors';
 import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
 
-type TranslateTypeAnnotation = (
-  hasteModuleName: string,
-  languageTypeAnnotation: $FlowFixMe,
-  types: TypeDeclarationMap,
-  aliasMap: {...NativeModuleAliasMap},
-  tryParse: ParserErrorCapturer,
-  cxxOnly: boolean,
-) => Nullable<NativeModuleTypeAnnotation>;
-
-function isObjectProperty(
-  property: NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>,
-  language: ParserType,
-): boolean {
+function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
   switch (language) {
     case 'Flow':
       return property.type === 'ObjectTypeProperty';
@@ -137,15 +125,15 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
 }
 
 function parseObjectProperty(
-  property: NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>,
+  property: $FlowFixMe,
   hasteModuleName: string,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   language: ParserType,
-  translateTypeAnnotation: TranslateTypeAnnotation,
-) {
+  translateTypeAnnotation: $FlowFixMe,
+): NamedShape<Nullable<NativeModuleBaseTypeAnnotation>> {
   if (!isObjectProperty(property, language)) {
     throw new UnsupportedObjectPropertyTypeAnnotationParserError(
       hasteModuleName,
@@ -184,13 +172,13 @@ function parseObjectProperty(
       propertyTypeAnnotation.type,
       language,
     );
-  } else {
-    return {
-      name: key.name,
-      optional,
-      typeAnnotation: wrapNullable(isPropertyNullable, propertyTypeAnnotation),
-    };
   }
+
+  return {
+    name: key.name,
+    optional,
+    typeAnnotation: wrapNullable(isPropertyNullable, propertyTypeAnnotation),
+  };
 }
 
 function emitMixedTypeAnnotation(
