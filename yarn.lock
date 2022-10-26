@@ -2637,6 +2637,10 @@
     prompts "^2.4.0"
     semver "^6.3.0"
 
+"@reactions/component@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@reactions/component/-/component-2.0.2.tgz#40f8c1c2c37baabe57a0c944edb9310dc1ec6642"
+
 "@seadub/danger-plugin-eslint@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@seadub/danger-plugin-eslint/-/danger-plugin-eslint-3.0.2.tgz#9a51d9f1a103a274264c30212234001de0b417c1"
