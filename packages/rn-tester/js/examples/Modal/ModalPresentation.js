@@ -20,6 +20,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import RNTOption from '../../components/RNTOption';
 const RNTesterButton = require('../../components/RNTesterButton');
 
