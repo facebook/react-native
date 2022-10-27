@@ -11,92 +11,57 @@ plugins {
 }
 
 /**
- * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
- * and bundleReleaseJsAndAssets).
- * These basically call `react-native bundle` with the correct arguments during the Android build
- * cycle. By default, bundleDebugJsAndAssets is skipped, as in debug/dev mode we prefer to load the
- * bundle directly from the development server. Below you can see all the possible configurations
- * and their defaults. If you decide to add a configuration block, make sure to add it before the
- * `apply from: "react.gradle"` line.
- *
- * project.ext.react = [
- *   // the name of the generated asset file containing your JS bundle
- *   bundleAssetName: "index.android.bundle",
- *
- *   // the entry file for bundle generation
- *   entryFile: "index.android.js",
- *
- *   // whether to bundle JS and assets in debug mode
- *   bundleInDebug: false,
- *
- *   // whether to bundle JS and assets in release mode
- *   bundleInRelease: true,
- *
- *   // whether to bundle JS and assets in another build variant (if configured).
- *   // See http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Build-Variants
- *   // The configuration property is in the format 'bundleIn${productFlavor}${buildType}'
- *   // bundleInFreeDebug: true,
- *   // bundleInPaidRelease: true,
- *   // bundleInBeta: true,
- *
- *   // the root of your project, i.e. where "package.json" lives
- *   root: "../../",
- *
- *   // where to put the JS bundle asset in debug mode
- *   jsBundleDirDebug: "$buildDir/intermediates/assets/debug",
- *
- *   // where to put the JS bundle asset in release mode
- *   jsBundleDirRelease: "$buildDir/intermediates/assets/release",
- *
- *   // where to put drawable resources / React Native assets, e.g. the ones you use via
- *   // require('./image.png')), in debug mode
- *   resourcesDirDebug: "$buildDir/intermediates/res/merged/debug",
- *
- *   // where to put drawable resources / React Native assets, e.g. the ones you use via
- *   // require('./image.png')), in release mode
- *   resourcesDirRelease: "$buildDir/intermediates/res/merged/release",
- *
- *   // by default the gradle tasks are skipped if none of the JS files or assets change; this means
- *   // that we don't look at files in android/ or ios/ to determine whether the tasks are up to
- *   // date; if you have any other folders that you want to ignore for performance reasons (gradle
- *   // indexes the entire tree), add them here. Alternatively, if you have JS files in android/
- *   // for example, you might want to remove it from here.
- *   inputExcludes: ["android/**", "ios/**"],
- *
- *   // Root dir for all JS files for the app. Defaults to `root` above.
- *   jsRootDir: "../..",
- *
- *   // Enable Fabric at runtime.
- *   enableFabric: true,
- *
- *   // Java package name to use for any codegen artifacts produced during build time.
- *   // Defaults to "com.facebook.fbreact.specs".
- *   codegenJavaPackageName: "com.facebook.fbreact.specs",
- * ]
+ * This is the configuration block to customize your React Native Android app.
+ * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
-
 react {
-    cliFile = file("$rootDir/cli.js")
-    bundleAssetName = "RNTesterApp.android.bundle"
-    entryFile = file("../../js/RNTesterApp.android.js")
+    /* Folders */
+    //   The root of your project, i.e. where "package.json" lives. Default is '..'
     root = file("../../")
-    hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
-    debuggableVariants = ["hermesDebug", "jscDebug"]
-    enableHermesOnlyInVariants = ["hermesDebug", "hermesRelease"]
-
-    // Codegen Configs
+    //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
     reactNativeDir = rootDir
+    //   The folder where the react-native Codegen package is. Default is ../node_modules/react-native-codegen
     codegenDir = file("$rootDir/node_modules/react-native-codegen")
+    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
+    cliFile = file("$rootDir/cli.js")
+
+    /* Variants */
+    //   The list of variants to that are debuggable. For those we're going to
+    //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
+    //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
+    debuggableVariants = ["hermesDebug", "jscDebug"]
+
+    /* Bundling */
+    //   A list containing the node command and its flags. Default is just 'node'.
+    // nodeExecutableAndArgs = ["node"]
+    //
+    //   The command to run when bundling. By default is 'bundle'
+    // bundleCommand = "ram-bundle"
+    //
+    //   The path to the CLI configuration file. Default is empty.
+    // bundleConfig = file(../rn-cli.config.js)
+    //
+    //   The name of the generated asset file containing your JS bundle
+    bundleAssetName = "RNTesterApp.android.bundle"
+    //
+    //   The entry file for bundle generation. Default is 'index.android.js' or 'index.js'
+    entryFile = file("../../js/RNTesterApp.android.js")
+    //
+    //   A list of extra flags to pass to the 'bundle' commands.
+    //   See https://github.com/react-native-community/cli/blob/main/docs/commands.md#bundle
+    // extraPackagerArgs = []
+
+    /* Hermes Commands */
+    //   The hermes compiler command to run. By default it is 'hermesc'
+    hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+    enableHermesOnlyInVariants = ["hermesDebug", "hermesRelease"]
 }
 
 /**
- * Set this to true to create three separate APKs instead of one:
- *   - A universal APK that works on all devices
- *   - An APK that only works on ARM devices
- *   - An APK that only works on x86 devices
- * The advantage is the size of the APK is reduced by about 4MB.
- * Upload all the APKs to the Play Store and people will download
- * the correct one based on the CPU architecture of their device.
+ * Set this to true to create four separate APKs instead of one,
+ * one for each native architecture. This is useful if you don't
+ * use App Bundles (https://developer.android.com/guide/app-bundle/)
+ * and want to have separate APKs to upload to the Play Store.
  */
 def enableSeparateBuildPerCPUArchitecture = true
 
@@ -106,12 +71,11 @@ def enableSeparateBuildPerCPUArchitecture = true
 def enableProguardInReleaseBuilds = true
 
 /**
- * Use the international variant of JavaScriptCore
- * This variant includes the ICU i18n library to make APIs like `Date.toLocaleString`
- * and `String.localeCompare` work when using with locales other than en-US.
- * Note that this variant is about 6MiB larger per architecture than the default.
+ * The preferred build flavor of JavaScriptCore (JSC)
+ * For example, to use the international variant, you can use:
+ * `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
  */
-def useIntlJsc = false
+def jscFlavor = 'org.webkit:android-jsc:+'
 
 /**
  * Architectures to build native code for.
@@ -206,11 +170,7 @@ dependencies {
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
 
-    if (useIntlJsc) {
-        jscImplementation 'org.webkit:android-jsc-intl:+'
-    } else {
-        jscImplementation 'org.webkit:android-jsc:+'
-    }
+    jscImplementation jscFlavor
 
     androidTestImplementation 'junit:junit:4.12'
 }
