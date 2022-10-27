@@ -194,6 +194,11 @@ if (argv.target === 'RNTester') {
     exec('yarn ios');
   } else {
     // android
+
+    exec(
+      'echo "REACT_NATIVE_MAVEN_LOCAL_REPO=/private/tmp/maven-local" >> android/gradle.properties',
+    );
+
     exec('yarn android');
   }
   popd();
