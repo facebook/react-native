@@ -117,7 +117,7 @@
     "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
-    "promise": "^8.0.3",
+    "promise": "^8.3.0",
     "react-devtools-core": "4.24.0",
     "react-native-gradle-plugin": "^0.70.3",
     "react-refresh": "^0.4.0",
