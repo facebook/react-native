@@ -115,8 +115,9 @@ inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const Tex
     if (textAttributes.dynamicTypeRamp.has_value()) {
       DynamicTypeRamp dynamicTypeRamp = textAttributes.dynamicTypeRamp.value();
       UIFontMetrics *fontMetrics = [UIFontMetrics metricsForTextStyle:RCTUIFontTextStyleForDynamicTypeRamp(dynamicTypeRamp)];
-      CGFloat baseSize = RCTBaseSizeForDynamicTypeRamp(dynamicTypeRamp);
-      return [fontMetrics scaledValueForValue:baseSize] / baseSize;
+      // Using a specific font size reduces rounding errors from -scaledValueForValue:
+      CGFloat requestedSize = isnan(textAttributes.fontSize) ? RCTBaseSizeForDynamicTypeRamp(dynamicTypeRamp) : textAttributes.fontSize;
+      return [fontMetrics scaledValueForValue:requestedSize] / requestedSize;
     } else {
       return textAttributes.fontSizeMultiplier;
     }

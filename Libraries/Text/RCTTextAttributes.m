@@ -233,8 +233,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     CGFloat fontSizeMultiplier = !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
     if (_dynamicTypeRamp != RCTDynamicTypeRampUndefined) {
       UIFontMetrics *fontMetrics = RCTUIFontMetricsForDynamicTypeRamp(_dynamicTypeRamp);
-      CGFloat baseSize = RCTBaseSizeForDynamicTypeRamp(_dynamicTypeRamp);
-      fontSizeMultiplier = [fontMetrics scaledValueForValue:baseSize] / baseSize;
+      // Using a specific font size reduces rounding errors from -scaledValueForValue:
+      CGFloat requestedSize = isnan(_fontSize) ? RCTBaseSizeForDynamicTypeRamp(_dynamicTypeRamp) : _fontSize;
+      fontSizeMultiplier = [fontMetrics scaledValueForValue:requestedSize] / requestedSize;
     }
     CGFloat maxFontSizeMultiplier = !isnan(_maxFontSizeMultiplier) ? _maxFontSizeMultiplier : 0.0;
     return maxFontSizeMultiplier >= 1.0 ? fminf(maxFontSizeMultiplier, fontSizeMultiplier) : fontSizeMultiplier;
