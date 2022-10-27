@@ -115,6 +115,11 @@ public class RNTesterApplication extends Application implements ReactApplication
         protected boolean isNewArchEnabled() {
           return true;
         }
+
+        @Override
+        protected Boolean isHermesEnabled() {
+          return BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR;
+        }
       };
 
   @Override

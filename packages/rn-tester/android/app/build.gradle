@@ -138,9 +138,11 @@ android {
     productFlavors {
         hermes {
             dimension "vm"
+            buildConfigField("boolean", "IS_HERMES_ENABLED_IN_FLAVOR", "true")
         }
         jsc {
             dimension "vm"
+            buildConfigField("boolean", "IS_HERMES_ENABLED_IN_FLAVOR", "false")
         }
     }
 
