@@ -10,26 +10,19 @@
 
 import {Dimensions, Text, useWindowDimensions} from 'react-native';
 import * as React from 'react';
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect} from 'react';
 
 type Props = {dim: string};
 
 function DimensionsSubscription(props: Props) {
   const [dims, setDims] = useState(Dimensions.get(props.dim));
 
-  let dimensionsSubscription = useRef();
-
   useEffect(() => {
-    dimensionsSubscription.current = Dimensions.addEventListener(
-      'change',
-      dimensions => {
-        setDims(dimensions[props.dim]);
-      },
-    );
+    const subscription = Dimensions.addEventListener('change', dimensions => {
+      setDims(dimensions[props.dim]);
+    });
 
-    return () => {
-      dimensionsSubscription?.current?.remove();
-    };
+    return () => subscription?.remove();
   }, [props.dim]);
 
   return <Text>{JSON.stringify(dims, null, 2)}</Text>;
