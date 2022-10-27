@@ -1284,7 +1284,7 @@ exports.examples = [
     },
   },
   {
-    title: 'Dynamic Text sizing (iOS only)',
+    title: 'Dynamic Type (iOS only)',
     render: function (): React.Node {
       const boldStyle = {fontWeight: 'bold'};
       const boxStyle = {
