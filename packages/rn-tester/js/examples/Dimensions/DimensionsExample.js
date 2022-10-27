@@ -9,9 +9,12 @@
  */
 
 import {Dimensions, Text, useWindowDimensions} from 'react-native';
-import React, {useState, useRef, useEffect} from 'react';
+import * as React from 'react';
+import {useState, useEffect, useRef} from 'react';
 
-function DimensionsSubscription(props) {
+type Props = {dim: string};
+
+function DimensionsSubscription(props: Props) {
   const [dims, setDims] = useState(Dimensions.get(props.dim));
 
   let dimensionsSubscription = useRef();
