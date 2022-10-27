@@ -15,10 +15,17 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 
 internal object DependencyUtils {
 
-  fun configureRepositories(project: Project, reactNativeDir: File) {
+  fun configureRepositories(project: Project, reactNativeDir: File, versionString: String) {
     with(project) {
       if (hasProperty("REACT_NATIVE_MAVEN_LOCAL_REPO")) {
         mavenRepoFromUrl("file://${property("REACT_NATIVE_MAVEN_LOCAL_REPO")}")
+      }
+      if(versionString.matches(Regex(".*\\d{4}"))) {
+        println ("Here's the version string: $versionString")
+        // if we are here, it means that we are local testing RN
+        // which is shaped like "1000.0.0-20221027-1041"
+        // the only way here is the local E2E script, so we can assume the path.
+        mavenRepoFromUrl("file:///private/tmp/maven-local")
       }
       // We add the snapshot for users on nightlies.
       mavenRepoFromUrl("https://oss.sonatype.org/content/repositories/snapshots/")
