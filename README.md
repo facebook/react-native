@@ -76,10 +76,12 @@ Follow the [Getting Started guide](https://reactnative.dev/docs/getting-started)
 - [Trying out React Native][hello-world]
 - [Creating a New Application][new-app]
 - [Adding React Native to an Existing Application][existing]
+- [React Native Projects with Source Code][projects]
 
 [hello-world]: https://snack.expo.dev/@hramos/hello,-world!
 [new-app]: https://reactnative.dev/docs/getting-started
 [existing]: https://reactnative.dev/docs/integration-with-existing-apps
+[projects]: https://www.interviewbit.com/blog/react-native-projects/
 
 ## 📖 Documentation
 
