@@ -760,9 +760,11 @@ jobs:
         description: The Android build type. Must be one of "Debug", "Release".
         type: enum
         enum: ["Debug", "Release"]
-      newarchitecture:
-        type: boolean
-        default: false
+      architecture:
+        default: "OldArch"
+        description: Which React Native architecture to use. Must be one of "NewArch", "OldArch".
+        type: enum
+        enum: [ "NewArch", "OldArch" ]
       jsengine:
         default: "Hermes"
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
@@ -775,17 +777,6 @@ jobs:
       - run_yarn
       - attach_workspace:
           at: .
-      - when:
-          condition:
-            equal: ["JSC", << parameters.jsengine >>]
-          steps:
-            - run:
-                name: Set enableHermes in buld.gradle to false
-                command: |
-                  node ./scripts/set-rn-engine.js -e jsc
-                  echo "Hermes disabled."
-                  grep enableHermes: template/android/app/build.gradle
-
       - run:
           name: Create Android template project
           command: |
@@ -796,10 +787,20 @@ jobs:
             yarn
 
       - run:
-          name: Build the template application for << parameters.flavor >> with New Architecture set to << parameters.newarchitecture >>, and using the << parameters.jsengine>> JS engine.
+          name: Build the template application for << parameters.flavor >> with Architecture set to << parameters.architecture >>, and using the << parameters.jsengine>> JS engine.
           command: |
             cd /tmp/$PROJECT_NAME/android/
-            ./gradlew assemble<< parameters.flavor >> -PnewArchEnabled=<< parameters.newarchitecture >> -PREACT_NATIVE_MAVEN_LOCAL_REPO=/root/react-native/maven-local
+            if [[ << parameters.architecture >> == "NewArch" ]]; then
+              export ORG_GRADLE_PROJECT_newArchEnabled=true
+            else
+              export ORG_GRADLE_PROJECT_newArchEnabled=false
+            fi
+            if [[ << parameters.jsengine >> == "Hermes" ]]; then
+              export ORG_GRADLE_PROJECT_hermesEnabled=true
+            else
+              export ORG_GRADLE_PROJECT_hermesEnabled=false
+            fi
+            ./gradlew assemble<< parameters.flavor >> -PREACT_NATIVE_MAVEN_LOCAL_REPO=/root/react-native/maven-local
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -1602,7 +1603,7 @@ workflows:
             - build_npm_package
           matrix:
             parameters:
-              newarchitecture: [true, false]
+              architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
               flavor: ["Debug", "Release"]
       - test_buck
