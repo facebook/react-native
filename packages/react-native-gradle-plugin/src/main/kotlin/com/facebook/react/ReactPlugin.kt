@@ -40,7 +40,7 @@ class ReactPlugin : Plugin<Project> {
         val propertiesFile = File(reactNativeDir, "ReactAndroid/gradle.properties")
         val versionString = readVersionString(propertiesFile)
         configureDependencies(project, versionString)
-        configureRepositories(project, reactNativeDir, versionString)
+        configureRepositories(project, reactNativeDir)
       }
 
       configureReactNativeNdk(project, extension)
