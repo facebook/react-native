@@ -33,7 +33,7 @@ buildscript {
     gradlePluginPortal()
   }
   dependencies {
-    classpath("com.android.tools.build:gradle:7.3.0")
+    classpath("com.android.tools.build:gradle:7.3.1")
     classpath("de.undercouch:gradle-download-task:5.0.1")
   }
 }
