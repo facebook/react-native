@@ -65,6 +65,13 @@ if (isPackagerRunning() === 'running') {
   exec("lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill");
 }
 
+// we need to determine this to handle a couple of iOS related things
+const onReleaseBranch = exec('git rev-parse --abbrev-ref HEAD', {
+  silent: true,
+})
+  .stdout.trim()
+  .endsWith('-stable');
+
 if (argv.target === 'RNTester') {
   // FIXME: make sure that the commands retains colors
   // (--ansi) doesn't always work
@@ -77,16 +84,11 @@ if (argv.target === 'RNTester') {
       } version of RNTester iOS with the new Architecture enabled`,
     );
 
-    // if I'm on release branch, I can pick the hermes ref from file (see hermes-engine.podspec)
-    const onReleaseBranch = exec('git rev-parse --abbrev-ref HEAD', {
-      silent: true,
-    })
-      .stdout.trim()
-      .endsWith('-stable');
-
     // remember that for this to be successful
     // you should have run bundle install once
     // in your local setup
+    // also: if I'm on release branch, I pick the
+    // hermes ref from the hermes ref file (see hermes-engine.podspec)
     exec(
       `cd packages/rn-tester && USE_HERMES=${
         argv.hermes ? 1 : 0
