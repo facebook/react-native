@@ -213,9 +213,11 @@ if (argv.target === 'RNTester') {
     // see this line for reference: https://github.com/facebook/react-native/blob/main/.circleci/config.yml#L1412
 
     // set HERMES_ENGINE_TARBALL_PATH to point to the local artifacts I just created
-    exec(`export HERMES_ENGINE_TARBALL_PATH=${hermesMavenPath}`);
-
-    exec(`USE_HERMES=${argv.hermes ? 1 : 0} bundle exec pod install --ansi`);
+    exec(
+      `HERMES_ENGINE_TARBALL_PATH=${hermesMavenPath} USE_HERMES=${
+        argv.hermes ? 1 : 0
+      } bundle exec pod install --ansi`,
+    );
 
     cd('..');
     exec('yarn ios');
