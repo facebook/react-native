@@ -109,8 +109,8 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.2.1",
-    "@react-native-community/cli": "10.0.0-alpha.1",
-    "@react-native-community/cli-platform-android": "10.0.0-alpha.1",
+    "@react-native-community/cli": "10.0.0-alpha.2",
+    "@react-native-community/cli-platform-android": "10.0.0-alpha.2",
     "@react-native-community/cli-platform-ios": "10.0.0-alpha.1",
     "@react-native/assets": "1.0.0",
     "@react-native/normalize-color": "2.0.0",
