@@ -20,8 +20,8 @@ function ColorSchemeSubscription() {
   useEffect(() => {
     const subscription = Appearance.addChangeListener(
       (preferences: AppearancePreferences) => {
-        const {colorScheme} = preferences;
-        setScheme({colorScheme});
+        const {colorScheme: scheme} = preferences;
+        setScheme({scheme});
       },
     );
 
