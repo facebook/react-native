@@ -232,7 +232,7 @@ class TouchableOpacity extends React.Component<Props, State> {
       this.props.disabled != null
         ? {
             ..._accessibilityState,
-            disabled: this.props.disabled,
+            disabled: !!this.props.disabled,
           }
         : _accessibilityState;
 
