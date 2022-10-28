@@ -12,6 +12,7 @@ import type {PressEvent} from '../Types/CoreEventTypes';
 import type {HostRef} from './getInspectorDataForViewAtPoint';
 
 import View from '../Components/View/View';
+import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import Dimensions from '../Utilities/Dimensions';
 import ElementBox from './ElementBox';
@@ -115,39 +116,33 @@ export default function DevtoolsOverlay({
     };
   }, []);
 
-  const findViewForTouchEvent = useCallback(
-    (e: PressEvent) => {
+  const findViewForLocation = useCallback(
+    (x: number, y: number) => {
       const agent = devToolsAgentRef.current;
       if (agent == null) {
         return;
       }
-      const {locationX, locationY} = e.nativeEvent.touches[0];
-      getInspectorDataForViewAtPoint(
-        inspectedView,
-        locationX,
-        locationY,
-        viewData => {
-          const {touchedViewTag, closestInstance, frame} = viewData;
-          if (closestInstance != null || touchedViewTag != null) {
-            if (closestInstance != null) {
-              // Fabric
-              agent.selectNode(closestInstance);
-            } else {
-              agent.selectNode(findNodeHandle(touchedViewTag));
-            }
-            setInspected({
-              frame,
-            });
-            return true;
+      getInspectorDataForViewAtPoint(inspectedView, x, y, viewData => {
+        const {touchedViewTag, closestInstance, frame} = viewData;
+        if (closestInstance != null || touchedViewTag != null) {
+          if (closestInstance != null) {
+            // Fabric
+            agent.selectNode(closestInstance);
+          } else {
+            agent.selectNode(findNodeHandle(touchedViewTag));
           }
-          return false;
-        },
-      );
+          setInspected({
+            frame,
+          });
+          return true;
+        }
+        return false;
+      });
     },
     [inspectedView],
   );
 
-  const onResponderRelease = useCallback(() => {
+  const stopInspecting = useCallback(() => {
     const agent = devToolsAgentRef.current;
     if (agent == null) {
       return;
@@ -157,23 +152,49 @@ export default function DevtoolsOverlay({
     setInspected(null);
   }, []);
 
+  const onPointerMove = useCallback(
+    e => {
+      findViewForLocation(e.nativeEvent.x, e.nativeEvent.y);
+    },
+    [findViewForLocation],
+  );
+
+  const onResponderMove = useCallback(
+    e => {
+      findViewForLocation(
+        e.nativeEvent.touches[0].locationX,
+        e.nativeEvent.touches[0].locationY,
+      );
+    },
+    [findViewForLocation],
+  );
+
   const shouldSetResponser = useCallback(
     (e: PressEvent): boolean => {
-      findViewForTouchEvent(e);
+      onResponderMove(e);
       return true;
     },
-    [findViewForTouchEvent],
+    [onResponderMove],
   );
 
   let highlight = inspected ? <ElementBox frame={inspected.frame} /> : null;
   if (isInspecting) {
+    const events = ReactNativeFeatureFlags.shouldEmitW3CPointerEvents
+      ? {
+          onPointerMove,
+          onPointerDown: onPointerMove,
+          onPointerUp: stopInspecting,
+        }
+      : {
+          onStartShouldSetResponder: shouldSetResponser,
+          onResponderMove: onResponderMove,
+          onResponderRelease: stopInspecting,
+        };
     return (
       <View
-        onStartShouldSetResponder={shouldSetResponser}
-        onResponderMove={findViewForTouchEvent}
-        onResponderRelease={onResponderRelease}
         nativeID="devToolsInspectorOverlay"
-        style={[styles.inspector, {height: Dimensions.get('window').height}]}>
+        style={[styles.inspector, {height: Dimensions.get('window').height}]}
+        {...events}>
         {highlight}
       </View>
     );
