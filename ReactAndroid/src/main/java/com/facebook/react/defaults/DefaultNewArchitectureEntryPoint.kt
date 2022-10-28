@@ -25,10 +25,10 @@ object DefaultNewArchitectureEntryPoint {
   @JvmStatic
   @JvmOverloads
   fun load(
-      dynamicLibraryName: String = "appmodules",
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
-      concurrentReactEnabled: Boolean = true
+      concurrentReactEnabled: Boolean = true,
+      dynamicLibraryName: String = "appmodules",
   ) {
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
