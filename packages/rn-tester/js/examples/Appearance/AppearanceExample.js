@@ -9,47 +9,36 @@
  */
 
 import * as React from 'react';
+import {useState, useEffect} from 'react';
 import {Appearance, Text, useColorScheme, View} from 'react-native';
 import type {AppearancePreferences} from 'react-native/Libraries/Utilities/NativeAppearance';
-import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';
 
-class ColorSchemeSubscription extends React.Component<
-  {...},
-  {colorScheme: ?string, ...},
-> {
-  _subscription: ?EventSubscription;
+function ColorSchemeSubscription() {
+  const [colorScheme, setScheme] = useState(Appearance.getColorScheme());
 
-  state: {colorScheme: ?string, ...} = {
-    colorScheme: Appearance.getColorScheme(),
-  };
-
-  componentDidMount() {
-    this._subscription = Appearance.addChangeListener(
+  useEffect(() => {
+    const subscription = Appearance.addChangeListener(
       (preferences: AppearancePreferences) => {
         const {colorScheme} = preferences;
-        this.setState({colorScheme});
+        setScheme({colorScheme});
       },
     );
-  }
 
-  componentWillUnmount() {
-    this._subscription?.remove();
-  }
+    return () => subscription?.remove();
+  }, [setScheme]);
 
-  render(): React.Node {
-    return (
-      <RNTesterThemeContext.Consumer>
-        {theme => {
-          return (
-            <ThemedContainer>
-              <ThemedText>{this.state.colorScheme}</ThemedText>
-            </ThemedContainer>
-          );
-        }}
-      </RNTesterThemeContext.Consumer>
-    );
-  }
+  return (
+    <RNTesterThemeContext.Consumer>
+      {theme => {
+        return (
+          <ThemedContainer>
+            <ThemedText>{colorScheme}</ThemedText>
+          </ThemedContainer>
+        );
+      }}
+    </RNTesterThemeContext.Consumer>
+  );
 }
 
 const ThemedContainer = (props: {children: React.Node}) => (
