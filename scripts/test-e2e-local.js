@@ -76,10 +76,21 @@ if (argv.target === 'RNTester') {
         argv.hermes ? 'Hermes' : 'JSC'
       } version of RNTester iOS with the new Architecture enabled`,
     );
+
+    // if I'm on release branch, I can pick the hermes ref from file (see hermes-engine.podspec)
+    const onReleaseBranch = exec('git rev-parse --abbrev-ref HEAD', {
+      silent: true,
+    })
+      .stdout.trim()
+      .endsWith('-stable');
+
+    // remember that for this to be successful
+    // you should have run bundle install once
+    // in your local setup
     exec(
       `cd packages/rn-tester && USE_HERMES=${
         argv.hermes ? 1 : 0
-      } RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
+      } CI=${onReleaseBranch} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
 
     // if everything succeeded so far, we can launch Metro and the app
