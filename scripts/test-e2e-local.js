@@ -33,6 +33,8 @@ const {
   saveFilesToRestore,
 } = require('./release-utils');
 
+const {createHermesTarball} = require('./hermes/hermes-utils');
+
 const argv = yargs
   .option('t', {
     alias: 'target',
@@ -185,24 +187,36 @@ if (argv.target === 'RNTester') {
     cd('ios');
     exec('bundle install');
 
-    // TODO: we should be able to also use HERMES_ENGINE_TARBALL_PATH
-    // if we can make RNTester step generate it already so that it gets reused
+    // for this scenario, we only need to create the debug build
+    // (env variable PRODUCTION defines that podspec side)
 
-    // need to discern if it's main branch or release branch
-    if (baseVersion === '1000.0.0') {
-      // main branch
-      exec(`USE_HERMES=${argv.hermes ? 1 : 0} bundle exec pod install --ansi`);
-    } else {
-      // TODO: to test this, I need to apply changes on top of a release branch
-      // a release branch
-      // copy over the .hermesversion file from react-native core into the RNTestProject
-      exec(`cp -f ${repoRoot}/sdks/.hermesversion .`);
-      exec(
-        `CI=true USE_HERMES=${
-          argv.hermes ? 1 : 0
-        } bundle exec pod install --ansi`,
-      );
-    }
+    // FIXME: need to figure out how to generate the hermes stuff
+    // (can I just do a pod install for RNTester iOS and use those files? need to find where they are stored)
+    // and get the Hermes reference here for the next phase
+    const hermesDir = 'help me';
+
+    // the android ones get set into /private/tmp/maven-local
+    const localMavenPath = '/private/tmp/maven-local';
+
+    const tarballOutputPath = createHermesTarball(
+      hermesDir,
+      'Debug',
+      releaseVersion,
+      localMavenPath,
+    );
+
+    console.log('this is where I generated the tarball', tarballOutputPath);
+
+    // final name needs to be hermes-ios-debug.tar.gz
+    // so we need to do something like
+    // mv <folder>/hermes-runtime-darwin-debug-*.tar.gz <same-folder>/hermes-ios-debug.tar.gz
+    // see this line for reference: https://github.com/facebook/react-native/blob/main/.circleci/config.yml#L1412
+
+    // set HERMES_ENGINE_TARBALL_PATH to point to the local artifacts I just created
+    exec(`export HERMES_ENGINE_TARBALL_PATH=${hermesMavenPath}`);
+
+    exec(`USE_HERMES=${argv.hermes ? 1 : 0} bundle exec pod install --ansi`);
+
     cd('..');
     exec('yarn ios');
   } else {
