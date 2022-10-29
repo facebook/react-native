@@ -84,6 +84,7 @@ const {
 } = require('../../error-utils');
 
 const {TypeScriptParser} = require('../parser');
+const {getKeyName} = require('../../parsers-commons');
 
 const language = 'TypeScript';
 const parser = new TypeScriptParser();
@@ -306,7 +307,10 @@ function translateTypeAnnotation(
           .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
             property => {
               return tryParse(() => {
-                if (property.type !== 'TSPropertySignature') {
+                if (
+                  property.type !== 'TSPropertySignature' &&
+                  property.type !== 'TSIndexSignature'
+                ) {
                   throw new UnsupportedObjectPropertyTypeAnnotationParserError(
                     hasteModuleName,
                     property,
@@ -315,8 +319,15 @@ function translateTypeAnnotation(
                   );
                 }
 
-                const {optional = false, key} = property;
-
+                const {optional = false} = property;
+                const name = getKeyName(property, hasteModuleName, language);
+                if (property.type === 'TSIndexSignature') {
+                  return {
+                    name,
+                    optional,
+                    typeAnnotation: emitObject(nullable),
+                  };
+                }
                 const [propertyTypeAnnotation, isPropertyNullable] =
                   unwrapNullable(
                     translateTypeAnnotation(
@@ -343,7 +354,7 @@ function translateTypeAnnotation(
                   );
                 } else {
                   return {
-                    name: key.name,
+                    name,
                     optional,
                     typeAnnotation: wrapNullable(
                       isPropertyNullable,

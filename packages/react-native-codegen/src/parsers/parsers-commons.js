@@ -24,7 +24,9 @@ const {
   UnsupportedUnionTypeAnnotationParserError,
 } = require('./errors');
 import type {ParserType} from './errors';
-
+const {
+  UnsupportedObjectPropertyTypeAnnotationParserError,
+} = require('./errors');
 const invariant = require('invariant');
 
 function wrapModuleSchema(
@@ -155,6 +157,31 @@ function emitUnionTypeAnnotation(
   });
 }
 
+function getKeyName(
+  propertyOrIndex: $FlowFixMe,
+  hasteModuleName: string,
+  language: ParserType,
+): string {
+  switch (propertyOrIndex.type) {
+    case 'ObjectTypeProperty':
+    case 'TSPropertySignature':
+      return propertyOrIndex.key.name;
+    case 'ObjectTypeIndexer':
+      // flow index name is optional
+      return propertyOrIndex.id?.name ?? 'key';
+    case 'TSIndexSignature':
+      // TypeScript index name is mandatory
+      return propertyOrIndex.parameters[0].name;
+    default:
+      throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+        hasteModuleName,
+        propertyOrIndex,
+        propertyOrIndex.type,
+        language,
+      );
+  }
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -162,4 +189,5 @@ module.exports = {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
+  getKeyName,
 };

@@ -62,7 +62,6 @@ const {
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
-  UnsupportedUnionTypeAnnotationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
@@ -84,6 +83,7 @@ const {
 } = require('../../error-utils');
 
 const {FlowParser} = require('../parser.js');
+const {getKeyName} = require('../../parsers-commons');
 
 const language = 'Flow';
 const parser = new FlowParser();
@@ -287,11 +287,17 @@ function translateTypeAnnotation(
       const objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         // $FlowFixMe[missing-type-arg]
-        properties: (typeAnnotation.properties: Array<$FlowFixMe>)
+        properties: ([
+          ...typeAnnotation.properties,
+          ...typeAnnotation.indexers,
+        ]: Array<$FlowFixMe>)
           .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
             property => {
               return tryParse(() => {
-                if (property.type !== 'ObjectTypeProperty') {
+                if (
+                  property.type !== 'ObjectTypeProperty' &&
+                  property.type !== 'ObjectTypeIndexer'
+                ) {
                   throw new UnsupportedObjectPropertyTypeAnnotationParserError(
                     hasteModuleName,
                     property,
@@ -300,8 +306,15 @@ function translateTypeAnnotation(
                   );
                 }
 
-                const {optional, key} = property;
-
+                const {optional = false} = property;
+                const name = getKeyName(property, hasteModuleName, language);
+                if (property.type === 'ObjectTypeIndexer') {
+                  return {
+                    name,
+                    optional,
+                    typeAnnotation: emitObject(nullable),
+                  };
+                }
                 const [propertyTypeAnnotation, isPropertyNullable] =
                   unwrapNullable(
                     translateTypeAnnotation(
@@ -328,7 +341,7 @@ function translateTypeAnnotation(
                   );
                 } else {
                   return {
-                    name: key.name,
+                    name,
                     optional,
                     typeAnnotation: wrapNullable(
                       isPropertyNullable,
