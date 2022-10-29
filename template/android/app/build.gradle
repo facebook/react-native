@@ -93,6 +93,7 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+    namespace "com.helloworld"
     defaultConfig {
         applicationId "com.helloworld"
         minSdkVersion rootProject.ext.minSdkVersion
