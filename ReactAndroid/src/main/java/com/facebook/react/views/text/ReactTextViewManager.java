@@ -94,6 +94,15 @@ public class ReactTextViewManager
     ReactClickableSpan[] clickableSpans =
         spannable.getSpans(0, update.getText().length(), ReactClickableSpan.class);
 
+    ReactTtsSpan[] ttsSpans = spannable.getSpans(0, update.getText().length(), ReactTtsSpan.class);
+    if (ttsSpans.length > 0) {
+      view.setTag(
+          R.id.accessibility_spans,
+          new ReactAccessibilityDelegate.AccessibilityLinks(ttsSpans, spannable));
+      ReactAccessibilityDelegate.resetDelegate(
+          view, view.isFocusable(), view.getImportantForAccessibility());
+    }
+
     if (clickableSpans.length > 0) {
       view.setTag(
           R.id.accessibility_links,

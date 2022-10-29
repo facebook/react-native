@@ -14,27 +14,19 @@ import {useState} from 'react';
 
 export default function TextAdjustsDynamicLayoutExample(props: {}): React.Node {
   const [height, setHeight] = useState(20);
-
   return (
     <>
       <View>
-        <View style={[styles.subjectContainer, {height}]}>
+        <Text fontWeight={700} accessible={true}>
+          My number is{' '}
           <Text
-            adjustsFontSizeToFit={true}
-            numberOfLines={1}
-            style={styles.subjectText}>
-            This is adjusting text.
+            accessibilityRole="link"
+            accessible={true}
+            style={{backgroundColor: 'red'}}>
+            please spell this text
           </Text>
-        </View>
-      </View>
-      <View style={styles.row}>
-        <Button onPress={() => setHeight(20)} title="Set Height to 20" />
-      </View>
-      <View style={styles.row}>
-        <Button onPress={() => setHeight(40)} title="Set Height to 40" />
-      </View>
-      <View style={styles.row}>
-        <Button onPress={() => setHeight(60)} title="Set Height to 60" />
+          .
+        </Text>
       </View>
     </>
   );

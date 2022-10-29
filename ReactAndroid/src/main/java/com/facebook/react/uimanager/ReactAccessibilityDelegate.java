@@ -15,9 +15,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Layout;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
@@ -44,6 +46,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
+import com.facebook.react.views.text.ReactTtsSpan;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +74,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   private final View mView;
   private final AccessibilityLinks mAccessibilityLinks;
+  private final AccessibilityLinks mAccessibilitySpans;
+  // private final TtsSpan.MoneyBuilder mSpanned;
 
   private Handler mHandler;
 
@@ -216,6 +221,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     mView.setFocusable(originalFocus);
     ViewCompat.setImportantForAccessibility(mView, originalImportantForAccessibility);
     mAccessibilityLinks = (AccessibilityLinks) mView.getTag(R.id.accessibility_links);
+    mAccessibilitySpans = (AccessibilityLinks) mView.getTag(R.id.accessibility_spans);
   }
 
   @Nullable View mAccessibilityLabelledBy;
@@ -228,6 +234,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     final String accessibilityHint = (String) host.getTag(R.id.accessibility_hint);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
+      info.setHeading(true);
+      info.setRoleDescription("heading");
     }
 
     if (accessibilityHint != null) {
@@ -579,6 +587,37 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     node.setBoundsInParent(getBoundsInParent(accessibleTextSpan));
     node.setRoleDescription(mView.getResources().getString(R.string.link_description));
     node.setClassName(AccessibilityRole.getValue(AccessibilityRole.BUTTON));
+    Log.w("TESTING::ReactAccessibilityDelegate", "mAccessibilitySpans: " + (mAccessibilitySpans));
+    if (mAccessibilitySpans == null) {
+      return;
+    }
+    final AccessibilityLinks.AccessibleLink ttsSpan =
+        mAccessibilitySpans.getLinkById(virtualViewId);
+    Log.w("TESTING::ReactAccessibilityDelegate", "ttsSpan: " + (ttsSpan));
+    if (ttsSpan == null) {
+      return;
+    }
+    Log.w("TESTING::ReactAccessibilityDelegate", "node.getText(): " + (node.getText()));
+    if (mView instanceof TextView) {
+      TextView textView = (TextView) mView;
+      Log.w("TESTING::ReactAccessibilityDelegate", "textView.getText(): " + (textView.getText()));
+      SpannableString spannableString = new SpannableString(textView.getText());
+      spannableString.setSpan(ttsSpan.span, 0, java.lang.Math.min(6, ttsSpan.end), 0);
+      node.setContentDescription(spannableString);
+      // node.addAction(AccessibilityNodeInfoCompat.ACTION_CLICK);
+      // node.setRoleDescription(mView.getResources().getString(R.string.link_description));
+      // node.setHeading(true);
+      // node.setRoleDescription("heading");
+      // node.setClassName(AccessibilityRole.getValue(AccessibilityRole.BUTTON));
+    }
+    // String string = "my test string";
+    Log.w("TESTING::ReactAccessibilityDelegate", "ttsSpan.span: " + (ttsSpan.span));
+    Log.w("TESTING::ReactAccessibilityDelegate", "ttsSpan.end: " + (ttsSpan.end));
+    Log.w(
+        "TESTING::ReactAccessibilityDelegate",
+        "ttsSpan.span.getArgs(): " + (ttsSpan.span.getArgs()));
+    // TtsSpan ttsSpan = new TtsSpan.Builder(TtsSpan.TYPE_VERBATIM).build();
+
   }
 
   private Rect getBoundsInParent(AccessibilityLinks.AccessibleLink accessibleLink) {
@@ -647,6 +686,34 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   public static class AccessibilityLinks {
     private final List<AccessibleLink> mLinks;
 
+    public AccessibilityLinks(ReactTtsSpan[] spans, Spannable text) {
+      ArrayList<AccessibleLink> links = new ArrayList<>();
+      for (int i = 0; i < spans.length; i++) {
+        ReactTtsSpan span = spans[i];
+        int start = text.getSpanStart(span);
+        int end = text.getSpanEnd(span);
+        // zero length spans, and out of range spans should not be included.
+        if (start == end || start < 0 || end < 0 || start > text.length() || end > text.length()) {
+          continue;
+        }
+
+        final AccessibleLink link = new AccessibleLink();
+        link.span = span;
+        link.start = start;
+        link.end = end;
+
+        // ID is the reverse of what is expected, since the ClickableSpans are returned in reverse
+        // order due to being added in reverse order. If we don't do this, focus will move to the
+        // last link first and move backwards.
+        //
+        // If this approach becomes unreliable, we should instead look at their start position and
+        // order them manually.
+        link.id = spans.length - 1 - i;
+        links.add(link);
+      }
+      mLinks = links;
+    }
+
     public AccessibilityLinks(ClickableSpan[] spans, Spannable text) {
       ArrayList<AccessibleLink> links = new ArrayList<>();
       for (int i = 0; i < spans.length; i++) {
@@ -703,6 +770,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
     private static class AccessibleLink {
       public String description;
+      public ReactTtsSpan span;
       public int start;
       public int end;
       public int id;
