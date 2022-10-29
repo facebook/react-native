@@ -21,7 +21,7 @@ function ColorSchemeSubscription() {
     const subscription = Appearance.addChangeListener(
       (preferences: AppearancePreferences) => {
         const {colorScheme: scheme} = preferences;
-        setScheme({scheme});
+        setScheme(scheme);
       },
     );
 
@@ -58,7 +58,7 @@ const ThemedContainer = (props: {children: React.Node}) => (
   </RNTesterThemeContext.Consumer>
 );
 
-const ThemedText = (props: {children: React.Node}) => (
+const ThemedText = (props: {children: React.Node | string}) => (
   <RNTesterThemeContext.Consumer>
     {theme => {
       return <Text style={{color: theme.LabelColor}}>{props.children}</Text>;
