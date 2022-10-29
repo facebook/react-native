@@ -19,7 +19,6 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
-import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -156,9 +155,6 @@ public class TextLayoutManagerMapBuffer {
                   start, end, new ReactBackgroundColorSpan(textAttributes.mBackgroundColor)));
            */
           if (Build.VERSION.SDK_INT > 21 && textAttributes.mBackgroundColor == -65536) {
-            Log.w(
-                "TESTING::TextLayoutManagerMapBuffer",
-                "textAttributes.mBackgroundColor: " + (textAttributes.mBackgroundColor));
             ops.add(
                 new SetSpanOperation(
                     start, end, new ReactTtsSpan.Builder(ReactTtsSpan.TYPE_VERBATIM).build()));

@@ -19,7 +19,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
@@ -587,37 +586,24 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     node.setBoundsInParent(getBoundsInParent(accessibleTextSpan));
     node.setRoleDescription(mView.getResources().getString(R.string.link_description));
     node.setClassName(AccessibilityRole.getValue(AccessibilityRole.BUTTON));
-    Log.w("TESTING::ReactAccessibilityDelegate", "mAccessibilitySpans: " + (mAccessibilitySpans));
     if (mAccessibilitySpans == null) {
       return;
     }
     final AccessibilityLinks.AccessibleLink ttsSpan =
         mAccessibilitySpans.getLinkById(virtualViewId);
-    Log.w("TESTING::ReactAccessibilityDelegate", "ttsSpan: " + (ttsSpan));
     if (ttsSpan == null) {
       return;
     }
-    Log.w("TESTING::ReactAccessibilityDelegate", "node.getText(): " + (node.getText()));
     if (mView instanceof TextView) {
-      TextView textView = (TextView) mView;
-      Log.w("TESTING::ReactAccessibilityDelegate", "textView.getText(): " + (textView.getText()));
-      SpannableString spannableString = new SpannableString(textView.getText());
-      spannableString.setSpan(ttsSpan.span, 0, java.lang.Math.min(6, ttsSpan.end), 0);
+      CharSequence textViewText = ((TextView) mView).getText();
+      SpannableString spannableString = new SpannableString(textViewText);
+      spannableString.setSpan(
+          ttsSpan.span,
+          java.lang.Math.min(textViewText.length(), ttsSpan.start),
+          java.lang.Math.max(ttsSpan.start, ttsSpan.end - 1),
+          0);
       node.setContentDescription(spannableString);
-      // node.addAction(AccessibilityNodeInfoCompat.ACTION_CLICK);
-      // node.setRoleDescription(mView.getResources().getString(R.string.link_description));
-      // node.setHeading(true);
-      // node.setRoleDescription("heading");
-      // node.setClassName(AccessibilityRole.getValue(AccessibilityRole.BUTTON));
     }
-    // String string = "my test string";
-    Log.w("TESTING::ReactAccessibilityDelegate", "ttsSpan.span: " + (ttsSpan.span));
-    Log.w("TESTING::ReactAccessibilityDelegate", "ttsSpan.end: " + (ttsSpan.end));
-    Log.w(
-        "TESTING::ReactAccessibilityDelegate",
-        "ttsSpan.span.getArgs(): " + (ttsSpan.span.getArgs()));
-    // TtsSpan ttsSpan = new TtsSpan.Builder(TtsSpan.TYPE_VERBATIM).build();
-
   }
 
   private Rect getBoundsInParent(AccessibilityLinks.AccessibleLink accessibleLink) {
@@ -700,6 +686,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         final AccessibleLink link = new AccessibleLink();
         link.span = span;
         link.start = start;
+        link.description = text.subSequence(start, end).toString();
         link.end = end;
 
         // ID is the reverse of what is expected, since the ClickableSpans are returned in reverse
