@@ -17,6 +17,7 @@ const {
   verifyPlatforms,
   visit,
   buildSchemaFromConfigType,
+  isModuleRegistryCall,
 } = require('../utils.js');
 const {ParserError} = require('../errors');
 
@@ -431,6 +432,151 @@ describe('buildSchemaFromConfigType', () => {
 
           expect(buildComponentSchemaMock).not.toHaveBeenCalled();
           expect(wrapComponentSchemaMock).not.toHaveBeenCalled();
+        });
+      });
+    });
+  });
+
+  describe('isModuleRegistryCall', () => {
+    describe('when node is not of CallExpression type', () => {
+      it('returns false', () => {
+        const node = {
+          type: 'NotCallExpression',
+        };
+        expect(isModuleRegistryCall(node)).toBe(false);
+      });
+    });
+
+    describe('when node is of CallExpressionType', () => {
+      describe('when callee type is not of MemberExpression type', () => {
+        it('returns false', () => {
+          const node = {
+            type: 'CallExpression',
+            callee: {
+              type: 'NotMemberExpression',
+            },
+          };
+          expect(isModuleRegistryCall(node)).toBe(false);
+        });
+      });
+
+      describe('when callee type is of MemberExpression type', () => {
+        describe('when memberExpression has an object of type different than "Identifier"', () => {
+          it('returns false', () => {
+            const node = {
+              type: 'CallExpression',
+              callee: {
+                type: 'MemberExpression',
+                object: {
+                  type: 'NotIdentifier',
+                  name: 'TurboModuleRegistry',
+                },
+              },
+            };
+            expect(isModuleRegistryCall(node)).toBe(false);
+          });
+        });
+
+        describe('when memberExpression has an object of name different than "TurboModuleRegistry"', () => {
+          it('returns false', () => {
+            const node = {
+              type: 'CallExpression',
+              callee: {
+                type: 'MemberExpression',
+                object: {
+                  type: 'Identifier',
+                  name: 'NotTurboModuleRegistry',
+                },
+              },
+            };
+            expect(isModuleRegistryCall(node)).toBe(false);
+          });
+        });
+
+        describe('when memberExpression has an object of type "Identifier" and name "TurboModuleRegistry', () => {
+          describe('when memberExpression has a property of type different than "Identifier"', () => {
+            it('returns false', () => {
+              const node = {
+                type: 'CallExpression',
+                callee: {
+                  type: 'MemberExpression',
+                  object: {
+                    type: 'Identifier',
+                    name: 'TurboModuleRegistry',
+                  },
+                  property: {
+                    type: 'NotIdentifier',
+                    name: 'get',
+                  },
+                },
+              };
+              expect(isModuleRegistryCall(node)).toBe(false);
+            });
+          });
+
+          describe('when memberExpression has a property of name different than "get" or "getEnforcing', () => {
+            it('returns false', () => {
+              const node = {
+                type: 'CallExpression',
+                callee: {
+                  type: 'MemberExpression',
+                  object: {
+                    type: 'Identifier',
+                    name: 'TurboModuleRegistry',
+                  },
+                  property: {
+                    type: 'Identifier',
+                    name: 'NotGet',
+                  },
+                },
+              };
+              expect(isModuleRegistryCall(node)).toBe(false);
+            });
+          });
+
+          describe('when memberExpression has a property of type "Identifier" and of name "get" or "getEnforcing', () => {
+            describe('when memberExpression is computed', () => {
+              it('returns false', () => {
+                const node = {
+                  type: 'CallExpression',
+                  callee: {
+                    type: 'MemberExpression',
+                    object: {
+                      type: 'Identifier',
+                      name: 'TurboModuleRegistry',
+                    },
+                    property: {
+                      type: 'Identifier',
+                      name: 'get',
+                    },
+                    computed: true,
+                  },
+                };
+                expect(isModuleRegistryCall(node)).toBe(false);
+              });
+            });
+
+            describe('when memberExpression is not computed', () => {
+              it('returns true', () => {
+                const node = {
+                  type: 'CallExpression',
+                  callee: {
+                    type: 'MemberExpression',
+                    object: {
+                      type: 'Identifier',
+                      name: 'TurboModuleRegistry',
+                    },
+                    property: {
+                      type: 'Identifier',
+                      name: 'get',
+                    },
+                    computed: false,
+                  },
+                };
+                expect(isModuleRegistryCall(node)).toBe(true);
+              });
+            });
+          });
         });
       });
     });
