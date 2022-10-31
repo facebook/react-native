@@ -75,7 +75,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   private final View mView;
   private final AccessibilityLinks mAccessibilityLinks;
   private final AccessibilityLinks mAccessibilitySpans;
-  // private final TtsSpan.MoneyBuilder mSpanned;
 
   private Handler mHandler;
 
@@ -234,8 +233,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     final String accessibilityHint = (String) host.getTag(R.id.accessibility_hint);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
-      info.setHeading(true);
-      info.setRoleDescription("heading");
     }
 
     if (accessibilityHint != null) {
@@ -595,15 +592,13 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     if (ttsSpan == null) {
       return;
     }
-    if (mView instanceof TextView) {
-      SpannableString spannableString = new SpannableString(ttsSpan.description);
-      spannableString.setSpan(
-          ttsSpan.span,
-          java.lang.Math.min(spannableString.length(), ttsSpan.start),
-          java.lang.Math.max(ttsSpan.start, ttsSpan.end - 1),
-          0);
-      node.setContentDescription(spannableString);
-    }
+    SpannableString spannableString = new SpannableString(ttsSpan.description);
+    spannableString.setSpan(
+        ttsSpan.span,
+        java.lang.Math.min(spannableString.length(), ttsSpan.start),
+        java.lang.Math.max(ttsSpan.start, ttsSpan.end - 1),
+        0);
+    node.setContentDescription(spannableString);
   }
 
   private Rect getBoundsInParent(AccessibilityLinks.AccessibleLink accessibleLink) {
@@ -684,15 +679,14 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         }
 
         final AccessibleLink link = new AccessibleLink();
+        link.description = text.subSequence(start, end).toString();
         if (span instanceof ReactTtsSpan) {
           link.span = span;
           SpannableString spannableDescription = new SpannableString(text.subSequence(start, end));
-          link.description = spannableDescription.toString();
           link.start = spannableDescription.getSpanStart(span);
           link.end = spannableDescription.getSpanEnd(span);
         }
         if (span instanceof ClickableSpan) {
-          link.description = text.subSequence(start, end).toString();
           link.start = start;
           link.end = end;
         }
