@@ -332,6 +332,13 @@ type IOSProps = $ReadOnly<{|
 
   // [TODO(macOS GH#774)
   /**
+   * If `true`, hide vertical scrollbar on the underlying multiline scrollview
+   * The default value is `false`.
+   * @platform macos
+   */
+  hideVerticalScrollIndicator?: ?boolean,
+
+  /**
    * If `false`, disables grammar-check.
    * @platform macos
    */

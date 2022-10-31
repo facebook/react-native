@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (void)setReadablePasteBoardTypes:(NSArray<NSPasteboardType> *)readablePasteboardTypes;
+@property (nonatomic, assign) BOOL hideVerticalScrollIndicator;
 #endif // ]TODO(macOS GH#774)
 @end
 

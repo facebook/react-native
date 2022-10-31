@@ -130,6 +130,7 @@ const RCTTextInputViewConfig = {
     blurOnSubmit: true,
     mostRecentEventCount: true,
     scrollEnabled: true,
+    hideVerticalScrollIndicator: true,
     selectionColor: {process: require('../../StyleSheet/processColor')},
     contextMenuHidden: true,
     secureTextEntry: true,
