@@ -8,7 +8,7 @@
 #include "ManagedObjectWrapper.h"
 
 #if defined(__OBJC__) && defined(__cplusplus)
-#if TARGET_OS_MAC && TARGET_OS_IPHONE
+#if TARGET_OS_MAC && (TARGET_OS_IPHONE || TARGET_OS_OSX)
 
 namespace facebook {
 namespace react {
