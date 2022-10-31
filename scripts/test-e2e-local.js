@@ -199,6 +199,7 @@ if (argv.target === 'RNTester') {
     const tarballOutputPath = generateiOSArtifacts(
       hermesSourceFolder,
       buildType,
+      releaseVersion,
       localMavenPath,
     );
 

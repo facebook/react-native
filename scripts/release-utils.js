@@ -95,13 +95,15 @@ function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
   echo('Published artifacts to Maven Central');
 }
 
-function generateiOSArtifacts(hermesSourceFolder, buildType, targetFolder) {
-  // TODO: invoke all the ios specific build commands
-
+function generateiOSArtifacts(
+  hermesSourceFolder,
+  buildType,
+  releaseVersion,
+  targetFolder,
+) {
   pushd(`${hermesSourceFolder}`);
 
   //Generating iOS Artifacts
-
   exec(`BUILD_TYPE=${buildType} ./utils/build-mac-framework.sh`);
   exec(`BUILD_TYPE=${buildType} ./utils/build-ios-framework.sh`);
   exec(`BUILD_TYPE=${buildType} ./utils/build-apple-framework.sh`);
@@ -112,7 +114,7 @@ function generateiOSArtifacts(hermesSourceFolder, buildType, targetFolder) {
     hermesSourceFolder,
     buildType,
     releaseVersion,
-    localMavenPath,
+    targetFolder,
   );
 
   return tarballOutputPath;
