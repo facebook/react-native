@@ -167,7 +167,8 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
     );
   });
 
-  it("throws an IncorrectlyParameterizedGenericParserError if typeParameters don't have 1 exactly parameter", () => {
+  it("throws an IncorrectlyParameterizedGenericParserError if typeParameters don't have 1 exactly parameter for Flow", () => {
+    const language: ParserType = 'Flow';
     const typeAnnotationWithTwoParams = {
       typeParameters: {
         params: [1, 2],
@@ -181,7 +182,7 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
       assertGenericTypeAnnotationHasExactlyOneTypeParameter(
         moduleName,
         typeAnnotationWithTwoParams,
-        'Flow',
+        language,
       ),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Module testModuleName: Generic 'typeAnnotationName' must have exactly one type parameter."`,
@@ -200,7 +201,48 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
       assertGenericTypeAnnotationHasExactlyOneTypeParameter(
         moduleName,
         typeAnnotationWithNoParams,
-        'Flow',
+        language,
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Module testModuleName: Generic 'typeAnnotationName' must have exactly one type parameter."`,
+    );
+  });
+
+  it("throws an IncorrectlyParameterizedGenericParserError if typeParameters don't have 1 exactly parameter for TS", () => {
+    const language: ParserType = 'TypeScript';
+    const typeAnnotationWithTwoParams = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'TSTypeParameterInstantiation',
+      },
+      typeName: {
+        name: 'typeAnnotationName',
+      },
+    };
+    expect(() =>
+      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+        moduleName,
+        typeAnnotationWithTwoParams,
+        language,
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Module testModuleName: Generic 'typeAnnotationName' must have exactly one type parameter."`,
+    );
+
+    const typeAnnotationWithNoParams = {
+      typeParameters: {
+        params: [],
+        type: 'TSTypeParameterInstantiation',
+      },
+      typeName: {
+        name: 'typeAnnotationName',
+      },
+    };
+    expect(() =>
+      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+        moduleName,
+        typeAnnotationWithNoParams,
+        language,
       ),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Module testModuleName: Generic 'typeAnnotationName' must have exactly one type parameter."`,

@@ -20,7 +20,8 @@ import type {
   NativeModuleUnionTypeAnnotation,
 } from '../CodegenSchema.js';
 const {
-  IncorrectlyParameterizedGenericParserError,
+  MissingTypeParameterGenericParserError,
+  MoreThanOneTypeParameterGenericParserError,
   UnsupportedUnionTypeAnnotationParserError,
 } = require('./errors');
 import type {ParserType} from './errors';
@@ -80,7 +81,7 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
   language: ParserType,
 ) {
   if (typeAnnotation.typeParameters == null) {
-    throw new IncorrectlyParameterizedGenericParserError(
+    throw new MissingTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
       language,
@@ -98,7 +99,7 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
   );
 
   if (typeAnnotation.typeParameters.params.length !== 1) {
-    throw new IncorrectlyParameterizedGenericParserError(
+    throw new MoreThanOneTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
       language,

@@ -12,7 +12,6 @@
 
 import type {UnionTypeAnnotationMemberType} from '../CodegenSchema';
 
-const invariant = require('invariant');
 import type {Parser} from './parser';
 export type ParserType = 'Flow' | 'TypeScript';
 
@@ -131,11 +130,7 @@ class UnsupportedGenericParserError extends ParserError {
   }
 }
 
-class IncorrectlyParameterizedGenericParserError extends ParserError {
-  +genericName: string;
-  +numTypeParameters: number;
-
-  // $FlowFixMe[missing-local-annot]
+class MissingTypeParameterGenericParserError extends ParserError {
   constructor(
     nativeModuleName: string,
     genericTypeAnnotation: $FlowFixMe,
@@ -145,31 +140,30 @@ class IncorrectlyParameterizedGenericParserError extends ParserError {
       language === 'TypeScript'
         ? genericTypeAnnotation.typeName.name
         : genericTypeAnnotation.id.name;
-    if (genericTypeAnnotation.typeParameters == null) {
-      super(
-        nativeModuleName,
-        genericTypeAnnotation,
-        `Generic '${genericName}' must have type parameters.`,
-      );
-      return;
-    }
 
-    if (
-      genericTypeAnnotation.typeParameters.type ===
-        'TypeParameterInstantiation' &&
-      genericTypeAnnotation.typeParameters.params.length !== 1
-    ) {
-      super(
-        nativeModuleName,
-        genericTypeAnnotation.typeParameters,
-        `Generic '${genericName}' must have exactly one type parameter.`,
-      );
-      return;
-    }
+    super(
+      nativeModuleName,
+      genericTypeAnnotation,
+      `Generic '${genericName}' must have type parameters.`,
+    );
+  }
+}
 
-    invariant(
-      false,
-      "Couldn't create IncorrectlyParameterizedGenericParserError",
+class MoreThanOneTypeParameterGenericParserError extends ParserError {
+  constructor(
+    nativeModuleName: string,
+    genericTypeAnnotation: $FlowFixMe,
+    language: ParserType,
+  ) {
+    const genericName =
+      language === 'TypeScript'
+        ? genericTypeAnnotation.typeName.name
+        : genericTypeAnnotation.id.name;
+
+    super(
+      nativeModuleName,
+      genericTypeAnnotation,
+      `Generic '${genericName}' must have exactly one type parameter.`,
     );
   }
 }
@@ -422,7 +416,8 @@ class IncorrectModuleRegistryCallArgumentTypeParserError extends ParserError {
 
 module.exports = {
   ParserError,
-  IncorrectlyParameterizedGenericParserError,
+  MissingTypeParameterGenericParserError,
+  MoreThanOneTypeParameterGenericParserError,
   MisnamedModuleInterfaceParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleInterfaceParserError,
