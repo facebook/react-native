@@ -162,7 +162,7 @@ if (argv.target === 'RNTester') {
   exec(`node scripts/set-rn-version.js --to-version ${releaseVersion}`).code;
 
   // Generate native files (Android only for now)
-  generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
+  // generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
 
   // create locally the node module
   exec('npm pack');
@@ -186,8 +186,13 @@ if (argv.target === 'RNTester') {
     cd('ios');
     exec('bundle install');
 
+    console.info('\n\nGENERATING THE STUFF!\n\n');
+
     // I need to tell it where the hermes stuff lives
-    const hermesSourceFolder = `${repoRoot}/sdks/hermes-engine`;
+    const jsiFolder = `${repoRoot}/ReactCommon/jsi`;
+    const hermesEngineSourceFolder = `${repoRoot}/sdks/hermes-engine`;
+    // TODO: need to try a full cleanup and see if the folder is there of if I need to download it
+    const hermesCoreSourceFolder = `${repoRoot}/sdks/hermes`;
 
     // for this scenario, we only need to create the debug build
     // (env variable PRODUCTION defines that podspec side)
@@ -197,14 +202,25 @@ if (argv.target === 'RNTester') {
     const localMavenPath = '/private/tmp/maven-local';
 
     const tarballOutputPath = generateiOSArtifacts(
-      hermesSourceFolder,
+      jsiFolder,
+      hermesEngineSourceFolder,
+      hermesCoreSourceFolder,
       buildType,
       releaseVersion,
       localMavenPath,
     );
 
-    console.log('this is where I generated the tarball', tarballOutputPath);
+    console.info(
+      'this is where I generated the tarball (last element)',
+      hermesEngineSourceFolder,
+      hermesCoreSourceFolder,
+      buildType,
+      releaseVersion,
+      localMavenPath,
+      tarballOutputPath, // /private/tmp/maven-local/hermes-runtime-darwin-debug-v1000.0.0-20221031-1736.tar.gz
+    );
 
+    // TODO: verify if I actually need to do the renaming
     // final name needs to be hermes-ios-debug.tar.gz
     // so we need to do something like
     // mv <folder>/hermes-runtime-darwin-debug-*.tar.gz <same-folder>/hermes-ios-debug.tar.gz
@@ -212,7 +228,7 @@ if (argv.target === 'RNTester') {
 
     // set HERMES_ENGINE_TARBALL_PATH to point to the local artifacts I just created
     exec(
-      `HERMES_ENGINE_TARBALL_PATH=${hermesMavenPath} USE_HERMES=${
+      `HERMES_ENGINE_TARBALL_PATH=${tarballOutputPath} USE_HERMES=${
         argv.hermes ? 1 : 0
       } bundle exec pod install --ansi`,
     );

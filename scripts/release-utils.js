@@ -9,7 +9,7 @@
 
 'use strict';
 
-const {exec, echo, exit, test, env} = require('shelljs');
+const {exec, echo, exit, test, env, pushd, popd} = require('shelljs');
 const {saveFiles} = require('./scm-utils');
 const {createHermesTarball} = require('./hermes/hermes-utils');
 
@@ -96,22 +96,35 @@ function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
 }
 
 function generateiOSArtifacts(
-  hermesSourceFolder,
+  jsiFolder,
+  hermesEngineSourceFolder,
+  hermesCoreSourceFolder,
   buildType,
   releaseVersion,
   targetFolder,
 ) {
-  pushd(`${hermesSourceFolder}`);
+  pushd(`${hermesCoreSourceFolder}`);
 
   //Generating iOS Artifacts
-  exec(`BUILD_TYPE=${buildType} ./utils/build-mac-framework.sh`);
-  exec(`BUILD_TYPE=${buildType} ./utils/build-ios-framework.sh`);
-  exec(`BUILD_TYPE=${buildType} ./utils/build-apple-framework.sh`);
+  console.log('BUILD MAC FRAMEWORK');
+  exec(
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesEngineSourceFolder}/utils/build-mac-framework.sh`,
+  );
+
+  console.log('BUILD IOS FRAMEWORK');
+  exec(
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesEngineSourceFolder}/utils/build-ios-framework.sh`,
+  );
+
+  console.log('BUILD APPLE FRAMEWORK');
+  exec(
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesEngineSourceFolder}/utils/build-apple-framework.sh`,
+  );
 
   popd();
 
   const tarballOutputPath = createHermesTarball(
-    hermesSourceFolder,
+    hermesCoreSourceFolder,
     buildType,
     releaseVersion,
     targetFolder,
