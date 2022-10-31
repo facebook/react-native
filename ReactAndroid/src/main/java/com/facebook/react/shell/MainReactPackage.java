@@ -33,7 +33,6 @@ import com.facebook.react.modules.permissions.PermissionsModule;
 import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
-import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.toast.ToastModule;
 import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
@@ -69,7 +68,6 @@ import java.util.Map;
       AppStateModule.class,
       BlobModule.class,
       FileReaderModule.class,
-      AsyncStorageModule.class,
       ClipboardModule.class,
       DialogModule.class,
       FrescoModule.class,
@@ -111,8 +109,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new BlobModule(context);
       case FileReaderModule.NAME:
         return new FileReaderModule(context);
-      case AsyncStorageModule.NAME:
-        return new AsyncStorageModule(context);
       case ClipboardModule.NAME:
         return new ClipboardModule(context);
       case DialogModule.NAME:
@@ -193,7 +189,6 @@ public class MainReactPackage extends TurboReactPackage {
             AppStateModule.class,
             BlobModule.class,
             FileReaderModule.class,
-            AsyncStorageModule.class,
             ClipboardModule.class,
             DialogModule.class,
             FrescoModule.class,
