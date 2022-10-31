@@ -31,9 +31,8 @@ const {
 const {
   generateAndroidArtifacts,
   saveFilesToRestore,
+  generateiOSArtifacts,
 } = require('./release-utils');
-
-const {createHermesTarball} = require('./hermes/hermes-utils');
 
 const argv = yargs
   .option('t', {
@@ -189,21 +188,12 @@ if (argv.target === 'RNTester') {
 
     // for this scenario, we only need to create the debug build
     // (env variable PRODUCTION defines that podspec side)
-
-    // FIXME: need to figure out how to generate the hermes stuff
-    // (can I just do a pod install for RNTester iOS and use those files? need to find where they are stored)
-    // and get the Hermes reference here for the next phase
-    const hermesDir = 'help me';
+    const buildType = 'Debug';
 
     // the android ones get set into /private/tmp/maven-local
     const localMavenPath = '/private/tmp/maven-local';
 
-    const tarballOutputPath = createHermesTarball(
-      hermesDir,
-      'Debug',
-      releaseVersion,
-      localMavenPath,
-    );
+    const tarballOutputPath = generateiOSArtifacts(buildType, localMavenPath);
 
     console.log('this is where I generated the tarball', tarballOutputPath);
 

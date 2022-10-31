@@ -11,6 +11,7 @@
 
 const {exec, echo, exit, test, env} = require('shelljs');
 const {saveFiles} = require('./scm-utils');
+const {createHermesTarball} = require('./hermes/hermes-utils');
 
 function saveFilesToRestore(tmpPublishingFolder) {
   const filesToSaveAndRestore = [
@@ -94,8 +95,26 @@ function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
   echo('Published artifacts to Maven Central');
 }
 
+function generateiOSArtifacts(buildType, targetFolder) {
+  // TODO: invoke all the ios specific build commands
+
+  // by default it's
+  // ./sdks/hermes
+  const hermesDir = 'help me';
+
+  const tarballOutputPath = createHermesTarball(
+    hermesDir,
+    buildType,
+    releaseVersion,
+    localMavenPath,
+  );
+
+  return tarballOutputPath;
+}
+
 module.exports = {
   generateAndroidArtifacts,
+  generateiOSArtifacts,
   publishAndroidArtifactsToMaven,
   saveFilesToRestore,
 };
