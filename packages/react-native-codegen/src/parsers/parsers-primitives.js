@@ -32,6 +32,7 @@ import type {
   NamedShape,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
+import type {Parser} from './parser';
 import type {
   ParserErrorCapturer,
   TypeAliasResolutionStatus,
@@ -174,13 +175,13 @@ function typeAliasResolution(
 function emitPromise(
   hasteModuleName: string,
   typeAnnotation: $FlowFixMe,
-  language: ParserType,
+  parser: Parser,
   nullable: boolean,
 ): Nullable<NativeModulePromiseTypeAnnotation> {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter(
     hasteModuleName,
     typeAnnotation,
-    language,
+    parser,
   );
 
   return wrapNullable(nullable, {

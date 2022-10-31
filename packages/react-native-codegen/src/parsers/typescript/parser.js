@@ -14,6 +14,8 @@ import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
 
 class TypeScriptParser implements Parser {
+  typeParameterInstantiation: string = 'TSTypeParameterInstantiation';
+
   getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
     if (maybeEnumDeclaration.members[0].initializer) {
       return maybeEnumDeclaration.members[0].initializer.type
