@@ -17,7 +17,8 @@ const {execSync} = require('child_process');
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
 const HERMES_DIR = path.join(SDKS_DIR, 'hermes');
 const HERMES_TAG_FILE_PATH = path.join(SDKS_DIR, '.hermesversion');
-const HERMES_TARBALL_BASE_URL = 'https://github.com/facebook/hermes/tarball/';
+const HERMES_SOURCE_TARBALL_BASE_URL =
+  'https://github.com/facebook/hermes/tarball/';
 const HERMES_TARBALL_DOWNLOAD_DIR = path.join(SDKS_DIR, 'download');
 const MACOS_BIN_DIR = path.join(SDKS_DIR, 'hermesc', 'osx-bin');
 const MACOS_HERMESC_PATH = path.join(MACOS_BIN_DIR, 'hermesc');
@@ -71,11 +72,11 @@ function getHermesTarballDownloadPath(hermesTag) {
   return path.join(HERMES_TARBALL_DOWNLOAD_DIR, `hermes-${hermesTagSHA}.tgz`);
 }
 
-function downloadHermesTarball() {
+function downloadHermesSourceTarball() {
   const hermesTag = readHermesTag();
   const hermesTagSHA = getHermesTagSHA(hermesTag);
   const hermesTarballDownloadPath = getHermesTarballDownloadPath(hermesTag);
-  let hermesTarballUrl = HERMES_TARBALL_BASE_URL + hermesTag;
+  let hermesTarballUrl = HERMES_SOURCE_TARBALL_BASE_URL + hermesTag;
 
   if (fs.existsSync(hermesTarballDownloadPath)) {
     return;
@@ -95,7 +96,7 @@ function downloadHermesTarball() {
   }
 }
 
-function expandHermesTarball() {
+function expandHermesSourceTarball() {
   const hermesTag = readHermesTag();
   const hermesTagSHA = getHermesTagSHA(hermesTag);
   const hermesTarballDownloadPath = getHermesTarballDownloadPath(hermesTag);
@@ -196,7 +197,7 @@ set_target_properties(native-hermesc PROPERTIES
   }
 }
 
-function getHermesTarballName(buildType, releaseVersion) {
+function getHermesPrebuiltArtifactsTarballName(buildType, releaseVersion) {
   if (!buildType) {
     throw Error('Did not specify build type.');
   }
@@ -206,7 +207,7 @@ function getHermesTarballName(buildType, releaseVersion) {
   return `hermes-runtime-darwin-${buildType.toLowerCase()}-v${releaseVersion}.tar.gz`;
 }
 
-function createHermesTarball(
+function createHermesPrebuiltArtifactsTarball(
   hermesDir,
   buildType,
   releaseVersion,
@@ -245,7 +246,10 @@ function createHermesTarball(
     throw new Error(`Failed to copy destroot to tempdir: ${error}`);
   }
 
-  const tarballFilename = getHermesTarballName(buildType, releaseVersion);
+  const tarballFilename = getHermesPrebuiltArtifactsTarballName(
+    buildType,
+    releaseVersion,
+  );
   const tarballOutputPath = path.join(tarballOutputDir, tarballFilename);
 
   try {
@@ -267,11 +271,11 @@ module.exports = {
   configureMakeForPrebuiltHermesC,
   copyBuildScripts,
   copyPodSpec,
-  createHermesTarball,
-  downloadHermesTarball,
-  expandHermesTarball,
+  createHermesPrebuiltArtifactsTarball,
+  downloadHermesSourceTarball,
+  expandHermesSourceTarball,
   getHermesTagSHA,
-  getHermesTarballName,
+  getHermesPrebuiltArtifactsTarballName,
   readHermesTag,
   setHermesTag,
   shouldBuildHermesFromSource,
