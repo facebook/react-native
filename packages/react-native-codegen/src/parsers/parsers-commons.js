@@ -24,21 +24,17 @@ const {
   UnsupportedUnionTypeAnnotationParserError,
 } = require('./errors');
 import type {ParserType} from './errors';
-
-const invariant = require('invariant');
 const {
-  getTypes,
-  isModuleRegistryCall,
-  resolveTypeAnnotation,
-} = require('./flow/utils');
+  UnsupportedObjectPropertyTypeAnnotationParserError,
+} = require('./errors');
+const invariant = require('invariant');
+const {getTypes, isModuleRegistryCall} = require('./flow/utils');
 const {
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfModuleInterfaceIsMisnamed,
   throwIfModuleInterfaceNotFound,
-  throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfMoreThanOneModuleRegistryCalls,
-  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfUntypedModule,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
@@ -46,42 +42,12 @@ const {
 const {verifyPlatforms, visit} = require('./utils');
 const {
   IncorrectModuleRegistryCallArgumentTypeParserError,
-  UnnamedFunctionParamParserError,
-  UnsupportedFunctionParamTypeAnnotationParserError,
 } = require('./errors');
 import type {
-  NamedShape,
   NativeModuleAliasMap,
-  NativeModuleArrayTypeAnnotation,
-  NativeModuleBaseTypeAnnotation,
-  NativeModuleFunctionTypeAnnotation,
-  NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
 } from '../CodegenSchema';
-import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
-import {
-  UnsupportedArrayElementTypeAnnotationParserError,
-  UnsupportedEnumDeclarationParserError,
-  UnsupportedGenericParserError,
-  UnsupportedObjectPropertyTypeAnnotationParserError,
-  UnsupportedTypeAnnotationParserError,
-} from './errors';
-import {
-  emitBoolean,
-  emitDouble,
-  emitFunction,
-  emitInt32,
-  emitNumber,
-  emitObject,
-  emitPromise,
-  emitRootTag,
-  emitString,
-  emitStringish,
-  emitVoid,
-  typeAliasResolution,
-} from './parsers-primitives';
-import {throwIfPropertyValueTypeIsUnsupported} from './error-utils';
-import {nullGuard} from './parsers-utils';
+import type {ParserErrorCapturer} from './utils';
 import type {Parser} from './parser';
 
 function wrapModuleSchema(
@@ -392,6 +358,31 @@ function buildModuleSchema(
     );
 }
 
+function getKeyName(
+  propertyOrIndex: $FlowFixMe,
+  hasteModuleName: string,
+  language: ParserType,
+): string {
+  switch (propertyOrIndex.type) {
+    case 'ObjectTypeProperty':
+    case 'TSPropertySignature':
+      return propertyOrIndex.key.name;
+    case 'ObjectTypeIndexer':
+      // flow index name is optional
+      return propertyOrIndex.id?.name ?? 'key';
+    case 'TSIndexSignature':
+      // TypeScript index name is mandatory
+      return propertyOrIndex.parameters[0].name;
+    default:
+      throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+        hasteModuleName,
+        propertyOrIndex,
+        propertyOrIndex.type,
+        language,
+      );
+  }
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -400,4 +391,5 @@ module.exports = {
   emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
   buildModuleSchema,
+  getKeyName,
 };

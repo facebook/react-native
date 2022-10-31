@@ -26,7 +26,10 @@ import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 const {nullGuard} = require('../../parsers-utils');
 
-const {throwIfMoreThanOneModuleRegistryCalls} = require('../../error-utils');
+const {
+  throwIfMoreThanOneModuleRegistryCalls,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+} = require('../../error-utils');
 const {visit} = require('../../utils');
 const {
   resolveTypeAnnotation,
@@ -43,6 +46,7 @@ const {
 const {
   emitBoolean,
   emitDouble,
+  emitFloat,
   emitFunction,
   emitNumber,
   emitInt32,
@@ -59,7 +63,6 @@ const {
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
-  UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
@@ -81,6 +84,7 @@ const {
 } = require('../../error-utils');
 
 const {TypeScriptParser} = require('../parser');
+const {getKeyName} = require('../../parsers-commons');
 
 const language = 'TypeScript';
 const parser = new TypeScriptParser();
@@ -253,9 +257,7 @@ function translateTypeAnnotation(
           return emitDouble(nullable);
         }
         case 'Float': {
-          return wrapNullable(nullable, {
-            type: 'FloatTypeAnnotation',
-          });
+          return emitFloat(nullable);
         }
         case 'UnsafeObject':
         case 'Object': {
@@ -305,7 +307,10 @@ function translateTypeAnnotation(
           .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
             property => {
               return tryParse(() => {
-                if (property.type !== 'TSPropertySignature') {
+                if (
+                  property.type !== 'TSPropertySignature' &&
+                  property.type !== 'TSIndexSignature'
+                ) {
                   throw new UnsupportedObjectPropertyTypeAnnotationParserError(
                     hasteModuleName,
                     property,
@@ -314,8 +319,15 @@ function translateTypeAnnotation(
                   );
                 }
 
-                const {optional = false, key} = property;
-
+                const {optional = false} = property;
+                const name = getKeyName(property, hasteModuleName, language);
+                if (property.type === 'TSIndexSignature') {
+                  return {
+                    name,
+                    optional,
+                    typeAnnotation: emitObject(nullable),
+                  };
+                }
                 const [propertyTypeAnnotation, isPropertyNullable] =
                   unwrapNullable(
                     translateTypeAnnotation(
@@ -342,7 +354,7 @@ function translateTypeAnnotation(
                   );
                 } else {
                   return {
-                    name: key.name,
+                    name,
                     optional,
                     typeAnnotation: wrapNullable(
                       isPropertyNullable,
@@ -450,23 +462,15 @@ function translateFunctionTypeAnnotation(
           ),
         );
 
-      if (paramTypeAnnotation.type === 'VoidTypeAnnotation') {
-        throw new UnsupportedFunctionParamTypeAnnotationParserError(
+      if (
+        paramTypeAnnotation.type === 'VoidTypeAnnotation' ||
+        paramTypeAnnotation.type === 'PromiseTypeAnnotation'
+      ) {
+        return throwIfUnsupportedFunctionParamTypeAnnotationParserError(
           hasteModuleName,
           typeScriptParam.typeAnnotation,
           paramName,
-          'void',
-          language,
-        );
-      }
-
-      if (paramTypeAnnotation.type === 'PromiseTypeAnnotation') {
-        throw new UnsupportedFunctionParamTypeAnnotationParserError(
-          hasteModuleName,
-          typeScriptParam.typeAnnotation,
-          paramName,
-          'Promise',
-          language,
+          paramTypeAnnotation.type,
         );
       }
 

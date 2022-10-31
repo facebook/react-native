@@ -44,26 +44,28 @@ static void InitializeFlipper(UIApplication *application)
 }
 #endif
 
-void RCTAppSetupPrepareApp(UIApplication *application)
+void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
 #ifdef FB_SONARKIT_ENABLED
   InitializeFlipper(application);
 #endif
 
 #if RCT_NEW_ARCH_ENABLED
-  RCTEnableTurboModule(YES);
+  RCTEnableTurboModule(turboModuleEnabled);
 #endif
 }
 
-UIView *RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties)
+UIView *
+RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
 {
 #if RCT_NEW_ARCH_ENABLED
-  return [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:bridge
-                                                           moduleName:moduleName
-                                                    initialProperties:initialProperties];
-#else
-  return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  if (fabricEnabled) {
+    return [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:bridge
+                                                             moduleName:moduleName
+                                                      initialProperties:initialProperties];
+  }
 #endif
+  return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
 #if RCT_NEW_ARCH_ENABLED

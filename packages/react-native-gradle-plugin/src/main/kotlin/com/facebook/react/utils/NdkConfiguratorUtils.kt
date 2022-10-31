@@ -39,21 +39,12 @@ internal object NdkConfiguratorUtils {
         // Parameters should be provided in an additive manner (do not override what
         // the user provided, but allow for sensible defaults).
         val cmakeArgs = ext.defaultConfig.externalNativeBuild.cmake.arguments
-        if ("-DGENERATED_SRC_DIR" !in cmakeArgs) {
-          cmakeArgs.add("-DGENERATED_SRC_DIR=${File(project.buildDir, "generated/source")}")
-        }
         if ("-DPROJECT_BUILD_DIR" !in cmakeArgs) {
           cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.buildDir}")
         }
         if ("-DREACT_ANDROID_DIR" !in cmakeArgs) {
           cmakeArgs.add(
               "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}")
-        }
-        if ("-DREACT_ANDROID_BUILD_DIR" !in cmakeArgs) {
-          cmakeArgs.add(
-              "-DREACT_ANDROID_BUILD_DIR=${
-              extension.reactNativeDir.file("ReactAndroid/build").get().asFile
-            }")
         }
         if ("-DANDROID_STL" !in cmakeArgs) {
           cmakeArgs.add("-DANDROID_STL=c++_shared")
