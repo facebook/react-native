@@ -14,12 +14,14 @@ import type {SchemaType} from '../../CodegenSchema.js';
 
 const babelParser = require('@babel/parser');
 const fs = require('fs');
-const {buildSchemaFromConfigType, getConfigType} = require('../utils');
+const {
+  buildSchemaFromConfigType,
+  getConfigType,
+  isModuleRegistryCall,
+} = require('../utils');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
-
-const {isModuleRegistryCall} = require('./utils');
 
 function Visitor(infoMap: {isComponent: boolean, isModule: boolean}) {
   return {

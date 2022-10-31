@@ -30,12 +30,8 @@ const {
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
 } = require('../../error-utils');
-const {visit} = require('../../utils');
-const {
-  resolveTypeAnnotation,
-  getTypes,
-  isModuleRegistryCall,
-} = require('../utils.js');
+const {visit, isModuleRegistryCall} = require('../../utils');
+const {resolveTypeAnnotation, getTypes} = require('../utils.js');
 const {
   unwrapNullable,
   wrapNullable,
