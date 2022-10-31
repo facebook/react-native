@@ -595,11 +595,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
     if (mView instanceof TextView) {
-      CharSequence textViewText = ((TextView) mView).getText();
-      SpannableString spannableString = new SpannableString(textViewText);
+      SpannableString spannableString = new SpannableString(ttsSpan.description);
       spannableString.setSpan(
           ttsSpan.span,
-          java.lang.Math.min(textViewText.length(), ttsSpan.start),
+          java.lang.Math.min(spannableString.length(), ttsSpan.start),
           java.lang.Math.max(ttsSpan.start, ttsSpan.end - 1),
           0);
       node.setContentDescription(spannableString);
@@ -685,9 +684,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
         final AccessibleLink link = new AccessibleLink();
         link.span = span;
-        link.start = start;
-        link.description = text.subSequence(start, end).toString();
-        link.end = end;
+        SpannableString spannableDescription = new SpannableString(text.subSequence(start, end));
+        link.description = spannableDescription.toString();
+        link.start = spannableDescription.getSpanStart(span);
+        link.end = spannableDescription.getSpanEnd(span);
 
         // ID is the reverse of what is expected, since the ClickableSpans are returned in reverse
         // order due to being added in reverse order. If we don't do this, focus will move to the
