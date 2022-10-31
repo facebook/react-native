@@ -15,7 +15,6 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
@@ -102,7 +101,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       boolean supportsInlineViews,
       Map<Integer, ReactShadowNode> inlineViews,
       int start) {
-    Log.w("TESTING::ReactBaseTextShadowNode", "buildSpannedFromShadowNode");
 
     TextAttributes textAttributes;
     if (parentTextAttributes != null) {
@@ -485,12 +483,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.BACKGROUND_COLOR, customType = "Color")
   public void setBackgroundColor(@Nullable Integer color) {
-    Log.w("TESTING::ReactBaseTextShadowNode", "setBackgroundColor");
     // Background color needs to be handled here for virtual nodes so it can be incorporated into
     // the span. However, it doesn't need to be applied to non-virtual nodes because non-virtual
     // nodes get mapped to native views and native views get their background colors get set via
     // {@link BaseViewManager}.
-    Log.w("TESTING::ReactBaseTextShadowNode", "isVirtual(): " + (isVirtual()));
     if (isVirtual()) {
       mIsBackgroundColorSet = (color != null);
       if (mIsBackgroundColorSet) {

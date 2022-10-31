@@ -45,6 +45,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
+import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTtsSpan;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -671,10 +672,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   public static class AccessibilityLinks {
     private final List<AccessibleLink> mLinks;
 
-    public AccessibilityLinks(ReactTtsSpan[] spans, Spannable text) {
+    public AccessibilityLinks(ReactSpan[] spans, Spannable text) {
       ArrayList<AccessibleLink> links = new ArrayList<>();
       for (int i = 0; i < spans.length; i++) {
-        ReactTtsSpan span = spans[i];
+        ReactSpan span = spans[i];
         int start = text.getSpanStart(span);
         int end = text.getSpanEnd(span);
         // zero length spans, and out of range spans should not be included.
@@ -683,39 +684,18 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         }
 
         final AccessibleLink link = new AccessibleLink();
-        link.span = span;
-        SpannableString spannableDescription = new SpannableString(text.subSequence(start, end));
-        link.description = spannableDescription.toString();
-        link.start = spannableDescription.getSpanStart(span);
-        link.end = spannableDescription.getSpanEnd(span);
-
-        // ID is the reverse of what is expected, since the ClickableSpans are returned in reverse
-        // order due to being added in reverse order. If we don't do this, focus will move to the
-        // last link first and move backwards.
-        //
-        // If this approach becomes unreliable, we should instead look at their start position and
-        // order them manually.
-        link.id = spans.length - 1 - i;
-        links.add(link);
-      }
-      mLinks = links;
-    }
-
-    public AccessibilityLinks(ClickableSpan[] spans, Spannable text) {
-      ArrayList<AccessibleLink> links = new ArrayList<>();
-      for (int i = 0; i < spans.length; i++) {
-        ClickableSpan span = spans[i];
-        int start = text.getSpanStart(span);
-        int end = text.getSpanEnd(span);
-        // zero length spans, and out of range spans should not be included.
-        if (start == end || start < 0 || end < 0 || start > text.length() || end > text.length()) {
-          continue;
+        if (span instanceof ReactTtsSpan) {
+          link.span = span;
+          SpannableString spannableDescription = new SpannableString(text.subSequence(start, end));
+          link.description = spannableDescription.toString();
+          link.start = spannableDescription.getSpanStart(span);
+          link.end = spannableDescription.getSpanEnd(span);
         }
-
-        final AccessibleLink link = new AccessibleLink();
-        link.description = text.subSequence(start, end).toString();
-        link.start = start;
-        link.end = end;
+        if (span instanceof ClickableSpan) {
+          link.description = text.subSequence(start, end).toString();
+          link.start = start;
+          link.end = end;
+        }
 
         // ID is the reverse of what is expected, since the ClickableSpans are returned in reverse
         // order due to being added in reverse order. If we don't do this, focus will move to the
@@ -757,7 +737,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
     private static class AccessibleLink {
       public String description;
-      public ReactTtsSpan span;
+      public ReactSpan span;
       public int start;
       public int end;
       public int id;
