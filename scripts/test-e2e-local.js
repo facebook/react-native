@@ -186,6 +186,9 @@ if (argv.target === 'RNTester') {
     cd('ios');
     exec('bundle install');
 
+    // I need to tell it where the hermes stuff lives
+    const hermesSourceFolder = `${repoRoot}/sdks/hermes-engine`;
+
     // for this scenario, we only need to create the debug build
     // (env variable PRODUCTION defines that podspec side)
     const buildType = 'Debug';
@@ -193,7 +196,11 @@ if (argv.target === 'RNTester') {
     // the android ones get set into /private/tmp/maven-local
     const localMavenPath = '/private/tmp/maven-local';
 
-    const tarballOutputPath = generateiOSArtifacts(buildType, localMavenPath);
+    const tarballOutputPath = generateiOSArtifacts(
+      hermesSourceFolder,
+      buildType,
+      localMavenPath,
+    );
 
     console.log('this is where I generated the tarball', tarballOutputPath);
 
