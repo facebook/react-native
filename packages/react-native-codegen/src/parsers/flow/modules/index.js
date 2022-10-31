@@ -26,8 +26,7 @@ import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 const {nullGuard} = require('../../parsers-utils');
 
-const {throwIfMoreThanOneModuleRegistryCalls} = require('../../error-utils');
-const {visit, isModuleRegistryCall} = require('../../utils');
+const {visit, verifyPlatforms, isModuleRegistryCall} = require('../../utils');
 const {resolveTypeAnnotation, getTypes} = require('../utils.js');
 const {
   unwrapNullable,
@@ -64,14 +63,13 @@ const {
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
 
-const {verifyPlatforms} = require('../../utils');
-
 const {
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
+  throwIfMoreThanOneModuleRegistryCalls,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfUntypedModule,
   throwIfModuleTypeIsUnsupported,
@@ -275,6 +273,7 @@ function translateTypeAnnotation(
                   tryParse,
                   cxxOnly,
                   language,
+                  nullable,
                   translateTypeAnnotation,
                 );
               });

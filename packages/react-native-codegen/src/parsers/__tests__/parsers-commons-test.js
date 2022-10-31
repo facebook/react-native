@@ -13,16 +13,16 @@
 
 import {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
-  /* parseObjectProperty */
+  parseObjectProperty,
 } from '../parsers-commons';
-
+import type {ParserType} from '../errors';
+import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema';
 const {
   wrapNullable,
   unwrapNullable,
   emitUnionTypeAnnotation,
 } = require('../parsers-commons.js');
 const {UnsupportedUnionTypeAnnotationParserError} = require('../errors');
-import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema';
 
 describe('wrapNullable', () => {
   describe('when nullable is true', () => {

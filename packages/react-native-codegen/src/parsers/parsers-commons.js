@@ -18,41 +18,28 @@ import type {
   Nullable,
   NativeModuleAliasMap,
   UnionTypeAnnotationMemberType,
+  NativeModuleEnumDeclaration,
   NativeModuleTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModuleUnionTypeAnnotation,
   NativeModuleMixedTypeAnnotation,
   Nullable,
 } from '../CodegenSchema.js';
+import type {ParserType} from './errors';
+import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {Parser} from './parser';
+
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedUnionTypeAnnotationParserError,
-} = require('./errors');
-const {throwIfPropertyValueTypeIsUnsupported} = require('./error-utils');
-import type {ParserType} from './errors';
-import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
-
-function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
-  switch (language) {
-    case 'Flow':
-      return property.type === 'ObjectTypeProperty';
-    case 'TypeScript':
-      return property.type === 'TSPropertySignature';
-    default:
-      return false;
-  }
-}
-
-const invariant = require('invariant');
-import type {TypeDeclarationMap} from './utils';
-const {
   UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
 } = require('./errors');
-import type {Parser} from './parser';
-import type {NativeModuleEnumDeclaration} from '../CodegenSchema';
+const {throwIfPropertyValueTypeIsUnsupported} = require('./error-utils');
+
+const invariant = require('invariant');
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -124,6 +111,23 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
   }
 }
 
+function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
+  switch (language) {
+    case 'Flow':
+      return (
+        property.type === 'ObjectTypeProperty' ||
+        property.type === 'ObjectTypeIndexer'
+      );
+    case 'TypeScript':
+      return (
+        property.type === 'TSPropertySignature' ||
+        property.type === 'TSIndexSignature'
+      );
+    default:
+      return false;
+  }
+}
+
 function parseObjectProperty(
   property: $FlowFixMe,
   hasteModuleName: string,
@@ -132,6 +136,7 @@ function parseObjectProperty(
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   language: ParserType,
+  nullable: boolean,
   translateTypeAnnotation: $FlowFixMe,
 ): NamedShape<Nullable<NativeModuleBaseTypeAnnotation>> {
   if (!isObjectProperty(property, language)) {
@@ -143,11 +148,25 @@ function parseObjectProperty(
     );
   }
 
-  const {optional = false, key} = property;
+  const {optional = false} = property;
+  const name = getKeyName(property, hasteModuleName, language);
   const languageTypeAnnotation =
     language === 'TypeScript'
       ? property.typeAnnotation.typeAnnotation
       : property.value;
+
+  if (
+    property.type === 'ObjectTypeIndexer' ||
+    property.type === 'TSIndexSignature'
+  ) {
+    return {
+      name,
+      optional,
+      typeAnnotation: wrapNullable(nullable, {
+        type: 'GenericObjectTypeAnnotation',
+      }), //TODO: use `emitObject` for typeAnnotation
+    };
+  }
 
   const [propertyTypeAnnotation, isPropertyNullable] = unwrapNullable(
     translateTypeAnnotation(
@@ -175,7 +194,7 @@ function parseObjectProperty(
   }
 
   return {
-    name: key.name,
+    name,
     optional,
     typeAnnotation: wrapNullable(isPropertyNullable, propertyTypeAnnotation),
   };
@@ -311,6 +330,6 @@ module.exports = {
   parseObjectProperty,
   emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
-  getKeyName,
   translateDefault,
+  getKeyName,
 };
