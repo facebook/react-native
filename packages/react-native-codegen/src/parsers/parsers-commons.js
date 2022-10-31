@@ -28,6 +28,13 @@ const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('./errors');
 const invariant = require('invariant');
+import type {TypeDeclarationMap} from './utils';
+const {
+  UnsupportedEnumDeclarationParserError,
+  UnsupportedGenericParserError,
+} = require('./errors');
+import type {Parser} from './parser';
+import type {NativeModuleEnumDeclaration} from '../CodegenSchema';
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -157,6 +164,44 @@ function emitUnionTypeAnnotation(
   });
 }
 
+function translateDefault(
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  nullable: boolean,
+  parser: Parser,
+): Nullable<NativeModuleEnumDeclaration> {
+  const maybeEnumDeclaration =
+    types[parser.nameForGenericTypeAnnotation(typeAnnotation)];
+
+  if (maybeEnumDeclaration && parser.isEnumDeclaration(maybeEnumDeclaration)) {
+    const memberType = parser.getMaybeEnumMemberType(maybeEnumDeclaration);
+
+    if (
+      memberType === 'NumberTypeAnnotation' ||
+      memberType === 'StringTypeAnnotation'
+    ) {
+      return wrapNullable(nullable, {
+        type: 'EnumDeclaration',
+        memberType: memberType,
+      });
+    } else {
+      throw new UnsupportedEnumDeclarationParserError(
+        hasteModuleName,
+        typeAnnotation,
+        memberType,
+        parser.language(),
+      );
+    }
+  }
+
+  throw new UnsupportedGenericParserError(
+    hasteModuleName,
+    typeAnnotation,
+    parser,
+  );
+}
+
 function getKeyName(
   propertyOrIndex: $FlowFixMe,
   hasteModuleName: string,
@@ -190,4 +235,5 @@ module.exports = {
   emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
   getKeyName,
+  translateDefault,
 };

@@ -42,6 +42,7 @@ const {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
+  translateDefault,
 } = require('../../parsers-commons');
 const {
   emitBoolean,
@@ -63,7 +64,6 @@ const {
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
-  UnsupportedEnumDeclarationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
@@ -264,36 +264,11 @@ function translateTypeAnnotation(
           return emitObject(nullable);
         }
         default: {
-          const maybeEumDeclaration = types[typeAnnotation.typeName.name];
-          if (
-            maybeEumDeclaration &&
-            maybeEumDeclaration.type === 'TSEnumDeclaration'
-          ) {
-            const memberType = maybeEumDeclaration.members[0].initializer
-              ? maybeEumDeclaration.members[0].initializer.type
-                  .replace('NumericLiteral', 'NumberTypeAnnotation')
-                  .replace('StringLiteral', 'StringTypeAnnotation')
-              : 'StringTypeAnnotation';
-            if (
-              memberType === 'NumberTypeAnnotation' ||
-              memberType === 'StringTypeAnnotation'
-            ) {
-              return wrapNullable(nullable, {
-                type: 'EnumDeclaration',
-                memberType: memberType,
-              });
-            } else {
-              throw new UnsupportedEnumDeclarationParserError(
-                hasteModuleName,
-                typeAnnotation,
-                memberType,
-                language,
-              );
-            }
-          }
-          throw new UnsupportedGenericParserError(
+          return translateDefault(
             hasteModuleName,
             typeAnnotation,
+            types,
+            nullable,
             parser,
           );
         }
