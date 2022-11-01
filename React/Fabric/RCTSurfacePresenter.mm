@@ -82,7 +82,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   butter::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
   RCTImageLoader *_imageLoader;
-  RuntimeExecutor _runtimeExecutor;
 }
 
 - (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
