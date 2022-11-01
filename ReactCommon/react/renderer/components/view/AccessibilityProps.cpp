@@ -224,6 +224,7 @@ void AccessibilityProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityMagicTap, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityEscape, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityAction, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityUnit, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(
         importantForAccessibility, ImportantForAccessibility::Auto);
     RAW_SET_PROP_SWITCH_CASE(testId, "testID", std::string{""});

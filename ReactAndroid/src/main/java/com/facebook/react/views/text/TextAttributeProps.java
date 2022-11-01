@@ -11,7 +11,6 @@ import android.os.Build;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.LayoutDirection;
-import android.util.Log;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -105,7 +104,7 @@ public class TextAttributeProps {
   protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
   protected boolean mIsAccessibilityUnitSet = false;
-  protected String mAccessibilityUnit = null;
+  protected String mAccessibilityUnit = "";
   protected boolean mIsAccessibilityLink = false;
 
   protected int mFontStyle = UNSET;
@@ -147,7 +146,6 @@ public class TextAttributeProps {
 
     // TODO T83483191: Review constants that are not being set!
     Iterator<MapBuffer.Entry> iterator = props.iterator();
-    Log.w("TESTING::TextAttributeProps", "props: " + (props));
     while (iterator.hasNext()) {
       MapBuffer.Entry entry = iterator.next();
       switch (entry.getKey()) {
@@ -609,7 +607,6 @@ public class TextAttributeProps {
   }
 
   private void setAccessibilityUnit(@Nullable String accessibilityUnit) {
-    Log.w("TESTING::TextAttributeProps", "accessibilityUnit: " + (accessibilityUnit));
     if (accessibilityUnit != null) {
       mIsAccessibilityUnitSet = true;
       mAccessibilityUnit = accessibilityUnit;

@@ -45,6 +45,7 @@ class AccessibilityProps {
       AccessibilityLiveRegion::None};
   AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
   std::string accessibilityRole{""};
+  std::string accessibilityUnit{""};
   std::string accessibilityHint{""};
   std::string accessibilityLanguage{""};
   AccessibilityValue accessibilityValue;
