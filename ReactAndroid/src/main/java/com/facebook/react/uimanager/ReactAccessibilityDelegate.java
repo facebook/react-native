@@ -90,6 +90,36 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     Message msg = mHandler.obtainMessage(SEND_EVENT, host);
     mHandler.sendMessageDelayed(msg, TIMEOUT_SEND_ACCESSIBILITY_EVENT);
   }
+  /**
+   * These roles are defined by Google's TalkBack screen reader, and this list should be kept up to
+   * date with their implementation. Details can be seen in their source code here:
+   *
+   * <p>https://github.com/google/talkback/blob/master/utils/src/main/java/Unit.java
+   */
+  public enum AccessibilityUnit {
+    NONE,
+    VERBATIM;
+
+    public static String getValue(AccessibilityUnit role) {
+      switch (role) {
+        case VERBATIM:
+          return "android.type.verbatim";
+        case NONE:
+          return "android.type.text";
+        default:
+          throw new IllegalArgumentException("Invalid accessibility role value: " + role);
+      }
+    }
+
+    public static AccessibilityUnit fromValue(@Nullable String value) {
+      for (AccessibilityUnit unit : AccessibilityUnit.values()) {
+        if (unit.name().equalsIgnoreCase(value)) {
+          return unit;
+        }
+      }
+      throw new IllegalArgumentException("Invalid accessibility unit value: " + value);
+    }
+  }
 
   /**
    * These roles are defined by Google's TalkBack screen reader, and this list should be kept up to

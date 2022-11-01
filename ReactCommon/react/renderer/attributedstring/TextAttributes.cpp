@@ -99,8 +99,8 @@ void TextAttributes::apply(TextAttributes textAttributes) {
       ? textAttributes.accessibilityRole
       : accessibilityRole;
   accessibilityUnit = textAttributes.accessibilityUnit.has_value()
-      ? "first value"
-      : "second value";
+      ? textAttributes.accessibilityUnit
+      : accessibilityUnit;
 }
 
 #pragma mark - Operators

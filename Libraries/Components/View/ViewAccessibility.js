@@ -12,6 +12,7 @@
 
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 
+export type AccessibilityUnit = 'none' | 'verbatim';
 // This must be kept in sync with the AccessibilityRolesMask in RCTViewManager.m
 export type AccessibilityRole =
   | 'none'

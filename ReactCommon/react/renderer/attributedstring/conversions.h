@@ -22,6 +22,7 @@
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/conversions.h>
+#include <sys/errno.h>
 #include <cmath>
 
 #ifdef ANDROID
@@ -565,7 +566,21 @@ inline std::string toString(const TextDecorationStyle &textDecorationStyle) {
   return "solid";
 }
 
+inline std::string toString(const AccessibilityUnit &accessibilityUnit) {
+  LOG(ERROR) << "TESTING:: some test";
+  switch (accessibilityUnit) {
+    case AccessibilityUnit::None:
+      return "none";
+    case AccessibilityUnit::Verbatim:
+      return "verbatim";
+  }
+  LOG(ERROR) << "Unsupported AccessibilityUnit value";
+  react_native_assert(false);
+  return "none";
+}
+
 inline std::string toString(const AccessibilityRole &accessibilityRole) {
+  LOG(ERROR) << "TESTING:: some test";
   switch (accessibilityRole) {
     case AccessibilityRole::None:
       return "none";
@@ -629,6 +644,32 @@ inline std::string toString(const AccessibilityRole &accessibilityRole) {
   react_native_assert(false);
   // sane default for prod
   return "none";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    AccessibilityUnit &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = AccessibilityUnit::None;
+    } else if (string == "verbatim") {
+      result = AccessibilityUnit::Verbatim;
+    } else {
+      LOG(ERROR) << "Unsupported AccessibilityUnit value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = AccessibilityUnit::None;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported AccessibilityUnit type";
+  react_native_assert(false);
+  // sane default for prod
+  result = AccessibilityUnit::None;
 }
 
 inline void fromRawValue(
@@ -955,13 +996,14 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "layoutDirection", toString(*textAttributes.layoutDirection));
   }
+  LOG(ERROR) << "TESTING:: triggered ";
   if (textAttributes.accessibilityRole.has_value()) {
     _textAttributes(
         "accessibilityRole", toString(*textAttributes.accessibilityRole));
   }
   if (textAttributes.accessibilityUnit.has_value()) {
     _textAttributes(
-        "accessibilityUnit", "random value");
+        "accessibilityUnit", toString(*textAttributes.accessibilityUnit));
   }
   return _textAttributes;
 }
@@ -1184,9 +1226,10 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
     builder.putString(
         TA_KEY_ACCESSIBILITY_ROLE, toString(*textAttributes.accessibilityRole));
   }
+  LOG(ERROR) << "TESTING:: triggered ";
   if (textAttributes.accessibilityUnit.has_value()) {
     builder.putString(
-        TA_KEY_ACCESSIBILITY_UNIT, "random string value");
+        TA_KEY_ACCESSIBILITY_UNIT, toString(*textAttributes.accessibilityUnit));
   }
   return builder.build();
 }

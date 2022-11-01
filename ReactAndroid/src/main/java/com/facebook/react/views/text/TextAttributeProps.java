@@ -104,7 +104,7 @@ public class TextAttributeProps {
   protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
   protected boolean mIsAccessibilityUnitSet = false;
-  protected String mAccessibilityUnit = "";
+  protected @Nullable ReactAccessibilityDelegate.AccessibilityUnit mAccessibilityUnit = "";
   protected boolean mIsAccessibilityLink = false;
 
   protected int mFontStyle = UNSET;
@@ -609,7 +609,8 @@ public class TextAttributeProps {
   private void setAccessibilityUnit(@Nullable String accessibilityUnit) {
     if (accessibilityUnit != null) {
       mIsAccessibilityUnitSet = true;
-      mAccessibilityUnit = accessibilityUnit;
+      mAccessibilityUnit =
+          ReactAccessibilityDelegate.AccessibilityUnit.fromValue(accessibilityUnit);
     }
   }
 

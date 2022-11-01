@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityUnit;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
@@ -248,6 +249,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       return;
     }
     view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
+  }
+
+  @ReactProp(name = ViewProps.ACCESSIBILITY_UNIT)
+  public void setAccessibilityUnit(@NonNull T view, @Nullable String accessibilityUnit) {
+    if (accessibilityUnit == null) {
+      return;
+    }
+    view.setTag(R.id.accessibility_unit, AccessibilityUnit.fromValue(accessibilityUnit));
   }
 
   @Override
