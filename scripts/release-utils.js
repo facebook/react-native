@@ -97,7 +97,7 @@ function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
 
 function generateiOSArtifacts(
   jsiFolder,
-  hermesEngineSourceFolder,
+  hermesUtilsFolder,
   hermesCoreSourceFolder,
   buildType,
   releaseVersion,
@@ -106,19 +106,16 @@ function generateiOSArtifacts(
   pushd(`${hermesCoreSourceFolder}`);
 
   //Generating iOS Artifacts
-  console.log('BUILD MAC FRAMEWORK');
   exec(
-    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesEngineSourceFolder}/utils/build-mac-framework.sh`,
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesUtilsFolder}/build-mac-framework.sh`,
   );
 
-  console.log('BUILD IOS FRAMEWORK');
   exec(
-    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesEngineSourceFolder}/utils/build-ios-framework.sh`,
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesUtilsFolder}/build-ios-framework.sh`,
   );
 
-  console.log('BUILD APPLE FRAMEWORK');
   exec(
-    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesEngineSourceFolder}/utils/build-apple-framework.sh`,
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesUtilsFolder}/build-apple-framework.sh`,
   );
 
   popd();

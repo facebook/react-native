@@ -87,8 +87,7 @@ if (argv.target === 'RNTester') {
 
     // remember that for this to be successful
     // you should have run bundle install once
-    // in your local setup
-    // also: if I'm on release branch, I pick the
+    // in your local setup - also: if I'm on release branch, I pick the
     // hermes ref from the hermes ref file (see hermes-engine.podspec)
     exec(
       `cd packages/rn-tester && USE_HERMES=${
@@ -127,12 +126,14 @@ if (argv.target === 'RNTester') {
     // if everything succeeded so far, we can launch Metro and the app
     // start the Metro server in a separate window
     launchPackagerInSeparateWindow();
-    // just to make sure that the Android up won't have troubles finding the Metro server
-    exec('adb reverse tcp:8081 tcp:8081');
+
     // launch the app
     exec(
       'adb shell am start -n com.facebook.react.uiapp/com.facebook.react.uiapp.RNTesterActivity',
     );
+
+    // just to make sure that the Android up won't have troubles finding the Metro server
+    exec('adb reverse tcp:8081 tcp:8081');
   }
 } else {
   console.info("We're going to test a fresh new RN project");
@@ -161,8 +162,8 @@ if (argv.target === 'RNTester') {
   // this is needed to generate the Android artifacts correctly
   exec(`node scripts/set-rn-version.js --to-version ${releaseVersion}`).code;
 
-  // Generate native files (Android only for now)
-  // generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
+  // Generate native files for Android
+  generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
 
   // create locally the node module
   exec('npm pack');
@@ -186,11 +187,9 @@ if (argv.target === 'RNTester') {
     cd('ios');
     exec('bundle install');
 
-    console.info('\n\nGENERATING THE STUFF!\n\n');
-
     // I need to tell it where the hermes stuff lives
     const jsiFolder = `${repoRoot}/ReactCommon/jsi`;
-    const hermesEngineSourceFolder = `${repoRoot}/sdks/hermes-engine`;
+    const hermesUtilsFolder = `${repoRoot}/sdks/hermes-engine/utils`;
     // TODO: need to try a full cleanup and see if the folder is there of if I need to download it
     const hermesCoreSourceFolder = `${repoRoot}/sdks/hermes`;
 
@@ -203,28 +202,12 @@ if (argv.target === 'RNTester') {
 
     const tarballOutputPath = generateiOSArtifacts(
       jsiFolder,
-      hermesEngineSourceFolder,
+      hermesUtilsFolder,
       hermesCoreSourceFolder,
       buildType,
       releaseVersion,
       localMavenPath,
     );
-
-    console.info(
-      'this is where I generated the tarball (last element)',
-      hermesEngineSourceFolder,
-      hermesCoreSourceFolder,
-      buildType,
-      releaseVersion,
-      localMavenPath,
-      tarballOutputPath, // /private/tmp/maven-local/hermes-runtime-darwin-debug-v1000.0.0-20221031-1736.tar.gz
-    );
-
-    // TODO: verify if I actually need to do the renaming
-    // final name needs to be hermes-ios-debug.tar.gz
-    // so we need to do something like
-    // mv <folder>/hermes-runtime-darwin-debug-*.tar.gz <same-folder>/hermes-ios-debug.tar.gz
-    // see this line for reference: https://github.com/facebook/react-native/blob/main/.circleci/config.yml#L1412
 
     // set HERMES_ENGINE_TARBALL_PATH to point to the local artifacts I just created
     exec(
