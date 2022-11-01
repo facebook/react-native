@@ -54,32 +54,16 @@ const QuickPerformanceLogger = {
 
   markerAnnotate(
     markerId: number,
-    annotationKey: string,
-    annotationValue: string,
-    instanceKey: number = DUMMY_INSTANCE_KEY,
-  ): void {
-    if (global.nativeQPLMarkerAnnotate) {
-      global.nativeQPLMarkerAnnotate(
-        markerId,
-        instanceKey,
-        annotationKey,
-        annotationValue,
-      );
-    }
-  },
-
-  markerAnnotateWithMap(
-    markerId: number,
     annotations: AnnotationsMap,
     instanceKey: number = DUMMY_INSTANCE_KEY,
   ): void {
     if (global.nativeQPLMarkerAnnotateWithMap) {
       global.nativeQPLMarkerAnnotateWithMap(markerId, annotations, instanceKey);
     } else if (global.nativeQPLMarkerAnnotate) {
-      for (var type of ['string']) {
-        var keyValsOfType = annotations[type];
-        if (keyValsOfType !== null && keyValsOfType !== undefined) {
-          for (var annotationKey of Object.keys(keyValsOfType)) {
+      for (const type of ['string']) {
+        const keyValsOfType = annotations[type];
+        if (keyValsOfType != null) {
+          for (const annotationKey of Object.keys(keyValsOfType)) {
             global.nativeQPLMarkerAnnotate(
               markerId,
               instanceKey,
