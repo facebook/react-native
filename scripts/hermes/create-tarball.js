@@ -18,7 +18,7 @@ const path = require('path');
  * Must be invoked after Hermes has been built.
  */
 const yargs = require('yargs');
-const {createHermesTarball} = require('./hermes-utils');
+const {createHermesPrebuiltArtifactsTarball} = require('./hermes-utils');
 
 let argv = yargs
   .option('i', {
@@ -60,7 +60,7 @@ async function main() {
     }
   }
 
-  const tarballOutputPath = createHermesTarball(
+  const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
     hermesDir,
     buildType,
     releaseVersion,

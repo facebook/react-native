@@ -275,6 +275,42 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               ],
             },
           },
+          {
+            name: 'getEnums',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'enumInt',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'enumFloat',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'enumString',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'StringTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
         ],
       },
       moduleNames: ['SampleTurboModule'],

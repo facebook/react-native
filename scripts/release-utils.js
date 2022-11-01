@@ -33,15 +33,8 @@ function saveFilesToRestore(tmpPublishingFolder) {
 
 function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
   // -------- Generating Android Artifacts
-  env.REACT_NATIVE_SKIP_PREFAB = true;
-  if (exec('./gradlew :ReactAndroid:installArchives').code) {
-    echo('Could not generate artifacts');
-    exit(1);
-  }
-
-  // -------- Generating the Hermes Engine Artifacts
-  env.REACT_NATIVE_HERMES_SKIP_PREFAB = true;
-  if (exec('./gradlew :ReactAndroid:hermes-engine:installArchives').code) {
+  echo('Generating Android artifacts inside /tmp/maven-local');
+  if (exec('./gradlew publishAllToMavenTempLocal').code) {
     echo('Could not generate artifacts');
     exit(1);
   }
@@ -63,12 +56,12 @@ function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
     if (
       !test(
         '-e',
-        `./android/com/facebook/react/react-native/${releaseVersion}/${name}`,
+        `/tmp/maven-local/com/facebook/react/react-native/${releaseVersion}/${name}`,
       )
     ) {
       echo(
         `Failing as expected file: \n\
-      android/com/facebook/react/react-native/${releaseVersion}/${name}\n\
+      /tmp/maven-local/com/facebook/react/react-native/${releaseVersion}/${name}\n\
       was not correctly generated.`,
       );
       exit(1);
@@ -76,7 +69,7 @@ function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
   });
 }
 
-function publishAndroidArtifactsToMaven(isNightly) {
+function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
   // -------- Publish every artifact to Maven Central
   // The GPG key is base64 encoded on CircleCI
   let buff = Buffer.from(env.ORG_GRADLE_PROJECT_SIGNING_KEY_ENCODED, 'base64');
@@ -86,12 +79,11 @@ function publishAndroidArtifactsToMaven(isNightly) {
     exit(1);
   }
 
-  if (!isNightly) {
+  // We want to gate ourselves against accidentally publishing a 1.x or a 1000.x on
+  // maven central which will break the semver for our artifacts.
+  if (!isNightly && releaseVersion.startsWith('0.')) {
     // -------- For stable releases, we also need to close and release the staging repository.
-    // TODO(ncor): Remove the --dry-run before RC0
-    if (
-      exec('./gradlew closeAndReleaseSonatypeStagingRepository --dry-run').code
-    ) {
+    if (exec('./gradlew closeAndReleaseSonatypeStagingRepository').code) {
       echo(
         'Failed to close and release the staging repository on Sonatype (Maven Central)',
       );

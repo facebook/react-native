@@ -14,6 +14,7 @@
 const {
   emitBoolean,
   emitDouble,
+  emitFloat,
   emitNumber,
   emitInt32,
   emitObject,
@@ -422,6 +423,32 @@ describe('emitObject', () => {
       };
 
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('emitFloat', () => {
+    describe('when nullable is true', () => {
+      it('returns nullable type annotation', () => {
+        const result = emitFloat(true);
+        const expected = {
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: {
+            type: 'FloatTypeAnnotation',
+          },
+        };
+
+        expect(result).toEqual(expected);
+      });
+    });
+    describe('when nullable is false', () => {
+      it('returns non nullable type annotation', () => {
+        const result = emitFloat(false);
+        const expected = {
+          type: 'FloatTypeAnnotation',
+        };
+
+        expect(result).toEqual(expected);
+      });
     });
   });
 });

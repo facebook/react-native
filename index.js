@@ -51,7 +51,6 @@ import typeof * as AnimatedModule from './Libraries/Animated/Animated';
 import typeof Appearance from './Libraries/Utilities/Appearance';
 import typeof AppRegistry from './Libraries/ReactNative/AppRegistry';
 import typeof AppState from './Libraries/AppState/AppState';
-import typeof AsyncStorage from './Libraries/Storage/AsyncStorage';
 import typeof BackHandler from './Libraries/Utilities/BackHandler';
 import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
@@ -252,16 +251,6 @@ module.exports = {
   get AppState(): AppState {
     return require('./Libraries/AppState/AppState');
   },
-  // $FlowFixMe[value-as-type]
-  get AsyncStorage(): AsyncStorage {
-    warnOnce(
-      'async-storage-moved',
-      'AsyncStorage has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. " +
-        'See https://github.com/react-native-async-storage/async-storage',
-    );
-    return require('./Libraries/Storage/AsyncStorage');
-  },
   get BackHandler(): BackHandler {
     return require('./Libraries/Utilities/BackHandler');
   },
@@ -433,44 +422,44 @@ module.exports = {
   },
   // Deprecated Prop Types
   get ColorPropType(): $FlowFixMe {
-    invariant(
-      false,
-      'ColorPropType has been removed from React Native, along with all ' +
+    console.error(
+      'ColorPropType will be removed from React Native, along with all ' +
         'other PropTypes. We recommend that you migrate away from PropTypes ' +
         'and switch to a type system like TypeScript. If you need to ' +
         'continue using ColorPropType, migrate to the ' +
         "'deprecated-react-native-prop-types' package.",
     );
+    return require('deprecated-react-native-prop-types').ColorPropType;
   },
   get EdgeInsetsPropType(): $FlowFixMe {
-    invariant(
-      false,
-      'EdgeInsetsPropType has been removed from React Native, along with all ' +
+    console.error(
+      'EdgeInsetsPropType will be removed from React Native, along with all ' +
         'other PropTypes. We recommend that you migrate away from PropTypes ' +
         'and switch to a type system like TypeScript. If you need to ' +
         'continue using EdgeInsetsPropType, migrate to the ' +
         "'deprecated-react-native-prop-types' package.",
     );
+    return require('deprecated-react-native-prop-types').EdgeInsetsPropType;
   },
   get PointPropType(): $FlowFixMe {
-    invariant(
-      false,
-      'PointPropType has been removed from React Native, along with all ' +
+    console.error(
+      'PointPropType will be removed from React Native, along with all ' +
         'other PropTypes. We recommend that you migrate away from PropTypes ' +
         'and switch to a type system like TypeScript. If you need to ' +
         'continue using PointPropType, migrate to the ' +
         "'deprecated-react-native-prop-types' package.",
     );
+    return require('deprecated-react-native-prop-types').PointPropType;
   },
   get ViewPropTypes(): $FlowFixMe {
-    invariant(
-      false,
-      'ViewPropTypes has been removed from React Native, along with all ' +
+    console.error(
+      'ViewPropTypes will be removed from React Native, along with all ' +
         'other PropTypes. We recommend that you migrate away from PropTypes ' +
         'and switch to a type system like TypeScript. If you need to ' +
         'continue using ViewPropTypes, migrate to the ' +
         "'deprecated-react-native-prop-types' package.",
     );
+    return require('deprecated-react-native-prop-types').ViewPropTypes;
   },
 };
 
@@ -758,6 +747,21 @@ if (__DEV__) {
         'MaskedViewIOS has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/react-native-masked-view' instead of 'react-native'. " +
           'See https://github.com/react-native-masked-view/masked-view',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access AsyncStorage. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access AsyncStorage. */
+  Object.defineProperty(module.exports, 'AsyncStorage', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'AsyncStorage has been removed from react-native core. ' +
+          "It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. " +
+          'See https://github.com/react-native-async-storage/async-storage',
       );
     },
   });

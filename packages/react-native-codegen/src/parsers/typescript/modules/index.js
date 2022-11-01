@@ -26,22 +26,24 @@ import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 const {nullGuard} = require('../../parsers-utils');
 
-const {throwIfMoreThanOneModuleRegistryCalls} = require('../../error-utils');
-const {visit} = require('../../utils');
 const {
-  resolveTypeAnnotation,
-  getTypes,
-  isModuleRegistryCall,
-} = require('../utils.js');
+  throwIfMoreThanOneModuleRegistryCalls,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+} = require('../../error-utils');
+const {visit, isModuleRegistryCall} = require('../../utils');
+const {resolveTypeAnnotation, getTypes} = require('../utils.js');
 const {
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   emitMixedTypeAnnotation,
+  emitUnionTypeAnnotation,
+  translateDefault,
 } = require('../../parsers-commons');
 const {
   emitBoolean,
   emitDouble,
+  emitFloat,
   emitFunction,
   emitNumber,
   emitInt32,
@@ -58,9 +60,6 @@ const {
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
-  UnsupportedFunctionParamTypeAnnotationParserError,
-  UnsupportedEnumDeclarationParserError,
-  UnsupportedUnionTypeAnnotationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
@@ -80,7 +79,11 @@ const {
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
 } = require('../../error-utils');
 
+const {TypeScriptParser} = require('../parser');
+const {getKeyName} = require('../../parsers-commons');
+
 const language = 'TypeScript';
+const parser = new TypeScriptParser();
 
 function translateArrayTypeAnnotation(
   hasteModuleName: string,
@@ -205,7 +208,7 @@ function translateTypeAnnotation(
         throw new UnsupportedGenericParserError(
           hasteModuleName,
           typeAnnotation,
-          language,
+          parser,
         );
       }
     }
@@ -250,47 +253,19 @@ function translateTypeAnnotation(
           return emitDouble(nullable);
         }
         case 'Float': {
-          return wrapNullable(nullable, {
-            type: 'FloatTypeAnnotation',
-          });
+          return emitFloat(nullable);
         }
         case 'UnsafeObject':
         case 'Object': {
           return emitObject(nullable);
         }
         default: {
-          const maybeEumDeclaration = types[typeAnnotation.typeName.name];
-          if (
-            cxxOnly &&
-            maybeEumDeclaration &&
-            maybeEumDeclaration.type === 'TSEnumDeclaration'
-          ) {
-            const memberType = maybeEumDeclaration.members[0].initializer
-              ? maybeEumDeclaration.members[0].initializer.type
-                  .replace('NumericLiteral', 'NumberTypeAnnotation')
-                  .replace('StringLiteral', 'StringTypeAnnotation')
-              : 'StringTypeAnnotation';
-            if (
-              memberType === 'NumberTypeAnnotation' ||
-              memberType === 'StringTypeAnnotation'
-            ) {
-              return wrapNullable(nullable, {
-                type: 'EnumDeclaration',
-                memberType: memberType,
-              });
-            } else {
-              throw new UnsupportedEnumDeclarationParserError(
-                hasteModuleName,
-                typeAnnotation,
-                memberType,
-                language,
-              );
-            }
-          }
-          throw new UnsupportedGenericParserError(
+          return translateDefault(
             hasteModuleName,
             typeAnnotation,
-            language,
+            types,
+            nullable,
+            parser,
           );
         }
       }
@@ -303,7 +278,10 @@ function translateTypeAnnotation(
           .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
             property => {
               return tryParse(() => {
-                if (property.type !== 'TSPropertySignature') {
+                if (
+                  property.type !== 'TSPropertySignature' &&
+                  property.type !== 'TSIndexSignature'
+                ) {
                   throw new UnsupportedObjectPropertyTypeAnnotationParserError(
                     hasteModuleName,
                     property,
@@ -312,8 +290,15 @@ function translateTypeAnnotation(
                   );
                 }
 
-                const {optional = false, key} = property;
-
+                const {optional = false} = property;
+                const name = getKeyName(property, hasteModuleName, language);
+                if (property.type === 'TSIndexSignature') {
+                  return {
+                    name,
+                    optional,
+                    typeAnnotation: emitObject(nullable),
+                  };
+                }
                 const [propertyTypeAnnotation, isPropertyNullable] =
                   unwrapNullable(
                     translateTypeAnnotation(
@@ -340,7 +325,7 @@ function translateTypeAnnotation(
                   );
                 } else {
                   return {
-                    name: key.name,
+                    name,
                     optional,
                     typeAnnotation: wrapNullable(
                       isPropertyNullable,
@@ -388,29 +373,12 @@ function translateTypeAnnotation(
     }
     case 'TSUnionType': {
       if (cxxOnly) {
-        // Remap literal names
-        const unionTypes = typeAnnotation.types
-          .map(item =>
-            item.literal
-              ? item.literal.type
-                  .replace('NumericLiteral', 'NumberTypeAnnotation')
-                  .replace('StringLiteral', 'StringTypeAnnotation')
-              : 'ObjectTypeAnnotation',
-          )
-          .filter((value, index, self) => self.indexOf(value) === index);
-        // Only support unionTypes of the same kind
-        if (unionTypes.length > 1) {
-          throw new UnsupportedUnionTypeAnnotationParserError(
-            hasteModuleName,
-            typeAnnotation,
-            unionTypes,
-            language,
-          );
-        }
-        return wrapNullable(nullable, {
-          type: 'UnionTypeAnnotation',
-          memberType: unionTypes[0],
-        });
+        return emitUnionTypeAnnotation(
+          nullable,
+          hasteModuleName,
+          typeAnnotation,
+          language,
+        );
       }
       // Fallthrough
     }
@@ -465,23 +433,15 @@ function translateFunctionTypeAnnotation(
           ),
         );
 
-      if (paramTypeAnnotation.type === 'VoidTypeAnnotation') {
-        throw new UnsupportedFunctionParamTypeAnnotationParserError(
+      if (
+        paramTypeAnnotation.type === 'VoidTypeAnnotation' ||
+        paramTypeAnnotation.type === 'PromiseTypeAnnotation'
+      ) {
+        return throwIfUnsupportedFunctionParamTypeAnnotationParserError(
           hasteModuleName,
           typeScriptParam.typeAnnotation,
           paramName,
-          'void',
-          language,
-        );
-      }
-
-      if (paramTypeAnnotation.type === 'PromiseTypeAnnotation') {
-        throw new UnsupportedFunctionParamTypeAnnotationParserError(
-          hasteModuleName,
-          typeScriptParam.typeAnnotation,
-          paramName,
-          'Promise',
-          language,
+          paramTypeAnnotation.type,
         );
       }
 

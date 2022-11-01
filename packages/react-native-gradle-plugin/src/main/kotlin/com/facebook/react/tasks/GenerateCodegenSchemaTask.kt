@@ -63,7 +63,6 @@ abstract class GenerateCodegenSchemaTask : Exec() {
   }
 
   internal fun setupCommandLine() {
-    // TODO: restore the --platform android parameters as soon as we publish the codegen package.
     commandLine(
         windowsAwareCommandLine(
             *nodeExecutableAndArgs.get().toTypedArray(),
@@ -72,8 +71,8 @@ abstract class GenerateCodegenSchemaTask : Exec() {
                 .get()
                 .asFile
                 .absolutePath,
-            // "--platform",
-            // "android",
+            "--platform",
+            "android",
             generatedSchemaFile.get().asFile.absolutePath,
             jsRootDir.asFile.get().absolutePath,
         ))

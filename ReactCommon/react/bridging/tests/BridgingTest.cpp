@@ -431,6 +431,8 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsFromJs<std::string>));
   EXPECT_TRUE((bridging::supportsFromJs<std::string, jsi::String>));
   EXPECT_TRUE((bridging::supportsFromJs<std::string, jsi::String &>));
+  EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array>));
+  EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array &>));
   EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array>));
   EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array &>));
   EXPECT_TRUE(
@@ -453,6 +455,8 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_FALSE((bridging::supportsFromJs<double, jsi::Object &>));
   EXPECT_FALSE((bridging::supportsFromJs<std::string, jsi::Object>));
   EXPECT_FALSE((bridging::supportsFromJs<std::string, jsi::Object &>));
+  EXPECT_FALSE((bridging::supportsFromJs<std::set<int>, jsi::String>));
+  EXPECT_FALSE((bridging::supportsFromJs<std::set<int>, jsi::String &>));
   EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String>));
   EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String &>));
 
@@ -494,6 +498,8 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsToJs<double>));
   EXPECT_TRUE((bridging::supportsToJs<std::string>));
   EXPECT_TRUE((bridging::supportsToJs<std::string, jsi::String>));
+  EXPECT_TRUE((bridging::supportsToJs<std::set<int>>));
+  EXPECT_TRUE((bridging::supportsToJs<std::set<int>, jsi::Array>));
   EXPECT_TRUE((bridging::supportsToJs<std::vector<int>>));
   EXPECT_TRUE((bridging::supportsToJs<std::vector<int>, jsi::Array>));
   EXPECT_TRUE((bridging::supportsToJs<std::map<std::string, int>>));

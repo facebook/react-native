@@ -42,9 +42,9 @@ abstract class BundleHermesCTask : DefaultTask() {
 
   @get:Input abstract val nodeExecutableAndArgs: ListProperty<String>
 
-  @get:Input abstract val cliPath: Property<String>
+  @get:InputFile abstract val cliFile: RegularFileProperty
 
-  @get:Input abstract val composeSourceMapsPath: Property<String>
+  @get:Internal abstract val reactNativeDir: DirectoryProperty
 
   @get:Input abstract val bundleCommand: Property<String>
 
@@ -90,19 +90,23 @@ abstract class BundleHermesCTask : DefaultTask() {
 
     if (hermesEnabled.get()) {
       val detectedHermesCommand = detectOSAwareHermesCommand(root.get().asFile, hermesCommand.get())
-      val bytecodeTempFile = File("${bundleFile}.hbc")
+      val bytecodeFile = File("${bundleFile}.hbc")
       val outputSourceMap = resolveOutputSourceMap(bundleAssetFilename)
       val compilerSourceMap = resolveCompilerSourceMap(bundleAssetFilename)
 
-      val hermesCommand = getHermescCommand(detectedHermesCommand, bundleFile, packagerSourceMap)
+      val hermesCommand = getHermescCommand(detectedHermesCommand, bytecodeFile, bundleFile)
       runCommand(hermesCommand)
-      bytecodeTempFile.moveTo(bundleFile)
+      bytecodeFile.moveTo(bundleFile)
 
       if (hermesFlags.get().contains("-output-source-map")) {
-        val hermesTempSourceMapFile = File("$bytecodeTempFile.map")
+        val hermesTempSourceMapFile = File("$bytecodeFile.map")
         hermesTempSourceMapFile.moveTo(compilerSourceMap)
+
+        val reactNativeDir = reactNativeDir.get().asFile
+        val composeScriptFile = File(reactNativeDir, "scripts/compose-source-maps.js")
         val composeSourceMapsCommand =
-            getComposeSourceMapsCommand(packagerSourceMap, compilerSourceMap, outputSourceMap)
+            getComposeSourceMapsCommand(
+                composeScriptFile, packagerSourceMap, compilerSourceMap, outputSourceMap)
         runCommand(composeSourceMapsCommand)
       }
     }
@@ -132,7 +136,7 @@ abstract class BundleHermesCTask : DefaultTask() {
       windowsAwareCommandLine(
           buildList {
             addAll(nodeExecutableAndArgs.get())
-            add(cliPath.get())
+            add(cliFile.get().asFile.absolutePath)
             add(bundleCommand.get())
             add("--platform")
             add("android")
@@ -159,25 +163,26 @@ abstract class BundleHermesCTask : DefaultTask() {
 
   internal fun getHermescCommand(
       hermesCommand: String,
-      bundleFile: File,
-      outputFile: File
+      bytecodeFile: File,
+      bundleFile: File
   ): List<Any> =
       windowsAwareCommandLine(
           hermesCommand,
           "-emit-binary",
           "-out",
-          outputFile.absolutePath,
+          bytecodeFile.absolutePath,
           bundleFile.absolutePath,
           *hermesFlags.get().toTypedArray())
 
   internal fun getComposeSourceMapsCommand(
+      composeScript: File,
       packagerSourceMap: File,
       compilerSourceMap: File,
       outputSourceMap: File
   ): List<Any> =
       windowsAwareCommandLine(
           *nodeExecutableAndArgs.get().toTypedArray(),
-          composeSourceMapsPath.get(),
+          composeScript.absolutePath,
           packagerSourceMap.toString(),
           compilerSourceMap.toString(),
           "-o",

@@ -10,7 +10,6 @@ package com.facebook.react.devsupport;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.react.common.SurfaceDelegateFactory;
-import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
@@ -61,9 +60,6 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory) {
     if (!enableOnCreate) {
       return new DisabledDevSupportManager();
-    }
-    if (!ReactBuildConfig.DEBUG) {
-      return new PerftestDevSupportManager(applicationContext);
     }
     try {
       // ProGuard is surprisingly smart in this case and will keep a class if it detects a call to

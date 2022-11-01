@@ -154,6 +154,17 @@ function translateReturnTypeToKind(
       return 'StringKind';
     case 'BooleanTypeAnnotation':
       return 'BooleanKind';
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return 'NumberKind';
+        case 'StringTypeAnnotation':
+          return 'StringKind';
+        default:
+          throw new Error(
+            `Unknown enum prop type for returning value, found: ${realTypeAnnotation.type}"`,
+          );
+      }
     case 'NumberTypeAnnotation':
       return 'NumberKind';
     case 'DoubleTypeAnnotation':
@@ -212,6 +223,17 @@ function translateParamTypeToJniType(
       return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return !isRequired ? 'Ljava/lang/Double;' : 'D';
+        case 'StringTypeAnnotation':
+          return 'Ljava/lang/String;';
+        default:
+          throw new Error(
+            `Unknown enum prop type for method arg, found: ${realTypeAnnotation.type}"`,
+          );
+      }
     case 'NumberTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
@@ -267,6 +289,17 @@ function translateReturnTypeToJniType(
       return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
       return nullable ? 'Ljava/lang/Boolean;' : 'Z';
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return nullable ? 'Ljava/lang/Double;' : 'D';
+        case 'StringTypeAnnotation':
+          return 'Ljava/lang/String;';
+        default:
+          throw new Error(
+            `Unknown enum prop type for method return type, found: ${realTypeAnnotation.type}"`,
+          );
+      }
     case 'NumberTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':

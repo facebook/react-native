@@ -46,7 +46,9 @@ elsif File.exists?(hermestag_file) && isInCI
   source[:git] = git
   source[:tag] = hermestag
 else
-  source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-#{build_type.to_s}-v#{version}.tar.gz"
+  # Sample url from Maven:
+  # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.71.0/react-native-artifacts-0.71.0-hermes-ios-debug.tar.gz
+  source[:http] = "https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
 end
 
 Pod::Spec.new do |spec|

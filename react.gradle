@@ -7,6 +7,24 @@
 
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.internal.jvm.Jvm
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
+import org.gradle.internal.logging.text.StyledTextOutput.Style
+
+def out = services.get(StyledTextOutputFactory).create("ouput")
+out.style(Style.Info)
+    .text('##############################')
+    .text('\n\n')
+    .text('Using react.gradle in your project is deprecated! You should move to "apply plugin: com.facebook.react"')
+    .text('\n')
+    .text('react.gradle is going to be removed in a future React Native project and your project will not build anymore.')
+    .text('\n')
+    .text('You can use the template as a reference:')
+    .text('\n')
+    .text('https://github.com/facebook/react-native/blob/main/template/android/app/build.gradle')
+    .text('\n\n')
+    .text('##############################')
+    .println('')
 
 def config = project.hasProperty("react") ? project.react : [:];
 

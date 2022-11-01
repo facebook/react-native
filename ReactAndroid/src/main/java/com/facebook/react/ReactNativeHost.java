@@ -190,4 +190,12 @@ public abstract class ReactNativeHost {
    * default ones, you'll want to include more packages here.
    */
   protected abstract List<ReactPackage> getPackages();
+
+  /**
+   * Returns the {@link JSEngineResolutionAlgorithm} to be used when loading the JS engine. If null,
+   * will try to load JSC first and fallback to Hermes if JSC is not available.
+   */
+  protected @Nullable JSEngineResolutionAlgorithm getJSEngineResolutionAlgorithm() {
+    return null;
+  }
 }

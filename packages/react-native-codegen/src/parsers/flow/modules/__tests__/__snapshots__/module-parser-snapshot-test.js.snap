@@ -123,6 +123,80 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             }
           },
           {
+            'name': 'getMap',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'b',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'GenericObjectTypeAnnotation'
+                    }
+                  }
+                ]
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'GenericObjectTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getAnotherMap',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'key',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'GenericObjectTypeAnnotation'
+                    }
+                  }
+                ]
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'key',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'GenericObjectTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
             'name': 'getUnion',
             'optional': false,
             'typeAnnotation': {
@@ -205,7 +279,52 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
       'type': 'NativeModule',
       'aliases': {},
       'spec': {
-        'properties': []
+        'properties': [
+          {
+            'name': 'getEnums',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'quality',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'resolution',
+                  'optional': true,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'floppy',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'stringOptions',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          }
+        ]
       },
       'moduleNames': [
         'SampleTurboModuleIOS'

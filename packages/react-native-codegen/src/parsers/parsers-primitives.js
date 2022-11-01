@@ -26,6 +26,7 @@ import type {
   NativeModulePromiseTypeAnnotation,
   StringTypeAnnotation,
   VoidTypeAnnotation,
+  NativeModuleFloatTypeAnnotation,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {TypeAliasResolutionStatus} from './utils';
@@ -171,9 +172,18 @@ function emitObject(
   });
 }
 
+function emitFloat(
+  nullable: boolean,
+): Nullable<NativeModuleFloatTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'FloatTypeAnnotation',
+  });
+}
+
 module.exports = {
   emitBoolean,
   emitDouble,
+  emitFloat,
   emitFunction,
   emitInt32,
   emitNumber,

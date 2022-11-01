@@ -10,46 +10,35 @@
 
 import type {Node} from 'React';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
-import React, {Component} from 'react';
+import React, {useState, useCallback, useRef, useEffect} from 'react';
 
-type State = {|animating: boolean|};
-type Props = $ReadOnly<{||}>;
-type Timer = TimeoutID;
+function ToggleAnimatingActivityIndicator() {
+  const timer = useRef();
 
-class ToggleAnimatingActivityIndicator extends Component<Props, State> {
-  _timer: Timer;
+  const [animating, setAnimating] = useState(true);
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      animating: true,
-    };
-  }
-
-  componentDidMount() {
-    this.setToggleTimeout();
-  }
-
-  componentWillUnmount() {
-    clearTimeout(this._timer);
-  }
-
-  setToggleTimeout() {
-    this._timer = setTimeout(() => {
-      this.setState({animating: !this.state.animating});
-      this.setToggleTimeout();
+  const setToggleTimeout = useCallback(() => {
+    timer.current = setTimeout(() => {
+      setAnimating(currentState => !currentState);
+      setToggleTimeout();
     }, 2000);
-  }
+  }, []);
 
-  render(): Node {
-    return (
-      <ActivityIndicator
-        animating={this.state.animating}
-        style={[styles.centering, {height: 80}]}
-        size="large"
-      />
-    );
-  }
+  useEffect(() => {
+    setToggleTimeout();
+
+    return () => {
+      clearTimeout(timer.current);
+    };
+  }, [timer, setToggleTimeout]);
+
+  return (
+    <ActivityIndicator
+      animating={animating}
+      style={[styles.centering, {height: 80}]}
+      size="large"
+    />
+  );
 }
 
 const styles = StyleSheet.create({

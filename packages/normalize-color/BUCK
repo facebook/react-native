@@ -1,8 +1,6 @@
 load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 load("@fbsource//xplat/js:JS_DEFS.bzl", "rn_library")
 
-oncall("react_native")
-
 rn_library(
     name = "normalize-color",
     labels = [

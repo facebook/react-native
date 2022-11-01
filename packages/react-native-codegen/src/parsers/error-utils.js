@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {NativeModuleTypeAnnotation} from '../CodegenSchema';
 import type {ParserType} from './errors';
 
 const {
@@ -24,6 +25,7 @@ const {
   UntypedModuleRegistryCallParserError,
   UnsupportedModulePropertyParserError,
   MoreThanOneModuleInterfaceParserError,
+  UnsupportedFunctionParamTypeAnnotationParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -249,6 +251,20 @@ function throwIfMoreThanOneModuleInterfaceParserError(
   }
 }
 
+function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+  nativeModuleName: string,
+  languageParamTypeAnnotation: $FlowFixMe,
+  paramName: string,
+  paramTypeAnnotationType: NativeModuleTypeAnnotation['type'],
+) {
+  throw new UnsupportedFunctionParamTypeAnnotationParserError(
+    nativeModuleName,
+    languageParamTypeAnnotation,
+    paramName,
+    paramTypeAnnotationType,
+  );
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -261,4 +277,5 @@ module.exports = {
   throwIfUntypedModule,
   throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
 };

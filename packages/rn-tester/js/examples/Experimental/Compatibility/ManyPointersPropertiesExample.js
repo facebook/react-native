@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 });
 
 function ManyPointersPropertiesExample(): React.Node {
-  const [data, setData] = React.useState({});
+  const [data, setData] = React.useState<{}>({});
   const onPointerMove = (event: PointerEvent) => {
     const pointerId = event.nativeEvent.pointerId;
     setData({...data, [pointerId]: event.nativeEvent});

@@ -138,6 +138,15 @@ function translateFunctionParamToJavaType(
       return !isRequired ? 'Double' : 'double';
     case 'BooleanTypeAnnotation':
       return !isRequired ? 'Boolean' : 'boolean';
+    case 'EnumDeclaration':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return !isRequired ? 'Double' : 'double';
+        case 'StringTypeAnnotation':
+          return wrapIntoNullableIfNeeded('String');
+        default:
+          throw new Error(createErrorMessage(realTypeAnnotation.type));
+      }
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.ReadableMap');
       if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -213,6 +222,15 @@ function translateFunctionReturnTypeToJavaType(
       return nullable ? 'Double' : 'double';
     case 'BooleanTypeAnnotation':
       return nullable ? 'Boolean' : 'boolean';
+    case 'EnumDeclaration':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return nullable ? 'Double' : 'double';
+        case 'StringTypeAnnotation':
+          return wrapIntoNullableIfNeeded('String');
+        default:
+          throw new Error(createErrorMessage(realTypeAnnotation.type));
+      }
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableMap');
       return wrapIntoNullableIfNeeded('WritableMap');
@@ -269,6 +287,15 @@ function getFalsyReturnStatementFromReturnType(
       return nullable ? 'return null;' : 'return 0;';
     case 'BooleanTypeAnnotation':
       return nullable ? 'return null;' : 'return false;';
+    case 'EnumDeclaration':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return nullable ? 'return null;' : 'return 0;';
+        case 'StringTypeAnnotation':
+          return nullable ? 'return null;' : 'return "";';
+        default:
+          throw new Error(createErrorMessage(realTypeAnnotation.type));
+      }
     case 'StringTypeAnnotation':
       return nullable ? 'return null;' : 'return "";';
     case 'ObjectTypeAnnotation':

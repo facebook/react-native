@@ -157,6 +157,10 @@ class AccessibilityExample extends React.Component<{}> {
           <Text accessibilityRole="header">This is a title.</Text>
         </RNTesterBlock>
 
+        <RNTesterBlock title="Text with role = heading">
+          <Text role="heading">This is a title.</Text>
+        </RNTesterBlock>
+
         <RNTesterBlock title="Touchable with accessibilityRole = link">
           <TouchableOpacity
             onPress={() => Alert.alert('Link has been clicked!')}

@@ -135,7 +135,6 @@ export * from '../Libraries/Renderer/implementations/ReactNativeRenderer';
 export * from '../Libraries/Renderer/shims/ReactNativeTypes';
 export * from '../Libraries/Settings/Settings';
 export * from '../Libraries/Share/Share';
-export * from '../Libraries/Storage/AsyncStorage';
 export * from '../Libraries/StyleSheet/PlatformColorValueTypesIOS';
 export * from '../Libraries/StyleSheet/PlatformColorValueTypes';
 export * from '../Libraries/StyleSheet/StyleSheet';

@@ -203,7 +203,7 @@ const isLatest = exitIfNotOnGit(
 
 // We first publish on Maven Central all the necessary artifacts.
 // NPM publishing is done just after.
-publishAndroidArtifactsToMaven(nightlyBuild);
+publishAndroidArtifactsToMaven(releaseVersion, nightlyBuild);
 
 const releaseBranch = `${major}.${minor}-stable`;
 

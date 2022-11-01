@@ -102,7 +102,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:5.4
+      - image: reactnativecommunity/react-native-android:6.0
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
@@ -670,10 +670,6 @@ jobs:
             buck build ReactAndroid/src/main/java/com/facebook/react/shell
 
       - run:
-          name: Validate Android Test Environment
-          command: ./scripts/validate-android-test-env.sh
-
-      - run:
           name: Run Tests - Android Unit Tests with Buck
           command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
 
@@ -717,10 +713,6 @@ jobs:
       - checkout
       - setup_artifacts
       - run_yarn
-
-      - run:
-          name: Validate Android SDK Install
-          command: ./scripts/validate-android-sdk.sh
 
       # Starting emulator in advance as it takes some time to boot.
       - run:
@@ -768,9 +760,11 @@ jobs:
         description: The Android build type. Must be one of "Debug", "Release".
         type: enum
         enum: ["Debug", "Release"]
-      newarchitecture:
-        type: boolean
-        default: false
+      architecture:
+        default: "OldArch"
+        description: Which React Native architecture to use. Must be one of "NewArch", "OldArch".
+        type: enum
+        enum: [ "NewArch", "OldArch" ]
       jsengine:
         default: "Hermes"
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
@@ -783,17 +777,6 @@ jobs:
       - run_yarn
       - attach_workspace:
           at: .
-      - when:
-          condition:
-            equal: ["JSC", << parameters.jsengine >>]
-          steps:
-            - run:
-                name: Set enableHermes in buld.gradle to false
-                command: |
-                  node ./scripts/set-rn-engine.js -e jsc
-                  echo "Hermes disabled."
-                  grep enableHermes: template/android/app/build.gradle
-
       - run:
           name: Create Android template project
           command: |
@@ -804,8 +787,20 @@ jobs:
             yarn
 
       - run:
-          name: Build the template application for << parameters.flavor >> with New Architecture set to << parameters.newarchitecture >>, and using the << parameters.jsengine>> JS engine.
-          command: cd /tmp/$PROJECT_NAME/android/ && ./gradlew assemble<< parameters.flavor >> -PnewArchEnabled=<< parameters.newarchitecture >>
+          name: Build the template application for << parameters.flavor >> with Architecture set to << parameters.architecture >>, and using the << parameters.jsengine>> JS engine.
+          command: |
+            cd /tmp/$PROJECT_NAME/android/
+            if [[ << parameters.architecture >> == "NewArch" ]]; then
+              export ORG_GRADLE_PROJECT_newArchEnabled=true
+            else
+              export ORG_GRADLE_PROJECT_newArchEnabled=false
+            fi
+            if [[ << parameters.jsengine >> == "Hermes" ]]; then
+              export ORG_GRADLE_PROJECT_hermesEnabled=true
+            else
+              export ORG_GRADLE_PROJECT_hermesEnabled=false
+            fi
+            ./gradlew assemble<< parameters.flavor >> -PREACT_NATIVE_MAVEN_LOCAL_REPO=/root/react-native/maven-local
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -1443,6 +1438,15 @@ jobs:
           command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
       - store_artifacts:
           path: /tmp/hermes-native-symbols.zip
+      - run:
+          name: Zip Maven Artifacts from /tmp/maven-local
+          command: zip -r /tmp/maven-local.zip /tmp/maven-local
+      - store_artifacts:
+          path: /tmp/maven-local.zip
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - maven-local
 
       # START: Commitlies
       # Provide a react-native package for this commit as a Circle CI release artifact.
@@ -1599,7 +1603,7 @@ workflows:
             - build_npm_package
           matrix:
             parameters:
-              newarchitecture: [true, false]
+              architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
               flavor: ["Debug", "Release"]
       - test_buck
