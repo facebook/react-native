@@ -73,7 +73,13 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
-  - hermes-engine (1000.0.0)
+  - hermes-engine (1000.0.0):
+    - hermes-engine/Hermes (= 1000.0.0)
+    - hermes-engine/JSI (= 1000.0.0)
+    - hermes-engine/Public (= 1000.0.0)
+  - hermes-engine/Hermes (1000.0.0)
+  - hermes-engine/JSI (1000.0.0)
+  - hermes-engine/Public (1000.0.0)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
@@ -933,7 +939,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: 19e408e76fa9258dd32191a50d60c41444f52d29
-  FBReactNativeSpec: 27a89a8eea1b441a73a78f420dd18dad3ed13723
+  FBReactNativeSpec: 9761d52cf2d3727e2557fbf4014c514909d76b6b
   Flipper: 26fc4b7382499f1281eb8cb921e5c3ad6de91fe0
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
@@ -945,7 +951,7 @@ SPEC CHECKSUMS:
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: cd15ebd246edff3a995ec666e898dd1cbdcaa10d
+  hermes-engine: 445a2267b04cb39ca4a0b2d6758b5a0e5a58ccad
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
@@ -960,7 +966,7 @@ SPEC CHECKSUMS:
   React-cxxreact: ebed982230716c3515ab2f435cb13aec8a56af02
   React-Fabric: 141459e61c825acf02d26ece099acbd9cbd87b99
   React-graphics: 2dda97baebb0082bb85499c862c3f269a194f416
-  React-hermes: 0a5145bae4207edf0def8e28fbcb6a8fd6e806c2
+  React-hermes: 4912383b4f062173cb623e570ead70ab380f7bef
   React-jsi: c24dbcfdf7ea075138b73372387c7f17c0db56ef
   React-jsidynamic: 2b14ac1b6d3a1b7daa1e5a424b98de87da981698
   React-jsiexecutor: 14e899380e3fe9ca74c4e19727540a03e7574721

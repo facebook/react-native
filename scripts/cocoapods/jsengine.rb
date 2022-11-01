@@ -34,3 +34,23 @@ def setup_hermes!(react_native_path: "../node_modules/react-native", fabric_enab
     pod 'React-hermes', :path => "#{react_native_path}/ReactCommon/hermes"
     pod 'libevent', '~> 2.1.12'
 end
+
+def add_copy_hermes_framework_script_phase(installer, react_native_path)
+    utils_dir = File.join(react_native_path, "sdks", "hermes-engine", "utils")
+    phase_name = "[RN]Copy Hermes framework"
+    project = installer.generated_aggregate_targets.first.user_project
+    target = project.targets.first
+    if target.shell_script_build_phases.none? { |phase| phase.name == phase_name }
+        phase = target.new_shell_script_build_phase(phase_name)
+        phase.shell_script = ". #{utils_dir}/copy-hermes-xcode.sh"
+        project.save()
+    end
+end
+
+def remove_copy_hermes_framework_script_phase(installer, react_native_path)
+    utils_dir = File.join(react_native_path, "sdks", "hermes-engine", "utils")
+    phase_name = "[RN]Copy Hermes framework"
+    project = installer.generated_aggregate_targets.first.user_project
+    project.targets.first.shell_script_build_phases.delete_if { |phase| phase.name == phase_name }
+    project.save()
+end
