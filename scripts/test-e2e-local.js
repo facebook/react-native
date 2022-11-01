@@ -34,6 +34,11 @@ const {
   generateiOSArtifacts,
 } = require('./release-utils');
 
+const {
+  downloadHermesSourceTarball,
+  expandHermesSourceTarball,
+} = require('./hermes/hermes-utils');
+
 const argv = yargs
   .option('t', {
     alias: 'target',
@@ -66,7 +71,6 @@ if (isPackagerRunning() === 'running') {
   exec("lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill");
 }
 
-// we need to determine this to handle a couple of iOS related things
 const onReleaseBranch = exec('git rev-parse --abbrev-ref HEAD', {
   silent: true,
 })
@@ -165,16 +169,43 @@ if (argv.target === 'RNTester') {
   // Generate native files for Android
   generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
 
+  // Setting up generating native iOS (will be done later)
+  const repoRoot = pwd();
+  const jsiFolder = `${repoRoot}/ReactCommon/jsi`;
+  const hermesUtilsFolder = `${repoRoot}/sdks/hermes-engine/utils`;
+  const hermesCoreSourceFolder = `${repoRoot}/sdks/hermes`;
+
+  if (!fs.existsSync(hermesCoreSourceFolder)) {
+    console.info('The Hermes source folder is missing. Downloading...');
+    downloadHermesSourceTarball();
+    expandHermesSourceTarball();
+  }
+
+  // for this scenario, we only need to create the debug build
+  // (env variable PRODUCTION defines that podspec side)
+  const buildType = 'Debug';
+
+  // the android ones get set into /private/tmp/maven-local
+  const localMavenPath = '/private/tmp/maven-local';
+
+  // Generate native files for iOS
+  const tarballOutputPath = generateiOSArtifacts(
+    jsiFolder,
+    hermesUtilsFolder,
+    hermesCoreSourceFolder,
+    buildType,
+    releaseVersion,
+    localMavenPath,
+  );
+
   // create locally the node module
   exec('npm pack');
 
-  const localNodeTGZPath = `${pwd()}/react-native-${releaseVersion}.tgz`;
+  const localNodeTGZPath = `${repoRoot}/react-native-${releaseVersion}.tgz`;
   exec(`node scripts/set-rn-template-version.js "file:${localNodeTGZPath}"`);
 
-  const repoRoot = pwd();
-
   pushd('/tmp/');
-  // need to avoid the pod install step because it will fail! (see above)
+  // need to avoid the pod install step - we'll do it later
   exec(
     `node ${repoRoot}/cli.js init RNTestProject --template ${repoRoot} --skip-install`,
   );
@@ -186,28 +217,6 @@ if (argv.target === 'RNTester') {
     // if we want iOS, we need to do pod install - but with a trick
     cd('ios');
     exec('bundle install');
-
-    // I need to tell it where the hermes stuff lives
-    const jsiFolder = `${repoRoot}/ReactCommon/jsi`;
-    const hermesUtilsFolder = `${repoRoot}/sdks/hermes-engine/utils`;
-    // TODO: need to try a full cleanup and see if the folder is there of if I need to download it
-    const hermesCoreSourceFolder = `${repoRoot}/sdks/hermes`;
-
-    // for this scenario, we only need to create the debug build
-    // (env variable PRODUCTION defines that podspec side)
-    const buildType = 'Debug';
-
-    // the android ones get set into /private/tmp/maven-local
-    const localMavenPath = '/private/tmp/maven-local';
-
-    const tarballOutputPath = generateiOSArtifacts(
-      jsiFolder,
-      hermesUtilsFolder,
-      hermesCoreSourceFolder,
-      buildType,
-      releaseVersion,
-      localMavenPath,
-    );
 
     // set HERMES_ENGINE_TARBALL_PATH to point to the local artifacts I just created
     exec(
