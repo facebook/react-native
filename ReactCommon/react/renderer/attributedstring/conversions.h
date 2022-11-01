@@ -567,7 +567,6 @@ inline std::string toString(const TextDecorationStyle &textDecorationStyle) {
 }
 
 inline std::string toString(const AccessibilityUnit &accessibilityUnit) {
-  LOG(ERROR) << "TESTING:: some test";
   switch (accessibilityUnit) {
     case AccessibilityUnit::None:
       return "none";
@@ -580,7 +579,6 @@ inline std::string toString(const AccessibilityUnit &accessibilityUnit) {
 }
 
 inline std::string toString(const AccessibilityRole &accessibilityRole) {
-  LOG(ERROR) << "TESTING:: some test";
   switch (accessibilityRole) {
     case AccessibilityRole::None:
       return "none";
@@ -996,7 +994,6 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "layoutDirection", toString(*textAttributes.layoutDirection));
   }
-  LOG(ERROR) << "TESTING:: triggered ";
   if (textAttributes.accessibilityRole.has_value()) {
     _textAttributes(
         "accessibilityRole", toString(*textAttributes.accessibilityRole));
@@ -1079,7 +1076,7 @@ constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 20;
 constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
 constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 22;
 constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 23;
-constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_UNIT = 24;
+constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_UNIT = 99;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1226,7 +1223,6 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
     builder.putString(
         TA_KEY_ACCESSIBILITY_ROLE, toString(*textAttributes.accessibilityRole));
   }
-  LOG(ERROR) << "TESTING:: triggered ";
   if (textAttributes.accessibilityUnit.has_value()) {
     builder.putString(
         TA_KEY_ACCESSIBILITY_UNIT, toString(*textAttributes.accessibilityUnit));
