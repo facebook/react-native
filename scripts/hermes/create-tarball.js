@@ -40,12 +40,18 @@ let argv = yargs
   .option('o', {
     alias: 'outputDir',
     describe: 'Location where the tarball will be saved to.',
+  })
+  .option('exclude-debug-symbols', {
+    describe: 'Whether dSYMs should be excluded from the tarball.',
+    type: 'boolean',
+    default: true,
   }).argv;
 
 async function main() {
   const hermesDir = argv.inputDir;
   const buildType = argv.buildType;
   const releaseVersion = argv.releaseVersion;
+  const excludeDebugSymbols = argv.excludeDebugSymbols;
   let tarballOutputDir = argv.outputDir;
 
   if (!tarballOutputDir) {
@@ -65,6 +71,7 @@ async function main() {
     buildType,
     releaseVersion,
     tarballOutputDir,
+    excludeDebugSymbols,
   );
   console.log(tarballOutputPath);
   return tarballOutputPath;
