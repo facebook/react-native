@@ -28,7 +28,11 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
     private PersistableBundle mArgs = new PersistableBundle();
 
     public Builder(String type) {
-      mType = type;
+      if (type == "verbatim") {
+        mType = TYPE_VERBATIM;
+      } else {
+        mType = TYPE_TEXT;
+      }
     }
 
     public ReactTtsSpan build() {

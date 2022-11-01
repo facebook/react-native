@@ -325,6 +325,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
   protected boolean mIsAccessibilityLink = false;
+  protected String mIsAccessibilityUnit;
 
   protected int mNumberOfLines = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;

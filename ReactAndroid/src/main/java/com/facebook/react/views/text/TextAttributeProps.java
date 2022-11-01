@@ -11,6 +11,7 @@ import android.os.Build;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.LayoutDirection;
+import android.util.Log;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -53,6 +54,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 22;
+  public static final short TA_KEY_ACCESSIBILITY_UNIT = 24;
 
   public static final int UNSET = -1;
 
@@ -102,6 +104,8 @@ public class TextAttributeProps {
 
   protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
+  protected boolean mIsAccessibilityUnitSet = false;
+  protected String mAccessibilityUnit = null;
   protected boolean mIsAccessibilityLink = false;
 
   protected int mFontStyle = UNSET;
@@ -143,6 +147,7 @@ public class TextAttributeProps {
 
     // TODO T83483191: Review constants that are not being set!
     Iterator<MapBuffer.Entry> iterator = props.iterator();
+    Log.w("TESTING::TextAttributeProps", "props: " + (props));
     while (iterator.hasNext()) {
       MapBuffer.Entry entry = iterator.next();
       switch (entry.getKey()) {
@@ -205,6 +210,9 @@ public class TextAttributeProps {
         case TA_KEY_ACCESSIBILITY_ROLE:
           result.setAccessibilityRole(entry.getStringValue());
           break;
+        case TA_KEY_ACCESSIBILITY_UNIT:
+          result.setAccessibilityUnit(entry.getStringValue());
+          break;
       }
     }
 
@@ -246,6 +254,7 @@ public class TextAttributeProps {
     result.setTextTransform(getStringProp(props, PROP_TEXT_TRANSFORM));
     result.setLayoutDirection(getStringProp(props, ViewProps.LAYOUT_DIRECTION));
     result.setAccessibilityRole(getStringProp(props, ViewProps.ACCESSIBILITY_ROLE));
+    result.setAccessibilityUnit(getStringProp(props, ViewProps.ACCESSIBILITY_UNIT));
     return result;
   }
 
@@ -596,6 +605,14 @@ public class TextAttributeProps {
       mTextTransform = TextTransform.CAPITALIZE;
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
+    }
+  }
+
+  private void setAccessibilityUnit(@Nullable String accessibilityUnit) {
+    Log.w("TESTING::TextAttributeProps", "accessibilityUnit: " + (accessibilityUnit));
+    if (accessibilityUnit != null) {
+      mIsAccessibilityUnitSet = true;
+      mAccessibilityUnit = accessibilityUnit;
     }
   }
 

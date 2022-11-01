@@ -142,11 +142,22 @@ public class TextLayoutManagerMapBuffer {
       } else if (end >= start) {
         if (textAttributes.mIsAccessibilityLink) {
           ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
+          // add here the span
         }
         if (textAttributes.mIsColorSet) {
           ops.add(
               new SetSpanOperation(
                   start, end, new ReactForegroundColorSpan(textAttributes.mColor)));
+        }
+        if (textAttributes.mAccessibilityUnit != null) {
+          if (Build.VERSION.SDK_INT > 21 && textAttributes.mBackgroundColor == -65536) {
+            ops.add(new SetSpanOperation(start, end, new ReactTtsSpan.Builder("verbatim").build()));
+            /*
+            ops.add(
+                new SetSpanOperation(
+                    start, end, new ReactTtsSpan.Builder(ReactTtsSpan.TYPE_VERBATIM).build()));
+                    */
+          }
         }
         if (textAttributes.mIsBackgroundColorSet) {
           /*
@@ -154,11 +165,6 @@ public class TextLayoutManagerMapBuffer {
               new SetSpanOperation(
                   start, end, new ReactBackgroundColorSpan(textAttributes.mBackgroundColor)));
            */
-          if (Build.VERSION.SDK_INT > 21 && textAttributes.mBackgroundColor == -65536) {
-            ops.add(
-                new SetSpanOperation(
-                    start, end, new ReactTtsSpan.Builder(ReactTtsSpan.TYPE_VERBATIM).build()));
-          }
         }
         if (!Float.isNaN(textAttributes.getLetterSpacing())) {
           ops.add(
