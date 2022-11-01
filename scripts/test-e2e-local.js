@@ -213,6 +213,11 @@ if (argv.target === 'RNTester') {
   cd('RNTestProject');
   exec('yarn install');
 
+  // need to do this here so that Android will be properly setup either way
+  exec(
+    'echo "REACT_NATIVE_MAVEN_LOCAL_REPO=/private/tmp/maven-local" >> android/gradle.properties',
+  );
+
   if (argv.platform === 'iOS') {
     // if we want iOS, we need to do pod install - but with a trick
     cd('ios');
@@ -229,10 +234,6 @@ if (argv.target === 'RNTester') {
     exec('yarn ios');
   } else {
     // android
-
-    exec(
-      'echo "REACT_NATIVE_MAVEN_LOCAL_REPO=/private/tmp/maven-local" >> android/gradle.properties',
-    );
 
     exec('yarn android');
   }
