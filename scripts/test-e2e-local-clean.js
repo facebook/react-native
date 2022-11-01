@@ -48,6 +48,8 @@ exec('rm -rf /tmp/maven-local');
 // iOS
 console.info('\n** Nuking the derived data folder **\n');
 exec('rm -rf ~/Library/Developer/Xcode/DerivedData');
+console.info('\n** Resetting HERMES_ENGINE_TARBALL_PATH env variable **\n');
+exec('unset HERMES_ENGINE_TARBALL_PATH');
 
 // RNTester Pods
 console.info('\n** Removing the RNTester Pods **\n');
