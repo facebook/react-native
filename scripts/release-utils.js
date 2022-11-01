@@ -11,7 +11,7 @@
 
 const {exec, echo, exit, test, env, pushd, popd} = require('shelljs');
 const {saveFiles} = require('./scm-utils');
-const {createHermesTarball} = require('./hermes/hermes-utils');
+const {createHermesPrebuiltArtifactsTarball} = require('./hermes/hermes-utils');
 
 function saveFilesToRestore(tmpPublishingFolder) {
   const filesToSaveAndRestore = [
@@ -123,7 +123,7 @@ function generateiOSArtifacts(
 
   popd();
 
-  const tarballOutputPath = createHermesTarball(
+  const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
     hermesCoreSourceFolder,
     buildType,
     releaseVersion,
