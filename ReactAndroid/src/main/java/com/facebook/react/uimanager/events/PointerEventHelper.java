@@ -212,4 +212,18 @@ public class PointerEventHelper {
     boolean inActiveButtonState = buttonState != 0;
     return inActiveButtonState ? 0.5 : 0;
   }
+
+  public static boolean isBubblingEvent(String eventName) {
+    switch (eventName) {
+      case POINTER_UP:
+      case POINTER_DOWN:
+      case POINTER_OVER:
+      case POINTER_OUT:
+      case POINTER_MOVE:
+      case POINTER_CANCEL:
+        return true;
+      default:
+        return false;
+    }
+  }
 }
