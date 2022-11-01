@@ -6,7 +6,7 @@
  */
 
 package com.facebook.react.views.view
-
+import android.util.Log;
 import android.graphics.Color
 import android.graphics.Rect
 import androidx.core.view.ViewCompat
@@ -64,6 +64,7 @@ object ReactMapBufferPropSetter {
   private const val VP_POINTER_OVER_CAPTURE = 44
   private const val VP_BORDER_CURVES = 45 // iOS only
   private const val VP_FG_COLOR = 46 // iOS only?
+  private const val VP_ACCESSIBILITY_UNIT = 99
 
   // Yoga values
   private const val YG_BORDER_WIDTH = 100
@@ -108,6 +109,7 @@ object ReactMapBufferPropSetter {
 
   fun setProps(view: ReactViewGroup, viewManager: ReactViewManager, props: MapBuffer) {
     for (entry in props) {
+      Log.w("TESTING::ReactMapBufferPropSetter", "entry.key: " + ( entry.key ));
       when (entry.key) {
         VP_ACCESSIBILITY_ACTIONS -> {
           viewManager.accessibilityActions(view, entry.mapBufferValue)
@@ -239,6 +241,9 @@ object ReactMapBufferPropSetter {
         }
         VP_ZINDEX -> {
           viewManager.setZIndex(view, entry.intValue.toFloat())
+        }
+        VP_ACCESSIBILITY_UNIT -> {
+          viewManager.setAccessibilityUnit(view, entry.stringValue.takeIf { it.isNotEmpty() })
         }
         YG_BORDER_WIDTH -> {
           viewManager.borderWidth(view, entry.mapBufferValue)
