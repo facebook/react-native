@@ -15,14 +15,11 @@ import type {
   NamedShape,
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
-  Nullable,
   NativeModuleAliasMap,
   UnionTypeAnnotationMemberType,
   NativeModuleEnumDeclaration,
-  NativeModuleTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModuleUnionTypeAnnotation,
-  NativeModuleMixedTypeAnnotation,
   Nullable,
 } from '../CodegenSchema.js';
 import type {ParserType} from './errors';
@@ -200,14 +197,6 @@ function parseObjectProperty(
   };
 }
 
-function emitMixedTypeAnnotation(
-  nullable: boolean,
-): Nullable<NativeModuleMixedTypeAnnotation> {
-  return wrapNullable(nullable, {
-    type: 'MixedTypeAnnotation',
-  });
-}
-
 function remapUnionTypeAnnotationMemberNames(
   types: $FlowFixMe,
   language: ParserType,
@@ -328,7 +317,6 @@ module.exports = {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   isObjectProperty,
   parseObjectProperty,
-  emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
   translateDefault,
   getKeyName,

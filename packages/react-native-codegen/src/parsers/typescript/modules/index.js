@@ -31,7 +31,6 @@ const {
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   parseObjectProperty,
-  emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
   translateDefault,
 } = require('../../parsers-commons');
@@ -564,4 +563,5 @@ function buildModuleSchema(
 
 module.exports = {
   buildModuleSchema,
+  typeScriptTranslateTypeAnnotation: translateTypeAnnotation,
 };
