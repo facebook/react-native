@@ -13,6 +13,7 @@ const {exec, echo, exit, test, env, pushd, popd} = require('shelljs');
 const {saveFiles} = require('./scm-utils');
 const {createHermesPrebuiltArtifactsTarball} = require('./hermes/hermes-utils');
 
+// TODO: we should probably remove this because of this? https://github.com/facebook/react-native/pull/34846
 function saveFilesToRestore(tmpPublishingFolder) {
   const filesToSaveAndRestore = [
     'template/Gemfile',
