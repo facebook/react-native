@@ -10,6 +10,8 @@ class NewArchitectureHelper
 
     @@new_arch_cpp_flags = "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 #{@@shared_flags}"
 
+    @@cplusplus_version = "c++17"
+
     def self.set_clang_cxx_language_standard_if_needed(installer)
         language_standard = nil
 
@@ -73,6 +75,7 @@ class NewArchitectureHelper
 
         spec.compiler_flags = compiler_flags.empty? ? @@folly_compiler_flags : "#{compiler_flags} #{@@folly_compiler_flags}"
         current_config["HEADER_SEARCH_PATHS"] = current_headers.empty? ? boost_search_path : "#{current_headers} #{boost_search_path}"
+        current_config["CLANG_CXX_LANGUAGE_STANDARD"] = @@cplusplus_version
         spec.pod_target_xcconfig = current_config
 
         spec.dependency "React-Core"

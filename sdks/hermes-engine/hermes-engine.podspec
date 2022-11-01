@@ -19,9 +19,6 @@ version = package['version']
 hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
 isInCI = ENV['CI'] == true
 
-# sdks/hermesc/osx-bin/ImportHermesc.cmake
-import_hermesc_file=File.join(react_native_path, "sdks", "hermesc", "osx-bin", "ImportHermesc.cmake")
-
 source = {}
 git = "https://github.com/facebook/hermes.git"
 
@@ -32,7 +29,7 @@ if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
   Pod::UI.puts '[Hermes] Using pre-built Hermes binaries from local path.' if Object.const_defined?("Pod::UI")
   source[:http] = "file://#{ENV['HERMES_ENGINE_TARBALL_PATH']}"
 elsif isInMain
-  Pod::UI.puts '[Hermes] Installing hermes-engine may take a while, building Hermes from source...'.yellow if Object.const_defined?("Pod::UI")
+  Pod::UI.puts '[Hermes] Installing hermes-engine may take slightly longer, building Hermes compiler from source...'.yellow if Object.const_defined?("Pod::UI")
   source[:git] = git
   source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
 elsif isNightly
@@ -62,42 +59,80 @@ Pod::Spec.new do |spec|
   spec.source      = source
   spec.platforms   = { :osx => "10.13", :ios => "12.4" }
 
-  spec.preserve_paths      = ["destroot/bin/*"].concat(build_type == :debug ? ["**/*.{h,c,cpp}"] : [])
-  spec.source_files        = "destroot/include/**/*.h"
-  spec.exclude_files       = [
-                               "destroot/include/jsi/jsi/JSIDynamic.{h,cpp}",
-                               "destroot/include/jsi/jsi/jsilib-*.{h,cpp}",
-                             ]
-  spec.header_mappings_dir = "destroot/include"
-
-  spec.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
-  spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
+  spec.preserve_paths      = '**/*.*'
+  spec.source_files        = ''
 
   spec.xcconfig = {
                     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                     "CLANG_CXX_LIBRARY" => "compiler-default"
                   }.merge!(build_type == :debug ? { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" } : {})
 
-  if source[:git] then
-    ENV['REACT_NATIVE_PATH'] = react_native_path
-    hermes_utils_path = "/sdks/hermes-engine/utils"
+  if source[:http] then
 
-    spec.prepare_command = <<-EOS
-    export BUILD_TYPE=#{build_type.to_s.capitalize}
-    export RELEASE_VERSION="#{version}"
-    export IOS_DEPLOYMENT_TARGET="#{spec.deployment_target('ios')}"
-    export MAC_DEPLOYMENT_TARGET="#{spec.deployment_target('osx')}"
-    export JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
+    spec.subspec 'Pre-built' do |ss|
+      ss.preserve_paths = ["destroot/bin/*"].concat(build_type == :debug ? ["**/*.{h,c,cpp}"] : [])
+      ss.source_files = "destroot/include/**/*.h"
+      ss.exclude_files = ["destroot/include/jsi/jsi/JSIDynamic.{h,cpp}", "destroot/include/jsi/jsi/jsilib-*.{h,cpp}"]
+      ss.header_mappings_dir = "destroot/include"
+      ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
+      ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
+    end
 
-    # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
-    #{File.exist?(import_hermesc_file) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_file}" : ""}
-    #{File.exist?(import_hermesc_file) ? "echo \"Overriding HermesC path...\"" : ""}
+  elsif source[:git] then
 
-    # Build iOS framework
-    $REACT_NATIVE_PATH#{hermes_utils_path}/build-ios-framework.sh
+    ENV['HERMES_BUILD_FROM_SOURCE'] = "1"
 
-    # Build Mac framework
-    $REACT_NATIVE_PATH#{hermes_utils_path}/build-mac-framework.sh
-    EOS
+    spec.subspec 'Hermes' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/*.h'
+      ss.header_dir = 'hermes'
+    end
+
+    spec.subspec 'JSI' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/jsi/jsi/*.h'
+      ss.header_dir = 'jsi'
+    end
+
+    spec.subspec 'Public' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'public/hermes/Public/*.h'
+      ss.header_dir = 'hermes/Public'
+    end
+
+    hermesc_path = ""
+
+    if ENV.has_key?('HERMES_OVERRIDE_HERMESC_PATH') && File.exist?(ENV['HERMES_OVERRIDE_HERMESC_PATH']) then
+      hermesc_path = ENV['HERMES_OVERRIDE_HERMESC_PATH']
+    else
+      # Keep hermesc_path synchronized with .gitignore entry.
+      ENV['REACT_NATIVE_PATH'] = react_native_path
+      hermesc_path = "${REACT_NATIVE_PATH}/sdks/hermes-engine/build_host_hermesc"
+      spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}"
+    end
+
+    spec.user_target_xcconfig = {
+      'FRAMEWORK_SEARCH_PATHS' => '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/iphoneos" ' +
+                                  '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/iphonesimulator" ' +
+                                  '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/macosx" ' +
+                                  '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/catalyst"',
+      'OTHER_LDFLAGS' => '-framework "hermes"',
+      'HERMES_CLI_PATH' => "#{hermesc_path}/bin/hermesc"
+    }
+
+    spec.script_phases = [
+      {
+        :name => 'Build Hermes',
+        :script => <<-EOS
+        . ${PODS_ROOT}/../.xcode.env
+        export CMAKE_BINARY=${CMAKE_BINARY:-#{%x(command -v cmake | tr -d '\n')}}
+        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
+        EOS
+      },
+      {
+        :name => 'Copy Hermes Framework',
+        :script => ". ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/copy-hermes-xcode.sh"
+      }
+    ]
   end
 end
