@@ -64,6 +64,7 @@ RCT_MULTI_ENUM_CONVERTER(
       @"timer" : @(UIAccessibilityTraitNone),
       @"toolbar" : @(UIAccessibilityTraitNone),
       @"list" : @(UIAccessibilityTraitNone),
+      @"grid" : @(UIAccessibilityTraitNone),
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)

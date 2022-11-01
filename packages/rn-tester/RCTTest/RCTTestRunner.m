@@ -196,11 +196,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
       RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                        moduleName:moduleName
                                                 initialProperties:initialProps];
-#if TARGET_OS_TV
-      rootView.frame = CGRectMake(0, 0, 1920, 1080); // Standard screen size for tvOS
-#else
       rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
-#endif
 
       rootTag = rootView.reactTag;
       testModule.view = rootView;

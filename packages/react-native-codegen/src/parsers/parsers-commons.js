@@ -20,12 +20,22 @@ import type {
   NativeModuleUnionTypeAnnotation,
 } from '../CodegenSchema.js';
 const {
-  IncorrectlyParameterizedGenericParserError,
+  MissingTypeParameterGenericParserError,
+  MoreThanOneTypeParameterGenericParserError,
   UnsupportedUnionTypeAnnotationParserError,
 } = require('./errors');
 import type {ParserType} from './errors';
-
+const {
+  UnsupportedObjectPropertyTypeAnnotationParserError,
+} = require('./errors');
 const invariant = require('invariant');
+import type {TypeDeclarationMap} from './utils';
+const {
+  UnsupportedEnumDeclarationParserError,
+  UnsupportedGenericParserError,
+} = require('./errors');
+import type {Parser} from './parser';
+import type {NativeModuleEnumDeclaration} from '../CodegenSchema';
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -71,7 +81,7 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
   language: ParserType,
 ) {
   if (typeAnnotation.typeParameters == null) {
-    throw new IncorrectlyParameterizedGenericParserError(
+    throw new MissingTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
       language,
@@ -89,7 +99,7 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
   );
 
   if (typeAnnotation.typeParameters.params.length !== 1) {
-    throw new IncorrectlyParameterizedGenericParserError(
+    throw new MoreThanOneTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
       language,
@@ -155,6 +165,69 @@ function emitUnionTypeAnnotation(
   });
 }
 
+function translateDefault(
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  nullable: boolean,
+  parser: Parser,
+): Nullable<NativeModuleEnumDeclaration> {
+  const maybeEnumDeclaration =
+    types[parser.nameForGenericTypeAnnotation(typeAnnotation)];
+
+  if (maybeEnumDeclaration && parser.isEnumDeclaration(maybeEnumDeclaration)) {
+    const memberType = parser.getMaybeEnumMemberType(maybeEnumDeclaration);
+
+    if (
+      memberType === 'NumberTypeAnnotation' ||
+      memberType === 'StringTypeAnnotation'
+    ) {
+      return wrapNullable(nullable, {
+        type: 'EnumDeclaration',
+        memberType: memberType,
+      });
+    } else {
+      throw new UnsupportedEnumDeclarationParserError(
+        hasteModuleName,
+        typeAnnotation,
+        memberType,
+        parser.language(),
+      );
+    }
+  }
+
+  throw new UnsupportedGenericParserError(
+    hasteModuleName,
+    typeAnnotation,
+    parser,
+  );
+}
+
+function getKeyName(
+  propertyOrIndex: $FlowFixMe,
+  hasteModuleName: string,
+  language: ParserType,
+): string {
+  switch (propertyOrIndex.type) {
+    case 'ObjectTypeProperty':
+    case 'TSPropertySignature':
+      return propertyOrIndex.key.name;
+    case 'ObjectTypeIndexer':
+      // flow index name is optional
+      return propertyOrIndex.id?.name ?? 'key';
+    case 'TSIndexSignature':
+      // TypeScript index name is mandatory
+      return propertyOrIndex.parameters[0].name;
+    default:
+      throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+        hasteModuleName,
+        propertyOrIndex,
+        propertyOrIndex.type,
+        language,
+      );
+  }
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -162,4 +235,6 @@ module.exports = {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
+  getKeyName,
+  translateDefault,
 };

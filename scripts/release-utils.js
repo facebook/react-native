@@ -69,7 +69,7 @@ function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
   });
 }
 
-function publishAndroidArtifactsToMaven(isNightly) {
+function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
   // -------- Publish every artifact to Maven Central
   // The GPG key is base64 encoded on CircleCI
   let buff = Buffer.from(env.ORG_GRADLE_PROJECT_SIGNING_KEY_ENCODED, 'base64');
@@ -79,7 +79,9 @@ function publishAndroidArtifactsToMaven(isNightly) {
     exit(1);
   }
 
-  if (!isNightly) {
+  // We want to gate ourselves against accidentally publishing a 1.x or a 1000.x on
+  // maven central which will break the semver for our artifacts.
+  if (!isNightly && releaseVersion.startsWith('0.')) {
     // -------- For stable releases, we also need to close and release the staging repository.
     if (exec('./gradlew closeAndReleaseSonatypeStagingRepository').code) {
       echo(

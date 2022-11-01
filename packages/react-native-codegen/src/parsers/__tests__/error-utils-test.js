@@ -22,6 +22,7 @@ const {
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfModuleTypeIsUnsupported,
   throwIfUntypedModule,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -34,6 +35,7 @@ const {
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   MoreThanOneModuleInterfaceParserError,
+  UnsupportedFunctionParamTypeAnnotationParserError,
 } = require('../errors');
 
 describe('throwIfModuleInterfaceIsMisnamed', () => {
@@ -631,5 +633,22 @@ describe('throwIfMoreThanOneModuleInterfaceParserError', () => {
         parserType,
       );
     }).toThrow(MoreThanOneModuleInterfaceParserError);
+  });
+});
+
+describe('throwIfUnsupportedFunctionParamTypeAnnotationParserError', () => {
+  const nativeModuleName = 'moduleName';
+  const languageParamTypeAnnotation = {type: 'VoidTypeAnnotation'};
+  const paramName = 'paramName';
+  it('throws an UnsupportedFunctionParamTypeAnnotationParserError', () => {
+    const paramTypeAnnotationType = 'VoidTypeAnnotation';
+    expect(() => {
+      throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+        nativeModuleName,
+        languageParamTypeAnnotation,
+        paramName,
+        paramTypeAnnotationType,
+      );
+    }).toThrow(UnsupportedFunctionParamTypeAnnotationParserError);
   });
 });

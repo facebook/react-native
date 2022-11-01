@@ -644,6 +644,8 @@ export interface Spec extends TurboModule {
   +getCallback: () => () => void;
   +getMixed: (arg: mixed) => mixed;
   +getEnums: (quality: Quality, resolution?: Resolution, floppy: Floppy, stringOptions: StringOptions) => string;
+  +getMap: (arg: {[a: string]: ?number}) => {[b: string]: ?number};
+  +getAnotherMap: (arg: {[string]: string}) => {[string]: string};
   +getUnion: (chooseInt: ChooseInt, chooseFloat: ChooseFloat, chooseObject: ChooseObject, chooseString: ChooseString) => ChooseObject;
 }
 

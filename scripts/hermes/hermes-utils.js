@@ -17,7 +17,8 @@ const {execSync} = require('child_process');
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
 const HERMES_DIR = path.join(SDKS_DIR, 'hermes');
 const HERMES_TAG_FILE_PATH = path.join(SDKS_DIR, '.hermesversion');
-const HERMES_TARBALL_BASE_URL = 'https://github.com/facebook/hermes/tarball/';
+const HERMES_SOURCE_TARBALL_BASE_URL =
+  'https://github.com/facebook/hermes/tarball/';
 const HERMES_TARBALL_DOWNLOAD_DIR = path.join(SDKS_DIR, 'download');
 const MACOS_BIN_DIR = path.join(SDKS_DIR, 'hermesc', 'osx-bin');
 const MACOS_HERMESC_PATH = path.join(MACOS_BIN_DIR, 'hermesc');
@@ -71,11 +72,11 @@ function getHermesTarballDownloadPath(hermesTag) {
   return path.join(HERMES_TARBALL_DOWNLOAD_DIR, `hermes-${hermesTagSHA}.tgz`);
 }
 
-function downloadHermesTarball() {
+function downloadHermesSourceTarball() {
   const hermesTag = readHermesTag();
   const hermesTagSHA = getHermesTagSHA(hermesTag);
   const hermesTarballDownloadPath = getHermesTarballDownloadPath(hermesTag);
-  let hermesTarballUrl = HERMES_TARBALL_BASE_URL + hermesTag;
+  let hermesTarballUrl = HERMES_SOURCE_TARBALL_BASE_URL + hermesTag;
 
   if (fs.existsSync(hermesTarballDownloadPath)) {
     return;
@@ -95,7 +96,7 @@ function downloadHermesTarball() {
   }
 }
 
-function expandHermesTarball() {
+function expandHermesSourceTarball() {
   const hermesTag = readHermesTag();
   const hermesTagSHA = getHermesTagSHA(hermesTag);
   const hermesTarballDownloadPath = getHermesTarballDownloadPath(hermesTag);
@@ -196,7 +197,7 @@ set_target_properties(native-hermesc PROPERTIES
   }
 }
 
-function getHermesTarballName(buildType, releaseVersion) {
+function getHermesPrebuiltArtifactsTarballName(buildType, releaseVersion) {
   if (!buildType) {
     throw Error('Did not specify build type.');
   }
@@ -206,38 +207,33 @@ function getHermesTarballName(buildType, releaseVersion) {
   return `hermes-runtime-darwin-${buildType.toLowerCase()}-v${releaseVersion}.tar.gz`;
 }
 
-function createHermesTarball(
+function createHermesPrebuiltArtifactsTarball(
   hermesDir,
   buildType,
   releaseVersion,
   tarballOutputDir,
+  excludeDebugSymbols,
 ) {
-  if (!hermesDir) {
-    hermesDir = HERMES_DIR;
-  }
-  if (!fs.existsSync(hermesDir)) {
-    throw new Error(`Path to Hermes does not exist at ${hermesDir}`);
-  }
-  if (!fs.existsSync(path.join(hermesDir, 'destroot'))) {
-    throw new Error(
-      `destroot not found at ${path.join(
-        hermesDir,
-        'destroot',
-      )}. Are you sure Hermes has been built?`,
-    );
-  }
+  validateHermesFrameworksExist(path.join(hermesDir, 'destroot'));
+
   if (!fs.existsSync(tarballOutputDir)) {
     fs.mkdirSync(tarballOutputDir, {recursive: true});
   }
 
   let tarballTempDir;
-
   try {
     tarballTempDir = fs.mkdtempSync(
       path.join(os.tmpdir(), 'hermes-engine-destroot-'),
     );
 
-    execSync(`cp -R ./destroot ${tarballTempDir}`, {cwd: hermesDir});
+    let args = ['-a'];
+    if (excludeDebugSymbols) {
+      args.push('--exclude=dSYMs/');
+      args.push('--exclude=*.dSYM/');
+    }
+    execSync(`rsync ${args.join(' ')} ./destroot ${tarballTempDir}`, {
+      cwd: hermesDir,
+    });
     if (fs.existsSync(path.join(hermesDir, 'LICENSE'))) {
       execSync(`cp LICENSE ${tarballTempDir}`, {cwd: hermesDir});
     }
@@ -245,7 +241,10 @@ function createHermesTarball(
     throw new Error(`Failed to copy destroot to tempdir: ${error}`);
   }
 
-  const tarballFilename = getHermesTarballName(buildType, releaseVersion);
+  const tarballFilename = getHermesPrebuiltArtifactsTarballName(
+    buildType,
+    releaseVersion,
+  );
   const tarballOutputPath = path.join(tarballOutputDir, tarballFilename);
 
   try {
@@ -263,15 +262,36 @@ function createHermesTarball(
   return tarballOutputPath;
 }
 
+function validateHermesFrameworksExist(destrootDir) {
+  if (
+    !fs.existsSync(
+      path.join(destrootDir, 'Library/Frameworks/macosx/hermes.framework'),
+    )
+  ) {
+    throw new Error(
+      'Error: Hermes macOS Framework not found. Are you sure Hermes has been built?',
+    );
+  }
+  if (
+    !fs.existsSync(
+      path.join(destrootDir, 'Library/Frameworks/universal/hermes.xcframework'),
+    )
+  ) {
+    throw new Error(
+      'Error: Hermes iOS XCFramework not found. Are you sure Hermes has been built?',
+    );
+  }
+}
+
 module.exports = {
   configureMakeForPrebuiltHermesC,
   copyBuildScripts,
   copyPodSpec,
-  createHermesTarball,
-  downloadHermesTarball,
-  expandHermesTarball,
+  createHermesPrebuiltArtifactsTarball,
+  downloadHermesSourceTarball,
+  expandHermesSourceTarball,
   getHermesTagSHA,
-  getHermesTarballName,
+  getHermesPrebuiltArtifactsTarballName,
   readHermesTag,
   setHermesTag,
   shouldBuildHermesFromSource,
