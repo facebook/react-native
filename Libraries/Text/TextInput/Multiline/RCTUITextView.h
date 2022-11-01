@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
-@property (nonatomic, assign) BOOL scrollEnabled;
+@property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic, strong, nullable) RCTUIColor *selectionColor; // TODO(OSS Candidate ISS#2710739)
 @property (nonatomic, assign) UIEdgeInsets textContainerInsets;
 @property (nonatomic, copy) NSString *text;

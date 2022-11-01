@@ -742,6 +742,14 @@ exports.examples = ([
             multiline={true}
             style={styles.multiline}
           />
+          {/* [TODO(macOS GH#774) */}
+          <TextInput
+            placeholder="multiline text input with scroll disabled"
+            multiline={true}
+            scrollEnabled={false}
+            style={styles.multiline}
+          />
+          {/* [TODO(macOS GH#774) */}
           <TextInput
             placeholder="multiline text input with vertical scrollbar hidden"
             multiline={true}

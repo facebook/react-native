@@ -15,6 +15,7 @@
 {
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
   RCTUIScrollView *_scrollView;
+  RCTClipView *_clipView;
 #endif // ]TODO(macOS GH#774)
   RCTUITextView *_backedTextInputView;
 }
@@ -37,6 +38,9 @@
     _scrollView.hasVerticalRuler = NO;
     _scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     [_scrollView setHasVerticalScroller:YES];
+    
+    _clipView = [[RCTClipView alloc] initWithFrame:_scrollView.frame];
+    [_scrollView setContentView:_clipView];
     
     _backedTextInputView.verticallyResizable = YES;
     _backedTextInputView.horizontallyResizable = YES;
@@ -94,15 +98,33 @@
   [self setNeedsLayout];
 }
 
-- (void)setEnableFocusRing:(BOOL)enableFocusRing {
+- (void)setEnableFocusRing:(BOOL)enableFocusRing 
+{
   [super setEnableFocusRing:enableFocusRing];
   if ([_scrollView respondsToSelector:@selector(setEnableFocusRing:)]) {
     [_scrollView setEnableFocusRing:enableFocusRing];
   }
 }
 
-- (void)setReadablePasteBoardTypes:(NSArray<NSPasteboardType> *)readablePasteboardTypes {
+- (void)setReadablePasteBoardTypes:(NSArray<NSPasteboardType> *)readablePasteboardTypes 
+{
   [_backedTextInputView setReadablePasteBoardTypes:readablePasteboardTypes];
+}
+
+- (void)setScrollEnabled:(BOOL)scrollEnabled
+{
+  if (scrollEnabled) {
+    _scrollView.scrollEnabled = YES;
+    [_clipView setConstrainScrolling:NO];
+  } else {
+    _scrollView.scrollEnabled = NO;
+    [_clipView setConstrainScrolling:YES];
+  }
+}
+
+- (BOOL)scrollEnabled
+{
+  return _scrollView.isScrollEnabled;
 }
 
 - (BOOL)shouldShowVerticalScrollbar

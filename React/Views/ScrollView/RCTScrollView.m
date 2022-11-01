@@ -116,7 +116,7 @@
 
 - (void)scrollWheel:(NSEvent *)theEvent
 {
-  if (!self.scrollEnabled) {
+  if (!self.isScrollEnabled) {
     [[self nextResponder] scrollWheel:theEvent];
     return;
   }

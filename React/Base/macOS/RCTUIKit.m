@@ -436,6 +436,15 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
 
 @implementation RCTUIScrollView // TODO(macOS ISS#3536887)
 
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if (self = [super initWithFrame:frame]) {
+    self.scrollEnabled = YES;
+  }
+  
+  return self;
+}
+
 - (void)setEnableFocusRing:(BOOL)enableFocusRing {
   if (_enableFocusRing != enableFocusRing) {
     _enableFocusRing = enableFocusRing;
@@ -542,6 +551,7 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
   self.verticalScrollElasticity = alwaysBounceVertical ? NSScrollElasticityAllowed : NSScrollElasticityNone;
 }
 
+
 @end
 
 BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
@@ -557,3 +567,26 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
 
   return clipsToBounds;
 }
+
+@implementation RCTClipView
+
+- (instancetype)initWithFrame:(NSRect)frameRect
+{
+   if (self = [super initWithFrame:frameRect]) {
+    self.constrainScrolling = NO;
+    self.drawsBackground = NO;
+  }
+  
+  return self;
+}
+
+- (NSRect)constrainBoundsRect:(NSRect)proposedBounds
+{
+  if (self.constrainScrolling) {
+    return NSMakeRect(0, 0, 0, 0);
+  }
+  
+  return [super constrainBoundsRect:proposedBounds];
+}
+
+@end
