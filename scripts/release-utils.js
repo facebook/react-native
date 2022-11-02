@@ -115,10 +115,6 @@ function generateiOSArtifacts(
     `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesUtilsFolder}/build-ios-framework.sh`,
   );
 
-  exec(
-    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesUtilsFolder}/build-apple-framework.sh`,
-  );
-
   popd();
 
   const tarballOutputPath = createHermesPrebuiltArtifactsTarball(

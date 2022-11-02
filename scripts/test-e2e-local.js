@@ -234,7 +234,6 @@ if (argv.target === 'RNTester') {
     exec('yarn ios');
   } else {
     // android
-
     exec('yarn android');
   }
   popd();
