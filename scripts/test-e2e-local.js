@@ -218,19 +218,18 @@ if (argv.target === 'RNTester') {
     'echo "REACT_NATIVE_MAVEN_LOCAL_REPO=/private/tmp/maven-local" >> android/gradle.properties',
   );
 
+  // doing the pod install here so that it's easier to play around RNTestProject
+  cd('ios');
+  exec('bundle install');
+  exec(
+    `HERMES_ENGINE_TARBALL_PATH=${tarballOutputPath} USE_HERMES=${
+      argv.hermes ? 1 : 0
+    } bundle exec pod install --ansi`,
+  );
+
+  cd('..');
+
   if (argv.platform === 'iOS') {
-    // if we want iOS, we need to do pod install - but with a trick
-    cd('ios');
-    exec('bundle install');
-
-    // set HERMES_ENGINE_TARBALL_PATH to point to the local artifacts I just created
-    exec(
-      `HERMES_ENGINE_TARBALL_PATH=${tarballOutputPath} USE_HERMES=${
-        argv.hermes ? 1 : 0
-      } bundle exec pod install --ansi`,
-    );
-
-    cd('..');
     exec('yarn ios');
   } else {
     // android
