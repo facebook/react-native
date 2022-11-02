@@ -9,9 +9,11 @@
 
 'use strict';
 
-const {exec, echo, exit, test, env} = require('shelljs');
+const {exec, echo, exit, test, env, pushd, popd} = require('shelljs');
 const {saveFiles} = require('./scm-utils');
+const {createHermesPrebuiltArtifactsTarball} = require('./hermes/hermes-utils');
 
+// TODO: we should probably remove this because of this? https://github.com/facebook/react-native/pull/34846
 function saveFilesToRestore(tmpPublishingFolder) {
   const filesToSaveAndRestore = [
     'template/Gemfile',
@@ -94,8 +96,45 @@ function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
   echo('Published artifacts to Maven Central');
 }
 
+function generateiOSArtifacts(
+  jsiFolder,
+  hermesCoreSourceFolder,
+  buildType,
+  releaseVersion,
+  targetFolder,
+) {
+  pushd(`${hermesCoreSourceFolder}`);
+
+  //Need to generate hermesc
+  exec(
+    `${hermesCoreSourceFolder}/utils/build-hermesc-xcode.sh ${hermesCoreSourceFolder}/build_host_hermesc`,
+  );
+
+  //Generating iOS Artifacts
+  exec(
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesCoreSourceFolder}/utils/build-mac-framework.sh`,
+  );
+
+  exec(
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesCoreSourceFolder}/utils/build-ios-framework.sh`,
+  );
+
+  popd();
+
+  const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
+    hermesCoreSourceFolder,
+    buildType,
+    releaseVersion,
+    targetFolder,
+    true, // this is excludeDebugSymbols, we keep it as the default
+  );
+
+  return tarballOutputPath;
+}
+
 module.exports = {
   generateAndroidArtifacts,
+  generateiOSArtifacts,
   publishAndroidArtifactsToMaven,
   saveFilesToRestore,
 };
