@@ -8,8 +8,9 @@
  */
 
 import type * as React from 'react';
-import {Constructor, TimerMixin} from 'Utilities';
-import {NativeMethods} from '../../Renderer/shims/ReactNativeTypes';
+import {Constructor} from '../../../types/private/Utilities';
+import {TimerMixin} from '../../../types/private/TimerMixin';
+import {NativeMethods} from '../../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
 import {TouchableMixin} from './Touchable';

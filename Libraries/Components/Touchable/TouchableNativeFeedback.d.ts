@@ -8,7 +8,7 @@
  */
 
 import type * as React from 'react';
-import {Constructor} from 'Utilities';
+import {Constructor} from '../../../types/private/Utilities';
 import {ColorValue} from '../../StyleSheet/StyleSheet';
 import {TouchableMixin} from './Touchable';
 

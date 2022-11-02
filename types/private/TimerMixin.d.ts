@@ -7,9 +7,6 @@
  * @format
  */
 
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-export type Constructor<T> = new (...args: any[]) => T;
-
 export interface TimerMixin {
   setTimeout: typeof setTimeout;
   clearTimeout: typeof clearTimeout;
@@ -19,11 +16,4 @@ export interface TimerMixin {
   clearImmediate: typeof clearImmediate;
   requestAnimationFrame: typeof requestAnimationFrame;
   cancelAnimationFrame: typeof cancelAnimationFrame;
-}
-
-export interface Insets {
-  top?: number | undefined;
-  left?: number | undefined;
-  bottom?: number | undefined;
-  right?: number | undefined;
 }

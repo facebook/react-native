@@ -8,7 +8,8 @@
  */
 
 import type * as React from 'react';
-import {Constructor, Insets} from 'Utilities';
+import {Constructor} from '../../../types/private/Utilities';
+import {Insets} from '../../../types/public/Insets';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
 import {
