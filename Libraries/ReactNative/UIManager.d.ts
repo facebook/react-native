@@ -12,7 +12,7 @@ import {
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
-} from '../Renderer/shims/ReactNativeTypes';
+} from '../../types/public/ReactNativeTypes';
 
 export interface UIManagerStatic {
   /**

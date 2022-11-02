@@ -7,7 +7,7 @@
  * @format
  */
 
-import {GestureResponderHandlers} from '../Renderer/implementations/ReactNativeRenderer';
+import {GestureResponderHandlers} from '../../types/public/ReactNativeRenderer';
 import {GestureResponderEvent} from '../Types/CoreEventTypes';
 
 export interface PanResponderGestureState {
