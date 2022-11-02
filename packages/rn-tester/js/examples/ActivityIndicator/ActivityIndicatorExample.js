@@ -17,7 +17,7 @@ function ToggleAnimatingActivityIndicator() {
 
   const [animating, setAnimating] = useState(true);
 
-  const setToggleTimeout = useCallback(() => {
+  const setToggleTimeout: () => void = useCallback(() => {
     timer.current = setTimeout(() => {
       setAnimating(currentState => !currentState);
       setToggleTimeout();

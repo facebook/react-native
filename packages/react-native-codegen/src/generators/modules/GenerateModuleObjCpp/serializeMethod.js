@@ -295,7 +295,7 @@ function getParamObjCType(
 function getReturnObjCType(
   methodName: string,
   nullableTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
-) {
+): string {
   const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
 
   function wrapIntoNullableIfNeeded(generatedType: string) {
