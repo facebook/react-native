@@ -64,7 +64,7 @@ object ReactMapBufferPropSetter {
   private const val VP_POINTER_OVER_CAPTURE = 44
   private const val VP_BORDER_CURVES = 45 // iOS only
   private const val VP_FG_COLOR = 46 // iOS only?
-  private const val VP_ACCESSIBILITY_UNIT = 99
+  private const val VP_ACCESSIBILITY_UNIT = 89
 
   // Yoga values
   private const val YG_BORDER_WIDTH = 100
