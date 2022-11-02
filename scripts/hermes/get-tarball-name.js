@@ -10,33 +10,56 @@
 'use strict';
 
 /**
- * This script returns the filename that would be used for a
- * Hermes tarball for the given build type and release version.
+ * This script returns the filename that would be used for a Hermes tarball
+ * for the given tarball type, build type and release version.
  */
 const yargs = require('yargs');
-const {getHermesPrebuiltArtifactsTarballName} = require('./hermes-utils');
+const {
+  getHermesDebugSymbolsTarballName,
+  getHermesPrebuiltArtifactsTarballName,
+} = require('./hermes-utils');
 
 let argv = yargs
   .option('b', {
     alias: 'buildType',
     type: 'string',
-    describe: 'Specifies whether Hermes was built for Debug or Release.',
+    choices: ['Debug', 'Release'],
+    describe:
+      'Specifies which Hermes build type to use when generating the name for the tarball.',
     default: 'Debug',
   })
+  .version(false) // Disables --version as an alias for -v
   .option('v', {
     alias: 'releaseVersion',
     type: 'string',
-    describe: 'The version of React Native that will use this tarball.',
+    describe: 'The version string to use in the name for this tarball.',
     default: '1000.0.0',
+  })
+  .option('t', {
+    alias: 'tarballType',
+    type: 'string',
+    choices: ['prebuilts', 'dsyms'],
+    describe: 'Which Hermes tarball is this name for?',
+    default: 'prebuilts',
+    defaultDescription: 'Prebuilt Artifacts',
   }).argv;
 
 async function main() {
-  const tarballName = getHermesPrebuiltArtifactsTarballName(
-    argv.buildType,
-    argv.releaseVersion,
-  );
-  console.log(tarballName);
-  return tarballName;
+  if (argv.tarballType === 'prebuilts') {
+    const tarballName = getHermesPrebuiltArtifactsTarballName(
+      argv.buildType,
+      argv.releaseVersion,
+    );
+    console.log(tarballName);
+    return tarballName;
+  } else if (argv.tarballType === 'dsyms') {
+    const tarballName = getHermesDebugSymbolsTarballName(
+      argv.buildType,
+      argv.releaseVersion,
+    );
+    console.log(tarballName);
+    return tarballName;
+  }
 }
 
 main().then(() => {

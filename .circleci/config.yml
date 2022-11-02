@@ -26,8 +26,10 @@ references:
 
   hermes_workspace_root: &hermes_workspace_root
     /tmp/hermes
-  hermes_tarball_artifacts_dir: &hermes_tarball_artifacts_dir
+  hermes_prebuilts_tarball_artifacts_dir: &hermes_prebuilts_tarball_artifacts_dir
     /tmp/hermes/hermes-runtime-darwin
+  hermes_dsyms_tarball_artifacts_dir: &hermes_dsyms_tarball_artifacts_dir
+    /tmp/hermes/hermes-dsyms
   hermes_osxbin_artifacts_dir: &hermes_osxbin_artifacts_dir
     /tmp/hermes/osx-bin
   attach_hermes_workspace: &attach_hermes_workspace
@@ -66,7 +68,7 @@ references:
       - ~/react-native/sdks/hermes/build_macosx
       - ~/react-native/sdks/hermes/destroot
     hermes_tarball_cache_paths: &hermes_tarball_cache_paths
-      - *hermes_tarball_artifacts_dir
+      - *hermes_prebuilts_tarball_artifacts_dir
 
   # -------------------------
   #        Filters
@@ -259,7 +261,7 @@ commands:
           name: Report size of RNTester.app (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
 
-  with_hermes_tarball_cache_span:
+  with_hermes_prebuilts_tarball_cache_span:
     parameters:
       steps:
         type: steps
@@ -271,9 +273,9 @@ commands:
         description: The Hermes build type. Must be one of "Debug", "Release".
         type: enum
         enum: ["Debug", "Release"]
-      hermes_tarball_artifacts_dir:
+      hermes_prebuilts_tarball_artifacts_dir:
         type: string
-        default: *hermes_tarball_artifacts_dir
+        default: *hermes_prebuilts_tarball_artifacts_dir
     steps:
       - when:
           condition:
@@ -293,11 +295,11 @@ commands:
           condition: << parameters.set_tarball_path >>
           steps:
             - run:
-                name: Set HERMES_ENGINE_TARBALL_PATH envvar if Hermes tarball is present
+                name: Set HERMES_ENGINE_TARBALL_PATH envvar if Hermes prebuilts tarball is present
                 command: |
-                  HERMES_TARBALL_ARTIFACTS_DIR=<< parameters.hermes_tarball_artifacts_dir >>
-                  if [ ! -d $HERMES_TARBALL_ARTIFACTS_DIR ]; then
-                    echo "Hermes tarball artifacts dir not present ($HERMES_TARBALL_ARTIFACTS_DIR). Build Hermes from source."
+                  HERMES_PREBUILTS_TARBALL_ARTIFACTS_DIR=<< parameters.hermes_prebuilts_tarball_artifacts_dir >>
+                  if [ ! -d $HERMES_PREBUILTS_TARBALL_ARTIFACTS_DIR ]; then
+                    echo "Hermes tarball artifacts dir not present ($HERMES_PREBUILTS_TARBALL_ARTIFACTS_DIR). Build Hermes from source."
                     exit 0
                   fi
 
@@ -306,19 +308,22 @@ commands:
                     exit 0
                   fi
 
-                  TARBALL_FILENAME=$(node ~/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>" --releaseVersion "*")
-                  TARBALL_PATH=$(ls $HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME)
+                  PREBUILTS_TARBALL_FILENAME=$(node ~/react-native/scripts/hermes/get-tarball-name.js \
+                    --tarballType prebuilts \
+                    --buildType "<< parameters.flavor >>" \
+                    --releaseVersion "*")
+                  PREBUILTS_TARBALL_PATH=$(ls $HERMES_PREBUILTS_TARBALL_ARTIFACTS_DIR/$PREBUILTS_TARBALL_FILENAME)
 
-                  echo "Looking for $TARBALL_FILENAME in $HERMES_TARBALL_ARTIFACTS_DIR"
-                  echo "$TARBALL_PATH"
+                  echo "Looking for $PREBUILTS_TARBALL_FILENAME in $HERMES_PREBUILTS_TARBALL_ARTIFACTS_DIR"
+                  echo "$PREBUILTS_TARBALL_PATH"
 
-                  if [ ! -f $TARBALL_PATH ]; then
-                    echo "Hermes tarball not present ($TARBALL_PATH). Build Hermes from source."
+                  if [ ! -f $PREBUILTS_TARBALL_PATH ]; then
+                    echo "Hermes tarball not present ($PREBUILTS_TARBALL_PATH). Build Hermes from source."
                     exit 0
                   fi
 
-                  echo "Found Hermes tarball at $TARBALL_PATH"
-                  echo "export HERMES_ENGINE_TARBALL_PATH=$TARBALL_PATH" >> $BASH_ENV
+                  echo "Found Hermes prebuilts tarball at $PREBUILTS_TARBALL_PATH. Configuring HERMES_ENGINE_TARBALL_PATH."
+                  echo "export HERMES_ENGINE_TARBALL_PATH=$PREBUILTS_TARBALL_PATH" >> $BASH_ENV
       - steps: << parameters.steps >>
       - when:
           condition:
@@ -589,7 +594,7 @@ jobs:
           name: Setup the CocoaPods environment
           command: bundle exec pod setup
 
-      - with_hermes_tarball_cache_span:
+      - with_hermes_prebuilts_tarball_cache_span:
           set_tarball_path: True
           steps:
             - with_rntester_pods_cache_span:
@@ -928,7 +933,7 @@ jobs:
           background: true
           command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
 
-      - with_hermes_tarball_cache_span:
+      - with_hermes_prebuilts_tarball_cache_span:
           set_tarball_path: True
           steps:
             - run:
@@ -1173,7 +1178,8 @@ jobs:
     executor: reactnativeios
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
-      - HERMES_TARBALL_ARTIFACTS_DIR: *hermes_tarball_artifacts_dir
+      - HERMES_PREBUILTS_TARBALL_ARTIFACTS_DIR: *hermes_prebuilts_tarball_artifacts_dir
+      - HERMES_DSYMS_TARBALL_ARTIFACTS_DIR: *hermes_dsyms_tarball_artifacts_dir
       - HERMES_OSXBIN_ARTIFACTS_DIR: *hermes_osxbin_artifacts_dir
     steps:
       - checkout_code_with_cache
@@ -1200,7 +1206,7 @@ jobs:
             cp -r $HERMES_WS_DIR/hermes/* ./sdks/hermes/.
       - brew_install:
           package: cmake
-      - with_hermes_tarball_cache_span:
+      - with_hermes_prebuilts_tarball_cache_span:
           flavor: << parameters.flavor >>
           steps:
             - with_hermesc_span:
@@ -1233,20 +1239,43 @@ jobs:
                     RELEASE_VERSION=$(get_release_version)
                   popd
 
-                  TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE" --releaseVersion "$RELEASE_VERSION")
+                  mkdir -p $HERMES_PREBUILTS_TARBALL_ARTIFACTS_DIR $HERMES_DSYMS_TARBALL_ARTIFACTS_DIR
 
-                  echo "Packaging Hermes Apple frameworks for $BUILD_TYPE build type"
+                  function create_tarball_artifact {
+                    tarball_type="$1"; shift
+                    input_dir="$1"; shift
+                    build_type="$1"; shift
+                    release_version="$1"; shift
+                    output_dir="$1"; shift
+                    artifacts_dir="$1"; shift
 
-                  TARBALL_OUTPUT_PATH=$(node ./scripts/hermes/create-tarball.js \
-                    --inputDir ./sdks/hermes \
-                    --buildType "$BUILD_TYPE" \
-                    --releaseVersion "$RELEASE_VERSION" \
-                    --outputDir $TARBALL_OUTPUT_DIR)
+                    local tarball_output_path=$(node ./scripts/hermes/create-tarball.js \
+                      --tarballType $tarball_type \
+                      --inputDir $input_dir \
+                      --buildType $build_type \
+                      --releaseVersion $release_version \
+                      --outputDir $output_dir)
 
-                  echo "Hermes tarball saved to $TARBALL_OUTPUT_PATH"
+                    cp $tarball_output_path $artifacts_dir/.
+                    echo "Hermes $tarball_type tarball saved to $tarball_output_path and stored in $artifacts_dir"
+                  }
 
-                  mkdir -p $HERMES_TARBALL_ARTIFACTS_DIR
-                  cp $TARBALL_OUTPUT_PATH $HERMES_TARBALL_ARTIFACTS_DIR/.
+                  create_tarball_artifact \
+                    prebuilts \
+                    ./sdks/hermes \
+                    "$BUILD_TYPE" \
+                    "$RELEASE_VERSION" \
+                    $TARBALL_OUTPUT_DIR \
+                    $HERMES_PREBUILTS_TARBALL_ARTIFACTS_DIR
+
+                  create_tarball_artifact \
+                    dsyms \
+                    ./sdks/hermes \
+                    "$BUILD_TYPE" \
+                    "$RELEASE_VERSION" \
+                    $TARBALL_OUTPUT_DIR \
+                    $HERMES_DSYMS_TARBALL_ARTIFACTS_DIR
+
             - when:
                 condition:
                   equal: [ << parameters.flavor >>, "Debug"]
@@ -1262,13 +1291,16 @@ jobs:
                       key: *hermes_workspace_release_cache_key
                       paths: *hermes_workspace_macos_cache_paths
             - store_artifacts:
-                path: *hermes_tarball_artifacts_dir
+                path: *hermes_prebuilts_tarball_artifacts_dir
+            - store_artifacts:
+                path: *hermes_dsyms_tarball_artifacts_dir
             - store_artifacts:
                 path: *hermes_osxbin_artifacts_dir
             - persist_to_workspace:
                 root: /tmp/hermes/
                 paths:
                   - hermes-runtime-darwin
+                  - hermes-dsyms
                   - osx-bin
 
   build_hermesc_windows:
@@ -1396,7 +1428,11 @@ jobs:
           command: |
             mkdir -p ./sdks/hermesc ./sdks/hermesc/osx-bin ./sdks/hermesc/win64-bin ./sdks/hermesc/linux64-bin
 
-            # When build_hermes_macos runs as a matrix, it outputs
+            # When running a job in a matrix, each instance of the job must be
+            # careful to avoid persisting the same filepath to a workspace.
+            # We end up with a Release and Debug hermesc binary, but they're
+            # identical because we do not configure a build type when building
+            # hermesc.
             if [[ -d $HERMES_WS_DIR/osx-bin/Release ]]; then
               cp -r $HERMES_WS_DIR/osx-bin/Release/* ./sdks/hermesc/osx-bin/.
             elif [[ -d $HERMES_WS_DIR/osx-bin/Debug ]]; then
@@ -1517,11 +1553,18 @@ jobs:
 
                   ARTIFACTS=("")
                   for build_type in "Debug" "Release"; do
-                    TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js \
+                    PREBUILTS_TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js \
+                      --tarballType prebuilts \
                       --buildType $build_type \
                       --releaseVersion $RELEASE_VERSION)
 
-                    ARTIFACTS+=("$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME")
+                    DSYMS_TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js \
+                      --tarballType dsyms \
+                      --buildType $build_type \
+                      --releaseVersion $RELEASE_VERSION)
+
+                    ARTIFACTS+=("$HERMES_WS_DIR/hermes-runtime-darwin/$PREBUILTS_TARBALL_FILENAME")
+                    ARTIFACTS+=("$HERMES_WS_DIR/hermes-dsyms/$DSYMS_TARBALL_FILENAME")
                   done
 
                   ./scripts/circleci/create_github_release.sh \

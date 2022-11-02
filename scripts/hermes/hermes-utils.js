@@ -27,6 +27,14 @@ const MACOS_IMPORT_HERMESC_PATH = path.join(
   'ImportHermesc.cmake',
 );
 
+const HERMES_DSYMS_PLATFORM_DIR_MAPPING = {
+  macOS: 'macosx/',
+  iOS: 'universal/hermes.xcframework/ios-arm64/dSYMs/',
+  Simulator: 'universal/hermes.xcframework/ios-arm64_x86_64-simulator/dSYMs/',
+  MacCatalyst:
+    'universal/hermes.xcframework/ios-arm64_x86_64-maccatalyst/dSYMs/',
+};
+
 /**
  * Delegate execution to the supplied command.
  *
@@ -222,6 +230,16 @@ function getHermesPrebuiltArtifactsTarballName(buildType, releaseVersion) {
   return `hermes-runtime-darwin-${buildType.toLowerCase()}-v${releaseVersion}.tar.gz`;
 }
 
+function getHermesDebugSymbolsTarballName(buildType, releaseVersion) {
+  if (!buildType) {
+    throw Error('Did not specify build type.');
+  }
+  if (!releaseVersion) {
+    throw Error('Did not specify release version.');
+  }
+  return `hermes-dSYMs-${buildType.toLowerCase()}-v${releaseVersion}.tar.gz`;
+}
+
 /**
  * Creates a tarball with the contents of the supplied directory.
  */
@@ -307,16 +325,91 @@ function validateHermesFrameworksExist(destrootDir) {
   }
 }
 
+function validateDebugSymbolsExist(destrootDir) {
+  const frameworksDir = path.join(destrootDir, 'Library/Frameworks/');
+  for (const [platform, dsymsDir] of Object.entries(
+    HERMES_DSYMS_PLATFORM_DIR_MAPPING,
+  )) {
+    const pathToDebugSymbols = path.join(
+      frameworksDir,
+      dsymsDir,
+      'hermes.framework.dSYM',
+    );
+    if (!fs.existsSync(pathToDebugSymbols)) {
+      throw new Error(
+        `Error: Hermes ${platform} debug symbols not found at ${pathToDebugSymbols}. To generate debug symbols, Hermes must be built with HERMES_BUILD_APPLE_DSYM=true`,
+      );
+    }
+  }
+}
+
+function createHermesDebugSymbolsTarball(
+  hermesDir,
+  buildType,
+  releaseVersion,
+  tarballOutputDir,
+) {
+  validateDebugSymbolsExist(path.join(hermesDir, 'destroot'));
+
+  if (!fs.existsSync(tarballOutputDir)) {
+    fs.mkdirSync(tarballOutputDir, {recursive: true});
+  }
+
+  let tarballTempDir;
+  try {
+    tarballTempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hermes-dsyms-'));
+    for (const [platform, dsymsDir] of Object.entries(
+      HERMES_DSYMS_PLATFORM_DIR_MAPPING,
+    )) {
+      fs.mkdirSync(path.join(tarballTempDir, platform), {recursive: true});
+      const source = path.join(
+        'destroot/Library/Frameworks',
+        dsymsDir,
+        'hermes.framework.dSYM',
+      );
+      const destination = path.join(tarballTempDir, platform, '.');
+      delegateSync('rsync', ['-a', source, destination], {
+        cwd: hermesDir,
+      });
+    }
+  } catch (error) {
+    throw new Error(`Failed to copy dSYMs to temporary directory: ${error}`);
+  }
+
+  const tarballFilename = path.join(
+    tarballOutputDir,
+    getHermesDebugSymbolsTarballName(buildType, releaseVersion),
+  );
+
+  try {
+    createTarballFromDirectory(tarballTempDir, tarballFilename);
+  } catch (error) {
+    throw new Error(
+      `[Hermes] Failed to create debug symbols tarball: ${error}`,
+    );
+  }
+
+  if (!fs.existsSync(tarballFilename)) {
+    throw new Error(
+      `Tarball creation failed, could not locate tarball at ${tarballFilename}`,
+    );
+  }
+
+  return tarballFilename;
+}
+
 module.exports = {
   configureMakeForPrebuiltHermesC,
   copyBuildScripts,
   copyPodSpec,
+  createHermesDebugSymbolsTarball,
   createHermesPrebuiltArtifactsTarball,
   createTarballFromDirectory,
   downloadHermesSourceTarball,
   expandHermesSourceTarball,
   getHermesTagSHA,
   getHermesTarballDownloadPath,
+  getHermesDebugSymbolsTarballName,
   getHermesPrebuiltArtifactsTarballName,
   readHermesTag,
   setHermesTag,

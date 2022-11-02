@@ -42,7 +42,7 @@ elif [[ $RELEASE_TYPE == "nightly" ]]; then
   describe "GitHub Releases are not used with nightlies. Skipping."
   exit 0
 else
-  echoerr "Unrecognized release type: $RELEASE_TYPE"
+  echoerr "Unrecognized release type: $RELEASE_TYPE. Must be one of 'release', 'dry-run', 'nightly'."
   exit 1
 fi
 
@@ -96,11 +96,17 @@ elif [[ $RELEASE_TYPE == "dry-run" ]]; then
 fi
 
 # Upload artifacts
-describe_header "Uploading artifacts to GitHub release."
+describe_header "Uploading artifacts to GitHub release:"
 for ARTIFACT_PATH in "${ARTIFACTS[@]}"
 do
     :
     # Upload Hermes artifacts to GitHub Release
+
+    if [[ ! -f "$ARTIFACT_PATH" ]]; then
+      echoerr "Could not locate artifact: $ARTIFACT_PATH"
+      exit 1
+    fi
+
     ARTIFACT_NAME=$(basename "$ARTIFACT_PATH")
     describe "Uploading $ARTIFACT_NAME..."
 

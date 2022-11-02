@@ -15,11 +15,13 @@ const {
   configureMakeForPrebuiltHermesC,
   copyBuildScripts,
   copyPodSpec,
+  createHermesDebugSymbolsTarball,
   createHermesPrebuiltArtifactsTarball,
   createTarballFromDirectory,
   downloadHermesSourceTarball,
   expandHermesSourceTarball,
   getHermesTarballDownloadPath,
+  getHermesDebugSymbolsTarballName,
   getHermesPrebuiltArtifactsTarballName,
   getHermesTagSHA,
   readHermesTag,
@@ -77,7 +79,7 @@ jest.mock('child_process', () => ({
       }
     }
 
-    // rsync is used in createHermesPrebuiltArtifactsTarball
+    // rsync is used in createHermesPrebuiltArtifactsTarball and createHermesDebugSymbolsTarball
     if (command === 'rsync') {
       spawnCalls.rsync = true;
       spawnCalls.rsyncArgs = args;
@@ -460,6 +462,61 @@ describe('hermes-utils', () => {
         expect(spawnCalls.rsyncArgs.length).toEqual(5);
         expect(spawnCalls.rsyncArgs[1]).toEqual('--exclude=dSYMs/');
         expect(spawnCalls.rsyncArgs[2]).toEqual('--exclude=*.dSYM/');
+      });
+    });
+
+    describe('getHermesDebugSymbolsTarballName', () => {
+      it('should return Hermes debug symbols tarball name for debug builds', () => {
+        expect(getHermesDebugSymbolsTarballName('Debug', '1000.0.0')).toEqual(
+          'hermes-dSYMs-debug-v1000.0.0.tar.gz',
+        );
+      });
+      it('should return Hermes debug symbols tarball name for release builds', () => {
+        expect(getHermesDebugSymbolsTarballName('Release', '1000.0.0')).toEqual(
+          'hermes-dSYMs-release-v1000.0.0.tar.gz',
+        );
+      });
+      it('should throw if build type is undefined', () => {
+        expect(() => {
+          getHermesDebugSymbolsTarballName();
+        }).toThrow('Did not specify build type.');
+      });
+      it('should throw if release version is undefined', () => {
+        expect(() => {
+          getHermesDebugSymbolsTarballName('Release');
+        }).toThrow('Did not specify release version.');
+      });
+      it('should return debug Hermes debug symbols tarball name for RN 0.70.0', () => {
+        expect(getHermesDebugSymbolsTarballName('Debug', '0.70.0')).toEqual(
+          'hermes-dSYMs-debug-v0.70.0.tar.gz',
+        );
+      });
+      it('should return a wildcard Hermes debug symbols tarball name for any RN version', () => {
+        expect(getHermesDebugSymbolsTarballName('Debug', '*')).toEqual(
+          'hermes-dSYMs-debug-v*.tar.gz',
+        );
+      });
+    });
+
+    describe('createHermesDebugSymbolsTarball', () => {
+      it('creates tarball', () => {
+        const tarballOutputDir = fs.mkdtempSync(
+          path.join(os.tmpdir(), 'hermes-dsyms-'),
+        );
+        fs.mkdirSync(tarballOutputDir, {
+          recursive: true,
+        });
+
+        const tarballOutputPath = createHermesDebugSymbolsTarball(
+          path.join(SDKS_DIR, 'hermes'),
+          'Debug',
+          '1000.0.0',
+          tarballOutputDir,
+        );
+        expect(fs.existsSync(tarballOutputPath)).toBe(true);
+        expect(spawnCalls.rsync).toBe(true);
+        // rsync -a src dest
+        expect(spawnCalls.rsyncArgs.length).toEqual(3);
       });
     });
   });
