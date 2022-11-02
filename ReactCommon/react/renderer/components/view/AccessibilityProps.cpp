@@ -201,6 +201,17 @@ AccessibilityProps::AccessibilityProps(
     accessibilityTraits = traits;
     accessibilityRole = roleString;
   }
+  if (!CoreFeatures::enablePropIteratorSetter) {
+    const auto *rawPropValue =
+        rawProps.at("accessibilityUnit", nullptr, nullptr);
+    std::string unitString;
+    if (rawPropValue == nullptr || !rawPropValue->hasValue()) {
+      unitString = "";
+    } else {
+      fromRawValue(context, *rawPropValue, unitString);
+    }
+    accessibilityUnit = unitString;
+  }
 }
 
 void AccessibilityProps::setProp(
@@ -224,7 +235,6 @@ void AccessibilityProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityMagicTap, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityEscape, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityAction, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityUnit, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(
         importantForAccessibility, ImportantForAccessibility::Auto);
     RAW_SET_PROP_SWITCH_CASE(testId, "testID", std::string{""});
@@ -238,6 +248,15 @@ void AccessibilityProps::setProp(
 
       accessibilityTraits = traits;
       accessibilityRole = roleString;
+      return;
+    }
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("accessibilityUnit"): {
+      std::string unitString;
+      if (value.hasValue()) {
+        fromRawValue(context, value, unitString);
+      }
+
+      accessibilityUnit = unitString;
       return;
     }
   }

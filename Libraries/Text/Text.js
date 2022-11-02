@@ -226,7 +226,7 @@ const Text: React.AbstractComponent<
       accessibilityState={_accessibilityState}
       {...eventHandlersForText}
       accessibilityLabel={ariaLabel ?? accessibilityLabel}
-      accessibilityUnit="verbatim"
+      accessibilityUnit="none"
       accessibilityRole={
         role ? getAccessibilityRoleFromRole(role) : accessibilityRole
       }
@@ -252,6 +252,7 @@ const Text: React.AbstractComponent<
             : _accessible
         }
         accessibilityLabel={ariaLabel ?? accessibilityLabel}
+        accessibilityUnit="none"
         accessibilityState={nativeTextAccessibilityState}
         accessibilityRole={
           role ? getAccessibilityRoleFromRole(role) : accessibilityRole
