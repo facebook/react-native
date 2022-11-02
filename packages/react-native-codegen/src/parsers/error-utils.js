@@ -265,18 +265,24 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
   type: string,
   language: ParserType,
 ) {
-  const invalidPropertyValueType =
-    UnsupportedArrayElementTypeAnnotationTypeToInvalidArrayElementTypeAnnotationTypeMap[
-      type
-    ];
+  if (
+    type === 'VoidTypeAnnotation' ||
+    type === 'PromiseTypeAnnotation' ||
+    type === 'FunctionTypeAnnotation'
+  ) {
+    const invalidPropertyValueType =
+      UnsupportedArrayElementTypeAnnotationTypeToInvalidArrayElementTypeAnnotationTypeMap[
+        type
+      ];
 
-  throw new UnsupportedArrayElementTypeAnnotationParserError(
-    hasteModuleName,
-    flowElementType,
-    flowArrayType,
-    invalidPropertyValueType,
-    language,
-  );
+    throw new UnsupportedArrayElementTypeAnnotationParserError(
+      hasteModuleName,
+      flowElementType,
+      flowArrayType,
+      invalidPropertyValueType,
+      language,
+    );
+  }
 }
 
 module.exports = {

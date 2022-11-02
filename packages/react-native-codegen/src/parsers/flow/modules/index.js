@@ -113,28 +113,20 @@ function translateArrayTypeAnnotation(
       ),
     );
 
-    if (
-      elementType.type === 'VoidTypeAnnotation' ||
-      elementType.type === 'PromiseTypeAnnotation' ||
-      elementType.type === 'FunctionTypeAnnotation'
-    ) {
-      throwIfArrayElementTypeAnnotationIsUnsupported(
-        hasteModuleName,
-        flowElementType,
-        flowArrayType,
-        elementType.type,
-        language,
-      );
-    }
+    throwIfArrayElementTypeAnnotationIsUnsupported(
+      hasteModuleName,
+      flowElementType,
+      flowArrayType,
+      elementType.type,
+      language,
+    );
 
-    const finalTypeAnnotation: NativeModuleArrayTypeAnnotation<
-      Nullable<NativeModuleBaseTypeAnnotation>,
-    > = {
+    return wrapNullable(nullable, {
       type: 'ArrayTypeAnnotation',
-      elementType: wrapNullable(isElementTypeNullable, elementType),
-    };
+      // $FlowFixMe[incompatible-call]
+      elementType: wrapNullable(isElementTypeNullable, elementType)
+    });
 
-    return wrapNullable(nullable, finalTypeAnnotation);
   } catch (ex) {
     return wrapNullable(nullable, {
       type: 'ArrayTypeAnnotation',

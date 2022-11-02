@@ -114,40 +114,19 @@ function translateArrayTypeAnnotation(
       ),
     );
 
-    if (
-      elementType.type === 'VoidTypeAnnotation' ||
-      elementType.type === 'PromiseTypeAnnotation' ||
-      elementType.type === 'FunctionTypeAnnotation'
-    ) {
-      throwIfArrayElementTypeAnnotationIsUnsupported(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        elementType.type,
-        language,
-      );
-    }
+    throwIfArrayElementTypeAnnotationIsUnsupported(
+      hasteModuleName,
+      tsElementType,
+      tsArrayType,
+      elementType.type,
+      language,
+    );
 
-    // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
-    // Right now they are partially treated as UnionTypeAnnotation
-    if (elementType.type === 'UnionTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        'UnionTypeAnnotation',
-        language,
-      );
-    }
-
-    const finalTypeAnnotation: NativeModuleArrayTypeAnnotation<
-      Nullable<NativeModuleBaseTypeAnnotation>,
-    > = {
+    return wrapNullable(nullable, {
       type: 'ArrayTypeAnnotation',
+      // $FlowFixMe[incompatible-call]
       elementType: wrapNullable(isElementTypeNullable, elementType),
-    };
-
-    return wrapNullable(nullable, finalTypeAnnotation);
+    });
   } catch (ex) {
     return wrapNullable(nullable, {
       type: 'ArrayTypeAnnotation',
