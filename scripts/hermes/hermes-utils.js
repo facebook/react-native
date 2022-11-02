@@ -12,7 +12,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const {execSync} = require('child_process');
+const {execSync, spawnSync} = require('child_process');
 
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
 const HERMES_DIR = path.join(SDKS_DIR, 'hermes');
@@ -26,6 +26,17 @@ const MACOS_IMPORT_HERMESC_PATH = path.join(
   MACOS_BIN_DIR,
   'ImportHermesc.cmake',
 );
+
+/**
+ * Delegate execution to the supplied command.
+ *
+ * @param command Path to the command.
+ * @param args Array of arguments pass to the command.
+ * @param options child process options.
+ */
+function delegateSync(command, args, options) {
+  return spawnSync(command, args, {stdio: 'inherit', ...options});
+}
 
 function readHermesTag() {
   if (fs.existsSync(HERMES_TAG_FILE_PATH)) {
@@ -90,7 +101,7 @@ function downloadHermesSourceTarball() {
     `[Hermes] Downloading Hermes source code for commit ${hermesTagSHA}`,
   );
   try {
-    execSync(`curl ${hermesTarballUrl} -Lo ${hermesTarballDownloadPath}`);
+    delegateSync('curl', [hermesTarballUrl, '-Lo', hermesTarballDownloadPath]);
   } catch (error) {
     throw new Error(`[Hermes] Failed to download Hermes tarball. ${error}`);
   }
@@ -110,9 +121,13 @@ function expandHermesSourceTarball() {
   }
   console.info(`[Hermes] Expanding Hermes tarball for commit ${hermesTagSHA}`);
   try {
-    execSync(
-      `tar -zxf ${hermesTarballDownloadPath} --strip-components=1 --directory ${HERMES_DIR}`,
-    );
+    delegateSync('tar', [
+      '-zxf',
+      hermesTarballDownloadPath,
+      '--strip-components=1',
+      '--directory',
+      HERMES_DIR,
+    ]);
   } catch (error) {
     throw new Error('[Hermes] Failed to expand Hermes tarball.');
   }
@@ -207,6 +222,14 @@ function getHermesPrebuiltArtifactsTarballName(buildType, releaseVersion) {
   return `hermes-runtime-darwin-${buildType.toLowerCase()}-v${releaseVersion}.tar.gz`;
 }
 
+/**
+ * Creates a tarball with the contents of the supplied directory.
+ */
+function createTarballFromDirectory(directory, filename) {
+  const args = ['-C', directory, '-czvf', filename, '.'];
+  delegateSync('tar', args);
+}
+
 function createHermesPrebuiltArtifactsTarball(
   hermesDir,
   buildType,
@@ -231,35 +254,36 @@ function createHermesPrebuiltArtifactsTarball(
       args.push('--exclude=dSYMs/');
       args.push('--exclude=*.dSYM/');
     }
-    execSync(`rsync ${args.join(' ')} ./destroot ${tarballTempDir}`, {
+    args.push('./destroot');
+    args.push(tarballTempDir);
+    delegateSync('rsync', args, {
       cwd: hermesDir,
     });
     if (fs.existsSync(path.join(hermesDir, 'LICENSE'))) {
-      execSync(`cp LICENSE ${tarballTempDir}`, {cwd: hermesDir});
+      delegateSync('cp', ['LICENSE', tarballTempDir], {cwd: hermesDir});
     }
   } catch (error) {
     throw new Error(`Failed to copy destroot to tempdir: ${error}`);
   }
 
-  const tarballFilename = getHermesPrebuiltArtifactsTarballName(
-    buildType,
-    releaseVersion,
+  const tarballFilename = path.join(
+    tarballOutputDir,
+    getHermesPrebuiltArtifactsTarballName(buildType, releaseVersion),
   );
-  const tarballOutputPath = path.join(tarballOutputDir, tarballFilename);
 
   try {
-    execSync(`tar -C ${tarballTempDir} -czvf ${tarballOutputPath} .`);
+    createTarballFromDirectory(tarballTempDir, tarballFilename);
   } catch (error) {
     throw new Error(`[Hermes] Failed to create tarball: ${error}`);
   }
 
-  if (!fs.existsSync(tarballOutputPath)) {
+  if (!fs.existsSync(tarballFilename)) {
     throw new Error(
-      `Tarball creation failed, could not locate tarball at ${tarballOutputPath}`,
+      `Tarball creation failed, could not locate tarball at ${tarballFilename}`,
     );
   }
 
-  return tarballOutputPath;
+  return tarballFilename;
 }
 
 function validateHermesFrameworksExist(destrootDir) {
@@ -288,9 +312,11 @@ module.exports = {
   copyBuildScripts,
   copyPodSpec,
   createHermesPrebuiltArtifactsTarball,
+  createTarballFromDirectory,
   downloadHermesSourceTarball,
   expandHermesSourceTarball,
   getHermesTagSHA,
+  getHermesTarballDownloadPath,
   getHermesPrebuiltArtifactsTarballName,
   readHermesTag,
   setHermesTag,
