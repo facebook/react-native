@@ -4,9 +4,19 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-NUM_CORES=$(sysctl -n hw.ncpu)
+# Defines functions for building various Hermes frameworks.
+# See build-ios-framework.sh and build-mac-framework.sh for usage examples.
+
+CURR_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+
 IMPORT_HERMESC_PATH=${HERMES_OVERRIDE_HERMESC_PATH:-$PWD/build_host_hermesc/ImportHermesc.cmake}
-REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$PWD/../..}
+BUILD_TYPE=${BUILD_TYPE:-Debug}
+
+HERMES_PATH="$CURR_SCRIPT_DIR/.."
+REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$CURR_SCRIPT_DIR/../../..}
+
+NUM_CORES=$(sysctl -n hw.ncpu)
+
 if [[ -z "$JSI_PATH" ]]; then
   JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
 fi
@@ -34,8 +44,10 @@ function get_mac_deployment_target {
 # Build host hermes compiler for internal bytecode
 function build_host_hermesc {
   echo "Building hermesc"
-  cmake -S . -B build_host_hermesc
-  cmake --build ./build_host_hermesc --target hermesc -j ${NUM_CORES}
+  pushd "$HERMES_PATH" > /dev/null || exit 1
+    cmake -S . -B build_host_hermesc -DJSI_DIR="$JSI_PATH"
+    cmake --build ./build_host_hermesc --target hermesc -j "${NUM_CORES}"
+  popd > /dev/null || exit 1
 }
 
 # Utility function to configure an Apple framework
@@ -58,30 +70,30 @@ function configure_apple_framework {
     enable_debugger="false"
   fi
 
-  cmake -S . -B "build_$1" \
-    -DHERMES_APPLE_TARGET_PLATFORM:STRING="$1" \
-    -DCMAKE_OSX_ARCHITECTURES:STRING="$2" \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$3" \
-    -DHERMES_ENABLE_DEBUGGER:BOOLEAN="$enable_debugger" \
-    -DHERMES_ENABLE_INTL:BOOLEAN=true \
-    -DHERMES_ENABLE_LIBFUZZER:BOOLEAN=false \
-    -DHERMES_ENABLE_FUZZILLI:BOOLEAN=false \
-    -DHERMES_ENABLE_TEST_SUITE:BOOLEAN=false \
-    -DHERMES_ENABLE_BITCODE:BOOLEAN="$enable_bitcode" \
-    -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
-    -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
-    -DHERMES_ENABLE_TOOLS:BOOLEAN="$build_cli_tools" \
-    -DIMPORT_HERMESC:PATH="$IMPORT_HERMESC_PATH" \
-    -DJSI_DIR="$JSI_PATH" \
-    -DHERMES_RELEASE_VERSION="for RN $(get_release_version)" \
-    -DCMAKE_INSTALL_PREFIX:PATH=../destroot \
-    -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+  pushd "$HERMES_PATH" > /dev/null || exit 1
+    cmake -S . -B "build_$1" \
+      -DHERMES_APPLE_TARGET_PLATFORM:STRING="$1" \
+      -DCMAKE_OSX_ARCHITECTURES:STRING="$2" \
+      -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$3" \
+      -DHERMES_ENABLE_DEBUGGER:BOOLEAN="$enable_debugger" \
+      -DHERMES_ENABLE_INTL:BOOLEAN=true \
+      -DHERMES_ENABLE_LIBFUZZER:BOOLEAN=false \
+      -DHERMES_ENABLE_FUZZILLI:BOOLEAN=false \
+      -DHERMES_ENABLE_TEST_SUITE:BOOLEAN=false \
+      -DHERMES_ENABLE_BITCODE:BOOLEAN="$enable_bitcode" \
+      -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
+      -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
+      -DHERMES_ENABLE_TOOLS:BOOLEAN="$build_cli_tools" \
+      -DIMPORT_HERMESC:PATH="$IMPORT_HERMESC_PATH" \
+      -DJSI_DIR="$JSI_PATH" \
+      -DHERMES_RELEASE_VERSION="for RN $(get_release_version)" \
+      -DCMAKE_INSTALL_PREFIX:PATH=../destroot \
+      -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+    popd > /dev/null || exit 1
 }
 
 # Utility function to build an Apple framework
 function build_apple_framework {
-  echo "Building $BUILD_TYPE framework for $1 with architectures: $2"
-
   # Only build host HermesC if no file found at $IMPORT_HERMESC_PATH
   [ ! -f "$IMPORT_HERMESC_PATH" ] &&
   build_host_hermesc
@@ -90,15 +102,19 @@ function build_apple_framework {
   [ ! -f "$IMPORT_HERMESC_PATH" ] &&
   echo "Host hermesc is required to build apple frameworks!"
 
+  echo "Building $BUILD_TYPE framework for $1 with architectures: $2"
   configure_apple_framework "$1" "$2" "$3"
-  cmake --build "./build_$1" --target install/strip -j ${NUM_CORES}
+
+  pushd "$HERMES_PATH" > /dev/null || exit 1
+    cmake --build "./build_$1" --target install/strip -j "${NUM_CORES}"
+  popd > /dev/null || exit 1
 }
 
 # Accepts an array of frameworks and will place all of
 # the architectures into an universal folder and then remove
 # the merged frameworks from destroot
 function create_universal_framework {
-  cd ./destroot/Library/Frameworks || exit 1
+  pushd "$HERMES_PATH/destroot/Library/Frameworks" > /dev/null || exit 1
 
   local platforms=("$@")
   local args=""
@@ -106,16 +122,23 @@ function create_universal_framework {
   echo "Creating universal framework for platforms: ${platforms[*]}"
 
   for i in "${!platforms[@]}"; do
-    args+="-framework ${platforms[$i]}/hermes.framework "
+    local hermes_framework_path="${platforms[$i]}/hermes.framework"
+    args+="-framework $hermes_framework_path "
+
+    # Path to dSYM must be absolute
+    args+="-debug-symbols $HERMES_PATH/destroot/Library/Frameworks/$hermes_framework_path.dSYM "
   done
 
-  mkdir universal
+  mkdir -p universal
   # shellcheck disable=SC2086
-  xcodebuild -create-xcframework $args -output "universal/hermes.xcframework"
+  if xcodebuild -create-xcframework $args -output "universal/hermes.xcframework"
+  then
+    # # Remove the thin iOS hermes.frameworks that are now part of the universal
+    # XCFramework
+    for platform in "${platforms[@]}"; do
+      rm -r "$platform"
+    done
+  fi
 
-  for platform in "$@"; do
-    rm -r "$platform"
-  done
-
-  cd - || exit 1
+  popd > /dev/null || exit 1
 }
