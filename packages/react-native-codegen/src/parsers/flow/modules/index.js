@@ -124,9 +124,8 @@ function translateArrayTypeAnnotation(
     return wrapNullable(nullable, {
       type: 'ArrayTypeAnnotation',
       // $FlowFixMe[incompatible-call]
-      elementType: wrapNullable(isElementTypeNullable, elementType)
+      elementType: wrapNullable(isElementTypeNullable, elementType),
     });
-
   } catch (ex) {
     return wrapNullable(nullable, {
       type: 'ArrayTypeAnnotation',
