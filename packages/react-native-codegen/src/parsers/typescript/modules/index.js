@@ -72,7 +72,7 @@ const {
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
-  throwIfArrayElementTypeAnnotationIsUnsupported
+  throwIfArrayElementTypeAnnotationIsUnsupported,
 } = require('../../error-utils');
 
 const {TypeScriptParser} = require('../parser');

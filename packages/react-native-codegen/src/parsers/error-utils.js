@@ -27,7 +27,7 @@ const {
   UnsupportedModulePropertyParserError,
   MoreThanOneModuleInterfaceParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
-  UnsupportedArrayElementTypeAnnotationParserError
+  UnsupportedArrayElementTypeAnnotationParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -251,21 +251,24 @@ function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
   );
 }
 
-const UnsupportedArrayElementTypeAnnotationTypeToInvalidArrayElementTypeAnnotationTypeMap = {
-  FunctionTypeAnnotation: 'FunctionTypeAnnotation',
-  VoidTypeAnnotation: 'void',
-  PromiseTypeAnnotation: 'Promise',
-};
+const UnsupportedArrayElementTypeAnnotationTypeToInvalidArrayElementTypeAnnotationTypeMap =
+  {
+    FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+    VoidTypeAnnotation: 'void',
+    PromiseTypeAnnotation: 'Promise',
+  };
 
 function throwIfArrayElementTypeAnnotationIsUnsupported(
   hasteModuleName: string,
   flowElementType: $FlowFixMe,
-  flowArrayType: "Array" | "$ReadOnlyArray",
+  flowArrayType: 'Array' | '$ReadOnlyArray' | 'ReadonlyArray',
   type: string,
   language: ParserType,
 ) {
   const invalidPropertyValueType =
-    UnsupportedArrayElementTypeAnnotationTypeToInvalidArrayElementTypeAnnotationTypeMap[type];
+    UnsupportedArrayElementTypeAnnotationTypeToInvalidArrayElementTypeAnnotationTypeMap[
+      type
+    ];
 
   throw new UnsupportedArrayElementTypeAnnotationParserError(
     hasteModuleName,
@@ -289,5 +292,5 @@ module.exports = {
   throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
-  throwIfArrayElementTypeAnnotationIsUnsupported
+  throwIfArrayElementTypeAnnotationIsUnsupported,
 };
