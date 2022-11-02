@@ -3,11 +3,10 @@
  * https://github.com/facebook/react-native
  *
  * @format
- * @flow strict-local
  */
 
 import React from 'react';
-import type {Node} from 'react';
+import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -26,12 +25,11 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = {
-  title: string,
-  children: Node,
-};
+type SectionProps = PropsWithChildren<{
+  title: string;
+}>;
 
-function Section({children, title}: SectionProps): Node {
+function Section({children, title}: SectionProps): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -57,7 +55,7 @@ function Section({children, title}: SectionProps): Node {
   );
 }
 
-function App(): Node {
+function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
