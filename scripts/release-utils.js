@@ -98,7 +98,7 @@ function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
 
 function generateiOSArtifacts(
   jsiFolder,
-  hermesUtilsFolder,
+  hermesEngineFolder,
   hermesCoreSourceFolder,
   buildType,
   releaseVersion,
@@ -106,13 +106,18 @@ function generateiOSArtifacts(
 ) {
   pushd(`${hermesCoreSourceFolder}`);
 
+  //Need to generate hermesc
+  exec(
+    `${hermesUtilsFolder}/utils/build-hermesc-xcode.sh ${hermesEngineFolder}/build_host_hermesc`,
+  );
+
   //Generating iOS Artifacts
   exec(
-    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesUtilsFolder}/build-mac-framework.sh`,
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesEngineFolder}/utils/build-mac-framework.sh`,
   );
 
   exec(
-    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesUtilsFolder}/build-ios-framework.sh`,
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesEngineFolder}/utils/build-ios-framework.sh`,
   );
 
   popd();
@@ -122,6 +127,7 @@ function generateiOSArtifacts(
     buildType,
     releaseVersion,
     targetFolder,
+    true, // this is excludeDebugSymbols, we keep it as the default
   );
 
   return tarballOutputPath;

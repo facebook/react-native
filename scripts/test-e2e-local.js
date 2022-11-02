@@ -172,7 +172,7 @@ if (argv.target === 'RNTester') {
   // Setting up generating native iOS (will be done later)
   const repoRoot = pwd();
   const jsiFolder = `${repoRoot}/ReactCommon/jsi`;
-  const hermesUtilsFolder = `${repoRoot}/sdks/hermes-engine/utils`;
+  const hermesEngineFolder = `${repoRoot}/sdks/hermes-engine`;
   const hermesCoreSourceFolder = `${repoRoot}/sdks/hermes`;
 
   if (!fs.existsSync(hermesCoreSourceFolder)) {
@@ -191,7 +191,7 @@ if (argv.target === 'RNTester') {
   // Generate native files for iOS
   const tarballOutputPath = generateiOSArtifacts(
     jsiFolder,
-    hermesUtilsFolder,
+    hermesEngineFolder,
     hermesCoreSourceFolder,
     buildType,
     releaseVersion,
