@@ -6,7 +6,7 @@
  */
 
 package com.facebook.react.views.view
-import android.util.Log;
+
 import android.graphics.Color
 import android.graphics.Rect
 import androidx.core.view.ViewCompat
@@ -109,7 +109,6 @@ object ReactMapBufferPropSetter {
 
   fun setProps(view: ReactViewGroup, viewManager: ReactViewManager, props: MapBuffer) {
     for (entry in props) {
-      Log.w("TESTING::ReactMapBufferPropSetter", "entry.key: " + ( entry.key ));
       when (entry.key) {
         VP_ACCESSIBILITY_ACTIONS -> {
           viewManager.accessibilityActions(view, entry.mapBufferValue)

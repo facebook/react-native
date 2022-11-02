@@ -19,7 +19,6 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
-import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -101,7 +100,6 @@ public class TextLayoutManager {
       ReadableArray fragments,
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
-    Log.w("TESTING::TextLayoutManager", "buildSpannableFromFragment");
 
     for (int i = 0, length = fragments.size(); i < length; i++) {
       ReadableMap fragment = fragments.getMap(i);
@@ -210,7 +208,6 @@ public class TextLayoutManager {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    Log.w("TESTING::TextLayoutManager", "attributedString: " + (attributedString));
     buildSpannableFromFragment(context, attributedString.getArray("fragments"), sb, ops);
 
     // TODO T31905686: add support for inline Images
