@@ -56,6 +56,7 @@ const {
 
 const {
   UnsupportedArrayElementTypeAnnotationParserError,
+  UnnamedFunctionParamParserError,
   UnsupportedTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
@@ -63,6 +64,8 @@ const {
 const {
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
+  throwIfPropertyValueTypeIsUnsupported,
+  throwIfArrayElementTypeAnnotationIsUnsupported,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfMoreThanOneModuleRegistryCalls,
@@ -110,32 +113,16 @@ function translateArrayTypeAnnotation(
       ),
     );
 
-    if (elementType.type === 'VoidTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
+    if (
+      elementType.type === 'VoidTypeAnnotation' ||
+      elementType.type === 'PromiseTypeAnnotation' ||
+      elementType.type === 'FunctionTypeAnnotation'
+    ) {
+      throwIfArrayElementTypeAnnotationIsUnsupported(
         hasteModuleName,
         flowElementType,
         flowArrayType,
-        'void',
-        language,
-      );
-    }
-
-    if (elementType.type === 'PromiseTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        flowElementType,
-        flowArrayType,
-        'Promise',
-        language,
-      );
-    }
-
-    if (elementType.type === 'FunctionTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        flowElementType,
-        flowArrayType,
-        'FunctionTypeAnnotation',
+        elementType.type,
         language,
       );
     }

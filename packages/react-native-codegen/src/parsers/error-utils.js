@@ -27,6 +27,7 @@ const {
   UnsupportedModulePropertyParserError,
   MoreThanOneModuleInterfaceParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
+  UnsupportedArrayElementTypeAnnotationParserError
 } = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -250,6 +251,31 @@ function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
   );
 }
 
+const UnsupportedArrayElementTypeAnnotationTypeToInvalidArrayElementTypeAnnotationTypeMap = {
+  FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+  VoidTypeAnnotation: 'void',
+  PromiseTypeAnnotation: 'Promise',
+};
+
+function throwIfArrayElementTypeAnnotationIsUnsupported(
+  hasteModuleName: string,
+  flowElementType: $FlowFixMe,
+  flowArrayType: "Array" | "$ReadOnlyArray",
+  type: string,
+  language: ParserType,
+) {
+  const invalidPropertyValueType =
+    UnsupportedArrayElementTypeAnnotationTypeToInvalidArrayElementTypeAnnotationTypeMap[type];
+
+  throw new UnsupportedArrayElementTypeAnnotationParserError(
+    hasteModuleName,
+    flowElementType,
+    flowArrayType,
+    invalidPropertyValueType,
+    language,
+  );
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -263,4 +289,5 @@ module.exports = {
   throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+  throwIfArrayElementTypeAnnotationIsUnsupported
 };

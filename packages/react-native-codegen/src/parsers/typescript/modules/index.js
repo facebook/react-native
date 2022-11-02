@@ -56,6 +56,7 @@ const {
 
 const {
   UnsupportedArrayElementTypeAnnotationParserError,
+  UnnamedFunctionParamParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
@@ -70,6 +71,8 @@ const {
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
+  throwIfArrayElementTypeAnnotationIsUnsupported
 } = require('../../error-utils');
 
 const {TypeScriptParser} = require('../parser');
@@ -111,32 +114,16 @@ function translateArrayTypeAnnotation(
       ),
     );
 
-    if (elementType.type === 'VoidTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
+    if (
+      elementType.type === 'VoidTypeAnnotation' ||
+      elementType.type === 'PromiseTypeAnnotation' ||
+      elementType.type === 'FunctionTypeAnnotation'
+    ) {
+      throwIfArrayElementTypeAnnotationIsUnsupported(
         hasteModuleName,
         tsElementType,
         tsArrayType,
-        'void',
-        language,
-      );
-    }
-
-    if (elementType.type === 'PromiseTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        'Promise',
-        language,
-      );
-    }
-
-    if (elementType.type === 'FunctionTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        'FunctionTypeAnnotation',
+        elementType.type,
         language,
       );
     }
