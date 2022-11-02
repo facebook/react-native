@@ -199,6 +199,23 @@ class DependencyUtilsTest {
   }
 
   @Test
+  fun readVersionString_withNightlyVersionString_returnsSnapshotVersion() {
+    val propertiesFile =
+        tempFolder.newFile("gradle.properties").apply {
+          writeText(
+              """
+        VERSION_NAME=0.0.0-20221101-2019-cfe811ab1
+        ANOTHER_PROPERTY=true
+      """
+                  .trimIndent())
+        }
+
+    val versionString = readVersionString(propertiesFile)
+
+    assertEquals("0.0.0-20221101-2019-cfe811ab1-SNAPSHOT", versionString)
+  }
+
+  @Test
   fun readVersionString_withMissingVersionString_returnsEmpty() {
     val propertiesFile =
         tempFolder.newFile("gradle.properties").apply {
