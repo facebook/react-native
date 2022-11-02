@@ -16,7 +16,7 @@
  * and to make it more accessible for other devs to play around with.
  */
 
-const {exec, exit, pushd, popd, pwd, cd} = require('shelljs');
+const {exec, exit, pushd, popd, pwd, cd, cp} = require('shelljs');
 const yargs = require('yargs');
 const fs = require('fs');
 const path = require('path');
@@ -172,7 +172,6 @@ if (argv.target === 'RNTester') {
   // Setting up generating native iOS (will be done later)
   const repoRoot = pwd();
   const jsiFolder = `${repoRoot}/ReactCommon/jsi`;
-  const hermesEngineFolder = `${repoRoot}/sdks/hermes-engine`;
   const hermesCoreSourceFolder = `${repoRoot}/sdks/hermes`;
 
   if (!fs.existsSync(hermesCoreSourceFolder)) {
@@ -180,6 +179,13 @@ if (argv.target === 'RNTester') {
     downloadHermesSourceTarball();
     expandHermesSourceTarball();
   }
+
+  // need to move the scripts inside the local hermes cloned folder
+  // cp sdks/hermes-engine/utils/*.sh <your_hermes_checkout>/utils/.
+  cp(
+    `${repoRoot}/sdks/hermes-engine/utils/*.sh`,
+    `${repoRoot}/sdks/hermes/utils/.`,
+  );
 
   // for this scenario, we only need to create the debug build
   // (env variable PRODUCTION defines that podspec side)
@@ -191,7 +197,6 @@ if (argv.target === 'RNTester') {
   // Generate native files for iOS
   const tarballOutputPath = generateiOSArtifacts(
     jsiFolder,
-    hermesEngineFolder,
     hermesCoreSourceFolder,
     buildType,
     releaseVersion,
