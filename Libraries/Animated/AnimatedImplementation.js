@@ -415,7 +415,7 @@ const parallel = function (
       });
     },
 
-    _startNativeLoop: function () {
+    _startNativeLoop: function (): empty {
       throw new Error(
         'Loops run using the native driver cannot contain Animated.parallel animations',
       );

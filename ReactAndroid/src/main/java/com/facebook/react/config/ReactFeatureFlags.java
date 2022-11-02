@@ -38,6 +38,11 @@ public class ReactFeatureFlags {
   public static boolean enableBridgelessArchitecture = false;
 
   /**
+   * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
+   */
+  public static volatile boolean enableBridgelessArchitectureSoftExceptions = false;
+
+  /**
    * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
    * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
    * is used.
