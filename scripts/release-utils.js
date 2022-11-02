@@ -108,7 +108,7 @@ function generateiOSArtifacts(
 
   //Need to generate hermesc
   exec(
-    `${hermesUtilsFolder}/utils/build-hermesc-xcode.sh ${hermesEngineFolder}/build_host_hermesc`,
+    `${hermesEngineFolder}/utils/build-hermesc-xcode.sh ${hermesEngineFolder}/build_host_hermesc`,
   );
 
   //Generating iOS Artifacts
