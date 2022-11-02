@@ -83,6 +83,7 @@ inline static UIFontTextStyle RCTUIFontTextStyleForDynamicTypeRamp(const Dynamic
 }
 
 inline static CGFloat RCTBaseSizeForDynamicTypeRamp(const DynamicTypeRamp &dynamicTypeRamp) {
+  // Values taken from https://developer.apple.com/design/human-interface-guidelines/foundations/typography/#specifications
   switch (dynamicTypeRamp) {
     case DynamicTypeRamp::Caption2:
       return 11.0;

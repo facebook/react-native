@@ -52,7 +52,7 @@ CGFloat RCTBaseSizeForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp) {
   static NSDictionary<NSNumber *, NSNumber *> *mapping;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    // Values taken from https://developer.apple.com/design/human-interface-guidelines/foundations/typography/
+    // Values taken from https://developer.apple.com/design/human-interface-guidelines/foundations/typography/#specifications
     mapping = @{
       @(RCTDynamicTypeRampCaption2): @11,
       @(RCTDynamicTypeRampCaption1): @12,
