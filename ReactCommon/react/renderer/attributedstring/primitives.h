@@ -96,6 +96,7 @@ enum class AccessibilityRole {
   None,
   Button,
   Link,
+  Verbatim,
   Search,
   Image,
   Imagebutton,

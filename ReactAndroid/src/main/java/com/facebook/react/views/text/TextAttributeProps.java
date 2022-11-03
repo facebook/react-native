@@ -107,6 +107,7 @@ public class TextAttributeProps {
   protected @Nullable ReactAccessibilityDelegate.AccessibilityUnit mAccessibilityUnit =
       ReactAccessibilityDelegate.AccessibilityUnit.NONE;
   protected boolean mIsAccessibilityLink = false;
+  protected boolean mIsAccessibilityUnit = false;
 
   protected int mFontStyle = UNSET;
   protected int mFontWeight = UNSET;
@@ -622,6 +623,8 @@ public class TextAttributeProps {
           ReactAccessibilityDelegate.AccessibilityRole.fromValue(accessibilityRole);
       mIsAccessibilityLink =
           mAccessibilityRole.equals(ReactAccessibilityDelegate.AccessibilityRole.LINK);
+      mIsAccessibilityUnit =
+          mAccessibilityRole.equals(ReactAccessibilityDelegate.AccessibilityRole.VERBATIM);
     }
   }
 

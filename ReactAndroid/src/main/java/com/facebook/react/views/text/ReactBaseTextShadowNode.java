@@ -183,6 +183,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
         ops.add(
             new SetSpanOperation(start, end, new ReactClickableSpan(textShadowNode.getReactTag())));
       }
+      if (textShadowNode.mIsAccessibilityUnit) {
+        if (Build.VERSION.SDK_INT > 21) {
+          ops.add(new SetSpanOperation(start, end, new ReactTtsSpan.Builder("verbatim").build()));
+        }
+      }
       float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
       if (!Float.isNaN(effectiveLetterSpacing)
           && (parentTextAttributes == null
@@ -325,7 +330,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
   protected boolean mIsAccessibilityLink = false;
-  protected String mIsAccessibilityUnit;
+  protected boolean mIsAccessibilityUnit;
 
   protected int mNumberOfLines = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
@@ -501,6 +506,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   public void setIsAccessibilityLink(@Nullable String accessibilityRole) {
     if (isVirtual()) {
       mIsAccessibilityLink = Objects.equals(accessibilityRole, "link");
+      mIsAccessibilityUnit = Objects.equals(accessibilityRole, "verbatim");
       markUpdated();
     }
   }

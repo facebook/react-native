@@ -17,11 +17,10 @@ export default function TextAdjustsDynamicLayoutExample(props: {}): React.Node {
   return (
     <>
       <View>
-        <Text fontWeight={700} accessible={true}>
+        <Text accessible={true}>
           My number is{' '}
           <Text
-            accessibilityRole="link"
-            accessibilityUnit="verbatim"
+            accessibilityRole="verbatim"
             accessible={true}
             style={{backgroundColor: 'red'}}>
             please spell this text

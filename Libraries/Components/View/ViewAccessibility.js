@@ -19,6 +19,7 @@ export type AccessibilityRole =
   | 'button'
   | 'togglebutton'
   | 'link'
+  | 'verbatim'
   | 'search'
   | 'image'
   | 'keyboardkey'

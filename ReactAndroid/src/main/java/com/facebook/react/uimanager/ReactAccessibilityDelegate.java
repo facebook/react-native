@@ -132,6 +132,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     BUTTON,
     TOGGLEBUTTON,
     LINK,
+    VERBATIM,
     SEARCH,
     IMAGE,
     IMAGEBUTTON,
@@ -189,6 +190,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.AbsListView";
         case GRID:
           return "android.widget.GridView";
+        case VERBATIM:
+          return "android.type.verbatim";
         case NONE:
         case LINK:
         case SUMMARY:
