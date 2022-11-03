@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * {@link ReactShadowNode} abstract class for spannable text nodes.
@@ -184,7 +185,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(start, end, new ReactClickableSpan(textShadowNode.getReactTag())));
       }
       if (textShadowNode.mIsAccessibilityUnit && Build.VERSION.SDK_INT >= 21) {
-        ops.add(new SetSpanOperation(start, end, new ReactTtsSpan.Builder("verbatim").build()));
+        ops.add(
+            new SetSpanOperation(
+                start, end, new ReactTtsSpan.Builder(textShadowNode.mAccessibilityRole).build()));
       }
       float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
       if (!Float.isNaN(effectiveLetterSpacing)
@@ -327,6 +330,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mColor;
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
+  protected String mAccessibilityRole;
   protected boolean mIsAccessibilityLink = false;
   protected boolean mIsAccessibilityUnit;
 
@@ -503,8 +507,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
   public void setIsAccessibilityLink(@Nullable String accessibilityRole) {
     if (isVirtual()) {
+      mAccessibilityRole = accessibilityRole;
       mIsAccessibilityLink = Objects.equals(accessibilityRole, "link");
-      mIsAccessibilityUnit = Objects.equals(accessibilityRole, "verbatim");
+      Set<String> TYPES = Set.of("verbatim", "date");
+      mIsAccessibilityUnit = TYPES.contains(accessibilityRole);
       markUpdated();
     }
   }

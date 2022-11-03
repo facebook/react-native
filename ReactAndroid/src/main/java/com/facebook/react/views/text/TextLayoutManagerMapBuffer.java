@@ -148,11 +148,6 @@ public class TextLayoutManagerMapBuffer {
               new SetSpanOperation(
                   start, end, new ReactForegroundColorSpan(textAttributes.mColor)));
         }
-        if (textAttributes.mIsAccessibilityUnit) {
-          if (Build.VERSION.SDK_INT > 21) {
-            ops.add(new SetSpanOperation(start, end, new ReactTtsSpan.Builder("verbatim").build()));
-          }
-        }
         if (textAttributes.mIsBackgroundColorSet) {
           ops.add(
               new SetSpanOperation(

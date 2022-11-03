@@ -30,6 +30,8 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
     public Builder(String type) {
       if (type == "verbatim") {
         mType = TYPE_VERBATIM;
+      } else if (type == "date") {
+        mType = TYPE_DATE;
       } else {
         mType = TYPE_TEXT;
       }

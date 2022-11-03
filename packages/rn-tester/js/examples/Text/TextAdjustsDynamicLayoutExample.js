@@ -23,7 +23,7 @@ export default function TextAdjustsDynamicLayoutExample(props: {}): React.Node {
             accessibilityRole="verbatim"
             accessible={true}
             style={{backgroundColor: 'red'}}>
-            please spell this text
+            02/07/1987
           </Text>
           .
         </Text>
