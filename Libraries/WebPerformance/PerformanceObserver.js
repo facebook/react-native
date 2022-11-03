@@ -8,21 +8,15 @@
  * @flow strict
  */
 
-'use strict';
-
-export type Timestamp = number;
-export type PerformanceEntryType = 'event';
+export type HighResTimeStamp = number;
+// TODO: Extend once new types (such as event) are supported
+export type PerformanceEntryType = empty;
 
 export class PerformanceEntry {
   name: string;
   entryType: PerformanceEntryType;
-  startTime: Timestamp;
+  startTime: HighResTimeStamp;
   duration: number;
-
-  // For "event" entries only:
-  processingStart: ?Timestamp;
-  processingEnd: ?Timestamp;
-  interactionId: ?number;
 
   // $FlowIgnore: Flow(unclear-type)
   toJSON(): Object {
@@ -73,12 +67,10 @@ export type PerformanceObserverCallback = (
 
 export type PerformanceObserverInit =
   | {
-      entryTypes: PerformanceEntryType[],
-      buffered?: boolean,
+      entryTypes: Array<PerformanceEntryType>,
     }
   | {
       type: PerformanceEntryType,
-      buffered?: boolean,
     };
 
 /**
@@ -120,5 +112,7 @@ export default class PerformanceObserver {
     return [];
   }
 
-  static supportedEntryTypes: PerformanceEntryType[] = ['event'];
+  static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
+    // TODO: add types once they are fully supported
+    Object.freeze([]);
 }
