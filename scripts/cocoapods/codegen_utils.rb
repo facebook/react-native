@@ -118,7 +118,7 @@ class CodegenUtils
 
         if hermes_enabled
           spec[:'dependencies'].merge!({
-            'hermes-engine': [version],
+            'hermes-engine': [], # let React Native decide which version of Hermes Engine to be used. Otherwise, this can create conflicts.
           });
         else
           spec[:'dependencies'].merge!({
