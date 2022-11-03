@@ -272,9 +272,9 @@ function translateTypeAnnotation(
                   aliasMap,
                   tryParse,
                   cxxOnly,
-                  language,
                   nullable,
                   translateTypeAnnotation,
+                  parser,
                 );
               });
             },
