@@ -107,12 +107,14 @@ ${modules.join('\n\n')}
 
 function translatePrimitiveJSTypeToCpp(
   nullableTypeAnnotation: Nullable<NativeModuleTypeAnnotation>,
+  optional: boolean,
   createErrorMessage: (typeName: string) => string,
   resolveAlias: AliasResolver,
 ) {
   const [typeAnnotation, nullable] = unwrapNullable<NativeModuleTypeAnnotation>(
     nullableTypeAnnotation,
   );
+  const isRequired = !optional && !nullable;
 
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -120,7 +122,7 @@ function translatePrimitiveJSTypeToCpp(
   }
 
   function wrap(type: string) {
-    return nullable ? `std::optional<${type}>` : type;
+    return isRequired ? type : `std::optional<${type}>`;
   }
 
   switch (realTypeAnnotation.type) {
@@ -199,6 +201,7 @@ function translatePropertyToCpp(
   const paramTypes = propTypeAnnotation.params.map(param => {
     const translatedParam = translatePrimitiveJSTypeToCpp(
       param.typeAnnotation,
+      param.optional,
       typeName =>
         `Unsupported type for param "${param.name}" in ${prop.name}. Found: ${typeName}`,
       resolveAlias,
@@ -208,6 +211,7 @@ function translatePropertyToCpp(
 
   const returnType = translatePrimitiveJSTypeToCpp(
     propTypeAnnotation.returnTypeAnnotation,
+    false,
     typeName => `Unsupported return type for ${prop.name}. Found: ${typeName}`,
     resolveAlias,
   );

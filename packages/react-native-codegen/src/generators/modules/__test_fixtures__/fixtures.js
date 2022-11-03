@@ -276,6 +276,25 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
             },
           },
           {
+            name: 'getValueWithOptionalArg',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'PromiseTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: true,
+                  name: 'parameter',
+                  typeAnnotation: {
+                    type: 'GenericObjectTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
             name: 'getEnums',
             optional: false,
             typeAnnotation: {

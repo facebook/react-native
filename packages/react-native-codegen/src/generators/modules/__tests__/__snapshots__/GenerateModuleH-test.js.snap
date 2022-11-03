@@ -87,7 +87,7 @@ protected:
 public:
   virtual jsi::Object difficult(jsi::Runtime &rt, jsi::Object A) = 0;
   virtual void optionals(jsi::Runtime &rt, jsi::Object A) = 0;
-  virtual void optionalMethod(jsi::Runtime &rt, jsi::Object options, jsi::Function callback, jsi::Array extras) = 0;
+  virtual void optionalMethod(jsi::Runtime &rt, jsi::Object options, jsi::Function callback, std::optional<jsi::Array> extras) = 0;
   virtual void getArrays(jsi::Runtime &rt, jsi::Object options) = 0;
   virtual std::optional<jsi::Object> getNullableObject(jsi::Runtime &rt) = 0;
   virtual std::optional<jsi::Object> getNullableGenericObject(jsi::Runtime &rt) = 0;
@@ -129,7 +129,7 @@ private:
       return bridging::callFromJs<void>(
           rt, &T::optionals, jsInvoker_, instance_, std::move(A));
     }
-    void optionalMethod(jsi::Runtime &rt, jsi::Object options, jsi::Function callback, jsi::Array extras) override {
+    void optionalMethod(jsi::Runtime &rt, jsi::Object options, jsi::Function callback, std::optional<jsi::Array> extras) override {
       static_assert(
           bridging::getParameterCount(&T::optionalMethod) == 4,
           \\"Expected optionalMethod(...) to have 4 parameters\\");
@@ -668,6 +668,7 @@ public:
   virtual jsi::Object getValue(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) = 0;
   virtual void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) = 0;
   virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;
+  virtual jsi::Value getValueWithOptionalArg(jsi::Runtime &rt, std::optional<jsi::Object> parameter) = 0;
   virtual jsi::String getEnums(jsi::Runtime &rt, double enumInt, double enumFloat, jsi::String enumString) = 0;
 
 };
@@ -777,6 +778,14 @@ private:
 
       return bridging::callFromJs<jsi::Value>(
           rt, &T::getValueWithPromise, jsInvoker_, instance_, std::move(error));
+    }
+    jsi::Value getValueWithOptionalArg(jsi::Runtime &rt, std::optional<jsi::Object> parameter) override {
+      static_assert(
+          bridging::getParameterCount(&T::getValueWithOptionalArg) == 2,
+          \\"Expected getValueWithOptionalArg(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<jsi::Value>(
+          rt, &T::getValueWithOptionalArg, jsInvoker_, instance_, std::move(parameter));
     }
     jsi::String getEnums(jsi::Runtime &rt, double enumInt, double enumFloat, jsi::String enumString) override {
       static_assert(
