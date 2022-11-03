@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Layout;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
@@ -46,7 +45,6 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.text.ReactSpan;
-import com.facebook.react.views.text.ReactTtsSpan;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -666,16 +664,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
         final AccessibleLink link = new AccessibleLink();
         link.description = text.subSequence(start, end).toString();
-        if (span instanceof ReactTtsSpan) {
-          link.span = span;
-          SpannableString spannableDescription = new SpannableString(text.subSequence(start, end));
-          link.start = spannableDescription.getSpanStart(span);
-          link.end = spannableDescription.getSpanEnd(span);
-        }
-        if (span instanceof ClickableSpan) {
-          link.start = start;
-          link.end = end;
-        }
+        link.start = start;
+        link.end = end;
 
         // ID is the reverse of what is expected, since the ClickableSpans are returned in reverse
         // order due to being added in reverse order. If we don't do this, focus will move to the
@@ -717,7 +707,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
     private static class AccessibleLink {
       public String description;
-      public ReactSpan span;
       public int start;
       public int end;
       public int id;

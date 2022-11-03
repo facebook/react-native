@@ -579,6 +579,7 @@ public class TextLayoutManagerMapBuffer {
   // TODO T31905686: This class should be private
   public static class SetSpanOperation {
     protected int start, end;
+    protected ReactSpan what;
 
     public SetSpanOperation(int start, int end, ReactSpan what) {
       this.start = start;

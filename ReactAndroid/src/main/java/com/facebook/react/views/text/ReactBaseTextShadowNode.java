@@ -183,10 +183,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
         ops.add(
             new SetSpanOperation(start, end, new ReactClickableSpan(textShadowNode.getReactTag())));
       }
-      if (textShadowNode.mIsAccessibilityUnit) {
-        if (Build.VERSION.SDK_INT > 21) {
-          ops.add(new SetSpanOperation(start, end, new ReactTtsSpan.Builder("verbatim").build()));
-        }
+      if (textShadowNode.mIsAccessibilityUnit && Build.VERSION.SDK_INT >= 21) {
+        ops.add(new SetSpanOperation(start, end, new ReactTtsSpan.Builder("verbatim").build()));
       }
       float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
       if (!Float.isNaN(effectiveLetterSpacing)
