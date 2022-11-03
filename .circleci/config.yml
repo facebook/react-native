@@ -306,11 +306,10 @@ commands:
                     exit 0
                   fi
 
-                  TARBALL_FILENAME=$(node ~/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>" --releaseVersion "*")
-                  TARBALL_PATH=$(ls $HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME)
-
-                  echo "Looking for $TARBALL_FILENAME in $HERMES_TARBALL_ARTIFACTS_DIR"
-                  echo "$TARBALL_PATH"
+                  #mimicking the logic of test_ios_template
+                  TARBALL_FILENAME=$(ls -AU "$HERMES_TARBALL_ARTIFACTS_DIR" | head -1)
+                  echo "Will use tarball: $TARBALL_FILENAME"
+                  TARBALL_PATH="$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME"
 
                   if [ ! -f $TARBALL_PATH ]; then
                     echo "Hermes tarball not present ($TARBALL_PATH). Build Hermes from source."
@@ -601,7 +600,13 @@ jobs:
                           export USE_HERMES=0
                         fi
 
-                        cd packages/rn-tester && bundle exec pod install --verbose
+                        cd packages/rn-tester
+                        echo "Hermes engine tarball: $HERMES_ENGINE_TARBALL_PATH"
+                        if [[ "$HERMES_ENGINE_TARBALL_PATH" != *"1000.0.0"* ]]; then
+                          # we are in a release. Let's wipe the Podfile.lock
+                          rm -rf Podfile.lock
+                        fi
+                        bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -944,7 +949,13 @@ jobs:
                     export USE_HERMES=0
                   fi
 
-                  cd packages/rn-tester && bundle exec pod install
+                  cd packages/rn-tester
+                  echo "Hermes engine tarball: $HERMES_ENGINE_TARBALL_PATH"
+                  if [[ "$HERMES_ENGINE_TARBALL_PATH" != *"1000.0.0"* ]]; then
+                    # we are in a release. Let's wipe the Podfile.lock
+                    rm -rf Podfile.lock
+                  fi
+                  bundle exec pod install --verbose
 
       - run:
           name: Build RNTester
@@ -1211,9 +1222,6 @@ jobs:
                       command: |
                         cd ./sdks/hermes || exit 1
                         BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
-            - with_hermesc_span:
-                flavor: << parameters.flavor >>
-                steps:
                   - run:
                       name: Build the Hermes iOS frameworks
                       command: |
@@ -1233,20 +1241,25 @@ jobs:
                     RELEASE_VERSION=$(get_release_version)
                   popd
 
+                  # if RELEASE_VERSION is a stable and a previous artifact already exists, we want to rename it.
+                  TARBALL_NAME_FOR_MAIN=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE" --releaseVersion "1000.0.0")
                   TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE" --releaseVersion "$RELEASE_VERSION")
+                  if [[ "$RELEASE_VERSION" != "1000.0.0" ]] && [[ -n "$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_NAME_FOR_MAIN" ]]; then
+                    mv "$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_NAME_FOR_MAIN" "$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME"
+                  else
+                    echo "Packaging Hermes Apple frameworks for $BUILD_TYPE build type"
 
-                  echo "Packaging Hermes Apple frameworks for $BUILD_TYPE build type"
+                    TARBALL_OUTPUT_PATH=$(node ./scripts/hermes/create-tarball.js \
+                      --inputDir ./sdks/hermes \
+                      --buildType "$BUILD_TYPE" \
+                      --releaseVersion "$RELEASE_VERSION" \
+                      --outputDir $TARBALL_OUTPUT_DIR)
 
-                  TARBALL_OUTPUT_PATH=$(node ./scripts/hermes/create-tarball.js \
-                    --inputDir ./sdks/hermes \
-                    --buildType "$BUILD_TYPE" \
-                    --releaseVersion "$RELEASE_VERSION" \
-                    --outputDir $TARBALL_OUTPUT_DIR)
+                    echo "Hermes tarball saved to $TARBALL_OUTPUT_PATH"
 
-                  echo "Hermes tarball saved to $TARBALL_OUTPUT_PATH"
-
-                  mkdir -p $HERMES_TARBALL_ARTIFACTS_DIR
-                  cp $TARBALL_OUTPUT_PATH $HERMES_TARBALL_ARTIFACTS_DIR/.
+                    mkdir -p $HERMES_TARBALL_ARTIFACTS_DIR
+                    cp $TARBALL_OUTPUT_PATH $HERMES_TARBALL_ARTIFACTS_DIR/.
+                  fi
             - when:
                 condition:
                   equal: [ << parameters.flavor >>, "Debug"]
