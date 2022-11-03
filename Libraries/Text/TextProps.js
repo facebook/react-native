@@ -15,7 +15,6 @@ import type {
   AccessibilityActionInfo,
   AccessibilityRole,
   AccessibilityState,
-  AccessibilityUnit,
   Role,
 } from '../Components/View/ViewAccessibility';
 import type {TextStyleProp} from '../StyleSheet/StyleSheet';
@@ -58,7 +57,6 @@ export type TextProps = $ReadOnly<{|
   accessibilityLanguage?: ?Stringish,
   accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
-  accessibilityUnit?: ?AccessibilityUnit,
   accessibilityState?: ?AccessibilityState,
   'aria-label'?: ?string,
 

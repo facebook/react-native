@@ -53,7 +53,6 @@ public class TextAttributeProps {
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 22;
-  public static final short TA_KEY_ACCESSIBILITY_UNIT = 89;
 
   public static final int UNSET = -1;
 
@@ -104,8 +103,8 @@ public class TextAttributeProps {
   protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
   protected boolean mIsAccessibilityUnitSet = false;
-  protected @Nullable ReactAccessibilityDelegate.AccessibilityUnit mAccessibilityUnit =
-      ReactAccessibilityDelegate.AccessibilityUnit.NONE;
+  protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityUnit =
+      ReactAccessibilityDelegate.AccessibilityRole.NONE;
   protected boolean mIsAccessibilityLink = false;
   protected boolean mIsAccessibilityUnit = false;
 
@@ -210,9 +209,6 @@ public class TextAttributeProps {
         case TA_KEY_ACCESSIBILITY_ROLE:
           result.setAccessibilityRole(entry.getStringValue());
           break;
-        case TA_KEY_ACCESSIBILITY_UNIT:
-          result.setAccessibilityUnit(entry.getStringValue());
-          break;
       }
     }
 
@@ -254,7 +250,6 @@ public class TextAttributeProps {
     result.setTextTransform(getStringProp(props, PROP_TEXT_TRANSFORM));
     result.setLayoutDirection(getStringProp(props, ViewProps.LAYOUT_DIRECTION));
     result.setAccessibilityRole(getStringProp(props, ViewProps.ACCESSIBILITY_ROLE));
-    result.setAccessibilityUnit(getStringProp(props, ViewProps.ACCESSIBILITY_UNIT));
     return result;
   }
 
@@ -605,14 +600,6 @@ public class TextAttributeProps {
       mTextTransform = TextTransform.CAPITALIZE;
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
-    }
-  }
-
-  private void setAccessibilityUnit(@Nullable String accessibilityUnit) {
-    if (accessibilityUnit != null) {
-      mIsAccessibilityUnitSet = true;
-      mAccessibilityUnit =
-          ReactAccessibilityDelegate.AccessibilityUnit.fromValue(accessibilityUnit);
     }
   }
 

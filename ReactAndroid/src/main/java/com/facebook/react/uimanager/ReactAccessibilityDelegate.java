@@ -74,7 +74,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   private final View mView;
   private final AccessibilityLinks mAccessibilityLinks;
-  private final AccessibilityLinks mAccessibilitySpans;
 
   private Handler mHandler;
 
@@ -89,36 +88,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
     Message msg = mHandler.obtainMessage(SEND_EVENT, host);
     mHandler.sendMessageDelayed(msg, TIMEOUT_SEND_ACCESSIBILITY_EVENT);
-  }
-  /**
-   * These roles are defined by Google's TalkBack screen reader, and this list should be kept up to
-   * date with their implementation. Details can be seen in their source code here:
-   *
-   * <p>https://github.com/google/talkback/blob/master/utils/src/main/java/Unit.java
-   */
-  public enum AccessibilityUnit {
-    NONE,
-    VERBATIM;
-
-    public static String getValue(AccessibilityUnit role) {
-      switch (role) {
-        case VERBATIM:
-          return "android.type.verbatim";
-        case NONE:
-          return "android.type.text";
-        default:
-          throw new IllegalArgumentException("Invalid accessibility role value: " + role);
-      }
-    }
-
-    public static AccessibilityUnit fromValue(@Nullable String value) {
-      for (AccessibilityUnit unit : AccessibilityUnit.values()) {
-        if (unit.name().equalsIgnoreCase(value)) {
-          return unit;
-        }
-      }
-      throw new IllegalArgumentException("Invalid accessibility unit value: " + value);
-    }
   }
 
   /**
@@ -253,7 +222,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     mView.setFocusable(originalFocus);
     ViewCompat.setImportantForAccessibility(mView, originalImportantForAccessibility);
     mAccessibilityLinks = (AccessibilityLinks) mView.getTag(R.id.accessibility_links);
-    mAccessibilitySpans = (AccessibilityLinks) mView.getTag(R.id.accessibility_spans);
   }
 
   @Nullable View mAccessibilityLabelledBy;
@@ -617,21 +585,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     node.setBoundsInParent(getBoundsInParent(accessibleTextSpan));
     node.setRoleDescription(mView.getResources().getString(R.string.link_description));
     node.setClassName(AccessibilityRole.getValue(AccessibilityRole.BUTTON));
-    if (mAccessibilitySpans == null) {
-      return;
-    }
-    final AccessibilityLinks.AccessibleLink ttsSpan =
-        mAccessibilitySpans.getLinkById(virtualViewId);
-    if (ttsSpan == null) {
-      return;
-    }
-    SpannableString spannableString = new SpannableString(ttsSpan.description);
-    spannableString.setSpan(
-        ttsSpan.span,
-        java.lang.Math.min(spannableString.length(), ttsSpan.start),
-        java.lang.Math.max(ttsSpan.start, ttsSpan.end - 1),
-        0);
-    node.setContentDescription(spannableString);
   }
 
   private Rect getBoundsInParent(AccessibilityLinks.AccessibleLink accessibleLink) {
