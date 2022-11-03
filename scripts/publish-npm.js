@@ -53,7 +53,6 @@ const otp = process.env.NPM_CONFIG_OTP;
 const tmpPublishingFolder = fs.mkdtempSync(
   path.join(os.tmpdir(), 'rn-publish-'),
 );
-echo(`The temp publishing folder is ${tmpPublishingFolder}`);
 
 const argv = yargs
   .option('n', {
@@ -66,72 +65,16 @@ const argv = yargs
     type: 'boolean',
     default: false,
   })
-  .option('h', {
-    alias: 'include-hermes',
-    type: 'boolean',
-    default: false,
-  }).argv;
+  .strict().argv;
 const nightlyBuild = argv.nightly;
 const dryRunBuild = argv.dryRun;
-const includeHermes = argv.includeHermes;
 const isCommitly = nightlyBuild || dryRunBuild;
 
-saveFilesToRestore(tmpPublishingFolder);
-
-if (includeHermes) {
-  const HERMES_INSTALL_LOCATION = 'sdks';
-  const HERMES_SOURCE_DEST_PATH = `${HERMES_INSTALL_LOCATION}/hermes`;
-
-  let hermesReleaseTag;
-  let hermesReleaseURI;
-  if (isCommitly) {
-    // use latest commit / tarball
-    hermesReleaseURI = 'https://github.com/facebook/hermes/tarball/main';
-  } else {
-    // use one configured in disk
-    fs.readFile(
-      `${HERMES_INSTALL_LOCATION}/.hermesversion`,
-      {
-        encoding: 'utf8',
-        flag: 'r',
-      },
-      function (err, data) {
-        if (err) {
-          echo('Failed to read current Hermes release tag.');
-          // TODO: We'll need to make sure every release going forward has one of these.
-          exit(1);
-        } else {
-          hermesReleaseTag = data.trim();
-          hermesReleaseURI = `https://github.com/facebook/hermes/archive/refs/tags/${hermesReleaseTag}.tar.gz`;
-        }
-      },
-    );
-  }
-
-  const tmpDownloadDir = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'hermes-tarball'),
-  );
-  const tmpExtractDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hermes'));
-
-  const hermesInstallScript = `
-    mkdir -p ${HERMES_SOURCE_DEST_PATH} && \
-    wget ${hermesReleaseURI} -O ${tmpDownloadDir}/hermes.tar.gz && \
-    tar -xzf ${tmpDownloadDir}/hermes.tar.gz -C ${tmpExtractDir} && \
-    HERMES_SOURCE_EXTRACT_PATH=$(ls -d ${tmpExtractDir}/*) && \
-    mv $HERMES_SOURCE_EXTRACT_PATH ${HERMES_SOURCE_DEST_PATH}
-  `;
-
-  if (fs.existsSync(`${HERMES_SOURCE_DEST_PATH}`)) {
-    if (exec(`rm -rf ./${HERMES_SOURCE_DEST_PATH}`).code) {
-      echo('Failed to clean up previous Hermes installation.');
-      exit(1);
-    }
-  }
-  if (exec(hermesInstallScript).code) {
-    echo('Failed to include Hermes in release.');
-    exit(1);
-  }
+if (!argv.help) {
+  echo(`The temp publishing folder is ${tmpPublishingFolder}`);
 }
+
+saveFilesToRestore(tmpPublishingFolder);
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
 const currentCommit = getCurrentCommit();
