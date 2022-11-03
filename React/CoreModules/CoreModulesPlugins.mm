@@ -36,7 +36,6 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"PerfMonitor", RCTPerfMonitorCls},
     {"DevMenu", RCTDevMenuCls},
     {"DevSettings", RCTDevSettingsCls},
-    {"BlobModule", RCTBlobManagerCls},
     {"RedBox", RCTRedBoxCls},
     {"LogBox", RCTLogBoxCls},
     {"WebSocketExecutor", RCTWebSocketExecutorCls},
