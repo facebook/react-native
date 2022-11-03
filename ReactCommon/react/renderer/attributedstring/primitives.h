@@ -92,11 +92,6 @@ enum class TextDecorationLineType {
 
 enum class TextDecorationStyle { Solid, Double, Dotted, Dashed };
 
-enum class AccessibilityUnit {
-  None,
-  Verbatim,
-};
-
 enum class AccessibilityRole {
   None,
   Button,
@@ -212,13 +207,6 @@ struct hash<facebook::react::TextBreakStrategy> {
 template <>
 struct hash<facebook::react::AccessibilityRole> {
   size_t operator()(const facebook::react::AccessibilityRole &v) const {
-    return hash<int>()(static_cast<int>(v));
-  }
-};
-
-template <>
-struct hash<facebook::react::AccessibilityUnit> {
-  size_t operator()(const facebook::react::AccessibilityUnit &v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };

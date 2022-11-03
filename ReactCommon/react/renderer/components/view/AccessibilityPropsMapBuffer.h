@@ -23,7 +23,6 @@ constexpr MapBuffer::Key AP_ACCESSIBILITY_STATE = 6;
 constexpr MapBuffer::Key AP_ACCESSIBILITY_VALUE = 7;
 constexpr MapBuffer::Key AP_ACCESSIBLE = 8;
 constexpr MapBuffer::Key AP_IMPORTANT_FOR_ACCESSIBILITY = 19;
-constexpr MapBuffer::Key AP_ACCESSIBILITY_UNIT = 99;
 
 // AccessibilityAction values
 constexpr MapBuffer::Key ACCESSIBILITY_ACTION_NAME = 0;

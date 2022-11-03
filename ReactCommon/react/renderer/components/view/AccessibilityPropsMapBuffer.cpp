@@ -161,9 +161,6 @@ void AccessibilityProps::propsDiffMapBuffer(
     }
     builder.putInt(AP_IMPORTANT_FOR_ACCESSIBILITY, value);
   }
-  if (oldProps.accessibilityUnit != newProps.accessibilityUnit) {
-    builder.putString(AP_ACCESSIBILITY_UNIT, newProps.accessibilityUnit);
-  }
 }
 #endif
 
