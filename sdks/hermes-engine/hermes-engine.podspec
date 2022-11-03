@@ -17,7 +17,7 @@ version = package['version']
 
 # sdks/.hermesversion
 hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
-isInCI = ENV['CI'] == true
+isInCI = ENV['CI'] === 'true'
 
 source = {}
 git = "https://github.com/facebook/hermes.git"
@@ -38,7 +38,7 @@ elsif isNightly
   # set tarball as hermes engine
   source[:http] = "file://#{destination_path}"
 elsif File.exists?(hermestag_file) && isInCI
-  Pod::UI.puts '[Hermes] Detected that you are on a React Native release branch, building Hermes from source...'.yellow if Object.const_defined?("Pod::UI")
+  Pod::UI.puts '[Hermes] Detected that you are on a React Native release branch, building Hermes from source but fetched from tag...'.yellow if Object.const_defined?("Pod::UI")
   hermestag = File.read(hermestag_file).strip
   source[:git] = git
   source[:tag] = hermestag

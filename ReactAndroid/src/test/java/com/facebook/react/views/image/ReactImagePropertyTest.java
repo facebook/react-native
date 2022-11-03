@@ -35,6 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -61,9 +62,21 @@ public class ReactImagePropertyTest {
   public void setup() {
     PowerMockito.mockStatic(Arguments.class);
     PowerMockito.when(Arguments.createArray())
-        .thenAnswer((InvocationOnMock invocation) -> new JavaOnlyArray());
+        .thenAnswer(
+            new Answer<Object>() {
+              @Override
+              public Object answer(InvocationOnMock invocation) {
+                return new JavaOnlyArray();
+              }
+            });
     PowerMockito.when(Arguments.createMap())
-        .thenAnswer((InvocationOnMock invocation) -> new JavaOnlyMap());
+        .thenAnswer(
+            new Answer<Object>() {
+              @Override
+              public Object answer(InvocationOnMock invocation) {
+                return new JavaOnlyMap();
+              }
+            });
 
     // RNLog is stubbed out and the whole class need to be mocked
     PowerMockito.mockStatic(RNLog.class);

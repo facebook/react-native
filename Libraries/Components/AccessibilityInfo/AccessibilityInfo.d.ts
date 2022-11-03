@@ -8,7 +8,7 @@
  */
 
 import type * as React from 'react';
-import {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import {HostComponent} from '../../../types/public/ReactNativeTypes';
 import {EmitterSubscription} from '../../vendor/emitter/EventEmitter';
 
 type AccessibilityChangeEventName =

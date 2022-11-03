@@ -10,10 +10,8 @@ project(appmodules)
 
 include(${REACT_ANDROID_DIR}/cmake-utils/ReactNative-application.cmake)
 
-add_subdirectory(${PROJECT_BUILD_DIR}/generated/source/codegen/jni/ codegen_build)
 add_subdirectory(${REACT_COMMON_DIR}/react/nativemodule/samples/platform/android/ sampleturbomodule_build)
 
-# RN Tester needs to link against the local codegen-ned library and a sample turbomobule
+# RN Tester needs to link against the sample turbomobule
 target_link_libraries(${CMAKE_PROJECT_NAME}
-        react_codegen_AppSpecs
         sampleturbomodule)

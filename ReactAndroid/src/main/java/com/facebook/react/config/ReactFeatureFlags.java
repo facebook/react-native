@@ -120,4 +120,7 @@ public class ReactFeatureFlags {
 
   /** Temporary flag to allow execution of mount items up to 15ms earlier than normal. */
   public static boolean enableEarlyScheduledMountItemExecution = false;
+
+  // TODO (T136375139): Remove this once finish testing
+  public static boolean enableAtomicRegisterSegment = false;
 }

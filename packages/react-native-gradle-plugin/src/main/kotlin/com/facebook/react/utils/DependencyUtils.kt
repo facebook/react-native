@@ -45,7 +45,13 @@ internal object DependencyUtils {
   fun readVersionString(propertiesFile: File): String {
     val reactAndroidProperties = Properties()
     propertiesFile.inputStream().use { reactAndroidProperties.load(it) }
-    return reactAndroidProperties["VERSION_NAME"] as? String ?: ""
+    val versionString = reactAndroidProperties["VERSION_NAME"] as? String ?: ""
+    // If on a nightly, we need to fetch the -SNAPSHOT artifact from Sonatype.
+    return if (versionString.startsWith("0.0.0")) {
+      "$versionString-SNAPSHOT"
+    } else {
+      versionString
+    }
   }
 
   fun Project.mavenRepoFromUrl(url: String): MavenArtifactRepository =
