@@ -194,8 +194,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return ReactTtsSpan.TYPE_VERBATIM;
         case LINK:
         case SUMMARY:
+        case HEADER:
         case ALERT:
         case COMBOBOX:
+        case MENU:
         case MENUBAR:
         case MENUITEM:
         case PROGRESSBAR:

@@ -93,41 +93,13 @@ class AccessibilityExample extends React.Component<{}> {
         <RNTesterBlock title="Text with TtsSpan">
           <View>
             <Text accessible={true}>
-              My number is{' '}
+              It spells like{' '}
               <Text
-                accessibilityRole="decimal"
+                accessibilityRole="verbatim"
                 accessible={true}
                 style={{backgroundColor: 'red'}}>
-                10.20
+                reactnative
               </Text>
-              .
-            </Text>
-          </View>
-          <View>
-            <Text accessible={true}>
-              My number is{' '}
-              <Text
-                accessibilityRole="decimal"
-                accessible={true}
-                style={{backgroundColor: 'red'}}>
-                10$
-              </Text>
-            </Text>
-          </View>
-          <View>
-            <Text accessible={true}>
-              My number is{' '}
-              <Text
-                accessibilityRole="time"
-                accessible={true}
-                style={{backgroundColor: 'red'}}>
-                17:00
-              </Text>
-            </Text>
-          </View>
-          <View>
-            <Text accessible={true} accessibilityRole="telephone">
-              My number is 0111234234234
             </Text>
           </View>
           <View>
@@ -165,13 +137,41 @@ class AccessibilityExample extends React.Component<{}> {
           </View>
           <View>
             <Text accessible={true}>
-              It spells like{' '}
+              My number is{' '}
               <Text
-                accessibilityRole="verbatim"
+                accessibilityRole="decimal"
                 accessible={true}
                 style={{backgroundColor: 'red'}}>
-                reactnative
+                10.20
               </Text>
+              .
+            </Text>
+          </View>
+          <View>
+            <Text accessible={true}>
+              My number is{' '}
+              <Text
+                accessibilityRole="money"
+                accessible={true}
+                style={{backgroundColor: 'red'}}>
+                10$
+              </Text>
+            </Text>
+          </View>
+          <View>
+            <Text accessible={true}>
+              My number is{' '}
+              <Text
+                accessibilityRole="time"
+                accessible={true}
+                style={{backgroundColor: 'red'}}>
+                17:00
+              </Text>
+            </Text>
+          </View>
+          <View>
+            <Text accessible={true} accessibilityRole="telephone">
+              My number is 0111234234234
             </Text>
           </View>
         </RNTesterBlock>
