@@ -240,15 +240,6 @@ NativeCameraRollManagerCxxSpecJSI::NativeCameraRollManagerCxxSpecJSI(std::shared
   methodMap_[\\"saveToCameraRoll\\"] = MethodMetadata {2, __hostFunction_NativeCameraRollManagerCxxSpecJSI_saveToCameraRoll};
   methodMap_[\\"deletePhotos\\"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerCxxSpecJSI_deletePhotos};
 }
-static jsi::Value __hostFunction_NativeImagePickerIOSCxxSpecJSI_openCameraDialog(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeImagePickerIOSCxxSpecJSI *>(&turboModule)->openCameraDialog(rt, args[0].asObject(rt), args[1].asObject(rt).asFunction(rt), args[2].asObject(rt).asFunction(rt));
-  return jsi::Value::undefined();
-}
-
-NativeImagePickerIOSCxxSpecJSI::NativeImagePickerIOSCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
-  : TurboModule(\\"ImagePickerIOS\\", jsInvoker) {
-  methodMap_[\\"openCameraDialog\\"] = MethodMetadata {3, __hostFunction_NativeImagePickerIOSCxxSpecJSI_openCameraDialog};
-}
 static jsi::Value __hostFunction_NativeExceptionsManagerCxxSpecJSI_reportFatalException(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->reportFatalException(rt, args[0].asString(rt), args[1].asObject(rt).asArray(rt), args[2].asNumber());
   return jsi::Value::undefined();

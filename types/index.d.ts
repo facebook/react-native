@@ -110,7 +110,6 @@ export * from '../Libraries/EventEmitter/NativeEventEmitter';
 export * from '../Libraries/EventEmitter/RCTDeviceEventEmitter';
 export * from '../Libraries/EventEmitter/RCTNativeAppEventEmitter';
 export * from '../Libraries/Image/Image';
-export * from '../Libraries/Image/ImagePickerIOS';
 export * from '../Libraries/Image/ImageResizeMode';
 export * from '../Libraries/Image/ImageSource';
 export * from '../Libraries/Interaction/InteractionManager';

@@ -505,49 +505,6 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeImagePickerIOSCxxSpecJSI : public TurboModule {
-protected:
-  NativeImagePickerIOSCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual void openCameraDialog(jsi::Runtime &rt, jsi::Object config, jsi::Function successCallback, jsi::Function cancelCallback) = 0;
-
-};
-
-template <typename T>
-class JSI_EXPORT NativeImagePickerIOSCxxSpec : public TurboModule {
-public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
-  }
-
-protected:
-  NativeImagePickerIOSCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"ImagePickerIOS\\", jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
-
-private:
-  class Delegate : public NativeImagePickerIOSCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeImagePickerIOSCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
-
-    void openCameraDialog(jsi::Runtime &rt, jsi::Object config, jsi::Function successCallback, jsi::Function cancelCallback) override {
-      static_assert(
-          bridging::getParameterCount(&T::openCameraDialog) == 4,
-          \\"Expected openCameraDialog(...) to have 4 parameters\\");
-
-      return bridging::callFromJs<void>(
-          rt, &T::openCameraDialog, jsInvoker_, instance_, std::move(config), std::move(successCallback), std::move(cancelCallback));
-    }
-
-  private:
-    T *instance_;
-  };
-
-  Delegate delegate_;
-};
-
 class JSI_EXPORT NativeExceptionsManagerCxxSpecJSI : public TurboModule {
 protected:
   NativeExceptionsManagerCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
