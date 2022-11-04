@@ -142,8 +142,7 @@ const API = {
     }
   },
   flushQueue: function (): void {
-    // TODO: (T136971132)
-    // invariant(NativeAnimatedModule, 'Native animated module is not available');
+    invariant(NativeAnimatedModule, 'Native animated module is not available');
     flushQueueTimeout = null;
 
     // Early returns before calling any APIs
@@ -166,17 +165,16 @@ const API = {
       // use RCTDeviceEventEmitter. This reduces overhead of sending lots of
       // JSI functions across to native code; but also, TM infrastructure currently
       // does not support packing a function into native arrays.
-      NativeAnimatedModule?.queueAndExecuteBatchedOperations?.(singleOpQueue);
+      NativeAnimatedModule.queueAndExecuteBatchedOperations?.(singleOpQueue);
       singleOpQueue.length = 0;
     } else {
-      Platform.OS === 'android' &&
-        NativeAnimatedModule?.startOperationBatch?.();
+      Platform.OS === 'android' && NativeAnimatedModule.startOperationBatch?.();
       for (let q = 0, l = queue.length; q < l; q++) {
         queue[q]();
       }
       queue.length = 0;
       Platform.OS === 'android' &&
-        NativeAnimatedModule?.finishOperationBatch?.();
+        NativeAnimatedModule.finishOperationBatch?.();
     }
   },
   queueOperation: <Args: $ReadOnlyArray<mixed>, Fn: (...Args) => void>(
