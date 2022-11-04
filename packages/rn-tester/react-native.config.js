@@ -25,4 +25,9 @@ module.exports = {
     },
   },
   reactNativePath: '../../',
+  project: {
+    ios: {
+      sourceDir: '.',
+    },
+  },
 };
