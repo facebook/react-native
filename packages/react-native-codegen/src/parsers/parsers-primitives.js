@@ -17,6 +17,7 @@ import type {
   NativeModuleFunctionTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   NativeModuleNumberTypeAnnotation,
+  NativeModuleMixedTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   Int32TypeAnnotation,
@@ -80,11 +81,20 @@ function emitStringish(nullable: boolean): Nullable<StringTypeAnnotation> {
     type: 'StringTypeAnnotation',
   });
 }
+
 function emitFunction(
   nullable: boolean,
   translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation,
 ): Nullable<NativeModuleFunctionTypeAnnotation> {
   return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
+}
+
+function emitMixedTypeAnnotation(
+  nullable: boolean,
+): Nullable<NativeModuleMixedTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'MixedTypeAnnotation',
+  });
 }
 
 function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
@@ -193,5 +203,6 @@ module.exports = {
   emitVoid,
   emitString,
   emitStringish,
+  emitMixedTypeAnnotation,
   typeAliasResolution,
 };

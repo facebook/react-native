@@ -23,6 +23,7 @@ const {
   emitVoid,
   emitString,
   emitStringish,
+  emitMixedTypeAnnotation,
   typeAliasResolution,
 } = require('../parsers-primitives.js');
 
@@ -449,6 +450,32 @@ describe('emitObject', () => {
 
         expect(result).toEqual(expected);
       });
+    });
+  });
+});
+
+describe('emitMixedTypeAnnotation', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitMixedTypeAnnotation(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'MixedTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitMixedTypeAnnotation(false);
+      const expected = {
+        type: 'MixedTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
     });
   });
 });

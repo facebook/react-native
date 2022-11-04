@@ -16,7 +16,6 @@ import type {ParserType} from '../errors';
 const {
   wrapNullable,
   unwrapNullable,
-  emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
 } = require('../parsers-commons.js');
 const {UnsupportedUnionTypeAnnotationParserError} = require('../errors');
@@ -247,32 +246,6 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
     ).toThrowErrorMatchingInlineSnapshot(
       `"Module testModuleName: Generic 'typeAnnotationName' must have exactly one type parameter."`,
     );
-  });
-});
-
-describe('emitMixedTypeAnnotation', () => {
-  describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
-      const result = emitMixedTypeAnnotation(true);
-      const expected = {
-        type: 'NullableTypeAnnotation',
-        typeAnnotation: {
-          type: 'MixedTypeAnnotation',
-        },
-      };
-
-      expect(result).toEqual(expected);
-    });
-  });
-  describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
-      const result = emitMixedTypeAnnotation(false);
-      const expected = {
-        type: 'MixedTypeAnnotation',
-      };
-
-      expect(result).toEqual(expected);
-    });
   });
 });
 

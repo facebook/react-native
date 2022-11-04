@@ -15,7 +15,6 @@ import type {
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
   Nullable,
-  NativeModuleMixedTypeAnnotation,
   UnionTypeAnnotationMemberType,
   NativeModuleUnionTypeAnnotation,
 } from '../CodegenSchema.js';
@@ -105,14 +104,6 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
       language,
     );
   }
-}
-
-function emitMixedTypeAnnotation(
-  nullable: boolean,
-): Nullable<NativeModuleMixedTypeAnnotation> {
-  return wrapNullable(nullable, {
-    type: 'MixedTypeAnnotation',
-  });
 }
 
 function remapUnionTypeAnnotationMemberNames(
@@ -233,7 +224,6 @@ module.exports = {
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
-  emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
   getKeyName,
   translateDefault,
