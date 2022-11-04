@@ -90,6 +90,91 @@ class AccessibilityExample extends React.Component<{}> {
   render(): React.Node {
     return (
       <View>
+        <RNTesterBlock title="Text with TtsSpan">
+          <View>
+            <Text accessible={true}>
+              My number is{' '}
+              <Text
+                accessibilityRole="decimal"
+                accessible={true}
+                style={{backgroundColor: 'red'}}>
+                10.20
+              </Text>
+              .
+            </Text>
+          </View>
+          <View>
+            <Text accessible={true}>
+              My number is{' '}
+              <Text
+                accessibilityRole="decimal"
+                accessible={true}
+                style={{backgroundColor: 'red'}}>
+                10$
+              </Text>
+            </Text>
+          </View>
+          <View>
+            <Text accessible={true}>
+              My number is{' '}
+              <Text
+                accessibilityRole="time"
+                accessible={true}
+                style={{backgroundColor: 'red'}}>
+                17:00
+              </Text>
+            </Text>
+          </View>
+          <View>
+            <Text accessible={true} accessibilityRole="telephone">
+              My number is 0111234234234
+            </Text>
+          </View>
+          <View>
+            <Text accessible={true}>
+              My number is{' '}
+              <Text
+                accessibilityRole="date"
+                accessible={true}
+                style={{backgroundColor: 'red'}}>
+                02/07/1987
+              </Text>
+            </Text>
+          </View>
+          <View>
+            <Text accessible={true}>
+              My number is{' '}
+              <Text
+                accessibilityRole="measure"
+                accessible={true}
+                style={{backgroundColor: 'red'}}>
+                10m
+              </Text>
+            </Text>
+          </View>
+          <View>
+            <Text accessible={true}>
+              My number is{' '}
+              <Text
+                accessibilityRole="fraction"
+                accessible={true}
+                style={{backgroundColor: 'red'}}>
+                1/2
+              </Text>
+            </Text>
+          </View>
+          <View>
+            <Text accessible={true}>
+              It spells like{' '}
+              <Text
+                accessibilityRole="verbatim"
+                accessible={true}
+                style={{backgroundColor: 'red'}}>
+                reactnative
+              </Text>
+            </Text>
+          </View>
+        </RNTesterBlock>
         <RNTesterBlock title="TextView without label">
           <Text>
             Text's accessibilityLabel is the raw text itself unless it is set
