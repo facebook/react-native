@@ -18,19 +18,30 @@ import AnimatedNode from './AnimatedNode';
 import AnimatedTransform from './AnimatedTransform';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
+function createAnimatedStyle(inputStyle: any): Object {
+  const style = flattenStyle(inputStyle);
+  const animatedStyles: any = {};
+  for (const key in style) {
+    const value = style[key];
+    if (key === 'transform') {
+      animatedStyles[key] = new AnimatedTransform(value);
+    } else if (value instanceof AnimatedNode) {
+      animatedStyles[key] = value;
+    } else if (value && !Array.isArray(value) && typeof value === 'object') {
+      animatedStyles[key] = createAnimatedStyle(value);
+    }
+  }
+  return animatedStyles;
+}
+
 export default class AnimatedStyle extends AnimatedWithChildren {
+  _inputStyle: any;
   _style: Object;
 
   constructor(style: any) {
     super();
-    style = flattenStyle(style) || ({}: {[string]: any});
-    if (style.transform) {
-      style = {
-        ...style,
-        transform: new AnimatedTransform(style.transform),
-      };
-    }
-    this._style = style;
+    this._inputStyle = style;
+    this._style = createAnimatedStyle(style);
   }
 
   // Recursively get values for nested styles (like iOS's shadowOffset)
@@ -51,7 +62,10 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   }
 
   __getValue(): Object {
-    return this._walkStyleAndGetValues(this._style);
+    return flattenStyle([
+      this._inputStyle,
+      this._walkStyleAndGetValues(this._style),
+    ]);
   }
 
   // Recursively get animated values for nested styles (like iOS's shadowOffset)
