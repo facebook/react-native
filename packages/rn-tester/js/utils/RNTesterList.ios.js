@@ -339,6 +339,7 @@ if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {
 const Modules: {...} = {};
 
 APIs.concat(Components).forEach(Example => {
+  // $FlowFixMe[prop-missing]
   Modules[Example.key] = Example.module;
 });
 

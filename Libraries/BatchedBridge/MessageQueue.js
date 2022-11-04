@@ -381,6 +381,7 @@ class MessageQueue {
     return (
       // $FlowFixMe[cannot-resolve-name]
       typeof DebuggerInternal !== 'undefined' &&
+      // $FlowFixMe[cannot-resolve-name]
       DebuggerInternal.shouldPauseOnThrow === true
     );
   }
