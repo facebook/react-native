@@ -48,7 +48,7 @@ references:
   # Anchors for the cache keys
 
   cache_keys:
-    checkout_cache_key: &checkout_cache_key v4-checkout
+    checkout_cache_key: &checkout_cache_key v5-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_workspace_cache_key: &hermes_workspace_cache_key v4-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
