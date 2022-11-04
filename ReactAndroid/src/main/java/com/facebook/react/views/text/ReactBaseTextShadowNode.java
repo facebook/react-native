@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * {@link ReactShadowNode} abstract class for spannable text nodes.
@@ -510,8 +509,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       String roleClassName =
           AccessibilityRole.getValue(AccessibilityRole.fromValue(accessibilityRole));
       mIsAccessibilityLink = Objects.equals(accessibilityRole, "link");
-      Set<String> UNIT_TYPES = Set.of(ReactTtsSpan.TYPE_VERBATIM, ReactTtsSpan.TYPE_DATE);
-      mAccessibilityUnit = UNIT_TYPES.contains(roleClassName) ? roleClassName : null;
+      mAccessibilityUnit =
+          ReactTtsSpan.SUPPORTED_UNIT_TYPES.contains(roleClassName) ? roleClassName : null;
       markUpdated();
     }
   }

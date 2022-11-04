@@ -10,11 +10,15 @@ package com.facebook.react.views.text;
 import android.os.Parcel;
 import android.os.PersistableBundle;
 import android.text.style.TtsSpan;
+import java.util.Set;
 
 /*
  * Wraps {@link BackgroundColorSpan} as a {@link ReactSpan}.
  */
 public class ReactTtsSpan extends TtsSpan implements ReactSpan {
+  // supported TYPES in react-native
+  public static Set<String> SUPPORTED_UNIT_TYPES = Set.of(TYPE_VERBATIM, TYPE_DATE);
+
   public ReactTtsSpan(String type, PersistableBundle args) {
     super(type, args);
   }

@@ -19,6 +19,7 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -125,7 +126,11 @@ public class TextLayoutManager {
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
       } else if (end >= start) {
         if (textAttributes.mIsAccessibilityLink) {
-          ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
+          /*
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new ReactTtsSpan.Builder(ReactTtsSpan.TYPE_VERBATIM).build()));
+                  */
         }
         if (textAttributes.mIsColorSet) {
           ops.add(

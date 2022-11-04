@@ -18,7 +18,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import java.util.ArrayList;
@@ -100,13 +100,10 @@ public class TextAttributeProps {
   protected boolean mIsLineThroughTextDecorationSet = false;
   protected boolean mIncludeFontPadding = true;
 
-  protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
+  protected @Nullable AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
-  protected boolean mIsAccessibilityUnitSet = false;
-  protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityUnit =
-      ReactAccessibilityDelegate.AccessibilityRole.NONE;
+  protected @Nullable String mAccessibilityUnit = null;
   protected boolean mIsAccessibilityLink = false;
-  protected boolean mIsAccessibilityUnit = false;
 
   protected int mFontStyle = UNSET;
   protected int mFontWeight = UNSET;
@@ -606,12 +603,13 @@ public class TextAttributeProps {
   private void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (accessibilityRole != null) {
       mIsAccessibilityRoleSet = true;
-      mAccessibilityRole =
-          ReactAccessibilityDelegate.AccessibilityRole.fromValue(accessibilityRole);
+      mAccessibilityRole = AccessibilityRole.fromValue(accessibilityRole);
       mIsAccessibilityLink =
-          mAccessibilityRole.equals(ReactAccessibilityDelegate.AccessibilityRole.LINK);
-      mIsAccessibilityUnit =
-          mAccessibilityRole.equals(ReactAccessibilityDelegate.AccessibilityRole.VERBATIM);
+          mAccessibilityRole.equals(AccessibilityRole.LINK);
+      String roleClassName =
+          AccessibilityRole.getValue(AccessibilityRole.fromValue(accessibilityRole));
+      mAccessibilityUnit =
+          ReactTtsSpan.SUPPORTED_UNIT_TYPES.contains(roleClassName) ? roleClassName : null;
     }
   }
 
