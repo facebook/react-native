@@ -25,6 +25,7 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -184,10 +185,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
         ops.add(
             new SetSpanOperation(start, end, new ReactClickableSpan(textShadowNode.getReactTag())));
       }
-      if (textShadowNode.mIsAccessibilityUnit && Build.VERSION.SDK_INT >= 21) {
+      if (textShadowNode.mAccessibilityUnit != null && Build.VERSION.SDK_INT >= 21) {
         ops.add(
             new SetSpanOperation(
-                start, end, new ReactTtsSpan.Builder(textShadowNode.mAccessibilityRole).build()));
+                start, end, new ReactTtsSpan.Builder(textShadowNode.mAccessibilityUnit).build()));
       }
       float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
       if (!Float.isNaN(effectiveLetterSpacing)
@@ -330,9 +331,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mColor;
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
-  protected String mAccessibilityRole;
+  protected @Nullable String mAccessibilityUnit = null;
   protected boolean mIsAccessibilityLink = false;
-  protected boolean mIsAccessibilityUnit;
 
   protected int mNumberOfLines = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
@@ -507,10 +507,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
   public void setIsAccessibilityLink(@Nullable String accessibilityRole) {
     if (isVirtual()) {
-      mAccessibilityRole = accessibilityRole;
+      String roleClassName =
+          AccessibilityRole.getValue(AccessibilityRole.fromValue(accessibilityRole));
       mIsAccessibilityLink = Objects.equals(accessibilityRole, "link");
-      Set<String> TYPES = Set.of("verbatim", "date");
-      mIsAccessibilityUnit = TYPES.contains(accessibilityRole);
+      Set<String> UNIT_TYPES = Set.of(ReactTtsSpan.TYPE_VERBATIM, ReactTtsSpan.TYPE_DATE);
+      mAccessibilityUnit = UNIT_TYPES.contains(roleClassName) ? roleClassName : null;
       markUpdated();
     }
   }

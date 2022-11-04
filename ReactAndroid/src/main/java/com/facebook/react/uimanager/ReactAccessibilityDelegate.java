@@ -45,6 +45,7 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.text.ReactSpan;
+import com.facebook.react.views.text.ReactTtsSpan;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -158,7 +159,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case GRID:
           return "android.widget.GridView";
         case VERBATIM:
-          return "android.type.verbatim";
+          return ReactTtsSpan.TYPE_VERBATIM;
         case NONE:
         case LINK:
         case SUMMARY:
