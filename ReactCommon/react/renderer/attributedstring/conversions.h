@@ -575,6 +575,8 @@ inline std::string toString(const AccessibilityRole &accessibilityRole) {
       return "link";
     case AccessibilityRole::Verbatim:
       return "verbatim";
+    case AccessibilityRole::Date:
+      return "date";
     case AccessibilityRole::Search:
       return "search";
     case AccessibilityRole::Image:
@@ -648,6 +650,8 @@ inline void fromRawValue(
       result = AccessibilityRole::Link;
     } else if (string == "verbatim") {
       result = AccessibilityRole::Verbatim;
+    } else if (string == "date") {
+      result = AccessibilityRole::Date;
     } else if (string == "search") {
       result = AccessibilityRole::Search;
     } else if (string == "image") {

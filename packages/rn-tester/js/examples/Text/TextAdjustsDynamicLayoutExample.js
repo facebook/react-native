@@ -17,8 +17,15 @@ export default function TextAdjustsDynamicLayoutExample(props: {}): React.Node {
   return (
     <>
       <View>
-        <Text accessibilityRole="verbatim" accessible={true}>
-          please spell
+        <Text accessible={true}>
+          My number is{' '}
+          <Text
+            accessibilityRole="date"
+            accessible={true}
+            style={{backgroundColor: 'red'}}>
+            02/07/1987
+          </Text>
+          .
         </Text>
       </View>
     </>

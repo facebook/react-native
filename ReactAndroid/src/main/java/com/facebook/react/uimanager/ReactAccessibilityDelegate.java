@@ -44,7 +44,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
-import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTtsSpan;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,6 +100,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     TOGGLEBUTTON,
     LINK,
     VERBATIM,
+    DATE,
     SEARCH,
     IMAGE,
     IMAGEBUTTON,
@@ -160,6 +160,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.GridView";
         case VERBATIM:
           return ReactTtsSpan.TYPE_VERBATIM;
+        case DATE:
+          return ReactTtsSpan.TYPE_DATE;
         case NONE:
         case LINK:
         case SUMMARY:
@@ -652,10 +654,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   public static class AccessibilityLinks {
     private final List<AccessibleLink> mLinks;
 
-    public AccessibilityLinks(ReactSpan[] spans, Spannable text) {
+    public AccessibilityLinks(ClickableSpan[] spans, Spannable text) {
       ArrayList<AccessibleLink> links = new ArrayList<>();
       for (int i = 0; i < spans.length; i++) {
-        ReactSpan span = spans[i];
+        ClickableSpan span = spans[i];
         int start = text.getSpanStart(span);
         int end = text.getSpanEnd(span);
         // zero length spans, and out of range spans should not be included.
