@@ -99,8 +99,18 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     BUTTON,
     TOGGLEBUTTON,
     LINK,
-    VERBATIM,
+    CARDINAL,
+    ORDINAL,
+    DECIMAL,
+    FRACTION,
+    MEASURE,
+    TIME,
     DATE,
+    TELEPHONE,
+    ELECTRONIC,
+    MONEY,
+    DIGITS,
+    VERBATIM,
     SEARCH,
     IMAGE,
     IMAGEBUTTON,
@@ -158,17 +168,34 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.AbsListView";
         case GRID:
           return "android.widget.GridView";
-        case VERBATIM:
-          return ReactTtsSpan.TYPE_VERBATIM;
+        case ORDINAL:
+          return ReactTtsSpan.TYPE_ORDINAL;
+        case DECIMAL:
+          return ReactTtsSpan.TYPE_DECIMAL;
+        case FRACTION:
+          return ReactTtsSpan.TYPE_FRACTION;
+        case CARDINAL:
+          return ReactTtsSpan.TYPE_CARDINAL;
+        case MEASURE:
+          return ReactTtsSpan.TYPE_MEASURE;
+        case TIME:
+          return ReactTtsSpan.TYPE_TIME;
         case DATE:
           return ReactTtsSpan.TYPE_DATE;
-        case NONE:
+        case TELEPHONE:
+          return ReactTtsSpan.TYPE_TELEPHONE;
+        case ELECTRONIC:
+          return ReactTtsSpan.TYPE_ELECTRONIC;
+        case MONEY:
+          return ReactTtsSpan.TYPE_MONEY;
+        case DIGITS:
+          return ReactTtsSpan.TYPE_DIGITS;
+        case VERBATIM:
+          return ReactTtsSpan.TYPE_VERBATIM;
         case LINK:
         case SUMMARY:
-        case HEADER:
         case ALERT:
         case COMBOBOX:
-        case MENU:
         case MENUBAR:
         case MENUITEM:
         case PROGRESSBAR:

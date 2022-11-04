@@ -17,12 +17,9 @@ export default function TextAdjustsDynamicLayoutExample(props: {}): React.Node {
   return (
     <>
       <View>
-        <Text accessible={true}>
+        <Text accessibilityRole="date" accessible={true}>
           My number is{' '}
-          <Text
-            accessibilityRole="date"
-            accessible={true}
-            style={{backgroundColor: 'red'}}>
+          <Text accessible={true} style={{backgroundColor: 'red'}}>
             02/07/1987
           </Text>
           .

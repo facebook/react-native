@@ -14,10 +14,35 @@ import java.util.Set;
 
 /*
  * Wraps {@link TtsSpan} as a {@link ReactSpan}.
+ * A span that supplies additional meta-data for the associated text intended
+ * for text-to-speech engines. If the text is being processed by a
+ * text-to-speech engine, the engine may use the data in this span in addition
+ * to or instead of its associated text.
+ *
+ * Each instance of a TtsSpan has a type, for example {@link #TYPE_DATE}
+ * or {@link #TYPE_MEASURE}. And a list of arguments, provided as
+ * key-value pairs in a bundle.
+ *
+ * The inner classes are there for convenience and provide builders for each
+ * TtsSpan type.
  */
 public class ReactTtsSpan extends TtsSpan implements ReactSpan {
+
   // supported TYPES in react-native
-  public static Set<String> SUPPORTED_UNIT_TYPES = Set.of(TYPE_VERBATIM, TYPE_DATE);
+  public static Set<String> SUPPORTED_UNIT_TYPES =
+      Set.of(
+          TYPE_CARDINAL,
+          TYPE_ORDINAL,
+          TYPE_DECIMAL,
+          TYPE_FRACTION,
+          TYPE_MEASURE,
+          TYPE_TIME,
+          TYPE_DATE,
+          TYPE_TELEPHONE,
+          TYPE_ELECTRONIC,
+          TYPE_MONEY,
+          TYPE_DIGITS,
+          TYPE_VERBATIM);
 
   public ReactTtsSpan(String type, PersistableBundle args) {
     super(type, args);

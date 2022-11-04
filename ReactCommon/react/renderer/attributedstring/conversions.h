@@ -573,10 +573,30 @@ inline std::string toString(const AccessibilityRole &accessibilityRole) {
       return "button";
     case AccessibilityRole::Link:
       return "link";
-    case AccessibilityRole::Verbatim:
-      return "verbatim";
     case AccessibilityRole::Date:
       return "date";
+    case AccessibilityRole::Ordinal:
+      return "ordinal";
+    case AccessibilityRole::Decimal:
+      return "decimal";
+    case AccessibilityRole::Fraction:
+      return "fraction";
+    case AccessibilityRole::Cardinal:
+      return "cardinal";
+    case AccessibilityRole::Measure:
+      return "measure";
+    case AccessibilityRole::Time:
+      return "time";
+    case AccessibilityRole::Telephone:
+      return "telephone";
+    case AccessibilityRole::Electronic:
+      return "electronic";
+    case AccessibilityRole::Money:
+      return "money";
+    case AccessibilityRole::Digits:
+      return "digits";
+    case AccessibilityRole::Verbatim:
+      return "verbatim";
     case AccessibilityRole::Search:
       return "search";
     case AccessibilityRole::Image:
@@ -652,6 +672,28 @@ inline void fromRawValue(
       result = AccessibilityRole::Verbatim;
     } else if (string == "date") {
       result = AccessibilityRole::Date;
+    } else if (string == "cardinal") {
+      result = AccessibilityRole::Cardinal;
+    } else if (string == "ordinal") {
+      result = AccessibilityRole::Ordinal;
+    } else if (string == "decimal") {
+      result = AccessibilityRole::Decimal;
+    } else if (string == "fraction") {
+      result = AccessibilityRole::Fraction;
+    } else if (string == "measure") {
+      result = AccessibilityRole::Measure;
+    } else if (string == "time") {
+      result = AccessibilityRole::Time;
+    } else if (string == "telephone") {
+      result = AccessibilityRole::Telephone;
+    } else if (string == "electronic") {
+      result = AccessibilityRole::Electronic;
+    } else if (string == "money") {
+      result = AccessibilityRole::Money;
+    } else if (string == "digits") {
+      result = AccessibilityRole::Digits;
+    } else if (string == "verbatim") {
+      result = AccessibilityRole::Verbatim;
     } else if (string == "search") {
       result = AccessibilityRole::Search;
     } else if (string == "image") {
