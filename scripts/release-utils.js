@@ -73,22 +73,29 @@ function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
 
 function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
   // -------- Publish every artifact to Maven Central
-  // The GPG key is base64 encoded on CircleCI
+  // The GPG key is base64 encoded on CircleCI and then decoded here
   let buff = Buffer.from(env.ORG_GRADLE_PROJECT_SIGNING_KEY_ENCODED, 'base64');
   env.ORG_GRADLE_PROJECT_SIGNING_KEY = buff.toString('ascii');
-  if (exec('./gradlew publishAllToSonatype -PisNightly=' + isNightly).code) {
-    echo('Failed to publish artifacts to Sonatype (Maven Central)');
-    exit(1);
-  }
 
   // We want to gate ourselves against accidentally publishing a 1.x or a 1000.x on
   // maven central which will break the semver for our artifacts.
   if (!isNightly && releaseVersion.startsWith('0.')) {
     // -------- For stable releases, we also need to close and release the staging repository.
-    if (exec('./gradlew closeAndReleaseSonatypeStagingRepository').code) {
+    if (
+      exec(
+        './gradlew publishAllToSonatype closeAndReleaseSonatypeStagingRepository -PisNightly=' +
+          isNightly,
+      ).code
+    ) {
       echo(
         'Failed to close and release the staging repository on Sonatype (Maven Central)',
       );
+      exit(1);
+    }
+  } else {
+    // -------- For nightly releases, we only need to publish the snapshot to Sonatype snapshot repo.
+    if (exec('./gradlew publishAllToSonatype -PisNightly=' + isNightly).code) {
+      echo('Failed to publish artifacts to Sonatype (Maven Central)');
       exit(1);
     }
   }
