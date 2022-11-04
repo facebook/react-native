@@ -41,7 +41,6 @@ const {
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
-  saveFilesToRestore,
 } = require('./release-utils');
 const fs = require('fs');
 const os = require('os');
@@ -73,8 +72,6 @@ const isCommitly = nightlyBuild || dryRunBuild;
 if (!argv.help) {
   echo(`The temp publishing folder is ${tmpPublishingFolder}`);
 }
-
-saveFilesToRestore(tmpPublishingFolder);
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
 const currentCommit = getCurrentCommit();
