@@ -65,6 +65,11 @@ const argv = yargs
     type: 'boolean',
     default: false,
   })
+  .option('r', {
+    alias: 'release', // useless but needed for CI
+    type: 'boolean',
+    default: false,
+  })
   .strict().argv;
 const nightlyBuild = argv.nightly;
 const dryRunBuild = argv.dryRun;
