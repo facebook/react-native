@@ -13,7 +13,7 @@ import android.text.style.TtsSpan;
 import java.util.Set;
 
 /*
- * Wraps {@link BackgroundColorSpan} as a {@link ReactSpan}.
+ * Wraps {@link TtsSpan} as a {@link ReactSpan}.
  */
 public class ReactTtsSpan extends TtsSpan implements ReactSpan {
   // supported TYPES in react-native
