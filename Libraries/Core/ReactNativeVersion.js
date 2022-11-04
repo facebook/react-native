@@ -10,8 +10,8 @@
  */
 
 exports.version = {
-  major: 0,
-  minor: 71,
+  major: 1000,
+  minor: 0,
   patch: 0,
-  prerelease: 'rc.0',
+  prerelease: null,
 };
