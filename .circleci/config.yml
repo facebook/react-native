@@ -1445,7 +1445,7 @@ jobs:
                 echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
       # END: Stables and nightlies
 
-      - run: node ./scripts/publish-npm.js --<< parameters.release_type >>
+      - run: node ./scripts/publish-npm.js
       - run:
           name: Zip Hermes Native Symbols
           command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
