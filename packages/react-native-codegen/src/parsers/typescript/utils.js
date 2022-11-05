@@ -109,77 +109,7 @@ function resolveTypeAnnotation(
   };
 }
 
-// TODO(T108222691): Use flow-types for @babel/parser
-function visit(
-  astNode: $FlowFixMe,
-  visitor: {
-    [type: string]: (node: $FlowFixMe) => void,
-  },
-) {
-  const queue = [astNode];
-  while (queue.length !== 0) {
-    let item = queue.shift();
-
-    if (!(typeof item === 'object' && item != null)) {
-      continue;
-    }
-
-    if (
-      typeof item.type === 'string' &&
-      typeof visitor[item.type] === 'function'
-    ) {
-      // Don't visit any children
-      visitor[item.type](item);
-    } else if (Array.isArray(item)) {
-      queue.push(...item);
-    } else {
-      queue.push(...Object.values(item));
-    }
-  }
-}
-
-// TODO(T108222691): Use flow-types for @babel/parser
-function isModuleRegistryCall(node: $FlowFixMe): boolean {
-  if (node.type !== 'CallExpression') {
-    return false;
-  }
-
-  const callExpression = node;
-
-  if (callExpression.callee.type !== 'MemberExpression') {
-    return false;
-  }
-
-  const memberExpression = callExpression.callee;
-  if (
-    !(
-      memberExpression.object.type === 'Identifier' &&
-      memberExpression.object.name === 'TurboModuleRegistry'
-    )
-  ) {
-    return false;
-  }
-
-  if (
-    !(
-      memberExpression.property.type === 'Identifier' &&
-      (memberExpression.property.name === 'get' ||
-        memberExpression.property.name === 'getEnforcing')
-    )
-  ) {
-    return false;
-  }
-
-  if (memberExpression.computed) {
-    return false;
-  }
-
-  return true;
-}
-
 module.exports = {
   resolveTypeAnnotation,
   getTypes,
-  visit,
-  isModuleRegistryCall,
 };

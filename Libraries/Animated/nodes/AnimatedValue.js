@@ -49,7 +49,7 @@ const NativeAnimatedAPI = NativeAnimatedHelper.API;
  * transform which can receive values from multiple parents.
  */
 function _flush(rootNode: AnimatedValue): void {
-  const animatedStyles = new Set();
+  const animatedStyles = new Set<AnimatedValue | AnimatedNode>();
   function findAnimatedStyles(node: AnimatedValue | AnimatedNode) {
     /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
      * suppresses an error found when Flow v0.68 was deployed. To see the error

@@ -12,8 +12,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
-import com.facebook.react.common.mapbuffer.MapBufferSoLoader;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.systrace.Systrace;
@@ -56,10 +54,6 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
     final Binding binding = new Binding();
-
-    if (ReactFeatureFlags.mapBufferSerializationEnabled) {
-      MapBufferSoLoader.staticInit();
-    }
 
     binding.register(
         mReactApplicationContext.getCatalystInstance().getRuntimeExecutor(),

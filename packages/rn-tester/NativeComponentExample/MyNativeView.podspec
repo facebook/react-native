@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.description     = "my-native-view"
   s.homepage        = "https://github.com/sota000/my-native-view.git"
   s.license         = "MIT"
-  s.platforms       = { :ios => "12.4", :tvos => "12.4" }
+  s.platforms       = { :ios => "12.4" }
   s.compiler_flags  = boost_compiler_flags + ' -Wno-nullability-completeness'
   s.author          = "Facebook, Inc. and its affiliates"
   s.source          = { :git => "https://github.com/facebook/my-native-view.git", :tag => "#{s.version}" }

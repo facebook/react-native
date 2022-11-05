@@ -75,3 +75,9 @@ RCT_EXTERN void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value);
  */
 RCT_EXTERN BOOL RCTGetMemoryPressureUnloadLevel(void);
 RCT_EXTERN void RCTSetMemoryPressureUnloadLevel(int value);
+
+/*
+ * Parse JS stack for unhandled JS errors caught in C++
+ */
+RCT_EXTERN BOOL RCTGetParseUnhandledJSErrorStackNatively(void);
+RCT_EXTERN void RCTSetParseUnhandledJSErrorStackNatively(BOOL value);

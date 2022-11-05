@@ -76,36 +76,6 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
 
     {\\"MultiFileIncludedNativeComponent\\", MultiFileIncludedNativeComponentCls}, // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_BOOL_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_STRING_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_INT_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_FLOAT_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_DOUBLE_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_COLOR_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_POINT_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_IMAGE_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_EDGE_INSET_STATE_PROPS
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_ARRAY_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_OBJECT_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_ARRAY_OF_OBJECTS_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_STRING_ENUM_STATE_PROPS
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENT_WITH_INT_ENUM_STATE
-
-    {\\"SimpleComponent\\", SimpleComponentCls}, // COMPONENTS_WITH_IMAGES_IN_STATE
   };
 
   auto p = sFabricComponentsClassMap.find(name);

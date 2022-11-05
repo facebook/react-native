@@ -197,34 +197,18 @@ function getEventArgument(argumentProps, name: $FlowFixMe) {
   };
 }
 
-function isEvent(typeAnnotation: $FlowFixMe) {
-  switch (typeAnnotation.type) {
-    case 'TSTypeReference':
-      if (
-        typeAnnotation.typeName.name !== 'BubblingEventHandler' &&
-        typeAnnotation.typeName.name !== 'DirectEventHandler'
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    default:
-      return false;
-  }
-}
+// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
+type EventTypeAST = Object;
 
 function buildEventSchema(
   types: TypeDeclarationMap,
   property: EventTypeAST,
-): ?EventTypeShape {
+): EventTypeShape {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,
     types,
   );
-  if (!isEvent(topLevelType.type)) {
-    return null;
-  }
 
   const name = property.key.name;
   const typeAnnotation = topLevelType.type;
@@ -232,7 +216,11 @@ function buildEventSchema(
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(typeAnnotation, types);
 
-  if (bubblingType && argumentProps) {
+  if (!argumentProps) {
+    throw new Error(`Unable to determine event arguments for "${name}"`);
+  } else if (!bubblingType) {
+    throw new Error(`Unable to determine event bubbling type for "${name}"`);
+  } else {
     if (paperTopLevelNameDeprecated != null) {
       return {
         name,
@@ -256,27 +244,13 @@ function buildEventSchema(
       },
     };
   }
-
-  if (argumentProps === null) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
-
-  if (bubblingType === null) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
 }
-
-// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
-type EventTypeAST = Object;
 
 function getEvents(
   eventTypeAST: $ReadOnlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<EventTypeShape> {
-  return eventTypeAST
-    .filter(property => property.type === 'TSPropertySignature')
-    .map(property => buildEventSchema(types, property))
-    .filter(Boolean);
+  return eventTypeAST.map(property => buildEventSchema(types, property));
 }
 
 module.exports = {

@@ -352,6 +352,12 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   textContentType?: ?TextContentType,
+
+  /**
+   * Set line break strategy on iOS.
+   * @platform ios
+   */
+  lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -1659,6 +1665,13 @@ const ExportedForwardRef: React.AbstractComponent<
     />
   );
 });
+
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+ExportedForwardRef.propTypes =
+  require('deprecated-react-native-prop-types').TextInputPropTypes;
 
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {

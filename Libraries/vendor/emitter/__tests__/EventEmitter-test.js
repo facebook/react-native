@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+import type {EventSubscription} from '../EventEmitter';
+
 import EventEmitter from '../EventEmitter';
 
 describe('listeners', () => {
@@ -309,7 +311,7 @@ describe('event emission', () => {
     const listenerA = jest.fn(() => {
       results.push('A');
     });
-    const listenerB = jest.fn(() => {
+    const listenerB: JestMockFn<Array<mixed>, void> = jest.fn(() => {
       results.push('B');
       subscriptionB.remove();
     });
@@ -317,7 +319,10 @@ describe('event emission', () => {
       results.push('C');
     });
     emitter.addListener('A', listenerA);
-    const subscriptionB = emitter.addListener('A', listenerB);
+    const subscriptionB: EventSubscription = emitter.addListener(
+      'A',
+      listenerB,
+    );
     emitter.addListener('A', listenerC);
 
     emitter.emit('A');

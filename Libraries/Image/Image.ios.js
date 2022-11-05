@@ -10,6 +10,7 @@
 
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
+import type {ImageIOS} from './Image.flow';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
 import flattenStyle from '../StyleSheet/flattenStyle';
@@ -22,8 +23,6 @@ import ImageViewNativeComponent from './ImageViewNativeComponent';
 import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 import resolveAssetSource from './resolveAssetSource';
 import * as React from 'react';
-
-import type {ImageIOS} from './Image.flow';
 
 function getSize(
   uri: string,
@@ -260,6 +259,12 @@ Image.queryCache = queryCache;
  * suppresses an error found when Flow v0.89 was deployed. To see the error,
  * delete this comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
+
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {

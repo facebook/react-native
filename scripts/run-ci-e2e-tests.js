@@ -89,19 +89,9 @@ try {
   exec(`rsync -a ${ROOT}/template ${REACT_NATIVE_TEMP_DIR}`);
   cd(REACT_NATIVE_APP_DIR);
 
-  const METRO_CONFIG = path.join(ROOT, 'metro.config.js');
-  const RN_GET_POLYFILLS = path.join(ROOT, 'rn-get-polyfills.js');
-  const RN_POLYFILLS_PATH = 'packages/polyfills/';
-  exec(`mkdir -p ${RN_POLYFILLS_PATH}`);
-
-  cp(METRO_CONFIG, '.');
-  cp(RN_GET_POLYFILLS, '.');
-  exec(
-    `rsync -a ${ROOT}/${RN_POLYFILLS_PATH} ${REACT_NATIVE_APP_DIR}/${RN_POLYFILLS_PATH}`,
-  );
-  mv('_flowconfig', '.flowconfig');
-  mv('_watchmanconfig', '.watchmanconfig');
   mv('_bundle', '.bundle');
+  mv('_eslintrc.js', '.eslintrc.js');
+  mv('_watchmanconfig', '.watchmanconfig');
 
   describe('Install React Native package');
   exec(`npm install ${REACT_NATIVE_PACKAGE}`);
@@ -267,6 +257,7 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
+
     describe('Test: Verify packager can generate an iOS bundle');
     if (
       exec(
@@ -277,12 +268,17 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    describe('Test: Flow check');
-    // The resolve package included a test for a malformed package.json (see https://github.com/browserify/resolve/issues/89)
-    // that is failing the flow check. We're removing it.
-    rm('-rf', './node_modules/resolve/test/resolver/malformed_package_json');
-    if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
-      echo('Flow check failed.');
+
+    describe('Test: TypeScript typechecking');
+    if (exec('yarn tsc').code) {
+      echo('Typechecking errors were found');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
+
+    describe('Test: Jest tests');
+    if (exec('yarn test').code) {
+      echo('Jest tests failed');
       exitCode = 1;
       throw Error(exitCode);
     }

@@ -39,7 +39,6 @@ Class RCTI18nManagerCls(void) __attribute__((used));
 Class RCTSourceCodeCls(void) __attribute__((used));
 Class RCTActionSheetManagerCls(void) __attribute__((used));
 Class RCTAlertManagerCls(void) __attribute__((used));
-Class RCTAsyncLocalStorageCls(void) __attribute__((used));
 Class RCTTimingCls(void) __attribute__((used));
 Class RCTStatusBarManagerCls(void) __attribute__((used));
 Class RCTKeyboardObserverCls(void) __attribute__((used));
@@ -54,6 +53,7 @@ Class RCTWebSocketModuleCls(void) __attribute__((used));
 Class RCTDevLoadingViewCls(void) __attribute__((used));
 Class RCTDevSplitBundleLoaderCls(void) __attribute__((used));
 Class RCTEventDispatcherCls(void) __attribute__((used));
+Class RCTBlobManagerCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

@@ -29,7 +29,12 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  RCTAppSetupPrepareApp(application);
+  BOOL enableTM = NO;
+#if RCT_NEW_ARCH_ENABLED
+  enableTM = self.turboModuleEnabled;
+#endif
+
+  RCTAppSetupPrepareApp(application, enableTM);
 
   if (!self.bridge) {
     self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
@@ -94,7 +99,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
 {
-  return RCTAppSetupDefaultRootView(bridge, moduleName, initProps);
+  BOOL enableFabric = NO;
+#if RCT_NEW_ARCH_ENABLED
+  enableFabric = self.fabricEnabled;
+#endif
+  return RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
 }
 
 - (UIViewController *)createRootViewController
@@ -136,6 +145,18 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return RCTAppSetupDefaultModuleFromClass(moduleClass);
+}
+
+#pragma mark - New Arch Enabled settings
+
+- (BOOL)turboModuleEnabled
+{
+  return YES;
+}
+
+- (BOOL)fabricEnabled
+{
+  return YES;
 }
 
 #endif

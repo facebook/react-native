@@ -43,10 +43,6 @@ FabricMountingManager::FabricMountingManager(
     global_ref<jobject> &javaUIManager)
     : javaUIManager_(javaUIManager),
       cppComponentRegistry_(cppComponentRegistry),
-      enableEarlyEventEmitterUpdate_(
-          config->getBool("react_fabric:enable_early_event_emitter_update")),
-      disablePreallocateViews_(
-          config->getBool("react_fabric:disabled_view_preallocation_android")),
       disableRevisionCheckForPreallocation_(config->getBool(
           "react_fabric:disable_revision_check_for_preallocation")),
       useOverflowInset_(getFeatureFlagValue("useOverflowInset")) {
@@ -919,14 +915,6 @@ void FabricMountingManager::preallocateShadowView(
 
   // Do not hold a reference to javaEventEmitter from the C++ side.
   local_ref<EventEmitterWrapper::JavaPart> javaEventEmitter = nullptr;
-  if (enableEarlyEventEmitterUpdate_) {
-    SharedEventEmitter eventEmitter = shadowView.eventEmitter;
-    if (eventEmitter != nullptr) {
-      javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
-      EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
-    }
-  }
 
   local_ref<JObject> props = getProps({}, shadowView);
 

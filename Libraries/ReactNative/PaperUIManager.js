@@ -19,7 +19,7 @@ const UIManagerProperties = require('./UIManagerProperties');
 
 const viewManagerConfigs: {[string]: any | null} = {};
 
-const triedLoadingConfig = new Set();
+const triedLoadingConfig = new Set<string>();
 
 let NativeUIManagerConstants = {};
 let isNativeUIManagerConstantsSet = false;

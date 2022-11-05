@@ -17,17 +17,15 @@ import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.defaults.DefaultNativeEntryPoint;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.uiapp.component.MyNativeViewManager;
-import com.facebook.react.uiapp.component.NativeViewWithStateManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -108,10 +106,7 @@ public class RNTesterApplication extends Application implements ReactApplication
                 @Override
                 public List<ViewManager> createViewManagers(
                     @NonNull ReactApplicationContext reactContext) {
-                  ArrayList<ViewManager> list = new ArrayList();
-                  list.add(new MyNativeViewManager());
-                  list.add(new NativeViewWithStateManager());
-                  return list;
+                  return Collections.singletonList(new MyNativeViewManager());
                 }
               });
         }
@@ -120,15 +115,19 @@ public class RNTesterApplication extends Application implements ReactApplication
         protected boolean isNewArchEnabled() {
           return true;
         }
+
+        @Override
+        protected Boolean isHermesEnabled() {
+          return BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR;
+        }
       };
 
   @Override
   public void onCreate() {
-    ReactFeatureFlags.useTurboModules = true;
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    DefaultNativeEntryPoint.load();
+    DefaultNewArchitectureEntryPoint.load();
     ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
 

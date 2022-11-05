@@ -161,12 +161,6 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
     supportsTVOS: false,
   },
-  {
-    key: 'ComponentWithState',
-    category: 'UI',
-    module: require('../examples/NewArchitecture/ComponentWithState'),
-    supportsTVOS: false,
-  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = [

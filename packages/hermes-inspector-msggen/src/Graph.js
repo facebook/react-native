@@ -63,7 +63,7 @@ export class Graph {
       root.children.add(node);
     }
 
-    const output = [];
+    const output: Array<NodeId> = [];
     postorder(root, output);
 
     // remove fake root node

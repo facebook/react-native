@@ -43,6 +43,8 @@ if (__DEV__) {
   require('../LogBox/LogBox').install();
 }
 
+require('../ReactNative/AppRegistry');
+
 const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
 // We could just call GlobalPerformanceLogger.markPoint at the top of the file,
 // but then we'd be excluding the time it took to require the logger.

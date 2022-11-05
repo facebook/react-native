@@ -19,6 +19,7 @@ import type {
   NativeModuleDoubleTypeAnnotation,
   NativeModuleFloatTypeAnnotation,
   NativeModuleBooleanTypeAnnotation,
+  NativeModuleEnumDeclaration,
   NativeModuleGenericObjectTypeAnnotation,
   ReservedTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
@@ -63,6 +64,7 @@ export type StructTypeAnnotation =
   | NativeModuleDoubleTypeAnnotation
   | NativeModuleFloatTypeAnnotation
   | NativeModuleBooleanTypeAnnotation
+  | NativeModuleEnumDeclaration
   | NativeModuleGenericObjectTypeAnnotation
   | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
@@ -113,7 +115,7 @@ class StructCollector {
         return wrapNullable(nullable, typeAnnotation);
       }
       case 'EnumDeclaration':
-        throw new Error('Enum types are unsupported in structs');
+        return wrapNullable(nullable, typeAnnotation);
       case 'MixedTypeAnnotation':
         throw new Error('Mixed types are unsupported in structs');
       case 'UnionTypeAnnotation':

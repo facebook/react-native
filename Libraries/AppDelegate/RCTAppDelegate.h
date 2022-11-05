@@ -43,6 +43,8 @@
  *   - (UIViewController *)createRootViewController;
  * New Architecture:
  *   - (BOOL)concurrentRootEnabled
+ *   - (BOOL)turboModuleEnabled;
+ *   - (BOOL)fabricEnabled;
  *   - (NSDictionary *)prepareInitialProps
  *   - (Class)getModuleClassFromName:(const char *)name
  *   - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
@@ -106,12 +108,23 @@
 @property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
 @property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
-/// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
+/// This method controls whether the `concurrentRoot` feature of React18 is turned on or off.
 ///
 /// @see: https://reactjs.org/blog/2022/03/29/react-v18.html
 /// @note: This requires to be rendering on Fabric (i.e. on the New Architecture).
 /// @return: `true` if the `concurrentRoot` feature is enabled. Otherwise, it returns `false`.
 - (BOOL)concurrentRootEnabled;
+
+/// This method controls whether the `turboModules` feature of the New Architecture is turned on or off.
+///
+/// @note: This is required to be rendering on Fabric (i.e. on the New Architecture).
+/// @return: `true` if the Turbo Native Module are enabled. Otherwise, it returns `false`.
+- (BOOL)turboModuleEnabled;
+
+/// This method controls whether the App will use the Fabric renderer of the New Architecture or not.
+///
+/// @return: `true` if the Fabric Renderer is enabled. Otherwise, it returns `false`.
+- (BOOL)fabricEnabled;
 
 @end
 #endif

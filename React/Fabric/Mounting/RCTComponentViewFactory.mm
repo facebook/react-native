@@ -39,6 +39,7 @@
 
 #import <objc/runtime.h>
 
+using namespace facebook;
 using namespace facebook::react;
 
 // Allow JS runtime to register native components as needed. For static view configs.

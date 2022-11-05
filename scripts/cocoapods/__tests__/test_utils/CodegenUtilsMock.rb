@@ -66,7 +66,7 @@ class CodegenUtilsMock
         return @react_codegen_script_phases
     end
 
-    def get_react_codegen_spec(package_json_file, folly_version: '2021.07.22.00', fabric_enabled: false, script_phases: nil)
+    def get_react_codegen_spec(package_json_file, folly_version: '2021.07.22.00', fabric_enabled: false, hermes_enabled: true, script_phases: nil)
         @get_react_codegen_spec_params.push({
             package_json_file: package_json_file,
             folly_version: folly_version,
@@ -88,6 +88,7 @@ class CodegenUtilsMock
         app_path,
         react_native_path: "../node_modules/react-native",
         fabric_enabled: false,
+        hermes_enabled: true,
         config_file_dir: '',
         codegen_output_dir: 'build/generated/ios',
         config_key: 'codegenConfig',

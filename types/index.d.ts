@@ -65,17 +65,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/// <reference path="globals.d.ts" />
-/// <reference path="legacy-properties.d.ts" />
-/// <reference path="BatchedBridge.d.ts" />
-/// <reference path="Codegen.d.ts" />
-/// <reference path="Devtools.d.ts" />
-/// <reference path="LaunchScreen.d.ts" />
+/// <reference path="modules/BatchedBridge.d.ts" />
+/// <reference path="modules/Codegen.d.ts" />
+/// <reference path="modules/Devtools.d.ts" />
+/// <reference path="modules/globals.d.ts" />
+/// <reference path="modules/LaunchScreen.d.ts" />
 
 export * from '../Libraries/ActionSheetIOS/ActionSheetIOS';
 export * from '../Libraries/Alert/Alert';
 export * from '../Libraries/Animated/Animated';
 export * from '../Libraries/Animated/Easing';
+export * from '../Libraries/Animated/useAnimatedValue';
 export * from '../Libraries/AppState/AppState';
 export * from '../Libraries/BatchedBridge/NativeModules';
 export * from '../Libraries/Components/AccessibilityInfo/AccessibilityInfo';
@@ -130,11 +130,8 @@ export * from '../Libraries/ReactNative/I18nManager';
 export * from '../Libraries/ReactNative/RendererProxy';
 export * from '../Libraries/ReactNative/UIManager';
 export * from '../Libraries/ReactNative/requireNativeComponent';
-export * from '../Libraries/Renderer/implementations/ReactNativeRenderer';
-export * from '../Libraries/Renderer/shims/ReactNativeTypes';
 export * from '../Libraries/Settings/Settings';
 export * from '../Libraries/Share/Share';
-export * from '../Libraries/Storage/AsyncStorage';
 export * from '../Libraries/StyleSheet/PlatformColorValueTypesIOS';
 export * from '../Libraries/StyleSheet/PlatformColorValueTypes';
 export * from '../Libraries/StyleSheet/StyleSheet';
@@ -154,6 +151,11 @@ export * from '../Libraries/Vibration/Vibration';
 export * from '../Libraries/YellowBox/YellowBoxDeprecated';
 export * from '../Libraries/vendor/core/ErrorUtils';
 export * from '../Libraries/vendor/emitter/EventEmitter';
+
+export * from './public/DeprecatedPropertiesAlias';
+export * from './public/Insets';
+export * from './public/ReactNativeRenderer';
+export * from './public/ReactNativeTypes';
 
 import type {ErrorUtils} from '../Libraries/vendor/core/ErrorUtils';
 

@@ -16,7 +16,7 @@ import type {HermesParsedStack} from './parseHermesStack';
 const parseHermesStack = require('./parseHermesStack');
 
 function convertHermesStack(stack: HermesParsedStack): Array<StackFrame> {
-  const frames = [];
+  const frames: Array<StackFrame> = [];
   for (const entry of stack.entries) {
     if (entry.type !== 'FRAME') {
       continue;

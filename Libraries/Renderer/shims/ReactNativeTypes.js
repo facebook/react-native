@@ -1,12 +1,12 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @noformat
  * @flow strict
- * @generated SignedSource<<d1711869276d3e52d184ac3230988ced>>
+ * @generated SignedSource<<d9fed8e0aacc3113ceaf7d8e266300c6>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -141,6 +141,7 @@ type InspectorDataGetter = (
 }>;
 
 export type InspectorData = $ReadOnly<{
+  closestInstance?: mixed,
   hierarchy: Array<{
     name: ?string,
     getInspectorData: InspectorDataGetter,
@@ -153,7 +154,6 @@ export type InspectorData = $ReadOnly<{
 export type TouchedViewDataAtPoint = $ReadOnly<{
   pointerY: number,
   touchedViewTag?: number,
-  closestInstance?: mixed,
   frame: $ReadOnly<{
     top: number,
     left: number,

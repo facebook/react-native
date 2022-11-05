@@ -10,17 +10,37 @@
 
 'use strict';
 
+import type {NativeModuleTypeAnnotation} from '../CodegenSchema';
 import type {ParserType} from './errors';
 
 const {
+  MisnamedModuleInterfaceParserError,
+  UnsupportedFunctionReturnTypeAnnotationParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
+  UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   UnsupportedModulePropertyParserError,
+  MoreThanOneModuleInterfaceParserError,
+  UnsupportedFunctionParamTypeAnnotationParserError,
 } = require('./errors.js');
+
+function throwIfModuleInterfaceIsMisnamed(
+  nativeModuleName: string,
+  moduleSpecId: $FlowFixMe,
+  parserType: ParserType,
+) {
+  if (moduleSpecId.name !== 'Spec') {
+    throw new MisnamedModuleInterfaceParserError(
+      nativeModuleName,
+      moduleSpecId,
+      parserType,
+    );
+  }
+}
 
 function throwIfModuleInterfaceNotFound(
   numberOfModuleSpecs: number,
@@ -124,6 +144,24 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
   }
 }
 
+function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
+  nativeModuleName: string,
+  returnTypeAnnotation: $FlowFixMe,
+  invalidReturnType: string,
+  language: ParserType,
+  cxxOnly: boolean,
+  returnType: string,
+) {
+  if (!cxxOnly && returnType === 'FunctionTypeAnnotation') {
+    throw new UnsupportedFunctionReturnTypeAnnotationParserError(
+      nativeModuleName,
+      returnTypeAnnotation.returnType,
+      'FunctionTypeAnnotation',
+      language,
+    );
+  }
+}
+
 function throwIfUntypedModule(
   typeArguments: $FlowFixMe,
   hasteModuleName: string,
@@ -173,12 +211,71 @@ function throwIfModuleTypeIsUnsupported(
   }
 }
 
+const UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap = {
+  FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+  VoidTypeAnnotation: 'void',
+  PromiseTypeAnnotation: 'Promise',
+};
+
+function throwIfPropertyValueTypeIsUnsupported(
+  moduleName: string,
+  propertyValue: $FlowFixMe,
+  propertyKey: string,
+  type: string,
+  language: ParserType,
+) {
+  const invalidPropertyValueType =
+    UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap[type];
+
+  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+    moduleName,
+    propertyValue,
+    propertyKey,
+    invalidPropertyValueType,
+    language,
+  );
+}
+
+function throwIfMoreThanOneModuleInterfaceParserError(
+  nativeModuleName: string,
+  moduleSpecs: $ReadOnlyArray<$FlowFixMe>,
+  parserType: ParserType,
+) {
+  if (moduleSpecs.length > 1) {
+    throw new MoreThanOneModuleInterfaceParserError(
+      nativeModuleName,
+      moduleSpecs,
+      moduleSpecs.map(node => node.id.name),
+      parserType,
+    );
+  }
+}
+
+function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+  nativeModuleName: string,
+  languageParamTypeAnnotation: $FlowFixMe,
+  paramName: string,
+  paramTypeAnnotationType: NativeModuleTypeAnnotation['type'],
+) {
+  throw new UnsupportedFunctionParamTypeAnnotationParserError(
+    nativeModuleName,
+    languageParamTypeAnnotation,
+    paramName,
+    paramTypeAnnotationType,
+  );
+}
+
 module.exports = {
+  throwIfModuleInterfaceIsMisnamed,
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
+  throwIfPropertyValueTypeIsUnsupported,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfUntypedModule,
   throwIfModuleTypeIsUnsupported,
+  throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
 };
