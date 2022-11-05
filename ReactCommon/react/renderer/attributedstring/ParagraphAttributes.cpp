@@ -21,16 +21,14 @@ bool ParagraphAttributes::operator==(const ParagraphAttributes &rhs) const {
              textBreakStrategy,
              adjustsFontSizeToFit,
              includeFontPadding,
-             android_hyphenationFrequency,
-             accessibilityErrorMessage) ==
+             android_hyphenationFrequency) ==
       std::tie(
              rhs.maximumNumberOfLines,
              rhs.ellipsizeMode,
              rhs.textBreakStrategy,
              rhs.adjustsFontSizeToFit,
              rhs.includeFontPadding,
-             rhs.android_hyphenationFrequency,
-             rhs.accessibilityErrorMessage) &&
+             rhs.android_hyphenationFrequency) &&
       floatEquality(minimumFontSize, rhs.minimumFontSize) &&
       floatEquality(maximumFontSize, rhs.maximumFontSize);
 }
@@ -52,9 +50,7 @@ SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
       debugStringConvertibleItem("maximumFontSize", maximumFontSize),
       debugStringConvertibleItem("includeFontPadding", includeFontPadding),
       debugStringConvertibleItem(
-          "android_hyphenationFrequency", android_hyphenationFrequency),
-      debugStringConvertibleItem(
-          "accessibilityErrorMessage", accessibilityErrorMessage)};
+          "android_hyphenationFrequency", android_hyphenationFrequency)};
 }
 #endif
 

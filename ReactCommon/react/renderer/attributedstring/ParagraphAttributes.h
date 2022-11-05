@@ -14,8 +14,6 @@
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Geometry.h>
 
-#include <optional>
-
 namespace facebook {
 namespace react {
 
@@ -67,12 +65,6 @@ class ParagraphAttributes : public DebugStringConvertible {
   HyphenationFrequency android_hyphenationFrequency{};
 
   /*
-   * (Android only) String to be read by screenreaders to indicate an error state
-   * of a TextInput. The default is `null`.
-   */
-  std::optional<std::string> accessibilityErrorMessage{};
-
-  /*
    * In case of font size adjustment enabled, defines minimum and maximum
    * font sizes.
    */
@@ -107,8 +99,7 @@ struct hash<facebook::react::ParagraphAttributes> {
         attributes.minimumFontSize,
         attributes.maximumFontSize,
         attributes.includeFontPadding,
-        attributes.android_hyphenationFrequency, 
-        attributes.accessibilityErrorMessage);
+        attributes.android_hyphenationFrequency);
   }
 };
 } // namespace std

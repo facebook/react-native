@@ -1329,11 +1329,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
-    String accessibilityErrorMessage =
-        paragraphAttributes.hasKey("accessibilityErrorMessage")
-            ? paragraphAttributes.getString("accessibilityErrorMessage")
-            : null;
-
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
         state.getInt("mostRecentEventCount"),
