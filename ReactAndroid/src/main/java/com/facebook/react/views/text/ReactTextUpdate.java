@@ -127,6 +127,33 @@ public class ReactTextUpdate {
       int textBreakStrategy,
       int justificationMode,
       int selectionStart,
+      int selectionEnd) {
+    mText = text;
+    mJsEventCounter = jsEventCounter;
+    mContainsImages = containsImages;
+    mPaddingLeft = paddingStart;
+    mPaddingTop = paddingTop;
+    mPaddingRight = paddingEnd;
+    mPaddingBottom = paddingBottom;
+    mTextAlign = textAlign;
+    mTextBreakStrategy = textBreakStrategy;
+    mSelectionStart = selectionStart;
+    mSelectionEnd = selectionEnd;
+    mJustificationMode = justificationMode;
+  }
+
+  public ReactTextUpdate(
+      Spannable text,
+      int jsEventCounter,
+      boolean containsImages,
+      float paddingStart,
+      float paddingTop,
+      float paddingEnd,
+      float paddingBottom,
+      int textAlign,
+      int textBreakStrategy,
+      int justificationMode,
+      int selectionStart,
       int selectionEnd,
       @Nullable String accessibilityErrorMessage) {
     mText = text;
