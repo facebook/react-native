@@ -92,7 +92,7 @@ TextInputProps::TextInputProps(
             rawProps,
             "accessibilityErrorMessage",
             sourceProps.accessibilityErrorMessage,
-            "")),
+            {})),
       inputAccessoryViewID(convertRawProp(
           context,
           rawProps,
