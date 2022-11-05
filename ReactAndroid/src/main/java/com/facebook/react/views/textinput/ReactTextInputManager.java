@@ -318,10 +318,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         if (!args.isNull(1)) {
           String text = args.getString(1);
-          String accessibilityErrorMessage = (String) reactEditText.getError();
           reactEditText.maybeSetTextFromJS(
-              getReactTextUpdate(
-                  text, mostRecentEventCount, start, end, accessibilityErrorMessage));
+              getReactTextUpdate(text, mostRecentEventCount, start, end));
         }
         reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
@@ -329,24 +327,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private ReactTextUpdate getReactTextUpdate(
-      String text, int mostRecentEventCount, int start, int end, String accessibilityErrorMessage) {
+      String text, int mostRecentEventCount, int start, int end) {
     SpannableStringBuilder sb = new SpannableStringBuilder();
     sb.append(TextTransform.apply(text, TextTransform.UNSET));
 
     return new ReactTextUpdate(
-        sb,
-        mostRecentEventCount,
-        false,
-        0,
-        0,
-        0,
-        0,
-        Gravity.NO_GRAVITY,
-        0,
-        0,
-        start,
-        end,
-        accessibilityErrorMessage);
+        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0, start, end);
   }
 
   @Override
