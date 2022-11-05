@@ -1329,6 +1329,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
+    @Nullable
     String accessibilityErrorMessage =
         props.hasKey("accessibilityErrorMessage")
             ? props.getString("accessibilityErrorMessage")
@@ -1368,6 +1369,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
 
+    @Nullable
     String accessibilityErrorMessage =
         props.hasKey("accessibilityErrorMessage")
             ? props.getString("accessibilityErrorMessage")
