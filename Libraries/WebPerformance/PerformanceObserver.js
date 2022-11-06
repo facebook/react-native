@@ -10,12 +10,11 @@
 
 import type {
   RawPerformanceEntry,
-  RawPerformanceEntryList,
   RawPerformanceEntryType,
-} from '../NativeModules/specs/NativePerformanceObserverCxx';
+} from './NativePerformanceObserver';
 
-import NativePerformanceObserver from '../NativeModules/specs/NativePerformanceObserverCxx';
 import warnOnce from '../Utilities/warnOnce';
+import NativePerformanceObserver from './NativePerformanceObserver';
 
 export type HighResTimeStamp = number;
 // TODO: Extend once new types (such as event) are supported.
@@ -210,7 +209,7 @@ function onPerformanceEntry() {
   if (!NativePerformanceObserver) {
     return;
   }
-  const rawEntries: RawPerformanceEntryList =
+  const rawEntries: $ReadOnlyArray<RawPerformanceEntry> =
     NativePerformanceObserver.getPendingEntries();
   const entries = rawEntries.map(rawToPerformanceEntry);
   _observers.forEach(observer => {

@@ -8,11 +8,9 @@
  * @format
  */
 
-import type {TurboModule} from '../../TurboModule/RCTExport';
+import type {TurboModule} from '../TurboModule/RCTExport';
 
-import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
-
-export type RawTimeStamp = number;
+import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export const RawPerformanceEntryTypeValues = {
   UNDEFINED: 0,
@@ -23,22 +21,25 @@ export type RawPerformanceEntryType = number;
 export type RawPerformanceEntry = $ReadOnly<{
   name: string,
   entryType: RawPerformanceEntryType,
-  startTime: RawTimeStamp,
+  startTime: number,
   duration: number,
-
   // For "event" entries only:
-  processingStart?: RawTimeStamp,
-  processingEnd?: RawTimeStamp,
-  interactionId?: RawTimeStamp,
+  processingStart?: number,
+  processingEnd?: number,
+  interactionId?: number,
 }>;
 
-export type RawPerformanceEntryList = $ReadOnlyArray<RawPerformanceEntry>;
+export type OnPerformanceEntryCallbackUnsubscribe = () => void;
 
 export interface Spec extends TurboModule {
   +startReporting: (entryType: string) => void;
   +stopReporting: (entryType: string) => void;
-  +getPendingEntries: () => RawPerformanceEntryList;
-  +setOnPerformanceEntryCallback: (callback?: () => void) => void;
+  +getPendingEntries: () => $ReadOnlyArray<RawPerformanceEntry>;
+  +setOnPerformanceEntryCallback: (
+    callback?: () => void,
+  ) => OnPerformanceEntryCallbackUnsubscribe;
 }
 
-export default (TurboModuleRegistry.get<Spec>('PerformanceObserver'): ?Spec);
+export default (TurboModuleRegistry.get<Spec>(
+  'NativePerformanceObserverCxx',
+): ?Spec);
