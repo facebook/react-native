@@ -20,6 +20,7 @@
 #import "RCTViewUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
+#import "UIResponder+FirstResponder.h"
 
 /**
  * Include a custom scroll view subclass because we want to limit certain
@@ -324,11 +325,28 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }
 
   CGPoint newContentOffset = _scrollView.contentOffset;
-  CGFloat contentDiff = endFrame.origin.y - beginFrame.origin.y;
-  if (self.inverted) {
-    newContentOffset.y += contentDiff;
+  UIResponder *firstResponder = [UIResponder currentFirstResponder];
+  if ([firstResponder isKindOfClass: [UITextField class]] && [(UITextField *) firstResponder isDescendantOfView:_scrollView]) {
+    UITextField *textField = [UIResponder currentFirstResponder];
+    CGRect textFieldFrame = [textField.superview convertRect:textField.frame toView:nil];
+    // [32] is a placeholder. It's the distance between the bottom of the textfield and the top of the keyboard
+    // What value should be used? Should it be customizable with a prop?
+    CGFloat textFieldBottom = textFieldFrame.origin.y + textFieldFrame.size.height + 32;
+    CGFloat contentDiff = textFieldBottom - endFrame.origin.y;
+    if (textFieldBottom > endFrame.origin.y) {
+      if (self.inverted) {
+        newContentOffset.y -= contentDiff;
+      } else {
+        newContentOffset.y += contentDiff;
+        }
+      }
   } else {
-    newContentOffset.y -= contentDiff;
+    CGFloat contentDiff = endFrame.origin.y - beginFrame.origin.y;
+    if (self.inverted) {
+      newContentOffset.y += contentDiff;
+    } else {
+      newContentOffset.y -= contentDiff;
+    }
   }
 
   [UIView animateWithDuration:duration

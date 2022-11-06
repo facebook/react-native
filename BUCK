@@ -350,6 +350,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTViewUtils.h": RCTVIEWS_PATH + "RCTViewUtils.h",
     "React/RCTWeakProxy.h": RCTBASE_PATH + "RCTWeakProxy.h",
     "React/RCTWrapperViewController.h": RCTVIEWS_PATH + "RCTWrapperViewController.h",
+    "React/UIResponder+FirstResponder.h": RCTVIEWS_PATH + "UIResponder+FirstResponder.h",
     "React/UIView+React.h": RCTVIEWS_PATH + "UIView+React.h",
 }
 
