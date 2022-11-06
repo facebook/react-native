@@ -466,3 +466,17 @@ afterEvaluate {
         }
     }
 }
+
+// Patch needed for https://github.com/facebook/react-native/issues/35210
+// This is a patch to short-circuit the "+" dependencies inside the
+// users' app/build.gradle file and the various .gradle files of libraries.
+// As using plain "+" dependencies causes Gradle to always download the latest,
+// this logic forces Gradle to use latest release in the minor series.
+project.rootProject.allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force "com.facebook.react:react-native:0.70.+"
+            force "com.facebook.react:hermes-engine:0.70.+"
+        }
+    }
+}
