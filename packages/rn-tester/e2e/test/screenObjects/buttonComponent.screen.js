@@ -2,51 +2,82 @@ const Utils = require('../helpers/utils');
 
 class ButtonComponentScreen {
 
-    // buttonScreen = '//android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.TextView[1]';
+    buttonScreen = '//android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.TextView[1]';
 
-    // btnSubmit = '//android.widget.Button[@resource-id="button_default_styling"]';
+    btnSubmit = '//android.widget.Button[@resource-id="button_default_styling"]';
 
-    // alertBox = '//android.widget.TextView[@resource-id="android:id/alertTitle"]';
+    alertBox = '//android.widget.TextView[@resource-id="android:id/alertTitle"]';
 
-    // inputSearch = '//android.widget.EditText[@resource-id="example_search"]';
+    inputSearch = '//android.widget.EditText[@resource-id="example_search"]';
 
-    // btnOK = '//android.widget.Button[@text="OK"]';
+    btnOK = '//android.widget.Button[@text="OK"]';
 
-    // btnCancel = '//android.widget.Button[@resource-id="cancel_button"]';
+    btnCancel = '//android.widget.Button[@resource-id="cancel_button"]';
 
 
-    buttonScreen = '[label="Button"]';
+    buttonScreenIOS = '[label="Button"]';
 
-    btnSubmit = '[label="Press to submit your application!"]';
+    btnSubmitIOS = '[label="Press to submit your application!"]';
 
-    submitAlertBox = '[value="Your application has been submitted!"]';
+    inputSearchIOS = '[name="example_search"]';
 
-    cancelAlertBox = '[value="Your application has been cancelled!"]';
+    btnOKIOS = '[label="OK"]';
 
-    inputSearch = '[name="example_search"]';
+    btnCancelIOS = '[label="Press to cancel your application!"]';
 
-    btnOK = '[label="OK"]';
-
-    btnCancel = '[label="Press to cancel your application!"]';
 
     async checkButtonsScreenIsDisplayed() {
-        return await Utils.checkElementText(this.buttonScreen);
+        let deviceLocator;
+        if (process.env.ENV === 'ios') {
+            deviceLocator === this.buttonScreenIOS;
+        }
+        if (process.env.ENV === 'android') {
+            deviceLocator === this.buttonScreen;
+        }
+        return await Utils.getElementText(this.deviceLocator);
     }
 
     async clickSubmitApplication() {
+        let deviceLocator;
+        if (process.env.ENV === 'ios') {
+            deviceLocator === this.btnSubmitIOS;
+        }
+        if (process.env.ENV === 'android') {
+            deviceLocator === this.btnSubmit;
+        }
         await Utils.clickElement(this.btnSubmit);
     }
 
     async clickCancelApplication() {
+        let deviceLocator;
+        if (process.env.ENV === 'ios') {
+            deviceLocator === this.btnCancelIOS;
+        }
+        if (process.env.ENV === 'android') {
+            deviceLocator === this.btnCancel;
+        }
         await Utils.clickElement(this.btnCancel);
     }
-
-    async getSubmitAlertText() {
-        return await Utils.checkElementText(this.submitAlertBox);
+    async getAlertText() {
+        let deviceLocator;
+        if (process.env.ENV === 'ios') {
+            deviceLocator === this.buttonScreenIOS;
+        }
+        if (process.env.ENV === 'android') {
+            deviceLocator === this.buttonScreen;
+        }
+        return await Utils.getElementText(this.alertBox);
     }
 
-    async getCancelAlertText() {
-        return await Utils.checkElementText(this.cancelAlertBox);
+    async clickOkButton() {
+        let deviceLocator;
+        if (process.env.ENV === 'ios') {
+            deviceLocator === this.btnOKIOS;
+        }
+        if (process.env.ENV === 'android') {
+            deviceLocator === this.btnOK;
+        }
+        await Utils.clickElement(this.deviceLocator);
     }
 
 }

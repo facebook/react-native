@@ -7,23 +7,26 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@babel/core": "^7.19.3",
-        "@babel/preset-env": "^7.19.4",
-        "@babel/register": "^7.18.9",
-        "@wdio/appium-service": "^7.25.1",
-        "@wdio/cli": "^7.25.1",
-        "@wdio/local-runner": "^7.25.1",
-        "@wdio/mocha-framework": "^7.25.1",
-        "@wdio/spec-reporter": "^7.25.1",
-        "appium-xcuitest-driver": "^4.12.1",
-        "wdio-wait-for": "^3.0.0"
+        "@babel/core": "^7.19.6",
+        "@babel/eslint-parser": "^7.19.1",
+        "@babel/runtime": "^7.12.5",
+        "@react-native-community/eslint-config": "^2.0.0",
+        "appium": "^2.0.0-beta.40",
+        "appium-uiautomator2-driver": "^2.9.0",
+        "babel-jest": "^26.6.3",
+        "eslint": "^7.32.0",
+        "jest": "^26.6.3",
+        "metro-react-native-babel-preset": "^0.70.3",
+        "react-test-renderer": "18.0.0",
+        "webdriverio": "^7.25.4",
+        "jest-html-reporter": "^3.7.0"
     },
     "scripts": {
-        "wdio": "wdio run ./config/wdio.conf.js",
-        "android": "wdio ./config/wdio.android.conf.js",
-        "ios": "wdio ./config/wdio.ios.conf.js"
+        "test": "jest --detectOpenHandles",
+        "android": "E2E_DEVICE=\"android\" npm run test",
+        "ios": "E2E_DEVICE=\"ios\" npm run test"
     },
     "dependencies": {
-        "appium": "^2.0.0-beta.46"
+        "@types/jest": "^29.2.1"
     }
 }

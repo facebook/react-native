@@ -1,21 +1,21 @@
 
+import { driver } from '../../jest.setup';
+
 class Utils {
 
   async checkElementExistence(locator) {
-    await $(locator).waitForDisplayed();
-    return await $(locator).isDisplayed();
+    await driver.$(locator).waitForDisplayed();
+    return driver.$(locator).isDisplayed();
   }
 
   async clickElement(locator) {
-    await $(locator).waitForDisplayed();
-    await $(locator).click();
-    //TODO change to better solution like waitForDocumentFullyLoaded()
-    await browser.pause(1000);
+    await driver.$(locator).waitForDisplayed();
+    await driver.$(locator).click();
   }
 
-  async checkElementText(locator) {
-    await $(locator).waitForDisplayed();
-    return await $(locator).getText();
+  async getElementText(locator) {
+    await driver.$(locator).waitForDisplayed();
+    return driver.$(locator).getText();
   }
 
 }
