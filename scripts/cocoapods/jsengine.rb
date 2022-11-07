@@ -59,3 +59,7 @@ def remove_copy_hermes_framework_script_phase(installer, react_native_path)
     end
     project.save()
 end
+
+def remove_hermesc_build_dir(react_native_path)
+    %x(rm -rf #{react_native_path}/sdks/hermes-engine/build_host_hermesc)
+end
