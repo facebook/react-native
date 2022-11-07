@@ -37,7 +37,7 @@ end
 
 def add_copy_hermes_framework_script_phase(installer, react_native_path)
     utils_dir = File.join(react_native_path, "sdks", "hermes-engine", "utils")
-    phase_name = "[RN]Copy Hermes framework"
+    phase_name = "[RN] Copy Hermes Framework"
     project = installer.generated_aggregate_targets.first.user_project
     target = project.targets.first
     if target.shell_script_build_phases.none? { |phase| phase.name == phase_name }
@@ -49,9 +49,14 @@ end
 
 def remove_copy_hermes_framework_script_phase(installer, react_native_path)
     utils_dir = File.join(react_native_path, "sdks", "hermes-engine", "utils")
-    phase_name = "[RN]Copy Hermes framework"
+    phase_name = "[RN] Copy Hermes Framework"
     project = installer.generated_aggregate_targets.first.user_project
-    project.targets.first.shell_script_build_phases.delete_if { |phase| phase.name == phase_name }
+    target = project.native_targets.first
+    target.shell_script_build_phases.each do |phase|
+        if phase.name == phase_name
+            target.build_phases.delete(phase)
+        end
+    end
     project.save()
 end
 
