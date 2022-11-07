@@ -11,7 +11,10 @@
 'use strict';
 import type {ASTNode} from '../utils';
 import type {NamedShape} from '../../../CodegenSchema.js';
-const {parseTopLevelType, flattenIntersectionType} = require('../parseTopLevelType');
+const {
+  parseTopLevelType,
+  flattenIntersectionType,
+} = require('../parseTopLevelType');
 import type {TypeDeclarationMap} from '../../utils';
 
 function getProperties(
@@ -177,9 +180,11 @@ function getCommonTypeAnnotation<T>(
     case 'TSInterfaceDeclaration':
     case 'TSIntersectionType': {
       const rawProperties =
-        type === 'TSInterfaceDeclaration' ? [typeAnnotation]:
-        type === 'TSIntersectionType' ? flattenIntersectionType(typeAnnotation, types) :
-        typeAnnotation.members;
+        type === 'TSInterfaceDeclaration'
+          ? [typeAnnotation]
+          : type === 'TSIntersectionType'
+          ? flattenIntersectionType(typeAnnotation, types)
+          : typeAnnotation.members;
       const flattenedProperties = flattenProperties(rawProperties, types);
       const properties = flattenedProperties
         .map(prop => buildSchema(prop, types))

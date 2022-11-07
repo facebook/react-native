@@ -202,11 +202,13 @@ function handleIntersectionAndParen(
     }
     case 'TSTypeReference':
       if (type.typeName.name === 'Readonly') {
-        handleIntersectionAndParen(type.typeParameters.params[0], result, knownTypes);
-      } else if (type.typeName.name === 'WithDefault') {
-        throw new Error(
-          'WithDefault<> is now allowed in intersection types.',
+        handleIntersectionAndParen(
+          type.typeParameters.params[0],
+          result,
+          knownTypes,
         );
+      } else if (type.typeName.name === 'WithDefault') {
+        throw new Error('WithDefault<> is now allowed in intersection types.');
       } else if (!knownTypes) {
         result.push(type);
       } else {
