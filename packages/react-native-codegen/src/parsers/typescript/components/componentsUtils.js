@@ -293,7 +293,15 @@ function getTypeAnnotationForArray<T>(
         extractedTypeAnnotation.typeName?.name ||
         extractedTypeAnnotation.type;
 
-  const common = getCommonTypeAnnotation(name, true, type, extractedTypeAnnotation, defaultValue, types, buildSchema);
+  const common = getCommonTypeAnnotation(
+    name,
+    true,
+    type,
+    extractedTypeAnnotation,
+    defaultValue,
+    types,
+    buildSchema,
+  );
   if (common) {
     return common;
   }
@@ -336,12 +344,18 @@ function getTypeAnnotation<T>(
       ? typeAnnotation.typeName.name
       : typeAnnotation.type;
 
-  const common = getCommonTypeAnnotation(name, false, type, typeAnnotation, defaultValue, types, buildSchema);
+  const common = getCommonTypeAnnotation(
+    name,
+    false,
+    type,
+    typeAnnotation,
+    defaultValue,
+    types,
+    buildSchema,
+  );
   if (common) {
     switch (common.type) {
       case 'Int32TypeAnnotation':
-        common.default = ((defaultValue ? defaultValue : 0): number);
-        break;
       case 'DoubleTypeAnnotation':
         common.default = ((defaultValue ? defaultValue : 0): number);
         break;
@@ -351,14 +365,14 @@ function getTypeAnnotation<T>(
           : defaultValue
           ? defaultValue
           : 0): number | null);
-          break;
+        break;
       case 'BooleanTypeAnnotation':
-        common.default = (defaultValue === null ? null : !!defaultValue);
+        common.default = defaultValue === null ? null : !!defaultValue;
         break;
       case 'StringTypeAnnotation':
         common.default = ((defaultValue === undefined ? null : defaultValue):
-        | string
-        | null);
+          | string
+          | null);
         break;
     }
     return common;
