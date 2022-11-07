@@ -355,10 +355,14 @@ afterEvaluate {
 // As using plain "+" dependencies causes Gradle to always download the latest,
 // this logic forces Gradle to use latest release in the minor series.
 project.rootProject.allprojects {
-    configurations.all {
-        resolutionStrategy {
-            force "com.facebook.react:react-native:0.64.+"
-            force "com.facebook.react:hermes-engine:0.64.+"
+    // This extra afterEvaluate is needed due to how AGP 4.1.x is resolving
+    // Gradle configurations.
+    afterEvaluate {
+        configurations.all {
+            resolutionStrategy {
+                force "com.facebook.react:react-native:0.64.+"
+                force "com.facebook.react:hermes-engine:0.64.+"
+            }
         }
     }
 }
