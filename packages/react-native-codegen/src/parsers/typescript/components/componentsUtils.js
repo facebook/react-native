@@ -11,7 +11,7 @@
 'use strict';
 import type {ASTNode} from '../utils';
 import type {NamedShape} from '../../../CodegenSchema.js';
-const {parseTopLevelType} = require('../parseTopLevelType');
+const {parseTopLevelType, flattenIntersectionType} = require('../parseTopLevelType');
 import type {TypeDeclarationMap} from '../../utils';
 
 function getProperties(
@@ -174,11 +174,12 @@ function getCommonTypeAnnotation<T>(
 ): $FlowFixMe {
   switch (type) {
     case 'TSTypeLiteral':
-    case 'TSInterfaceDeclaration': {
+    case 'TSInterfaceDeclaration':
+    case 'TSIntersectionType': {
       const rawProperties =
-        type === 'TSInterfaceDeclaration'
-          ? [typeAnnotation]
-          : typeAnnotation.members;
+        type === 'TSInterfaceDeclaration' ? [typeAnnotation]:
+        type === 'TSIntersectionType' ? flattenIntersectionType(typeAnnotation, types) :
+        typeAnnotation.members;
       const flattenedProperties = flattenProperties(rawProperties, types);
       const properties = flattenedProperties
         .map(prop => buildSchema(prop, types))
@@ -469,6 +470,8 @@ function flattenProperties(
         return flattenProperties(property.members, types);
       } else if (property.type === 'TSInterfaceDeclaration') {
         return flattenProperties(getProperties(property.id.name, types), types);
+      } else if (property.type === 'TSIntersectionType') {
+        return flattenProperties(property.types, types);
       } else {
         throw new Error(
           `${property.type} is not a supported object literal type.`,
