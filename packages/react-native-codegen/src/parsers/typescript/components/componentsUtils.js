@@ -186,6 +186,32 @@ function getCommonTypeAnnotation<T>(
         properties,
       };
     }
+    case 'ImageSource':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'ImageSourcePrimitive',
+      };
+    case 'ImageRequest':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'ImageRequestPrimitive',
+      };
+    case 'ColorValue':
+    case 'ProcessedColorValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'ColorPrimitive',
+      };
+    case 'PointValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'PointPrimitive',
+      };
+    case 'EdgeInsetsValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'EdgeInsetsPrimitive',
+      };
     default:
       return undefined;
   }
@@ -244,32 +270,6 @@ function getTypeAnnotationForArray<T>(
     case 'TSNumberKeyword':
       return {
         type: 'FloatTypeAnnotation',
-      };
-    case 'ImageSource':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ImageSourcePrimitive',
-      };
-    case 'ImageRequest':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ImageRequestPrimitive',
-      };
-    case 'ColorValue':
-    case 'ProcessedColorValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ColorPrimitive',
-      };
-    case 'PointValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'PointPrimitive',
-      };
-    case 'EdgeInsetsValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'EdgeInsetsPrimitive',
       };
     case 'Stringish':
       return {
@@ -342,22 +342,6 @@ function getTypeAnnotation<T>(
   }
 
   switch (type) {
-    case 'ImageSource':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ImageSourcePrimitive',
-      };
-    case 'ImageRequest':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ImageRequestPrimitive',
-      };
-    case 'ColorValue':
-    case 'ProcessedColorValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ColorPrimitive',
-      };
     case 'ColorArrayValue':
       return {
         type: 'ArrayTypeAnnotation',
@@ -365,16 +349,6 @@ function getTypeAnnotation<T>(
           type: 'ReservedPropTypeAnnotation',
           name: 'ColorPrimitive',
         },
-      };
-    case 'PointValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'PointPrimitive',
-      };
-    case 'EdgeInsetsValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'EdgeInsetsPrimitive',
       };
     case 'Int32':
       return {
