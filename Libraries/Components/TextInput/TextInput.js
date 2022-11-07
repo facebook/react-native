@@ -1602,6 +1602,7 @@ const ExportedForwardRef: React.AbstractComponent<
     enterKeyHint,
     returnKeyType,
     inputMode,
+    showSoftInputOnFocus,
     keyboardType,
     ...restProps
   },
@@ -1628,6 +1629,7 @@ const ExportedForwardRef: React.AbstractComponent<
       keyboardType={
         inputMode ? inputModeToKeyboardTypeMap[inputMode] : keyboardType
       }
+      showSoftInputOnFocus={inputMode === 'none' ? false : showSoftInputOnFocus}
       autoComplete={
         Platform.OS === 'android'
           ? // $FlowFixMe
