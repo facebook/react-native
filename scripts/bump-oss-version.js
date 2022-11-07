@@ -19,24 +19,38 @@
 const fs = require('fs');
 const {cat, echo, exec, exit, sed} = require('shelljs');
 const yargs = require('yargs');
+const {parseVersion} = require('./version-utils');
 
-let argv = yargs.option('r', {
-  alias: 'remote',
-  default: 'origin',
-})
-.option('n', {
-  alias: 'nightly',
-  type: 'boolean',
-  default: false,
-}).argv;
+let argv = yargs
+  .option('r', {
+    alias: 'remote',
+    default: 'origin',
+  })
+  .option('n', {
+    alias: 'nightly',
+    type: 'boolean',
+    default: false,
+  })
+  .option('v', {
+    alias: 'to-version',
+    type: 'string',
+  })
+  .option('l', {
+    alias: 'latest',
+    type: 'boolean',
+    default: false,
+  }).argv;
 
 const nightlyBuild = argv.nightly;
+const version = argv.toVersion;
 
-let version, branch;
-if (nightlyBuild) {
-  const currentCommit = exec('git rev-parse HEAD', {silent: true}).stdout.trim();
-  version = `0.0.0-${currentCommit.slice(0, 9)}`;
-} else {
+if (!version) {
+  echo('You must specify a version using -v');
+  exit(1);
+}
+
+let branch;
+if (!nightlyBuild) {
   // Check we are in release branch, e.g. 0.33-stable
   branch = exec('git symbolic-ref --short HEAD', {
     silent: true,
@@ -52,24 +66,24 @@ if (nightlyBuild) {
 
   // - check that argument version matches branch
   // e.g. 0.33.1 or 0.33.0-rc4
-  version = argv._[0];
-  if (!version || version.indexOf(versionMajor) !== 0) {
+  if (version.indexOf(versionMajor) !== 0) {
     echo(
-      `You must pass a tag like 0.${versionMajor}.[X]-rc[Y] to bump a version`,
+      `You must specify a version tag like 0.${versionMajor}.[X]-rc[Y] to bump a version`,
     );
     exit(1);
   }
 }
 
-// Generate version files to detect mismatches between JS and native.
-let match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/);
-if (!match) {
-  echo(
-    `You must pass a correctly formatted version; couldn't parse ${version}`,
-  );
+let major,
+  minor,
+  patch,
+  prerelease = -1;
+try {
+  ({major, minor, patch, prerelease} = parseVersion(version));
+} catch (e) {
+  echo(e.message);
   exit(1);
 }
-let [, major, minor, patch, prerelease] = match;
 
 fs.writeFileSync(
   'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
@@ -144,17 +158,26 @@ if (
 exec(`node scripts/set-rn-template-version.js ${version}`);
 
 // Verify that files changed, we just do a git diff and check how many times version is added across files
+const filesToValidate = [
+  'package.json',
+  'ReactAndroid/gradle.properties',
+  'template/package.json',
+];
 let numberOfChangedLinesWithNewVersion = exec(
-  `git diff -U0 | grep '^[+]' | grep -c ${version} `,
+  `git diff -U0 ${filesToValidate.join(
+    ' ',
+  )}| grep '^[+]' | grep -c ${version} `,
   {silent: true},
 ).stdout.trim();
 
 // Release builds should commit the version bumps, and create tags.
 // Nightly builds do not need to do that.
 if (!nightlyBuild) {
-  if (+numberOfChangedLinesWithNewVersion !== 3) {
+  if (+numberOfChangedLinesWithNewVersion !== filesToValidate.length) {
     echo(
-      'Failed to update all the files. package.json and gradle.properties must have versions in them',
+      `Failed to update all the files: [${filesToValidate.join(
+        ', ',
+      )}] must have versions in them`,
     );
     echo('Fix the issue, revert and try again');
     exec('git diff');
@@ -181,8 +204,9 @@ if (!nightlyBuild) {
   let remote = argv.remote;
   exec(`git push ${remote} v${version}`);
 
-  // Tag latest if doing stable release
-  if (version.indexOf('rc') === -1) {
+  // Tag latest if doing stable release.
+  // This will also tag npm release as `latest`
+  if (prerelease == null && argv.latest) {
     exec('git tag -d latest');
     exec(`git push ${remote} :latest`);
     exec('git tag latest');
