@@ -1629,7 +1629,9 @@ const ExportedForwardRef: React.AbstractComponent<
       keyboardType={
         inputMode ? inputModeToKeyboardTypeMap[inputMode] : keyboardType
       }
-      showSoftInputOnFocus={inputMode === 'none' ? false : showSoftInputOnFocus}
+      showSoftInputOnFocus={
+        inputMode == null ? showSoftInputOnFocus : inputMode !== 'none'
+      }
       autoComplete={
         Platform.OS === 'android'
           ? // $FlowFixMe
