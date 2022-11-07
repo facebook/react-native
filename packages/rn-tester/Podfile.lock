@@ -951,7 +951,7 @@ SPEC CHECKSUMS:
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: 445a2267b04cb39ca4a0b2d6758b5a0e5a58ccad
+  hermes-engine: 05b2399259b25f6c105858adc778c04342c1f424
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
@@ -989,7 +989,7 @@ SPEC CHECKSUMS:
   React-rncore: 665c70690f404bbfa3948148de72689672a906d2
   React-runtimeexecutor: 97dca9247f4d3cfe0733384b189c6930fbd402b7
   ReactCommon: b1f213aa09e3dfd0a89389b5023fdb1cd6528e96
-  ScreenshotManager: 06cb3d1794c8082d92b3e91813d1678d0977a4fb
+  ScreenshotManager: cf552c19152e3357f08875fc2f85adb2dee6a66b
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1b1a12ff3d86a10565ea7cbe057d42f5e5fb2a07
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
