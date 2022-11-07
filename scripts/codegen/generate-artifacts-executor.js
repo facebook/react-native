@@ -216,7 +216,7 @@ function handleLibrariesFromReactNativeConfig(
     `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${rnConfigFileName}`,
   );
 
-  const rnConfigFilePath = path.join(appRootDir, rnConfigFileName);
+  const rnConfigFilePath = path.resolve(appRootDir, rnConfigFileName);
 
   if (fs.existsSync(rnConfigFilePath)) {
     const rnConfig = require(rnConfigFilePath);
@@ -319,7 +319,7 @@ function generateSchema(tmpDir, library, node, codegenCliPath) {
       'cli',
       'combine',
       'combine-js-to-schema-cli.js',
-    )} ${pathToSchema} ${pathToJavaScriptSources}`,
+    )} --platform ios ${pathToSchema} ${pathToJavaScriptSources}`,
   );
   console.log(`[Codegen] Generated schema: ${pathToSchema}`);
   return pathToSchema;

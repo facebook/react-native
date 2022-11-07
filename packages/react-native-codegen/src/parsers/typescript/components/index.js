@@ -9,16 +9,18 @@
  */
 
 'use strict';
-import type {TypeDeclarationMap} from '../utils';
+import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
+import type {TypeDeclarationMap} from '../../utils';
 import type {CommandOptions} from './options';
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {getTypes} = require('../utils');
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
-const {getExtendsProps, removeKnownExtends} = require('./extends');
+const {categorizeProps} = require('./extends');
 const {getCommandOptions, getOptions} = require('./options');
-const {getPropProperties, getProps} = require('./props');
+const {getProps} = require('./props');
+const {getProperties} = require('./componentsUtils.js');
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
@@ -179,6 +181,9 @@ function getCommandProperties(
   return properties;
 }
 
+// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
+type PropsAST = Object;
+
 // $FlowFixMe[signature-verification-failure] TODO(T108222691): Use flow-types for @babel/parser
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
@@ -193,7 +198,7 @@ function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
 
   const types = getTypes(ast);
 
-  const propProperties = getPropProperties(propsTypeName, types);
+  const propProperties = getProperties(propsTypeName, types);
   const commandOptions = getCommandOptions(commandOptionsExpression);
 
   const commandProperties = getCommandProperties(
@@ -202,12 +207,20 @@ function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
     commandOptions,
   );
 
-  const extendsProps = getExtendsProps(propProperties, types);
   const options = getOptions(optionsExpression);
 
-  const nonExtendsProps = removeKnownExtends(propProperties, types);
-  const props = getProps(nonExtendsProps, types);
-  const events = getEvents(propProperties, types);
+  const extendsProps: Array<ExtendsPropsShape> = [];
+  const componentPropAsts: Array<PropsAST> = [];
+  const componentEventAsts: Array<PropsAST> = [];
+  categorizeProps(
+    propProperties,
+    types,
+    extendsProps,
+    componentPropAsts,
+    componentEventAsts,
+  );
+  const props = getProps(componentPropAsts, types);
+  const events = getEvents(componentEventAsts, types);
   const commands = getCommands(commandProperties, types);
 
   return {

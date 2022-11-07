@@ -13,8 +13,9 @@ fb_apple_library(
     extension_api_only = True,
     frameworks = [],
     labels = [
+        "fbios_link_group:xplat/default/public.react_native.infra",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
+        "talkios_link_group:xplat/default/public.react_native.infra",
     ],
     link_whole = False,
     visibility = ["PUBLIC"],

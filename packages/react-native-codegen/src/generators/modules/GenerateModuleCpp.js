@@ -22,7 +22,7 @@ import type {
 
 import type {AliasResolver} from './Utils';
 const {createAliasResolver, getModules} = require('./Utils');
-const {unwrapNullable} = require('../../parsers/flow/modules/utils');
+const {unwrapNullable} = require('../../parsers/parsers-commons');
 
 type FilesOutput = Map<string, string>;
 
@@ -118,9 +118,10 @@ function serializeArg(
   index: number,
   resolveAlias: AliasResolver,
 ): string {
-  const {typeAnnotation: nullableTypeAnnotation} = arg;
+  const {typeAnnotation: nullableTypeAnnotation, optional} = arg;
   const [typeAnnotation, nullable] =
     unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
+  const isRequired = !optional && !nullable;
 
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -130,12 +131,15 @@ function serializeArg(
   function wrap(callback: (val: string) => string) {
     const val = `args[${index}]`;
     const expression = callback(val);
-
-    if (nullable) {
-      return `${val}.isNull() || ${val}.isUndefined() ? std::nullopt : std::make_optional(${expression})`;
+    if (isRequired) {
+      return expression;
+    } else {
+      let condition = `${val}.isNull() || ${val}.isUndefined()`;
+      if (optional) {
+        condition = `count < ${index} || ${condition}`;
+      }
+      return `${condition} ? std::nullopt : std::make_optional(${expression})`;
     }
-
-    return expression;
   }
 
   switch (realTypeAnnotation.type) {

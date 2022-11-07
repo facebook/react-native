@@ -8,11 +8,11 @@
  * @format
  */
 
-import Platform from '../Utilities/Platform';
-import RCTLog from '../Utilities/RCTLog';
-
 import type {IgnorePattern, LogData} from './Data/LogBoxData';
 import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
+
+import Platform from '../Utilities/Platform';
+import RCTLog from '../Utilities/RCTLog';
 
 export type {LogData, ExtendedExceptionData, IgnorePattern};
 
@@ -143,6 +143,9 @@ if (__DEV__) {
     if (LogBoxData.isLogBoxErrorMessage(String(args[0]))) {
       originalConsoleError(...args);
       return;
+    } else {
+      // Be sure to pass LogBox warnings through.
+      originalConsoleWarn(...args);
     }
 
     try {
@@ -150,9 +153,6 @@ if (__DEV__) {
         const {category, message, componentStack} = parseLogBoxLog(args);
 
         if (!LogBoxData.isMessageIgnored(message.content)) {
-          // Be sure to pass LogBox warnings through.
-          originalConsoleWarn(...args);
-
           LogBoxData.addLog({
             level: 'warn',
             category,
@@ -205,12 +205,12 @@ if (__DEV__) {
       args[0] = `Warning: ${filterResult.finalFormat}`;
       const {category, message, componentStack} = parseLogBoxLog(args);
 
-      if (!LogBoxData.isMessageIgnored(message.content)) {
-        // Interpolate the message so they are formatted for adb and other CLIs.
-        // This is different than the message.content above because it includes component stacks.
-        const interpolated = parseInterpolation(args);
-        originalConsoleError(interpolated.message.content);
+      // Interpolate the message so they are formatted for adb and other CLIs.
+      // This is different than the message.content above because it includes component stacks.
+      const interpolated = parseInterpolation(args);
+      originalConsoleError(interpolated.message.content);
 
+      if (!LogBoxData.isMessageIgnored(message.content)) {
         LogBoxData.addLog({
           level,
           category,

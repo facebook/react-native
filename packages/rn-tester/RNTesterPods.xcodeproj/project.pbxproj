@@ -836,7 +836,7 @@
 					"-framework",
 					"\"JavaScriptCore\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTester.localDevelopment;
 				PRODUCT_NAME = RNTester;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -868,7 +868,7 @@
 					"-framework",
 					"\"JavaScriptCore\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTester.localDevelopment;
 				PRODUCT_NAME = RNTester;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1068,7 +1068,7 @@
 					"-DFB_SONARKIT_ENABLED=1",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterUnitTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTesterUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1105,7 +1105,7 @@
 					"-DFB_SONARKIT_ENABLED=1",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterUnitTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTesterUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1142,7 +1142,7 @@
 					"-DFB_SONARKIT_ENABLED=1",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterIntegrationTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTesterIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNTester.app/RNTester";
@@ -1176,7 +1176,7 @@
 					"-DFB_SONARKIT_ENABLED=1",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterIntegrationTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTesterIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNTester.app/RNTester";

@@ -12,11 +12,11 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-const AnimatedNode = require('./AnimatedNode');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedNode from './AnimatedNode';
+import AnimatedWithChildren from './AnimatedWithChildren';
 
-class AnimatedTransform extends AnimatedWithChildren {
+export default class AnimatedTransform extends AnimatedWithChildren {
   _transforms: $ReadOnlyArray<Object>;
 
   constructor(transforms: $ReadOnlyArray<Object>) {
@@ -37,34 +37,11 @@ class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __getValue(): $ReadOnlyArray<Object> {
-    return this._transforms.map(transform => {
-      const result: {[string]: any} = {};
-      for (const key in transform) {
-        const value = transform[key];
-        if (value instanceof AnimatedNode) {
-          result[key] = value.__getValue();
-        } else {
-          result[key] = value;
-        }
-      }
-      return result;
-    });
+    return this._get(animatedNode => animatedNode.__getValue());
   }
 
   __getAnimatedValue(): $ReadOnlyArray<Object> {
-    return this._transforms.map(transform => {
-      const result: {[string]: any} = {};
-      for (const key in transform) {
-        const value = transform[key];
-        if (value instanceof AnimatedNode) {
-          result[key] = value.__getAnimatedValue();
-        } else {
-          // All transform components needed to recompose matrix
-          result[key] = value;
-        }
-      }
-      return result;
-    });
+    return this._get(animatedNode => animatedNode.__getAnimatedValue());
   }
 
   __attach(): void {
@@ -118,6 +95,36 @@ class AnimatedTransform extends AnimatedWithChildren {
       transforms: transConfigs,
     };
   }
-}
 
-module.exports = AnimatedTransform;
+  _get(getter: AnimatedNode => any): $ReadOnlyArray<Object> {
+    return this._transforms.map(transform => {
+      const result: {[string]: any} = {};
+      for (const key in transform) {
+        const value = transform[key];
+        if (value instanceof AnimatedNode) {
+          result[key] = getter(value);
+        } else if (Array.isArray(value)) {
+          result[key] = value.map(element => {
+            if (element instanceof AnimatedNode) {
+              return getter(element);
+            } else {
+              return element;
+            }
+          });
+        } else if (typeof value === 'object') {
+          result[key] = {};
+          for (const [nestedKey, nestedValue] of Object.entries(value)) {
+            if (nestedValue instanceof AnimatedNode) {
+              result[key][nestedKey] = getter(nestedValue);
+            } else {
+              result[key][nestedKey] = nestedValue;
+            }
+          }
+        } else {
+          result[key] = value;
+        }
+      }
+      return result;
+    });
+  }
+}

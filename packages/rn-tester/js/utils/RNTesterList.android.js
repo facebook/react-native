@@ -29,7 +29,6 @@ const Components: Array<RNTesterModuleInfo> = [
     key: 'FlatListExampleIndex',
     module: require('../examples/FlatList/FlatListExampleIndex').default,
     category: 'ListView',
-    supportsTVOS: true,
   },
   {
     key: 'ImageExample',

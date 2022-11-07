@@ -4,10 +4,8 @@ rn_android_library(
     name = "shell",
     srcs = glob(["**/*.java"]),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     provided_deps = [
@@ -39,6 +37,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/clipboard:clipboard"),
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/modules/debug:debug"),
+        react_native_target("java/com/facebook/react/modules/devtoolssettings:devtoolssettings"),
         react_native_target("java/com/facebook/react/modules/dialog:dialog"),
         react_native_target("java/com/facebook/react/modules/fresco:fresco"),
         react_native_target("java/com/facebook/react/modules/i18nmanager:i18nmanager"),
@@ -48,7 +47,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/permissions:permissions"),
         react_native_target("java/com/facebook/react/modules/share:share"),
         react_native_target("java/com/facebook/react/modules/statusbar:statusbar"),
-        react_native_target("java/com/facebook/react/modules/storage:storage"),
         react_native_target("java/com/facebook/react/modules/sound:sound"),
         react_native_target("java/com/facebook/react/modules/toast:toast"),
         react_native_target("java/com/facebook/react/modules/vibration:vibration"),

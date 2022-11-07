@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.facebook.react.uiapp">
+  xmlns:android="http://schemas.android.com/apk/res/android">
 
   <uses-feature
     android:name="android.software.leanback"

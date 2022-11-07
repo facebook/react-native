@@ -18,12 +18,12 @@
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/ShadowNode.h>
 
-using namespace facebook::react;
-
 /**
  * This defines a set of TestComponent classes: Props, ShadowNode,
  * ComponentDescriptor. To be used for testing purpose.
  */
+
+namespace facebook::react {
 
 class TestState {
  public:
@@ -75,3 +75,5 @@ class TestComponentDescriptor
  public:
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 };
+
+} // namespace facebook::react

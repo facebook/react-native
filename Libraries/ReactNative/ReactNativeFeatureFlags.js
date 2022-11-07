@@ -38,6 +38,13 @@ export type FeatureFlags = {|
    * traffic.
    */
   animatedShouldUseSingleOp: () => boolean,
+  /**
+   * This feature flag enables an experimental render system that allows
+   * to render react components driven by classes written in C++.
+   */
+  enableCppRenderSystem: () => boolean,
+
+  removeListenersOnDetach: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -46,6 +53,8 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   shouldPressibilityUseW3CPointerEventsForHover: () => false,
   animatedShouldDebounceQueueFlush: () => false,
   animatedShouldUseSingleOp: () => false,
+  enableCppRenderSystem: () => false,
+  removeListenersOnDetach: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;

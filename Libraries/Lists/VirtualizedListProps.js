@@ -8,15 +8,15 @@
  * @format
  */
 
-import * as React from 'react';
+import typeof ScrollView from '../Components/ScrollView/ScrollView';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
   ViewToken,
 } from './ViewabilityHelper';
 
-import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
-import typeof ScrollView from '../Components/ScrollView/ScrollView';
+import * as React from 'react';
 
 export type Item = any;
 
@@ -163,12 +163,6 @@ type OptionalProps = {|
    * Styling for internal View for ListHeaderComponent
    */
   ListHeaderComponentStyle?: ViewStyleProp,
-  /**
-   * A unique identifier for this list. If there are multiple VirtualizedLists at the same level of
-   * nesting within another VirtualizedList, this key is necessary for virtualization to
-   * work properly.
-   */
-  listKey?: string,
   /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
    * once, the better the fill rate, but responsiveness may suffer because rendering content may

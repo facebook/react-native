@@ -8,15 +8,16 @@
  * @format
  */
 
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
+
+import Animated from '../../Animated/Animated';
+import Easing from '../../Animated/Easing';
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
-import Animated from 'react-native/Libraries/Animated/Animated';
-import Easing from 'react-native/Libraries/Animated/Easing';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
-import flattenStyle from 'react-native/Libraries/StyleSheet/flattenStyle';
+import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 

@@ -8,32 +8,31 @@
  * @format
  */
 
-import * as React from 'react';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  PressEvent,
+  ScrollEvent,
+  SyntheticEvent,
+} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {TextInputType} from './TextInput.flow';
 
-import Platform from '../../Utilities/Platform';
+import usePressability from '../../Pressability/usePressability';
+import flattenStyle from '../../StyleSheet/flattenStyle';
+import processLayoutProps from '../../StyleSheet/processStyles';
 import StyleSheet, {
+  type ColorValue,
   type TextStyleProp,
   type ViewStyleProp,
-  type ColorValue,
 } from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import TextAncestor from '../../Text/TextAncestor';
+import Platform from '../../Utilities/Platform';
+import setAndForwardRef from '../../Utilities/setAndForwardRef';
 import TextInputState from './TextInputState';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
-import setAndForwardRef from '../../Utilities/setAndForwardRef';
-
-import usePressability from '../../Pressability/usePressability';
-
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {
-  SyntheticEvent,
-  ScrollEvent,
-  PressEvent,
-} from '../../Types/CoreEventTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import processLayoutProps from '../../StyleSheet/processStyles';
-import flattenStyle from '../../StyleSheet/flattenStyle';
+import * as React from 'react';
 
 const {useLayoutEffect, useRef, useState} = React;
 
@@ -354,6 +353,12 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   textContentType?: ?TextContentType,
+
+  /**
+   * Set line break strategy on iOS.
+   * @platform ios
+   */
+  lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -1445,6 +1450,8 @@ function InternalTextInput(props: Props): React.Node {
     style = processLayoutProps(style);
 
     const autoCapitalize = props.autoCapitalize || 'sentences';
+    const _accessibilityLabelledBy =
+      props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy;
     const placeholder = props.placeholder ?? '';
     let children = props.children;
     const childCount = React.Children.count(children);
@@ -1471,6 +1478,7 @@ function InternalTextInput(props: Props): React.Node {
         {...eventHandlers}
         accessible={accessible}
         accessibilityState={_accessibilityState}
+        accessibilityLabelledBy={_accessibilityLabelledBy}
         autoCapitalize={autoCapitalize}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
@@ -1607,6 +1615,13 @@ const ExportedForwardRef: React.AbstractComponent<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
 ) {
+  const style = flattenStyle(restProps.style);
+
+  if (style?.verticalAlign != null) {
+    style.textAlignVertical =
+      verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+  }
+
   return (
     <InternalTextInput
       allowFontScaling={allowFontScaling}
@@ -1636,9 +1651,17 @@ const ExportedForwardRef: React.AbstractComponent<
       }
       {...restProps}
       forwardedRef={forwardedRef}
+      style={style}
     />
   );
 });
+
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+ExportedForwardRef.propTypes =
+  require('deprecated-react-native-prop-types').TextInputPropTypes;
 
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
@@ -1667,12 +1690,12 @@ const styles = StyleSheet.create({
   },
 });
 
+const verticalAlignToTextAlignVerticalMap = {
+  auto: 'auto',
+  top: 'top',
+  bottom: 'bottom',
+  middle: 'center',
+};
+
 // $FlowFixMe[unclear-type] Unclear type. Using `any` type is not safe.
-module.exports = ((ExportedForwardRef: any): React.AbstractComponent<
-  React.ElementConfig<typeof InternalTextInput>,
-  $ReadOnly<{|
-    ...React.ElementRef<HostComponent<mixed>>,
-    ...ImperativeMethods,
-  |}>,
-> &
-  TextInputComponentStatics);
+module.exports = ((ExportedForwardRef: any): TextInputType);

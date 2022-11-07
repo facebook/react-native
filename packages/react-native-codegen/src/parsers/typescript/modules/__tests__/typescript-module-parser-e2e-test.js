@@ -16,13 +16,13 @@ import type {
 } from '../../../../CodegenSchema';
 
 const {parseString} = require('../../index.js');
-const {unwrapNullable} = require('../utils');
+const {unwrapNullable} = require('../../../parsers-commons');
 const {
-  UnsupportedTypeScriptGenericParserError,
-  UnsupportedTypeScriptTypeAnnotationParserError,
+  UnsupportedGenericParserError,
+  UnsupportedTypeAnnotationParserError,
   UnnamedFunctionParamParserError,
-  IncorrectlyParameterizedTypeScriptGenericParserError,
-} = require('../errors');
+  MissingTypeParameterGenericParserError,
+} = require('../../../errors');
 const invariant = require('invariant');
 
 type PrimitiveTypeAnnotationType =
@@ -87,7 +87,7 @@ describe('TypeScript Module Parser', () => {
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
 
-      expect(parser).toThrow(UnsupportedTypeScriptTypeAnnotationParserError);
+      expect(parser).toThrow(UnsupportedTypeAnnotationParserError);
     });
 
     it('should fail parsing when a function param type is unamed', () => {
@@ -173,7 +173,7 @@ describe('TypeScript Module Parser', () => {
         () => {
           it(`should not parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of type 'Function'`, () => {
             expect(() => parseParamType('arg', 'Function')).toThrow(
-              UnsupportedTypeScriptGenericParserError,
+              UnsupportedGenericParserError,
             );
           });
 
@@ -212,7 +212,7 @@ describe('TypeScript Module Parser', () => {
           describe('Array Types', () => {
             it(`should not parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of type 'Array'`, () => {
               expect(() => parseParamType('arg', 'Array')).toThrow(
-                IncorrectlyParameterizedTypeScriptGenericParserError,
+                MissingTypeParameterGenericParserError,
               );
             });
 
@@ -510,9 +510,7 @@ describe('TypeScript Module Parser', () => {
                   it(`should not parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Array`, () => {
                     expect(() =>
                       parseParamTypeObjectLiteralProp('prop', 'Array'),
-                    ).toThrow(
-                      IncorrectlyParameterizedTypeScriptGenericParserError,
-                    );
+                    ).toThrow(MissingTypeParameterGenericParserError);
                   });
 
                   function parseArrayElementType(
@@ -782,7 +780,7 @@ describe('TypeScript Module Parser', () => {
           describe('Array Types', () => {
             it(`should not parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Array'`, () => {
               expect(() => parseReturnType('Array')).toThrow(
-                IncorrectlyParameterizedTypeScriptGenericParserError,
+                MissingTypeParameterGenericParserError,
               );
             });
 
@@ -885,7 +883,7 @@ describe('TypeScript Module Parser', () => {
 
           it(`should not parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Function'`, () => {
             expect(() => parseReturnType('Function')).toThrow(
-              UnsupportedTypeScriptGenericParserError,
+              UnsupportedGenericParserError,
             );
           });
 
@@ -1051,9 +1049,7 @@ describe('TypeScript Module Parser', () => {
                     it(`should not parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Array`, () => {
                       expect(() =>
                         parseObjectLiteralReturnTypeProp('prop', 'Array'),
-                      ).toThrow(
-                        IncorrectlyParameterizedTypeScriptGenericParserError,
-                      );
+                      ).toThrow(MissingTypeParameterGenericParserError);
                     });
 
                     function parseArrayElementType(

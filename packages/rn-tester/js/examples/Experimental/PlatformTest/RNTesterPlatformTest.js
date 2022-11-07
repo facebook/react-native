@@ -39,9 +39,11 @@ export default function RNTesterPlatformTest(props: Props): React.MixedElement {
     <View style={styles.root}>
       <View style={styles.testcaseContainer}>
         <Text style={[styles.textBlock, styles.title]}>{title}</Text>
-        <Text style={[styles.textBlock, styles.description]}>
-          {description}
-        </Text>
+        {description !== '' ? (
+          <Text style={[styles.textBlock, styles.description]}>
+            {description}
+          </Text>
+        ) : null}
         <RNTesterPlatformTestInstructions
           instructions={instructions}
           style={[styles.instructions, styles.block]}

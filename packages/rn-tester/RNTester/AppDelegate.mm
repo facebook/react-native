@@ -63,7 +63,6 @@
 #endif
 
 #import <ReactCommon/RCTTurboModuleManager.h>
-
 #import "RNTesterTurboModuleProvider.h"
 
 @interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate> {

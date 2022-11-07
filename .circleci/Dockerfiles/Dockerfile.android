@@ -14,14 +14,13 @@
 # and build a Android application that can be used to run the
 # tests specified in the scripts/ directory.
 #
-FROM reactnativecommunity/react-native-android:5.4
+FROM reactnativecommunity/react-native-android:6.0
 
 LABEL Description="React Native Android Test Image"
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
 
 # set default environment variables
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
-ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
 ENV KOTLIN_HOME="third-party/kotlin"
 
 ADD .buckconfig /app/.buckconfig

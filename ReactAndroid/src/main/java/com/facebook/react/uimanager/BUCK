@@ -13,10 +13,8 @@ rn_android_library(
     name = "interfaces",
     srcs = glob(INTERFACES_FILES),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     provided_deps = [
@@ -50,10 +48,8 @@ rn_android_library(
     exported_provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
     ],
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     provided_deps = [
@@ -102,10 +98,8 @@ rn_android_library(
         "DisplayMetricsHolder.java",
     ],
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     provided_deps = [

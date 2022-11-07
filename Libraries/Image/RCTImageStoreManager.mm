@@ -14,19 +14,18 @@
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/UTType.h>
 #import <React/RCTAssert.h>
+#import <React/RCTImageUtils.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
-#import <React/RCTImageUtils.h>
 
 #import "RCTImagePlugins.h"
 
 static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
 
-@interface RCTImageStoreManager() <NativeImageStoreIOSSpec>
+@interface RCTImageStoreManager () <NativeImageStoreIOSSpec>
 @end
 
-@implementation RCTImageStoreManager
-{
+@implementation RCTImageStoreManager {
   NSMutableDictionary<NSString *, NSData *> *_store;
   NSUInteger _id;
 }
@@ -37,7 +36,7 @@ RCT_EXPORT_MODULE()
 
 - (float)handlerPriority
 {
-    return 1;
+  return 1;
 }
 
 - (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)(void))block
@@ -91,36 +90,38 @@ RCT_EXPORT_MODULE()
   });
 }
 
-RCT_EXPORT_METHOD(removeImageForTag:(NSString *)imageTag)
+RCT_EXPORT_METHOD(removeImageForTag : (NSString *)imageTag)
 {
   [_store removeObjectForKey:imageTag];
 }
 
-RCT_EXPORT_METHOD(hasImageForTag:(NSString *)imageTag
-                  callback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(hasImageForTag : (NSString *)imageTag callback : (RCTResponseSenderBlock)callback)
 {
-  callback(@[@(_store[imageTag] != nil)]);
+  callback(@[ @(_store[imageTag] != nil) ]);
 }
 
 // TODO (#5906496): Name could be more explicit - something like getBase64EncodedDataForTag:?
-RCT_EXPORT_METHOD(getBase64ForTag:(NSString *)imageTag
-                  successCallback:(RCTResponseSenderBlock)successCallback
-                  errorCallback:(RCTResponseSenderBlock)errorCallback)
+RCT_EXPORT_METHOD(getBase64ForTag
+                  : (NSString *)imageTag successCallback
+                  : (RCTResponseSenderBlock)successCallback errorCallback
+                  : (RCTResponseSenderBlock)errorCallback)
 {
   NSData *imageData = _store[imageTag];
   if (!imageData) {
-    errorCallback(@[RCTJSErrorFromNSError(RCTErrorWithMessage([NSString stringWithFormat:@"Invalid imageTag: %@", imageTag]))]);
+    errorCallback(
+        @[ RCTJSErrorFromNSError(RCTErrorWithMessage([NSString stringWithFormat:@"Invalid imageTag: %@", imageTag])) ]);
     return;
   }
   // Dispatching to a background thread to perform base64 encoding
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    successCallback(@[[imageData base64EncodedStringWithOptions:0]]);
+    successCallback(@[ [imageData base64EncodedStringWithOptions:0] ]);
   });
 }
 
-RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
-                  successCallback:(RCTResponseSenderBlock)successCallback
-                  errorCallback:(RCTResponseSenderBlock)errorCallback)
+RCT_EXPORT_METHOD(addImageFromBase64
+                  : (NSString *)base64String successCallback
+                  : (RCTResponseSenderBlock)successCallback errorCallback
+                  : (RCTResponseSenderBlock)errorCallback)
 
 {
   // Dispatching to a background thread to perform base64 decoding
@@ -128,10 +129,10 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
     NSData *imageData = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
     if (imageData) {
       dispatch_async(self->_methodQueue, ^{
-        successCallback(@[[self _storeImageData:imageData]]);
+        successCallback(@[ [self _storeImageData:imageData] ]);
       });
     } else {
-      errorCallback(@[RCTJSErrorFromNSError(RCTErrorWithMessage(@"Failed to add image from base64String"))]);
+      errorCallback(@[ RCTJSErrorFromNSError(RCTErrorWithMessage(@"Failed to add image from base64String")) ]);
     }
   });
 }
@@ -166,7 +167,8 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
     CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
     if (!sourceRef) {
-      NSError *error = RCTErrorWithMessage([NSString stringWithFormat:@"Unable to decode data for imageTag: %@", imageTag]);
+      NSError *error =
+          RCTErrorWithMessage([NSString stringWithFormat:@"Unable to decode data for imageTag: %@", imageTag]);
       [delegate URLRequest:cancellationBlock didCompleteWithError:error];
       return;
     }
@@ -183,7 +185,6 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
     [delegate URLRequest:cancellationBlock didReceiveResponse:response];
     [delegate URLRequest:cancellationBlock didReceiveData:imageData];
     [delegate URLRequest:cancellationBlock didCompleteWithError:nil];
-
   });
 
   return cancellationBlock;
@@ -196,7 +197,8 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   }
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<facebook::react::NativeImageStoreIOSSpecJSI>(params);
 }
@@ -208,7 +210,8 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 - (NSString *)storeImage:(UIImage *)image
 {
   RCTAssertMainQueue();
-  RCTLogWarn(@"RCTImageStoreManager.storeImage() is deprecated and has poor performance. Use an alternative method instead.");
+  RCTLogWarn(
+      @"RCTImageStoreManager.storeImage() is deprecated and has poor performance. Use an alternative method instead.");
   __block NSString *imageTag;
   dispatch_sync(_methodQueue, ^{
     imageTag = [self _storeImageData:RCTGetImageData(image, 0.75)];
@@ -219,7 +222,8 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 - (UIImage *)imageForTag:(NSString *)imageTag
 {
   RCTAssertMainQueue();
-  RCTLogWarn(@"RCTImageStoreManager.imageForTag() is deprecated and has poor performance. Use an alternative method instead.");
+  RCTLogWarn(
+      @"RCTImageStoreManager.imageForTag() is deprecated and has poor performance. Use an alternative method instead.");
   __block NSData *imageData;
   dispatch_sync(_methodQueue, ^{
     imageData = self->_store[imageTag];
@@ -250,6 +254,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 @end
 
-Class RCTImageStoreManagerCls(void) {
+Class RCTImageStoreManagerCls(void)
+{
   return RCTImageStoreManager.class;
 }

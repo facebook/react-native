@@ -27,8 +27,7 @@
 #include <iostream>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Scheduler::Scheduler(
     SchedulerToolbox const &schedulerToolbox,
@@ -95,11 +94,13 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-  runtimeExecutor_(
-      [uiManager, runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
-        UIManagerBinding::createAndInstallIfNeeded(
-            runtime, runtimeExecutor, uiManager);
-      });
+  auto bindingsExecutor =
+      schedulerToolbox.bridgelessBindingsExecutor.has_value()
+      ? schedulerToolbox.bridgelessBindingsExecutor.value()
+      : runtimeExecutor_;
+  bindingsExecutor([uiManager](jsi::Runtime &runtime) {
+    UIManagerBinding::createAndInstallIfNeeded(runtime, uiManager);
+  });
 
   auto componentDescriptorRegistryKey =
       "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE";
@@ -308,17 +309,6 @@ void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {
   }
 }
 
-void Scheduler::uiManagerDidCloneShadowNode(
-    const ShadowNode &oldShadowNode,
-    const ShadowNode &newShadowNode) {
-  SystraceSection s("Scheduler::uiManagerDidCloneShadowNode");
-
-  if (delegate_ != nullptr) {
-    delegate_->schedulerDidCloneShadowNode(
-        newShadowNode.getSurfaceId(), oldShadowNode, newShadowNode);
-  }
-}
-
 void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
@@ -377,5 +367,4 @@ void Scheduler::removeEventListener(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

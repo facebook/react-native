@@ -21,10 +21,8 @@ rn_android_library(
         exclude = INTERFACES,
     ),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     proguard_config = "reactnative.pro",
@@ -71,10 +69,8 @@ rn_android_library(
     name = "interfaces",
     srcs = glob(INTERFACES),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     proguard_config = "reactnative.pro",

@@ -10,9 +10,10 @@
 
 // This is a controlled component version of RCTDatePickerIOS.
 
-import * as React from 'react';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+
+import * as React from 'react';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|

@@ -61,6 +61,10 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
     if (!enableOnCreate) {
       return new DisabledDevSupportManager();
     }
+    // Developer support is enabled, we now must choose whether to return a DevSupportManager,
+    // or a more lean profiling-only PerftestDevSupportManager. We make the choice by first
+    // trying to return the full support DevSupportManager and if it fails, then just
+    // return PerftestDevSupportManager.
     try {
       // ProGuard is surprisingly smart in this case and will keep a class if it detects a call to
       // Class.forName() with a static string. So instead we generate a quasi-dynamic string to
@@ -94,10 +98,7 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
               customPackagerCommandHandlers,
               surfaceDelegateFactory);
     } catch (Exception e) {
-      throw new RuntimeException(
-          "Requested enabled DevSupportManager, but BridgeDevSupportManager class was not found"
-              + " or could not be created",
-          e);
+      return new PerftestDevSupportManager(applicationContext);
     }
   }
 }

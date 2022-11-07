@@ -7,8 +7,7 @@
 
 #include "TextInputState.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef ANDROID
 TextInputState::TextInputState(
@@ -30,5 +29,4 @@ MapBuffer TextInputState::getMapBuffer() const {
 };
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

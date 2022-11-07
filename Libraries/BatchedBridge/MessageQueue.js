@@ -252,7 +252,7 @@ class MessageQueue {
       // folly-convertible.  As a special case, if a prop value is a
       // function it is permitted here, and special-cased in the
       // conversion.
-      const isValidArgument = (val: mixed) => {
+      const isValidArgument = (val: mixed): boolean => {
         switch (typeof val) {
           case 'undefined':
           case 'boolean':
@@ -321,6 +321,7 @@ class MessageQueue {
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && this.__spy && isFinite(moduleID)) {
+      // $FlowFixMe[not-a-function]
       this.__spy({
         type: TO_NATIVE,
         module: this._remoteModuleTable[moduleID],
@@ -380,6 +381,7 @@ class MessageQueue {
     return (
       // $FlowFixMe[cannot-resolve-name]
       typeof DebuggerInternal !== 'undefined' &&
+      // $FlowFixMe[cannot-resolve-name]
       DebuggerInternal.shouldPauseOnThrow === true
     );
   }

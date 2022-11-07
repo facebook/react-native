@@ -11,8 +11,7 @@
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsParser.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 RawProps::RawProps() {
   mode_ = Mode::Empty;
@@ -101,5 +100,4 @@ void RawProps::iterateOverValues(
   return parser_->iterateOverValues(*this, fn);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

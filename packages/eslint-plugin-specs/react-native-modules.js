@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails react_native
  * @format
+ * @oncall react_native
  */
 
 'use strict';
@@ -35,7 +35,7 @@ function requireModuleParser() {
 
       withBabelRegister(config, () => {
         RNModuleParser = require('react-native-codegen/src/parsers/flow/modules');
-        RNParserUtils = require('react-native-codegen/src/parsers/flow/utils');
+        RNParserUtils = require('react-native-codegen/src/parsers/utils');
       });
     } else {
       const config = {
@@ -45,7 +45,7 @@ function requireModuleParser() {
 
       withBabelRegister(config, () => {
         RNModuleParser = require('react-native-codegen/lib/parsers/flow/modules');
-        RNParserUtils = require('react-native-codegen/lib/parsers/flow/utils');
+        RNParserUtils = require('react-native-codegen/lib/parsers/utils');
       });
     }
   }

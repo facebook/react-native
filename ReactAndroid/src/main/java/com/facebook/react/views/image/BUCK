@@ -8,10 +8,8 @@ rn_android_library(
     name = "imageevents",
     srcs = IMAGE_EVENT_FILES,
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     provided_deps = [
@@ -37,10 +35,8 @@ rn_android_library(
         exclude = IMAGE_EVENT_FILES,
     ),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "JAVA",
     provided_deps = [
@@ -65,6 +61,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
+        react_native_target("java/com/facebook/react/util:util"),
         react_native_target("java/com/facebook/react/modules/fresco:fresco"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
         react_native_target("java/com/facebook/react/views/imagehelper:withmultisource"),

@@ -8,9 +8,10 @@
  * @flow strict-local
  */
 
-import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
-import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
+
+import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
+import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
 
 const bubblingEventTypes = {
   // Bubbling events from UIManagerModuleConstants.java
@@ -195,6 +196,9 @@ const validAttributesForNonEventProps = {
   maxHeight: true,
   flex: true,
   flexGrow: true,
+  rowGap: true,
+  columnGap: true,
+  gap: true,
   flexShrink: true,
   flexBasis: true,
   aspectRatio: true,

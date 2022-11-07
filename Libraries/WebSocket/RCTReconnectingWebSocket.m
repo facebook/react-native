@@ -68,7 +68,7 @@
 - (void)reconnect
 {
   if (_stopped) {
-   return;
+    return;
   }
 
   __weak RCTSRWebSocket *socket = _socket;
@@ -95,7 +95,10 @@
   }
 }
 
-- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
+- (void)webSocket:(RCTSRWebSocket *)webSocket
+    didCloseWithCode:(NSInteger)code
+              reason:(NSString *)reason
+            wasClean:(BOOL)wasClean
 {
   [_delegate reconnectingWebSocketDidClose:self];
   [self reconnect];

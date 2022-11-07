@@ -10,19 +10,20 @@
 
 ('use strict');
 
-import * as React from 'react';
-import LogBoxLog from './LogBoxLog';
-import {parseLogBoxException} from './parseLogBoxLog';
+import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
 import type {
-  Message,
   Category,
   ComponentStack,
   ExtendedExceptionData,
+  Message,
 } from './parseLogBoxLog';
+
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
-import type {ExtendedError} from '../../Core/ExtendedError';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
+import LogBoxLog from './LogBoxLog';
+import {parseLogBoxException} from './parseLogBoxLog';
+import * as React from 'react';
 export type LogBoxLogs = Set<LogBoxLog>;
 export type LogData = $ReadOnly<{|
   level: LogLevel,
@@ -67,7 +68,7 @@ const observers: Set<{observer: Observer, ...}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 let appInfo: ?() => AppInfo = null;
 let logs: LogBoxLogs = new Set();
-let updateTimeout = null;
+let updateTimeout: $FlowFixMe | null = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 

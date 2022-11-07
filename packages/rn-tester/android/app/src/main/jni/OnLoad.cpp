@@ -37,35 +37,15 @@ std::shared_ptr<TurboModule> provideModules(
   return rncore_ModuleProvider(name, params);
 }
 
-class RNTesterNativeEntryPoint
-    : public facebook::jni::HybridClass<RNTesterNativeEntryPoint> {
- public:
-  constexpr static auto kJavaDescriptor =
-      "Lcom/facebook/react/defaults/DefaultNativeEntryPoint;";
-
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>) {
-    DefaultTurboModuleManagerDelegate::moduleProvidersFromEntryPoint =
-        &provideModules;
-    DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint =
-        &registerComponents;
-    return makeCxxInstance();
-  }
-
-  static void registerNatives() {
-    registerHybrid({
-        makeNativeMethod("initHybrid", RNTesterNativeEntryPoint::initHybrid),
-    });
-  }
-
- private:
-  friend HybridBase;
-  using HybridBase::HybridBase;
-};
-
 } // namespace react
 } // namespace facebook
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
-  return facebook::jni::initialize(
-      vm, [] { facebook::react::RNTesterNativeEntryPoint::registerNatives(); });
+  return facebook::jni::initialize(vm, [] {
+    facebook::react::DefaultTurboModuleManagerDelegate::
+        moduleProvidersFromEntryPoint = &facebook::react::provideModules;
+    facebook::react::DefaultComponentsRegistry::
+        registerComponentDescriptorsFromEntryPoint =
+            &facebook::react::registerComponents;
+  });
 }

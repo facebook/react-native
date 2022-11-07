@@ -10,11 +10,12 @@
 
 import type {ViewProps} from './ViewPropTypes';
 
-import ViewNativeComponent from './ViewNativeComponent';
-import TextAncestor from '../../Text/TextAncestor';
 import flattenStyle from '../../StyleSheet/flattenStyle';
-import * as React from 'react';
 import processLayoutProps from '../../StyleSheet/processStyles';
+import TextAncestor from '../../Text/TextAncestor';
+import {getAccessibilityRoleFromRole} from '../../Utilities/AcessibilityMapping';
+import ViewNativeComponent from './ViewNativeComponent';
+import * as React from 'react';
 
 export type Props = ViewProps;
 
@@ -32,12 +33,25 @@ const View: React.AbstractComponent<
   (
     {
       accessibilityElementsHidden,
-      accessibilityLiveRegion,
-      'aria-live': ariaLive,
       accessibilityLabel,
+      accessibilityLabelledBy,
+      accessibilityLiveRegion,
       accessibilityRole,
-      'aria-label': ariaLabel,
+      accessibilityState,
+      accessibilityValue,
+      'aria-busy': ariaBusy,
+      'aria-checked': ariaChecked,
+      'aria-disabled': ariaDisabled,
+      'aria-expanded': ariaExpanded,
       'aria-hidden': ariaHidden,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
+      'aria-live': ariaLive,
+      'aria-selected': ariaSelected,
+      'aria-valuemax': ariaValueMax,
+      'aria-valuemin': ariaValueMin,
+      'aria-valuenow': ariaValueNow,
+      'aria-valuetext': ariaValueText,
       focusable,
       id,
       importantForAccessibility,
@@ -49,15 +63,8 @@ const View: React.AbstractComponent<
     }: ViewProps,
     forwardedRef,
   ) => {
-    const {
-      accessibilityState,
-      'aria-busy': ariaBusy,
-      'aria-checked': ariaChecked,
-      'aria-disabled': ariaDisabled,
-      'aria-expanded': ariaExpanded,
-      'aria-selected': ariaSelected,
-      ...restProps
-    } = otherProps;
+    const _accessibilityLabelledBy =
+      ariaLabelledBy?.split(/\s*,\s*/g) ?? accessibilityLabelledBy;
 
     const _accessibilityState = {
       busy: ariaBusy ?? accessibilityState?.busy,
@@ -67,83 +74,14 @@ const View: React.AbstractComponent<
       selected: ariaSelected ?? accessibilityState?.selected,
     };
 
-    // Map role values to AccessibilityRole values
-    const roleToAccessibilityRoleMapping = {
-      alert: 'alert',
-      alertdialog: undefined,
-      application: undefined,
-      article: undefined,
-      banner: undefined,
-      button: 'button',
-      cell: undefined,
-      checkbox: 'checkbox',
-      columnheader: undefined,
-      combobox: 'combobox',
-      complementary: undefined,
-      contentinfo: undefined,
-      definition: undefined,
-      dialog: undefined,
-      directory: undefined,
-      document: undefined,
-      feed: undefined,
-      figure: undefined,
-      form: undefined,
-      grid: 'grid',
-      group: undefined,
-      heading: 'header',
-      img: 'image',
-      link: 'link',
-      list: 'list',
-      listitem: undefined,
-      log: undefined,
-      main: undefined,
-      marquee: undefined,
-      math: undefined,
-      menu: 'menu',
-      menubar: 'menubar',
-      menuitem: 'menuitem',
-      meter: undefined,
-      navigation: undefined,
-      none: 'none',
-      note: undefined,
-      presentation: 'none',
-      progressbar: 'progressbar',
-      radio: 'radio',
-      radiogroup: 'radiogroup',
-      region: undefined,
-      row: undefined,
-      rowgroup: undefined,
-      rowheader: undefined,
-      scrollbar: 'scrollbar',
-      searchbox: 'search',
-      separator: undefined,
-      slider: 'adjustable',
-      spinbutton: 'spinbutton',
-      status: undefined,
-      summary: 'summary',
-      switch: 'switch',
-      tab: 'tab',
-      table: undefined,
-      tablist: 'tablist',
-      tabpanel: undefined,
-      term: undefined,
-      timer: 'timer',
-      toolbar: 'toolbar',
-      tooltip: undefined,
-      tree: undefined,
-      treegrid: undefined,
-      treeitem: undefined,
+    const _accessibilityValue = {
+      max: ariaValueMax ?? accessibilityValue?.max,
+      min: ariaValueMin ?? accessibilityValue?.min,
+      now: ariaValueNow ?? accessibilityValue?.now,
+      text: ariaValueText ?? accessibilityValue?.text,
     };
 
-    const accessibilityValue = {
-      max: otherProps['aria-valuemax'] ?? otherProps.accessibilityValue?.max,
-      min: otherProps['aria-valuemin'] ?? otherProps.accessibilityValue?.min,
-      now: otherProps['aria-valuenow'] ?? otherProps.accessibilityValue?.now,
-      text: otherProps['aria-valuetext'] ?? otherProps.accessibilityValue?.text,
-    };
-    const restWithDefaultProps = {...otherProps, accessibilityValue};
-
-    let style = flattenStyle(restProps.style);
+    let style = flattenStyle(otherProps.style);
     style = processLayoutProps(style);
 
     const newPointerEvents = style?.pointerEvents || pointerEvents;
@@ -151,6 +89,7 @@ const View: React.AbstractComponent<
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
+          {...otherProps}
           accessibilityLiveRegion={
             ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
           }
@@ -158,18 +97,19 @@ const View: React.AbstractComponent<
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
           accessibilityState={_accessibilityState}
           accessibilityRole={
-            role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
+            role ? getAccessibilityRoleFromRole(role) : accessibilityRole
           }
           accessibilityElementsHidden={
             ariaHidden ?? accessibilityElementsHidden
           }
+          accessibilityLabelledBy={_accessibilityLabelledBy}
+          accessibilityValue={_accessibilityValue}
           importantForAccessibility={
             ariaHidden === true
               ? 'no-hide-descendants'
               : importantForAccessibility
           }
           nativeID={id ?? nativeID}
-          {...restWithDefaultProps}
           style={style}
           pointerEvents={newPointerEvents}
           ref={forwardedRef}

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "CppComponentRegistry.h"
 #include "FabricMountingManager.h"
 
 #include <memory>
@@ -65,7 +66,8 @@ class Binding : public jni::HybridClass<Binding>,
       jni::alias_ref<jobject> javaUIManager,
       EventBeatManager *eventBeatManager,
       ComponentFactory *componentsRegistry,
-      jni::alias_ref<jobject> reactNativeConfig);
+      jni::alias_ref<jobject> reactNativeConfig,
+      CppComponentRegistry *cppComponentRegistry);
 
   void startSurface(
       jint surfaceId,
@@ -99,11 +101,6 @@ class Binding : public jni::HybridClass<Binding>,
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
       const ShadowNode &shadowNode) override;
-
-  void schedulerDidCloneShadowNode(
-      SurfaceId surfaceId,
-      const ShadowNode &oldShadowNode,
-      const ShadowNode &newShadowNode) override;
 
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
@@ -150,11 +147,10 @@ class Binding : public jni::HybridClass<Binding>,
   float pointScaleFactor_ = 1;
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
+  std::shared_ptr<const facebook::react::CppComponentRegistry>
+      sharedCppComponentRegistry_{nullptr};
   bool disablePreallocateViews_{false};
   bool enableFabricLogs_{false};
-  bool disableRevisionCheckForPreallocation_{false};
-  bool dispatchPreallocationInBackground_{false};
-  bool disablePreallocationOnClone_{false};
 };
 
 } // namespace react

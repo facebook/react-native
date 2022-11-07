@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.summary                = "Fabric for React Native."
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
-  s.author                 = "Facebook, Inc. and its affiliates"
+  s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => "12.4" }
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
@@ -78,6 +78,7 @@ Pod::Spec.new do |s|
 
   s.subspec "core" do |ss|
     ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-jsidynamic", version
     ss.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
     ss.source_files         = "react/renderer/core/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/core/tests"
@@ -252,6 +253,15 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
+  s.subspec "mapbuffer" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/mapbuffer/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/mapbuffer/tests"
+    ss.header_dir           = "react/renderer/mapbuffer"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+  end
+
   s.subspec "mounting" do |ss|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
@@ -293,6 +303,7 @@ Pod::Spec.new do |s|
 
   s.subspec "uimanager" do |ss|
     ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-jsidynamic", version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/uimanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/uimanager/tests"

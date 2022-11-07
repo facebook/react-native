@@ -85,6 +85,7 @@ export type Role =
   | 'navigation'
   | 'none'
   | 'note'
+  | 'option'
   | 'presentation'
   | 'progressbar'
   | 'radio'

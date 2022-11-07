@@ -15,86 +15,71 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.TouchTargetHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class PointerEvent extends Event<PointerEvent> {
   private static final String TAG = PointerEvent.class.getSimpleName();
   private static final int POINTER_EVENTS_POOL_SIZE = 6;
   private static final Pools.SynchronizedPool<PointerEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(POINTER_EVENTS_POOL_SIZE);
-  private static final int UNSET_COALESCING_KEY = -1;
+  private static final short UNSET_COALESCING_KEY = -1;
 
   public static PointerEvent obtain(
       String eventName,
-      int surfaceId,
-      int viewTag,
-      MotionEvent motionEventToCopy,
-      float[] offsetCoords,
-      int primaryPointerId) {
+      int targetTag,
+      PointerEventState eventState,
+      MotionEvent motionEventToCopy) {
     PointerEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new PointerEvent();
     }
     event.init(
-        eventName,
-        surfaceId,
-        viewTag,
-        Assertions.assertNotNull(motionEventToCopy),
-        offsetCoords,
-        0,
-        primaryPointerId);
+        eventName, targetTag, eventState, Assertions.assertNotNull(motionEventToCopy), (short) 0);
     return event;
   }
 
   public static PointerEvent obtain(
       String eventName,
-      int surfaceId,
-      int viewTag,
+      int targetTag,
+      PointerEventState eventState,
       MotionEvent motionEventToCopy,
-      float[] offsetCoords,
-      int coalescingKey,
-      int primaryPointerId) {
+      short coalescingKey) {
     PointerEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new PointerEvent();
     }
     event.init(
         eventName,
-        surfaceId,
-        viewTag,
+        targetTag,
+        eventState,
         Assertions.assertNotNull(motionEventToCopy),
-        offsetCoords,
-        coalescingKey,
-        primaryPointerId);
+        coalescingKey);
     return event;
   }
 
   private @Nullable MotionEvent mMotionEvent;
   private @Nullable String mEventName;
-  private int mCoalescingKey = UNSET_COALESCING_KEY;
-  private float mOffsetX;
-  private float mOffsetY;
+  private short mCoalescingKey = UNSET_COALESCING_KEY;
   private @Nullable List<WritableMap> mPointersEventData;
-  private int mPrimaryPointerId;
+  private PointerEventState mEventState;
+  private @Nullable Event.EventAnimationDriverMatchSpec mEventAnimationDriverMatchSpec;
 
   private void init(
       String eventName,
-      int surfaceId,
-      int viewTag,
+      int targetTag,
+      PointerEventState eventState,
       MotionEvent motionEventToCopy,
-      float[] offsetCoords,
-      int coalescingKey,
-      int primaryPointerId) {
+      short coalescingKey) {
 
-    super.init(surfaceId, viewTag, motionEventToCopy.getEventTime());
+    super.init(eventState.getSurfaceId(), targetTag, motionEventToCopy.getEventTime());
     mEventName = eventName;
     mMotionEvent = MotionEvent.obtain(motionEventToCopy);
     mCoalescingKey = coalescingKey;
-    mOffsetX = offsetCoords[0];
-    mOffsetY = offsetCoords[1];
-    mPrimaryPointerId = primaryPointerId;
+    mEventState = eventState;
   }
 
   private PointerEvent() {}
@@ -131,6 +116,31 @@ public class PointerEvent extends Event<PointerEvent> {
   }
 
   @Override
+  public Event.EventAnimationDriverMatchSpec getEventAnimationDriverMatchSpec() {
+    if (mEventAnimationDriverMatchSpec == null) {
+      mEventAnimationDriverMatchSpec =
+          new EventAnimationDriverMatchSpec() {
+            @Override
+            public boolean match(int viewTag, String eventName) {
+              if (!PointerEventHelper.isBubblingEvent(eventName)) {
+                return false;
+              }
+
+              List<TouchTargetHelper.ViewTarget> viewTargets =
+                  mEventState.getHitPathForActivePointer();
+              for (TouchTargetHelper.ViewTarget viewTarget : viewTargets) {
+                if (viewTarget.getViewId() == viewTag && eventName.equals(mEventName)) {
+                  return true;
+                }
+              }
+              return false;
+            }
+          };
+    }
+    return mEventAnimationDriverMatchSpec;
+  }
+
+  @Override
   public void onDispose() {
     mPointersEventData = null;
     MotionEvent motionEvent = mMotionEvent;
@@ -154,36 +164,36 @@ public class PointerEvent extends Event<PointerEvent> {
     }
   }
 
-  private ArrayList<WritableMap> createPointerEvents() {
-    MotionEvent motionEvent = mMotionEvent;
-    ArrayList<WritableMap> pointerEvents = new ArrayList<>();
+  private List<WritableMap> createW3CPointerEvents() {
 
-    for (int index = 0; index < motionEvent.getPointerCount(); index++) {
-      pointerEvents.add(this.createPointerEventData(index));
+    ArrayList<WritableMap> w3cPointerEvents = new ArrayList<>();
+    for (int index = 0; index < mMotionEvent.getPointerCount(); index++) {
+      w3cPointerEvents.add(this.createW3CPointerEvent(index));
     }
 
-    return pointerEvents;
+    return w3cPointerEvents;
   }
 
-  private WritableMap createPointerEventData(int index) {
+  private WritableMap createW3CPointerEvent(int index) {
     WritableMap pointerEvent = Arguments.createMap();
     int pointerId = mMotionEvent.getPointerId(index);
 
     // https://www.w3.org/TR/pointerevents/#pointerevent-interface
     pointerEvent.putDouble("pointerId", pointerId);
-    pointerEvent.putDouble("pressure", mMotionEvent.getPressure(index));
 
     String pointerType = PointerEventHelper.getW3CPointerType(mMotionEvent.getToolType(index));
     pointerEvent.putString("pointerType", pointerType);
 
     pointerEvent.putBoolean(
-        "isPrimary", PointerEventHelper.isPrimary(pointerId, mPrimaryPointerId, mMotionEvent));
+        "isPrimary",
+        PointerEventHelper.isPrimary(pointerId, mEventState.getPrimaryPointerId(), mMotionEvent));
 
     // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
     // Client refers to upper left edge of the content area (viewport)
     // We define the viewport to be ReactRootView
-    double clientX = PixelUtil.toDIPFromPixel(mMotionEvent.getX(index));
-    double clientY = PixelUtil.toDIPFromPixel(mMotionEvent.getY(index));
+    float[] eventCoords = mEventState.getEventCoordinatesByPointerId().get(pointerId);
+    double clientX = PixelUtil.toDIPFromPixel(eventCoords[0]);
+    double clientY = PixelUtil.toDIPFromPixel(eventCoords[1]);
     pointerEvent.putDouble("clientX", clientX);
     pointerEvent.putDouble("clientY", clientY);
 
@@ -196,18 +206,36 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putDouble("pageY", clientY);
 
     // Offset refers to upper left edge of the target view
-    pointerEvent.putDouble("offsetX", PixelUtil.toDIPFromPixel(mOffsetX));
-    pointerEvent.putDouble("offsetY", PixelUtil.toDIPFromPixel(mOffsetY));
+    float[] offsetCoords = mEventState.getOffsetByPointerId().get(pointerId);
+    pointerEvent.putDouble("offsetX", PixelUtil.toDIPFromPixel(offsetCoords[0]));
+    pointerEvent.putDouble("offsetY", PixelUtil.toDIPFromPixel(offsetCoords[1]));
 
     pointerEvent.putInt("target", this.getViewTag());
     pointerEvent.putDouble("timestamp", this.getTimestampMs());
 
+    pointerEvent.putInt("detail", 0);
+    pointerEvent.putDouble("tiltX", 0);
+    pointerEvent.putDouble("tiltY", 0);
+
     if (pointerType.equals(PointerEventHelper.POINTER_TYPE_MOUSE)) {
       pointerEvent.putDouble("width", 1);
       pointerEvent.putDouble("height", 1);
-      pointerEvent.putDouble("tiltX", 0);
-      pointerEvent.putDouble("tiltY", 0);
+    } else {
+      float majorAxis = PixelUtil.toDIPFromPixel(mMotionEvent.getTouchMajor(index));
+      pointerEvent.putDouble("width", majorAxis);
+      pointerEvent.putDouble("height", majorAxis);
     }
+
+    int buttonState = mMotionEvent.getButtonState();
+    pointerEvent.putInt(
+        "button",
+        PointerEventHelper.getButtonChange(
+            pointerType, mEventState.getLastButtonState(), buttonState));
+    pointerEvent.putInt(
+        "buttons", PointerEventHelper.getButtons(mEventName, pointerType, buttonState));
+
+    pointerEvent.putDouble(
+        "pressure", PointerEventHelper.getPressure(pointerEvent.getInt("buttons"), mEventName));
 
     return pointerEvent;
   }
@@ -219,7 +247,7 @@ public class PointerEvent extends Event<PointerEvent> {
         // Cases where all pointer info is relevant
       case PointerEventHelper.POINTER_MOVE:
       case PointerEventHelper.POINTER_CANCEL:
-        pointersEventData = createPointerEvents();
+        pointersEventData = this.createW3CPointerEvents();
         break;
         // Cases where only the "active" pointer info is relevant
       case PointerEventHelper.POINTER_ENTER:
@@ -228,11 +256,16 @@ public class PointerEvent extends Event<PointerEvent> {
       case PointerEventHelper.POINTER_LEAVE:
       case PointerEventHelper.POINTER_OUT:
       case PointerEventHelper.POINTER_OVER:
-        pointersEventData = Arrays.asList(createPointerEventData(activePointerIndex));
+        pointersEventData = Arrays.asList(createW3CPointerEvent(activePointerIndex));
         break;
     }
 
     return pointersEventData;
+  }
+
+  @Override
+  public short getCoalescingKey() {
+    return mCoalescingKey;
   }
 
   @Override
@@ -265,6 +298,66 @@ public class PointerEvent extends Event<PointerEvent> {
           mCoalescingKey,
           eventData,
           PointerEventHelper.getEventCategory(mEventName));
+    }
+  }
+
+  public static class PointerEventState {
+    private int mPrimaryPointerId;
+    private int mActivePointerId;
+    private int mLastButtonState;
+    private int mSurfaceId;
+
+    private Map<Integer, float[]> mOffsetByPointerId;
+    private Map<Integer, List<TouchTargetHelper.ViewTarget>> mHitPathByPointerId;
+    private Map<Integer, float[]> mEventCoordinatesByPointerId;
+
+    public PointerEventState(
+        int primaryPointerId,
+        int activePointerId,
+        int lastButtonState,
+        int surfaceId,
+        Map<Integer, float[]> offsetByPointerId,
+        Map<Integer, List<TouchTargetHelper.ViewTarget>> hitPathByPointerId,
+        Map<Integer, float[]> eventCoordinatesByPointerId) {
+      mPrimaryPointerId = primaryPointerId;
+      mActivePointerId = activePointerId;
+      mLastButtonState = lastButtonState;
+      mSurfaceId = surfaceId;
+      mOffsetByPointerId = offsetByPointerId;
+      mHitPathByPointerId = hitPathByPointerId;
+      mEventCoordinatesByPointerId = eventCoordinatesByPointerId;
+    }
+
+    public int getLastButtonState() {
+      return mLastButtonState;
+    }
+
+    public int getPrimaryPointerId() {
+      return mPrimaryPointerId;
+    }
+
+    public int getSurfaceId() {
+      return mSurfaceId;
+    }
+
+    public int getActivePointerId() {
+      return mActivePointerId;
+    }
+
+    public final Map<Integer, float[]> getOffsetByPointerId() {
+      return mOffsetByPointerId;
+    }
+
+    public final Map<Integer, List<TouchTargetHelper.ViewTarget>> getHitPathByPointerId() {
+      return mHitPathByPointerId;
+    }
+
+    public final Map<Integer, float[]> getEventCoordinatesByPointerId() {
+      return mEventCoordinatesByPointerId;
+    }
+
+    public final List<TouchTargetHelper.ViewTarget> getHitPathForActivePointer() {
+      return mHitPathByPointerId.get(mActivePointerId);
     }
   }
 }

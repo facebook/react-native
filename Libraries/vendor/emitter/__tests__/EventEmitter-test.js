@@ -1,10 +1,15 @@
 /**
- * (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
- * @emails oncall+react_native
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
  * @flow strict
  * @format
+ * @oncall react_native
  */
+
+import type {EventSubscription} from '../EventEmitter';
 
 import EventEmitter from '../EventEmitter';
 
@@ -306,7 +311,7 @@ describe('event emission', () => {
     const listenerA = jest.fn(() => {
       results.push('A');
     });
-    const listenerB = jest.fn(() => {
+    const listenerB: JestMockFn<Array<mixed>, void> = jest.fn(() => {
       results.push('B');
       subscriptionB.remove();
     });
@@ -314,7 +319,10 @@ describe('event emission', () => {
       results.push('C');
     });
     emitter.addListener('A', listenerA);
-    const subscriptionB = emitter.addListener('A', listenerB);
+    const subscriptionB: EventSubscription = emitter.addListener(
+      'A',
+      listenerB,
+    );
     emitter.addListener('A', listenerC);
 
     emitter.emit('A');

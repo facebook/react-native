@@ -36,14 +36,6 @@ class SchedulerDelegate {
       SurfaceId surfaceId,
       const ShadowNode &shadowView) = 0;
 
-  /*
-   * Called right after a ShadowNode is cloned.
-   */
-  virtual void schedulerDidCloneShadowNode(
-      SurfaceId surfaceId,
-      const ShadowNode &oldShadowNode,
-      const ShadowNode &newShadowNode) = 0;
-
   virtual void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       std::string const &commandName,

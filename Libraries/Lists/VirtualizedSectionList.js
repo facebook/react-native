@@ -10,10 +10,11 @@
 
 import type {ViewToken} from './ViewabilityHelper';
 
+import View from '../Components/View/View';
+import VirtualizedList from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
-import {View, VirtualizedList} from 'react-native';
 
 type Item = any;
 
@@ -172,7 +173,7 @@ class VirtualizedSectionList<
     const listHeaderOffset = this.props.ListHeaderComponent ? 1 : 0;
 
     const stickyHeaderIndices = this.props.stickySectionHeadersEnabled
-      ? []
+      ? ([]: Array<number>)
       : undefined;
 
     let itemCount = 0;
@@ -415,6 +416,7 @@ class VirtualizedSectionList<
     if (updateHighlightFn != null) {
       this._updateHighlightMap[cellKey] = updateHighlightFn;
     } else {
+      // $FlowFixMe[prop-missing]
       delete this._updateHighlightFor[cellKey];
     }
   };

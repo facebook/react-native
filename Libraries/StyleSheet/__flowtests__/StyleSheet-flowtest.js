@@ -10,9 +10,9 @@
 
 'use strict';
 
-const StyleSheet = require('../StyleSheet');
-
 import type {ImageStyleProp, TextStyleProp} from '../StyleSheet';
+
+const StyleSheet = require('../StyleSheet');
 const imageStyle = {tintColor: 'rgb(0, 0, 0)'};
 const textStyle = {color: 'rgb(0, 0, 0)'};
 

@@ -5,15 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
+const StatusBar = require('../StatusBar');
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
-
-const StatusBar = require('../StatusBar');
 
 describe('StatusBar', () => {
   it('renders the statusbar', () => {

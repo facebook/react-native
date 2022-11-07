@@ -36,8 +36,8 @@ function PointerEventAttributesHoverablePointersTestCase(
 ) {
   const {harness} = props;
 
-  const detected_pointertypesRef = useRef({});
-  const detected_eventTypesRef = useRef({});
+  const detected_pointertypesRef = useRef(({}: {[string]: boolean}));
+  const detected_eventTypesRef = useRef(({}: {[string]: boolean}));
   const expectedPointerIdRef = useRef(NaN);
 
   const [square1Visible, setSquare1Visible] = useState(true);
@@ -189,7 +189,7 @@ function PointerEventAttributesHoverablePointersTestCase(
           eventList.length
         ) {
           setSquare1Visible(false);
-          detected_eventTypesRef.current = {};
+          detected_eventTypesRef.current = ({}: {[string]: boolean});
           setSquare2Visible(true);
           expectedPointerIdRef.current = NaN;
         }

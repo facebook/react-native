@@ -214,7 +214,7 @@ const Easing = {
     x2: number,
     y2: number,
   ): (t: number) => number {
-    const _bezier = require('./bezier');
+    const _bezier = require('./bezier').default;
     return _bezier(x1, y1, x2, y2);
   },
 
@@ -247,4 +247,4 @@ const Easing = {
   },
 };
 
-module.exports = Easing;
+export default Easing;

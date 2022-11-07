@@ -8,16 +8,16 @@
  * @flow strict-local
  */
 
-const BatchedBridge = require('../BatchedBridge/BatchedBridge');
-const TaskQueue = require('./TaskQueue');
-
-const infoLog = require('../Utilities/infoLog');
-const invariant = require('invariant');
+import type {Task} from './TaskQueue';
 
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+const infoLog = require('../Utilities/infoLog');
+const TaskQueue = require('./TaskQueue');
+const invariant = require('invariant');
+
 export type Handle = number;
-import type {Task} from './TaskQueue';
 
 const _emitter = new EventEmitter<{
   interactionComplete: [],
@@ -150,9 +150,9 @@ const InteractionManager = {
   },
 };
 
-const _interactionSet = new Set();
-const _addInteractionSet = new Set();
-const _deleteInteractionSet = new Set();
+const _interactionSet = new Set<number | Handle>();
+const _addInteractionSet = new Set<number | Handle>();
+const _deleteInteractionSet = new Set<Handle>();
 const _taskQueue = new TaskQueue({onMoreTasks: _scheduleUpdate});
 let _nextUpdateHandle: $FlowFixMe | TimeoutID = 0;
 let _inc = 0;

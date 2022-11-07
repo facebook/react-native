@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import type {RootTag} from '../Types/RootTagTypes';
 
 import NativeUIManager from './NativeUIManager';
 
@@ -19,7 +19,7 @@ const UIManagerProperties = require('./UIManagerProperties');
 
 const viewManagerConfigs: {[string]: any | null} = {};
 
-const triedLoadingConfig = new Set();
+const triedLoadingConfig = new Set<string>();
 
 let NativeUIManagerConstants = {};
 let isNativeUIManagerConstantsSet = false;

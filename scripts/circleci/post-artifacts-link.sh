@@ -7,5 +7,6 @@
 GITHUB_OWNER=${CIRCLE_PROJECT_USERNAME:-facebook} \
 GITHUB_REPO=${CIRCLE_PROJECT_REPONAME:-react-native} \
 GITHUB_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}" \
+GITHUB_REF=${CIRCLE_BRANCH} \
 GITHUB_SHA=${CIRCLE_SHA1} \
-exec node bots/post-artifacts-link.js
+exec node packages/react-native-bots/post-artifacts-link.js

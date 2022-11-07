@@ -14,7 +14,7 @@ exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_
 
 exports[`RN Codegen TypeScript Parser Fails with error message NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE 1`] = `"key required_key_with_default must be optional if used with WithDefault<> annotation"`;
 
-exports[`RN Codegen TypeScript Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the union of void and/or null"`;
+exports[`RN Codegen TypeScript Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the union of undefined and/or null"`;
 
 exports[`RN Codegen TypeScript Parser Fails with error message PROP_ARRAY_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", received \\"BooleanLiteral\\""`;
 
@@ -1915,7 +1915,110 @@ exports[`RN Codegen TypeScript Parser can generate fixture ARRAY2_PROP_TYPES_NO_
 }"
 `;
 
-exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_EXPORTED 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_TYPES 1`] = `
+"{
+  'modules': {
+    'Module': {
+      'type': 'Component',
+      'components': {
+        'Module': {
+          'extendsProps': [
+            {
+              'type': 'ReactNativeBuiltInType',
+              'knownTypeName': 'ReactNativeCoreViewProps'
+            }
+          ],
+          'events': [],
+          'props': [],
+          'commands': [
+            {
+              'name': 'handleRootTag',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'FunctionTypeAnnotation',
+                'params': [
+                  {
+                    'name': 'rootTag',
+                    'typeAnnotation': {
+                      'type': 'ReservedTypeAnnotation',
+                      'name': 'RootTag'
+                    }
+                  }
+                ],
+                'returnTypeAnnotation': {
+                  'type': 'VoidTypeAnnotation'
+                }
+              }
+            },
+            {
+              'name': 'hotspotUpdate',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'FunctionTypeAnnotation',
+                'params': [
+                  {
+                    'name': 'x',
+                    'typeAnnotation': {
+                      'type': 'Int32TypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'y',
+                    'typeAnnotation': {
+                      'type': 'Int32TypeAnnotation'
+                    }
+                  }
+                ],
+                'returnTypeAnnotation': {
+                  'type': 'VoidTypeAnnotation'
+                }
+              }
+            },
+            {
+              'name': 'scrollTo',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'FunctionTypeAnnotation',
+                'params': [
+                  {
+                    'name': 'x',
+                    'typeAnnotation': {
+                      'type': 'FloatTypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'y',
+                    'typeAnnotation': {
+                      'type': 'Int32TypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'z',
+                    'typeAnnotation': {
+                      'type': 'DoubleTypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'animated',
+                    'typeAnnotation': {
+                      'type': 'BooleanTypeAnnotation'
+                    }
+                  }
+                ],
+                'returnTypeAnnotation': {
+                  'type': 'VoidTypeAnnotation'
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPORTED 1`] = `
 "{
   'modules': {
     'Module': {
@@ -3456,109 +3559,6 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_AND_EVENTS_T
                     'name': 'y',
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
-                    }
-                  },
-                  {
-                    'name': 'animated',
-                    'typeAnnotation': {
-                      'type': 'BooleanTypeAnnotation'
-                    }
-                  }
-                ],
-                'returnTypeAnnotation': {
-                  'type': 'VoidTypeAnnotation'
-                }
-              }
-            }
-          ]
-        }
-      }
-    }
-  }
-}"
-`;
-
-exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_TYPES 1`] = `
-"{
-  'modules': {
-    'Module': {
-      'type': 'Component',
-      'components': {
-        'Module': {
-          'extendsProps': [
-            {
-              'type': 'ReactNativeBuiltInType',
-              'knownTypeName': 'ReactNativeCoreViewProps'
-            }
-          ],
-          'events': [],
-          'props': [],
-          'commands': [
-            {
-              'name': 'handleRootTag',
-              'optional': false,
-              'typeAnnotation': {
-                'type': 'FunctionTypeAnnotation',
-                'params': [
-                  {
-                    'name': 'rootTag',
-                    'typeAnnotation': {
-                      'type': 'ReservedTypeAnnotation',
-                      'name': 'RootTag'
-                    }
-                  }
-                ],
-                'returnTypeAnnotation': {
-                  'type': 'VoidTypeAnnotation'
-                }
-              }
-            },
-            {
-              'name': 'hotspotUpdate',
-              'optional': false,
-              'typeAnnotation': {
-                'type': 'FunctionTypeAnnotation',
-                'params': [
-                  {
-                    'name': 'x',
-                    'typeAnnotation': {
-                      'type': 'Int32TypeAnnotation'
-                    }
-                  },
-                  {
-                    'name': 'y',
-                    'typeAnnotation': {
-                      'type': 'Int32TypeAnnotation'
-                    }
-                  }
-                ],
-                'returnTypeAnnotation': {
-                  'type': 'VoidTypeAnnotation'
-                }
-              }
-            },
-            {
-              'name': 'scrollTo',
-              'optional': false,
-              'typeAnnotation': {
-                'type': 'FunctionTypeAnnotation',
-                'params': [
-                  {
-                    'name': 'x',
-                    'typeAnnotation': {
-                      'type': 'FloatTypeAnnotation'
-                    }
-                  },
-                  {
-                    'name': 'y',
-                    'typeAnnotation': {
-                      'type': 'Int32TypeAnnotation'
-                    }
-                  },
-                  {
-                    'name': 'z',
-                    'typeAnnotation': {
-                      'type': 'DoubleTypeAnnotation'
                     }
                   },
                   {
@@ -10035,6 +10035,317 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
             }
           ],
           'props': [],
+          'commands': []
+        }
+      }
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_WITH_INTERFACES 1`] = `
+"{
+  'modules': {
+    'Module': {
+      'type': 'Component',
+      'components': {
+        'Module': {
+          'interfaceOnly': true,
+          'paperComponentName': 'RCTModule',
+          'extendsProps': [
+            {
+              'type': 'ReactNativeBuiltInType',
+              'knownTypeName': 'ReactNativeCoreViewProps'
+            }
+          ],
+          'events': [
+            {
+              'name': 'onDirect',
+              'optional': false,
+              'bubblingType': 'direct',
+              'typeAnnotation': {
+                'type': 'EventTypeAnnotation',
+                'argument': {
+                  'type': 'ObjectTypeAnnotation',
+                  'properties': [
+                    {
+                      'name': 'x',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'StringTypeAnnotation'
+                      }
+                    },
+                    {
+                      'name': 'y',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'Int32TypeAnnotation'
+                      }
+                    },
+                    {
+                      'name': 'z',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'BooleanTypeAnnotation'
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              'name': 'onBubbling',
+              'optional': false,
+              'bubblingType': 'bubble',
+              'typeAnnotation': {
+                'type': 'EventTypeAnnotation',
+                'argument': {
+                  'type': 'ObjectTypeAnnotation',
+                  'properties': [
+                    {
+                      'name': 'x',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'StringTypeAnnotation'
+                      }
+                    },
+                    {
+                      'name': 'y',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'Int32TypeAnnotation'
+                      }
+                    },
+                    {
+                      'name': 'z',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'BooleanTypeAnnotation'
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          'props': [
+            {
+              'name': 'ordinary_prop',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'x',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'StringTypeAnnotation',
+                      'default': null
+                    }
+                  },
+                  {
+                    'name': 'y',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'Int32TypeAnnotation',
+                      'default': 0
+                    }
+                  },
+                  {
+                    'name': 'z',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'BooleanTypeAnnotation',
+                      'default': false
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              'name': 'readonly_prop',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'x',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'StringTypeAnnotation',
+                      'default': null
+                    }
+                  },
+                  {
+                    'name': 'y',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'Int32TypeAnnotation',
+                      'default': 0
+                    }
+                  },
+                  {
+                    'name': 'z',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'BooleanTypeAnnotation',
+                      'default': false
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              'name': 'ordinary_array_prop',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'ObjectTypeAnnotation',
+                  'properties': [
+                    {
+                      'name': 'x',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'StringTypeAnnotation',
+                        'default': null
+                      }
+                    },
+                    {
+                      'name': 'y',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'Int32TypeAnnotation',
+                        'default': 0
+                      }
+                    },
+                    {
+                      'name': 'z',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'BooleanTypeAnnotation',
+                        'default': false
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              'name': 'readonly_array_prop',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'ObjectTypeAnnotation',
+                  'properties': [
+                    {
+                      'name': 'x',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'StringTypeAnnotation',
+                        'default': null
+                      }
+                    },
+                    {
+                      'name': 'y',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'Int32TypeAnnotation',
+                        'default': 0
+                      }
+                    },
+                    {
+                      'name': 'z',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'BooleanTypeAnnotation',
+                        'default': false
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              'name': 'ordinary_nested_array_prop',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'ArrayTypeAnnotation',
+                  'elementType': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'x',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation',
+                          'default': null
+                        }
+                      },
+                      {
+                        'name': 'y',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'Int32TypeAnnotation',
+                          'default': 0
+                        }
+                      },
+                      {
+                        'name': 'z',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation',
+                          'default': false
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              'name': 'readonly_nested_array_prop',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'ArrayTypeAnnotation',
+                  'elementType': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'x',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation',
+                          'default': null
+                        }
+                      },
+                      {
+                        'name': 'y',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'Int32TypeAnnotation',
+                          'default': 0
+                        }
+                      },
+                      {
+                        'name': 'z',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation',
+                          'default': false
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
           'commands': []
         }
       }

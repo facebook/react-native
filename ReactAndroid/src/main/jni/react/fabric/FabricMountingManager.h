@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "CppComponentRegistry.h"
 #include "FabricMountItem.h"
 
 #include <react/config/ReactNativeConfig.h>
@@ -33,6 +34,7 @@ class FabricMountingManager final {
 
   FabricMountingManager(
       std::shared_ptr<const ReactNativeConfig> &config,
+      std::shared_ptr<const CppComponentRegistry> &cppComponentRegistry,
       jni::global_ref<jobject> &javaUIManager);
 
   void onSurfaceStart(SurfaceId surfaceId);
@@ -68,13 +70,10 @@ class FabricMountingManager final {
 
   butter::map<SurfaceId, butter::set<Tag>> allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
+  std::shared_ptr<const CppComponentRegistry> cppComponentRegistry_;
 
-  bool const enableEarlyEventEmitterUpdate_{false};
-  bool const disablePreallocateViews_{false};
   bool const disableRevisionCheckForPreallocation_{false};
   bool const useOverflowInset_{false};
-  bool const shouldRememberAllocatedViews_{false};
-  bool const useMapBufferForViewProps_{false};
 
   jni::local_ref<jobject> getProps(
       ShadowView const &oldShadowView,

@@ -8,8 +8,8 @@
 #import "NSTextStorage+FontScaling.h"
 
 typedef NS_OPTIONS(NSInteger, RCTTextSizeComparisonOptions) {
-  RCTTextSizeComparisonSmaller     = 1 << 0,
-  RCTTextSizeComparisonLarger      = 1 << 1,
+  RCTTextSizeComparisonSmaller = 1 << 0,
+  RCTTextSizeComparisonLarger = 1 << 1,
   RCTTextSizeComparisonWithinRange = 1 << 2,
 };
 
@@ -19,7 +19,7 @@ typedef NS_OPTIONS(NSInteger, RCTTextSizeComparisonOptions) {
                minimumFontSize:(CGFloat)minimumFontSize
                maximumFontSize:(CGFloat)maximumFontSize
 {
-  CGFloat bottomRatio = 1.0/128.0;
+  CGFloat bottomRatio = 1.0 / 128.0;
   CGFloat topRatio = 128.0;
   CGFloat ratio = 1.0;
 
@@ -28,17 +28,11 @@ typedef NS_OPTIONS(NSInteger, RCTTextSizeComparisonOptions) {
   CGFloat lastRatioWhichFits = 0.02;
 
   while (true) {
-    [self scaleFontSizeWithRatio:ratio
-                 minimumFontSize:minimumFontSize
-                 maximumFontSize:maximumFontSize];
+    [self scaleFontSizeWithRatio:ratio minimumFontSize:minimumFontSize maximumFontSize:maximumFontSize];
 
-    RCTTextSizeComparisonOptions comparsion =
-      [self compareToSize:size thresholdRatio:0.01];
+    RCTTextSizeComparisonOptions comparsion = [self compareToSize:size thresholdRatio:0.01];
 
-    if (
-        (comparsion & RCTTextSizeComparisonWithinRange) &&
-        (comparsion & RCTTextSizeComparisonSmaller)
-    ) {
+    if ((comparsion & RCTTextSizeComparisonWithinRange) && (comparsion & RCTTextSizeComparisonSmaller)) {
       return;
     } else if (comparsion & RCTTextSizeComparisonSmaller) {
       bottomRatio = ratio;
@@ -50,25 +44,17 @@ typedef NS_OPTIONS(NSInteger, RCTTextSizeComparisonOptions) {
     ratio = (topRatio + bottomRatio) / 2.0;
 
     CGFloat kRatioThreshold = 0.005;
-    if (
-        ABS(topRatio - bottomRatio) < kRatioThreshold ||
-        ABS(topRatio - ratio) < kRatioThreshold ||
-        ABS(bottomRatio - ratio) < kRatioThreshold
-    ) {
-      [self replaceCharactersInRange:(NSRange){0, self.length}
-                withAttributedString:originalAttributedString];
+    if (ABS(topRatio - bottomRatio) < kRatioThreshold || ABS(topRatio - ratio) < kRatioThreshold ||
+        ABS(bottomRatio - ratio) < kRatioThreshold) {
+      [self replaceCharactersInRange:(NSRange){0, self.length} withAttributedString:originalAttributedString];
 
-      [self scaleFontSizeWithRatio:lastRatioWhichFits
-                   minimumFontSize:minimumFontSize
-                   maximumFontSize:maximumFontSize];
+      [self scaleFontSizeWithRatio:lastRatioWhichFits minimumFontSize:minimumFontSize maximumFontSize:maximumFontSize];
       return;
     }
 
-    [self replaceCharactersInRange:(NSRange){0, self.length}
-              withAttributedString:originalAttributedString];
+    [self replaceCharactersInRange:(NSRange){0, self.length} withAttributedString:originalAttributedString];
   }
 }
-
 
 - (RCTTextSizeComparisonOptions)compareToSize:(CGSize)size thresholdRatio:(CGFloat)thresholdRatio
 {
@@ -88,13 +74,11 @@ typedef NS_OPTIONS(NSInteger, RCTTextSizeComparisonOptions) {
   CGSize measuredSize = [layoutManager usedRectForTextContainer:textContainer].size;
 
   // Does it fit the size?
-  BOOL fitsSize =
-    size.width >= measuredSize.width &&
-    size.height >= measuredSize.height;
+  BOOL fitsSize = size.width >= measuredSize.width && size.height >= measuredSize.height;
 
   CGSize thresholdSize = (CGSize){
-    size.width * thresholdRatio,
-    size.height * thresholdRatio,
+      size.width * thresholdRatio,
+      size.height * thresholdRatio,
   };
 
   RCTTextSizeComparisonOptions result = 0;
@@ -117,19 +101,15 @@ typedef NS_OPTIONS(NSInteger, RCTTextSizeComparisonOptions) {
   [self enumerateAttribute:NSFontAttributeName
                    inRange:(NSRange){0, self.length}
                    options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
-                usingBlock:
-    ^(UIFont *_Nullable font, NSRange range, BOOL *_Nonnull stop) {
-      if (!font) {
-        return;
-      }
+                usingBlock:^(UIFont *_Nullable font, NSRange range, BOOL *_Nonnull stop) {
+                  if (!font) {
+                    return;
+                  }
 
-      CGFloat fontSize = MAX(MIN(font.pointSize * ratio, maximumFontSize), minimumFontSize);
+                  CGFloat fontSize = MAX(MIN(font.pointSize * ratio, maximumFontSize), minimumFontSize);
 
-      [self addAttribute:NSFontAttributeName
-                   value:[font fontWithSize:fontSize]
-                   range:range];
-    }
-  ];
+                  [self addAttribute:NSFontAttributeName value:[font fontWithSize:fontSize] range:range];
+                }];
 
   [self endEditing];
 }

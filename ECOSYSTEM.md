@@ -1,27 +1,36 @@
 # The React Native Ecosystem
 
-We aim to build a vibrant and inclusive ecosystem of partners, core contributors, and community that goes beyond the main React Native GitHub repository. This document explains the roles and responsibilities of various stakeholders and provides guidelines for the community organization. The structure outlined in this document has been in place for a while but hadn't been written down before.
+We aim to build a vibrant and inclusive ecosystem of partners, core contributors, and community that goes beyond the main React Native GitHub repository. This document explains the roles and responsibilities of various stakeholders and provides guidelines for the community organization. The structure outlined in this document has been in place for a while but had not been written down before.
 
 There are three types of stakeholders:
 
-* **Partners:** Companies that are significantly invested in React Native and have been for years.
+* **Partners:** Companies significantly invested in React Native and take responsibility for the React Native vision and community.
 * **Core Contributors:** Individual people who contribute to the React Native project.
 * **Community Contributors:** Individuals who support projects in the [react-native-community](https://github.com/react-native-community) organization.
 
 ## Partners
 
-Partners are companies that are significantly invested in React Native and have been for years. Informed by their use of React Native, they push for improvements of the core and/or the ecosystem around it. Partners think of React Native as a product: they understand the trade offs that the project makes as well as future plans and goals. Together we shape the vision for React Native to make it the best way to build applications.
+Partners are companies that are significantly invested in React Native and demonstrate ownership. Informed by their use of React Native, they push for improvements of the core and/or the ecosystem around it. Examples of this may include large scale contributions to `react-native` or owning essential tools or libraries.
 
-React Native's current set of partners include Callstack, Expo, Infinite Red, Meta, Microsoft and Software Mansion. Many engineers from these companies are core contributors, and their partner responsibilities also include:
+Partners think of React Native as a product; they understand the trade offs that the project makes as well as future plans and goals. Together we shape the vision for React Native to make it the best way to build applications.
 
-* **[Callstack](https://callstack.com/):** Manages releases, maintains the [React Native CLI](https://github.com/react-native-community/react-native-cli) and organizes [React Native EU](https://react-native.eu/)
-* **[Expo](https://expo.dev/):** Builds [expo](https://github.com/expo/expo) and [EAS](https://expo.dev/eas) on top of React Native to simplify app development
-* **[Infinite Red](https://infinite.red/):** Maintains the [ignite cli/boilerplate](https://github.com/infinitered/ignite), organizes [Chain React Conf](https://cr.infinite.red/)
+Baseline responsibilities of partners include:
+* Attending monthly meeting
+* Contributing to the release process. Examples include being a [community releaser](https://reactnative.dev/contributing/release-roles-responsibilities#release-role-2-community-releaser), testing new releases, technical support for release issues.
+* Engage on the core contributor Discord
+
+Our current partners and other areas of ownership:
+* **[Coinbase](https://www.coinbase.com/):** Publishes [posts](https://blog.coinbase.com/tagged/react-native) advocating React Native usage. Supports `@react-native-community/datetimepicker` and other community modules to migrate to the new architecture. Supports releases in testing and feedback.
+* **[Callstack](https://callstack.com/):** Maintains the [React Native CLI](https://github.com/react-native-community/react-native-cli) and [other community libraries](https://github.com/callstack), organizes [React Native EU](https://react-native.eu/) and hosts [The React Native Show podcast](https://www.callstack.com/podcast-react-native-show)
+* **[Expo](https://expo.dev/):** Builds [Expo Go and SDK](https://github.com/expo/expo), [Snack](https://snack.expo.dev/), and [Expo Application Services](https://expo.dev/eas). Maintains [React Native Directory](https://reactnative.directory/), stewards [React Navigation](https://reactnavigation.org/) along with other partners.
+* **[Infinite Red](https://infinite.red/):** Maintains the [ignite cli/boilerplate](https://github.com/infinitered/ignite), organizes [Chain React Conf](https://cr.infinite.red/), hosts the [React Native Radio podcast](https://reactnativeradio.com), publishes the [React Native Newsletter](https://reactnativenewsletter.com)
 * **[Meta](https://opensource.fb.com/):** Oversees the React Native product and maintains the [React Native core repo](https://reactnative.dev/) 
-* **[Microsoft](http://aka.ms/reactnative):** Develops [React Native Windows](https://github.com/Microsoft/react-native-windows) and [React Native macOS](https://github.com/microsoft/react-native-macos) for building apps that target Windows and macOS
+* **[Microsoft](https://twitter.com/ReactNativeMSFT):** Develops [React Native Windows](https://github.com/Microsoft/react-native-windows) and [React Native macOS](https://github.com/microsoft/react-native-macos) for building apps that target Windows and macOS; maintains [rnx-kit](https://github.com/microsoft/rnx-kit), [react-native-test-app](https://github.com/microsoft/react-native-test-app) and coordinates cross-companies efforts such as the [bundle working group](https://github.com/microsoft/rnx-kit/discussions/categories/bundle-working-group).
+* **[Shopify](https://www.shopify.com/):** Maintains React Native open source libraries such as [flash-list](https://github.com/Shopify/flash-list) or [@shopify/react-native-skia](https://github.com/Shopify/react-native-skia) and sponsors Software Mansion.
 * **[Software Mansion](https://swmansion.com/):** Maintain core infrastructure including JSC, Animated, and other popular third-party plugins and organizes [App.js Conf](https://appjs.co/)
+* **[Wix.com](https://wix.engineering/open-source):** Maintains a variety of React Native open source projects ([see all](https://github.com/orgs/wix/repositories?q=react-native)), including:  [Detox](https://wix.github.io/Detox/) end-to-end testing library for React Native apps, [RN UILib](https://wix.github.io/react-native-ui-lib/), [RN Navigation](https://wix.github.io/react-native-navigation/), [RN Calendars](https://wix.github.io/react-native-calendars/) and [RN Notifications](https://github.com/wix/react-native-notifications).
 
-In terms of open source work, pull requests from partners are commonly prioritized. When you are contributing to React Native, you'll most likely meet somebody who works at one of the partner companies and who is a core contributor:
+This list may fluctuate in response to newcomers who meet our partner definition. In terms of open source work, pull requests from partners are commonly prioritized. When you are contributing to React Native, you'll most likely meet somebody who works at one of the partner companies and who is a core contributor:
 
 ## Core Contributors
 
@@ -38,9 +47,15 @@ Core contributors are individuals who contribute to the React Native project. A 
 
 These are behaviors we have observed in our existing core contributors. They aren't strict rules but rather outline their usual responsibilities. We do not expect every core contributor to do all of the above things all the time. Most importantly, we want to create a supportive and friendly environment that fosters collaboration. Above all else, **we are always polite and friendly.**
 
-Core contributor status is attained after consistently contributing and taking on the responsibilities outlined above and granted by other core contributors. Similarly, after a long period of inactivity, a core contributor may be removed.
+Core contributor status is attained after consistently contributing and taking on the responsibilities outlined above and granted by other core contributors. Similarly, after a long period of inactivity (~6 months or more), a core contributor may be contacted to understand if they’re still interested in being part of the program.
 
-We aim to make contributing to React Native as easy and transparent as possible. All important topics are handled through a [discussion or RFC process on GitHub](https://github.com/react-native-community/discussions-and-proposals). We are always looking for active, enthusiastic members of the React Native community to become core contributors.
+You can use this [form](https://forms.gle/4jpA4QeNUvAUDnNe8) to either:
+* Apply yourself to become a Core Contributor. Make sure to include a list of valuable contributions you did to the React Native repository and ecosystem.
+* Nominate someone to become a Core Contributor.
+
+As a core contributor, you will have access to the core contributor Discord which is used for light-weight coordination and discussion.
+
+**We aim to make contributing to React Native as easy and transparent as possible.** We have discussion groups dedicated to the [new architecture rollout](https://github.com/reactwg/react-native-new-architecture), [releases](https://github.com/reactwg/react-native-releases), and [general questions and proposals](https://github.com/react-native-community/discussions-and-proposals). We are always looking for active, enthusiastic members of the React Native community to become core contributors.
 
 ## Community Contributors
 

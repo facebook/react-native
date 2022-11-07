@@ -9,7 +9,6 @@
  */
 
 const Systrace = require('../Performance/Systrace');
-
 const infoLog = require('./infoLog');
 
 export type Timespan = {

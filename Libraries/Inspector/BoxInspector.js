@@ -10,12 +10,11 @@
 
 'use strict';
 
-const React = require('react');
+const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
-const View = require('../Components/View/View');
-
 const resolveBoxStyle = require('./resolveBoxStyle');
+const React = require('react');
 
 const blank = {
   top: 0,

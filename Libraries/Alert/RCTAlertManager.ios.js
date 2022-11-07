@@ -8,8 +8,9 @@
  * @flow strict-local
  */
 
-import NativeAlertManager from './NativeAlertManager';
 import type {Args} from './NativeAlertManager';
+
+import NativeAlertManager from './NativeAlertManager';
 
 module.exports = {
   alertWithArgs(

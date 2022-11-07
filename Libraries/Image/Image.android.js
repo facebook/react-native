@@ -8,25 +8,23 @@
  * @format
  */
 
-import ImageViewNativeComponent from './ImageViewNativeComponent';
-import * as React from 'react';
+import type {RootTag} from '../Types/RootTagTypes';
+import type {ImageAndroid} from './Image.flow';
+import type {ImageProps as ImagePropsType} from './ImageProps';
+
+import flattenStyle from '../StyleSheet/flattenStyle';
+import processLayoutProps from '../StyleSheet/processStyles';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import TextAncestor from '../Text/TextAncestor';
-import ImageInjection from './ImageInjection';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import flattenStyle from '../StyleSheet/flattenStyle';
-import resolveAssetSource from './resolveAssetSource';
-
-import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
-
-import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
-
-import {convertObjectFitToResizeMode} from './ImageUtils';
-
-import type {ImageProps as ImagePropsType} from './ImageProps';
-import type {RootTag} from '../Types/RootTagTypes';
+import ImageInjection from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
-import processLayoutProps from '../StyleSheet/processStyles';
+import {convertObjectFitToResizeMode} from './ImageUtils';
+import ImageViewNativeComponent from './ImageViewNativeComponent';
+import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
+import resolveAssetSource from './resolveAssetSource';
+import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
+import * as React from 'react';
 
 let _requestId = 1;
 function generateRequestId() {
@@ -130,7 +128,11 @@ export type ImageComponentStatics = $ReadOnly<{|
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const BaseImage = (props: ImagePropsType, forwardedRef) => {
-  let source = getImageSourcesFromImageProps(props);
+  let source = getImageSourcesFromImageProps(props) || {
+    uri: undefined,
+    width: undefined,
+    height: undefined,
+  };
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
     props.loadingIndicatorSource,
@@ -148,22 +150,19 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     );
   }
 
-  if (source && !source.uri && !Array.isArray(source)) {
-    source = null;
-  }
-
   let style;
   let sources;
-  if (!Array.isArray(source) && source?.uri != null) {
+  if (Array.isArray(source)) {
+    style = flattenStyle([styles.base, props.style]);
+    sources = source;
+  } else {
     const {width = props.width, height = props.height, uri} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
-    sources = [{uri: uri, width: width, height: height}];
+    sources = [source];
+
     if (uri === '') {
       console.warn('source.uri should not be an empty string');
     }
-  } else {
-    style = flattenStyle([styles.base, props.style]);
-    sources = source;
   }
 
   const {height, width, ...restProps} = props;
@@ -184,7 +183,11 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       ? loadingIndicatorSource.uri
       : null,
     ref: forwardedRef,
-    accessibilityLabel: props['aria-label'] ?? props.accessibilityLabel,
+    accessibilityLabel:
+      props['aria-label'] ?? props.accessibilityLabel ?? props.alt,
+    accessibilityLabelledBy:
+      props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy,
+    accessible: props.alt !== undefined ? true : props.accessible,
     accessibilityState: {
       busy: props['aria-busy'] ?? props.accessibilityState?.busy,
       checked: props['aria-checked'] ?? props.accessibilityState?.checked,
@@ -216,13 +219,12 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
           <TextAncestor.Consumer>
             {hasTextAncestor => {
               if (hasTextAncestor) {
-                let src = Array.isArray(sources) ? sources : [sources];
                 return (
                   <TextInlineImageNativeComponent
                     style={style}
                     resizeMode={resizeMode}
                     headers={nativeProps.headers}
-                    src={src}
+                    src={sources}
                     ref={forwardedRef}
                   />
                 );
@@ -327,15 +329,16 @@ Image.queryCache = queryCache;
  * comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
 
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
+
 const styles = StyleSheet.create({
   base: {
     overflow: 'hidden',
   },
 });
 
-module.exports = ((Image: any): React.AbstractComponent<
-  ImagePropsType,
-  | React.ElementRef<typeof TextInlineImageNativeComponent>
-  | React.ElementRef<typeof ImageViewNativeComponent>,
-> &
-  ImageComponentStatics);
+module.exports = ((Image: any): ImageAndroid);

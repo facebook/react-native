@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     width: 200,
   },
   b: {
-    marginLeft: 100,
+    marginLeft: 50,
     height: 120,
     width: 200,
     backgroundColor: 'green',
@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
     height: 120,
     width: 200,
     backgroundColor: 'yellow',
-    marginVertical: 100,
-    marginLeft: 100,
+    marginVertical: 10,
+    marginLeft: 50,
   },
   a1: {
     backgroundColor: 'blue',
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   b1: {
     padding: 1,
-    marginLeft: 100,
+    marginLeft: 50,
     height: 120,
     width: 200,
     backgroundColor: 'green',
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     height: 120,
     width: 200,
     backgroundColor: 'black',
-    marginLeft: 100,
+    marginLeft: 50,
   },
 });
 

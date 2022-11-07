@@ -10,21 +10,17 @@
 
 'use strict';
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
 import type AnimatedValue from '../nodes/AnimatedValue';
 import type AnimatedValueXY from '../nodes/AnimatedValueXY';
-import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
-
-const Animation = require('./Animation');
-const SpringConfig = require('../SpringConfig');
-
-const invariant = require('invariant');
-
-const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
-
-import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimationConfig, EndCallback} from './Animation';
 
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedColor from '../nodes/AnimatedColor';
+import * as SpringConfig from '../SpringConfig';
+import Animation from './Animation';
+import invariant from 'invariant';
 
 export type SpringAnimationConfig = {
   ...AnimationConfig,
@@ -83,7 +79,7 @@ export type SpringAnimationConfigSingle = {
   delay?: number,
 };
 
-class SpringAnimation extends Animation {
+export default class SpringAnimation extends Animation {
   _overshootClamping: boolean;
   _restDisplacementThreshold: number;
   _restSpeedThreshold: number;
@@ -116,7 +112,7 @@ class SpringAnimation extends Animation {
     this._lastVelocity = config.velocity ?? 0;
     this._toValue = config.toValue;
     this._delay = config.delay ?? 0;
-    this._useNativeDriver = shouldUseNativeDriver(config);
+    this._useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
     this._platformConfig = config.platformConfig;
     this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
     this.__iterations = config.iterations ?? 1;
@@ -372,5 +368,3 @@ class SpringAnimation extends Animation {
     this.__debouncedOnEnd({finished: false});
   }
 }
-
-module.exports = SpringAnimation;

@@ -4,9 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
  * @flow
  * @format
+ * @oncall react_native
  */
 
 /**
@@ -17,7 +17,7 @@
 
 'use strict';
 
-const bezier = require('../bezier');
+import bezier from '../bezier';
 
 const identity = function (x: number) {
   return x;

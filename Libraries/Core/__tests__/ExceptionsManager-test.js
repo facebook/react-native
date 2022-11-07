@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
+const LogBox = require('../../LogBox/LogBox');
 const ExceptionsManager = require('../ExceptionsManager');
 const NativeExceptionsManager = require('../NativeExceptionsManager').default;
-const LogBox = require('../../LogBox/LogBox');
 const ReactFiberErrorDialog = require('../ReactFiberErrorDialog').default;
 const fs = require('fs');
 const path = require('path');

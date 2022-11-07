@@ -5,18 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
-
-const LogBoxData = require('../Data/LogBoxData');
-const TestRenderer = require('react-test-renderer');
-
-import * as React from 'react';
 
 import {
   DoesNotUseKey,
   FragmentWithProp,
 } from './__fixtures__/ReactWarningFixtures';
+import * as React from 'react';
+
+const LogBoxData = require('../Data/LogBoxData');
+const TestRenderer = require('react-test-renderer');
 
 const installLogBox = () => {
   const LogBox = require('../LogBox');

@@ -4,15 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
- * @format
  * @flow
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
-import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 import type {SymbolicatedStackTrace} from '../../../Core/Devtools/symbolicateStackTrace';
+import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 
 jest.mock('../LogBoxSymbolication', () => {
   return {__esModule: true, symbolicate: jest.fn(), deleteStack: jest.fn()};
@@ -50,7 +50,7 @@ function getLogBoxSymbolication(): {|
 }
 
 const createStack = (methodNames: Array<string>) =>
-  methodNames.map(methodName => ({
+  methodNames.map((methodName): StackFrame => ({
     column: null,
     file: 'file://path/to/file.js',
     lineNumber: 1,

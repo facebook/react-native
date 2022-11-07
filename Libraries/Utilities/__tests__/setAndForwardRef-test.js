@@ -6,15 +6,14 @@
  *
  * @flow
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
+const setAndForwardRef = require('../setAndForwardRef');
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
-
-const setAndForwardRef = require('../setAndForwardRef');
 
 describe('setAndForwardRef', () => {
   let innerFuncCalled: ?boolean = false;

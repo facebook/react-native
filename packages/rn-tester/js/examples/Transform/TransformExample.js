@@ -13,7 +13,7 @@ import {Animated, StyleSheet, Text, View} from 'react-native';
 
 import type {Node, Element} from 'react';
 
-function AnimateTansformSingleProp() {
+function AnimateTransformSingleProp() {
   const [theta] = useState(new Animated.Value(45));
   const animate = () => {
     theta.setValue(0);
@@ -199,6 +199,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'salmon',
     alignSelf: 'center',
   },
+  box7: {
+    backgroundColor: 'lightseagreen',
+    height: 50,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: 50,
+  },
+  box7Transform: {
+    transform: 'translate(-50, 35) rotate(50deg) scale(2)',
+  },
   flipCardContainer: {
     marginVertical: 40,
     flex: 1,
@@ -318,10 +329,21 @@ exports.examples = [
     },
   },
   {
-    title: 'Amimate Translate single prop',
+    title: 'Animate Translate single prop',
     description: "rotate: '360deg'",
     render(): Node {
-      return <AnimateTansformSingleProp />;
+      return <AnimateTransformSingleProp />;
+    },
+  },
+  {
+    title: 'Transform using a string',
+    description: "transform: 'translate(-50, 35) rotate(50deg) scale(2)'",
+    render(): Node {
+      return (
+        <View style={styles.container}>
+          <View style={[styles.box7, styles.box7Transform]} />
+        </View>
+      );
     },
   },
 ];

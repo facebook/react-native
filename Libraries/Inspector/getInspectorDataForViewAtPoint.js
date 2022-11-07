@@ -13,6 +13,9 @@ import type {
   TouchedViewDataAtPoint,
 } from '../Renderer/shims/ReactNativeTypes';
 
+const invariant = require('invariant');
+const React = require('react');
+
 export type HostRef = React.ElementRef<HostComponent<mixed>>;
 export type ReactRenderer = {
   rendererConfig: {
@@ -25,9 +28,6 @@ export type ReactRenderer = {
     ...
   },
 };
-
-const React = require('react');
-const invariant = require('invariant');
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 const renderers = findRenderers();

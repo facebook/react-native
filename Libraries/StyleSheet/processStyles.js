@@ -7,6 +7,7 @@
  * @format
  * @flow strict-local
  */
+
 'use strict';
 
 import type {____FlattenStyleProp_Internal} from './StyleSheetTypes';

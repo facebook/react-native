@@ -13,6 +13,7 @@
 #include <deque>
 #include <initializer_list>
 #include <list>
+#include <set>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -102,6 +103,24 @@ struct Bridging<std::vector<T>>
     }
 
     return vector;
+  }
+};
+
+template <typename T>
+struct Bridging<std::set<T>> : array_detail::BridgingDynamic<std::set<T>> {
+  static std::set<T> fromJs(
+      facebook::jsi::Runtime &rt,
+      const jsi::Array &array,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    size_t length = array.length(rt);
+
+    std::set<T> set;
+    for (size_t i = 0; i < length; i++) {
+      set.insert(
+          bridging::fromJs<T>(rt, array.getValueAtIndex(rt, i), jsInvoker));
+    }
+
+    return set;
   }
 };
 

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
  * @format
+ * @oncall react_native
  */
 
 'use strict';
@@ -26,7 +26,7 @@ describe('generateSpec', () => {
     const outputDirectory = normalize('app/ios/build/generated/ios');
     const libraryName = 'library';
     const packageName = 'com.library';
-    const generators = ['componentsIOS', 'modulesIOS'];
+    const generators = ['componentsIOS', 'modulesIOS', 'modulesCxx'];
 
     jest.mock('fs', () => ({
       readFileSync: (path, encoding) => {

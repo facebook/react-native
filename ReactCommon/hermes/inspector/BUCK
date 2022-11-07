@@ -26,7 +26,6 @@ CFLAGS_BY_MODE = {
 }
 
 CHROME_EXPORTED_HEADERS = [
-    "chrome/AutoAttachUtils.h",
     "chrome/Connection.h",
     "chrome/ConnectionDemux.h",
     "chrome/MessageConverters.h",
@@ -49,7 +48,7 @@ fb_xplat_cxx_library(
     exported_headers = CHROME_EXPORTED_HEADERS,
     compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
     fbobjc_header_path_prefix = "hermes/inspector/chrome",
-    labels = ["supermodule:xplat/default/public.hermes"],
+    labels = [],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX, FBCODE, WINDOWS),
     tests = [":chrome-tests"],
@@ -117,7 +116,7 @@ fb_xplat_cxx_library(
         "//fbandroid/libraries/fbjni:fbjni",
     ],
     fbobjc_header_path_prefix = "hermes/inspector/detail",
-    labels = ["supermodule:xplat/default/public.hermes"],
+    labels = [],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX, FBCODE, WINDOWS),
     tests = [":detail-tests"],
@@ -191,11 +190,11 @@ fb_xplat_cxx_library(
     exported_headers = INSPECTOR_EXPORTED_HEADERS,
     compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
     cxx_tests = [":inspector-tests"],
+    exported_preprocessor_flags = get_hermes_shared_library_preprocessor_flags(),
     fbobjc_header_path_prefix = "hermes/inspector",
-    labels = ["supermodule:xplat/default/public.hermes"],
+    labels = [],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX, FBCODE, WINDOWS),
-    preprocessor_flags = get_hermes_shared_library_preprocessor_flags(),
     visibility = [
         "PUBLIC",
     ],

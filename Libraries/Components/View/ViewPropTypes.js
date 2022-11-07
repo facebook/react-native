@@ -10,26 +10,26 @@
 
 'use strict';
 
+import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BlurEvent,
   FocusEvent,
+  Layout,
+  LayoutEvent,
   MouseEvent,
   PointerEvent,
   PressEvent,
-  Layout,
-  LayoutEvent,
 } from '../../Types/CoreEventTypes';
-import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
-import type {Node} from 'react';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
-  Role,
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
   AccessibilityRole,
   AccessibilityState,
   AccessibilityValue,
-  AccessibilityActionEvent,
-  AccessibilityActionInfo,
+  Role,
 } from './ViewAccessibility';
+import type {Node} from 'react';
 
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
@@ -531,7 +531,7 @@ export type ViewProps = $ReadOnly<{|
    * see https://reactnative.dev/docs/accessibility#accessibilitystate
    */
   'aria-busy'?: ?boolean,
-  'aria-checked'?: ?boolean,
+  'aria-checked'?: ?boolean | 'mixed',
   'aria-disabled'?: ?boolean,
   'aria-expanded'?: ?boolean,
   'aria-selected'?: ?boolean,
@@ -541,6 +541,13 @@ export type ViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#aria-hidden
    */
   'aria-hidden'?: ?boolean,
+
+  /**
+   * It reperesents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   *
+   * @platform android
+   */
+  'aria-labelledby'?: ?string,
 
   /**
    * Views that are only used to layout their children or otherwise don't draw

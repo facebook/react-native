@@ -7,8 +7,7 @@
 
 #include "SliderState.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ImageSource SliderState::getTrackImageSource() const {
   return trackImageSource_;
@@ -42,5 +41,4 @@ ImageRequest const &SliderState::getThumbImageRequest() const {
   return *thumbImageRequest_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

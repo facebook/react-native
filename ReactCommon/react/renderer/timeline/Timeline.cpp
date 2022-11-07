@@ -9,8 +9,7 @@
 
 #include <react/renderer/uimanager/UIManager.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Timeline::Timeline(ShadowTree const &shadowTree) : shadowTree_(&shadowTree) {
   record(shadowTree.getCurrentRevision().rootShadowNode);
@@ -117,5 +116,4 @@ void Timeline::rewind(TimelineSnapshot const &snapshot) const noexcept {
   rewinding_ = false;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

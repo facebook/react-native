@@ -90,7 +90,6 @@ class TextLayoutManager {
 
   void *self_{};
   ContextContainer::Shared contextContainer_;
-  bool mapBufferSerializationEnabled_;
   TextMeasureCache measureCache_;
 };
 

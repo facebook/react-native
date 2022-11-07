@@ -10,10 +10,10 @@
 
 'use strict';
 
-import AnimatedProps from './nodes/AnimatedProps';
-import {AnimatedEvent} from './AnimatedEvent';
 import useRefEffect from '../Utilities/useRefEffect';
+import {AnimatedEvent} from './AnimatedEvent';
 import NativeAnimatedHelper from './NativeAnimatedHelper';
+import AnimatedProps from './nodes/AnimatedProps';
 import {
   useCallback,
   useEffect,
@@ -33,7 +33,7 @@ type CallbackRef<T> = T => mixed;
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
-  const [, scheduleUpdate] = useReducer(count => count + 1, 0);
+  const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
   const onUpdateRef = useRef<?() => void>(null);
 
   // TODO: Only invalidate `node` if animated props or `style` change. In the
@@ -60,7 +60,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   // But there is no way to transparently compose three separate callback refs,
   // so we just combine them all into one for now.
   const refEffect = useCallback(
-    instance => {
+    (instance: TInstance) => {
       // NOTE: This may be called more often than necessary (e.g. when `props`
       // changes), but `setNativeView` already optimizes for that.
       node.setNativeView(instance);

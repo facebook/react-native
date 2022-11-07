@@ -23,6 +23,7 @@ import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
+import com.facebook.react.modules.devtoolssettings.DevToolsSettingsManagerModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
@@ -33,7 +34,6 @@ import com.facebook.react.modules.permissions.PermissionsModule;
 import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
-import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.toast.ToastModule;
 import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
@@ -69,7 +69,6 @@ import java.util.Map;
       AppStateModule.class,
       BlobModule.class,
       FileReaderModule.class,
-      AsyncStorageModule.class,
       ClipboardModule.class,
       DialogModule.class,
       FrescoModule.class,
@@ -111,8 +110,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new BlobModule(context);
       case FileReaderModule.NAME:
         return new FileReaderModule(context);
-      case AsyncStorageModule.NAME:
-        return new AsyncStorageModule(context);
       case ClipboardModule.NAME:
         return new ClipboardModule(context);
       case DialogModule.NAME:
@@ -145,6 +142,8 @@ public class MainReactPackage extends TurboReactPackage {
         return new VibrationModule(context);
       case WebSocketModule.NAME:
         return new WebSocketModule(context);
+      case DevToolsSettingsManagerModule.NAME:
+        return new DevToolsSettingsManagerModule(context);
       default:
         return null;
     }
@@ -185,7 +184,8 @@ public class MainReactPackage extends TurboReactPackage {
           Class.forName("com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider");
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
-      // In OSS case, the annotation processor does not run. We fall back on creating this byhand
+      // In the OSS case, the annotation processor does not run. We fall back to creating this by
+      // hand
       Class<? extends NativeModule>[] moduleList =
           new Class[] {
             AccessibilityInfoModule.class,
@@ -193,7 +193,6 @@ public class MainReactPackage extends TurboReactPackage {
             AppStateModule.class,
             BlobModule.class,
             FileReaderModule.class,
-            AsyncStorageModule.class,
             ClipboardModule.class,
             DialogModule.class,
             FrescoModule.class,
@@ -204,6 +203,7 @@ public class MainReactPackage extends TurboReactPackage {
             NativeAnimatedModule.class,
             NetworkingModule.class,
             PermissionsModule.class,
+            DevToolsSettingsManagerModule.class,
             ShareModule.class,
             StatusBarModule.class,
             SoundManagerModule.class,

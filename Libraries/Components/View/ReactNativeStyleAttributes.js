@@ -9,7 +9,10 @@
  */
 
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
+
+import processAspectRatio from '../../StyleSheet/processAspectRatio';
 import processColor from '../../StyleSheet/processColor';
+import processFontVariant from '../../StyleSheet/processFontVariant';
 import processTransform from '../../StyleSheet/processTransform';
 import sizesDiffer from '../../Utilities/differ/sizesDiffer';
 
@@ -22,13 +25,14 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   alignContent: true,
   alignItems: true,
   alignSelf: true,
-  aspectRatio: true,
+  aspectRatio: {process: processAspectRatio},
   borderBottomWidth: true,
   borderEndWidth: true,
   borderLeftWidth: true,
   borderRightWidth: true,
   borderStartWidth: true,
   borderTopWidth: true,
+  columnGap: true,
   borderWidth: true,
   bottom: true,
   direction: true,
@@ -40,6 +44,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   flexGrow: true,
   flexShrink: true,
   flexWrap: true,
+  gap: true,
   height: true,
   justifyContent: true,
   left: true,
@@ -68,6 +73,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   paddingVertical: true,
   position: true,
   right: true,
+  rowGap: true,
   start: true,
   top: true,
   width: true,
@@ -120,7 +126,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   fontFamily: true,
   fontSize: true,
   fontStyle: true,
-  fontVariant: true,
+  fontVariant: {process: processFontVariant},
   fontWeight: true,
   includeFontPadding: true,
   letterSpacing: true,
@@ -135,6 +141,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   textShadowRadius: true,
   textTransform: true,
   userSelect: true,
+  verticalAlign: true,
   writingDirection: true,
 
   /**

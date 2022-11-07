@@ -11,19 +11,20 @@
 'use strict';
 
 import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+  AccessibilityRole,
+  AccessibilityState,
+  Role,
+} from '../Components/View/ViewAccessibility';
+import type {TextStyleProp} from '../StyleSheet/StyleSheet';
+import type {
   LayoutEvent,
   PointerEvent,
   PressEvent,
   TextLayoutEvent,
 } from '../Types/CoreEventTypes';
 import type {Node} from 'react';
-import type {TextStyleProp} from '../StyleSheet/StyleSheet';
-import type {
-  AccessibilityRole,
-  AccessibilityState,
-  AccessibilityActionInfo,
-  AccessibilityActionEvent,
-} from '../Components/View/ViewAccessibility';
 
 export type PressRetentionOffset = $ReadOnly<{|
   top: number,
@@ -85,10 +86,18 @@ export type TextProps = $ReadOnly<{|
    * see https://reactnative.dev/docs/accessibility#accessibilitystate
    */
   'aria-busy'?: ?boolean,
-  'aria-checked'?: ?boolean,
+  'aria-checked'?: ?boolean | 'mixed',
   'aria-disabled'?: ?boolean,
   'aria-expanded'?: ?boolean,
   'aria-selected'?: ?boolean,
+
+  /**
+   * Reperesents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   *
+   * @platform android
+   */
+  'aria-labelledby'?: ?string,
+
   children?: ?Node,
 
   /**
@@ -169,6 +178,11 @@ export type TextProps = $ReadOnly<{|
   pressRetentionOffset?: ?PressRetentionOffset,
 
   /**
+   * Indicates to accessibility services to treat UI component like a specific role.
+   */
+  role?: ?Role,
+
+  /**
    * Lets the user select text.
    *
    * See https://reactnative.dev/docs/text#selectable
@@ -228,4 +242,11 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text#supperhighlighting
    */
   suppressHighlighting?: ?boolean,
+
+  /**
+   * Set line break strategy on iOS.
+   *
+   * See https://reactnative.dev/docs/text.html#linebreakstrategyios
+   */
+  lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
 |}>;

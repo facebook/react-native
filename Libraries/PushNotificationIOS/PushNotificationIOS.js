@@ -8,10 +8,12 @@
  * @flow
  */
 
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import Platform from '../Utilities/Platform';
 import NativePushNotificationManagerIOS from './NativePushNotificationManagerIOS';
 import invariant from 'invariant';
-import Platform from '../Utilities/Platform';
 
 type NativePushNotificationIOSEventDefinitions = {
   remoteNotificationReceived: [
@@ -44,7 +46,7 @@ const PushNotificationEmitter =
     Platform.OS !== 'ios' ? null : NativePushNotificationManagerIOS,
   );
 
-const _notifHandlers = new Map();
+const _notifHandlers = new Map<string, void | EventSubscription>();
 
 const DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
