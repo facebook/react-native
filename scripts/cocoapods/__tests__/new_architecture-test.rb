@@ -134,6 +134,7 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "React-Codegen" },
                 { :dependency_name => "RCTRequired" },
                 { :dependency_name => "RCTTypeSafety" },
+                { :dependency_name => "ReactCommon/turbomodule/bridging" },
                 { :dependency_name => "ReactCommon/turbomodule/core" }
         ])
     end
