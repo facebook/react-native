@@ -223,6 +223,27 @@ function getCommonTypeAnnotation<T>(
         defaultValue,
         types,
       );
+    case 'Int32':
+      return {
+        type: 'Int32TypeAnnotation',
+      };
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
+      };
+    case 'Float':
+      return {
+        type: 'FloatTypeAnnotation',
+      };
+    case 'TSBooleanKeyword':
+      return {
+        type: 'BooleanTypeAnnotation',
+      };
+    case 'Stringish':
+    case 'TSStringKeyword':
+      return {
+        type: 'StringTypeAnnotation',
+      };
     default:
       return undefined;
   }
@@ -282,30 +303,6 @@ function getTypeAnnotationForArray<T>(
       return {
         type: 'FloatTypeAnnotation',
       };
-    case 'Stringish':
-      return {
-        type: 'StringTypeAnnotation',
-      };
-    case 'Int32':
-      return {
-        type: 'Int32TypeAnnotation',
-      };
-    case 'Double':
-      return {
-        type: 'DoubleTypeAnnotation',
-      };
-    case 'Float':
-      return {
-        type: 'FloatTypeAnnotation',
-      };
-    case 'TSBooleanKeyword':
-      return {
-        type: 'BooleanTypeAnnotation',
-      };
-    case 'TSStringKeyword':
-      return {
-        type: 'StringTypeAnnotation',
-      };
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": ${type}`);
@@ -341,6 +338,29 @@ function getTypeAnnotation<T>(
 
   const common = getCommonTypeAnnotation(name, false, type, typeAnnotation, defaultValue, types, buildSchema);
   if (common) {
+    switch (common.type) {
+      case 'Int32TypeAnnotation':
+        common.default = ((defaultValue ? defaultValue : 0): number);
+        break;
+      case 'DoubleTypeAnnotation':
+        common.default = ((defaultValue ? defaultValue : 0): number);
+        break;
+      case 'FloatTypeAnnotation':
+        common.default = ((defaultValue === null
+          ? null
+          : defaultValue
+          ? defaultValue
+          : 0): number | null);
+          break;
+      case 'BooleanTypeAnnotation':
+        common.default = (defaultValue === null ? null : !!defaultValue);
+        break;
+      case 'StringTypeAnnotation':
+        common.default = ((defaultValue === undefined ? null : defaultValue):
+        | string
+        | null);
+        break;
+    }
     return common;
   }
 
@@ -352,44 +372,6 @@ function getTypeAnnotation<T>(
           type: 'ReservedPropTypeAnnotation',
           name: 'ColorPrimitive',
         },
-      };
-    case 'Int32':
-      return {
-        type: 'Int32TypeAnnotation',
-        default: ((defaultValue ? defaultValue : 0): number),
-      };
-    case 'Double':
-      return {
-        type: 'DoubleTypeAnnotation',
-        default: ((defaultValue ? defaultValue : 0): number),
-      };
-    case 'Float':
-      return {
-        type: 'FloatTypeAnnotation',
-        default: ((defaultValue === null
-          ? null
-          : defaultValue
-          ? defaultValue
-          : 0): number | null),
-      };
-    case 'TSBooleanKeyword':
-      return {
-        type: 'BooleanTypeAnnotation',
-        default: defaultValue === null ? null : !!defaultValue,
-      };
-    case 'TSStringKeyword':
-      return {
-        type: 'StringTypeAnnotation',
-        default: ((defaultValue === undefined ? null : defaultValue):
-          | string
-          | null),
-      };
-    case 'Stringish':
-      return {
-        type: 'StringTypeAnnotation',
-        default: ((defaultValue === undefined ? null : defaultValue):
-          | string
-          | null),
       };
     case 'TSNumberKeyword':
       throw new Error(
