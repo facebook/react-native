@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.summary                = "-"  # TODO
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
-  s.author                 = "Facebook, Inc. and its affiliates"
+  s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => "12.4" }
   s.source                 = source
   s.header_dir             = "ReactCommon" # Use global header_dir for all subspecs for use_frameworks! compatibility
