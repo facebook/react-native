@@ -164,8 +164,11 @@ function detectArrayType<T>(
 }
 
 function getCommonTypeAnnotation<T>(
+  name: string,
+  forArray: boolean,
   type: string,
   typeAnnotation: $FlowFixMe,
+  defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
@@ -212,6 +215,14 @@ function getCommonTypeAnnotation<T>(
         type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
+    case 'TSUnionType':
+      return getUnionOfLiterals(
+        name,
+        forArray,
+        typeAnnotation.types,
+        defaultValue,
+        types,
+      );
     default:
       return undefined;
   }
@@ -261,7 +272,7 @@ function getTypeAnnotationForArray<T>(
         extractedTypeAnnotation.typeName?.name ||
         extractedTypeAnnotation.type;
 
-  const common = getCommonTypeAnnotation(type, extractedTypeAnnotation, types, buildSchema);
+  const common = getCommonTypeAnnotation(name, true, type, extractedTypeAnnotation, defaultValue, types, buildSchema);
   if (common) {
     return common;
   }
@@ -295,14 +306,6 @@ function getTypeAnnotationForArray<T>(
       return {
         type: 'StringTypeAnnotation',
       };
-    case 'TSUnionType':
-      return getUnionOfLiterals(
-        name,
-        true,
-        extractedTypeAnnotation.types,
-        defaultValue,
-        types,
-      );
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": ${type}`);
@@ -336,7 +339,7 @@ function getTypeAnnotation<T>(
       ? typeAnnotation.typeName.name
       : typeAnnotation.type;
 
-  const common = getCommonTypeAnnotation(type, typeAnnotation, types, buildSchema);
+  const common = getCommonTypeAnnotation(name, false, type, typeAnnotation, defaultValue, types, buildSchema);
   if (common) {
     return common;
   }
@@ -391,14 +394,6 @@ function getTypeAnnotation<T>(
     case 'TSNumberKeyword':
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
-      );
-    case 'TSUnionType':
-      return getUnionOfLiterals(
-        name,
-        false,
-        typeAnnotation.types,
-        defaultValue,
-        types,
       );
     default:
       (type: empty);
