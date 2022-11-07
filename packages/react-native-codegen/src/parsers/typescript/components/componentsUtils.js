@@ -163,6 +163,34 @@ function detectArrayType<T>(
   return null;
 }
 
+function getCommonTypeAnnotation<T>(
+  type: string,
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+): $FlowFixMe {
+  switch (type) {
+    case 'TSTypeLiteral':
+    case 'TSInterfaceDeclaration': {
+      const rawProperties =
+        type === 'TSInterfaceDeclaration'
+          ? [typeAnnotation]
+          : typeAnnotation.members;
+      const flattenedProperties = flattenProperties(rawProperties, types);
+      const properties = flattenedProperties
+        .map(prop => buildSchema(prop, types))
+        .filter(Boolean);
+
+      return {
+        type: 'ObjectTypeAnnotation',
+        properties,
+      };
+    }
+    default:
+      return undefined;
+  }
+}
+
 function getTypeAnnotationForArray<T>(
   name: string,
   typeAnnotation: $FlowFixMe,
@@ -207,23 +235,12 @@ function getTypeAnnotationForArray<T>(
         extractedTypeAnnotation.typeName?.name ||
         extractedTypeAnnotation.type;
 
+  const common = getCommonTypeAnnotation(type, extractedTypeAnnotation, types, buildSchema);
+  if (common) {
+    return common;
+  }
+
   switch (type) {
-    case 'TSTypeLiteral':
-    case 'TSInterfaceDeclaration': {
-      const rawProperties =
-        type === 'TSInterfaceDeclaration'
-          ? [extractedTypeAnnotation]
-          : extractedTypeAnnotation.members;
-      if (rawProperties === undefined) {
-        throw new Error(type);
-      }
-      return {
-        type: 'ObjectTypeAnnotation',
-        properties: flattenProperties(rawProperties, types)
-          .map(prop => buildSchema(prop, types))
-          .filter(Boolean),
-      };
-    }
     case 'TSNumberKeyword':
       return {
         type: 'FloatTypeAnnotation',
@@ -319,23 +336,12 @@ function getTypeAnnotation<T>(
       ? typeAnnotation.typeName.name
       : typeAnnotation.type;
 
-  switch (type) {
-    case 'TSTypeLiteral':
-    case 'TSInterfaceDeclaration': {
-      const rawProperties =
-        type === 'TSInterfaceDeclaration'
-          ? [typeAnnotation]
-          : typeAnnotation.members;
-      const flattenedProperties = flattenProperties(rawProperties, types);
-      const properties = flattenedProperties
-        .map(prop => buildSchema(prop, types))
-        .filter(Boolean);
+  const common = getCommonTypeAnnotation(type, typeAnnotation, types, buildSchema);
+  if (common) {
+    return common;
+  }
 
-      return {
-        type: 'ObjectTypeAnnotation',
-        properties,
-      };
-    }
+  switch (type) {
     case 'ImageSource':
       return {
         type: 'ReservedPropTypeAnnotation',
