@@ -80,7 +80,7 @@ class ViewabilityHelper {
   _timers: Set<number> = new Set();
   _viewableIndices: Array<number> = [];
   _viewableItems: Map<string, ViewToken> = new Map();
-  _parentWasViewable: boolean = undefined;
+  _parentWasViewable: ?boolean = undefined;
 
   constructor(
     config: ViewabilityConfig = {viewAreaCoveragePercentThreshold: 0},
@@ -103,7 +103,7 @@ class ViewabilityHelper {
    */
   computeViewableItems(
     props: FrameMetricProps,
-    isParentViewable: boolean | undefined,
+    isParentViewable: ?boolean,
     scrollOffset: number,
     viewportSize: number,
     getFrameMetrics: (
@@ -182,7 +182,7 @@ class ViewabilityHelper {
    */
   onUpdate(
     props: FrameMetricProps,
-    isParentViewable: boolean | undefined,
+    isParentViewable: ?boolean,
     scrollOffset: number,
     viewportSize: number,
     getFrameMetrics: (
@@ -331,7 +331,7 @@ class ViewabilityHelper {
 
 function _isViewable(
   viewAreaMode: boolean,
-  isParentViewable: boolean | undefined,
+  isParentViewable: ?boolean,
   viewablePercentThreshold: number,
   start: number,
   end: number,

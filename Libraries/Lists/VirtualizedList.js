@@ -776,7 +776,7 @@ export default class VirtualizedList extends StateSafePureComponent<
     });
   };
 
-  _isNestedWithSameOrientation(props: FrameMetricProps = this.props): boolean {
+  _isNestedWithSameOrientation(props: Props = this.props): boolean {
     const nestedContext = this.context;
     return !!(
       nestedContext &&
@@ -1849,7 +1849,7 @@ export default class VirtualizedList extends StateSafePureComponent<
      * false - nested in parent list and not visible
      * undefined - not nested in parent list
      */
-    const isParentViewable: boolean | undefined = !this._isNested()
+    const isParentViewable: ?boolean = !this._isNested()
       ? undefined
       : !!this._getOutermostParentListRef()._viewableItems?.find(
           item => item.key === this.context.cellKey,
