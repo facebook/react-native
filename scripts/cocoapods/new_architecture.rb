@@ -87,6 +87,7 @@ class NewArchitectureHelper
 
             spec.dependency "RCTRequired"
             spec.dependency "RCTTypeSafety"
+            spec.dependency "ReactCommon/turbomodule/bridging"
             spec.dependency "ReactCommon/turbomodule/core"
         end
     end

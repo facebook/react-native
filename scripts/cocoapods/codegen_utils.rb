@@ -98,13 +98,14 @@ class CodegenUtils
             ].join(' ')
           },
           'dependencies': {
-            "FBReactNativeSpec":  [version],
-            "React-jsiexecutor":  [version],
+            "FBReactNativeSpec": [version],
+            "React-jsiexecutor": [version],
             "RCT-Folly": [folly_version],
             "RCTRequired": [version],
             "RCTTypeSafety": [version],
             "React-Core": [version],
             "React-jsi": [version],
+            "ReactCommon/turbomodule/bridging": [version],
             "ReactCommon/turbomodule/core": [version]
           }
         }
