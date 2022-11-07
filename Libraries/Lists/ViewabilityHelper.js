@@ -103,7 +103,7 @@ class ViewabilityHelper {
   computeViewableItems(
     props: FrameMetricProps,
     scrollOffset: number,
-    viewportHeight: number,
+    viewportSize: number,
     getFrameMetrics: (
       index: number,
       props: FrameMetricProps,
@@ -150,17 +150,17 @@ class ViewabilityHelper {
       if (!metrics) {
         continue;
       }
-      const top = metrics.offset - scrollOffset;
-      const bottom = top + metrics.length;
-      if (top < viewportHeight && bottom > 0) {
+      const start = metrics.offset - scrollOffset;
+      const end = start + metrics.length;
+      if (start < viewportSize && end > 0) {
         firstVisible = idx;
         if (
           _isViewable(
             viewAreaMode,
             viewablePercentThreshold,
-            top,
-            bottom,
-            viewportHeight,
+            start,
+            end,
+            viewportSize,
             metrics.length,
           )
         ) {
@@ -180,7 +180,7 @@ class ViewabilityHelper {
   onUpdate(
     props: FrameMetricProps,
     scrollOffset: number,
-    viewportHeight: number,
+    viewportSize: number,
     getFrameMetrics: (
       index: number,
       props: FrameMetricProps,
@@ -219,7 +219,7 @@ class ViewabilityHelper {
       viewableIndices = this.computeViewableItems(
         props,
         scrollOffset,
-        viewportHeight,
+        viewportSize,
         getFrameMetrics,
         renderRange,
       );
@@ -325,36 +325,36 @@ class ViewabilityHelper {
 function _isViewable(
   viewAreaMode: boolean,
   viewablePercentThreshold: number,
-  top: number,
-  bottom: number,
-  viewportHeight: number,
+  start: number,
+  end: number,
+  viewportSize: number,
   itemLength: number,
 ): boolean {
-  if (_isEntirelyVisible(top, bottom, viewportHeight)) {
+  } else if (_isEntirelyVisible(start, end, viewportSize)) {
     return true;
   } else {
-    const pixels = _getPixelsVisible(top, bottom, viewportHeight);
+    const pixels = _getPixelsVisible(start, end, viewportSize);
     const percent =
-      100 * (viewAreaMode ? pixels / viewportHeight : pixels / itemLength);
+      100 * (viewAreaMode ? pixels / viewportSize : pixels / itemLength);
     return percent >= viewablePercentThreshold;
   }
 }
 
 function _getPixelsVisible(
-  top: number,
-  bottom: number,
-  viewportHeight: number,
+  start: number,
+  end: number,
+  viewportSize: number,
 ): number {
-  const visibleHeight = Math.min(bottom, viewportHeight) - Math.max(top, 0);
-  return Math.max(0, visibleHeight);
+  const visibleSize = Math.min(end, viewportSize) - Math.max(start, 0);
+  return Math.max(0, visibleSize);
 }
 
 function _isEntirelyVisible(
-  top: number,
-  bottom: number,
-  viewportHeight: number,
+  start: number,
+  end: number,
+  viewportSize: number,
 ): boolean {
-  return top >= 0 && bottom <= viewportHeight && bottom > top;
+  return start >= 0 && end <= viewportSize && end > start;
 }
 
 module.exports = ViewabilityHelper;
