@@ -78,7 +78,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
   @ReactMethod
   @DoNotStrip
-  public void optionalMethod(ReadableMap options, Callback callback, ReadableArray extras) {}
+  public void optionalMethod(ReadableMap options, Callback callback, @Nullable ReadableArray extras) {}
 
   @ReactMethod
   @DoNotStrip
@@ -379,7 +379,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
   @ReactMethod
   @DoNotStrip
-  public abstract void getValueWithOptionalArg(ReadableMap parameter, Promise promise);
+  public abstract void getValueWithOptionalArg(@Nullable ReadableMap parameter, Promise promise);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
