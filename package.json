@@ -98,6 +98,7 @@
     "test-e2e-local": "node ./scripts/test-e2e-local.js",
     "test-e2e-local-clean": "node ./scripts/test-e2e-local-clean.js",
     "test-ios": "./scripts/objc-test.sh test",
+    "test-scripts": "npx bats --recursive .",
     "test-typescript": "dtslint types"
   },
   "workspaces": [

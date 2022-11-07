@@ -6,6 +6,7 @@ version: 2.1
 
 orbs:
   win: circleci/windows@2.4.0
+  bats: circleci/bats@1.0.0
 
 # -------------------------
 #        REFERENCES
@@ -1726,6 +1727,20 @@ workflows:
 
       # Gather coverage
       - js_coverage
+
+      # Test shell scripts
+      - bats/run:
+          setup-steps:
+            - run:
+                name: Install dependencies
+                command: |
+                  sudo apt-get -y install jq jo
+
+                  # Install bats-mock as a git submodule in the same path that
+                  # the npm package would be installed
+                  mkdir -p node_modules
+                  git submodule add -f https://github.com/jasonkarns/bats-mock node_modules/bats-mock
+          path: --recursive .
 
   nightly:
     unless: << pipeline.parameters.run_package_release_workflow_only >>

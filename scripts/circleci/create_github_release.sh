@@ -96,7 +96,7 @@ create_release_data () {
     echo "$release_data"
     return 0
   else
-    echo "Could not format release data."
+    echo "Could not format release data"
     return 1
   fi
 }

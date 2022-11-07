@@ -21,6 +21,8 @@
     "@types/react": "^18.0.18",
     "@typescript-eslint/parser": "^5.30.5",
     "async": "^3.2.2",
+    "bats": "^1.8.2",
+    "bats-mock": "^1.0.1",
     "clang-format": "^1.8.0",
     "connect": "^3.6.5",
     "coveralls": "^3.1.1",

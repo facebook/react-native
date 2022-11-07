@@ -3029,6 +3029,16 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
+bats-mock@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/bats-mock/-/bats-mock-1.0.1.tgz#f86d7d1fce3e4615382f63de9af5ffdfe74df5d5"
+  integrity sha512-/OOoA9qVw6XlDqTJzHCfYVmE/dMqRUE5Pysps8459Gu4NcNCco/FbjY+FUpqJYVqFRJQx6LBDvMhFKenMa7WBA==
+
+bats@^1.8.2:
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/bats/-/bats-1.8.2.tgz#bdbaa7690a18f04291b35144a8ce5435cffb8dc5"
+  integrity sha512-KLUIaPYuIMjqui8MbZmK84+CiwhjFVFAhFy5PXP0prLbkovc5faVzc+Qaowbz76F97zP573JrF31ODFAH7vzhg==
+
 bcrypt-pbkdf@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.2.tgz#a4301d389b6a43f9b67ff3ca11a3f6637e360e9e"
