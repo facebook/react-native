@@ -64,14 +64,14 @@ Pod::Spec.new do |s|
       sss.dependency "React-jsidynamic", version
     end
 
-    s.subspec "react_debug_core" do |sss|
-        sss.source_files = "react/debug/*.{cpp,h}"
-    end
-
     ss.subspec "samples" do |sss|
       sss.source_files = "react/nativemodule/samples/ReactCommon/**/*.{cpp,h}",
-                         "react/nativemodule/samples/platform/ios/**/*.{mm,cpp,h}"
+      "react/nativemodule/samples/platform/ios/**/*.{mm,cpp,h}"
       sss.dependency "ReactCommon/turbomodule/core", version
     end
+  end
+
+  s.subspec "react_debug_core" do |sss|
+    sss.source_files = "react/debug/*.{cpp,h}"
   end
 end
