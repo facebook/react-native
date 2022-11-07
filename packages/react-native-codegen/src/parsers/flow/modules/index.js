@@ -51,6 +51,7 @@ const {
   emitStringish,
   emitMixedTypeAnnotation,
   typeAliasResolution,
+  translateFunctionTypeAnnotation,
 } = require('../../parsers-primitives');
 
 const {
@@ -355,6 +356,8 @@ function translateTypeAnnotation(
           aliasMap,
           tryParse,
           cxxOnly,
+          translateTypeAnnotation,
+          language,
         );
       return emitFunction(nullable, translateFunctionTypeAnnotationValue);
     }
@@ -383,98 +386,6 @@ function translateTypeAnnotation(
       );
     }
   }
-}
-
-function translateFunctionTypeAnnotation(
-  hasteModuleName: string,
-  // TODO(T71778680): This is a FunctionTypeAnnotation. Type this.
-  flowFunctionTypeAnnotation: $FlowFixMe,
-  types: TypeDeclarationMap,
-  aliasMap: {...NativeModuleAliasMap},
-  tryParse: ParserErrorCapturer,
-  cxxOnly: boolean,
-): NativeModuleFunctionTypeAnnotation {
-  type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
-  const params: Array<Param> = [];
-
-  for (const flowParam of (flowFunctionTypeAnnotation.params: $ReadOnlyArray<$FlowFixMe>)) {
-    const parsedParam = tryParse(() => {
-      if (flowParam.name == null) {
-        throw new UnnamedFunctionParamParserError(
-          flowParam,
-          hasteModuleName,
-          language,
-        );
-      }
-
-      const paramName = flowParam.name.name;
-      const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
-        unwrapNullable(
-          translateTypeAnnotation(
-            hasteModuleName,
-            flowParam.typeAnnotation,
-            types,
-            aliasMap,
-            tryParse,
-            cxxOnly,
-          ),
-        );
-
-      if (
-        paramTypeAnnotation.type === 'VoidTypeAnnotation' ||
-        paramTypeAnnotation.type === 'PromiseTypeAnnotation'
-      ) {
-        return throwIfUnsupportedFunctionParamTypeAnnotationParserError(
-          hasteModuleName,
-          flowParam.typeAnnotation,
-          paramName,
-          paramTypeAnnotation.type,
-        );
-      }
-
-      return {
-        name: flowParam.name.name,
-        optional: flowParam.optional,
-        typeAnnotation: wrapNullable(
-          isParamTypeAnnotationNullable,
-          paramTypeAnnotation,
-        ),
-      };
-    });
-
-    if (parsedParam != null) {
-      params.push(parsedParam);
-    }
-  }
-
-  const [returnTypeAnnotation, isReturnTypeAnnotationNullable] = unwrapNullable(
-    translateTypeAnnotation(
-      hasteModuleName,
-      flowFunctionTypeAnnotation.returnType,
-      types,
-      aliasMap,
-      tryParse,
-      cxxOnly,
-    ),
-  );
-
-  throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
-    hasteModuleName,
-    flowFunctionTypeAnnotation,
-    'FunctionTypeAnnotation',
-    language,
-    cxxOnly,
-    returnTypeAnnotation.type,
-  );
-
-  return {
-    type: 'FunctionTypeAnnotation',
-    returnTypeAnnotation: wrapNullable(
-      isReturnTypeAnnotationNullable,
-      returnTypeAnnotation,
-    ),
-    params,
-  };
 }
 
 function buildPropertySchema(
@@ -516,6 +427,8 @@ function buildPropertySchema(
         aliasMap,
         tryParse,
         cxxOnly,
+        translateTypeAnnotation,
+        language,
       ),
     ),
   };

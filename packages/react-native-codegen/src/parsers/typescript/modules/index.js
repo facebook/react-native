@@ -16,7 +16,6 @@ import type {
   NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
-  NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleSchema,
   Nullable,
@@ -26,10 +25,7 @@ import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 const {nullGuard} = require('../../parsers-utils');
 
-const {
-  throwIfMoreThanOneModuleRegistryCalls,
-  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
-} = require('../../error-utils');
+const {throwIfMoreThanOneModuleRegistryCalls} = require('../../error-utils');
 const {visit, isModuleRegistryCall} = require('../../utils');
 const {resolveTypeAnnotation, getTypes} = require('../utils.js');
 const {
@@ -54,9 +50,9 @@ const {
   emitStringish,
   emitMixedTypeAnnotation,
   typeAliasResolution,
+  translateFunctionTypeAnnotation,
 } = require('../../parsers-primitives');
 const {
-  UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
@@ -76,7 +72,6 @@ const {
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
-  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
 } = require('../../error-utils');
 
 const {TypeScriptParser} = require('../parser');
@@ -367,6 +362,8 @@ function translateTypeAnnotation(
           aliasMap,
           tryParse,
           cxxOnly,
+          translateTypeAnnotation,
+          language,
         );
 
       return emitFunction(nullable, translateFunctionTypeAnnotationValue);
@@ -396,98 +393,6 @@ function translateTypeAnnotation(
       );
     }
   }
-}
-
-function translateFunctionTypeAnnotation(
-  hasteModuleName: string,
-  // TODO(T108222691): Use flow-types for @babel/parser
-  typescriptFunctionTypeAnnotation: $FlowFixMe,
-  types: TypeDeclarationMap,
-  aliasMap: {...NativeModuleAliasMap},
-  tryParse: ParserErrorCapturer,
-  cxxOnly: boolean,
-): NativeModuleFunctionTypeAnnotation {
-  type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
-  const params: Array<Param> = [];
-
-  for (const typeScriptParam of (typescriptFunctionTypeAnnotation.parameters: $ReadOnlyArray<$FlowFixMe>)) {
-    const parsedParam = tryParse(() => {
-      if (typeScriptParam.typeAnnotation == null) {
-        throw new UnnamedFunctionParamParserError(
-          typeScriptParam,
-          hasteModuleName,
-          language,
-        );
-      }
-
-      const paramName = typeScriptParam.name;
-      const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
-        unwrapNullable(
-          translateTypeAnnotation(
-            hasteModuleName,
-            typeScriptParam.typeAnnotation.typeAnnotation,
-            types,
-            aliasMap,
-            tryParse,
-            cxxOnly,
-          ),
-        );
-
-      if (
-        paramTypeAnnotation.type === 'VoidTypeAnnotation' ||
-        paramTypeAnnotation.type === 'PromiseTypeAnnotation'
-      ) {
-        return throwIfUnsupportedFunctionParamTypeAnnotationParserError(
-          hasteModuleName,
-          typeScriptParam.typeAnnotation,
-          paramName,
-          paramTypeAnnotation.type,
-        );
-      }
-
-      return {
-        name: typeScriptParam.name,
-        optional: Boolean(typeScriptParam.optional),
-        typeAnnotation: wrapNullable(
-          isParamTypeAnnotationNullable,
-          paramTypeAnnotation,
-        ),
-      };
-    });
-
-    if (parsedParam != null) {
-      params.push(parsedParam);
-    }
-  }
-
-  const [returnTypeAnnotation, isReturnTypeAnnotationNullable] = unwrapNullable(
-    translateTypeAnnotation(
-      hasteModuleName,
-      typescriptFunctionTypeAnnotation.typeAnnotation.typeAnnotation,
-      types,
-      aliasMap,
-      tryParse,
-      cxxOnly,
-    ),
-  );
-
-  throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
-    hasteModuleName,
-    typescriptFunctionTypeAnnotation,
-    'FunctionTypeAnnotation',
-    language,
-    cxxOnly,
-    returnTypeAnnotation.type,
-  );
-
-  return {
-    type: 'FunctionTypeAnnotation',
-    returnTypeAnnotation: wrapNullable(
-      isReturnTypeAnnotationNullable,
-      returnTypeAnnotation,
-    ),
-    params,
-  };
 }
 
 function buildPropertySchema(
@@ -527,6 +432,8 @@ function buildPropertySchema(
         aliasMap,
         tryParse,
         cxxOnly,
+        translateTypeAnnotation,
+        language,
       ),
     ),
   };

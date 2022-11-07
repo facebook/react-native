@@ -28,11 +28,25 @@ import type {
   StringTypeAnnotation,
   VoidTypeAnnotation,
   NativeModuleFloatTypeAnnotation,
+  NativeModuleParamTypeAnnotation,
+  NamedShape,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
-import type {TypeAliasResolutionStatus} from './utils';
+import type {
+  ParserErrorCapturer,
+  TypeAliasResolutionStatus,
+  TypeDeclarationMap,
+} from './utils';
+
+const {UnnamedFunctionParamParserError} = require('./errors');
 
 const {
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
+} = require('./error-utils');
+
+const {
+  unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
 } = require('./parsers-commons');
@@ -190,6 +204,137 @@ function emitFloat(
   });
 }
 
+function getTypeAnnotationParameters(
+  typeAnnotation: $FlowFixMe,
+  language: ParserType,
+): $ReadOnlyArray<$FlowFixMe> {
+  return language === 'Flow'
+    ? typeAnnotation.params
+    : typeAnnotation.parameters;
+}
+
+function getFunctionNameFromParameter(
+  param: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
+  language: ParserType,
+) {
+  return language === 'Flow' ? param.name : param.typeAnnotation;
+}
+
+function getParameterName(param: $FlowFixMe, language: ParserType): string {
+  return language === 'Flow' ? param.name.name : param.name;
+}
+
+function getParameterTypeAnnotation(param: $FlowFixMe, language: ParserType) {
+  return language === 'Flow'
+    ? param.typeAnnotation
+    : param.typeAnnotation.typeAnnotation;
+}
+
+function getTypeAnnotationReturnType(
+  typeAnnotation: $FlowFixMe,
+  language: ParserType,
+) {
+  return language === 'Flow'
+    ? typeAnnotation.returnType
+    : typeAnnotation.typeAnnotation.typeAnnotation;
+}
+
+function translateFunctionTypeAnnotation(
+  hasteModuleName: string,
+  // TODO(T108222691): Use flow-types for @babel/parser
+  // TODO(T71778680): This is a FunctionTypeAnnotation. Type this.
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  translateTypeAnnotation: $FlowFixMe,
+  language: ParserType,
+): NativeModuleFunctionTypeAnnotation {
+  type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+  const params: Array<Param> = [];
+
+  for (const param of getTypeAnnotationParameters(typeAnnotation, language)) {
+    const parsedParam = tryParse(() => {
+      if (getFunctionNameFromParameter(param, language) == null) {
+        throw new UnnamedFunctionParamParserError(
+          param,
+          hasteModuleName,
+          language,
+        );
+      }
+
+      const paramName = getParameterName(param, language);
+
+      const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
+        unwrapNullable(
+          translateTypeAnnotation(
+            hasteModuleName,
+            getParameterTypeAnnotation(param, language),
+            types,
+            aliasMap,
+            tryParse,
+            cxxOnly,
+          ),
+        );
+
+      if (
+        paramTypeAnnotation.type === 'VoidTypeAnnotation' ||
+        paramTypeAnnotation.type === 'PromiseTypeAnnotation'
+      ) {
+        return throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+          hasteModuleName,
+          param.typeAnnotation,
+          paramName,
+          paramTypeAnnotation.type,
+        );
+      }
+
+      return {
+        name: paramName,
+        optional: Boolean(param.optional),
+        typeAnnotation: wrapNullable(
+          isParamTypeAnnotationNullable,
+          paramTypeAnnotation,
+        ),
+      };
+    });
+
+    if (parsedParam != null) {
+      params.push(parsedParam);
+    }
+  }
+
+  const [returnTypeAnnotation, isReturnTypeAnnotationNullable] = unwrapNullable(
+    translateTypeAnnotation(
+      hasteModuleName,
+      getTypeAnnotationReturnType(typeAnnotation, language),
+      types,
+      aliasMap,
+      tryParse,
+      cxxOnly,
+    ),
+  );
+
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
+    hasteModuleName,
+    typeAnnotation,
+    'FunctionTypeAnnotation',
+    language,
+    cxxOnly,
+    returnTypeAnnotation.type,
+  );
+
+  return {
+    type: 'FunctionTypeAnnotation',
+    returnTypeAnnotation: wrapNullable(
+      isReturnTypeAnnotationNullable,
+      returnTypeAnnotation,
+    ),
+    params,
+  };
+}
+
 module.exports = {
   emitBoolean,
   emitDouble,
@@ -205,4 +350,5 @@ module.exports = {
   emitStringish,
   emitMixedTypeAnnotation,
   typeAliasResolution,
+  translateFunctionTypeAnnotation,
 };
