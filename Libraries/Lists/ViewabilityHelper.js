@@ -80,6 +80,7 @@ class ViewabilityHelper {
   _timers: Set<number> = new Set();
   _viewableIndices: Array<number> = [];
   _viewableItems: Map<string, ViewToken> = new Map();
+  _parentWasViewable: boolean = undefined;
 
   constructor(
     config: ViewabilityConfig = {viewAreaCoveragePercentThreshold: 0},
@@ -102,6 +103,7 @@ class ViewabilityHelper {
    */
   computeViewableItems(
     props: FrameMetricProps,
+    isParentViewable: boolean | undefined,
     scrollOffset: number,
     viewportSize: number,
     getFrameMetrics: (
@@ -157,6 +159,7 @@ class ViewabilityHelper {
         if (
           _isViewable(
             viewAreaMode,
+            isParentViewable,
             viewablePercentThreshold,
             start,
             end,
@@ -179,6 +182,7 @@ class ViewabilityHelper {
    */
   onUpdate(
     props: FrameMetricProps,
+    isParentViewable: boolean | undefined,
     scrollOffset: number,
     viewportSize: number,
     getFrameMetrics: (
@@ -218,6 +222,7 @@ class ViewabilityHelper {
     if (itemCount) {
       viewableIndices = this.computeViewableItems(
         props,
+        isParentViewable,
         scrollOffset,
         viewportSize,
         getFrameMetrics,
@@ -225,6 +230,7 @@ class ViewabilityHelper {
       );
     }
     if (
+      isParentViewable === this._parentWasViewable &&
       this._viewableIndices.length === viewableIndices.length &&
       this._viewableIndices.every((v, ii) => v === viewableIndices[ii])
     ) {
@@ -258,6 +264,7 @@ class ViewabilityHelper {
         createViewToken,
       );
     }
+    this._parentWasViewable = isParentViewable;
   }
 
   /**
@@ -324,12 +331,18 @@ class ViewabilityHelper {
 
 function _isViewable(
   viewAreaMode: boolean,
+  isParentViewable: boolean | undefined,
   viewablePercentThreshold: number,
   start: number,
   end: number,
   viewportSize: number,
   itemLength: number,
 ): boolean {
+  if (isParentViewable === false) {
+    // If the parent is not viewable, then none of the children are.
+    // Otherwise, we'll want to do the calculations for all children below
+    // If undefined, we know there is no parent list
+    return false;
   } else if (_isEntirelyVisible(start, end, viewportSize)) {
     return true;
   } else {

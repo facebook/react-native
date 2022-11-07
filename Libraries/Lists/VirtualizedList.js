@@ -55,13 +55,15 @@ const ON_END_REACHED_EPSILON = 0.001;
 let _usedIndexForKey = false;
 let _keylessItemComponentName: string = '';
 
+type ViewabilityUpdates = {
+  changed: Array<ViewToken>,
+  viewableItems: Array<ViewToken>,
+  ...
+};
+
 type ViewabilityHelperCallbackTuple = {
   viewabilityHelper: ViewabilityHelper,
-  onViewableItemsChanged: (info: {
-    viewableItems: Array<ViewToken>,
-    changed: Array<ViewToken>,
-    ...
-  }) => void,
+  onViewableItemsChanged: (info: ViewabilityUpdates) => void,
   ...
 };
 
@@ -152,6 +154,7 @@ export default class VirtualizedList extends StateSafePureComponent<
   State,
 > {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
+  _viewableItems: Array<ViewToken> = [];
 
   // scrollToEnd may be janky without getItemLayout prop
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
@@ -378,7 +381,7 @@ export default class VirtualizedList extends StateSafePureComponent<
 
   // $FlowFixMe[missing-local-annot]
   _getOutermostParentListRef = () => {
-    if (this._isNestedWithSameOrientation()) {
+    if (this._isNested()) {
       return this.context.getOutermostParentListRef();
     } else {
       return this;
@@ -431,7 +434,9 @@ export default class VirtualizedList extends StateSafePureComponent<
       this._viewabilityTuples = this.props.viewabilityConfigCallbackPairs.map(
         pair => ({
           viewabilityHelper: new ViewabilityHelper(pair.viewabilityConfig),
-          onViewableItemsChanged: pair.onViewableItemsChanged,
+          onViewableItemsChanged: this.storeChildViewableItems(
+            pair.onViewableItemsChanged,
+          ),
         }),
       );
     } else {
@@ -439,7 +444,9 @@ export default class VirtualizedList extends StateSafePureComponent<
       if (onViewableItemsChanged) {
         this._viewabilityTuples.push({
           viewabilityHelper: new ViewabilityHelper(viewabilityConfig),
-          onViewableItemsChanged: onViewableItemsChanged,
+          onViewableItemsChanged: this.storeChildViewableItems(
+            onViewableItemsChanged,
+          ),
         });
       }
     }
@@ -454,6 +461,16 @@ export default class VirtualizedList extends StateSafePureComponent<
     this.state = {
       cellsAroundViewport: initialRenderRegion,
       renderMask: VirtualizedList._createRenderMask(props, initialRenderRegion),
+    };
+  }
+
+  // Proxy to store child onViewableItemsChanged callback values in-memory
+  storeChildViewableItems(
+    onViewableItemsChanged: ?(info: ViewabilityUpdates) => void,
+  ): (info: ViewabilityUpdates) => void {
+    return (info: ViewabilityUpdates) => {
+      this._viewableItems = info.viewableItems;
+      onViewableItemsChanged?.(info);
     };
   }
 
@@ -759,13 +776,15 @@ export default class VirtualizedList extends StateSafePureComponent<
     });
   };
 
-  _isNestedWithSameOrientation(): boolean {
+  _isNestedWithSameOrientation(props: FrameMetricProps = this.props): boolean {
     const nestedContext = this.context;
     return !!(
       nestedContext &&
-      !!nestedContext.horizontal === horizontalOrDefault(this.props.horizontal)
+      !!nestedContext.horizontal === horizontalOrDefault(props.horizontal)
     );
   }
+
+  _isNested = (): boolean => !!this.context;
 
   _getSpacerKey = (isVertical: boolean): string =>
     isVertical ? 'height' : 'width';
@@ -1824,9 +1843,21 @@ export default class VirtualizedList extends StateSafePureComponent<
     props: FrameMetricProps,
     cellsAroundViewport: {first: number, last: number},
   ) {
+    /**
+     * This is used to determine whether a cell is visible within the parent list
+     * true - nested in parent list and visible
+     * false - nested in parent list and not visible
+     * undefined - not nested in parent list
+     */
+    const isParentViewable: boolean | undefined = !this._isNested()
+      ? undefined
+      : !!this._getOutermostParentListRef()._viewableItems?.find(
+          item => item.key === this.context.cellKey,
+        );
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.onUpdate(
         props,
+        isParentViewable,
         this._scrollMetrics.offset,
         this._scrollMetrics.visibleLength,
         this._getFrameMetrics,
