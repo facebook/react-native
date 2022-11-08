@@ -191,7 +191,7 @@ type ActiveCallback = (
 
 type PassiveCallback = (event: PressEvent, gestureState: GestureState) => mixed;
 
-type PanHandlers = {|
+export type PanHandlers = {|
   onMoveShouldSetResponder: (event: PressEvent) => boolean,
   onMoveShouldSetResponderCapture: (event: PressEvent) => boolean,
   onResponderEnd: (event: PressEvent) => void,
