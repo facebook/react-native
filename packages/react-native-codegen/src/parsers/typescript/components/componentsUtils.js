@@ -166,6 +166,22 @@ function detectArrayType<T>(
   return null;
 }
 
+function buildObjectType<T>(
+  rawProperties: Array<$FlowFixMe>,
+  types: TypeDeclarationMap,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+): $FlowFixMe {
+  const flattenedProperties = flattenProperties(rawProperties, types);
+  const properties = flattenedProperties
+    .map(prop => buildSchema(prop, types))
+    .filter(Boolean);
+
+  return {
+    type: 'ObjectTypeAnnotation',
+    properties,
+  };
+}
+
 function getCommonTypeAnnotation<T>(
   name: string,
   forArray: boolean,
@@ -177,24 +193,11 @@ function getCommonTypeAnnotation<T>(
 ): $FlowFixMe {
   switch (type) {
     case 'TSTypeLiteral':
+      return buildObjectType(typeAnnotation.members, types, buildSchema);
     case 'TSInterfaceDeclaration':
-    case 'TSIntersectionType': {
-      const rawProperties =
-        type === 'TSInterfaceDeclaration'
-          ? [typeAnnotation]
-          : type === 'TSIntersectionType'
-          ? flattenIntersectionType(typeAnnotation, types)
-          : typeAnnotation.members;
-      const flattenedProperties = flattenProperties(rawProperties, types);
-      const properties = flattenedProperties
-        .map(prop => buildSchema(prop, types))
-        .filter(Boolean);
-
-      return {
-        type: 'ObjectTypeAnnotation',
-        properties,
-      };
-    }
+      return buildObjectType([typeAnnotation], types, buildSchema);
+    case 'TSIntersectionType':
+      return buildObjectType(flattenIntersectionType(typeAnnotation, types), types, buildSchema);
     case 'ImageSource':
       return {
         type: 'ReservedPropTypeAnnotation',
