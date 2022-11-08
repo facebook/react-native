@@ -1175,6 +1175,7 @@ rn_apple_library(
         ],
     ),
     autoglob = False,
+    extension_api_only = True,
     frameworks = [
         "Foundation",
     ],
