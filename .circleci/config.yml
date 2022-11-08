@@ -132,10 +132,7 @@ commands:
         type: string
     steps:
       - restore_cache:
-            keys:
-              - << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-{{ .Revision }}
-              - << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-
-              - << parameters.checkout_base_cache_key >>-{{ arch }}-
+          key: << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-{{ .Revision }}
       - checkout
       - save_cache:
           key: << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-{{ .Revision }}
