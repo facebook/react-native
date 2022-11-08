@@ -31,7 +31,15 @@ exports[`TouchableOpacity renders correctly 1`] = `
   onStartShouldSetResponder={[Function]}
   style={
     Object {
-      "opacity": 1,
+      "0": Array [
+        undefined,
+        Object {
+          "opacity": 1,
+        },
+      ],
+      "1": Object {
+        "opacity": 1,
+      },
     }
   }
 >
@@ -72,7 +80,15 @@ exports[`TouchableOpacity renders in disabled state when a disabled prop is pass
   onStartShouldSetResponder={[Function]}
   style={
     Object {
-      "opacity": 1,
+      "0": Array [
+        undefined,
+        Object {
+          "opacity": 1,
+        },
+      ],
+      "1": Object {
+        "opacity": 1,
+      },
     }
   }
 >
@@ -113,7 +129,15 @@ exports[`TouchableOpacity renders in disabled state when a key disabled in acces
   onStartShouldSetResponder={[Function]}
   style={
     Object {
-      "opacity": 1,
+      "0": Array [
+        undefined,
+        Object {
+          "opacity": 1,
+        },
+      ],
+      "1": Object {
+        "opacity": 1,
+      },
     }
   }
 >
