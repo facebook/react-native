@@ -197,7 +197,11 @@ function getCommonTypeAnnotation<T>(
     case 'TSInterfaceDeclaration':
       return buildObjectType([typeAnnotation], types, buildSchema);
     case 'TSIntersectionType':
-      return buildObjectType(flattenIntersectionType(typeAnnotation, types), types, buildSchema);
+      return buildObjectType(
+        flattenIntersectionType(typeAnnotation, types),
+        types,
+        buildSchema,
+      );
     case 'ImageSource':
       return {
         type: 'ReservedPropTypeAnnotation',
@@ -328,7 +332,7 @@ function getTypeAnnotationForArray<T>(
 
 function setDefaultValue(
   common: $FlowFixMe,
-  defaultValue: $FlowFixMe | void
+  defaultValue: $FlowFixMe | void,
 ): void {
   switch (common.type) {
     case 'Int32TypeAnnotation':
