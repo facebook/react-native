@@ -537,7 +537,7 @@ function buildModuleSchema(
       typeArguments,
       methodName,
       $moduleName,
-      language,
+      parser,
     );
 
     return $moduleName;
