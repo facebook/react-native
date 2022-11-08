@@ -1492,43 +1492,6 @@ jobs:
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
       # END: Stable releases
 
-      # START: Stables and commitlies
-      - when:
-          condition:
-            or:
-              - equal: [ "release", << parameters.release_type >> ]
-              - equal: [ "dry-run", << parameters.release_type >> ]
-          steps:
-            - run:
-                name: Install dependencies
-                command: apt update && apt install -y jq jo
-            - run:
-                name: Create draft GitHub Release and upload Hermes binaries
-                command: |
-                  RELEASE_VERSION=$(cat build/.version)
-                  if [[ << parameters.release_type >> == "release" ]]; then
-                    GIT_TAG=$CIRCLE_TAG
-                  elif [[ << parameters.release_type >> == "dry-run" ]]; then
-                    GIT_TAG=v1000.0.0
-                  fi
-
-                  ARTIFACTS=("")
-                  for build_type in "Debug" "Release"; do
-                    TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js \
-                      --buildType $build_type \
-                      --releaseVersion $RELEASE_VERSION)
-
-                    ARTIFACTS+=("$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME")
-                  done
-
-                  ./scripts/circleci/create_github_release.sh \
-                    << parameters.release_type >> \
-                    $GIT_TAG \
-                    $RELEASE_VERSION \
-                    $GITHUB_TOKEN \
-                    "${ARTIFACTS[@]}"
-      # END: Stable and commitlies
-
   # -------------------------
   #    JOBS: Nightly
   # -------------------------
