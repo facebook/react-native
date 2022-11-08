@@ -61,11 +61,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     return updatedStyle;
   }
 
-  __getValue(): Object {
-    return flattenStyle([
-      this._inputStyle,
-      this._walkStyleAndGetValues(this._style),
-    ]);
+  __getValue(): Array<Object> {
+    return [this._inputStyle, this._walkStyleAndGetValues(this._style)];
   }
 
   // Recursively get animated values for nested styles (like iOS's shadowOffset)

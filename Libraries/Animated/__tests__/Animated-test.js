@@ -62,15 +62,29 @@ describe('Animated tests', () => {
       );
 
       expect(node.__getValue()).toEqual({
-        style: {
-          backgroundColor: 'red',
-          opacity: 0,
-          transform: [{translate: [100, 100]}, {translateX: 100}, {scale: 0}],
-          shadowOffset: {
-            width: 0,
-            height: 0,
+        style: [
+          {
+            backgroundColor: 'red',
+            opacity: anim,
+            shadowOffset: {
+              width: anim,
+              height: anim,
+            },
+            transform: [
+              {translate: [translateAnim, translateAnim]},
+              {translateX: translateAnim},
+              {scale: anim},
+            ],
           },
-        },
+          {
+            opacity: 0,
+            transform: [{translate: [100, 100]}, {translateX: 100}, {scale: 0}],
+            shadowOffset: {
+              width: 0,
+              height: 0,
+            },
+          },
+        ],
       });
 
       expect(anim.__getChildren().length).toBe(0);
@@ -84,15 +98,33 @@ describe('Animated tests', () => {
       expect(callback).toBeCalled();
 
       expect(node.__getValue()).toEqual({
-        style: {
-          backgroundColor: 'red',
-          opacity: 0.5,
-          transform: [{translate: [150, 150]}, {translateX: 150}, {scale: 0.5}],
-          shadowOffset: {
-            width: 0.5,
-            height: 0.5,
+        style: [
+          {
+            backgroundColor: 'red',
+            opacity: anim,
+            shadowOffset: {
+              width: anim,
+              height: anim,
+            },
+            transform: [
+              {translate: [translateAnim, translateAnim]},
+              {translateX: translateAnim},
+              {scale: anim},
+            ],
           },
-        },
+          {
+            opacity: 0.5,
+            transform: [
+              {translate: [150, 150]},
+              {translateX: 150},
+              {scale: 0.5},
+            ],
+            shadowOffset: {
+              width: 0.5,
+              height: 0.5,
+            },
+          },
+        ],
       });
 
       node.__detach();
@@ -173,7 +205,7 @@ describe('Animated tests', () => {
         <Animated.View style={{opacity}} />,
       );
 
-      expect(testRenderer.toJSON().props.style.opacity).toEqual(0);
+      expect(testRenderer.toJSON().props.style[1].opacity).toEqual(0);
 
       Animated.timing(opacity, {
         toValue: 1,
@@ -181,7 +213,7 @@ describe('Animated tests', () => {
         useNativeDriver: false,
       }).start();
 
-      expect(testRenderer.toJSON().props.style.opacity).toEqual(1);
+      expect(testRenderer.toJSON().props.style[1].opacity).toEqual(1);
     });
 
     it('warns if `useNativeDriver` is missing', () => {
@@ -804,30 +836,40 @@ describe('Animated tests', () => {
   describe('Animated Vectors', () => {
     it('should animate vectors', () => {
       const vec = new Animated.ValueXY();
+      const vecLayout = vec.getLayout();
+      const opacity = vec.x.interpolate({
+        inputRange: [0, 42],
+        outputRange: [0.2, 0.8],
+      });
 
       const callback = jest.fn();
 
       const node = new AnimatedProps(
         {
           style: {
-            opacity: vec.x.interpolate({
-              inputRange: [0, 42],
-              outputRange: [0.2, 0.8],
-            }),
+            opacity,
             transform: vec.getTranslateTransform(),
-            ...vec.getLayout(),
+            ...vecLayout,
           },
         },
         callback,
       );
 
       expect(node.__getValue()).toEqual({
-        style: {
-          opacity: 0.2,
-          transform: [{translateX: 0}, {translateY: 0}],
-          left: 0,
-          top: 0,
-        },
+        style: [
+          {
+            top: vecLayout.top,
+            left: vecLayout.left,
+            opacity,
+            transform: vec.getTranslateTransform(),
+          },
+          {
+            opacity: 0.2,
+            transform: [{translateX: 0}, {translateY: 0}],
+            left: 0,
+            top: 0,
+          },
+        ],
       });
 
       node.__attach();
@@ -839,12 +881,20 @@ describe('Animated tests', () => {
       expect(callback.mock.calls.length).toBe(2); // once each for x, y
 
       expect(node.__getValue()).toEqual({
-        style: {
-          opacity: 0.8,
-          transform: [{translateX: 42}, {translateY: 1492}],
-          left: 42,
-          top: 1492,
-        },
+        style: [
+          {
+            top: vecLayout.top,
+            left: vecLayout.left,
+            opacity,
+            transform: vec.getTranslateTransform(),
+          },
+          {
+            opacity: 0.8,
+            transform: [{translateX: 42}, {translateY: 1492}],
+            left: 42,
+            top: 1492,
+          },
+        ],
       });
 
       node.__detach();
@@ -937,13 +987,22 @@ describe('Animated tests', () => {
       expect(listener.mock.calls.length).toBe(2);
       expect(listener).toBeCalledWith({value: 137});
       expect(view.__getValue()).toEqual({
-        style: {
-          transform: [
-            {
-              translateX: 137,
-            },
-          ],
-        },
+        style: [
+          {
+            transform: [
+              {
+                translateX: value4,
+              },
+            ],
+          },
+          {
+            transform: [
+              {
+                translateX: 137,
+              },
+            ],
+          },
+        ],
       });
       value4.removeListener(id);
       value1.setValue(40);
@@ -1011,6 +1070,10 @@ describe('Animated tests', () => {
 
     it('should animate colors', () => {
       const color = new Animated.Color({r: 255, g: 0, b: 0, a: 1.0});
+      const scale = color.a.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 2],
+      });
       const callback = jest.fn();
       const node = new AnimatedProps(
         {
@@ -1018,10 +1081,7 @@ describe('Animated tests', () => {
             backgroundColor: color,
             transform: [
               {
-                scale: color.a.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [1, 2],
-                }),
+                scale,
               },
             ],
           },
@@ -1030,10 +1090,16 @@ describe('Animated tests', () => {
       );
 
       expect(node.__getValue()).toEqual({
-        style: {
-          backgroundColor: 'rgba(255, 0, 0, 1)',
-          transform: [{scale: 2}],
-        },
+        style: [
+          {
+            backgroundColor: color,
+            transform: [{scale}],
+          },
+          {
+            backgroundColor: 'rgba(255, 0, 0, 1)',
+            transform: [{scale: 2}],
+          },
+        ],
       });
 
       node.__attach();
@@ -1042,10 +1108,16 @@ describe('Animated tests', () => {
       color.setValue({r: 11, g: 22, b: 33, a: 0.5});
       expect(callback.mock.calls.length).toBe(4);
       expect(node.__getValue()).toEqual({
-        style: {
-          backgroundColor: 'rgba(11, 22, 33, 0.5)',
-          transform: [{scale: 1.5}],
-        },
+        style: [
+          {
+            backgroundColor: color,
+            transform: [{scale}],
+          },
+          {
+            backgroundColor: 'rgba(11, 22, 33, 0.5)',
+            transform: [{scale: 1.5}],
+          },
+        ],
       });
 
       node.__detach();
