@@ -10,10 +10,10 @@
 
 'use strict';
 
-import type {ParserType} from '../errors';
-import type {Parser} from '../parser';
+import type {Parser} from './parser';
+import type {ParserType} from './errors';
 
-class FlowParser implements Parser {
+export class MockedParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
 
   getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
@@ -34,7 +34,3 @@ class FlowParser implements Parser {
     return typeAnnotation.id.name;
   }
 }
-
-module.exports = {
-  FlowParser,
-};

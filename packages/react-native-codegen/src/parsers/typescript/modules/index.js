@@ -213,19 +213,14 @@ function translateTypeAnnotation(
           return emitRootTag(nullable);
         }
         case 'Promise': {
-          return emitPromise(
-            hasteModuleName,
-            typeAnnotation,
-            language,
-            nullable,
-          );
+          return emitPromise(hasteModuleName, typeAnnotation, parser, nullable);
         }
         case 'Array':
         case 'ReadonlyArray': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
             hasteModuleName,
             typeAnnotation,
-            language,
+            parser,
           );
 
           return translateArrayTypeAnnotation(

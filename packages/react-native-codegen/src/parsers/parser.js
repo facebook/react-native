@@ -18,6 +18,11 @@ import type {ParserType} from './errors';
  */
 export interface Parser {
   /**
+   * This is the TypeParameterInstantiation value
+   */
+  typeParameterInstantiation: string;
+
+  /**
    * Given a type declaration, it possibly returns the name of the Enum type.
    * @parameter maybeEnumDeclaration: an object possibly containing an Enum declaration.
    * @returns: the name of the Enum type.

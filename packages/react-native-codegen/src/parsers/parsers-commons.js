@@ -77,20 +77,17 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
    * TODO(T108222691): Use flow-types for @babel/parser
    */
   typeAnnotation: $FlowFixMe,
-  language: ParserType,
+  parser: Parser,
 ) {
   if (typeAnnotation.typeParameters == null) {
     throw new MissingTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
-      language,
+      parser.language(),
     );
   }
 
-  const typeAnnotationType =
-    language === 'TypeScript'
-      ? 'TSTypeParameterInstantiation'
-      : 'TypeParameterInstantiation';
+  const typeAnnotationType = parser.typeParameterInstantiation;
 
   invariant(
     typeAnnotation.typeParameters.type === typeAnnotationType,
@@ -101,7 +98,7 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
     throw new MoreThanOneTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
-      language,
+      parser.language(),
     );
   }
 }
