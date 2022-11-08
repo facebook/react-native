@@ -11,6 +11,7 @@
 import type {ViewProps} from './ViewPropTypes';
 
 import flattenStyle from '../../StyleSheet/flattenStyle';
+import processLayoutProps from '../../StyleSheet/processStyles';
 import TextAncestor from '../../Text/TextAncestor';
 import {getAccessibilityRoleFromRole} from '../../Utilities/AcessibilityMapping';
 import ViewNativeComponent from './ViewNativeComponent';
@@ -57,7 +58,6 @@ const View: React.AbstractComponent<
       nativeID,
       pointerEvents,
       role,
-      style,
       tabIndex,
       ...otherProps
     }: ViewProps,
@@ -81,8 +81,10 @@ const View: React.AbstractComponent<
       text: ariaValueText ?? accessibilityValue?.text,
     };
 
-    const flattenedStyle = flattenStyle(style);
-    const newPointerEvents = flattenedStyle?.pointerEvents || pointerEvents;
+    let style = flattenStyle(otherProps.style);
+    style = processLayoutProps(style);
+
+    const newPointerEvents = style?.pointerEvents || pointerEvents;
 
     return (
       <TextAncestor.Provider value={false}>

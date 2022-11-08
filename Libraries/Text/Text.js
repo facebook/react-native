@@ -9,17 +9,18 @@
  */
 
 import type {PressEvent} from '../Types/CoreEventTypes';
+import type {TextProps} from './TextProps';
 
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
+import processLayoutProps from '../StyleSheet/processStyles';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import {getAccessibilityRoleFromRole} from '../Utilities/AcessibilityMapping';
 import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
-import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
 
@@ -174,19 +175,7 @@ const Text: React.AbstractComponent<
       ? null
       : processColor(restProps.selectionColor);
 
-  let style = flattenStyle(restProps.style);
-
-  let _selectable = restProps.selectable;
-  if (style?.userSelect != null) {
-    _selectable = userSelectToSelectableMap[style.userSelect];
-  }
-
-  if (style?.verticalAlign != null) {
-    style = StyleSheet.compose(style, {
-      textAlignVertical:
-        verticalAlignToTextAlignVerticalMap[style.verticalAlign],
-    });
-  }
+  let style;
 
   if (__DEV__) {
     if (PressabilityDebug.isEnabled() && onPress != null) {
@@ -194,6 +183,8 @@ const Text: React.AbstractComponent<
         color: 'magenta',
       });
     }
+  } else {
+    style = restProps.style;
   }
 
   let numberOfLines = restProps.numberOfLines;
@@ -211,10 +202,23 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
-  let flattenedStyle = flattenStyle(style);
+  style = flattenStyle(style);
+  style = processLayoutProps(style);
 
-  if (typeof flattenedStyle?.fontWeight === 'number') {
-    flattenedStyle.fontWeight = flattenedStyle?.fontWeight.toString();
+  if (typeof style?.fontWeight === 'number') {
+    style.fontWeight = style?.fontWeight.toString();
+  }
+
+  let _selectable = restProps.selectable;
+  if (style?.userSelect != null) {
+    _selectable = userSelectToSelectableMap[style.userSelect];
+  }
+
+  if (style?.verticalAlign != null) {
+    style = StyleSheet.compose(style, {
+      textAlignVertical:
+        verticalAlignToTextAlignVerticalMap[style.verticalAlign],
+    });
   }
 
   const _hasOnPressOrOnLongPress =
@@ -235,7 +239,7 @@ const Text: React.AbstractComponent<
       nativeID={id ?? nativeID}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
-      style={flattenedStyle}
+      style={style}
       ref={forwardedRef}
     />
   ) : (
@@ -261,7 +265,7 @@ const Text: React.AbstractComponent<
         nativeID={id ?? nativeID}
         numberOfLines={numberOfLines}
         selectionColor={selectionColor}
-        style={flattenedStyle}
+        style={style}
         ref={forwardedRef}
       />
     </TextAncestor.Provider>

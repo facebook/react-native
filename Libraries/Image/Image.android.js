@@ -13,6 +13,7 @@ import type {ImageAndroid} from './Image.flow';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
 import flattenStyle from '../StyleSheet/flattenStyle';
+import processLayoutProps from '../StyleSheet/processStyles';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import TextAncestor from '../Text/TextAncestor';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
@@ -165,6 +166,9 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   }
 
   const {height, width, ...restProps} = props;
+
+  style = processLayoutProps(style);
+
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {
     ...restProps,
