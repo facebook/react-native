@@ -29,8 +29,6 @@ load(
 )
 load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 
-oncall("react_native")
-
 RCTCXXBRIDGE_PUBLIC_HEADERS = {
     "React/" + x: "React/CxxBridge/" + x
     for x in [
