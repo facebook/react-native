@@ -28,6 +28,7 @@ const {
   Slider,
   Platform,
   Switch,
+  ScrollView,
 } = require('react-native');
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
@@ -83,6 +84,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     backgroundColor: '#000000c0',
+  },
+  scrollView: {
+    height: 50,
   },
 });
 
@@ -571,106 +575,168 @@ class NestedCheckBox extends React.Component<
 
 class AccessibilityRoleAndStateExample extends React.Component<{}> {
   render(): React.Node {
+    const content = [
+      <Text key={1}>This is some text</Text>,
+      <Text key={2}>This is some text</Text>,
+      <Text key={3}>This is some text</Text>,
+      <Text key={4}>This is some text</Text>,
+      <Text key={5}>This is some text</Text>,
+      <Text key={6}>This is some text</Text>,
+      <Text key={7}>This is some text</Text>,
+    ];
+
     return (
-      <View>
-        <View
-          accessibilityLabel="element 1"
-          accessibilityRole="alert"
-          accessible={true}>
-          <Text>Alert example</Text>
-        </View>
-        <CheckboxExample />
-        <View
-          accessibilityLabel="element 3"
-          accessibilityRole="combobox"
-          accessible={true}>
-          <Text>Combobox example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 4"
-          accessibilityRole="menu"
-          accessible={true}>
-          <Text>Menu example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 5"
-          accessibilityRole="menubar"
-          accessible={true}>
-          <Text>Menu bar example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 6"
-          accessibilityRole="menuitem"
-          accessible={true}>
-          <Text>Menu item example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 7"
-          accessibilityRole="progressbar"
-          accessible={true}>
-          <Text>Progress bar example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 8"
-          accessibilityRole="radio"
-          accessible={true}>
-          <Text>Radio button example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 9"
-          accessibilityRole="radiogroup"
-          accessible={true}>
-          <Text>Radio group example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 10"
-          accessibilityRole="scrollbar"
-          accessible={true}>
-          <Text>Scrollbar example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 11"
-          accessibilityRole="spinbutton"
-          accessible={true}>
-          <Text>Spin button example</Text>
-        </View>
-        <SwitchExample />
-        <View
-          accessibilityLabel="element 13"
-          accessibilityRole="tab"
-          accessible={true}>
-          <Text>Tab example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 14"
-          accessibilityRole="tablist"
-          accessible={true}>
-          <Text>Tab list example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 15"
-          accessibilityRole="timer"
-          accessible={true}>
-          <Text>Timer example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 16"
-          accessibilityRole="toolbar"
-          accessible={true}>
-          <Text>Toolbar example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 17"
-          accessibilityState={{busy: true}}
-          accessible={true}>
-          <Text>State busy example</Text>
-        </View>
-        <ExpandableElementExample />
-        <SelectionExample />
-        <RNTesterBlock title="Nested checkbox with delayed state change">
-          <NestedCheckBox />
+      <>
+        <RNTesterBlock title="ScrollView with grid role">
+          <ScrollView accessibilityRole="grid" style={styles.scrollView}>
+            {content}
+          </ScrollView>
         </RNTesterBlock>
-      </View>
+        <RNTesterBlock title="ScrollView with scrollview role">
+          <ScrollView accessibilityRole="scrollview" style={styles.scrollView}>
+            {content}
+          </ScrollView>
+        </RNTesterBlock>
+        <RNTesterBlock title="HorizontalScrollView with horizontalscrollview role">
+          <ScrollView
+            horizontal
+            accessibilityRole="horizontalscrollview"
+            style={styles.scrollView}>
+            {content}
+          </ScrollView>
+        </RNTesterBlock>
+        <RNTesterBlock title="accessibilityRole with View Component">
+          <View>
+            <View
+              accessibilityLabel="element 1"
+              accessibilityRole="alert"
+              accessible={true}>
+              <Text>Alert example</Text>
+            </View>
+            <CheckboxExample />
+            <View
+              accessibilityLabel="element 3"
+              accessibilityRole="combobox"
+              accessible={true}>
+              <Text>Combobox example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 4"
+              accessibilityRole="menu"
+              accessible={true}>
+              <Text>Menu example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 5"
+              accessibilityRole="menubar"
+              accessible={true}>
+              <Text>Menu bar example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 6"
+              accessibilityRole="menuitem"
+              accessible={true}>
+              <Text>Menu item example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 7"
+              accessibilityRole="progressbar"
+              accessible={true}>
+              <Text>Progress bar example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 8"
+              accessibilityRole="radio"
+              accessible={true}>
+              <Text>Radio button example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 9"
+              accessibilityRole="radiogroup"
+              accessible={true}>
+              <Text>Radio group example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 10"
+              accessibilityRole="scrollbar"
+              accessible={true}>
+              <Text>Scrollbar example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 11"
+              accessibilityRole="spinbutton"
+              accessible={true}>
+              <Text>Spin button example</Text>
+            </View>
+            <SwitchExample />
+            <View
+              accessibilityLabel="element 13"
+              accessibilityRole="tab"
+              accessible={true}>
+              <Text>Tab example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 14"
+              accessibilityRole="tablist"
+              accessible={true}>
+              <Text>Tab list example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 15"
+              accessibilityRole="timer"
+              accessible={true}>
+              <Text>Timer example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 16"
+              accessibilityRole="toolbar"
+              accessible={true}>
+              <Text>Toolbar example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 17"
+              accessibilityState={{busy: true}}
+              accessible={true}>
+              <Text>State busy example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 18"
+              accessibilityRole="dropdownlist"
+              accessible={true}>
+              <Text>Drop Down List example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 19"
+              accessibilityRole="pager"
+              accessible={true}>
+              <Text>Pager example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 20"
+              accessibilityRole="togglebutton"
+              accessible={true}>
+              <Text>Toggle Button example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 21"
+              accessibilityRole="viewgroup"
+              accessible={true}>
+              <Text>Viewgroup example</Text>
+            </View>
+            <View
+              accessibilityLabel="element 22"
+              accessibilityRole="webview"
+              accessible={true}>
+              <Text>Webview example</Text>
+            </View>
+            <ExpandableElementExample />
+            <SelectionExample />
+            <RNTesterBlock title="Nested checkbox with delayed state change">
+              <NestedCheckBox />
+            </RNTesterBlock>
+          </View>
+        </RNTesterBlock>
+      </>
     );
   }
 }
@@ -1370,15 +1436,15 @@ exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
   {
-    title: 'Accessibility elements',
-    render(): React.Element<typeof AccessibilityExample> {
-      return <AccessibilityExample />;
-    },
-  },
-  {
     title: 'New accessibility roles and states',
     render(): React.Element<typeof AccessibilityRoleAndStateExample> {
       return <AccessibilityRoleAndStateExample />;
+    },
+  },
+  {
+    title: 'Accessibility elements',
+    render(): React.Element<typeof AccessibilityExample> {
+      return <AccessibilityExample />;
     },
   },
   {

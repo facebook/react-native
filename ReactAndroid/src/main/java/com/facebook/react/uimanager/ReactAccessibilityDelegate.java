@@ -96,6 +96,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   public enum AccessibilityRole {
     NONE,
     BUTTON,
+    DROPDOWNLIST,
     TOGGLEBUTTON,
     LINK,
     SEARCH,
@@ -123,12 +124,22 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     TIMER,
     LIST,
     GRID,
+    PAGER,
+    SCROLLVIEW,
+    HORIZONTALSCROLLVIEW,
+    VIEWGROUP,
+    WEBVIEW,
+    DRAWERLAYOUT,
+    SLIDINGDRAWER,
+    ICONMENU,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
       switch (role) {
         case BUTTON:
           return "android.widget.Button";
+        case DROPDOWNLIST:
+          return "android.widget.Spinner";
         case TOGGLEBUTTON:
           return "android.widget.ToggleButton";
         case SEARCH:
@@ -136,7 +147,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case IMAGE:
           return "android.widget.ImageView";
         case IMAGEBUTTON:
-          return "android.widget.ImageButon";
+          return "android.widget.ImageButton";
         case KEYBOARDKEY:
           return "android.inputmethodservice.Keyboard$Key";
         case TEXT:
@@ -155,6 +166,22 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.AbsListView";
         case GRID:
           return "android.widget.GridView";
+        case SCROLLVIEW:
+          return "android.widget.ScrollView";
+        case HORIZONTALSCROLLVIEW:
+          return "android.widget.HorizontalScrollView";
+        case PAGER:
+          return "androidx.viewpager.widget.ViewPager";
+        case DRAWERLAYOUT:
+          return "androidx.drawerlayout.widget.DrawerLayout";
+        case SLIDINGDRAWER:
+          return "android.widget.SlidingDrawer";
+        case ICONMENU:
+          return "com.android.internal.view.menu.IconMenuView";
+        case VIEWGROUP:
+          return "android.view.ViewGroup";
+        case WEBVIEW:
+          return "android.webkit.WebView";
         case NONE:
         case LINK:
         case SUMMARY:

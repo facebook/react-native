@@ -10,10 +10,16 @@ package com.facebook.react.views.drawer;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 
 /**
@@ -29,6 +35,30 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 
   public ReactDrawerLayout(ReactContext reactContext) {
     super(reactContext);
+    ViewCompat.setAccessibilityDelegate(
+        this,
+        new AccessibilityDelegateCompat() {
+          @Override
+          public void onInitializeAccessibilityNodeInfo(
+              View host, AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            final AccessibilityRole accessibilityRole =
+                (AccessibilityRole) host.getTag(R.id.accessibility_role);
+            if (accessibilityRole != null) {
+              info.setClassName(AccessibilityRole.getValue(accessibilityRole));
+            }
+          }
+
+          @Override
+          public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+            super.onInitializeAccessibilityEvent(host, event);
+            final AccessibilityRole accessibilityRole =
+                (AccessibilityRole) host.getTag(R.id.accessibility_role);
+            if (accessibilityRole != null) {
+              event.setClassName(AccessibilityRole.getValue(accessibilityRole));
+            }
+          }
+        });
   }
 
   @Override
