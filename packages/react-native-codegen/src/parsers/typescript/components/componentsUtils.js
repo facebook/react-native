@@ -326,6 +326,33 @@ function getTypeAnnotationForArray<T>(
   }
 }
 
+function setDefaultValue(
+  common: $FlowFixMe,
+  defaultValue: $FlowFixMe | void
+): void {
+  switch (common.type) {
+    case 'Int32TypeAnnotation':
+    case 'DoubleTypeAnnotation':
+      common.default = ((defaultValue ? defaultValue : 0): number);
+      break;
+    case 'FloatTypeAnnotation':
+      common.default = ((defaultValue === null
+        ? null
+        : defaultValue
+        ? defaultValue
+        : 0): number | null);
+      break;
+    case 'BooleanTypeAnnotation':
+      common.default = defaultValue === null ? null : !!defaultValue;
+      break;
+    case 'StringTypeAnnotation':
+      common.default = ((defaultValue === undefined ? null : defaultValue):
+        | string
+        | null);
+      break;
+  }
+}
+
 function getTypeAnnotation<T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
@@ -363,27 +390,7 @@ function getTypeAnnotation<T>(
     buildSchema,
   );
   if (common) {
-    switch (common.type) {
-      case 'Int32TypeAnnotation':
-      case 'DoubleTypeAnnotation':
-        common.default = ((defaultValue ? defaultValue : 0): number);
-        break;
-      case 'FloatTypeAnnotation':
-        common.default = ((defaultValue === null
-          ? null
-          : defaultValue
-          ? defaultValue
-          : 0): number | null);
-        break;
-      case 'BooleanTypeAnnotation':
-        common.default = defaultValue === null ? null : !!defaultValue;
-        break;
-      case 'StringTypeAnnotation':
-        common.default = ((defaultValue === undefined ? null : defaultValue):
-          | string
-          | null);
-        break;
-    }
+    setDefaultValue(common, defaultValue);
     return common;
   }
 
