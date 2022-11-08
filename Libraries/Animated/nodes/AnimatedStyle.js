@@ -13,6 +13,7 @@
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import flattenStyle from '../../StyleSheet/flattenStyle';
+import Platform from '../../Utilities/Platform';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 import AnimatedTransform from './AnimatedTransform';
@@ -62,7 +63,16 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   }
 
   __getValue(): Array<Object> {
-    return [this._inputStyle, this._walkStyleAndGetValues(this._style)];
+    if (Platform.OS === 'web') {
+      return [this._inputStyle, this._walkStyleAndGetValues(this._style)];
+    }
+
+    return [
+      flattenStyle([
+        this._inputStyle,
+        this._walkStyleAndGetValues(this._style),
+      ]),
+    ];
   }
 
   // Recursively get animated values for nested styles (like iOS's shadowOffset)

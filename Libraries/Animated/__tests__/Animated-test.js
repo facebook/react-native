@@ -65,18 +65,6 @@ describe('Animated tests', () => {
         style: [
           {
             backgroundColor: 'red',
-            opacity: anim,
-            shadowOffset: {
-              width: anim,
-              height: anim,
-            },
-            transform: [
-              {translate: [translateAnim, translateAnim]},
-              {translateX: translateAnim},
-              {scale: anim},
-            ],
-          },
-          {
             opacity: 0,
             transform: [{translate: [100, 100]}, {translateX: 100}, {scale: 0}],
             shadowOffset: {
@@ -101,18 +89,6 @@ describe('Animated tests', () => {
         style: [
           {
             backgroundColor: 'red',
-            opacity: anim,
-            shadowOffset: {
-              width: anim,
-              height: anim,
-            },
-            transform: [
-              {translate: [translateAnim, translateAnim]},
-              {translateX: translateAnim},
-              {scale: anim},
-            ],
-          },
-          {
             opacity: 0.5,
             transform: [
               {translate: [150, 150]},
@@ -205,7 +181,7 @@ describe('Animated tests', () => {
         <Animated.View style={{opacity}} />,
       );
 
-      expect(testRenderer.toJSON().props.style[1].opacity).toEqual(0);
+      expect(testRenderer.toJSON().props.style[0].opacity).toEqual(0);
 
       Animated.timing(opacity, {
         toValue: 1,
@@ -213,7 +189,7 @@ describe('Animated tests', () => {
         useNativeDriver: false,
       }).start();
 
-      expect(testRenderer.toJSON().props.style[1].opacity).toEqual(1);
+      expect(testRenderer.toJSON().props.style[0].opacity).toEqual(1);
     });
 
     it('warns if `useNativeDriver` is missing', () => {
@@ -858,12 +834,6 @@ describe('Animated tests', () => {
       expect(node.__getValue()).toEqual({
         style: [
           {
-            top: vecLayout.top,
-            left: vecLayout.left,
-            opacity,
-            transform: vec.getTranslateTransform(),
-          },
-          {
             opacity: 0.2,
             transform: [{translateX: 0}, {translateY: 0}],
             left: 0,
@@ -882,12 +852,6 @@ describe('Animated tests', () => {
 
       expect(node.__getValue()).toEqual({
         style: [
-          {
-            top: vecLayout.top,
-            left: vecLayout.left,
-            opacity,
-            transform: vec.getTranslateTransform(),
-          },
           {
             opacity: 0.8,
             transform: [{translateX: 42}, {translateY: 1492}],
@@ -991,13 +955,6 @@ describe('Animated tests', () => {
           {
             transform: [
               {
-                translateX: value4,
-              },
-            ],
-          },
-          {
-            transform: [
-              {
                 translateX: 137,
               },
             ],
@@ -1092,10 +1049,6 @@ describe('Animated tests', () => {
       expect(node.__getValue()).toEqual({
         style: [
           {
-            backgroundColor: color,
-            transform: [{scale}],
-          },
-          {
             backgroundColor: 'rgba(255, 0, 0, 1)',
             transform: [{scale: 2}],
           },
@@ -1109,10 +1062,6 @@ describe('Animated tests', () => {
       expect(callback.mock.calls.length).toBe(4);
       expect(node.__getValue()).toEqual({
         style: [
-          {
-            backgroundColor: color,
-            transform: [{scale}],
-          },
           {
             backgroundColor: 'rgba(11, 22, 33, 0.5)',
             transform: [{scale: 1.5}],
