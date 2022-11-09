@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     width: 50,
   },
   box7Transform: {
-    transform: 'translate(-50, 35) rotate(50deg) scale(2)',
+    transform: 'translate(-50px, 35px) rotate(50deg) scale(2)',
   },
   flipCardContainer: {
     marginVertical: 40,
@@ -337,7 +337,7 @@ exports.examples = [
   },
   {
     title: 'Transform using a string',
-    description: "transform: 'translate(-50, 35) rotate(50deg) scale(2)'",
+    description: "transform: 'translate(-50px, 35px) rotate(50deg) scale(2)'",
     render(): Node {
       return (
         <View style={styles.container}>
