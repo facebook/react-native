@@ -1749,7 +1749,10 @@ export default class VirtualizedList extends StateSafePureComponent<
       'Tried to get frame for out of range index ' + index,
     );
     const item = getItem(data, index);
-    const frame = item && this._frames[this._keyExtractor(item, index, props)];
+    const frame =
+      item != null
+        ? this._frames[this._keyExtractor(item, index, props)]
+        : undefined;
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
         /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
