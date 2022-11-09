@@ -8,31 +8,28 @@
 #pragma once
 
 #include <cmath>
-#include <optional>
+#include <functional>
+#include <limits>
 
-#include <folly/Hash.h>
 #include <react/renderer/graphics/ColorComponents.h>
-#include <react/renderer/graphics/Float.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using Color = int32_t;
 
+/*
+ * On Android, a color can be represented as 32 bits integer, so there is no
+ * need to instantiate complex color objects and then pass them as shared
+ * pointers. Hense instead of using shared_ptr, we use a simple wrapper class
+ * which provides a pointer-like interface.
+ */
 class SharedColor {
  public:
   static const Color UndefinedColor = std::numeric_limits<Color>::max();
 
   SharedColor() : color_(UndefinedColor) {}
 
-  SharedColor(const SharedColor &sharedColor) : color_(sharedColor.color_) {}
-
   SharedColor(Color color) : color_(color) {}
-
-  SharedColor &operator=(const SharedColor &sharedColor) {
-    color_ = sharedColor.color_;
-    return *this;
-  }
 
   Color operator*() const {
     return color_;
@@ -62,12 +59,11 @@ SharedColor clearColor();
 SharedColor blackColor();
 SharedColor whiteColor();
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 template <>
 struct std::hash<facebook::react::SharedColor> {
-  std::size_t operator()(facebook::react::SharedColor const &color) const {
-    return hash<int>()(*color);
+  size_t operator()(facebook::react::SharedColor color) const {
+    return std::hash<decltype(*color)>{}(*color);
   }
 };

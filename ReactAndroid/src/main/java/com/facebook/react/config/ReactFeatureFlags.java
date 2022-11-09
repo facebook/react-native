@@ -42,6 +42,9 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean enableBridgelessArchitectureSoftExceptions = false;
 
+  /** Does the bridgeless architecture use the new create/reload/destroy routines */
+  public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = false;
+
   /**
    * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
    * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system

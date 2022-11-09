@@ -23,7 +23,13 @@ void registerComponents(
                 RNTMyNativeViewComponentDescriptor>());
 }
 
-std::shared_ptr<TurboModule> provideModules(
+std::shared_ptr<TurboModule> cxxModuleProvider(
+    const std::string &name,
+    const std::shared_ptr<CallInvoker> &jsInvoker) {
+  return nullptr;
+}
+
+std::shared_ptr<TurboModule> javaModuleProvider(
     const std::string &name,
     const JavaTurboModule::InitParams &params) {
   auto module = AppSpecs_ModuleProvider(name, params);
@@ -42,8 +48,10 @@ std::shared_ptr<TurboModule> provideModules(
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
   return facebook::jni::initialize(vm, [] {
-    facebook::react::DefaultTurboModuleManagerDelegate::
-        moduleProvidersFromEntryPoint = &facebook::react::provideModules;
+    facebook::react::DefaultTurboModuleManagerDelegate::cxxModuleProvider =
+        &facebook::react::cxxModuleProvider;
+    facebook::react::DefaultTurboModuleManagerDelegate::javaModuleProvider =
+        &facebook::react::javaModuleProvider;
     facebook::react::DefaultComponentsRegistry::
         registerComponentDescriptorsFromEntryPoint =
             &facebook::react::registerComponents;

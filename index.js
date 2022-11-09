@@ -59,7 +59,6 @@ import typeof Dimensions from './Libraries/Utilities/Dimensions';
 import typeof Easing from './Libraries/Animated/Easing';
 import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
 import typeof I18nManager from './Libraries/ReactNative/I18nManager';
-import typeof ImagePickerIOS from './Libraries/Image/ImagePickerIOS';
 import typeof InteractionManager from './Libraries/Interaction/InteractionManager';
 import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
 import typeof LayoutAnimation from './Libraries/LayoutAnimation/LayoutAnimation';
@@ -280,16 +279,6 @@ module.exports = {
   },
   get I18nManager(): I18nManager {
     return require('./Libraries/ReactNative/I18nManager');
-  },
-  get ImagePickerIOS(): ImagePickerIOS {
-    warnOnce(
-      'imagePickerIOS-moved',
-      'ImagePickerIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "Please upgrade to use either '@react-native-community/react-native-image-picker' or 'expo-image-picker'. " +
-        "If you cannot upgrade to a different library, please install the deprecated '@react-native-community/image-picker-ios' package. " +
-        'See https://github.com/rnc-archive/react-native-image-picker-ios',
-    );
-    return require('./Libraries/Image/ImagePickerIOS');
   },
   get InteractionManager(): InteractionManager {
     return require('./Libraries/Interaction/InteractionManager');
@@ -762,6 +751,22 @@ if (__DEV__) {
         'AsyncStorage has been removed from react-native core. ' +
           "It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. " +
           'See https://github.com/react-native-async-storage/async-storage',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access ImagePickerIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access ImagePickerIOS. */
+  Object.defineProperty(module.exports, 'ImagePickerIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ImagePickerIOS has been removed from React Native. ' +
+          "Please upgrade to use either '@react-native-community/react-native-image-picker' or 'expo-image-picker'. " +
+          "If you cannot upgrade to a different library, please install the deprecated '@react-native-community/image-picker-ios' package. " +
+          'See https://github.com/rnc-archive/react-native-image-picker-ios',
       );
     },
   });

@@ -93,7 +93,6 @@ def use_react_native! (
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
 
-  pod 'React-bridging', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
 
   if hermes_enabled
@@ -207,11 +206,11 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
     add_copy_hermes_framework_script_phase(installer, react_native_path)
   else
     remove_copy_hermes_framework_script_phase(installer, react_native_path)
+    remove_hermesc_build_dir(react_native_path)
   end
 
   ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   ReactNativePodsUtils.fix_library_search_paths(installer)
-  ReactNativePodsUtils.fix_react_bridging_header_search_paths(installer)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)

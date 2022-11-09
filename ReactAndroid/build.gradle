@@ -363,8 +363,8 @@ task installArchives {
 }
 
 android {
-    buildToolsVersion = "31.0.0"
-    compileSdkVersion 31
+    buildToolsVersion = "33.0.0"
+    compileSdkVersion 33
 
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
@@ -377,7 +377,7 @@ android {
 
     defaultConfig {
         minSdkVersion(21)
-        targetSdkVersion(31)
+        targetSdkVersion(33)
         versionCode(1)
         versionName("1.0")
 

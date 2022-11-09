@@ -15,7 +15,6 @@ import type {
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
   Nullable,
-  NativeModuleMixedTypeAnnotation,
   UnionTypeAnnotationMemberType,
   NativeModuleUnionTypeAnnotation,
 } from '../CodegenSchema.js';
@@ -78,20 +77,17 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
    * TODO(T108222691): Use flow-types for @babel/parser
    */
   typeAnnotation: $FlowFixMe,
-  language: ParserType,
+  parser: Parser,
 ) {
   if (typeAnnotation.typeParameters == null) {
     throw new MissingTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
-      language,
+      parser.language(),
     );
   }
 
-  const typeAnnotationType =
-    language === 'TypeScript'
-      ? 'TSTypeParameterInstantiation'
-      : 'TypeParameterInstantiation';
+  const typeAnnotationType = parser.typeParameterInstantiation;
 
   invariant(
     typeAnnotation.typeParameters.type === typeAnnotationType,
@@ -102,17 +98,9 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
     throw new MoreThanOneTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
-      language,
+      parser.language(),
     );
   }
-}
-
-function emitMixedTypeAnnotation(
-  nullable: boolean,
-): Nullable<NativeModuleMixedTypeAnnotation> {
-  return wrapNullable(nullable, {
-    type: 'MixedTypeAnnotation',
-  });
 }
 
 function remapUnionTypeAnnotationMemberNames(
@@ -233,7 +221,6 @@ module.exports = {
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
-  emitMixedTypeAnnotation,
   emitUnionTypeAnnotation,
   getKeyName,
   translateDefault,

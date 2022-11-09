@@ -367,27 +367,6 @@ namespace facebook {
     }
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeImagePickerIOS_SpecOpenCameraDialogConfig)
-+ (RCTManagedPointer *)JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig>(json);
-}
-@end
-namespace facebook {
-  namespace react {
-    
-    static facebook::jsi::Value __hostFunction_NativeImagePickerIOSSpecJSI_openCameraDialog(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"openCameraDialog\\", @selector(openCameraDialog:successCallback:cancelCallback:), args, count);
-    }
-
-    NativeImagePickerIOSSpecJSI::NativeImagePickerIOSSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
-        methodMap_[\\"openCameraDialog\\"] = MethodMetadata {3, __hostFunction_NativeImagePickerIOSSpecJSI_openCameraDialog};
-        setMethodArgConversionSelector(@\\"openCameraDialog\\", 0, @\\"JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:\\");
-    }
-  } // namespace react
-} // namespace facebook
 ",
 }
 `;
@@ -453,6 +432,10 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:resolve:reject:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithOptionalArg(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithOptionalArg\\", @selector(getValueWithOptionalArg:resolve:reject:), args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getEnums(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getEnums\\", @selector(getEnums:enumFloat:enumString:), args, count);
     }
@@ -492,6 +475,9 @@ namespace facebook {
         
         
         methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise};
+        
+        
+        methodMap_[\\"getValueWithOptionalArg\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithOptionalArg};
         
         
         methodMap_[\\"getEnums\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleSpecJSI_getEnums};

@@ -86,7 +86,7 @@
     "prettier": "prettier --write \"./**/*.{js,md,yml,ts,tsx}\"",
     "format-check": "prettier --list-different \"./**/*.{js,md,yml,ts,tsx}\"",
     "update-lock": "npx yarn-deduplicate",
-    "docker-setup-android": "docker pull reactnativecommunity/react-native-android:6.0",
+    "docker-setup-android": "docker pull reactnativecommunity/react-native-android:6.1",
     "docker-build-android": "docker build -t reactnativeci/android -f .circleci/Dockerfiles/Dockerfile.android .",
     "test-android-run-instrumentation": "docker run --cap-add=SYS_ADMIN -it reactnativeci/android bash .circleci/Dockerfiles/scripts/run-android-docker-instrumentation-tests.sh",
     "test-android-run-unit": "docker run --cap-add=SYS_ADMIN -it reactnativeci/android bash .circleci/Dockerfiles/scripts/run-android-docker-unit-tests.sh",
@@ -113,7 +113,7 @@
     "@react-native-community/cli-platform-android": "10.0.0-alpha.2",
     "@react-native-community/cli-platform-ios": "10.0.0-alpha.1",
     "@react-native/assets": "1.0.0",
-    "@react-native/normalize-color": "2.0.0",
+    "@react-native/normalize-color": "2.1.0",
     "@react-native/polyfills": "2.0.0",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
@@ -132,7 +132,7 @@
     "pretty-format": "^26.5.2",
     "promise": "^8.3.0",
     "react-devtools-core": "^4.26.1",
-    "react-native-gradle-plugin": "^0.71.8",
+    "react-native-gradle-plugin": "^0.72.0",
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "^16.15.0",
     "regenerator-runtime": "^0.13.2",
@@ -143,7 +143,7 @@
     "ws": "^6.2.2"
   },
   "devDependencies": {
-    "flow-bin": "^0.191.0",
+    "flow-bin": "^0.192.0",
     "hermes-eslint": "0.8.0",
     "react": "18.2.0",
     "react-test-renderer": "^18.2.0"

@@ -14,6 +14,8 @@ import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
 
 class FlowParser implements Parser {
+  typeParameterInstantiation: string = 'TypeParameterInstantiation';
+
   getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
     return maybeEnumDeclaration.body.type
       .replace('EnumNumberBody', 'NumberTypeAnnotation')
