@@ -4,37 +4,39 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
 import type {
   SchemaType,
+  NamedShape,
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
-  Nullable,
+  NativeModuleAliasMap,
   UnionTypeAnnotationMemberType,
+  NativeModuleEnumDeclaration,
+  NativeModuleBaseTypeAnnotation,
   NativeModuleUnionTypeAnnotation,
+  Nullable,
 } from '../CodegenSchema.js';
+import type {ParserType} from './errors';
+import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {Parser} from './parser';
+
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
-  UnsupportedUnionTypeAnnotationParserError,
-} = require('./errors');
-import type {ParserType} from './errors';
-const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
-} = require('./errors');
-const invariant = require('invariant');
-import type {TypeDeclarationMap} from './utils';
-const {
+  UnsupportedUnionTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
 } = require('./errors');
-import type {Parser} from './parser';
-import type {NativeModuleEnumDeclaration} from '../CodegenSchema';
+const {throwIfPropertyValueTypeIsUnsupported} = require('./error-utils');
+
+const invariant = require('invariant');
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -101,6 +103,95 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
       parser.language(),
     );
   }
+}
+
+function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
+  switch (language) {
+    case 'Flow':
+      return (
+        property.type === 'ObjectTypeProperty' ||
+        property.type === 'ObjectTypeIndexer'
+      );
+    case 'TypeScript':
+      return (
+        property.type === 'TSPropertySignature' ||
+        property.type === 'TSIndexSignature'
+      );
+    default:
+      return false;
+  }
+}
+
+function parseObjectProperty(
+  property: $FlowFixMe,
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  language: ParserType,
+  nullable: boolean,
+  translateTypeAnnotation: $FlowFixMe,
+): NamedShape<Nullable<NativeModuleBaseTypeAnnotation>> {
+  if (!isObjectProperty(property, language)) {
+    throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+      hasteModuleName,
+      property,
+      property.type,
+      language,
+    );
+  }
+
+  const {optional = false} = property;
+  const name = getKeyName(property, hasteModuleName, language);
+  const languageTypeAnnotation =
+    language === 'TypeScript'
+      ? property.typeAnnotation.typeAnnotation
+      : property.value;
+
+  if (
+    property.type === 'ObjectTypeIndexer' ||
+    property.type === 'TSIndexSignature'
+  ) {
+    return {
+      name,
+      optional,
+      typeAnnotation: wrapNullable(nullable, {
+        type: 'GenericObjectTypeAnnotation',
+      }), //TODO: use `emitObject` for typeAnnotation
+    };
+  }
+
+  const [propertyTypeAnnotation, isPropertyNullable] = unwrapNullable(
+    translateTypeAnnotation(
+      hasteModuleName,
+      languageTypeAnnotation,
+      types,
+      aliasMap,
+      tryParse,
+      cxxOnly,
+    ),
+  );
+
+  if (
+    propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+    propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
+    propertyTypeAnnotation.type === 'VoidTypeAnnotation'
+  ) {
+    throwIfPropertyValueTypeIsUnsupported(
+      hasteModuleName,
+      languageTypeAnnotation,
+      property.key,
+      propertyTypeAnnotation.type,
+      language,
+    );
+  }
+
+  return {
+    name,
+    optional,
+    typeAnnotation: wrapNullable(isPropertyNullable, propertyTypeAnnotation),
+  };
 }
 
 function remapUnionTypeAnnotationMemberNames(
@@ -221,7 +312,9 @@ module.exports = {
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  isObjectProperty,
+  parseObjectProperty,
   emitUnionTypeAnnotation,
-  getKeyName,
   translateDefault,
+  getKeyName,
 };
