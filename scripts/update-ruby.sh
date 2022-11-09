@@ -23,15 +23,25 @@ die() {
     exit 1
 }
 
+# This assume that this script is invoked from the root of
+# react-native. The only place where this is invoked is the
+# `set-rn-version.js` script which invoked the script as
+# scripts/update-ruby.sh.
+MANAGED_RUBY_VERSION=$(cat .ruby-version)
+
 if [ $# -eq 1 ]; then
     VERSION=$1
+elif [ -n "$MANAGED_RUBY_VERSION" ]; then
+    VERSION="$MANAGED_RUBY_VERSION"
 else
     VERSION=$(ruby --version | cut -d' ' -f2 | cut -dp -f1)
 fi
 
-if [ -z "$VERSION" ]; then
-    die "Please provide an installed/usable Ruby version"
+VERSION_INSTALLED=$(ruby --version | cut -d' ' -f2 | cut -dp -f1)
+if [ "$VERSION" != "$VERSION_INSTALLED" ]; then
+  die "Please provide an installed/usable Ruby version. The command ruby --version returns $VERSION_INSTALLED"
 fi
+
 echo "Setting Ruby version to: $VERSION"
 
 cd "$ROOT" || die "Failed to change to $ROOT"
