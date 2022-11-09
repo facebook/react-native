@@ -24,6 +24,7 @@ const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint
 const {useEffect, useState, useCallback, useRef} = React;
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+const isFabric = global.nativeFabricUIManager != null;
 
 export default function DevtoolsOverlay({
   inspectedView,
@@ -179,17 +180,19 @@ export default function DevtoolsOverlay({
 
   let highlight = inspected ? <ElementBox frame={inspected.frame} /> : null;
   if (isInspecting) {
-    const events = ReactNativeFeatureFlags.shouldEmitW3CPointerEvents
-      ? {
-          onPointerMove,
-          onPointerDown: onPointerMove,
-          onPointerUp: stopInspecting,
-        }
-      : {
-          onStartShouldSetResponder: shouldSetResponser,
-          onResponderMove: onResponderMove,
-          onResponderRelease: stopInspecting,
-        };
+    const events =
+      // Pointer events only work on fabric
+      isFabric && ReactNativeFeatureFlags.shouldEmitW3CPointerEvents
+        ? {
+            onPointerMove,
+            onPointerDown: onPointerMove,
+            onPointerUp: stopInspecting,
+          }
+        : {
+            onStartShouldSetResponder: shouldSetResponser,
+            onResponderMove: onResponderMove,
+            onResponderRelease: stopInspecting,
+          };
     return (
       <View
         nativeID="devToolsInspectorOverlay"
