@@ -19,7 +19,6 @@ import type {TextInputType} from './TextInput.flow';
 
 import usePressability from '../../Pressability/usePressability';
 import flattenStyle from '../../StyleSheet/flattenStyle';
-import processLayoutProps from '../../StyleSheet/processStyles';
 import StyleSheet, {
   type ColorValue,
   type TextStyleProp,
@@ -1407,13 +1406,10 @@ function InternalTextInput(props: Props): React.Node {
         ? RCTMultilineTextInputView
         : RCTSinglelineTextInputView;
 
-    let style =
+    const style =
       props.multiline === true
-        ? [styles.multilineInput, props.style]
+        ? StyleSheet.flatten([styles.multilineInput, props.style])
         : props.style;
-
-    style = flattenStyle(style);
-    style = processLayoutProps(style);
 
     const useOnChangeSync =
       (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
@@ -1446,9 +1442,7 @@ function InternalTextInput(props: Props): React.Node {
       />
     );
   } else if (Platform.OS === 'android') {
-    let style = flattenStyle(props.style);
-    style = processLayoutProps(style);
-
+    const style = [props.style];
     const autoCapitalize = props.autoCapitalize || 'sentences';
     const _accessibilityLabelledBy =
       props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy;
