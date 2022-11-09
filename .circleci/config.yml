@@ -102,7 +102,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:6.0
+      - image: reactnativecommunity/react-native-android:6.1
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
@@ -964,8 +964,8 @@ jobs:
     environment:
       - ANDROID_HOME: "C:\\Android\\android-sdk"
       - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
-      - ANDROID_BUILD_VERSION: 31
-      - ANDROID_TOOLS_VERSION: 31.0.0
+      - ANDROID_BUILD_VERSION: 33
+      - ANDROID_TOOLS_VERSION: 33.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - checkout_code_with_cache
