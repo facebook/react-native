@@ -46,6 +46,7 @@ export interface AccessibilityProps
    * Accessibility State tells a person using either VoiceOver on iOS or TalkBack on Android the state of the element currently focused on.
    */
   accessibilityState?: AccessibilityState | undefined;
+  accessibilityUnit?: AccessibilityUnit | undefined;
 
   /**
    * alias for accessibilityState

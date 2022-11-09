@@ -63,5 +63,18 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
     public ReactTtsSpan build() {
       return new ReactTtsSpan(mType, mArgs);
     }
+
+    public C setIntArgument(String arg, int value) {
+      mArgs.putInt(arg, value);
+      return (C) this;
+    }
   }
+  /*
+  public static class TimeBuilder extends SemioticClassBuilder<TimeBuilder> {
+
+    public TimeBuilder() {
+      super(TtsSpan.TYPE_TIME);
+    }
+  }
+  */
 }

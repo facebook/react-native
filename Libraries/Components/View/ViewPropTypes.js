@@ -27,6 +27,7 @@ import type {
   AccessibilityRole,
   AccessibilityState,
   AccessibilityValue,
+  AccessibilityUnit,
   Role,
 } from './ViewAccessibility';
 import type {Node} from 'react';
@@ -501,6 +502,7 @@ export type ViewProps = $ReadOnly<{|
    * Indicates to accessibility services that UI Component is in a specific State.
    */
   accessibilityState?: ?AccessibilityState,
+  accessibilityUnit?: ?AccessibilityUnit,
   accessibilityValue?: ?AccessibilityValue,
 
   /**

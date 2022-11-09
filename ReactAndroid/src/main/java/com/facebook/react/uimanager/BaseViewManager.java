@@ -10,6 +10,7 @@ package com.facebook.react.uimanager;
 import android.graphics.Color;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
@@ -262,6 +263,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setAccessibilityCollectionItem(
       @NonNull T view, @Nullable ReadableMap accessibilityCollectionItem) {
     view.setTag(R.id.accessibility_collection_item, accessibilityCollectionItem);
+  }
+
+  @ReactProp(name = "accessibilityUnit")
+  public void setAccessibilityUnit(@NonNull T view, @Nullable ReadableMap accessibilityUnit) {
+    Log.w("TESTING::BaseViewManager", "setAccessibilityUnit");
+    Log.w("TESTING::BaseViewManager", "accessibilityUnit: " + (accessibilityUnit));
   }
 
   @Override

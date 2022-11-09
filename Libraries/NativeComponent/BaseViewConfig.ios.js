@@ -189,6 +189,7 @@ const validAttributesForNonEventProps = {
   transform: {diff: require('../Utilities/differ/matricesDiffer')},
   accessibilityRole: true,
   accessibilityState: true,
+  accessibilityUnit: false,
   nativeID: true,
   pointerEvents: true,
   removeClippedSubviews: true,

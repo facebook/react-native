@@ -18,7 +18,6 @@ export type AccessibilityRole =
   | 'button'
   | 'togglebutton'
   | 'link'
-  | 'verbatim'
   | 'cardinal'
   | 'ordinal'
   | 'decimal'
@@ -148,6 +147,10 @@ export type AccessibilityState = {
   busy?: boolean,
   expanded?: boolean,
   ...
+};
+
+export type AccessibilityUnit = {
+  hours?: number,
 };
 
 export type AccessibilityValue = $ReadOnly<{|

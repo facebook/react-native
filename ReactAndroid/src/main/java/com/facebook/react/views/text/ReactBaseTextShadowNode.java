@@ -15,6 +15,7 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
@@ -185,9 +186,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(start, end, new ReactClickableSpan(textShadowNode.getReactTag())));
       }
       if (textShadowNode.mAccessibilityUnit != null && Build.VERSION.SDK_INT >= 21) {
+        /*
         ops.add(
             new SetSpanOperation(
                 start, end, new ReactTtsSpan.Builder(textShadowNode.mAccessibilityUnit).build()));
+                */
       }
       float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
       if (!Float.isNaN(effectiveLetterSpacing)
@@ -511,6 +514,14 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       mIsAccessibilityLink = Objects.equals(accessibilityRole, "link");
       mAccessibilityUnit =
           ReactTtsSpan.SUPPORTED_UNIT_TYPES.contains(roleClassName) ? roleClassName : null;
+      markUpdated();
+    }
+  }
+
+  @ReactProp(name = "accessibilityUnit")
+  public void setAccessibilityUnit(@Nullable String accessibilityUnit) {
+    Log.w("TESTING::ReactBaseTextShadowNode", "accessibilityUnit: " + (accessibilityUnit));
+    if (isVirtual()) {
       markUpdated();
     }
   }
