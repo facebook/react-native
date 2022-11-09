@@ -284,6 +284,11 @@ const APIs: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     module: require('../examples/TurboModule/TurboModuleExample'),
   },
+  {
+    key: 'TurboCxxModuleExample',
+    category: 'Basic',
+    module: require('../examples/TurboModule/TurboCxxModuleExample'),
+  },
 ];
 
 if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {

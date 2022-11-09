@@ -312,6 +312,10 @@ const APIs: Array<RNTesterModuleInfo> = [
     supportsTVOS: false,
   },
   {
+    key: 'TurboCxxModuleExample',
+    module: require('../examples/TurboModule/TurboCxxModuleExample'),
+  },
+  {
     key: 'VibrationExample',
     module: require('../examples/Vibration/VibrationExample'),
     supportsTVOS: false,
