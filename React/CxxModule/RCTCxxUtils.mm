@@ -6,7 +6,9 @@
  */
 
 #import "RCTCxxUtils.h"
+#import "JSErrorHandler2.h"
 
+#import <React/RCTConstants.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
@@ -19,8 +21,6 @@
 
 namespace facebook {
 namespace react {
-
-using facebook::jsi::JSError;
 
 std::vector<std::unique_ptr<NativeModule>>
 createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
@@ -42,13 +42,39 @@ createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const 
 
 static NSError *errorWithException(const std::exception &e)
 {
-  NSString *msg = @(e.what());
+  NSString *msg;
   NSMutableDictionary *errorInfo = [NSMutableDictionary dictionary];
 
-  const auto *jsError = dynamic_cast<const JSError *>(&e);
-  if (jsError) {
-    errorInfo[RCTJSRawStackTraceKey] = @(jsError->getStack().c_str());
-    msg = [@"Unhandled JS Exception: " stringByAppendingString:msg];
+  const auto *jsError = dynamic_cast<const jsi::JSError *>(&e);
+
+  if (jsError && RCTGetParseUnhandledJSErrorStackNatively()) {
+    ParsedJSError parsedError = parseJSErrorStack(*jsError, true, false);
+
+    NSString *message = [NSString stringWithCString:parsedError.message.c_str()
+                                           encoding:[NSString defaultCStringEncoding]];
+
+    NSMutableArray<NSDictionary *> *stackArray = [NSMutableArray<NSDictionary *> new];
+
+    for (auto frame : parsedError.frames) {
+      NSMutableDictionary *frameDict = [NSMutableDictionary new];
+      frameDict[@"file"] = [NSString stringWithCString:frame.fileName.c_str()
+                                              encoding:[NSString defaultCStringEncoding]];
+      frameDict[@"methodName"] = [NSString stringWithCString:frame.methodName.c_str()
+                                                    encoding:[NSString defaultCStringEncoding]];
+      if (frame.lineNumber.has_value()) {
+        frameDict[@"lineNumber"] = @(frame.lineNumber.value());
+      }
+      if (frame.columnNumber.has_value()) {
+        frameDict[@"column"] = @(frame.columnNumber.value());
+      }
+      [stackArray addObject:frameDict];
+    }
+
+    msg = [@"Unhandled JS Exception: " stringByAppendingString:message];
+    errorInfo[RCTJSStackTraceKey] = stackArray;
+    errorInfo[RCTJSRawStackTraceKey] = @(e.what());
+  } else {
+    msg = @(e.what());
   }
 
   NSError *nestedError;
