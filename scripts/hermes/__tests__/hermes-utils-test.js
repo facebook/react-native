@@ -387,29 +387,14 @@ describe('hermes-utils', () => {
 
     describe('getHermesPrebuiltArtifactsTarballName', () => {
       it('should return Hermes prebuilts tarball name', () => {
-        expect(
-          getHermesPrebuiltArtifactsTarballName('Debug', '1000.0.0'),
-        ).toEqual('hermes-runtime-darwin-debug-v1000.0.0.tar.gz');
+        expect(getHermesPrebuiltArtifactsTarballName('Debug')).toEqual(
+          'hermes-ios-debug.tar.gz',
+        );
       });
       it('should throw if build type is undefined', () => {
         expect(() => {
           getHermesPrebuiltArtifactsTarballName();
         }).toThrow('Did not specify build type.');
-      });
-      it('should throw if release version is undefined', () => {
-        expect(() => {
-          getHermesPrebuiltArtifactsTarballName('Release');
-        }).toThrow('Did not specify release version.');
-      });
-      it('should return debug Hermes prebuilts tarball name for RN 0.70.0', () => {
-        expect(
-          getHermesPrebuiltArtifactsTarballName('Debug', '0.70.0'),
-        ).toEqual('hermes-runtime-darwin-debug-v0.70.0.tar.gz');
-      });
-      it('should return a wildcard Hermes prebuilts tarball name for any RN version', () => {
-        expect(getHermesPrebuiltArtifactsTarballName('Debug', '*')).toEqual(
-          'hermes-runtime-darwin-debug-v*.tar.gz',
-        );
       });
     });
 
@@ -426,7 +411,6 @@ describe('hermes-utils', () => {
         const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
           path.join(SDKS_DIR, 'hermes'),
           'Debug',
-          '1000.0.0',
           tarballOutputDir,
           excludeDebugSymbols,
         );
@@ -448,7 +432,6 @@ describe('hermes-utils', () => {
         const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
           path.join(SDKS_DIR, 'hermes'),
           'Debug',
-          '1000.0.0',
           tarballOutputDir,
           excludeDebugSymbols,
         );
