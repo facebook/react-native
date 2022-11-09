@@ -8,6 +8,7 @@
 #include <AppSpecs.h>
 #include <DefaultComponentsRegistry.h>
 #include <DefaultTurboModuleManagerDelegate.h>
+#include <NativeCxxModuleExample.h>
 #include <ReactCommon/SampleTurboModuleSpec.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
@@ -26,6 +27,9 @@ void registerComponents(
 std::shared_ptr<TurboModule> cxxModuleProvider(
     const std::string &name,
     const std::shared_ptr<CallInvoker> &jsInvoker) {
+  if (name == "NativeCxxModuleExampleCxx") {
+    return std::make_shared<NativeCxxModuleExample>(jsInvoker);
+  }
   return nullptr;
 }
 
