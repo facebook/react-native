@@ -121,7 +121,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   // the coordinate space of the RefreshControl. This ensures that the control respects any
   // offset in the view hierarchy, and that progressViewOffset is not inadvertently applied
   // multiple times.
-    
+
+  // Setting the UIRefreshControl's frame breaks integration with ContentInset from the superview
+  // if it is a UIScrollView. This integration happens when setting the UIScrollView's .refreshControl
+  // property. For this reason, setting the frame manually should be avoided, if not needed.
   if (_progressViewOffset > 0.f) {
     UIView *scrollView = self.superview;
     UIView *target = scrollView.superview;
