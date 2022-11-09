@@ -18,12 +18,42 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "NativeCxxModuleExample_ConstantsStruct.h"
-#include "NativeCxxModuleExample_ObjectStruct.h"
-#include "NativeCxxModuleExample_ValueStruct.h"
 
 namespace facebook::react {
 
+#pragma mark - Structs
+using ConstantsStruct =
+    NativeCxxModuleExampleCxxBaseConstantsStruct<bool, int32_t, std::string>;
+
+template <>
+struct Bridging<ConstantsStruct>
+    : NativeCxxModuleExampleCxxBaseConstantsStructBridging<
+          bool,
+          int32_t,
+          std::string> {};
+
+using ObjectStruct = NativeCxxModuleExampleCxxBaseObjectStruct<
+    int32_t,
+    std::string,
+    std::optional<std::string>>;
+
+template <>
+struct Bridging<ObjectStruct>
+    : NativeCxxModuleExampleCxxBaseObjectStructBridging<
+          int32_t,
+          std::string,
+          std::optional<std::string>> {};
+
+using ValueStruct =
+    NativeCxxModuleExampleCxxBaseValueStruct<double, std::string, ObjectStruct>;
+
+template <>
+struct Bridging<ValueStruct> : NativeCxxModuleExampleCxxBaseValueStructBridging<
+                                   double,
+                                   std::string,
+                                   ObjectStruct> {};
+
+#pragma mark - implementation
 class NativeCxxModuleExample
     : public NativeCxxModuleExampleCxxSpec<NativeCxxModuleExample> {
  public:
