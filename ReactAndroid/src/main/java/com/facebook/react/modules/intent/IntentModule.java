@@ -17,6 +17,7 @@ import android.provider.Settings;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativeIntentAndroidSpec;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -50,18 +51,20 @@ public class IntentModule extends NativeIntentAndroidSpec {
   public void getInitialURL(Promise promise) {
     try {
       Activity currentActivity = getCurrentActivity();
+      if (currentActivity == null) {
+        waitForActivityAndGetInitialURL(promise);
+        return;
+      }
+
+      Intent intent = currentActivity.getIntent();
+      String action = intent.getAction();
+      Uri uri = intent.getData();
+
       String initialURL = null;
-
-      if (currentActivity != null) {
-        Intent intent = currentActivity.getIntent();
-        String action = intent.getAction();
-        Uri uri = intent.getData();
-
-        if (uri != null
-            && (Intent.ACTION_VIEW.equals(action)
-                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
-          initialURL = uri.toString();
-        }
+      if (uri != null
+          && (Intent.ACTION_VIEW.equals(action)
+              || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
+        initialURL = uri.toString();
       }
 
       promise.resolve(initialURL);
@@ -70,6 +73,24 @@ public class IntentModule extends NativeIntentAndroidSpec {
           new JSApplicationIllegalArgumentException(
               "Could not get the initial URL : " + e.getMessage()));
     }
+  }
+
+  private void waitForActivityAndGetInitialURL(final Promise promise) {
+    final ReactApplicationContext context = getReactApplicationContext();
+    context.addLifecycleEventListener(
+        new LifecycleEventListener() {
+          @Override
+          public void onHostResume() {
+            getInitialURL(promise);
+            context.removeLifecycleEventListener(this);
+          }
+
+          @Override
+          public void onHostPause() {}
+
+          @Override
+          public void onHostDestroy() {}
+        });
   }
 
   /**
