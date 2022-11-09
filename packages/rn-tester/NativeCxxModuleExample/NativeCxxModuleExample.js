@@ -23,26 +23,28 @@ export type UnionFloat = 1.44 | 2.88 | 5.76;
 export type UnionString = 'One' | 'Two' | 'Three';
 export type UnionObject = {value: number} | {low: string};
 
-export type ObjectStruct = $ReadOnly<{
+export type ConstantsStruct = {|
+  const1: boolean,
+  const2: number,
+  const3: string,
+|};
+
+export type ObjectStruct = {|
   a: number,
   b: string,
   c?: ?string,
-}>;
+|};
 
-export type ValueStruct = $ReadOnly<{
+export type ValueStruct = {|
   x: number,
   y: string,
   z: ObjectStruct,
-}>;
+|};
 
 export interface Spec extends TurboModule {
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
-  +getConstants: () => {|
-    const1: boolean,
-    const2: number,
-    const3: string,
-  |};
+  +getConstants: () => ConstantsStruct;
   +getEnum: (arg: number /*EnumInt*/) => number /*EnumInt*/;
   +getMap: (arg: {[key: string]: ?number}) => {[key: string]: ?number};
   +getNumber: (arg: number) => number;
@@ -50,7 +52,7 @@ export interface Spec extends TurboModule {
   +getSet: (arg: Array<number>) => Array<number>;
   +getString: (arg: string) => string;
   +getUnion: (x: UnionFloat, y: UnionString, z: UnionObject) => string;
-  +getValue: (x: number, y: string, z: ObjectStruct) => ObjectStruct;
+  +getValue: (x: number, y: string, z: ObjectStruct) => ValueStruct;
   +getValueWithCallback: (callback: (value: string) => void) => void;
   +getValueWithPromise: (error: boolean) => Promise<string>;
   +voidFunc: () => void;

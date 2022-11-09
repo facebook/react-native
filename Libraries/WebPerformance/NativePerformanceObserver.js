@@ -18,7 +18,7 @@ export const RawPerformanceEntryTypeValues = {
 
 export type RawPerformanceEntryType = number;
 
-export type RawPerformanceEntry = $ReadOnly<{
+export type RawPerformanceEntry = {|
   name: string,
   entryType: RawPerformanceEntryType,
   startTime: number,
@@ -27,7 +27,7 @@ export type RawPerformanceEntry = $ReadOnly<{
   processingStart?: number,
   processingEnd?: number,
   interactionId?: number,
-}>;
+|};
 
 export interface Spec extends TurboModule {
   +startReporting: (entryType: string) => void;

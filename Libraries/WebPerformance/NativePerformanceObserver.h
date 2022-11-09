@@ -13,9 +13,33 @@
 #include <optional>
 #include <string>
 #include <vector>
-#include "NativePerformanceObserver_RawPerformanceEntry.h"
 
 namespace facebook::react {
+
+#pragma mark - Structs
+
+using RawPerformanceEntry = NativePerformanceObserverCxxBaseRawPerformanceEntry<
+    std::string,
+    int32_t,
+    double,
+    double,
+    // For "event" entries only:
+    std::optional<double>,
+    std::optional<double>,
+    std::optional<double>>;
+
+template <>
+struct Bridging<RawPerformanceEntry>
+    : NativePerformanceObserverCxxBaseRawPerformanceEntryBridging<
+          std::string,
+          int32_t,
+          double,
+          double,
+          std::optional<double>,
+          std::optional<double>,
+          std::optional<double>> {};
+
+#pragma mark - implementation
 
 class NativePerformanceObserver
     : public NativePerformanceObserverCxxSpec<NativePerformanceObserver>,
