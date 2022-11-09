@@ -121,11 +121,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   // the coordinate space of the RefreshControl. This ensures that the control respects any
   // offset in the view hierarchy, and that progressViewOffset is not inadvertently applied
   // multiple times.
-  UIView *scrollView = self.superview;
-  UIView *target = scrollView.superview;
-  CGPoint rawOffset = CGPointMake(0, _progressViewOffset);
-  CGPoint converted = [self convertPoint:rawOffset fromView:target];
-  self.frame = CGRectOffset(self.frame, 0, converted.y);
+    
+  if (_progressViewOffset > 0.f) {
+    UIView *scrollView = self.superview;
+    UIView *target = scrollView.superview;
+    CGPoint rawOffset = CGPointMake(0, _progressViewOffset);
+    CGPoint converted = [self convertPoint:rawOffset fromView:target];
+    self.frame = CGRectOffset(self.frame, 0, converted.y);
+  }
 }
 
 - (NSString *)title
