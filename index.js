@@ -24,7 +24,6 @@ import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/Keyboar
 import typeof Modal from './Libraries/Modal/Modal';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
-import typeof ProgressViewIOS from './Libraries/Components/ProgressViewIOS/ProgressViewIOS';
 import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
 import typeof ScrollView from './Libraries/Components/ScrollView/ScrollView';
@@ -159,16 +158,6 @@ module.exports = {
         'See https://github.com/react-native-progress-view/progress-bar-android',
     );
     return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
-  },
-  // $FlowFixMe[value-as-type]
-  get ProgressViewIOS(): ProgressViewIOS {
-    warnOnce(
-      'progress-view-ios-moved',
-      'ProgressViewIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
-        'See https://github.com/react-native-progress-view/progress-view',
-    );
-    return require('./Libraries/Components/ProgressViewIOS/ProgressViewIOS');
   },
   get RefreshControl(): RefreshControl {
     return require('./Libraries/Components/RefreshControl/RefreshControl');
@@ -767,6 +756,21 @@ if (__DEV__) {
           "Please upgrade to use either '@react-native-community/react-native-image-picker' or 'expo-image-picker'. " +
           "If you cannot upgrade to a different library, please install the deprecated '@react-native-community/image-picker-ios' package. " +
           'See https://github.com/rnc-archive/react-native-image-picker-ios',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access ProgressViewIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access ProgressViewIOS. */
+  Object.defineProperty(module.exports, 'ProgressViewIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ProgressViewIOS has been removed from react-native core. ' +
+          "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
+          'See https://github.com/react-native-progress-view/progress-view',
       );
     },
   });
