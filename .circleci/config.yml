@@ -159,6 +159,22 @@ commands:
           paths:
             - vendor/bundle
 
+  install_ruby_ubuntu:
+    steps:
+      - run:
+          name: setup rbenv
+          command: |
+            curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
+
+            echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+            echo "add eval(rbenv init) to ~/.bashrc"
+            echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+      - run:
+          name: install ruby
+          command: |
+            rbenv install 2.7.6 --verbose
+            rbenv global 2.7.6
+
   run_yarn:
     parameters:
       yarn_base_cache_key:
@@ -1360,6 +1376,10 @@ jobs:
     steps:
       - checkout_code_with_cache
       - run_yarn
+      - install_ruby_ubuntu
+      - run:
+          name: Which Ruby
+          command: which ruby
       - add_ssh_keys:
           fingerprints:
             - "1c:98:e0:3a:52:79:95:29:12:cd:b4:87:5b:41:e2:bb"
