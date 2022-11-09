@@ -302,19 +302,17 @@ function translateTypeAnnotation(
       return emitString(nullable);
     }
     case 'TSFunctionType': {
-      const translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation =
-        translateFunctionTypeAnnotation(
-          hasteModuleName,
-          typeAnnotation,
-          types,
-          aliasMap,
-          tryParse,
-          cxxOnly,
-          translateTypeAnnotation,
-          language,
-        );
-
-      return emitFunction(nullable, translateFunctionTypeAnnotationValue);
+      return emitFunction(
+        nullable,
+        hasteModuleName,
+        typeAnnotation,
+        types,
+        aliasMap,
+        tryParse,
+        cxxOnly,
+        translateTypeAnnotation,
+        language,
+      );
     }
     case 'TSUnionType': {
       if (cxxOnly) {
