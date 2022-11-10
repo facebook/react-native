@@ -29,7 +29,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    RCTWarnNotAllowedForNewArchitecture(
+    RCTErrorNotAllowedForNewArchitecture(
         self, @"ViewManager with interop layer is not allowed in the new architecture.");
     static const auto defaultProps = std::make_shared<const LegacyViewManagerInteropViewProps>();
     _props = defaultProps;
