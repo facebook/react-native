@@ -85,6 +85,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   // This helps to only update state from `scrollViewDidScroll` in case
   // some other part of the system scrolls scroll view.
   BOOL _isUserTriggeredScrolling;
+  BOOL _shouldUpdateContentInsetAdjustmentBehavior;
 
   CGPoint _contentOffsetWhenClipped;
 }
@@ -108,6 +109,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _scrollView.delaysContentTouches = NO;
     ((RCTEnhancedScrollView *)_scrollView).overridingDelegate = self;
     _isUserTriggeredScrolling = NO;
+    _shouldUpdateContentInsetAdjustmentBehavior = YES;
     [self addSubview:_scrollView];
 
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -253,7 +255,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     }
   }
 
-  if (oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) {
+  if ((oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) ||
+      _shouldUpdateContentInsetAdjustmentBehavior) {
     auto const contentInsetAdjustmentBehavior = newScrollViewProps.contentInsetAdjustmentBehavior;
     if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Never) {
       scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
@@ -264,6 +267,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Always) {
       scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
     }
+    _shouldUpdateContentInsetAdjustmentBehavior = NO;
   }
 
   MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);
@@ -377,6 +381,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 {
   const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
+  // We set the default behavior to "never" so that iOS
+  // doesn't do weird things to UIScrollView insets automatically
+  // and keeps it as an opt-in behavior.
+  _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+  _shouldUpdateContentInsetAdjustmentBehavior = YES;
   _state.reset();
   _isUserTriggeredScrolling = NO;
   [super prepareForRecycle];
