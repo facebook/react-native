@@ -43,6 +43,9 @@ public abstract class BaseViewManagerAdapter<T extends View>
   public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {}
 
   @Override
+  public void setAccessibilityUnit(@NonNull T view, @Nullable ReadableMap accessibilityUnit) {}
+
+  @Override
   public void setBackgroundColor(@NonNull T view, int backgroundColor) {}
 
   @Override

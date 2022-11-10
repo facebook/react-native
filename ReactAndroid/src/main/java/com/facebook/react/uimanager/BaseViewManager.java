@@ -266,12 +266,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_collection_item, accessibilityCollectionItem);
   }
 
-  @ReactProp(name = "accessibilityUnit")
-  public void setAccessibilityUnit(@NonNull T view, @Nullable ReadableMap accessibilityUnit) {
-    Log.w("TESTING::BaseViewManager", "setAccessibilityUnit");
-    Log.w("TESTING::BaseViewManager", "accessibilityUnit: " + (accessibilityUnit));
-  }
-
   @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_STATE)
   public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {
@@ -323,6 +317,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
       }
     }
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.ACCESSIBILITY_UNIT)
+  public void setAccessibilityUnit(@NonNull T view, @Nullable ReadableMap accessibilityUnit) {
+    Log.w("TESTING::BaseViewManager", "setAccessibilityUnit");
   }
 
   private void updateViewContentDescription(@NonNull T view) {

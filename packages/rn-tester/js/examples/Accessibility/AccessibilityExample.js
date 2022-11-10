@@ -169,9 +169,10 @@ class AccessibilityExample extends React.Component<{}> {
           </View>
           <View>
             <Text accessible={true}>
-              My number is{' '}
+              My number is <View accessibilityUnit={{hours: '10'}} />
               <Text
                 accessibilityRole="time"
+                accessibilityUnit={{hours: '10'}}
                 accessible={true}
                 style={{backgroundColor: 'red'}}>
                 17:00
@@ -413,6 +414,7 @@ class SwitchExample extends React.Component<
   _onSwitchToggle = () => {
     const switchState = !this.state.switchState;
 
+    console.log('switchState:', switchState);
     this.setState({
       switchState: switchState,
     });
@@ -420,14 +422,12 @@ class SwitchExample extends React.Component<
 
   render(): React.Node {
     return (
-      <TouchableOpacity
-        onPress={this._onSwitchToggle}
-        accessibilityLabel="element 12"
-        accessibilityRole="switch"
-        accessibilityState={{checked: this.state.switchState}}
-        accessible={true}>
-        <Text>Switch example</Text>
-      </TouchableOpacity>
+      <Text
+        onPress={() => console.log('onPress')}
+        disabled
+        accessibilityState={{disabled: true}}>
+        This is a Switch example
+      </Text>
     );
   }
 }
