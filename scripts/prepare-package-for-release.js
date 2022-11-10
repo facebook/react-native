@@ -21,6 +21,7 @@
 const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
 const {isReleaseBranch, parseVersion} = require('./version-utils');
+const {failIfTagExists} = require('./release-utils');
 
 const argv = yargs
   .option('r', {
@@ -48,6 +49,8 @@ const remote = argv.remote;
 const releaseVersion = argv.toVersion;
 const isLatest = argv.latest;
 const isDryRun = argv.dryRun;
+
+failIfTagExists(releaseVersion);
 
 if (branch && !isReleaseBranch(branch) && !isDryRun) {
   console.error(`This needs to be on a release branch. On branch: ${branch}`);
