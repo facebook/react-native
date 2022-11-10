@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -99,8 +99,26 @@ function emitStringish(nullable: boolean): Nullable<StringTypeAnnotation> {
 
 function emitFunction(
   nullable: boolean,
-  translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation,
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  translateTypeAnnotation: $FlowFixMe,
+  language: ParserType,
 ): Nullable<NativeModuleFunctionTypeAnnotation> {
+  const translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation =
+    translateFunctionTypeAnnotation(
+      hasteModuleName,
+      typeAnnotation,
+      types,
+      aliasMap,
+      tryParse,
+      cxxOnly,
+      translateTypeAnnotation,
+      language,
+    );
   return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
 }
 
