@@ -17,8 +17,8 @@ body:
     id: version
     attributes:
       label: Version
-      description: What react-native version does this appear on?
-      placeholder: ex. 0.66.0
+      description: What react-native version does this appear on? Bear in mind that only issues on [supported versions](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported) will be looked into.
+      placeholder: ex. 0.70.0
     validations:
       required: true
   - type: textarea
