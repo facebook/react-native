@@ -20,17 +20,10 @@ import {act, create} from 'react-test-renderer';
 function TestView({
   childKey = null,
   effect,
-}:
-  | $FlowFixMe
-  | $TEMPORARY$object<{
-      childKey: $TEMPORARY$string<'bar'>,
-      effect: () => () => void,
-    }>
-  | $TEMPORARY$object<{childKey: $TEMPORARY$string<'foo'>, effect: () => void}>
-  | $TEMPORARY$object<{
-      childKey: $TEMPORARY$string<'foo'>,
-      effect: () => () => void,
-    }>) {
+}: {
+  childKey: ?string,
+  effect: () => (() => void) | void,
+}) {
   const ref = useRefEffect(effect);
   return <View key={childKey} ref={ref} testID={childKey} />;
 }

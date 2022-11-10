@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 
 public class RNTesterActivity extends ReactActivity {
@@ -23,8 +24,8 @@ public class RNTesterActivity extends ReactActivity {
       super(
           activity,
           mainComponentName,
-          true, // fabricEnabled
-          true // concurrentRootEnabled
+          DefaultNewArchitectureEntryPoint.getFabricEnabled(), // fabricEnabled
+          DefaultNewArchitectureEntryPoint.getConcurrentReactEnabled() // concurrentRootEnabled
           );
       this.mActivity = activity;
     }

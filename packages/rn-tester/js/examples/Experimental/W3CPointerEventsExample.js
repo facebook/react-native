@@ -22,6 +22,7 @@ import PointerEventPointerMoveAcross from './W3CPointerEventPlatformTests/Pointe
 import PointerEventPointerMoveEventOrder from './W3CPointerEventPlatformTests/PointerEventPointerMoveEventOrder';
 import PointerEventPointerMoveBetween from './W3CPointerEventPlatformTests/PointerEventPointerMoveBetween';
 import PointerEventPointerOverOut from './W3CPointerEventPlatformTests/PointerEventPointerOverOut';
+import PointerEventLayoutChangeShouldFirePointerOver from './W3CPointerEventPlatformTests/PointerEventLayoutChangeShouldFirePointerOver';
 import EventfulView from './W3CPointerEventsEventfulView';
 import ManyPointersPropertiesExample from './Compatibility/ManyPointersPropertiesExample';
 
@@ -221,6 +222,14 @@ export default {
       title: 'WPT: PointerOver/PointerOut handling',
       render(): React.Node {
         return <PointerEventPointerOverOut />;
+      },
+    },
+    {
+      name: 'pointerevent_layout_change_should_fire_pointerover',
+      description: '',
+      title: 'WPT: Layout change should fire pointerover',
+      render(): React.Node {
+        return <PointerEventLayoutChangeShouldFirePointerOver />;
       },
     },
     {

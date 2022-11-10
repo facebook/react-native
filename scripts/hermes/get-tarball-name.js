@@ -14,7 +14,7 @@
  * Hermes tarball for the given build type and release version.
  */
 const yargs = require('yargs');
-const {getHermesTarballName} = require('./hermes-utils');
+const {getHermesPrebuiltArtifactsTarballName} = require('./hermes-utils');
 
 let argv = yargs
   .option('b', {
@@ -31,7 +31,10 @@ let argv = yargs
   }).argv;
 
 async function main() {
-  const tarballName = getHermesTarballName(argv.buildType, argv.releaseVersion);
+  const tarballName = getHermesPrebuiltArtifactsTarballName(
+    argv.buildType,
+    argv.releaseVersion,
+  );
   console.log(tarballName);
   return tarballName;
 }

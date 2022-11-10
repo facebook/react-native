@@ -116,48 +116,8 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
   return value;
 }
 
-// TODO(T71778680): Flow-type ASTNodes.
-function isModuleRegistryCall(node: $FlowFixMe): boolean {
-  if (node.type !== 'CallExpression') {
-    return false;
-  }
-
-  const callExpression = node;
-
-  if (callExpression.callee.type !== 'MemberExpression') {
-    return false;
-  }
-
-  const memberExpression = callExpression.callee;
-  if (
-    !(
-      memberExpression.object.type === 'Identifier' &&
-      memberExpression.object.name === 'TurboModuleRegistry'
-    )
-  ) {
-    return false;
-  }
-
-  if (
-    !(
-      memberExpression.property.type === 'Identifier' &&
-      (memberExpression.property.name === 'get' ||
-        memberExpression.property.name === 'getEnforcing')
-    )
-  ) {
-    return false;
-  }
-
-  if (memberExpression.computed) {
-    return false;
-  }
-
-  return true;
-}
-
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
   getTypes,
-  isModuleRegistryCall,
 };

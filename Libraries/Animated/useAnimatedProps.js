@@ -33,7 +33,7 @@ type CallbackRef<T> = T => mixed;
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
-  const [, scheduleUpdate] = useReducer(count => count + 1, 0);
+  const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
   const onUpdateRef = useRef<?() => void>(null);
 
   // TODO: Only invalidate `node` if animated props or `style` change. In the

@@ -124,6 +124,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         # Assert
         assert_equal(spec.compiler_flags, NewArchitectureHelper.folly_compiler_flags)
         assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\"")
+        assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
         assert_equal(
             spec.dependencies,
             [
@@ -133,6 +134,7 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "React-Codegen" },
                 { :dependency_name => "RCTRequired" },
                 { :dependency_name => "RCTTypeSafety" },
+                { :dependency_name => "ReactCommon/turbomodule/bridging" },
                 { :dependency_name => "ReactCommon/turbomodule/core" }
         ])
     end
@@ -152,6 +154,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         # Assert
         assert_equal(spec.compiler_flags, "-Wno-nullability-completeness #{NewArchitectureHelper.folly_compiler_flags}")
         assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "#{other_flags} \"$(PODS_ROOT)/boost\"")
+        assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
         assert_equal(
             spec.dependencies,
             [

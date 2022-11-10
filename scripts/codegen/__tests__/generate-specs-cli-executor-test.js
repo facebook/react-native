@@ -26,7 +26,7 @@ describe('generateSpec', () => {
     const outputDirectory = normalize('app/ios/build/generated/ios');
     const libraryName = 'library';
     const packageName = 'com.library';
-    const generators = ['componentsIOS', 'modulesIOS'];
+    const generators = ['componentsIOS', 'modulesIOS', 'modulesCxx'];
 
     jest.mock('fs', () => ({
       readFileSync: (path, encoding) => {

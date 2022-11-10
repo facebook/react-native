@@ -24,7 +24,6 @@ import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/Keyboar
 import typeof Modal from './Libraries/Modal/Modal';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
-import typeof ProgressViewIOS from './Libraries/Components/ProgressViewIOS/ProgressViewIOS';
 import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
 import typeof ScrollView from './Libraries/Components/ScrollView/ScrollView';
@@ -51,7 +50,6 @@ import typeof * as AnimatedModule from './Libraries/Animated/Animated';
 import typeof Appearance from './Libraries/Utilities/Appearance';
 import typeof AppRegistry from './Libraries/ReactNative/AppRegistry';
 import typeof AppState from './Libraries/AppState/AppState';
-import typeof AsyncStorage from './Libraries/Storage/AsyncStorage';
 import typeof BackHandler from './Libraries/Utilities/BackHandler';
 import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
@@ -60,7 +58,6 @@ import typeof Dimensions from './Libraries/Utilities/Dimensions';
 import typeof Easing from './Libraries/Animated/Easing';
 import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
 import typeof I18nManager from './Libraries/ReactNative/I18nManager';
-import typeof ImagePickerIOS from './Libraries/Image/ImagePickerIOS';
 import typeof InteractionManager from './Libraries/Interaction/InteractionManager';
 import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
 import typeof LayoutAnimation from './Libraries/LayoutAnimation/LayoutAnimation';
@@ -162,16 +159,6 @@ module.exports = {
     );
     return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
   },
-  // $FlowFixMe[value-as-type]
-  get ProgressViewIOS(): ProgressViewIOS {
-    warnOnce(
-      'progress-view-ios-moved',
-      'ProgressViewIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
-        'See https://github.com/react-native-progress-view/progress-view',
-    );
-    return require('./Libraries/Components/ProgressViewIOS/ProgressViewIOS');
-  },
   get RefreshControl(): RefreshControl {
     return require('./Libraries/Components/RefreshControl/RefreshControl');
   },
@@ -252,16 +239,6 @@ module.exports = {
   get AppState(): AppState {
     return require('./Libraries/AppState/AppState');
   },
-  // $FlowFixMe[value-as-type]
-  get AsyncStorage(): AsyncStorage {
-    warnOnce(
-      'async-storage-moved',
-      'AsyncStorage has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. " +
-        'See https://github.com/react-native-async-storage/async-storage',
-    );
-    return require('./Libraries/Storage/AsyncStorage');
-  },
   get BackHandler(): BackHandler {
     return require('./Libraries/Utilities/BackHandler');
   },
@@ -291,16 +268,6 @@ module.exports = {
   },
   get I18nManager(): I18nManager {
     return require('./Libraries/ReactNative/I18nManager');
-  },
-  get ImagePickerIOS(): ImagePickerIOS {
-    warnOnce(
-      'imagePickerIOS-moved',
-      'ImagePickerIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "Please upgrade to use either '@react-native-community/react-native-image-picker' or 'expo-image-picker'. " +
-        "If you cannot upgrade to a different library, please install the deprecated '@react-native-community/image-picker-ios' package. " +
-        'See https://github.com/rnc-archive/react-native-image-picker-ios',
-    );
-    return require('./Libraries/Image/ImagePickerIOS');
   },
   get InteractionManager(): InteractionManager {
     return require('./Libraries/Interaction/InteractionManager');
@@ -433,44 +400,44 @@ module.exports = {
   },
   // Deprecated Prop Types
   get ColorPropType(): $FlowFixMe {
-    invariant(
-      false,
-      'ColorPropType has been removed from React Native, along with all ' +
+    console.error(
+      'ColorPropType will be removed from React Native, along with all ' +
         'other PropTypes. We recommend that you migrate away from PropTypes ' +
         'and switch to a type system like TypeScript. If you need to ' +
         'continue using ColorPropType, migrate to the ' +
         "'deprecated-react-native-prop-types' package.",
     );
+    return require('deprecated-react-native-prop-types').ColorPropType;
   },
   get EdgeInsetsPropType(): $FlowFixMe {
-    invariant(
-      false,
-      'EdgeInsetsPropType has been removed from React Native, along with all ' +
+    console.error(
+      'EdgeInsetsPropType will be removed from React Native, along with all ' +
         'other PropTypes. We recommend that you migrate away from PropTypes ' +
         'and switch to a type system like TypeScript. If you need to ' +
         'continue using EdgeInsetsPropType, migrate to the ' +
         "'deprecated-react-native-prop-types' package.",
     );
+    return require('deprecated-react-native-prop-types').EdgeInsetsPropType;
   },
   get PointPropType(): $FlowFixMe {
-    invariant(
-      false,
-      'PointPropType has been removed from React Native, along with all ' +
+    console.error(
+      'PointPropType will be removed from React Native, along with all ' +
         'other PropTypes. We recommend that you migrate away from PropTypes ' +
         'and switch to a type system like TypeScript. If you need to ' +
         'continue using PointPropType, migrate to the ' +
         "'deprecated-react-native-prop-types' package.",
     );
+    return require('deprecated-react-native-prop-types').PointPropType;
   },
   get ViewPropTypes(): $FlowFixMe {
-    invariant(
-      false,
-      'ViewPropTypes has been removed from React Native, along with all ' +
+    console.error(
+      'ViewPropTypes will be removed from React Native, along with all ' +
         'other PropTypes. We recommend that you migrate away from PropTypes ' +
         'and switch to a type system like TypeScript. If you need to ' +
         'continue using ViewPropTypes, migrate to the ' +
         "'deprecated-react-native-prop-types' package.",
     );
+    return require('deprecated-react-native-prop-types').ViewPropTypes;
   },
 };
 
@@ -758,6 +725,52 @@ if (__DEV__) {
         'MaskedViewIOS has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/react-native-masked-view' instead of 'react-native'. " +
           'See https://github.com/react-native-masked-view/masked-view',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access AsyncStorage. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access AsyncStorage. */
+  Object.defineProperty(module.exports, 'AsyncStorage', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'AsyncStorage has been removed from react-native core. ' +
+          "It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. " +
+          'See https://github.com/react-native-async-storage/async-storage',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access ImagePickerIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access ImagePickerIOS. */
+  Object.defineProperty(module.exports, 'ImagePickerIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ImagePickerIOS has been removed from React Native. ' +
+          "Please upgrade to use either '@react-native-community/react-native-image-picker' or 'expo-image-picker'. " +
+          "If you cannot upgrade to a different library, please install the deprecated '@react-native-community/image-picker-ios' package. " +
+          'See https://github.com/rnc-archive/react-native-image-picker-ios',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access ProgressViewIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access ProgressViewIOS. */
+  Object.defineProperty(module.exports, 'ProgressViewIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ProgressViewIOS has been removed from react-native core. ' +
+          "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
+          'See https://github.com/react-native-progress-view/progress-view',
       );
     },
   });

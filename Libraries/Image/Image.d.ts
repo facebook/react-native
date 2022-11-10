@@ -8,9 +8,10 @@
  */
 
 import * as React from 'react';
-import {Constructor, Insets} from 'Utilities';
+import {Constructor} from '../../types/private/Utilities';
 import {AccessibilityProps} from '../Components/View/ViewAccessibility';
-import {NativeMethods} from '../Renderer/shims/ReactNativeTypes';
+import {Insets} from '../../types/public/Insets';
+import {NativeMethods} from '../../types/public/ReactNativeTypes';
 import {StyleProp} from '../StyleSheet/StyleSheet';
 import {ImageStyle, ViewStyle} from '../StyleSheet/StyleSheetTypes';
 import {LayoutChangeEvent, NativeSyntheticEvent} from '../Types/CoreEventTypes';

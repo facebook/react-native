@@ -18,7 +18,7 @@ const path = require('path');
  * Must be invoked after Hermes has been built.
  */
 const yargs = require('yargs');
-const {createHermesTarball} = require('./hermes-utils');
+const {createHermesPrebuiltArtifactsTarball} = require('./hermes-utils');
 
 let argv = yargs
   .option('i', {
@@ -40,12 +40,18 @@ let argv = yargs
   .option('o', {
     alias: 'outputDir',
     describe: 'Location where the tarball will be saved to.',
+  })
+  .option('exclude-debug-symbols', {
+    describe: 'Whether dSYMs should be excluded from the tarball.',
+    type: 'boolean',
+    default: true,
   }).argv;
 
 async function main() {
   const hermesDir = argv.inputDir;
   const buildType = argv.buildType;
   const releaseVersion = argv.releaseVersion;
+  const excludeDebugSymbols = argv.excludeDebugSymbols;
   let tarballOutputDir = argv.outputDir;
 
   if (!tarballOutputDir) {
@@ -60,11 +66,12 @@ async function main() {
     }
   }
 
-  const tarballOutputPath = createHermesTarball(
+  const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
     hermesDir,
     buildType,
     releaseVersion,
     tarballOutputDir,
+    excludeDebugSymbols,
   );
   console.log(tarballOutputPath);
   return tarballOutputPath;

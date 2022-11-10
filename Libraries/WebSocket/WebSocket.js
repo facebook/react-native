@@ -43,6 +43,10 @@ const CLOSED = 3;
 
 const CLOSE_NORMAL = 1000;
 
+// Abnormal closure where no code is provided in a control frame
+// https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
+const CLOSE_ABNORMAL = 1006;
+
 const WEBSOCKET_EVENTS = ['close', 'error', 'message', 'open'];
 
 let nextWebSocketId = 0;
@@ -260,6 +264,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
           new WebSocketEvent('close', {
             code: ev.code,
             reason: ev.reason,
+            // TODO: missing `wasClean` (exposed on iOS as `clean` but missing on Android)
           }),
         );
         this._unregisterEvents();
@@ -277,7 +282,9 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
         );
         this.dispatchEvent(
           new WebSocketEvent('close', {
-            message: ev.message,
+            code: CLOSE_ABNORMAL,
+            reason: ev.message,
+            // TODO: Expose `wasClean`
           }),
         );
         this._unregisterEvents();

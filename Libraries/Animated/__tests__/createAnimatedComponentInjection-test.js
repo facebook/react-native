@@ -13,40 +13,50 @@
 
 import * as React from 'react';
 
-const createAnimatedComponent = require('../createAnimatedComponent').default;
+let Animated = require('../Animated').default;
+const createAnimatedComponent_EXPERIMENTAL =
+  require('../createAnimatedComponent_EXPERIMENTAL').default;
 const createAnimatedComponentInjection = require('../createAnimatedComponentInjection');
+let TestRenderer = require('react-test-renderer');
+
+let callback;
 
 function injected<TProps: {...}, TInstance>(
   Component: React.AbstractComponent<TProps, TInstance>,
 ): React.AbstractComponent<TProps, TInstance> {
-  return createAnimatedComponent(Component);
+  callback();
+  return createAnimatedComponent_EXPERIMENTAL(Component);
 }
 
 beforeEach(() => {
   jest.resetModules();
   jest.resetAllMocks();
+  callback = jest.fn();
 });
 
 test('does nothing without injection', () => {
-  expect(typeof createAnimatedComponent).toBe('function');
-  expect(createAnimatedComponent).not.toBe(injected);
+  const opacity = new Animated.Value(0);
+  TestRenderer.create(<Animated.View style={{opacity}} />);
+  expect(callback.mock.calls.length).toBe(0);
 });
 
 test('injection overrides `createAnimatedComponent`', () => {
   createAnimatedComponentInjection.inject(injected);
-
-  expect(createAnimatedComponent).toBe(injected);
+  const opacity = new Animated.Value(0);
+  TestRenderer.create(<Animated.View style={{opacity}} />);
+  expect(callback.mock.calls.length).toBe(1);
 });
 
 test('injection errors if called too late', () => {
   jest.spyOn(console, 'error').mockReturnValue(undefined);
 
-  // Causes `createAnimatedComponent` to be initialized.
-  createAnimatedComponent;
+  const opacity = new Animated.Value(0);
+  TestRenderer.create(<Animated.View style={{opacity}} />);
 
   createAnimatedComponentInjection.inject(injected);
 
-  expect(createAnimatedComponent).not.toBe(injected);
+  expect(callback.mock.calls.length).toBe(0);
+
   expect(console.error).toBeCalledWith(
     'createAnimatedComponentInjection: Must be called before `createAnimatedComponent`.',
   );
@@ -57,7 +67,10 @@ test('injection errors if called more than once', () => {
 
   createAnimatedComponentInjection.inject(injected);
 
-  expect(createAnimatedComponent).toBe(injected);
+  const opacity = new Animated.Value(0);
+  TestRenderer.create(<Animated.View style={{opacity}} />);
+  expect(callback.mock.calls.length).toBe(1);
+
   expect(console.error).not.toBeCalled();
 
   createAnimatedComponentInjection.inject(injected);

@@ -24,6 +24,7 @@ export type ShareOptions = {
   excludedActivityTypes?: Array<string> | undefined;
   tintColor?: ColorValue | undefined;
   subject?: string | undefined;
+  anchor?: number | undefined;
 };
 
 export type ShareSharedAction = {

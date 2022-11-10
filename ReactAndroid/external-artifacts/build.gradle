@@ -13,13 +13,20 @@ group = "com.facebook.react"
 version = parent.publishing_version
 configurations.maybeCreate("default")
 
-// The artifact should be placed inside the `artifacts/hermes-ios.tar.gz` location.
-def hermesiOSArtifactFile = layout.projectDirectory.file('artifacts/hermes-ios.tar.gz')
-def hermesiOSArtifact = artifacts.add('default', hermesiOSArtifactFile) {
+// Those artifacts should be placed inside the `artifacts/hermes-ios-*.tar.gz` location.
+def hermesiOSDebugArtifactFile = layout.projectDirectory.file('artifacts/hermes-ios-debug.tar.gz')
+def hermesiOSDebugArtifact = artifacts.add('default', hermesiOSDebugArtifactFile) {
     type 'tgz'
     extension 'tar.gz'
-    classifier 'hermes-ios'
+    classifier 'hermes-ios-debug'
 }
+def hermesiOSReleaseArtifactFile = layout.projectDirectory.file('artifacts/hermes-ios-release.tar.gz')
+def hermesiOSReleaseArtifact = artifacts.add('default', hermesiOSReleaseArtifactFile) {
+    type 'tgz'
+    extension 'tar.gz'
+    classifier 'hermes-ios-release'
+}
+
 
 apply from: "../publish.gradle"
 
@@ -27,7 +34,8 @@ publishing {
     publications {
         getByName("release") {
             artifactId 'react-native-artifacts'
-            artifact hermesiOSArtifact
+            artifact hermesiOSDebugArtifact
+            artifact hermesiOSReleaseArtifact
         }
     }
 }

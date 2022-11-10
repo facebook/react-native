@@ -518,6 +518,19 @@ export type ____ShadowStyle_InternalCore = $ReadOnly<{
    * @platform ios
    */
   shadowRadius?: number,
+
+  /**
+   * In React Native, gap works the same way it does in CSS.
+   * If there are two or more children in a container, they will be separated from each other
+   * by the value of the gap - but the children will not be separated from the edges of their parent container.
+   * For horizontal gaps, use columnGap, for vertical gaps, use rowGap, and to apply both at the same time, it's gap.
+   * When align-content or justify-content are set to space-between or space-around, the separation
+   * between children may be larger than the gap value.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/gap for more details.
+   */
+  rowGap?: number,
+  columnGap?: number,
+  gap?: number,
 }>;
 
 export type ____ShadowStyle_Internal = $ReadOnly<{

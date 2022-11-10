@@ -65,8 +65,9 @@ class CodegenUtils
     # Parameters
     # - package_json_file: the path to the `package.json`, required to extract the proper React Native version
     # - fabric_enabled: whether fabric is enabled or not.
+    # - hermes_enabled: whether hermes is enabled or not.
     # - script_phases: whether we want to add some build script phases or not.
-    def get_react_codegen_spec(package_json_file, folly_version: '2021.07.22.00', fabric_enabled: false, script_phases: nil)
+    def get_react_codegen_spec(package_json_file, folly_version: '2021.07.22.00', fabric_enabled: false, hermes_enabled: true, script_phases: nil)
         package = JSON.parse(File.read(package_json_file))
         version = package['version']
 
@@ -97,13 +98,14 @@ class CodegenUtils
             ].join(' ')
           },
           'dependencies': {
-            "FBReactNativeSpec":  [version],
-            "React-jsiexecutor":  [version],
+            "FBReactNativeSpec": [version],
+            "React-jsiexecutor": [version],
             "RCT-Folly": [folly_version],
             "RCTRequired": [version],
             "RCTTypeSafety": [version],
             "React-Core": [version],
             "React-jsi": [version],
+            "ReactCommon/turbomodule/bridging": [version],
             "ReactCommon/turbomodule/core": [version]
           }
         }
@@ -112,6 +114,16 @@ class CodegenUtils
           spec[:'dependencies'].merge!({
             'React-graphics': [version],
             'React-rncore':  [version],
+          });
+        end
+
+        if hermes_enabled
+          spec[:'dependencies'].merge!({
+            'hermes-engine': [version],
+          });
+        else
+          spec[:'dependencies'].merge!({
+            'React-jsc': [version],
           });
         end
 
@@ -127,7 +139,7 @@ class CodegenUtils
     #
     # Parameters
     # - config_path: a path to the configuration file
-    # - config_ket: the codegen configuration key
+    # - config_key: the codegen configuration key
     #
     # Returns: the list of dependencies as extracted from the package.json
     def get_codegen_config_from_file(config_path, config_key)
@@ -181,6 +193,7 @@ class CodegenUtils
     def get_react_codegen_script_phases(
       app_path,
       fabric_enabled: false,
+      hermes_enabled: false,
       config_file_dir: '',
       react_native_path: "../node_modules/react-native",
       config_key: 'codegenConfig',
@@ -229,6 +242,7 @@ class CodegenUtils
       app_path,
       react_native_path: "../node_modules/react-native",
       fabric_enabled: false,
+      hermes_enabled: true,
       config_file_dir: '',
       codegen_output_dir: 'build/generated/ios',
       config_key: 'codegenConfig',
@@ -263,6 +277,7 @@ class CodegenUtils
         File.join(react_native_path, "package.json"),
         :folly_version => folly_version,
         :fabric_enabled => fabric_enabled,
+        :hermes_enabled => hermes_enabled,
         :script_phases => script_phases
       )
       codegen_utils.generate_react_codegen_podspec!(react_codegen_spec, codegen_output_dir)

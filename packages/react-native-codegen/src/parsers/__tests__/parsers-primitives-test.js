@@ -14,15 +14,21 @@
 const {
   emitBoolean,
   emitDouble,
+  emitFloat,
   emitNumber,
   emitInt32,
   emitObject,
   emitPromise,
   emitRootTag,
   emitVoid,
+  emitString,
   emitStringish,
+  emitMixedTypeAnnotation,
   typeAliasResolution,
 } = require('../parsers-primitives.js');
+import {MockedParser} from '../parserMock';
+
+const parser = new MockedParser();
 
 describe('emitBoolean', () => {
   describe('when nullable is true', () => {
@@ -146,6 +152,33 @@ describe('emitStringish', () => {
   describe('when nullable is false', () => {
     it('returns non nullable type annotation', () => {
       const result = emitStringish(false);
+      const expected = {
+        type: 'StringTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitString', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitString(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitString(false);
       const expected = {
         type: 'StringTypeAnnotation',
       };
@@ -304,7 +337,7 @@ describe('typeAliasResolution', () => {
 
 describe('emitPromise', () => {
   const moduleName = 'testModuleName';
-  const language = 'Flow';
+
   describe("when typeAnnotation doesn't have exactly one typeParameter", () => {
     const typeAnnotation = {
       typeParameters: {
@@ -318,7 +351,7 @@ describe('emitPromise', () => {
     it('throws an IncorrectlyParameterizedGenericParserError error', () => {
       const nullable = false;
       expect(() =>
-        emitPromise(moduleName, typeAnnotation, language, nullable),
+        emitPromise(moduleName, typeAnnotation, parser, nullable),
       ).toThrow();
     });
   });
@@ -340,7 +373,7 @@ describe('emitPromise', () => {
         const result = emitPromise(
           moduleName,
           typeAnnotation,
-          language,
+          parser,
           nullable,
         );
         const expected = {
@@ -359,7 +392,7 @@ describe('emitPromise', () => {
         const result = emitPromise(
           moduleName,
           typeAnnotation,
-          language,
+          parser,
           nullable,
         );
         const expected = {
@@ -391,6 +424,58 @@ describe('emitObject', () => {
       const result = emitObject(false);
       const expected = {
         type: 'GenericObjectTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('emitFloat', () => {
+    describe('when nullable is true', () => {
+      it('returns nullable type annotation', () => {
+        const result = emitFloat(true);
+        const expected = {
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: {
+            type: 'FloatTypeAnnotation',
+          },
+        };
+
+        expect(result).toEqual(expected);
+      });
+    });
+    describe('when nullable is false', () => {
+      it('returns non nullable type annotation', () => {
+        const result = emitFloat(false);
+        const expected = {
+          type: 'FloatTypeAnnotation',
+        };
+
+        expect(result).toEqual(expected);
+      });
+    });
+  });
+});
+
+describe('emitMixedTypeAnnotation', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitMixedTypeAnnotation(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'MixedTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitMixedTypeAnnotation(false);
+      const expected = {
+        type: 'MixedTypeAnnotation',
       };
 
       expect(result).toEqual(expected);

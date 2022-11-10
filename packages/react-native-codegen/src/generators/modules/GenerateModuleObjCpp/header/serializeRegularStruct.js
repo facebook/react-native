@@ -95,6 +95,17 @@ function toObjCType(
       return wrapOptional('double');
     case 'BooleanTypeAnnotation':
       return wrapOptional('bool');
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrapOptional('double');
+        case 'StringTypeAnnotation':
+          return 'NSString *';
+        default:
+          throw new Error(
+            `Couldn't convert enum into ObjC type: ${typeAnnotation.type}"`,
+          );
+      }
     case 'GenericObjectTypeAnnotation':
       return isRequired ? 'id<NSObject> ' : 'id<NSObject> _Nullable';
     case 'ArrayTypeAnnotation':
@@ -161,6 +172,17 @@ function toObjCValue(
       return RCTBridgingTo('Double');
     case 'BooleanTypeAnnotation':
       return RCTBridgingTo('Bool');
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return RCTBridgingTo('Double');
+        case 'StringTypeAnnotation':
+          return RCTBridgingTo('String');
+        default:
+          throw new Error(
+            `Couldn't convert enum into ObjC value: ${typeAnnotation.type}"`,
+          );
+      }
     case 'GenericObjectTypeAnnotation':
       return value;
     case 'ArrayTypeAnnotation':

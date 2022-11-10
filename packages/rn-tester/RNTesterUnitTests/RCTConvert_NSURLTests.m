@@ -45,6 +45,9 @@ TEST_BUNDLE_PATH(filePathWithEncodedSpaces, @"blah%20blah/hello.jsbundle", @"bla
 TEST_BUNDLE_PATH(imageAt2XPath, @"images/foo@2x.jpg", @"images/foo@2x.jpg")
 TEST_BUNDLE_PATH(imageFile, @"foo.jpg", @"foo.jpg")
 
+TEST_BUNDLE_PATH(imageFileWithSemicolon, @"folder/foo:bar-baz.jpg", @"folder/foo:bar-baz.jpg")
+TEST_URL(filePathWithSemicolon, @"/folder/foo:bar-baz.jpg", @"file:///folder/foo:bar-baz.jpg")
+
 // User documents
 TEST_PATH(
     documentsFolder,

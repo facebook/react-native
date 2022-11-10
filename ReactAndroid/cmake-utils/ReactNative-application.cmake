@@ -95,7 +95,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         turbomodulejsijni                   # prefab ready
         yoga)                               # prefab ready
 
-# We use an interface targe to propagate flags to all the generated targets
+# We use an interface target to propagate flags to all the generated targets
 # such as the folly flags or others.
 add_library(common_flags INTERFACE)
 target_compile_options(common_flags INTERFACE ${folly_FLAGS})
@@ -106,6 +106,14 @@ if(EXISTS ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
         include(${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
         target_link_libraries(${CMAKE_PROJECT_NAME} ${AUTOLINKED_LIBRARIES})
         foreach(autolinked_library ${AUTOLINKED_LIBRARIES})
-            target_link_libraries(autolinked_library INTERFACE common_flags)
+            target_link_libraries(autolinked_library common_flags)
         endforeach()
+endif()
+
+# If project is running codegen at the app level, we want to link and build the generated library.
+if(EXISTS ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/CMakeLists.txt)
+        add_subdirectory(${PROJECT_BUILD_DIR}/generated/source/codegen/jni/ codegen_app_build)
+        get_property(APP_CODEGEN_TARGET DIRECTORY ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/ PROPERTY BUILDSYSTEM_TARGETS)
+        target_link_libraries(${CMAKE_PROJECT_NAME} ${APP_CODEGEN_TARGET})
+        target_link_libraries(${APP_CODEGEN_TARGET} common_flags)
 endif()

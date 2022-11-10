@@ -540,6 +540,11 @@ public class ReactImageView extends GenericDraweeView {
     maybeUpdateView();
   }
 
+  // VisibleForTesting
+  public @Nullable ImageSource getImageSource() {
+    return mImageSource;
+  }
+
   @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);

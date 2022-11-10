@@ -8,8 +8,8 @@
  */
 
 import type * as React from 'react';
-import {Constructor} from 'Utilities';
-import {NativeMethods} from '../../Renderer/shims/ReactNativeTypes';
+import {Constructor} from '../../../types/private/Utilities';
+import {NativeMethods} from '../../../types/public/ReactNativeTypes';
 import {ViewProps} from '../View/ViewPropTypes';
 
 export interface DatePickerIOSProps extends ViewProps {
