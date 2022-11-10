@@ -29,7 +29,6 @@ import {
   DatePickerIOSProps,
   DrawerLayoutAndroidProps,
   ProgressBarAndroidProps,
-  ProgressViewIOSProps,
   RefreshControlProps,
   RefreshControlPropsIOS,
   RefreshControlPropsAndroid,
@@ -125,9 +124,6 @@ export type DrawerLayoutAndroidProperties = DrawerLayoutAndroidProps;
 
 /** @deprecated Use ProgressBarAndroidProps */
 export type ProgressBarAndroidProperties = ProgressBarAndroidProps;
-
-/** @deprecated Use ProgressViewIOSProps */
-export type ProgressViewIOSProperties = ProgressViewIOSProps;
 
 /** @deprecated Use RefreshControlProps */
 export type RefreshControlProperties = RefreshControlProps;
