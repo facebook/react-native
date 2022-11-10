@@ -168,9 +168,9 @@ describe('VirtualizedSectionList', () => {
   describe('scrollToLocation', () => {
     const ITEM_HEIGHT = 100;
 
-    const createVirtualizedSectionList = (
-      props: void | $TEMPORARY$object<{stickySectionHeadersEnabled: boolean}>,
-    ) => {
+    const createVirtualizedSectionList = (props?: {
+      stickySectionHeadersEnabled: boolean,
+    }) => {
       const component = ReactTestRenderer.create(
         <VirtualizedSectionList
           sections={[
