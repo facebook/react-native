@@ -591,6 +591,12 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
 
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+  CGFloat scaleFactor = self.window.backingScaleFactor;
+#else
+  // On iOS setting the scaleFactor to 0.0 will default to the device's native scale factor.
+  CGFloat scaleFactor = 0.0;
+#endif // ]TODO(macOS GH#774)
     UIImage *image = RCTGetBorderImage(
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
         layer.bounds.size,
@@ -598,7 +604,8 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         borderColors,
         _backgroundColor.CGColor,
-        self.clipsToBounds);
+        self.clipsToBounds,
+        scaleFactor); // TODO(macOS GH#774)
 
     RCTReleaseRCTBorderColors(borderColors);
 
