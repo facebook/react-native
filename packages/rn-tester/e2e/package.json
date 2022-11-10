@@ -24,7 +24,7 @@
         "webdriverio": "^7.25.4"
     },
     "scripts": {
-        "test": "jest --detectOpenHandles",
+        "test": "jest --runInBand",
         "android": "E2E_DEVICE=\"android\" npm run test",
         "ios": "E2E_DEVICE=\"ios\" npm run test"
     },

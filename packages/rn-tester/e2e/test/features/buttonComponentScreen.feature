@@ -1,19 +1,19 @@
 Feature: Button component screen
 
-Scenario: Cancel Button
-    Given user is on the main page
-    Then verify that the Button component is displayed
-    When user clicks on the Button component
-    Then verify that the Button header is displayed
-    When user clicks on the Cancel Application button 
-    Then verify that the alert box with Your application has been cancelled! text is displayed
-    When user clicks on the OK button
+    Scenario: Cancel Button
+        Given User is on the main screen
+        Then Verify that the Button component is displayed
+        When User clicks on the Button component
+        Then Verify that the "Button" header is displayed
+        When User clicks on the Cancel Application button
+        Then Verify that the alert box has text: "Your application has been cancelled!"
+        When User clicks on the OK button
 
-Scenario: Submit Button
-    Given user is on the main page
-    Then verify that the Button component is displayed
-    When user clicks on the Button component
-    Then verify that the Button header is displayed
-    When user clicks on the Submit Application button 
-    Then verify that the alert box with Your application has been submitted! text is displayed
-    When user clicks on the OK button    
+    Scenario: Submit Button
+        Given User is on the main screen
+        Then Verify that the Button component is displayed
+        When User clicks on the Button component
+        Then Verify that the "Button" header is displayed
+        When User clicks on the Submit Application button
+        Then Verify that the alert box has text: "Your application has been submitted!"
+        When User clicks on the OK button

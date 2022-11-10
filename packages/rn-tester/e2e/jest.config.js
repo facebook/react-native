@@ -3,6 +3,6 @@ module.exports = {
   bail: 0,
   setupFilesAfterEnv: ['./jest.setup.js'],
   testMatch: [
-    "**/runners/*.js"
+    '**/runners/*.js',
   ],
 };

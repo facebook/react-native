@@ -1,52 +1,45 @@
 import componentsScreen from '../screenObjects/components.screen.js';
 import buttonComponentScreen from '../screenObjects/buttonComponent.screen.js';
+import { expect } from '@jest/globals';
 
 export const thenVerifyThatTheButtonComponentIsDisplayed = (then) => {
-    then('verify that the Button component is displayed', async () => {
+    then(/^Verify that the Button component is displayed$/, async () => {
         expect(await componentsScreen.checkButtonComponentIsDisplayed()).toBeTruthy();
     });
 };
 
 export const whenUserClicksOnTheButtonComponent = (when) => {
-    when('user clicks on the Button component', async () => {
-    await componentsScreen.clickButtonComponent();
-});
+    when(/^User clicks on the Button component$/, async () => {
+        await componentsScreen.clickButtonComponent();
+    });
 };
 
 export const thenVerifyThatTheButtonHeaderIsDisplayed = (then) => {
-    then('verify that the Button header is displayed', async () => {
-    expect(await buttonComponentScreen.checkButtonsScreenIsDisplayed()).toContain('Button');
-});
+    then(/^Verify that the "(.*)" header is displayed$/, async (headerScreenName) => {
+        expect(await buttonComponentScreen.checkButtonsScreenIsDisplayed()).toContain(headerScreenName);
+    });
 };
 
 export const whenUserClicksOnTheCancelApplicationButton = (when) => {
-    when('user clicks on the Cancel Application button', async () => {
-    await buttonComponentScreen.clickCancelApplication();
-});
+    when(/^User clicks on the Cancel Application button$/, async () => {
+        await buttonComponentScreen.clickCancelApplication();
+    });
 };
 
-export const thenVerifyThatTheAlertBoxWithApplicationCancelledIsDisplayed = (then) => {
-    then('verify that the alert box with Your application has been cancelled! text is displayed', async () => {
-    const cancelText = 'Your application has been cancelled!';
-    expect(await buttonComponentScreen.getCancelAlertText()).toContain(cancelText);
-});
+export const thenVerifyAlertBoxHasText = (then) => {
+    then(/^Verify that the alert box has text: "(.*)"$/, async (alertBoxText) => {
+        expect(await buttonComponentScreen.getCancelAlertText()).toContain(alertBoxText);
+    });
 };
 
 export const whenUserClicksOnTheOKButton = (when) => {
-    when('user clicks on the OK button', async () => {
-    await buttonComponentScreen.clickOkButton();
-});
+    when(/^User clicks on the OK button$/, async () => {
+        await buttonComponentScreen.clickOkButton();
+    });
 };
 
 export const whenUserClicksOnTheSubmitApplicationButton = (when) => {
-    when('user clicks on the Submit Application button', async () => {
-    await buttonComponentScreen.clickSubmitApplication();
-});
-};
-
-export const thenVerifyThatTheAlertBoxWithApplicationSubmittedIsDisplayed = (then) => {
-    then('verify that the alert box with Your application has been submitted! text is displayed', async () => {
-    const submitText = 'Your application has been submitted!';
-    expect(await buttonComponentScreen.getSubmitAlertText()).toContain(submitText);
-});
+    when(/^User clicks on the Submit Application button$/, async () => {
+        await buttonComponentScreen.clickSubmitApplication();
+    });
 };

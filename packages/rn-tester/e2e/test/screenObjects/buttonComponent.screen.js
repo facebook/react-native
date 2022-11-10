@@ -2,7 +2,7 @@ const Utils = require('../helpers/utils');
 
 class ButtonComponentScreen {
 
-    buttonScreen = '//android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.TextView[1]';
+    buttonScreen = '//android.view.ViewGroup/android.widget.TextView[@text="Button"]';
 
     btnSubmit = '//android.widget.Button[@resource-id="button_default_styling"]';
 
