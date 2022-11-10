@@ -129,10 +129,12 @@ function parseObjectProperty(
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
-  language: ParserType,
   nullable: boolean,
   translateTypeAnnotation: $FlowFixMe,
+  parser: Parser,
 ): NamedShape<Nullable<NativeModuleBaseTypeAnnotation>> {
+  const language = parser.language();
+
   if (!isObjectProperty(property, language)) {
     throw new UnsupportedObjectPropertyTypeAnnotationParserError(
       hasteModuleName,
@@ -143,7 +145,7 @@ function parseObjectProperty(
   }
 
   const {optional = false} = property;
-  const name = getKeyName(property, hasteModuleName, language);
+  const name = parser.getKeyName(property, hasteModuleName);
   const languageTypeAnnotation =
     language === 'TypeScript'
       ? property.typeAnnotation.typeAnnotation
@@ -282,31 +284,6 @@ function translateDefault(
   );
 }
 
-function getKeyName(
-  propertyOrIndex: $FlowFixMe,
-  hasteModuleName: string,
-  language: ParserType,
-): string {
-  switch (propertyOrIndex.type) {
-    case 'ObjectTypeProperty':
-    case 'TSPropertySignature':
-      return propertyOrIndex.key.name;
-    case 'ObjectTypeIndexer':
-      // flow index name is optional
-      return propertyOrIndex.id?.name ?? 'key';
-    case 'TSIndexSignature':
-      // TypeScript index name is mandatory
-      return propertyOrIndex.parameters[0].name;
-    default:
-      throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-        hasteModuleName,
-        propertyOrIndex,
-        propertyOrIndex.type,
-        language,
-      );
-  }
-}
-
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -316,5 +293,4 @@ module.exports = {
   parseObjectProperty,
   emitUnionTypeAnnotation,
   translateDefault,
-  getKeyName,
 };

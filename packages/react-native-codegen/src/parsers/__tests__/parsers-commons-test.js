@@ -28,8 +28,10 @@ const {
 } = require('../errors');
 
 import {MockedParser} from '../parserMock';
+import {TypeScriptParser} from '../typescript/parser';
 
 const parser = new MockedParser();
+const typeScriptParser = new TypeScriptParser();
 
 const flowTranslateTypeAnnotation = require('../flow/modules/index');
 const typeScriptTranslateTypeAnnotation = require('../typescript/modules/index');
@@ -316,9 +318,9 @@ describe('parseObjectProperty', () => {
           aliasMap,
           tryParse,
           cxxOnly,
-          language,
           nullable,
           flowTranslateTypeAnnotation,
+          parser,
         ),
       ).toThrow(expected);
     });
@@ -349,9 +351,9 @@ describe('parseObjectProperty', () => {
           aliasMap,
           tryParse,
           cxxOnly,
-          language,
           nullable,
           typeScriptTranslateTypeAnnotation,
+          parser,
         ),
       ).toThrow(expected);
     });
@@ -377,9 +379,9 @@ describe('parseObjectProperty', () => {
         aliasMap,
         tryParse,
         cxxOnly,
-        language,
         nullable,
         typeScriptTranslateTypeAnnotation,
+        typeScriptParser,
       );
       const expected = {
         name: 'testName',
