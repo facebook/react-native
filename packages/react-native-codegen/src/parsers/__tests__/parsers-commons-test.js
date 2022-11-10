@@ -121,7 +121,7 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
     ).not.toThrow();
   });
 
-  it('throws an IncorrectlyParameterizedGenericParserError if typeParameters is null', () => {
+  it('throws a MissingTypeParameterGenericParserError if typeParameters is null', () => {
     const typeAnnotation = {
       typeParameters: null,
       id: {
@@ -160,7 +160,7 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
     );
   });
 
-  it("throws an IncorrectlyParameterizedGenericParserError if typeParameters don't have 1 exactly parameter", () => {
+  it("throws a MoreThanOneTypeParameterGenericParserError if typeParameters don't have 1 exactly parameter", () => {
     const typeAnnotationWithTwoParams = {
       typeParameters: {
         params: [1, 2],

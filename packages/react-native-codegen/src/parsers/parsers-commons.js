@@ -85,7 +85,7 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
     throw new MissingTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
-      parser.language(),
+      parser,
     );
   }
 
@@ -100,7 +100,7 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
     throw new MoreThanOneTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
-      parser.language(),
+      parser,
     );
   }
 }
