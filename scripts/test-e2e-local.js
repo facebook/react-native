@@ -164,7 +164,9 @@ if (argv.target === 'RNTester') {
   const releaseVersion = `${baseVersion}-${dateIdentifier}`;
 
   // this is needed to generate the Android artifacts correctly
-  exec(`node scripts/set-rn-version.js --to-version ${releaseVersion}`).code;
+  exec(
+    `node scripts/set-rn-version.js --to-version ${releaseVersion} --build-type dry-run`,
+  ).code;
 
   // Generate native files for Android
   generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
