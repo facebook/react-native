@@ -31,6 +31,16 @@ static jsi::Value __hostFunction_NativeSampleTurboCxxModuleSpecJSI_getBool(
           ->getBool(rt, args[0].getBool()));
 }
 
+static jsi::Value __hostFunction_NativeSampleTurboCxxModuleSpecJSI_getEnum(
+    jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const jsi::Value *args,
+    size_t count) {
+  return jsi::Value(
+      static_cast<NativeSampleTurboCxxModuleSpecJSI *>(&turboModule)
+          ->getEnum(rt, args[0].getNumber()));
+}
+
 static jsi::Value __hostFunction_NativeSampleTurboCxxModuleSpecJSI_getNumber(
     jsi::Runtime &rt,
     TurboModule &turboModule,
@@ -119,6 +129,8 @@ NativeSampleTurboCxxModuleSpecJSI::NativeSampleTurboCxxModuleSpecJSI(
       0, __hostFunction_NativeSampleTurboCxxModuleSpecJSI_voidFunc};
   methodMap_["getBool"] = MethodMetadata{
       1, __hostFunction_NativeSampleTurboCxxModuleSpecJSI_getBool};
+  methodMap_["getEnum"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboCxxModuleSpecJSI_getEnum};
   methodMap_["getNumber"] = MethodMetadata{
       1, __hostFunction_NativeSampleTurboCxxModuleSpecJSI_getNumber};
   methodMap_["getString"] = MethodMetadata{
