@@ -72,14 +72,7 @@ const argv = yargs
   .strict().argv;
 const nightlyBuild = argv.nightly;
 const dryRunBuild = argv.dryRun;
-const releaseBuild = argv.release;
 const isCommitly = nightlyBuild || dryRunBuild;
-
-const buildType = releaseBuild
-  ? 'release'
-  : nightlyBuild
-  ? 'nightly'
-  : 'dry-run';
 
 if (!argv.help) {
   echo(`The temp publishing folder is ${tmpPublishingFolder}`);
@@ -104,7 +97,7 @@ let version,
   minor,
   prerelease = null;
 try {
-  ({version, major, minor, prerelease} = parseVersion(rawVersion, buildType));
+  ({version, major, minor, prerelease} = parseVersion(rawVersion));
 } catch (e) {
   echo(e.message);
   exit(1);
@@ -129,9 +122,7 @@ if (dryRunBuild) {
 // For stable, pre-release releases, we rely on CircleCI job `prepare_package_for_release` to handle this
 if (isCommitly) {
   if (
-    exec(
-      `node scripts/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
-    ).code
+    exec(`node scripts/set-rn-version.js --to-version ${releaseVersion}`).code
   ) {
     echo(`Failed to set version number to ${releaseVersion}`);
     exit(1);

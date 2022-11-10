@@ -89,7 +89,7 @@ async function main() {
   }
 
   let latest = false;
-  const {version, prerelease} = parseVersion(releaseVersion, 'release');
+  const {version, prerelease} = parseVersion(releaseVersion);
   if (!prerelease) {
     const {setLatest} = await inquirer.prompt({
       type: 'confirm',

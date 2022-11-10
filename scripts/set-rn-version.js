@@ -21,40 +21,36 @@ const os = require('os');
 const path = require('path');
 const {cat, echo, exec, exit, sed} = require('shelljs');
 const yargs = require('yargs');
-const {parseVersion, validateBuildType} = require('./version-utils');
+const {parseVersion} = require('./version-utils');
 const {saveFiles} = require('./scm-utils');
 
-let argv = yargs
-  .option('v', {
-    alias: 'to-version',
-    type: 'string',
-    required: true,
-  })
-  .option('b', {
-    alias: 'build-type',
-    type: 'string',
-    required: true,
-  }).argv;
+const tmpVersioningFolder = fs.mkdtempSync(
+  path.join(os.tmpdir(), 'rn-set-version'),
+);
+echo(`The temp versioning folder is ${tmpVersioningFolder}`);
 
-const buildType = argv.buildType;
+let argv = yargs.option('v', {
+  alias: 'to-version',
+  type: 'string',
+}).argv;
+
 const version = argv.toVersion;
-validateBuildType(buildType);
+
+if (!version) {
+  echo('You must specify a version using -v');
+  exit(1);
+}
 
 let major,
   minor,
   patch,
   prerelease = -1;
 try {
-  ({major, minor, patch, prerelease} = parseVersion(version, buildType));
+  ({major, minor, patch, prerelease} = parseVersion(version));
 } catch (e) {
   echo(e.message);
   exit(1);
 }
-
-const tmpVersioningFolder = fs.mkdtempSync(
-  path.join(os.tmpdir(), 'rn-set-version'),
-);
-echo(`The temp versioning folder is ${tmpVersioningFolder}`);
 
 saveFiles(['package.json', 'template/package.json'], tmpVersioningFolder);
 

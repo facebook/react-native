@@ -57,26 +57,13 @@ if (branch && !isReleaseBranch(branch) && !isDryRun) {
   exit(1);
 }
 
-const buildType = isDryRun
-  ? 'dry-run'
-  : isReleaseBranch(branch)
-  ? 'release'
-  : 'nightly';
-
-const {version} = parseVersion(
-  releaseVersion,
-  isDryRun ? 'dry-run' : buildType,
-);
+const {version} = parseVersion(releaseVersion);
 if (version == null) {
   console.error(`Invalid version provided: ${releaseVersion}`);
   exit(1);
 }
 
-if (
-  exec(
-    `node scripts/set-rn-version.js --to-version ${version} --build-type ${buildType}`,
-  ).code
-) {
+if (exec(`node scripts/set-rn-version.js --to-version ${version}`).code) {
   echo(`Failed to set React Native version to ${version}`);
   exit(1);
 }
