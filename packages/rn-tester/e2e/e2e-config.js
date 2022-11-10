@@ -13,21 +13,20 @@ const android = {
 };
 
 const ios = {
-  platformName: 'iOS',
-  platformVersion: '15.5',
-  deviceName: 'iPhone 13',
-  bundleId: 'org.reactjs.native.example.TestForE2E',
-  automationName: 'XCUITest',
+  'platformName': 'iOS',
+  'appium:platformVersion': '16.0',
+  'appium:deviceName': 'iPhone 14 Pro Max',
+  //bundleId: 'org.reactjs.native.example.TestForE2E',
+  'appium:automationName': 'XCUITest',
+  'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
 };
 
 if (!process.env.E2E_DEVICE) {
   throw new Error('E2E_DEVICE environment variable is not defined');
 }
 
-if (![process.env.E2E_DEVICE].includes('android' || 'ios')) {
-  throw new Error(
-    'No e2e device configuration found.',
-  );
+if (!(process.env.E2E_DEVICE.includes('android') || process.env.E2E_DEVICE.includes('ios'))) {
+  throw new Error('No e2e device configuration found');
 }
 
 if (process.env.E2E_DEVICE === 'android') {
