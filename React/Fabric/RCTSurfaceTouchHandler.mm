@@ -9,7 +9,6 @@
 
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
-#import <UIKit/UIGestureRecognizerSubclass.h>
 
 #import "RCTConversions.h"
 #import "RCTTouchableComponentViewProtocol.h"
