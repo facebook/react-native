@@ -10,7 +10,7 @@ body:
     id: description
     attributes:
       label: Description
-      description: Please provide a clear and concise description of what the bug is. Include screenshots if needed. Please test using the latest React Native release to make sure your issue has not already been fixed - https://reactnative.dev/docs/upgrading.html
+      description: Please provide a clear and concise description of what the bug is. Include screenshots if needed. Test using the [latest React Native release](https://github.com/facebook/react-native/releases/latest) to make sure your issue has not already been fixed.
     validations:
       required: true
   - type: input
