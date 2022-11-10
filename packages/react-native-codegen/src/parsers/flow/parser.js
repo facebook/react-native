@@ -33,6 +33,15 @@ class FlowParser implements Parser {
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation.id.name;
   }
+
+  checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {
+    return (
+      typeArguments.type !== 'TypeParameterInstantiation' ||
+      typeArguments.params.length !== 1 ||
+      typeArguments.params[0].type !== 'GenericTypeAnnotation' ||
+      typeArguments.params[0].id.name !== 'Spec'
+    );
+  }
 }
 
 module.exports = {

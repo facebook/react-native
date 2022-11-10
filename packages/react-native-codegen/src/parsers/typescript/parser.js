@@ -37,6 +37,15 @@ class TypeScriptParser implements Parser {
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation.typeName.name;
   }
+
+  checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {
+    return (
+      typeArguments.type !== 'TSTypeParameterInstantiation' ||
+      typeArguments.params.length !== 1 ||
+      typeArguments.params[0].type !== 'TSTypeReference' ||
+      typeArguments.params[0].typeName.name !== 'Spec'
+    );
+  }
 }
 module.exports = {
   TypeScriptParser,

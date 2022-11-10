@@ -44,4 +44,10 @@ export interface Parser {
    * @returns: the name of the type.
    */
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string;
+  /**
+   * Given a type arguments, it returns a boolean specifying if the Module is Invalid.
+   * @parameter typeArguments: the type arguments.
+   * @returns: a boolean specifying if the Module is Invalid.
+   */
+  checkIfInvalidModule(typeArguments: $FlowFixMe): boolean;
 }
