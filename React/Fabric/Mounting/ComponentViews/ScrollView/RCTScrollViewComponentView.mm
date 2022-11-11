@@ -388,6 +388,9 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   _shouldUpdateContentInsetAdjustmentBehavior = YES;
   _state.reset();
   _isUserTriggeredScrolling = NO;
+  CGRect oldFrame = self.frame;
+  self.frame = CGRectZero;
+  self.frame = oldFrame;
   [super prepareForRecycle];
 }
 
