@@ -137,7 +137,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 #pragma mark - RCTMountingTransactionObserving
 
-- (void)mountingTransactionDidMountWithMetadata:(MountingTransactionMetadata const &)metadata
+- (void)mountingTransactionDidMount:(MountingTransaction const &)transaction
+               withSurfaceTelemetry:(facebook::react::SurfaceTelemetry const &)surfaceTelemetry
 {
   [self _remountChildren];
 }

@@ -192,7 +192,8 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 #pragma mark - RCTMountingTransactionObserving
 
-- (void)mountingTransactionWillMountWithMetadata:(MountingTransactionMetadata const &)metadata
+- (void)mountingTransactionWillMount:(MountingTransaction const &)transaction
+                withSurfaceTelemetry:(facebook::react::SurfaceTelemetry const &)surfaceTelemetry
 {
   _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
 }
