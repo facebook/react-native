@@ -126,4 +126,10 @@ public class ReactFeatureFlags {
 
   // TODO (T136375139): Remove this once finish testing
   public static boolean enableAtomicRegisterSegment = false;
+
+  /**
+   * Allow closing the small gap that appears between paths when drawing a rounded View with a
+   * border.
+   */
+  public static boolean enableCloseVisibleGapBetweenPaths = true;
 }
