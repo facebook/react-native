@@ -15,6 +15,7 @@ const processLayoutProps = require('../processStyles');
 describe('processLayoutProps', () => {
   it('it should map layout style properties', () => {
     const style = {
+      backgroundColor: 'white',
       marginInlineStart: 10,
       marginInlineEnd: 20,
       marginBlockStart: 30,
@@ -27,33 +28,27 @@ describe('processLayoutProps', () => {
       paddingBlockEnd: 100,
       paddingBlock: 110,
       paddingInline: 120,
+      verticalAlign: 'middle',
     };
     const processedStyle = processLayoutProps(style);
-    expect(processedStyle.marginStart).toBe(10);
-    expect(processedStyle.marginEnd).toBe(20);
-    expect(processedStyle.marginTop).toBe(30);
-    expect(processedStyle.marginBottom).toBe(40);
-    expect(processedStyle.marginVertical).toBe(50);
-    expect(processedStyle.marginHorizontal).toBe(60);
-    expect(processedStyle.paddingStart).toBe(70);
-    expect(processedStyle.paddingEnd).toBe(80);
-    expect(processedStyle.paddingTop).toBe(90);
-    expect(processedStyle.paddingBottom).toBe(100);
-    expect(processedStyle.paddingVertical).toBe(110);
-    expect(processedStyle.paddingHorizontal).toBe(120);
-
-    expect(processedStyle.marginInlineStart).toBe(undefined);
-    expect(processedStyle.marginInlineEnd).toBe(undefined);
-    expect(processedStyle.marginBlockStart).toBe(undefined);
-    expect(processedStyle.marginBlockEnd).toBe(undefined);
-    expect(processedStyle.marginBlock).toBe(undefined);
-    expect(processedStyle.marginInline).toBe(undefined);
-    expect(processedStyle.paddingInlineStart).toBe(undefined);
-    expect(processedStyle.paddingInlineEnd).toBe(undefined);
-    expect(processedStyle.paddingBlockStart).toBe(undefined);
-    expect(processedStyle.paddingBlockEnd).toBe(undefined);
-    expect(processedStyle.paddingBlock).toBe(undefined);
-    expect(processedStyle.paddingInline).toBe(undefined);
+    expect(processedStyle).toMatchInlineSnapshot(`
+      Object {
+        "backgroundColor": "white",
+        "marginBottom": 40,
+        "marginEnd": 20,
+        "marginHorizontal": 60,
+        "marginStart": 10,
+        "marginTop": 30,
+        "marginVertical": 50,
+        "paddingBottom": 100,
+        "paddingEnd": 80,
+        "paddingHorizontal": 120,
+        "paddingStart": 70,
+        "paddingTop": 90,
+        "paddingVertical": 110,
+        "textAlignVertical": "center",
+      }
+    `);
   });
 
   it('should override style properties', () => {

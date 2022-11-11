@@ -19,7 +19,7 @@ import type {TextInputType} from './TextInput.flow';
 
 import usePressability from '../../Pressability/usePressability';
 import flattenStyle from '../../StyleSheet/flattenStyle';
-import processLayoutProps from '../../StyleSheet/processStyles';
+import processStyles from '../../StyleSheet/processStyles';
 import StyleSheet, {
   type ColorValue,
   type TextStyleProp,
@@ -1073,6 +1073,15 @@ const emptyFunctionThatReturnsTrue = () => true;
  *
  */
 function InternalTextInput(props: Props): React.Node {
+  const {
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-selected': ariaSelected,
+    accessibilityState,
+  } = props;
+
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
 
   // Android sends a "onTextChanged" event followed by a "onSelectionChanged" event, for
@@ -1393,13 +1402,23 @@ function InternalTextInput(props: Props): React.Node {
   // so omitting onBlur and onFocus pressability handlers here.
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
 
-  const _accessibilityState = {
-    busy: props['aria-busy'] ?? props.accessibilityState?.busy,
-    checked: props['aria-checked'] ?? props.accessibilityState?.checked,
-    disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
-    expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
-    selected: props['aria-selected'] ?? props.accessibilityState?.selected,
-  };
+  let _accessibilityState;
+  if (
+    accessibilityState != null ||
+    ariaBusy != null ||
+    ariaChecked != null ||
+    ariaDisabled != null ||
+    ariaExpanded != null ||
+    ariaSelected != null
+  ) {
+    _accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
+  }
 
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
@@ -1413,7 +1432,7 @@ function InternalTextInput(props: Props): React.Node {
         : props.style;
 
     style = flattenStyle(style);
-    style = processLayoutProps(style);
+    style = processStyles(style);
 
     const useOnChangeSync =
       (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
@@ -1424,8 +1443,8 @@ function InternalTextInput(props: Props): React.Node {
         ref={_setNativeRef}
         {...props}
         {...eventHandlers}
-        accessible={accessible}
         accessibilityState={_accessibilityState}
+        accessible={accessible}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
@@ -1447,7 +1466,7 @@ function InternalTextInput(props: Props): React.Node {
     );
   } else if (Platform.OS === 'android') {
     let style = flattenStyle(props.style);
-    style = processLayoutProps(style);
+    style = processStyles(style);
 
     const autoCapitalize = props.autoCapitalize || 'sentences';
     const _accessibilityLabelledBy =
@@ -1476,9 +1495,9 @@ function InternalTextInput(props: Props): React.Node {
         ref={_setNativeRef}
         {...props}
         {...eventHandlers}
-        accessible={accessible}
         accessibilityState={_accessibilityState}
         accessibilityLabelledBy={_accessibilityLabelledBy}
+        accessible={accessible}
         autoCapitalize={autoCapitalize}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
@@ -1655,6 +1674,8 @@ const ExportedForwardRef: React.AbstractComponent<
     />
   );
 });
+
+ExportedForwardRef.displayName = 'TextInput';
 
 /**
  * Switch to `deprecated-react-native-prop-types` for compatibility with future

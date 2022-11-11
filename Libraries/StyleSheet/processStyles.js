@@ -12,29 +12,45 @@
 
 import type {____FlattenStyleProp_Internal} from './StyleSheetTypes';
 
-function processLayoutProps<T>(
+const propMap = {
+  marginInlineStart: 'marginStart',
+  marginInlineEnd: 'marginEnd',
+  marginBlockStart: 'marginTop',
+  marginBlockEnd: 'marginBottom',
+  marginBlock: 'marginVertical',
+  marginInline: 'marginHorizontal',
+  paddingInlineStart: 'paddingStart',
+  paddingInlineEnd: 'paddingEnd',
+  paddingBlockStart: 'paddingTop',
+  paddingBlockEnd: 'paddingBottom',
+  paddingBlock: 'paddingVertical',
+  paddingInline: 'paddingHorizontal',
+  verticalAlign: 'textAlignVertical',
+};
+
+const verticalAlignValueMap = {
+  auto: 'auto',
+  top: 'top',
+  bottom: 'bottom',
+  middle: 'center',
+};
+
+function processStyles<T>(
   flattenedStyle: ____FlattenStyleProp_Internal<T>,
 ): ____FlattenStyleProp_Internal<T> {
   const _flattenedStyle = {...flattenedStyle};
-  const layoutPropMap = {
-    marginInlineStart: 'marginStart',
-    marginInlineEnd: 'marginEnd',
-    marginBlockStart: 'marginTop',
-    marginBlockEnd: 'marginBottom',
-    marginBlock: 'marginVertical',
-    marginInline: 'marginHorizontal',
-    paddingInlineStart: 'paddingStart',
-    paddingInlineEnd: 'paddingEnd',
-    paddingBlockStart: 'paddingTop',
-    paddingBlockEnd: 'paddingBottom',
-    paddingBlock: 'paddingVertical',
-    paddingInline: 'paddingHorizontal',
-  };
-  if (_flattenedStyle) {
-    Object.keys(layoutPropMap).forEach(key => {
-      if (_flattenedStyle && _flattenedStyle[key] !== undefined) {
-        _flattenedStyle[layoutPropMap[key]] = _flattenedStyle[key];
+
+  if (_flattenedStyle != null) {
+    Object.keys(_flattenedStyle).forEach(key => {
+      const alt = propMap[key];
+      const originalValue = _flattenedStyle[key];
+      let _value = originalValue;
+      if (key === 'verticalAlign') {
+        _value = verticalAlignValueMap[originalValue];
+      }
+      if (alt != null) {
         delete _flattenedStyle[key];
+        _flattenedStyle[alt] = _value;
       }
     });
   }
@@ -42,4 +58,4 @@ function processLayoutProps<T>(
   return _flattenedStyle;
 }
 
-module.exports = processLayoutProps;
+module.exports = processStyles;
