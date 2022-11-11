@@ -26,8 +26,8 @@ function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
   );
   const name = property.key.name;
   const optional = property.optional || topLevelType.optional;
-  const value = topLevelType.type;
-  const firstParam = value.parameters[0].typeAnnotation;
+  const parameters = topLevelType.type.parameters;
+  const firstParam = parameters[0].typeAnnotation;
 
   if (
     !(
@@ -42,7 +42,7 @@ function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
     );
   }
 
-  const params = value.parameters.slice(1).map(param => {
+  const params = parameters.slice(1).map(param => {
     const paramName = param.name;
     const paramValue = parseTopLevelType(
       param.typeAnnotation.typeAnnotation,
