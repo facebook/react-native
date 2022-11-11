@@ -16,6 +16,7 @@
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventEmitter.h>
+#include <react/renderer/core/EventListener.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/scheduler/InspectorData.h>
@@ -106,6 +107,11 @@ class Scheduler final : public UIManagerDelegate {
 
 #pragma mark - ContextContainer
   ContextContainer::Shared getContextContainer() const;
+
+#pragma mark - Event listeners
+  void addEventListener(const std::shared_ptr<EventListener const> &listener);
+  void removeEventListener(
+      const std::shared_ptr<EventListener const> &listener);
 
  private:
   friend class SurfaceHandler;
