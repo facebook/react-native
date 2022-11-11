@@ -111,14 +111,21 @@ function buildCommandSchemaInternal(
 }
 
 function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
-  const topLevelType = parseTopLevelType(
-    property.typeAnnotation.typeAnnotation,
-    types,
-  );
-  const name = property.key.name;
-  const optional = property.optional || topLevelType.optional;
-  const parameters = topLevelType.type.parameters;
-  return buildCommandSchemaInternal(name,optional,parameters,types);
+  if(property.type === 'TSPropertySignature') {
+    const topLevelType = parseTopLevelType(
+      property.typeAnnotation.typeAnnotation,
+      types,
+    );
+    const name = property.key.name;
+    const optional = property.optional || topLevelType.optional;
+    const parameters = topLevelType.type.parameters || topLevelType.type.params;
+    return buildCommandSchemaInternal(name,optional,parameters,types);
+  } else {
+    const name = property.key.name;
+    const optional=false;
+    const parameters=property.parameters || property.params;
+    return buildCommandSchemaInternal(name,optional,parameters,types);
+  }
 }
 
 function getCommands(
@@ -126,7 +133,7 @@ function getCommands(
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<CommandTypeAnnotation>> {
   return commandTypeAST
-    .filter(property => property.type === 'TSPropertySignature')
+    .filter(property => property.type === 'TSPropertySignature' || property.type === 'TSMethodSignature')
     .map(property => buildCommandSchema(property, types))
     .filter(Boolean);
 }
