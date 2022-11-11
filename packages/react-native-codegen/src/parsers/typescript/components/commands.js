@@ -93,6 +93,7 @@ function buildCommandSchemaInternal(
 
     return {
       name: paramName,
+      optional: false,
       typeAnnotation: returnType,
     };
   });

@@ -1280,6 +1280,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_T
                 'params': [
                   {
                     'name': 'rootTag',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'ReservedTypeAnnotation',
                       'name': 'RootTag'
@@ -1299,12 +1300,14 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_T
                 'params': [
                   {
                     'name': 'x',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
                     }
                   },
                   {
                     'name': 'y',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
                     }
@@ -1323,24 +1326,28 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_T
                 'params': [
                   {
                     'name': 'x',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'FloatTypeAnnotation'
                     }
                   },
                   {
                     'name': 'y',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
                     }
                   },
                   {
                     'name': 'z',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'DoubleTypeAnnotation'
                     }
                   },
                   {
                     'name': 'animated',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'BooleanTypeAnnotation'
                     }
@@ -2898,12 +2905,14 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                 'params': [
                   {
                     'name': 'y',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
                     }
                   },
                   {
                     'name': 'animated',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'BooleanTypeAnnotation'
                     }
@@ -2946,12 +2955,14 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_WITH_EXTERNAL_TYPE
                 'params': [
                   {
                     'name': 'y',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
                     }
                   },
                   {
                     'name': 'animated',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'BooleanTypeAnnotation'
                     }
