@@ -24,7 +24,7 @@ function buildCommandSchemaInternal(
   optional: boolean,
   parameters: Array<$FlowFixMe>,
   types: TypeDeclarationMap,
-) {
+): NamedShape<CommandTypeAnnotation> {
   const firstParam = parameters[0].typeAnnotation;
   if (
     !(
@@ -110,8 +110,11 @@ function buildCommandSchemaInternal(
   };
 }
 
-function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
-  if(property.type === 'TSPropertySignature') {
+function buildCommandSchema(
+  property: EventTypeAST,
+  types: TypeDeclarationMap,
+): NamedShape<CommandTypeAnnotation> {
+  if (property.type === 'TSPropertySignature') {
     const topLevelType = parseTopLevelType(
       property.typeAnnotation.typeAnnotation,
       types,
@@ -119,12 +122,12 @@ function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
     const name = property.key.name;
     const optional = property.optional || topLevelType.optional;
     const parameters = topLevelType.type.parameters || topLevelType.type.params;
-    return buildCommandSchemaInternal(name,optional,parameters,types);
+    return buildCommandSchemaInternal(name, optional, parameters, types);
   } else {
     const name = property.key.name;
-    const optional=false;
-    const parameters=property.parameters || property.params;
-    return buildCommandSchemaInternal(name,optional,parameters,types);
+    const optional = property.optional || false;
+    const parameters = property.parameters || property.params;
+    return buildCommandSchemaInternal(name, optional, parameters, types);
   }
 }
 
@@ -133,7 +136,11 @@ function getCommands(
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<CommandTypeAnnotation>> {
   return commandTypeAST
-    .filter(property => property.type === 'TSPropertySignature' || property.type === 'TSMethodSignature')
+    .filter(
+      property =>
+        property.type === 'TSPropertySignature' ||
+        property.type === 'TSMethodSignature',
+    )
     .map(property => buildCommandSchema(property, types))
     .filter(Boolean);
 }
