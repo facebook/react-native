@@ -224,7 +224,7 @@ const Text: React.AbstractComponent<
     <NativeVirtualText
       {...restProps}
       accessibilityState={_accessibilityState}
-      accessibilityUnit={{hours: 10}}
+      accessibilityUnit={props.accessibilityUnit}
       {...eventHandlersForText}
       accessibilityLabel={ariaLabel ?? accessibilityLabel}
       accessibilityRole={
@@ -244,7 +244,7 @@ const Text: React.AbstractComponent<
       <NativeText
         {...restProps}
         {...eventHandlersForText}
-        accessibilityUnit={{hours: 10}}
+        accessibilityUnit={props.accessibilityUnit}
         disabled={_disabled}
         selectable={_selectable}
         accessible={

@@ -11,7 +11,6 @@ import android.os.Build;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.LayoutDirection;
-import android.util.Log;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -614,9 +613,7 @@ public class TextAttributeProps {
   }
 
   private void setAccessibilityUnit(@Nullable String accessibilityUnit) {
-    if (accessibilityUnit != null) {
-      Log.w("TESTING::TextAttributeProps", "accessibilityUnit: " + (accessibilityUnit));
-    }
+    // not yet implemented
   }
 
   public static int getTextBreakStrategy(@Nullable String textBreakStrategy) {

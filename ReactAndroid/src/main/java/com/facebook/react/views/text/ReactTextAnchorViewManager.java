@@ -15,7 +15,6 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;

@@ -169,10 +169,10 @@ class AccessibilityExample extends React.Component<{}> {
           </View>
           <View>
             <Text accessible={true}>
-              My number is <View accessibilityUnit={{hours: '10'}} />
+              My number is
               <Text
                 accessibilityRole="time"
-                accessibilityUnit={{hours: '10'}}
+                accessibilityUnit={{hours: '30'}}
                 accessible={true}
                 style={{backgroundColor: 'red'}}>
                 17:00
