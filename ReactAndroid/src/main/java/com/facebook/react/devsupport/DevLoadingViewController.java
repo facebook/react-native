@@ -22,10 +22,11 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import java.util.Locale;
 
 /** Controller to display loading messages on top of the screen. All methods are thread safe. */
-public class DevLoadingViewController {
+public class DevLoadingViewController implements DevLoadingViewManager {
   private static boolean sEnabled = true;
   private final ReactInstanceDevHelper mReactInstanceManagerHelper;
   private @Nullable TextView mDevLoadingView;
@@ -39,6 +40,7 @@ public class DevLoadingViewController {
     mReactInstanceManagerHelper = reactInstanceManagerHelper;
   }
 
+  @Override
   public void showMessage(final String message) {
     if (!sEnabled) {
       return;
@@ -53,6 +55,7 @@ public class DevLoadingViewController {
         });
   }
 
+  @Override
   public void updateProgress(
       final @Nullable String status, final @Nullable Integer done, final @Nullable Integer total) {
     if (!sEnabled) {
@@ -77,6 +80,7 @@ public class DevLoadingViewController {
         });
   }
 
+  @Override
   public void hide() {
     if (!sEnabled) {
       return;
