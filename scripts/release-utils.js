@@ -9,39 +9,13 @@
 
 'use strict';
 
-const {exec, echo, exit, test, env} = require('shelljs');
-const {saveFiles} = require('./scm-utils');
-
-function saveFilesToRestore(tmpPublishingFolder) {
-  const filesToSaveAndRestore = [
-    'template/Gemfile',
-    'template/_ruby-version',
-    'template/package.json',
-    '.ruby-version',
-    'Gemfile.lock',
-    'Gemfile',
-    'package.json',
-    'ReactAndroid/gradle.properties',
-    'Libraries/Core/ReactNativeVersion.js',
-    'React/Base/RCTVersion.m',
-    'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
-    'ReactCommon/cxxreact/ReactNativeVersion.h',
-  ];
-
-  saveFiles(filesToSaveAndRestore, tmpPublishingFolder);
-}
+const {exec, echo, exit, test, env, pushd, popd} = require('shelljs');
+const {createHermesPrebuiltArtifactsTarball} = require('./hermes/hermes-utils');
 
 function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
   // -------- Generating Android Artifacts
-  env.REACT_NATIVE_SKIP_PREFAB = true;
-  if (exec('./gradlew :ReactAndroid:installArchives').code) {
-    echo('Could not generate artifacts');
-    exit(1);
-  }
-
-  // -------- Generating the Hermes Engine Artifacts
-  env.REACT_NATIVE_HERMES_SKIP_PREFAB = true;
-  if (exec('./gradlew :ReactAndroid:hermes-engine:installArchives').code) {
+  echo('Generating Android artifacts inside /tmp/maven-local');
+  if (exec('./gradlew publishAllToMavenTempLocal').code) {
     echo('Could not generate artifacts');
     exit(1);
   }
@@ -63,12 +37,12 @@ function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
     if (
       !test(
         '-e',
-        `./android/com/facebook/react/react-native/${releaseVersion}/${name}`,
+        `/tmp/maven-local/com/facebook/react/react-native/${releaseVersion}/${name}`,
       )
     ) {
       echo(
         `Failing as expected file: \n\
-      android/com/facebook/react/react-native/${releaseVersion}/${name}\n\
+      /tmp/maven-local/com/facebook/react/react-native/${releaseVersion}/${name}\n\
       was not correctly generated.`,
       );
       exit(1);
@@ -76,25 +50,30 @@ function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
   });
 }
 
-function publishAndroidArtifactsToMaven(isNightly) {
+function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
   // -------- Publish every artifact to Maven Central
-  // The GPG key is base64 encoded on CircleCI
+  // The GPG key is base64 encoded on CircleCI and then decoded here
   let buff = Buffer.from(env.ORG_GRADLE_PROJECT_SIGNING_KEY_ENCODED, 'base64');
   env.ORG_GRADLE_PROJECT_SIGNING_KEY = buff.toString('ascii');
-  if (exec('./gradlew publishAllToSonatype -PisNightly=' + isNightly).code) {
-    echo('Failed to publish artifacts to Sonatype (Maven Central)');
-    exit(1);
-  }
 
-  if (!isNightly) {
+  // We want to gate ourselves against accidentally publishing a 1.x or a 1000.x on
+  // maven central which will break the semver for our artifacts.
+  if (!isNightly && releaseVersion.startsWith('0.')) {
     // -------- For stable releases, we also need to close and release the staging repository.
-    // TODO(ncor): Remove the --dry-run before RC0
     if (
-      exec('./gradlew closeAndReleaseSonatypeStagingRepository --dry-run').code
+      exec(
+        './gradlew publishAllToSonatype closeAndReleaseSonatypeStagingRepository',
+      ).code
     ) {
       echo(
         'Failed to close and release the staging repository on Sonatype (Maven Central)',
       );
+      exit(1);
+    }
+  } else {
+    // -------- For nightly releases, we only need to publish the snapshot to Sonatype snapshot repo.
+    if (exec('./gradlew publishAllToSonatype -PisNightly=' + isNightly).code) {
+      echo('Failed to publish artifacts to Sonatype (Maven Central)');
       exit(1);
     }
   }
@@ -102,8 +81,44 @@ function publishAndroidArtifactsToMaven(isNightly) {
   echo('Published artifacts to Maven Central');
 }
 
+function generateiOSArtifacts(
+  jsiFolder,
+  hermesCoreSourceFolder,
+  buildType,
+  releaseVersion,
+  targetFolder,
+) {
+  pushd(`${hermesCoreSourceFolder}`);
+
+  //Need to generate hermesc
+  exec(
+    `${hermesCoreSourceFolder}/utils/build-hermesc-xcode.sh ${hermesCoreSourceFolder}/build_host_hermesc`,
+  );
+
+  //Generating iOS Artifacts
+  exec(
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesCoreSourceFolder}/utils/build-mac-framework.sh`,
+  );
+
+  exec(
+    `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesCoreSourceFolder}/utils/build-ios-framework.sh`,
+  );
+
+  popd();
+
+  const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
+    hermesCoreSourceFolder,
+    buildType,
+    releaseVersion,
+    targetFolder,
+    true, // this is excludeDebugSymbols, we keep it as the default
+  );
+
+  return tarballOutputPath;
+}
+
 module.exports = {
   generateAndroidArtifacts,
+  generateiOSArtifacts,
   publishAndroidArtifactsToMaven,
-  saveFilesToRestore,
 };

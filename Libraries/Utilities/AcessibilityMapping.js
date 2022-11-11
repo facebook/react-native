@@ -92,6 +92,8 @@ export function getAccessibilityRoleFromRole(role: Role): ?AccessibilityRole {
       return 'none';
     case 'note':
       return undefined;
+    case 'option':
+      return undefined;
     case 'presentation':
       return 'none';
     case 'progressbar':

@@ -72,7 +72,7 @@ function FilterModalButton(props: FilterModalProps) {
   }, []);
 
   const onFilterFailStatus = useCallback(
-    value => {
+    (value: boolean) => {
       setFilterFail(value);
     },
     [setFilterFail],

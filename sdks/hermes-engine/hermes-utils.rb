@@ -15,7 +15,6 @@ require 'rexml/document'
 # - version: the version of React Native that requires the Hermes tarball
 # Returns: the path to the downloaded Hermes tarball
 def download_nightly_hermes(react_native_path, version)
-    # TODO: convert hermes-ios to hermes-ios-debug
     params = "r=snapshots\&g=com.facebook.react\&a=react-native-artifacts\&c=hermes-ios-debug\&e=tar.gz\&v=#{version}-SNAPSHOT"
     tarball_url = "http://oss.sonatype.org/service/local/artifact/maven/redirect\?#{params}"
 

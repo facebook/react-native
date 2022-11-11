@@ -259,6 +259,12 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     }
   }
 
+  const modernAnimated = createAnimatedComponentInjection.recordAndRetrieve();
+  if (modernAnimated != null) {
+    // $FlowIgnore[incompatible-return] - Will be compatible after refactors.
+    return modernAnimated(Component);
+  }
+
   return React.forwardRef(function AnimatedComponentWrapper(props, ref) {
     return (
       <AnimatedComponent
@@ -269,6 +275,4 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   });
 }
 
-// $FlowIgnore[incompatible-cast] - Will be compatible after refactors.
-export default (createAnimatedComponentInjection.recordAndRetrieve() ??
-  createAnimatedComponent: typeof createAnimatedComponent);
+export default (createAnimatedComponent: typeof createAnimatedComponent);

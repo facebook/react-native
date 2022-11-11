@@ -26,9 +26,7 @@ export function createStringifySafeWithLimits(limits: {|
     maxArrayLimit = Number.POSITIVE_INFINITY,
     maxObjectKeysLimit = Number.POSITIVE_INFINITY,
   } = limits;
-  const stack: Array<
-    string | {+[string]: mixed} | {'...(truncated keys)...': number},
-  > = [];
+  const stack: Array<mixed> = [];
   /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
    * Flow's LTI update could not be added via codemod */
   function replacer(key: string, value: mixed): mixed {
@@ -47,10 +45,7 @@ export function createStringifySafeWithLimits(limits: {|
       return value;
     }
 
-    let retval:
-      | string
-      | {+[string]: mixed}
-      | $TEMPORARY$object<{'...(truncated keys)...': number}> = value;
+    let retval: mixed = value;
     if (Array.isArray(value)) {
       if (stack.length >= maxDepth) {
         retval = `[ ... array with ${value.length} values ... ]`;

@@ -10,6 +10,9 @@ load(
 )
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID",
+    "APPLE",
+    "CXX",
     "HERMES_BYTECODE_VERSION",
     "IOS",
     "RCT_IMAGE_DATA_DECODER_SOCKET",
@@ -742,6 +745,7 @@ rn_library(
         "//xplat/js:node_modules__abort_19controller",
         "//xplat/js:node_modules__anser",
         "//xplat/js:node_modules__base64_19js",
+        "//xplat/js:node_modules__deprecated_19react_19native_19prop_19types",
         "//xplat/js:node_modules__event_19target_19shim",
         "//xplat/js:node_modules__invariant",
         "//xplat/js:node_modules__memoize_19one",
@@ -1171,6 +1175,7 @@ rn_apple_library(
         ],
     ),
     autoglob = False,
+    extension_api_only = True,
     frameworks = [
         "Foundation",
     ],
@@ -1450,5 +1455,30 @@ rn_xplat_cxx_library2(
     visibility = [
         "//fbobjc/Libraries/FBReactKit:RCTMapView",
         "//fbobjc/VendorLib/react-native-maps:react-native-maps",
+    ],
+)
+
+rn_xplat_cxx_library2(
+    name = "RCTWebPerformance",
+    srcs = glob([
+        "Libraries/WebPerformance/**/*.cpp",
+    ]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [("Libraries/WebPerformance", "*.h")],
+        prefix = "RCTWebPerformance",
+    ),
+    fbandroid_compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+    ],
+    labels = [
+        "depslint_never_remove",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    platforms = (ANDROID, APPLE, CXX),
+    visibility = ["PUBLIC"],
+    deps = [
+        ":FBReactNativeSpecJSI",
     ],
 )

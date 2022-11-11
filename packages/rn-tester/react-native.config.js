@@ -29,8 +29,5 @@ module.exports = {
     ios: {
       sourceDir: '.',
     },
-    android: {
-      sourceDir: '.',
-    },
   },
 };

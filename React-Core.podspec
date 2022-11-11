@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
   s.summary                = "The core of React Native."
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
-  s.author                 = "Facebook, Inc. and its affiliates"
+  s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => "12.4" }
   s.source                 = source
   s.resource_bundle        = { "AccessibilityResources" => ["React/AccessibilityResources/*.lproj"]}

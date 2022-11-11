@@ -8,6 +8,7 @@
 package com.facebook.react.defaults
 
 import android.app.Application
+import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSIModulePackage
@@ -20,8 +21,10 @@ import com.facebook.react.bridge.JSIModulePackage
  * providing the default TurboModuleManagerDelegateBuilder and the default JSIModulePackage,
  * provided the name of the dynamic library to load.
  */
-abstract class DefaultReactNativeHost protected constructor(application: Application) :
-    ReactNativeHost(application) {
+abstract class DefaultReactNativeHost
+protected constructor(
+    application: Application,
+) : ReactNativeHost(application) {
 
   override fun getReactPackageTurboModuleManagerDelegateBuilder():
       ReactPackageTurboModuleManagerDelegate.Builder? =
@@ -38,6 +41,13 @@ abstract class DefaultReactNativeHost protected constructor(application: Applica
         null
       }
 
+  override fun getJSEngineResolutionAlgorithm(): JSEngineResolutionAlgorithm? =
+      when (isHermesEnabled) {
+        true -> JSEngineResolutionAlgorithm.HERMES
+        false -> JSEngineResolutionAlgorithm.JSC
+        null -> null
+      }
+
   /**
    * Returns whether the user wants to use the New Architecture or not.
    *
@@ -48,4 +58,14 @@ abstract class DefaultReactNativeHost protected constructor(application: Applica
    */
   protected open val isNewArchEnabled: Boolean
     get() = false
+
+  /**
+   * Returns whether the user wants to use Hermes.
+   *
+   * If true, the app will load the Hermes engine, and fail if not found. If false, the app will
+   * load the JSC engine, and fail if not found. If null, the app will attempt to load JSC first and
+   * fallback to Hermes if not found.
+   */
+  protected open val isHermesEnabled: Boolean?
+    get() = null
 }

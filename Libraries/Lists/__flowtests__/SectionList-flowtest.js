@@ -76,7 +76,7 @@ module.exports = {
   },
 
   testBadInheritedDefaultProp(): React.MixedElement {
-    const sections = [];
+    const sections: $FlowFixMe = [];
     return (
       <SectionList
         renderItem={renderMyListItem}

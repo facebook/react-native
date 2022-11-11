@@ -38,6 +38,14 @@ public class ReactFeatureFlags {
   public static boolean enableBridgelessArchitecture = false;
 
   /**
+   * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
+   */
+  public static volatile boolean enableBridgelessArchitectureSoftExceptions = false;
+
+  /** Does the bridgeless architecture use the new create/reload/destroy routines */
+  public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = false;
+
+  /**
    * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
    * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
    * is used.
@@ -115,4 +123,13 @@ public class ReactFeatureFlags {
 
   /** Temporary flag to allow execution of mount items up to 15ms earlier than normal. */
   public static boolean enableEarlyScheduledMountItemExecution = false;
+
+  // TODO (T136375139): Remove this once finish testing
+  public static boolean enableAtomicRegisterSegment = false;
+
+  /**
+   * Allow closing the small gap that appears between paths when drawing a rounded View with a
+   * border.
+   */
+  public static boolean enableCloseVisibleGapBetweenPaths = true;
 }

@@ -19,11 +19,11 @@ const BookmarkTab = ({
   handleNavBarPress,
   isBookmarkActive,
   theme,
-}: $TEMPORARY$object<{
+}: {
   handleNavBarPress: (data: {screen: string}) => void,
   isBookmarkActive: boolean,
   theme: RNTesterTheme,
-}>) => (
+}) => (
   <View style={styles.centerBox}>
     <View
       style={[

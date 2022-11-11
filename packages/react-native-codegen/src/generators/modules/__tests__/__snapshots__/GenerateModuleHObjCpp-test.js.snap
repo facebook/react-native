@@ -711,40 +711,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-namespace JS {
-  namespace NativeImagePickerIOS {
-    struct SpecOpenCameraDialogConfig {
-      bool unmirrorFrontFacingCamera() const;
-      bool videoMode() const;
-
-      SpecOpenCameraDialogConfig(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeImagePickerIOS_SpecOpenCameraDialogConfig)
-+ (RCTManagedPointer *)JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:(id)json;
-@end
-@protocol NativeImagePickerIOSSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)openCameraDialog:(JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig &)config
-         successCallback:(RCTResponseSenderBlock)successCallback
-          cancelCallback:(RCTResponseSenderBlock)cancelCallback;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeImagePickerIOS'
-     */
-    class JSI_EXPORT NativeImagePickerIOSSpecJSI : public ObjCTurboModule {
-    public:
-      NativeImagePickerIOSSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
 inline double JS::NativeCameraRollManager::GetPhotosParams::first() const
 {
   id const p = _v[@\\"first\\"];
@@ -845,16 +811,6 @@ inline id<NSObject> _Nullable JS::NativeExceptionsManager::ExceptionData::extraD
   id const p = _v[@\\"extraData\\"];
   return p;
 }
-inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::unmirrorFrontFacingCamera() const
-{
-  id const p = _v[@\\"unmirrorFrontFacingCamera\\"];
-  return RCTBridgingToBool(p);
-}
-inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::videoMode() const
-{
-  id const p = _v[@\\"videoMode\\"];
-  return RCTBridgingToBool(p);
-}
 ",
 }
 `;
@@ -933,6 +889,9 @@ namespace JS {
 - (void)getValueWithPromise:(BOOL)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
+- (void)getValueWithOptionalArg:(NSDictionary *)parameter
+                        resolve:(RCTPromiseResolveBlock)resolve
+                         reject:(RCTPromiseRejectBlock)reject;
 - (NSString *)getEnums:(double)enumInt
              enumFloat:(double)enumFloat
             enumString:(NSString *)enumString;

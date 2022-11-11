@@ -54,7 +54,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_optionals(jsi
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_optionalMethod(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->optionalMethod(rt, args[0].asObject(rt), args[1].asObject(rt).asFunction(rt), args[2].asObject(rt).asArray(rt));
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->optionalMethod(rt, args[0].asObject(rt), args[1].asObject(rt).asFunction(rt), count < 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt).asArray(rt)));
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getArrays(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
@@ -240,15 +240,6 @@ NativeCameraRollManagerCxxSpecJSI::NativeCameraRollManagerCxxSpecJSI(std::shared
   methodMap_[\\"saveToCameraRoll\\"] = MethodMetadata {2, __hostFunction_NativeCameraRollManagerCxxSpecJSI_saveToCameraRoll};
   methodMap_[\\"deletePhotos\\"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerCxxSpecJSI_deletePhotos};
 }
-static jsi::Value __hostFunction_NativeImagePickerIOSCxxSpecJSI_openCameraDialog(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeImagePickerIOSCxxSpecJSI *>(&turboModule)->openCameraDialog(rt, args[0].asObject(rt), args[1].asObject(rt).asFunction(rt), args[2].asObject(rt).asFunction(rt));
-  return jsi::Value::undefined();
-}
-
-NativeImagePickerIOSCxxSpecJSI::NativeImagePickerIOSCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
-  : TurboModule(\\"ImagePickerIOS\\", jsInvoker) {
-  methodMap_[\\"openCameraDialog\\"] = MethodMetadata {3, __hostFunction_NativeImagePickerIOSCxxSpecJSI_openCameraDialog};
-}
 static jsi::Value __hostFunction_NativeExceptionsManagerCxxSpecJSI_reportFatalException(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->reportFatalException(rt, args[0].asString(rt), args[1].asObject(rt).asArray(rt), args[2].asNumber());
   return jsi::Value::undefined();
@@ -337,6 +328,9 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithC
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithPromise(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithPromise(rt, args[0].asBool());
 }
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithOptionalArg(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithOptionalArg(rt, count < 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt)));
+}
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnums(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getEnums(rt, args[0].asNumber(), args[1].asNumber(), args[2].asString(rt));
 }
@@ -354,6 +348,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
   methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue};
   methodMap_[\\"getValueWithCallback\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithCallback};
   methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithPromise};
+  methodMap_[\\"getValueWithOptionalArg\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithOptionalArg};
   methodMap_[\\"getEnums\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnums};
 }
 

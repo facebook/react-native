@@ -9,10 +9,10 @@
  */
 
 import * as React from 'react';
-import TestRenderer from 'react-test-renderer';
 
 let Animated = require('../Animated').default;
 let AnimatedProps = require('../nodes/AnimatedProps').default;
+let TestRenderer = require('react-test-renderer');
 
 jest.mock('../../BatchedBridge/NativeModules', () => ({
   NativeAnimatedModule: {},

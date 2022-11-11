@@ -65,12 +65,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/// <reference path="globals.d.ts" />
-/// <reference path="legacy-properties.d.ts" />
-/// <reference path="BatchedBridge.d.ts" />
-/// <reference path="Codegen.d.ts" />
-/// <reference path="Devtools.d.ts" />
-/// <reference path="LaunchScreen.d.ts" />
+/// <reference path="modules/BatchedBridge.d.ts" />
+/// <reference path="modules/Codegen.d.ts" />
+/// <reference path="modules/Devtools.d.ts" />
+/// <reference path="modules/globals.d.ts" />
+/// <reference path="modules/LaunchScreen.d.ts" />
 
 export * from '../Libraries/ActionSheetIOS/ActionSheetIOS';
 export * from '../Libraries/Alert/Alert';
@@ -88,7 +87,6 @@ export * from '../Libraries/Components/Keyboard/Keyboard';
 export * from '../Libraries/Components/Keyboard/KeyboardAvoidingView';
 export * from '../Libraries/Components/Pressable/Pressable';
 export * from '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
-export * from '../Libraries/Components/ProgressViewIOS/ProgressViewIOS';
 export * from '../Libraries/Components/RefreshControl/RefreshControl';
 export * from '../Libraries/Components/SafeAreaView/SafeAreaView';
 export * from '../Libraries/Components/ScrollView/ScrollView';
@@ -111,7 +109,6 @@ export * from '../Libraries/EventEmitter/NativeEventEmitter';
 export * from '../Libraries/EventEmitter/RCTDeviceEventEmitter';
 export * from '../Libraries/EventEmitter/RCTNativeAppEventEmitter';
 export * from '../Libraries/Image/Image';
-export * from '../Libraries/Image/ImagePickerIOS';
 export * from '../Libraries/Image/ImageResizeMode';
 export * from '../Libraries/Image/ImageSource';
 export * from '../Libraries/Interaction/InteractionManager';
@@ -131,11 +128,8 @@ export * from '../Libraries/ReactNative/I18nManager';
 export * from '../Libraries/ReactNative/RendererProxy';
 export * from '../Libraries/ReactNative/UIManager';
 export * from '../Libraries/ReactNative/requireNativeComponent';
-export * from '../Libraries/Renderer/implementations/ReactNativeRenderer';
-export * from '../Libraries/Renderer/shims/ReactNativeTypes';
 export * from '../Libraries/Settings/Settings';
 export * from '../Libraries/Share/Share';
-export * from '../Libraries/Storage/AsyncStorage';
 export * from '../Libraries/StyleSheet/PlatformColorValueTypesIOS';
 export * from '../Libraries/StyleSheet/PlatformColorValueTypes';
 export * from '../Libraries/StyleSheet/StyleSheet';
@@ -155,6 +149,11 @@ export * from '../Libraries/Vibration/Vibration';
 export * from '../Libraries/YellowBox/YellowBoxDeprecated';
 export * from '../Libraries/vendor/core/ErrorUtils';
 export * from '../Libraries/vendor/emitter/EventEmitter';
+
+export * from './public/DeprecatedPropertiesAlias';
+export * from './public/Insets';
+export * from './public/ReactNativeRenderer';
+export * from './public/ReactNativeTypes';
 
 import type {ErrorUtils} from '../Libraries/vendor/core/ErrorUtils';
 

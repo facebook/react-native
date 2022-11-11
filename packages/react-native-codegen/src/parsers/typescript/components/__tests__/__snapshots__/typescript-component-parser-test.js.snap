@@ -1221,6 +1221,29 @@ exports[`RN Codegen TypeScript Parser can generate fixture ARRAY_PROP_TYPES_NO_E
                   }
                 }
               }
+            },
+            {
+              'name': 'array_of_array_of_object_required_with_spread',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'ArrayTypeAnnotation',
+                  'elementType': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'prop',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation',
+                          'default': null
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
             }
           ],
           'commands': []
@@ -1885,6 +1908,29 @@ exports[`RN Codegen TypeScript Parser can generate fixture ARRAY2_PROP_TYPES_NO_
             },
             {
               'name': 'array_of_array_of_object_required_in_file',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'ArrayTypeAnnotation',
+                  'elementType': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'prop',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation',
+                          'default': null
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              'name': 'array_of_array_of_object_required_with_spread',
               'optional': false,
               'typeAnnotation': {
                 'type': 'ArrayTypeAnnotation',

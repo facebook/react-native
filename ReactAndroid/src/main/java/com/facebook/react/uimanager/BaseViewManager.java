@@ -79,6 +79,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_state, null);
     view.setTag(R.id.accessibility_actions, null);
     view.setTag(R.id.accessibility_value, null);
+    view.setTag(R.id.accessibility_state_expanded, null);
 
     // This indirectly calls (and resets):
     // setTranslationX
@@ -270,6 +271,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (accessibilityState == null) {
       return;
     }
+    if (accessibilityState.hasKey("expanded")) {
+      view.setTag(R.id.accessibility_state_expanded, accessibilityState.getBoolean("expanded"));
+    }
     if (accessibilityState.hasKey("selected")) {
       boolean prevSelected = view.isSelected();
       boolean nextSelected = accessibilityState.getBoolean("selected");
@@ -335,13 +339,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
             && value.getType() == ReadableType.Boolean
             && value.asBoolean()) {
           contentDescription.add(view.getContext().getString(R.string.state_busy_description));
-        } else if (state.equals(STATE_EXPANDED) && value.getType() == ReadableType.Boolean) {
-          contentDescription.add(
-              view.getContext()
-                  .getString(
-                      value.asBoolean()
-                          ? R.string.state_expanded_description
-                          : R.string.state_collapsed_description));
         }
       }
     }

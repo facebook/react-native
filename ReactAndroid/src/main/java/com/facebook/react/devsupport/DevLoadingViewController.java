@@ -22,8 +22,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Locale;
 
 /** Controller to display loading messages on top of the screen. All methods are thread safe. */
@@ -53,34 +51,6 @@ public class DevLoadingViewController {
             showInternal(message);
           }
         });
-  }
-
-  public void showForUrl(String url) {
-    Context context = getContext();
-    if (context == null) {
-      return;
-    }
-
-    URL parsedURL;
-    try {
-      parsedURL = new URL(url);
-    } catch (MalformedURLException e) {
-      FLog.e(ReactConstants.TAG, "Bundle url format is invalid. \n\n" + e.toString());
-      return;
-    }
-
-    int port = parsedURL.getPort() != -1 ? parsedURL.getPort() : parsedURL.getDefaultPort();
-    showMessage(
-        context.getString(R.string.catalyst_loading_from_url, parsedURL.getHost() + ":" + port));
-  }
-
-  public void showForRemoteJSEnabled() {
-    Context context = getContext();
-    if (context == null) {
-      return;
-    }
-
-    showMessage(context.getString(R.string.catalyst_debug_connecting));
   }
 
   public void updateProgress(
