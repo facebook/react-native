@@ -19,16 +19,13 @@ const {parseTopLevelType} = require('../parseTopLevelType');
 
 type EventTypeAST = Object;
 
-function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
-  const topLevelType = parseTopLevelType(
-    property.typeAnnotation.typeAnnotation,
-    types,
-  );
-  const name = property.key.name;
-  const optional = property.optional || topLevelType.optional;
-  const parameters = topLevelType.type.parameters;
+function buildCommandSchemaInternal(
+  name: string,
+  optional: boolean,
+  parameters: Array<$FlowFixMe>,
+  types: TypeDeclarationMap,
+) {
   const firstParam = parameters[0].typeAnnotation;
-
   if (
     !(
       firstParam.typeAnnotation != null &&
@@ -111,6 +108,17 @@ function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
       },
     },
   };
+}
+
+function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
+  const topLevelType = parseTopLevelType(
+    property.typeAnnotation.typeAnnotation,
+    types,
+  );
+  const name = property.key.name;
+  const optional = property.optional || topLevelType.optional;
+  const parameters = topLevelType.type.parameters;
+  return buildCommandSchemaInternal(name,optional,parameters,types);
 }
 
 function getCommands(
