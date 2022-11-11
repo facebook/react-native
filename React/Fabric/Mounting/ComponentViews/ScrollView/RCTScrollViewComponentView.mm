@@ -634,6 +634,10 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
+  if (CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+    return;
+  }
+
   [self _forceDispatchNextScrollEvent];
 
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
