@@ -57,10 +57,13 @@ export interface ModalPropsIOS {
     | undefined;
 
   /**
-   * The `detent` determines the height for modal,
-   * based on the detent value.
+   * The `detents` determines the height for modal,
+   * based on the detents value.
+   * It can be a combination of `large`, `medium` or
+   * any number.
+   * for eg: ['140', 'medium', 'large']
    */
-  detent?: 'large' | 'medium' | 'mediumResizable';
+  detents?: Array<string>;
 
   /**
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.

@@ -203,20 +203,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
       return;
     }
 
-    NSArray<UISheetPresentationControllerDetent *> *detents = @[UISheetPresentationControllerDetent.largeDetent];
-    switch (self.detent) {
-      case DetentLarge:
-        break;
-      case DetentMedium:
-        detents = @[UISheetPresentationControllerDetent.mediumDetent];
-        break;
-      case DetentMediumResizable:
-        _modalViewController.sheetPresentationController.prefersGrabberVisible = true;
-        _modalViewController.sheetPresentationController.largestUndimmedDetentIdentifier =  UISheetPresentationControllerDetentIdentifierMedium;
-        detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
-        break;
-    }
-    _modalViewController.sheetPresentationController.detents = detents;
+    _modalViewController.sheetPresentationController.prefersGrabberVisible = _detents.count > 1;
+    _modalViewController.sheetPresentationController.detents = [self convertedDetents];
   }
 }
 
@@ -229,6 +217,37 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   _modalViewController.modalPresentationStyle =
       transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
 }
+
+- (NSMutableArray<UISheetPresentationControllerDetent *> *)convertedDetents API_AVAILABLE(ios(15.0))
+{
+  NSMutableArray<UISheetPresentationControllerDetent *> *detents = [[NSMutableArray alloc] init];
+    
+  for (NSString *detent in _detents) {
+    if ([detent isEqualToString:@"medium"]) {
+      [detents addObject:UISheetPresentationControllerDetent.mediumDetent];
+    } else if ([detent isEqualToString:@"large"]) {
+      [detents addObject:UISheetPresentationControllerDetent.largeDetent];
+    } else {
+      [detents addObject: [self getCustomDetent:detent]];
+    }
+  }
+    
+  return detents;
+}
+
+- (UISheetPresentationControllerDetent *)getCustomDetent:(NSString *)detent API_AVAILABLE(ios(15.0))
+{
+  if (@available(iOS 16.0, *)) {
+    UISheetPresentationControllerDetent *customDetent = [UISheetPresentationControllerDetent customDetentWithIdentifier:nil resolver:^CGFloat(id<UISheetPresentationControllerDetentResolutionContext>  _Nonnull context) {
+      return [detent intValue];
+    }];
+        
+    return customDetent;
+  }
+    
+  return nil;
+}
+
 
 - (UIInterfaceOrientationMask)supportedOrientationsMask
 {

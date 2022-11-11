@@ -183,28 +183,48 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   }
 }
 
-- (void)handleDetent:(ModalHostViewDetent)detent
+- (void)handleDetents:(std::vector<std::string>)detents
 {
   if (@available(iOS 15.0, *)) {
     if (!self.viewController.sheetPresentationController) {
       return;
     }
 
-    NSArray<UISheetPresentationControllerDetent *> *detents = @[UISheetPresentationControllerDetent.largeDetent];
-    switch (detent) {
-      case ModalHostViewDetent::Large:
-        break;
-      case ModalHostViewDetent::Medium:
-        detents = @[UISheetPresentationControllerDetent.mediumDetent];
-        break;
-      case ModalHostViewDetent::MediumResizable:
-        self.viewController.sheetPresentationController.prefersGrabberVisible = true;
-        self.viewController.sheetPresentationController.largestUndimmedDetentIdentifier =  UISheetPresentationControllerDetentIdentifierMedium;
-        detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
-        break;
-    }
-    self.viewController.sheetPresentationController.detents = detents;
+    self.viewController.sheetPresentationController.prefersGrabberVisible = detents.size() > 1;
+    self.viewController.sheetPresentationController.detents = [self convertedDetents: detents];
   }
+}
+
+- (NSMutableArray<UISheetPresentationControllerDetent *> *)convertedDetents:(std::vector<std::string>)_detents API_AVAILABLE(ios(15.0))
+{
+  NSMutableArray<UISheetPresentationControllerDetent *> *detents = [[NSMutableArray alloc] init];
+    
+  for (auto detent : _detents) {
+    id stringDetent = [NSString stringWithUTF8String:detent.c_str()];
+      
+    if ([stringDetent isEqualToString:@"medium"]) {
+      [detents addObject:UISheetPresentationControllerDetent.mediumDetent];
+    } else if ([stringDetent isEqualToString:@"large"]) {
+      [detents addObject:UISheetPresentationControllerDetent.largeDetent];
+    } else {
+      [detents addObject: [self getCustomDetent:stringDetent]];
+    }
+  }
+    
+  return detents;
+}
+
+- (UISheetPresentationControllerDetent *)getCustomDetent:(NSString *)detent API_AVAILABLE(ios(15.0))
+{
+  if (@available(iOS 16.0, *)) {
+    UISheetPresentationControllerDetent *customDetent = [UISheetPresentationControllerDetent customDetentWithIdentifier:nil resolver:^CGFloat(id<UISheetPresentationControllerDetentResolutionContext>  _Nonnull context) {
+      return [detent intValue];
+    }];
+        
+    return customDetent;
+  }
+    
+  return nil;
 }
 
 - (std::shared_ptr<const ModalHostViewEventEmitter>)modalEventEmitter
@@ -293,7 +313,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   self.viewController.modalPresentationStyle = presentationConfiguration(newProps);
 
   _shouldPresent = newProps.visible;
-  [self handleDetent: newProps.detent];
+  [self handleDetents: newProps.detents];
   [self ensurePresentedOnlyIfNeeded];
 
   [super updateProps:props oldProps:oldProps];

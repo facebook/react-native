@@ -11,12 +11,6 @@
 #import <React/RCTModalHostViewManager.h>
 #import <React/RCTView.h>
 
-typedef NS_ENUM(NSInteger, Detent) {
-  DetentLarge = 0,
-  DetentMedium,
-  DetentMediumResizable
-};
-
 @class RCTBridge;
 @class RCTModalHostViewController;
 
@@ -26,7 +20,7 @@ typedef NS_ENUM(NSInteger, Detent) {
 
 @property (nonatomic, copy) NSString *animationType;
 @property (nonatomic, assign) UIModalPresentationStyle presentationStyle;
-@property (nonatomic, assign) Detent detent;
+@property (nonatomic, copy) NSArray<NSString *> *detents;
 @property (nonatomic, assign, getter=isTransparent) BOOL transparent;
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
