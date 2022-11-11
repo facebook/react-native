@@ -15,7 +15,6 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
@@ -520,7 +519,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = "accessibilityUnit")
   public void setAccessibilityUnit(@Nullable String accessibilityUnit) {
-    Log.w("TESTING::ReactBaseTextShadowNode", "accessibilityUnit: " + (accessibilityUnit));
     if (isVirtual()) {
       markUpdated();
     }
