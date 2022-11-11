@@ -11,31 +11,30 @@
 'use strict';
 
 import type {
-  SchemaType,
   NamedShape,
+  NativeModuleAliasMap,
+  NativeModuleBaseTypeAnnotation,
+  NativeModuleEnumDeclaration,
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
-  NativeModuleAliasMap,
-  UnionTypeAnnotationMemberType,
-  NativeModuleEnumDeclaration,
-  NativeModuleBaseTypeAnnotation,
   NativeModuleUnionTypeAnnotation,
   Nullable,
+  SchemaType,
+  UnionTypeAnnotationMemberType,
 } from '../CodegenSchema.js';
 import type {ParserType} from './errors';
-import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
 import type {Parser} from './parser';
+import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
 
+const {throwIfPropertyValueTypeIsUnsupported} = require('./error-utils');
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
-  UnsupportedObjectPropertyTypeAnnotationParserError,
-  UnsupportedUnionTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
+  UnsupportedObjectPropertyTypeAnnotationParserError,
+  UnsupportedUnionTypeAnnotationParserError,
 } = require('./errors');
-const {throwIfPropertyValueTypeIsUnsupported} = require('./error-utils');
-
 const invariant = require('invariant');
 
 function wrapModuleSchema(
@@ -164,16 +163,17 @@ function parseObjectProperty(
     };
   }
 
-  const [propertyTypeAnnotation, isPropertyNullable] = unwrapNullable(
-    translateTypeAnnotation(
-      hasteModuleName,
-      languageTypeAnnotation,
-      types,
-      aliasMap,
-      tryParse,
-      cxxOnly,
-    ),
-  );
+  const [propertyTypeAnnotation, isPropertyNullable] =
+    unwrapNullable<$FlowFixMe>(
+      translateTypeAnnotation(
+        hasteModuleName,
+        languageTypeAnnotation,
+        types,
+        aliasMap,
+        tryParse,
+        cxxOnly,
+      ),
+    );
 
   if (
     propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||

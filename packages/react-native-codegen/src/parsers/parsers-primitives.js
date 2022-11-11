@@ -11,25 +11,25 @@
 'use strict';
 
 import type {
-  Nullable,
-  NativeModuleAliasMap,
-  NativeModuleBaseTypeAnnotation,
-  NativeModuleFunctionTypeAnnotation,
-  NativeModuleTypeAliasTypeAnnotation,
-  NativeModuleNumberTypeAnnotation,
-  NativeModuleMixedTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   Int32TypeAnnotation,
+  NamedShape,
+  NativeModuleAliasMap,
+  NativeModuleBaseTypeAnnotation,
+  NativeModuleFloatTypeAnnotation,
+  NativeModuleFunctionTypeAnnotation,
   NativeModuleGenericObjectTypeAnnotation,
-  ReservedTypeAnnotation,
-  ObjectTypeAnnotation,
+  NativeModuleMixedTypeAnnotation,
+  NativeModuleNumberTypeAnnotation,
+  NativeModuleParamTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
+  NativeModuleTypeAliasTypeAnnotation,
+  Nullable,
+  ObjectTypeAnnotation,
+  ReservedTypeAnnotation,
   StringTypeAnnotation,
   VoidTypeAnnotation,
-  NativeModuleFloatTypeAnnotation,
-  NativeModuleParamTypeAnnotation,
-  NamedShape,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {Parser} from './parser';
@@ -39,17 +39,15 @@ import type {
   TypeDeclarationMap,
 } from './utils';
 
-const {UnnamedFunctionParamParserError} = require('./errors');
-
 const {
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
 } = require('./error-utils');
-
+const {UnnamedFunctionParamParserError} = require('./errors');
 const {
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   unwrapNullable,
   wrapNullable,
-  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
 } = require('./parsers-commons');
 
 function emitBoolean(nullable: boolean): Nullable<BooleanTypeAnnotation> {
@@ -286,7 +284,7 @@ function translateFunctionTypeAnnotation(
       const paramName = getParameterName(param, language);
 
       const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
-        unwrapNullable(
+        unwrapNullable<$FlowFixMe>(
           translateTypeAnnotation(
             hasteModuleName,
             getParameterTypeAnnotation(param, language),
@@ -324,16 +322,17 @@ function translateFunctionTypeAnnotation(
     }
   }
 
-  const [returnTypeAnnotation, isReturnTypeAnnotationNullable] = unwrapNullable(
-    translateTypeAnnotation(
-      hasteModuleName,
-      getTypeAnnotationReturnType(typeAnnotation, language),
-      types,
-      aliasMap,
-      tryParse,
-      cxxOnly,
-    ),
-  );
+  const [returnTypeAnnotation, isReturnTypeAnnotationNullable] =
+    unwrapNullable<$FlowFixMe>(
+      translateTypeAnnotation(
+        hasteModuleName,
+        getTypeAnnotationReturnType(typeAnnotation, language),
+        types,
+        aliasMap,
+        tryParse,
+        cxxOnly,
+      ),
+    );
 
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
     hasteModuleName,

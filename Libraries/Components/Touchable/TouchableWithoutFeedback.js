@@ -121,7 +121,7 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
   };
 
   render(): React.Node {
-    const element = React.Children.only(this.props.children);
+    const element = React.Children.only<$FlowFixMe>(this.props.children);
     const children = [element.props.children];
     const ariaLive = this.props['aria-live'];
 

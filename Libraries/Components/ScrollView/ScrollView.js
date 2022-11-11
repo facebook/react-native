@@ -1146,7 +1146,7 @@ class ScrollView extends React.Component<Props, State> {
     if (!stickyHeaderIndices) {
       return;
     }
-    const childArray = React.Children.toArray(this.props.children);
+    const childArray = React.Children.toArray<$FlowFixMe>(this.props.children);
     if (key !== this._getKeyForIndex(index, childArray)) {
       // ignore stale layout update
       return;
@@ -1673,7 +1673,9 @@ class ScrollView extends React.Component<Props, State> {
     let children = this.props.children;
 
     if (stickyHeaderIndices != null && stickyHeaderIndices.length > 0) {
-      const childArray = React.Children.toArray(this.props.children);
+      const childArray = React.Children.toArray<$FlowFixMe>(
+        this.props.children,
+      );
 
       children = childArray.map((child, index) => {
         const indexOfIndex = child ? stickyHeaderIndices.indexOf(index) : -1;

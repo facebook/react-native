@@ -256,13 +256,13 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
     setMeasured(true);
 
     props.onLayout(event);
-    const child = React.Children.only(props.children);
+    const child = React.Children.only<$FlowFixMe>(props.children);
     if (child.props.onLayout) {
       child.props.onLayout(event);
     }
   };
 
-  const child = React.Children.only(props.children);
+  const child = React.Children.only<$FlowFixMe>(props.children);
 
   // TODO T68319535: remove this if NativeAnimated is rewritten for Fabric
   const passthroughAnimatedPropExplicitValues =

@@ -239,7 +239,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    const element = React.Children.only(this.props.children);
+    const element = React.Children.only<$FlowFixMe>(this.props.children);
     const children = [element.props.children];
     if (__DEV__) {
       if (element.type === View) {
