@@ -104,14 +104,15 @@ function translateFunctionParamToJavaType(
     unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
   const isRequired = !optional && !nullable;
 
-  function wrapIntoNullableIfNeeded(generatedType: string) {
+  function wrapNullable(javaType: string, nullableType?: string) {
     if (!isRequired) {
       imports.add('javax.annotation.Nullable');
-      return `@Nullable ${generatedType}`;
+      return `@Nullable ${nullableType ?? javaType}`;
     }
-    return generatedType;
+    return javaType;
   }
 
+  // FIXME: support class alias for args
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
@@ -121,49 +122,45 @@ function translateFunctionParamToJavaType(
     case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
-          return !isRequired ? 'Double' : 'double';
+          return wrapNullable('double', 'Double');
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
       }
     case 'StringTypeAnnotation':
-      return wrapIntoNullableIfNeeded('String');
+      return wrapNullable('String');
     case 'NumberTypeAnnotation':
-      return !isRequired ? 'Double' : 'double';
+      return wrapNullable('double', 'Double');
     case 'FloatTypeAnnotation':
-      return !isRequired ? 'Double' : 'double';
+      return wrapNullable('double', 'Double');
     case 'DoubleTypeAnnotation':
-      return !isRequired ? 'Double' : 'double';
+      return wrapNullable('double', 'Double');
     case 'Int32TypeAnnotation':
-      return !isRequired ? 'Double' : 'double';
+      return wrapNullable('double', 'Double');
     case 'BooleanTypeAnnotation':
-      return !isRequired ? 'Boolean' : 'boolean';
+      return wrapNullable('boolean', 'Boolean');
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return !isRequired ? 'Double' : 'double';
+          return wrapNullable('double', 'Double');
         case 'StringTypeAnnotation':
-          return wrapIntoNullableIfNeeded('String');
+          return wrapNullable('String');
         default:
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.ReadableMap');
-      if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
-        // No class alias for args, so it still falls under ReadableMap.
-        return 'ReadableMap';
-      }
-      return 'ReadableMap';
+      return wrapNullable('ReadableMap');
     case 'GenericObjectTypeAnnotation':
       // Treat this the same as ObjectTypeAnnotation for now.
       imports.add('com.facebook.react.bridge.ReadableMap');
-      return 'ReadableMap';
+      return wrapNullable('ReadableMap');
     case 'ArrayTypeAnnotation':
       imports.add('com.facebook.react.bridge.ReadableArray');
-      return 'ReadableArray';
+      return wrapNullable('ReadableArray');
     case 'FunctionTypeAnnotation':
       imports.add('com.facebook.react.bridge.Callback');
-      return 'Callback';
+      return wrapNullable('Callback');
     default:
       (realTypeAnnotation.type:
         | 'EnumDeclaration'
@@ -184,14 +181,15 @@ function translateFunctionReturnTypeToJavaType(
       nullableReturnTypeAnnotation,
     );
 
-  function wrapIntoNullableIfNeeded(generatedType: string) {
+  function wrapNullable(javaType: string, nullableType?: string) {
     if (nullable) {
       imports.add('javax.annotation.Nullable');
-      return `@Nullable ${generatedType}`;
+      return `@Nullable ${nullableType ?? javaType}`;
     }
-    return generatedType;
+    return javaType;
   }
 
+  // FIXME: support class alias for args
   let realTypeAnnotation = returnTypeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
@@ -201,7 +199,7 @@ function translateFunctionReturnTypeToJavaType(
     case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
-          return nullable ? 'Double' : 'double';
+          return wrapNullable('double', 'Double');
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
@@ -211,35 +209,35 @@ function translateFunctionReturnTypeToJavaType(
     case 'PromiseTypeAnnotation':
       return 'void';
     case 'StringTypeAnnotation':
-      return wrapIntoNullableIfNeeded('String');
+      return wrapNullable('String');
     case 'NumberTypeAnnotation':
-      return nullable ? 'Double' : 'double';
+      return wrapNullable('double', 'Double');
     case 'FloatTypeAnnotation':
-      return nullable ? 'Double' : 'double';
+      return wrapNullable('double', 'Double');
     case 'DoubleTypeAnnotation':
-      return nullable ? 'Double' : 'double';
+      return wrapNullable('double', 'Double');
     case 'Int32TypeAnnotation':
-      return nullable ? 'Double' : 'double';
+      return wrapNullable('double', 'Double');
     case 'BooleanTypeAnnotation':
-      return nullable ? 'Boolean' : 'boolean';
+      return wrapNullable('boolean', 'Boolean');
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return nullable ? 'Double' : 'double';
+          return wrapNullable('double', 'Double');
         case 'StringTypeAnnotation':
-          return wrapIntoNullableIfNeeded('String');
+          return wrapNullable('String');
         default:
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableMap');
-      return wrapIntoNullableIfNeeded('WritableMap');
+      return wrapNullable('WritableMap');
     case 'GenericObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableMap');
-      return wrapIntoNullableIfNeeded('WritableMap');
+      return wrapNullable('WritableMap');
     case 'ArrayTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableArray');
-      return wrapIntoNullableIfNeeded('WritableArray');
+      return wrapNullable('WritableArray');
     default:
       (realTypeAnnotation.type:
         | 'EnumDeclaration'

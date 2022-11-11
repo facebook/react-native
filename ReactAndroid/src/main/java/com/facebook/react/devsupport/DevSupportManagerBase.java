@@ -752,13 +752,34 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
   @UiThread
   private void showDevLoadingViewForUrl(String bundleUrl) {
-    mDevLoadingViewController.showForUrl(bundleUrl);
+    if (mApplicationContext == null) {
+      return;
+    }
+
+    URL parsedURL;
+
+    try {
+      parsedURL = new URL(bundleUrl);
+    } catch (MalformedURLException e) {
+      FLog.e(ReactConstants.TAG, "Bundle url format is invalid. \n\n" + e.toString());
+      return;
+    }
+
+    int port = parsedURL.getPort() != -1 ? parsedURL.getPort() : parsedURL.getDefaultPort();
+    mDevLoadingViewController.showMessage(
+        mApplicationContext.getString(
+            R.string.catalyst_loading_from_url, parsedURL.getHost() + ":" + port));
     mDevLoadingViewVisible = true;
   }
 
   @UiThread
   protected void showDevLoadingViewForRemoteJSEnabled() {
-    mDevLoadingViewController.showForRemoteJSEnabled();
+    if (mApplicationContext == null) {
+      return;
+    }
+
+    mDevLoadingViewController.showMessage(
+        mApplicationContext.getString(R.string.catalyst_debug_connecting));
     mDevLoadingViewVisible = true;
   }
 

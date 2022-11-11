@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.70.5
+
+### Fixed
+
+- Force dependencies resolution to minor series for 0.70 ([59407a4d34](https://github.com/facebook/react-native/commit/59407a4d3442dddb7f4c29049bf56bbc345f950f) by [@cortinico](https://github.com/cortinico))
+
+## v0.70.4
+
+### Changed
+
+- Bump CLI to 9.2.1 ([a24c8946e0](https://github.com/facebook/react-native/commit/a24c8946e065ca89048e574abd7c2dc0434a350b) by [@kelset](https://github.com/kelset))
+- Bump react-native-codegen to 0.70.6 ([866021b58c](https://github.com/facebook/react-native/commit/866021b58c28a1f1c394294ddc4ed69d4ecef10a) by [@dmytrorykun](https://github.com/dmytrorykun))
+
+### Fixed
+
+- Load react-native.config.js from correct path during codegen ([74fda10702](https://github.com/facebook/react-native/commit/74fda1070266df13e1b58680a670dde3acf9d205) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+#### iOS specific
+
+- Fix error in the Codegen template for ThirdPartyFabricComponentsProvider ([2f6b2127d9](https://github.com/facebook/react-native/commit/2f6b2127d933094f864523749d13cfbb140b5b63) by [@gispada](https://github.com/gispada))
+- Center text if line height isn't 0 ([70cc27c901](https://github.com/facebook/react-native/commit/70cc27c901aeb447910e30ac3ceac85990d3c16d) by [@sammy-SC](https://github.com/sammy-SC))
+
 ## v0.70.3
 
 ### Fixed
@@ -250,6 +272,12 @@
 
 - Add GitHub token permissions for workflows ([3da3d82320](https://github.com/facebook/react-native/commit/3da3d82320bd035c6bd361a82ea12a70dba4e851) by [@varunsh-coder](https://github.com/varunsh-coder))
 - Bump RCT-Folly to 2021-07-22 ([68f3a42fc7](https://github.com/facebook/react-native/commit/68f3a42fc7380051714253f43b42175de361f8bd) by [@luissantana](https://github.com/luissantana))
+
+## v0.69.7
+
+### Fixed
+
+- Force dependencies resolution to minor series for 0.69 ([c4da74c463](https://github.com/facebook/react-native/commit/c4da74c4636cbbd6bbf681d39a8a8cca49f11f56) by [@Titozzz](https://github.com/Titozzz))
 
 ## v0.69.6
 
@@ -545,6 +573,12 @@
 
 - Encode URL params in URLSearchParams.toString() ([1042a8012f](https://github.com/facebook/react-native/commit/1042a8012fb472bd5c882b469fe507dd6279d562) by [@sshic](https://github.com/sshic))
 
+## v0.68.5
+
+### Fixed
+
+- Force dependencies resolution to minor series for 0.68 ([edcb3ca996](https://github.com/facebook/react-native/commit/edcb3ca996fb3296762af300a36c1d46356f1b24) by [@Titozzz](https://github.com/Titozzz))
+
 ## v0.68.4
 
 ### Changed
@@ -807,6 +841,13 @@
 
 - Remove RCTUIManagerObserver from RCTNativeAnimatedTurboModule ([e9ed115bab](https://github.com/facebook/react-native/commit/e9ed115babbc82968380dae22fa928d4ce3cd6da) by [@p-sun](https://github.com/p-sun))
 
+## v0.67.5
+
+🚨 **IMPORTANT:** This is an exceptional release on an unsupported version. We recommend you upgrade to one of [the supported versions, listed here](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported).
+
+### Fixed
+
+- Force dependencies resolution to minor series for 0.67 ([9f2acda1b8](https://github.com/facebook/react-native/commit/9f2acda1b807e790b3e7562ce3436b93bcc2ad09) by [@cortinico](https://github.com/cortinico))
 
 ## v0.67.4
 
@@ -948,6 +989,14 @@
 ### Security
 
 - Avoiding logging root view params outside of dev / debug mode builds ([e612d3a116](https://github.com/facebook/react-native/commit/e612d3a116f39ab354169643bab0d4bb9cfc1a85) by [@sterlingwes](https://github.com/sterlingwes))
+
+## v0.66.5
+
+🚨 **IMPORTANT:** This is an exceptional release on an unsupported version. We recommend you upgrade to one of [the supported versions, listed here](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported).
+
+### Fixed
+
+- Force dependencies resolution to minor series for 0.66 ([201824c89e](https://github.com/facebook/react-native/commit/201824c89ecebd749ba7e603415edbe6a5b9b73d) by [@cortinico](https://github.com/cortinico))
 
 ## v0.66.4
 
@@ -1118,6 +1167,14 @@
 - Avoid re-encoding images when uploading local files ([f78526ce3d](https://github.com/facebook/react-native/commit/f78526ce3d4004eb4bf8ca5178ca7e2c1c9abc1a) by [@arthuralee](https://github.com/arthuralee))
 - <TextInput> content is reset when emoji is entered at the max length ([f3b8d4976f](https://github.com/facebook/react-native/commit/f3b8d4976f8608c2cda1f071923f14b6d4538967))
 - Use `actionName` in accessibility event callback ([fed6ad5bad](https://github.com/facebook/react-native/commit/fed6ad5badb4196a1895370fc81c522572cb34b4) by [@ShikaSD](https://github.com/ShikaSD))
+
+## v0.65.3
+
+🚨 **IMPORTANT:** This is an exceptional release on an unsupported version. We recommend you upgrade to one of [the supported versions, listed here](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported).
+
+### Fixed
+
+- Force dependencies resolution to minor series for 0.65 ([9548eaea74](https://github.com/facebook/react-native/commit/9548eaea74c6ad242c015d1984503c4b7eb19b6f) by [@kelset](https://github.com/kelset))
 
 ## v0.65.2
 
@@ -1357,6 +1414,15 @@
 - Fix(hermes): fixed hermes build on iOS ([59abb5f378](https://github.com/facebook/react-native/commit/59abb5f378e116288cdea2f619de0c128bb0b0eb) by [@Titozzz](https://github.com/Titozzz))
 - Fix builds on Xcode 12.5 ([36b58a824e](https://github.com/facebook/react-native/commit/36b58a824ea20daa22fe7c528a3bf0ff4e6a4cb5) by [@PeteTheHeat](https://github.com/PeteTheHeat))
 - Fix running React Native project with Xcode 12 in Release on iPhone Simulator ([fdcacd7f76](https://github.com/facebook/react-native/commit/fdcacd7f76ea8ca6dafda32ac431c8adc7bdad00) by [@grabbou](https://github.com/grabbou))
+
+## v0.64.4
+
+🚨 **IMPORTANT:** This is an exceptional release on an unsupported version. We recommend you upgrade to one of [the supported versions, listed here](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported).
+
+### Fixed
+
+- Add an afterEvaluate to solve AGP 4.1.x configuration resolution ([667f1bd21a](https://github.com/facebook/react-native/commit/667f1bd21abfdda19e56f8bbf0520fddba3102ed) by [@cortinico](https://github.com/cortinico))
+- Force dependencies resolution to minor series for 0.64 ([a6a183ad81](https://github.com/facebook/react-native/commit/a6a183ad8106d67e3befce842138e82fb1e136fd) by [@kelset](https://github.com/kelset))
 
 ## v0.64.3
 
@@ -1620,6 +1686,15 @@
 - Check whether packager is running in RCTBundleURLProvider for saved JSLocation ([3d882495d5](https://github.com/facebook/react-native/commit/3d882495d5e4415c2ebb8f4280e18e16025e0736) by [@jimmy623](https://github.com/jimmy623))
 - Fix crash inside RCTRedBox when trying to present same UIViewController twice ([46c77dc296](https://github.com/facebook/react-native/commit/46c77dc296dfab754356cd9346a01dae8d4869f4) by [@sammy-SC](https://github.com/sammy-SC))
 - Fix outdated CocoaPods version requirement in a React.podspec ([8a6ac1fef3](https://github.com/facebook/react-native/commit/8a6ac1fef369071405a3bf14a89924c66f28d192) by [@sunnylqm](https://github.com/sunnylqm))
+
+## v0.63.5
+
+🚨 **IMPORTANT:** This is an exceptional release on an unsupported version. We recommend you upgrade to one of [the supported versions, listed here](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported).
+
+### Fixed
+
+- Add an afterEvaluate to solve AGP 3.x configuration resolution ([473a36099c](https://github.com/facebook/react-native/commit/473a36099c80de08591e3cb51687f7d531145ee3) by [@cortinico](https://github.com/cortinico))
+- Force dependencies resolution to minor series for 0.63 ([28cc286cc4](https://github.com/facebook/react-native/commit/28cc286cc4d43b9fe5153d779ea3eecf4d72c51e) by [@cortinico](https://github.com/cortinico))
 
 ## v0.63.4
 

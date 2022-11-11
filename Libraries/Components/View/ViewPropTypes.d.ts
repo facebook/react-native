@@ -8,8 +8,8 @@
  */
 
 import type * as React from 'react';
-import {Insets} from '../../../types/Utilities';
-import {GestureResponderHandlers} from '../../Renderer/implementations/ReactNativeRenderer';
+import {Insets} from '../../../types/public/Insets';
+import {GestureResponderHandlers} from '../../../types/public/ReactNativeRenderer';
 import {StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
 import {LayoutChangeEvent, PointerEvents} from '../../Types/CoreEventTypes';

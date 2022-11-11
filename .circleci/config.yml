@@ -102,7 +102,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:5.4
+      - image: reactnativecommunity/react-native-android:6.1
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
@@ -132,10 +132,7 @@ commands:
         type: string
     steps:
       - restore_cache:
-            keys:
-              - << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-{{ .Revision }}
-              - << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-
-              - << parameters.checkout_base_cache_key >>-{{ arch }}-
+          key: << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-{{ .Revision }}
       - checkout
       - save_cache:
           key: << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-{{ .Revision }}
@@ -670,10 +667,6 @@ jobs:
             buck build ReactAndroid/src/main/java/com/facebook/react/shell
 
       - run:
-          name: Validate Android Test Environment
-          command: ./scripts/validate-android-test-env.sh
-
-      - run:
           name: Run Tests - Android Unit Tests with Buck
           command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
 
@@ -717,10 +710,6 @@ jobs:
       - checkout
       - setup_artifacts
       - run_yarn
-
-      - run:
-          name: Validate Android SDK Install
-          command: ./scripts/validate-android-sdk.sh
 
       # Starting emulator in advance as it takes some time to boot.
       - run:
@@ -768,9 +757,11 @@ jobs:
         description: The Android build type. Must be one of "Debug", "Release".
         type: enum
         enum: ["Debug", "Release"]
-      newarchitecture:
-        type: boolean
-        default: false
+      architecture:
+        default: "OldArch"
+        description: Which React Native architecture to use. Must be one of "NewArch", "OldArch".
+        type: enum
+        enum: [ "NewArch", "OldArch" ]
       jsengine:
         default: "Hermes"
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
@@ -783,17 +774,6 @@ jobs:
       - run_yarn
       - attach_workspace:
           at: .
-      - when:
-          condition:
-            equal: ["JSC", << parameters.jsengine >>]
-          steps:
-            - run:
-                name: Set enableHermes in buld.gradle to false
-                command: |
-                  node ./scripts/set-rn-engine.js -e jsc
-                  echo "Hermes disabled."
-                  grep enableHermes: template/android/app/build.gradle
-
       - run:
           name: Create Android template project
           command: |
@@ -804,8 +784,20 @@ jobs:
             yarn
 
       - run:
-          name: Build the template application for << parameters.flavor >> with New Architecture set to << parameters.newarchitecture >>, and using the << parameters.jsengine>> JS engine.
-          command: cd /tmp/$PROJECT_NAME/android/ && ./gradlew assemble<< parameters.flavor >> -PnewArchEnabled=<< parameters.newarchitecture >>
+          name: Build the template application for << parameters.flavor >> with Architecture set to << parameters.architecture >>, and using the << parameters.jsengine>> JS engine.
+          command: |
+            cd /tmp/$PROJECT_NAME/android/
+            if [[ << parameters.architecture >> == "NewArch" ]]; then
+              export ORG_GRADLE_PROJECT_newArchEnabled=true
+            else
+              export ORG_GRADLE_PROJECT_newArchEnabled=false
+            fi
+            if [[ << parameters.jsengine >> == "Hermes" ]]; then
+              export ORG_GRADLE_PROJECT_hermesEnabled=true
+            else
+              export ORG_GRADLE_PROJECT_hermesEnabled=false
+            fi
+            ./gradlew assemble<< parameters.flavor >> -PREACT_NATIVE_MAVEN_LOCAL_REPO=/root/react-native/maven-local
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -972,8 +964,8 @@ jobs:
     environment:
       - ANDROID_HOME: "C:\\Android\\android-sdk"
       - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
-      - ANDROID_BUILD_VERSION: 31
-      - ANDROID_TOOLS_VERSION: 31.0.0
+      - ANDROID_BUILD_VERSION: 33
+      - ANDROID_TOOLS_VERSION: 33.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - checkout_code_with_cache
@@ -1443,6 +1435,15 @@ jobs:
           command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
       - store_artifacts:
           path: /tmp/hermes-native-symbols.zip
+      - run:
+          name: Zip Maven Artifacts from /tmp/maven-local
+          command: zip -r /tmp/maven-local.zip /tmp/maven-local
+      - store_artifacts:
+          path: /tmp/maven-local.zip
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - maven-local
 
       # START: Commitlies
       # Provide a react-native package for this commit as a Circle CI release artifact.
@@ -1490,43 +1491,6 @@ jobs:
                     -u "$PAT_USERNAME:$PAT_TOKEN" \
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
       # END: Stable releases
-
-      # START: Stables and commitlies
-      - when:
-          condition:
-            or:
-              - equal: [ "release", << parameters.release_type >> ]
-              - equal: [ "dry-run", << parameters.release_type >> ]
-          steps:
-            - run:
-                name: Install dependencies
-                command: apt update && apt install -y jq jo
-            - run:
-                name: Create draft GitHub Release and upload Hermes binaries
-                command: |
-                  RELEASE_VERSION=$(cat build/.version)
-                  if [[ << parameters.release_type >> == "release" ]]; then
-                    GIT_TAG=$CIRCLE_TAG
-                  elif [[ << parameters.release_type >> == "dry-run" ]]; then
-                    GIT_TAG=v1000.0.0
-                  fi
-
-                  ARTIFACTS=("")
-                  for build_type in "Debug" "Release"; do
-                    TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js \
-                      --buildType $build_type \
-                      --releaseVersion $RELEASE_VERSION)
-
-                    ARTIFACTS+=("$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME")
-                  done
-
-                  ./scripts/circleci/create_github_release.sh \
-                    << parameters.release_type >> \
-                    $GIT_TAG \
-                    $RELEASE_VERSION \
-                    $GITHUB_TOKEN \
-                    "${ARTIFACTS[@]}"
-      # END: Stable and commitlies
 
   # -------------------------
   #    JOBS: Nightly
@@ -1599,7 +1563,7 @@ workflows:
             - build_npm_package
           matrix:
             parameters:
-              newarchitecture: [true, false]
+              architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
               flavor: ["Debug", "Release"]
       - test_buck

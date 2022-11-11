@@ -276,6 +276,25 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
             },
           },
           {
+            name: 'getValueWithOptionalArg',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'PromiseTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: true,
+                  name: 'parameter',
+                  typeAnnotation: {
+                    type: 'GenericObjectTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
             name: 'getEnums',
             optional: false,
             typeAnnotation: {
@@ -1204,73 +1223,6 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
         ],
       },
       moduleNames: ['CameraRollManager'],
-    },
-    NativeImagePickerIOS: {
-      type: 'NativeModule',
-      aliases: {},
-      spec: {
-        properties: [
-          {
-            name: 'openCameraDialog',
-            optional: false,
-            typeAnnotation: {
-              type: 'FunctionTypeAnnotation',
-              returnTypeAnnotation: {
-                type: 'VoidTypeAnnotation',
-              },
-              params: [
-                {
-                  optional: false,
-                  name: 'config',
-                  typeAnnotation: {
-                    type: 'ObjectTypeAnnotation',
-                    properties: [
-                      {
-                        optional: false,
-                        name: 'unmirrorFrontFacingCamera',
-                        typeAnnotation: {
-                          type: 'BooleanTypeAnnotation',
-                        },
-                      },
-                      {
-                        optional: false,
-                        name: 'videoMode',
-                        typeAnnotation: {
-                          type: 'BooleanTypeAnnotation',
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  name: 'successCallback',
-                  optional: false,
-                  typeAnnotation: {
-                    type: 'FunctionTypeAnnotation',
-                    params: [],
-                    returnTypeAnnotation: {
-                      type: 'VoidTypeAnnotation',
-                    },
-                  },
-                },
-                {
-                  name: 'cancelCallback',
-                  optional: false,
-                  typeAnnotation: {
-                    type: 'FunctionTypeAnnotation',
-                    params: [],
-                    returnTypeAnnotation: {
-                      type: 'VoidTypeAnnotation',
-                    },
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-      moduleNames: ['ImagePickerIOS'],
-      excludedPlatforms: ['android'],
     },
     NativeExceptionsManager: {
       type: 'NativeModule',

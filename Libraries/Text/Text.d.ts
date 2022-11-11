@@ -8,9 +8,9 @@
  */
 
 import type * as React from 'react';
-import {Constructor} from 'Utilities';
+import {Constructor} from '../../types/private/Utilities';
 import {AccessibilityProps} from '../Components/View/ViewAccessibility';
-import {NativeMethods} from '../Renderer/shims/ReactNativeTypes';
+import {NativeMethods} from '../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../StyleSheet/StyleSheet';
 import {TextStyle} from '../StyleSheet/StyleSheetTypes';
 import {

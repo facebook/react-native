@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.hermes.reactexecutor.HermesExecutor;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
@@ -40,6 +41,8 @@ import java.util.Map;
 /** Builder class for {@link ReactInstanceManager} */
 public class ReactInstanceManagerBuilder {
 
+  private static final String TAG = ReactInstanceManagerBuilder.class.getSimpleName();
+
   private final List<ReactPackage> mPackages = new ArrayList<>();
 
   private @Nullable String mJSBundleAssetUrl;
@@ -64,7 +67,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
-  private JSInterpreter jsInterpreter = JSInterpreter.OLD_LOGIC;
+  private JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm = null;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -118,28 +121,12 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
-   * Sets the jsEngine as JSC or HERMES as per the setJsEngineAsHermes call Uses the enum {@link
-   * JSInterpreter}
-   *
-   * @param jsInterpreter
+   * Sets the JS Engine to load as either Hermes or JSC. If not set, the default is JSC with a
+   * Hermes fallback.
    */
-  private void setJSEngine(JSInterpreter jsInterpreter) {
-    this.jsInterpreter = jsInterpreter;
-  }
-
-  /**
-   * Utility setter to set the required JSEngine as HERMES or JSC Defaults to OLD_LOGIC if not
-   * called by the host app
-   *
-   * @param hermesEnabled hermesEnabled = true sets the JS Engine as HERMES and JSC otherwise
-   */
-  public ReactInstanceManagerBuilder setJsEngineAsHermes(boolean hermesEnabled) {
-    if (hermesEnabled) {
-      setJSEngine(JSInterpreter.HERMES);
-    } else {
-      setJSEngine(JSInterpreter.JSC);
-    }
-    return this;
+  private void setJSEngineResolutionAlgorithm(
+      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
+    this.jsEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
   }
 
   /**
@@ -365,7 +352,11 @@ public class ReactInstanceManagerBuilder {
 
     // if nothing is specified, use old loading method
     // else load the required engine
-    if (jsInterpreter == JSInterpreter.OLD_LOGIC) {
+    if (jsEngineResolutionAlgorithm == null) {
+      FLog.w(
+          TAG,
+          "You're not setting the JS Engine Resolution Algorithm. "
+              + "We'll try to load JSC first, and if it fails we'll fallback to Hermes");
       try {
         // If JSC is included, use it as normal
         initializeSoLoaderIfNecessary(applicationContext);
@@ -378,7 +369,7 @@ public class ReactInstanceManagerBuilder {
         HermesExecutor.loadLibrary();
         return new HermesExecutorFactory();
       }
-    } else if (jsInterpreter == JSInterpreter.HERMES) {
+    } else if (jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.HERMES) {
       HermesExecutor.loadLibrary();
       return new HermesExecutorFactory();
     } else {

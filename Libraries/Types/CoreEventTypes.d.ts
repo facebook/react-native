@@ -9,7 +9,7 @@
 
 import type * as React from 'react';
 import {NodeHandle} from '../ReactNative/RendererProxy';
-import {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import {HostComponent} from '../../types/public/ReactNativeTypes';
 
 export interface LayoutRectangle {
   x: number;

@@ -22,6 +22,7 @@ const {
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfModuleTypeIsUnsupported,
   throwIfUntypedModule,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -34,7 +35,10 @@ const {
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   MoreThanOneModuleInterfaceParserError,
+  UnsupportedFunctionParamTypeAnnotationParserError,
 } = require('../errors');
+const {FlowParser} = require('../flow/parser');
+const {TypeScriptParser} = require('../typescript/parser');
 
 describe('throwIfModuleInterfaceIsMisnamed', () => {
   it("don't throw error if module interface name is Spec", () => {
@@ -242,6 +246,9 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
   const nativeModuleName = 'moduleName';
   const methodName = 'methodName';
   const moduleName = 'moduleName';
+  const flowParser = new FlowParser();
+  const typescriptParser = new TypeScriptParser();
+
   it('throw error if flowTypeArguments type is incorrect', () => {
     const flowTypeArguments = {
       type: '',
@@ -255,15 +262,13 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
       ],
     };
 
-    const parserType = 'Flow';
-
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
         flowTypeArguments,
         methodName,
         moduleName,
-        parserType,
+        flowParser,
       );
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
@@ -274,15 +279,13 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
       params: [],
     };
 
-    const parserType = 'Flow';
-
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
         flowTypeArguments,
         methodName,
         moduleName,
-        parserType,
+        flowParser,
       );
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
@@ -300,15 +303,13 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
       ],
     };
 
-    const parserType = 'Flow';
-
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
         flowTypeArguments,
         methodName,
         moduleName,
-        parserType,
+        flowParser,
       );
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
@@ -326,15 +327,13 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
       ],
     };
 
-    const parserType = 'Flow';
-
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
         flowTypeArguments,
         methodName,
         moduleName,
-        parserType,
+        flowParser,
       );
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
@@ -352,15 +351,13 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
       ],
     };
 
-    const parserType = 'Flow';
-
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
         flowTypeArguments,
         methodName,
         moduleName,
-        parserType,
+        flowParser,
       );
     }).not.toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
@@ -378,15 +375,13 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
       ],
     };
 
-    const parserType = 'TypeScript';
-
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
         typeScriptTypeArguments,
         methodName,
         moduleName,
-        parserType,
+        typescriptParser,
       );
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
@@ -397,15 +392,13 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
       params: [],
     };
 
-    const parserType = 'TypeScript';
-
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
         typeScriptTypeArguments,
         methodName,
         moduleName,
-        parserType,
+        typescriptParser,
       );
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
@@ -423,15 +416,13 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
       ],
     };
 
-    const parserType = 'TypeScript';
-
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
         typeScriptTypeArguments,
         methodName,
         moduleName,
-        parserType,
+        typescriptParser,
       );
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
@@ -449,15 +440,13 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
       ],
     };
 
-    const parserType = 'TypeScript';
-
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
         typeScriptTypeArguments,
         methodName,
         moduleName,
-        parserType,
+        typescriptParser,
       );
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
@@ -475,15 +464,13 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
       ],
     };
 
-    const parserType = 'TypeScript';
-
     expect(() => {
       throwIfIncorrectModuleRegistryCallTypeParameterParserError(
         nativeModuleName,
         typeScriptTypeArguments,
         methodName,
         moduleName,
-        parserType,
+        typescriptParser,
       );
     }).not.toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
@@ -631,5 +618,22 @@ describe('throwIfMoreThanOneModuleInterfaceParserError', () => {
         parserType,
       );
     }).toThrow(MoreThanOneModuleInterfaceParserError);
+  });
+});
+
+describe('throwIfUnsupportedFunctionParamTypeAnnotationParserError', () => {
+  const nativeModuleName = 'moduleName';
+  const languageParamTypeAnnotation = {type: 'VoidTypeAnnotation'};
+  const paramName = 'paramName';
+  it('throws an UnsupportedFunctionParamTypeAnnotationParserError', () => {
+    const paramTypeAnnotationType = 'VoidTypeAnnotation';
+    expect(() => {
+      throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+        nativeModuleName,
+        languageParamTypeAnnotation,
+        paramName,
+        paramTypeAnnotationType,
+      );
+    }).toThrow(UnsupportedFunctionParamTypeAnnotationParserError);
   });
 });

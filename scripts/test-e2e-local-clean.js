@@ -43,6 +43,7 @@ if (isPackagerRunning() === 'running') {
 // Android
 console.info('\n** Cleaning Gradle build artifacts **\n');
 exec('./gradlew cleanAll');
+exec('rm -rf /tmp/maven-local');
 
 // iOS
 console.info('\n** Nuking the derived data folder **\n');

@@ -396,9 +396,12 @@ const TouchableMixin = {
    * @return {object} State object to be placed inside of
    * `this.state.touchable`.
    */
-  touchableGetInitialState: function (): $TEMPORARY$object<{|
-    touchable: $TEMPORARY$object<{|responderID: null, touchState: void|}>,
-  |}> {
+  touchableGetInitialState: function (): {
+    touchable: {
+      touchState: ?State,
+      responderID: ?PressEvent['currentTarget'],
+    },
+  } {
     return {
       touchable: {touchState: undefined, responderID: null},
     };

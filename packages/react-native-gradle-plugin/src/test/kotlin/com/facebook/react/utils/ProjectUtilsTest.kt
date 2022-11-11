@@ -7,14 +7,23 @@
 
 package com.facebook.react.utils
 
+import com.facebook.react.TestReactExtension
+import com.facebook.react.model.ModelCodegenConfig
+import com.facebook.react.model.ModelPackageJson
 import com.facebook.react.tests.createProject
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
+import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
+import java.io.File
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 
 class ProjectUtilsTest {
+
+  @get:Rule val tempFolder = TemporaryFolder()
 
   @Test
   fun isNewArchEnabled_returnsFalseByDefault() {
@@ -98,5 +107,58 @@ class ProjectUtilsTest {
     val extMap = mapOf("enableHermes" to "¯\\_(ツ)_/¯")
     project.extensions.extraProperties.set("react", extMap)
     assertTrue(project.isHermesEnabled)
+  }
+
+  @Test
+  fun needsCodegenFromPackageJson_withCodegenConfigInPackageJson_returnsTrue() {
+    val project = createProject()
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "name": "a-library",
+        "codegenConfig": {}
+      }
+      """
+              .trimIndent())
+    }
+    extension.root.set(tempFolder.root)
+    assertTrue(project.needsCodegenFromPackageJson(extension))
+  }
+
+  @Test
+  fun needsCodegenFromPackageJson_withMissingCodegenConfigInPackageJson_returnsFalse() {
+    val project = createProject()
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "name": "a-library"
+      }
+      """
+              .trimIndent())
+    }
+    extension.root.set(tempFolder.root)
+    assertFalse(project.needsCodegenFromPackageJson(extension))
+  }
+
+  @Test
+  fun needsCodegenFromPackageJson_withCodegenConfigInModel_returnsTrue() {
+    val project = createProject()
+    val model = ModelPackageJson(ModelCodegenConfig(null, null, null, null))
+
+    assertTrue(project.needsCodegenFromPackageJson(model))
+  }
+
+  @Test
+  fun needsCodegenFromPackageJson_withMissingCodegenConfigInModel_returnsFalse() {
+    val project = createProject()
+    val model = ModelPackageJson(null)
+
+    assertFalse(project.needsCodegenFromPackageJson(model))
   }
 }

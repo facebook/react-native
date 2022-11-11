@@ -1,7 +1,7 @@
 # React & React Native Versions
 
 This page describes how React and React Native versions interact each other.
-The version alignment between the two frameworks relies on two syncronization points:
+The version alignment between the two frameworks relies on two synchronization points:
 
 1. The versions in the `package.json` of the new app template. For example [for React Native 0.68.1](https://github.com/facebook/react-native/blob/0.68-stable/template/package.json#L12-L15) the versions are aligned as follows:
 

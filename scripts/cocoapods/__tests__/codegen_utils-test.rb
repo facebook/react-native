@@ -466,6 +466,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "React-Core": ["99.98.97"],
             "React-jsi": ["99.98.97"],
             "hermes-engine": ["99.98.97"],
+            "ReactCommon/turbomodule/bridging": ["99.98.97"],
             "ReactCommon/turbomodule/core": ["99.98.97"]
           }
         }

@@ -8,11 +8,12 @@
  */
 
 import type * as React from 'react';
-import {Constructor, TimerMixin} from 'Utilities';
+import {Constructor} from '../../../types/private/Utilities';
+import {TimerMixin} from '../../../types/private/TimerMixin';
 import {
   HostComponent,
   NativeMethods,
-} from '../../Renderer/shims/ReactNativeTypes';
+} from '../../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {TextStyle} from '../../StyleSheet/StyleSheetTypes';
 import {
