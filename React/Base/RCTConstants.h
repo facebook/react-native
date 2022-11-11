@@ -15,3 +15,9 @@ RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollec
  */
 RCT_EXTERN BOOL RCTExperimentGetPreemptiveViewAllocationDisabled(void);
 RCT_EXTERN void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value);
+
+/*
+ * W3C Pointer Events
+ */
+RCT_EXTERN BOOL RCTGetDispatchW3CPointerEvents(void);
+RCT_EXTERN void RCTSetDispatchW3CPointerEvents(BOOL value);
