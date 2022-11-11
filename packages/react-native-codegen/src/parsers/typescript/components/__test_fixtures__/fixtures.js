@@ -981,13 +981,13 @@ type NativeType = HostComponent<ModuleProps>;
  interface NativeCommands {
    readonly handleRootTag: (viewRef: React.ElementRef<NativeType>, rootTag: RootTag) => void;
    readonly hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
-   readonly scrollTo: (
+   scrollTo(
      viewRef: React.ElementRef<NativeType>,
      x: Float,
      y: Int32,
      z: Double,
      animated: boolean,
-   ) => void;
+   ): void;
  }
 
  export const Commands = codegenNativeCommands<NativeCommands>({
