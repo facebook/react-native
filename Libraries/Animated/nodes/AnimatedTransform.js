@@ -68,7 +68,7 @@ export default class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __getNativeConfig(): any {
-    const transConfigs = [];
+    const transConfigs: Array<any> = [];
 
     this._transforms.forEach(transform => {
       for (const key in transform) {

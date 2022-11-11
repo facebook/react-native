@@ -191,7 +191,7 @@ type ActiveCallback = (
 
 type PassiveCallback = (event: PressEvent, gestureState: GestureState) => mixed;
 
-type PanHandlers = {|
+export type PanHandlers = {|
   onMoveShouldSetResponder: (event: PressEvent) => boolean,
   onMoveShouldSetResponderCapture: (event: PressEvent) => boolean,
   onResponderEnd: (event: PressEvent) => void,
@@ -399,10 +399,10 @@ const PanResponder: PanResponderType = {
    *  accordingly. (numberActiveTouches) may not be totally accurate unless you
    *  are the responder.
    */
-  create(config: PanResponderConfig): $TEMPORARY$object<{|
+  create(config: PanResponderConfig): {
     getInteractionHandle: () => ?number,
     panHandlers: PanHandlers,
-  |}> {
+  } {
     const interactionState = {
       handle: (null: ?number),
     };

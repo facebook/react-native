@@ -71,7 +71,6 @@ import {
   PlatformColor,
   Pressable,
   ProgressBarAndroid,
-  ProgressViewIOS,
   PushNotificationIOS,
   RefreshControl,
   RegisteredStyle,

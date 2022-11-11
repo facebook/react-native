@@ -10,12 +10,11 @@
 
 import type {
   RawPerformanceEntry,
-  RawPerformanceEntryList,
   RawPerformanceEntryType,
-} from '../NativeModules/specs/NativePerformanceObserverCxx';
+} from './NativePerformanceObserver';
 
-import NativePerformanceObserver from '../NativeModules/specs/NativePerformanceObserverCxx';
 import warnOnce from '../Utilities/warnOnce';
+import NativePerformanceObserver from './NativePerformanceObserver';
 
 export type HighResTimeStamp = number;
 // TODO: Extend once new types (such as event) are supported.
@@ -195,7 +194,7 @@ export default class PerformanceObserver {
     });
     _observers.delete(this);
     if (_observers.size === 0) {
-      NativePerformanceObserver.setOnPerformanceEntryCallback();
+      NativePerformanceObserver.setOnPerformanceEntryCallback(undefined);
       _onPerformanceEntryCallbackIsSet = false;
     }
   }
@@ -210,8 +209,7 @@ function onPerformanceEntry() {
   if (!NativePerformanceObserver) {
     return;
   }
-  const rawEntries: RawPerformanceEntryList =
-    NativePerformanceObserver.getPendingEntries();
+  const rawEntries = NativePerformanceObserver.getPendingEntries();
   const entries = rawEntries.map(rawToPerformanceEntry);
   _observers.forEach(observer => {
     const entriesForObserver: PerformanceEntryList = entries.filter(entry =>

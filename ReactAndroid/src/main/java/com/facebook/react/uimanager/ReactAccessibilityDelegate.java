@@ -67,6 +67,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     sActionIdMap.put("longpress", AccessibilityActionCompat.ACTION_LONG_CLICK.getId());
     sActionIdMap.put("increment", AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId());
     sActionIdMap.put("decrement", AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId());
+    sActionIdMap.put("expand", AccessibilityActionCompat.ACTION_EXPAND.getId());
+    sActionIdMap.put("collapse", AccessibilityActionCompat.ACTION_COLLAPSE.getId());
   }
 
   private final View mView;
@@ -96,6 +98,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   public enum AccessibilityRole {
     NONE,
     BUTTON,
+    DROPDOWNLIST,
     TOGGLEBUTTON,
     LINK,
     SEARCH,
@@ -123,12 +126,22 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     TIMER,
     LIST,
     GRID,
+    PAGER,
+    SCROLLVIEW,
+    HORIZONTALSCROLLVIEW,
+    VIEWGROUP,
+    WEBVIEW,
+    DRAWERLAYOUT,
+    SLIDINGDRAWER,
+    ICONMENU,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
       switch (role) {
         case BUTTON:
           return "android.widget.Button";
+        case DROPDOWNLIST:
+          return "android.widget.Spinner";
         case TOGGLEBUTTON:
           return "android.widget.ToggleButton";
         case SEARCH:
@@ -136,7 +149,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case IMAGE:
           return "android.widget.ImageView";
         case IMAGEBUTTON:
-          return "android.widget.ImageButon";
+          return "android.widget.ImageButton";
         case KEYBOARDKEY:
           return "android.inputmethodservice.Keyboard$Key";
         case TEXT:
@@ -155,6 +168,22 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.AbsListView";
         case GRID:
           return "android.widget.GridView";
+        case SCROLLVIEW:
+          return "android.widget.ScrollView";
+        case HORIZONTALSCROLLVIEW:
+          return "android.widget.HorizontalScrollView";
+        case PAGER:
+          return "androidx.viewpager.widget.ViewPager";
+        case DRAWERLAYOUT:
+          return "androidx.drawerlayout.widget.DrawerLayout";
+        case SLIDINGDRAWER:
+          return "android.widget.SlidingDrawer";
+        case ICONMENU:
+          return "com.android.internal.view.menu.IconMenuView";
+        case VIEWGROUP:
+          return "android.view.ViewGroup";
+        case WEBVIEW:
+          return "android.webkit.WebView";
         case NONE:
         case LINK:
         case SUMMARY:
@@ -223,6 +252,14 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
+    if (host.getTag(R.id.accessibility_state_expanded) != null) {
+      final boolean accessibilityStateExpanded =
+          (boolean) host.getTag(R.id.accessibility_state_expanded);
+      info.addAction(
+          accessibilityStateExpanded
+              ? AccessibilityNodeInfoCompat.ACTION_COLLAPSE
+              : AccessibilityNodeInfoCompat.ACTION_EXPAND);
+    }
     final AccessibilityRole accessibilityRole =
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
     final String accessibilityHint = (String) host.getTag(R.id.accessibility_hint);
@@ -353,6 +390,12 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   public boolean performAccessibilityAction(View host, int action, Bundle args) {
+    if (action == AccessibilityNodeInfoCompat.ACTION_COLLAPSE) {
+      host.setTag(R.id.accessibility_state_expanded, false);
+    }
+    if (action == AccessibilityNodeInfoCompat.ACTION_EXPAND) {
+      host.setTag(R.id.accessibility_state_expanded, true);
+    }
     if (mAccessibilityActionsMap.containsKey(action)) {
       final WritableMap event = Arguments.createMap();
       event.putString("actionName", mAccessibilityActionsMap.get(action));

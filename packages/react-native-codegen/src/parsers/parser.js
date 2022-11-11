@@ -18,6 +18,19 @@ import type {ParserType} from './errors';
  */
 export interface Parser {
   /**
+   * This is the TypeParameterInstantiation value
+   */
+  typeParameterInstantiation: string;
+
+  /**
+   * Given a property or an index declaration, it returns the key name.
+   * @parameter propertyOrIndex: an object containing a property or an index declaration.
+   * @parameter hasteModuleName: a string with the native module name.
+   * @returns: the key name.
+   * @throws if propertyOrIndex does not contain a property or an index declaration.
+   */
+  getKeyName(propertyOrIndex: $FlowFixMe, hasteModuleName: string): string;
+  /**
    * Given a type declaration, it possibly returns the name of the Enum type.
    * @parameter maybeEnumDeclaration: an object possibly containing an Enum declaration.
    * @returns: the name of the Enum type.
@@ -39,4 +52,10 @@ export interface Parser {
    * @returns: the name of the type.
    */
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string;
+  /**
+   * Given a type arguments, it returns a boolean specifying if the Module is Invalid.
+   * @parameter typeArguments: the type arguments.
+   * @returns: a boolean specifying if the Module is Invalid.
+   */
+  checkIfInvalidModule(typeArguments: $FlowFixMe): boolean;
 }

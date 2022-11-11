@@ -179,17 +179,19 @@ export default function DevtoolsOverlay({
 
   let highlight = inspected ? <ElementBox frame={inspected.frame} /> : null;
   if (isInspecting) {
-    const events = ReactNativeFeatureFlags.shouldEmitW3CPointerEvents
-      ? {
-          onPointerMove,
-          onPointerDown: onPointerMove,
-          onPointerUp: stopInspecting,
-        }
-      : {
-          onStartShouldSetResponder: shouldSetResponser,
-          onResponderMove: onResponderMove,
-          onResponderRelease: stopInspecting,
-        };
+    const events =
+      // Pointer events only work on fabric
+      ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()
+        ? {
+            onPointerMove,
+            onPointerDown: onPointerMove,
+            onPointerUp: stopInspecting,
+          }
+        : {
+            onStartShouldSetResponder: shouldSetResponser,
+            onResponderMove: onResponderMove,
+            onResponderRelease: stopInspecting,
+          };
     return (
       <View
         nativeID="devToolsInspectorOverlay"

@@ -4,37 +4,39 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
 import type {
   SchemaType,
+  NamedShape,
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
-  Nullable,
+  NativeModuleAliasMap,
   UnionTypeAnnotationMemberType,
+  NativeModuleEnumDeclaration,
+  NativeModuleBaseTypeAnnotation,
   NativeModuleUnionTypeAnnotation,
+  Nullable,
 } from '../CodegenSchema.js';
+import type {ParserType} from './errors';
+import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {Parser} from './parser';
+
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
-  UnsupportedUnionTypeAnnotationParserError,
-} = require('./errors');
-import type {ParserType} from './errors';
-const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
-} = require('./errors');
-const invariant = require('invariant');
-import type {TypeDeclarationMap} from './utils';
-const {
+  UnsupportedUnionTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
 } = require('./errors');
-import type {Parser} from './parser';
-import type {NativeModuleEnumDeclaration} from '../CodegenSchema';
+const {throwIfPropertyValueTypeIsUnsupported} = require('./error-utils');
+
+const invariant = require('invariant');
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -77,20 +79,17 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
    * TODO(T108222691): Use flow-types for @babel/parser
    */
   typeAnnotation: $FlowFixMe,
-  language: ParserType,
+  parser: Parser,
 ) {
   if (typeAnnotation.typeParameters == null) {
     throw new MissingTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
-      language,
+      parser,
     );
   }
 
-  const typeAnnotationType =
-    language === 'TypeScript'
-      ? 'TSTypeParameterInstantiation'
-      : 'TypeParameterInstantiation';
+  const typeAnnotationType = parser.typeParameterInstantiation;
 
   invariant(
     typeAnnotation.typeParameters.type === typeAnnotationType,
@@ -101,9 +100,100 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
     throw new MoreThanOneTypeParameterGenericParserError(
       moduleName,
       typeAnnotation,
+      parser,
+    );
+  }
+}
+
+function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
+  switch (language) {
+    case 'Flow':
+      return (
+        property.type === 'ObjectTypeProperty' ||
+        property.type === 'ObjectTypeIndexer'
+      );
+    case 'TypeScript':
+      return (
+        property.type === 'TSPropertySignature' ||
+        property.type === 'TSIndexSignature'
+      );
+    default:
+      return false;
+  }
+}
+
+function parseObjectProperty(
+  property: $FlowFixMe,
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  nullable: boolean,
+  translateTypeAnnotation: $FlowFixMe,
+  parser: Parser,
+): NamedShape<Nullable<NativeModuleBaseTypeAnnotation>> {
+  const language = parser.language();
+
+  if (!isObjectProperty(property, language)) {
+    throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+      hasteModuleName,
+      property,
+      property.type,
       language,
     );
   }
+
+  const {optional = false} = property;
+  const name = parser.getKeyName(property, hasteModuleName);
+  const languageTypeAnnotation =
+    language === 'TypeScript'
+      ? property.typeAnnotation.typeAnnotation
+      : property.value;
+
+  if (
+    property.type === 'ObjectTypeIndexer' ||
+    property.type === 'TSIndexSignature'
+  ) {
+    return {
+      name,
+      optional,
+      typeAnnotation: wrapNullable(nullable, {
+        type: 'GenericObjectTypeAnnotation',
+      }), //TODO: use `emitObject` for typeAnnotation
+    };
+  }
+
+  const [propertyTypeAnnotation, isPropertyNullable] = unwrapNullable(
+    translateTypeAnnotation(
+      hasteModuleName,
+      languageTypeAnnotation,
+      types,
+      aliasMap,
+      tryParse,
+      cxxOnly,
+    ),
+  );
+
+  if (
+    propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+    propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
+    propertyTypeAnnotation.type === 'VoidTypeAnnotation'
+  ) {
+    throwIfPropertyValueTypeIsUnsupported(
+      hasteModuleName,
+      languageTypeAnnotation,
+      property.key,
+      propertyTypeAnnotation.type,
+      language,
+    );
+  }
+
+  return {
+    name,
+    optional,
+    typeAnnotation: wrapNullable(isPropertyNullable, propertyTypeAnnotation),
+  };
 }
 
 function remapUnionTypeAnnotationMemberNames(
@@ -194,37 +284,13 @@ function translateDefault(
   );
 }
 
-function getKeyName(
-  propertyOrIndex: $FlowFixMe,
-  hasteModuleName: string,
-  language: ParserType,
-): string {
-  switch (propertyOrIndex.type) {
-    case 'ObjectTypeProperty':
-    case 'TSPropertySignature':
-      return propertyOrIndex.key.name;
-    case 'ObjectTypeIndexer':
-      // flow index name is optional
-      return propertyOrIndex.id?.name ?? 'key';
-    case 'TSIndexSignature':
-      // TypeScript index name is mandatory
-      return propertyOrIndex.parameters[0].name;
-    default:
-      throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-        hasteModuleName,
-        propertyOrIndex,
-        propertyOrIndex.type,
-        language,
-      );
-  }
-}
-
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  isObjectProperty,
+  parseObjectProperty,
   emitUnionTypeAnnotation,
-  getKeyName,
   translateDefault,
 };

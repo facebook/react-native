@@ -134,12 +134,11 @@ class MissingTypeParameterGenericParserError extends ParserError {
   constructor(
     nativeModuleName: string,
     genericTypeAnnotation: $FlowFixMe,
-    language: ParserType,
+    parser: Parser,
   ) {
-    const genericName =
-      language === 'TypeScript'
-        ? genericTypeAnnotation.typeName.name
-        : genericTypeAnnotation.id.name;
+    const genericName = parser.nameForGenericTypeAnnotation(
+      genericTypeAnnotation,
+    );
 
     super(
       nativeModuleName,
@@ -153,12 +152,11 @@ class MoreThanOneTypeParameterGenericParserError extends ParserError {
   constructor(
     nativeModuleName: string,
     genericTypeAnnotation: $FlowFixMe,
-    language: ParserType,
+    parser: Parser,
   ) {
-    const genericName =
-      language === 'TypeScript'
-        ? genericTypeAnnotation.typeName.name
-        : genericTypeAnnotation.id.name;
+    const genericName = parser.nameForGenericTypeAnnotation(
+      genericTypeAnnotation,
+    );
 
     super(
       nativeModuleName,

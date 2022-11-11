@@ -1627,6 +1627,7 @@ const ExportedForwardRef: React.AbstractComponent<
     enterKeyHint,
     returnKeyType,
     inputMode,
+    showSoftInputOnFocus,
     keyboardType,
     ...restProps
   },
@@ -1652,6 +1653,9 @@ const ExportedForwardRef: React.AbstractComponent<
       }
       keyboardType={
         inputMode ? inputModeToKeyboardTypeMap[inputMode] : keyboardType
+      }
+      showSoftInputOnFocus={
+        inputMode == null ? showSoftInputOnFocus : inputMode !== 'none'
       }
       autoComplete={
         Platform.OS === 'android'

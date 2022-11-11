@@ -99,7 +99,30 @@ import * as React from 'react';
  *   }
  */
 
-// Default amount "active" region protrudes beyond box
+/**
+ * Touchable states.
+ */
+
+const States = {
+  NOT_RESPONDER: 'NOT_RESPONDER', // Not the responder
+  RESPONDER_INACTIVE_PRESS_IN: 'RESPONDER_INACTIVE_PRESS_IN', // Responder, inactive, in the `PressRect`
+  RESPONDER_INACTIVE_PRESS_OUT: 'RESPONDER_INACTIVE_PRESS_OUT', // Responder, inactive, out of `PressRect`
+  RESPONDER_ACTIVE_PRESS_IN: 'RESPONDER_ACTIVE_PRESS_IN', // Responder, active, in the `PressRect`
+  RESPONDER_ACTIVE_PRESS_OUT: 'RESPONDER_ACTIVE_PRESS_OUT', // Responder, active, out of `PressRect`
+  RESPONDER_ACTIVE_LONG_PRESS_IN: 'RESPONDER_ACTIVE_LONG_PRESS_IN', // Responder, active, in the `PressRect`, after long press threshold
+  RESPONDER_ACTIVE_LONG_PRESS_OUT: 'RESPONDER_ACTIVE_LONG_PRESS_OUT', // Responder, active, out of `PressRect`, after long press threshold
+  ERROR: 'ERROR',
+};
+
+type State =
+  | typeof States.NOT_RESPONDER
+  | typeof States.RESPONDER_INACTIVE_PRESS_IN
+  | typeof States.RESPONDER_INACTIVE_PRESS_OUT
+  | typeof States.RESPONDER_ACTIVE_PRESS_IN
+  | typeof States.RESPONDER_ACTIVE_PRESS_OUT
+  | typeof States.RESPONDER_ACTIVE_LONG_PRESS_IN
+  | typeof States.RESPONDER_ACTIVE_LONG_PRESS_OUT
+  | typeof States.ERROR;
 
 /**
  * By convention, methods prefixed with underscores are meant to be @private,
@@ -200,9 +223,12 @@ interface TouchableMixinType {
    * @return {object} State object to be placed inside of
    * `this.state.touchable`.
    */
-  touchableGetInitialState: () => $TEMPORARY$object<{|
-    touchable: $TEMPORARY$object<{|responderID: null, touchState: void|}>,
-  |}>;
+  touchableGetInitialState: () => {
+    touchable: {
+      touchState: ?State,
+      responderID: ?PressEvent['currentTarget'],
+    },
+  };
 
   // ==== Hooks to Gesture Responder system ====
   /**

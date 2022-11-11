@@ -11,15 +11,30 @@
 
 'use-strict';
 
-import {assertGenericTypeAnnotationHasExactlyOneTypeParameter} from '../parsers-commons';
-import type {ParserType} from '../errors';
-const {
+import {
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  isObjectProperty,
+  parseObjectProperty,
   wrapNullable,
   unwrapNullable,
   emitUnionTypeAnnotation,
-} = require('../parsers-commons.js');
-const {UnsupportedUnionTypeAnnotationParserError} = require('../errors');
+} from '../parsers-commons';
+import type {ParserType} from '../errors';
 import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema';
+
+const {
+  UnsupportedUnionTypeAnnotationParserError,
+  UnsupportedObjectPropertyTypeAnnotationParserError,
+} = require('../errors');
+
+import {MockedParser} from '../parserMock';
+import {TypeScriptParser} from '../typescript/parser';
+
+const parser = new MockedParser();
+const typeScriptParser = new TypeScriptParser();
+
+const flowTranslateTypeAnnotation = require('../flow/modules/index');
+const typeScriptTranslateTypeAnnotation = require('../typescript/modules/index');
 
 describe('wrapNullable', () => {
   describe('when nullable is true', () => {
@@ -101,12 +116,12 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
       assertGenericTypeAnnotationHasExactlyOneTypeParameter(
         moduleName,
         typeAnnotation,
-        'Flow',
+        parser,
       ),
     ).not.toThrow();
   });
 
-  it('throws an IncorrectlyParameterizedGenericParserError if typeParameters is null', () => {
+  it('throws a MissingTypeParameterGenericParserError if typeParameters is null', () => {
     const typeAnnotation = {
       typeParameters: null,
       id: {
@@ -117,14 +132,14 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
       assertGenericTypeAnnotationHasExactlyOneTypeParameter(
         moduleName,
         typeAnnotation,
-        'Flow',
+        parser,
       ),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Module testModuleName: Generic 'typeAnnotationName' must have type parameters."`,
     );
   });
 
-  it('throws an error if typeAnnotation.typeParameters.type is not TypeParameterInstantiation when language is Flow', () => {
+  it('throws an error if typeAnnotation.typeParameters.type is not equal to parser.typeParameterInstantiation', () => {
     const flowTypeAnnotation = {
       typeParameters: {
         type: 'wrongType',
@@ -138,114 +153,245 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
       assertGenericTypeAnnotationHasExactlyOneTypeParameter(
         moduleName,
         flowTypeAnnotation,
-        'Flow',
+        parser,
       ),
     ).toThrowErrorMatchingInlineSnapshot(
       `"assertGenericTypeAnnotationHasExactlyOneTypeParameter: Type parameters must be an AST node of type 'TypeParameterInstantiation'"`,
     );
   });
 
-  it('throws an error if typeAnnotation.typeParameters.type is not TSTypeParameterInstantiation when language is TypeScript', () => {
-    const typeScriptTypeAnnotation = {
+  it("throws a MoreThanOneTypeParameterGenericParserError if typeParameters don't have 1 exactly parameter", () => {
+    const typeAnnotationWithTwoParams = {
       typeParameters: {
-        type: 'wrongType',
-        params: [1],
+        params: [1, 2],
+        type: 'TypeParameterInstantiation',
       },
-      typeName: {
+      id: {
         name: 'typeAnnotationName',
       },
     };
     expect(() =>
       assertGenericTypeAnnotationHasExactlyOneTypeParameter(
         moduleName,
-        typeScriptTypeAnnotation,
-        'TypeScript',
+        typeAnnotationWithTwoParams,
+        parser,
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"assertGenericTypeAnnotationHasExactlyOneTypeParameter: Type parameters must be an AST node of type 'TSTypeParameterInstantiation'"`,
+      `"Module testModuleName: Generic 'typeAnnotationName' must have exactly one type parameter."`,
+    );
+
+    const typeAnnotationWithNoParams = {
+      typeParameters: {
+        params: [],
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+    expect(() =>
+      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+        moduleName,
+        typeAnnotationWithNoParams,
+        parser,
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Module testModuleName: Generic 'typeAnnotationName' must have exactly one type parameter."`,
     );
   });
+});
 
-  it("throws an IncorrectlyParameterizedGenericParserError if typeParameters don't have 1 exactly parameter for Flow", () => {
+describe('isObjectProperty', () => {
+  const propertyStub = {
+    /* type: 'notObjectTypeProperty', */
+    typeAnnotation: {
+      typeAnnotation: 'wrongTypeAnnotation',
+    },
+    value: 'wrongValue',
+    name: 'wrongName',
+  };
+
+  describe("when 'language' is 'Flow'", () => {
     const language: ParserType = 'Flow';
-    const typeAnnotationWithTwoParams = {
-      typeParameters: {
-        params: [1, 2],
-        type: 'TypeParameterInstantiation',
-      },
-      id: {
-        name: 'typeAnnotationName',
-      },
-    };
-    expect(() =>
-      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-        moduleName,
-        typeAnnotationWithTwoParams,
+    it("returns 'true' if 'property.type' is 'ObjectTypeProperty'", () => {
+      const result = isObjectProperty(
+        {
+          type: 'ObjectTypeProperty',
+          ...propertyStub,
+        },
         language,
-      ),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"Module testModuleName: Generic 'typeAnnotationName' must have exactly one type parameter."`,
-    );
+      );
+      expect(result).toEqual(true);
+    });
 
-    const typeAnnotationWithNoParams = {
-      typeParameters: {
-        params: [],
-        type: 'TypeParameterInstantiation',
-      },
-      id: {
-        name: 'typeAnnotationName',
-      },
-    };
-    expect(() =>
-      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-        moduleName,
-        typeAnnotationWithNoParams,
+    it("returns 'true' if 'property.type' is 'ObjectTypeIndexer'", () => {
+      const result = isObjectProperty(
+        {
+          type: 'ObjectTypeIndexer',
+          ...propertyStub,
+        },
         language,
-      ),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"Module testModuleName: Generic 'typeAnnotationName' must have exactly one type parameter."`,
-    );
+      );
+      expect(result).toEqual(true);
+    });
+
+    it("returns 'false' if 'property.type' is not 'ObjectTypeProperty' or 'ObjectTypeIndexer'", () => {
+      const result = isObjectProperty(
+        {
+          type: 'notObjectTypeProperty',
+          ...propertyStub,
+        },
+        language,
+      );
+      expect(result).toEqual(false);
+    });
   });
 
-  it("throws an IncorrectlyParameterizedGenericParserError if typeParameters don't have 1 exactly parameter for TS", () => {
+  describe("when 'language' is 'TypeScript'", () => {
     const language: ParserType = 'TypeScript';
-    const typeAnnotationWithTwoParams = {
-      typeParameters: {
-        params: [1, 2],
-        type: 'TSTypeParameterInstantiation',
-      },
-      typeName: {
-        name: 'typeAnnotationName',
-      },
-    };
-    expect(() =>
-      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-        moduleName,
-        typeAnnotationWithTwoParams,
+    it("returns 'true' if 'property.type' is 'TSPropertySignature'", () => {
+      const result = isObjectProperty(
+        {
+          type: 'TSPropertySignature',
+          ...propertyStub,
+        },
         language,
-      ),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"Module testModuleName: Generic 'typeAnnotationName' must have exactly one type parameter."`,
-    );
+      );
+      expect(result).toEqual(true);
+    });
 
-    const typeAnnotationWithNoParams = {
-      typeParameters: {
-        params: [],
-        type: 'TSTypeParameterInstantiation',
-      },
-      typeName: {
-        name: 'typeAnnotationName',
-      },
-    };
-    expect(() =>
-      assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-        moduleName,
-        typeAnnotationWithNoParams,
+    it("returns 'true' if 'property.type' is 'TSIndexSignature'", () => {
+      const result = isObjectProperty(
+        {
+          type: 'TSIndexSignature',
+          ...propertyStub,
+        },
         language,
-      ),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"Module testModuleName: Generic 'typeAnnotationName' must have exactly one type parameter."`,
-    );
+      );
+      expect(result).toEqual(true);
+    });
+
+    it("returns 'false' if 'property.type' is not 'TSPropertySignature' or 'TSIndexSignature'", () => {
+      const result = isObjectProperty(
+        {
+          type: 'notTSPropertySignature',
+          ...propertyStub,
+        },
+        language,
+      );
+      expect(result).toEqual(false);
+    });
+  });
+});
+
+describe('parseObjectProperty', () => {
+  const moduleName = 'testModuleName';
+  const types = {['wrongName']: 'wrongType'};
+  const aliasMap = {};
+  const tryParse = () => null;
+  const cxxOnly = false;
+  const nullable = true;
+
+  describe("when 'language' is 'Flow'", () => {
+    const language: ParserType = 'Flow';
+    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'ObjectTypeProperty' or 'ObjectTypeIndexer'.", () => {
+      const property = {
+        type: 'notObjectTypeProperty',
+        typeAnnotation: {
+          type: 'notObjectTypeProperty',
+          typeAnnotation: 'wrongTypeAnnotation',
+        },
+        value: 'wrongValue',
+        name: 'wrongName',
+      };
+      const expected = new UnsupportedObjectPropertyTypeAnnotationParserError(
+        moduleName,
+        property,
+        property.type,
+        language,
+      );
+      expect(() =>
+        parseObjectProperty(
+          property,
+          moduleName,
+          types,
+          aliasMap,
+          tryParse,
+          cxxOnly,
+          nullable,
+          flowTranslateTypeAnnotation,
+          parser,
+        ),
+      ).toThrow(expected);
+    });
+  });
+
+  describe("when 'language' is 'TypeScript'", () => {
+    const language: ParserType = 'TypeScript';
+    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'TSPropertySignature' or 'TSIndexSignature'.", () => {
+      const property = {
+        type: 'notTSPropertySignature',
+        typeAnnotation: {
+          typeAnnotation: 'wrongTypeAnnotation',
+        },
+        value: 'wrongValue',
+        name: 'wrongName',
+      };
+      const expected = new UnsupportedObjectPropertyTypeAnnotationParserError(
+        moduleName,
+        property,
+        property.type,
+        language,
+      );
+      expect(() =>
+        parseObjectProperty(
+          property,
+          moduleName,
+          types,
+          aliasMap,
+          tryParse,
+          cxxOnly,
+          nullable,
+          typeScriptTranslateTypeAnnotation,
+          parser,
+        ),
+      ).toThrow(expected);
+    });
+
+    it("returns a 'NativeModuleBaseTypeAnnotation' object with 'typeAnnotation.type' equal to 'GenericObjectTypeAnnotation', if 'property.type' is 'TSIndexSignature'.", () => {
+      const property = {
+        type: 'TSIndexSignature',
+        typeAnnotation: {
+          type: 'TSIndexSignature',
+          typeAnnotation: 'TSIndexSignature',
+        },
+        key: {
+          name: 'testKeyName',
+        },
+        value: 'wrongValue',
+        name: 'wrongName',
+        parameters: [{name: 'testName'}],
+      };
+      const result = parseObjectProperty(
+        property,
+        moduleName,
+        types,
+        aliasMap,
+        tryParse,
+        cxxOnly,
+        nullable,
+        typeScriptTranslateTypeAnnotation,
+        typeScriptParser,
+      );
+      const expected = {
+        name: 'testName',
+        optional: false,
+        typeAnnotation: wrapNullable(nullable, {
+          type: 'GenericObjectTypeAnnotation',
+        }),
+      };
+      expect(result).toEqual(expected);
+    });
   });
 });
 

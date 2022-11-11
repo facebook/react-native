@@ -102,7 +102,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:6.0
+      - image: reactnativecommunity/react-native-android:6.1
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
@@ -132,10 +132,7 @@ commands:
         type: string
     steps:
       - restore_cache:
-            keys:
-              - << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-{{ .Revision }}
-              - << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-
-              - << parameters.checkout_base_cache_key >>-{{ arch }}-
+          key: << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-{{ .Revision }}
       - checkout
       - save_cache:
           key: << parameters.checkout_base_cache_key >>-{{ arch }}-{{ .Branch }}-{{ .Revision }}
@@ -967,8 +964,8 @@ jobs:
     environment:
       - ANDROID_HOME: "C:\\Android\\android-sdk"
       - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
-      - ANDROID_BUILD_VERSION: 31
-      - ANDROID_TOOLS_VERSION: 31.0.0
+      - ANDROID_BUILD_VERSION: 33
+      - ANDROID_TOOLS_VERSION: 33.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - checkout_code_with_cache
@@ -1494,43 +1491,6 @@ jobs:
                     -u "$PAT_USERNAME:$PAT_TOKEN" \
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
       # END: Stable releases
-
-      # START: Stables and commitlies
-      - when:
-          condition:
-            or:
-              - equal: [ "release", << parameters.release_type >> ]
-              - equal: [ "dry-run", << parameters.release_type >> ]
-          steps:
-            - run:
-                name: Install dependencies
-                command: apt update && apt install -y jq jo
-            - run:
-                name: Create draft GitHub Release and upload Hermes binaries
-                command: |
-                  RELEASE_VERSION=$(cat build/.version)
-                  if [[ << parameters.release_type >> == "release" ]]; then
-                    GIT_TAG=$CIRCLE_TAG
-                  elif [[ << parameters.release_type >> == "dry-run" ]]; then
-                    GIT_TAG=v1000.0.0
-                  fi
-
-                  ARTIFACTS=("")
-                  for build_type in "Debug" "Release"; do
-                    TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js \
-                      --buildType $build_type \
-                      --releaseVersion $RELEASE_VERSION)
-
-                    ARTIFACTS+=("$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME")
-                  done
-
-                  ./scripts/circleci/create_github_release.sh \
-                    << parameters.release_type >> \
-                    $GIT_TAG \
-                    $RELEASE_VERSION \
-                    $GITHUB_TOKEN \
-                    "${ARTIFACTS[@]}"
-      # END: Stable and commitlies
 
   # -------------------------
   #    JOBS: Nightly
