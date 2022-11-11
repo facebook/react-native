@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {UnionTypeAnnotationMemberType} from '../CodegenSchema.js';
 import type {ParserType} from './errors';
 
 /**
@@ -58,4 +59,12 @@ export interface Parser {
    * @returns: a boolean specifying if the Module is Invalid.
    */
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean;
+  /**
+   * Given a union annotation members types, it returns an array of remaped members names without duplicates.
+   * @parameter membersTypes: union annotation members types
+   * @returns: an array of remaped members names without duplicates.
+   */
+  remapUnionTypeAnnotationMemberNames(
+    types: $FlowFixMe,
+  ): UnionTypeAnnotationMemberType[];
 }

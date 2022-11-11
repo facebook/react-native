@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {UnionTypeAnnotationMemberType} from '../CodegenSchema.js';
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
 
@@ -57,5 +58,11 @@ export class MockedParser implements Parser {
 
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {
     return false;
+  }
+
+  remapUnionTypeAnnotationMemberNames(
+    membersTypes: $FlowFixMe[],
+  ): UnionTypeAnnotationMemberType[] {
+    return [];
   }
 }
