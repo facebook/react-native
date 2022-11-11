@@ -575,7 +575,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     offset = CGPointMake(localX, localY);
   }
 
-  [self _forceDispatchNextScrollEvent];
   [self scrollToOffset:offset animated:animated];
 }
 
@@ -630,7 +629,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)scrollToOffset:(CGPoint)offset
 {
-  [self _forceDispatchNextScrollEvent];
   [self scrollToOffset:offset animated:YES];
 }
 
