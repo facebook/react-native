@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RCTFabricSurface;
 @class RCTImageLoader;
 @class RCTMountingManager;
+@class RCTScheduler;
 
 /**
  * Coordinates presenting of React Native Surfaces and represents application
@@ -53,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
 
 @property (readonly) RCTMountingManager *mountingManager;
+@property (readonly, nullable) RCTScheduler *scheduler;
 
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 
