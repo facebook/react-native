@@ -14,7 +14,7 @@ import type {
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
-} from 'ReactNativeTypes';
+} from '../../Renderer/shims/ReactNativeTypes.js';
 
 import View from '../../Components/View/View';
 import useRefEffect from '../useRefEffect';
