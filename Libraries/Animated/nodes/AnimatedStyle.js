@@ -35,6 +35,18 @@ function createAnimatedStyle(inputStyle: any): Object {
   return animatedStyles;
 }
 
+function createStyleWithAnimatedTransform(inputStyle: any): Object {
+  let style = flattenStyle(inputStyle) || ({}: {[string]: any});
+
+  if (style.transform) {
+    style = {
+      ...style,
+      transform: new AnimatedTransform(style.transform),
+    };
+  }
+  return style;
+}
+
 export default class AnimatedStyle extends AnimatedWithChildren {
   _inputStyle: any;
   _style: Object;
@@ -42,7 +54,10 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   constructor(style: any) {
     super();
     this._inputStyle = style;
-    this._style = createAnimatedStyle(style);
+    this._style =
+      Platform.OS === 'web'
+        ? createAnimatedStyle(style)
+        : createStyleWithAnimatedTransform(style);
   }
 
   // Recursively get values for nested styles (like iOS's shadowOffset)
@@ -62,17 +77,12 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     return updatedStyle;
   }
 
-  __getValue(): Array<Object> {
+  __getValue(): Object | Array<Object> {
     if (Platform.OS === 'web') {
       return [this._inputStyle, this._walkStyleAndGetValues(this._style)];
     }
 
-    return [
-      flattenStyle([
-        this._inputStyle,
-        this._walkStyleAndGetValues(this._style),
-      ]),
-    ];
+    return this._walkStyleAndGetValues(this._style);
   }
 
   // Recursively get animated values for nested styles (like iOS's shadowOffset)
