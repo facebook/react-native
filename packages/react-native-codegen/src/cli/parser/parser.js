@@ -11,21 +11,27 @@
 'use strict';
 
 const path = require('path');
-const {parseFile} = require('../../parsers/utils');
+const {FlowParser} = require('../../parsers/flow/parser');
+const {TypeScriptParser} = require('../../parsers/typescript/parser');
 const {buildSchema: buildSchemaForFlow} = require('../../parsers/flow');
 const {
   buildSchema: buildSchemaForTypescript,
 } = require('../../parsers/typescript');
+
+const flowParser = new FlowParser();
+const typescriptParser = new TypeScriptParser();
 
 function parseFiles(files: Array<string>) {
   files.forEach(filename => {
     const isTypeScript =
       path.extname(filename) === '.ts' || path.extname(filename) === '.tsx';
 
+    const parser = isTypeScript ? typescriptParser : flowParser;
+
     console.log(
       filename,
       JSON.stringify(
-        parseFile(
+        parser.parseFile(
           filename,
           isTypeScript ? buildSchemaForTypescript : buildSchemaForFlow,
         ),

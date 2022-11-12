@@ -15,7 +15,6 @@ import type {NativeModuleSchema, SchemaType} from '../CodegenSchema';
 const {ParserError} = require('./errors');
 const {wrapModuleSchema} = require('./parsers-commons');
 
-const fs = require('fs');
 const path = require('path');
 const invariant = require('invariant');
 
@@ -93,15 +92,6 @@ function verifyPlatforms(
     cxxOnly,
     excludedPlatforms: Array.from(excludedPlatforms),
   };
-}
-
-function parseFile(
-  filename: string,
-  callback: (contents: string, filename: string) => SchemaType,
-): SchemaType {
-  const contents = fs.readFileSync(filename, 'utf8');
-
-  return callback(contents, filename);
 }
 
 // TODO(T108222691): Use flow-types for @babel/parser
@@ -259,7 +249,6 @@ module.exports = {
   extractNativeModuleName,
   createParserErrorCapturer,
   verifyPlatforms,
-  parseFile,
   visit,
   buildSchemaFromConfigType,
   isModuleRegistryCall,
