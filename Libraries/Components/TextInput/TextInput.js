@@ -27,13 +27,12 @@ import StyleSheet, {
 import Text from '../../Text/Text';
 import TextAncestor from '../../Text/TextAncestor';
 import Platform from '../../Utilities/Platform';
-import setAndForwardRef from '../../Utilities/setAndForwardRef';
+import useMergeRefs from '../../Utilities/useMergeRefs';
 import TextInputState from './TextInputState';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-
-const {useLayoutEffect, useRef, useState} = React;
+import {useCallback, useLayoutEffect, useRef, useState} from 'react';
 
 type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
 type TextInputInstance = React.ElementRef<HostComponent<mixed>> & {
@@ -1184,71 +1183,74 @@ function InternalTextInput(props: Props): React.Node {
     }
   }, [inputRef]);
 
-  const setLocalRef = (ref: TextInputInstance | null) => {
-    inputRef.current = ref;
+  const setLocalRef = useCallback(
+    (instance: TextInputInstance | null) => {
+      inputRef.current = instance;
 
-    /*
-    Hi reader from the future. I'm sorry for this.
+      /*
+      Hi reader from the future. I'm sorry for this.
 
-    This is a hack. Ideally we would forwardRef to the underlying
-    host component. However, since TextInput has it's own methods that can be
-    called as well, if we used the standard forwardRef then these
-    methods wouldn't be accessible and thus be a breaking change.
+      This is a hack. Ideally we would forwardRef to the underlying
+      host component. However, since TextInput has it's own methods that can be
+      called as well, if we used the standard forwardRef then these
+      methods wouldn't be accessible and thus be a breaking change.
 
-    We have a couple of options of how to handle this:
-    - Return a new ref with everything we methods from both. This is problematic
-      because we need React to also know it is a host component which requires
-      internals of the class implementation of the ref.
-    - Break the API and have some other way to call one set of the methods or
-      the other. This is our long term approach as we want to eventually
-      get the methods on host components off the ref. So instead of calling
-      ref.measure() you might call ReactNative.measure(ref). This would hopefully
-      let the ref for TextInput then have the methods like `.clear`. Or we do it
-      the other way and make it TextInput.clear(textInputRef) which would be fine
-      too. Either way though is a breaking change that is longer term.
-    - Mutate this ref. :( Gross, but accomplishes what we need in the meantime
-      before we can get to the long term breaking change.
-    */
-    if (ref != null) {
-      // $FlowFixMe[incompatible-use] - See the explanation above.
-      Object.assign(ref, {
-        clear(): void {
-          if (inputRef.current != null) {
-            viewCommands.setTextAndSelection(
-              inputRef.current,
-              mostRecentEventCount,
-              '',
-              0,
-              0,
-            );
-          }
-        },
-        // TODO: Fix this returning true on null === null, when no input is focused
-        isFocused(): boolean {
-          return TextInputState.currentlyFocusedInput() === inputRef.current;
-        },
-        getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {
-          return inputRef.current;
-        },
-        setSelection(start: number, end: number): void {
-          if (inputRef.current != null) {
-            viewCommands.setTextAndSelection(
-              inputRef.current,
-              mostRecentEventCount,
-              null,
-              start,
-              end,
-            );
-          }
-        },
-      });
-    }
-  };
+      We have a couple of options of how to handle this:
+      - Return a new ref with everything we methods from both. This is problematic
+        because we need React to also know it is a host component which requires
+        internals of the class implementation of the ref.
+      - Break the API and have some other way to call one set of the methods or
+        the other. This is our long term approach as we want to eventually
+        get the methods on host components off the ref. So instead of calling
+        ref.measure() you might call ReactNative.measure(ref). This would hopefully
+        let the ref for TextInput then have the methods like `.clear`. Or we do it
+        the other way and make it TextInput.clear(textInputRef) which would be fine
+        too. Either way though is a breaking change that is longer term.
+      - Mutate this ref. :( Gross, but accomplishes what we need in the meantime
+        before we can get to the long term breaking change.
+      */
+      if (instance != null) {
+        // $FlowFixMe[incompatible-use] - See the explanation above.
+        Object.assign(instance, {
+          clear(): void {
+            if (inputRef.current != null) {
+              viewCommands.setTextAndSelection(
+                inputRef.current,
+                mostRecentEventCount,
+                '',
+                0,
+                0,
+              );
+            }
+          },
+          // TODO: Fix this returning true on null === null, when no input is focused
+          isFocused(): boolean {
+            return TextInputState.currentlyFocusedInput() === inputRef.current;
+          },
+          getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {
+            return inputRef.current;
+          },
+          setSelection(start: number, end: number): void {
+            if (inputRef.current != null) {
+              viewCommands.setTextAndSelection(
+                inputRef.current,
+                mostRecentEventCount,
+                null,
+                start,
+                end,
+              );
+            }
+          },
+        });
+      }
+    },
+    [mostRecentEventCount, viewCommands],
+  );
 
-  const _setNativeRef = setAndForwardRef({
-    getForwardedRef: () => props.forwardedRef,
+  const ref = useMergeRefs<TextInputInstance | null>(
     setLocalRef,
-  });
+    props.forwardedRef,
+  );
 
   const _onChange = (event: ChangeEvent) => {
     const currentText = event.nativeEvent.text;
@@ -1411,7 +1413,8 @@ function InternalTextInput(props: Props): React.Node {
 
     textInput = (
       <RCTTextInputView
-        ref={_setNativeRef}
+        // $FlowFixMe[incompatible-type] - Figure out imperative + forward refs.
+        ref={ref}
         {...props}
         {...eventHandlers}
         accessible={accessible}
@@ -1461,7 +1464,8 @@ function InternalTextInput(props: Props): React.Node {
        * match up exactly with the props for TextInput. This will need to get
        * fixed */
       <AndroidTextInput
-        ref={_setNativeRef}
+        // $FlowFixMe[incompatible-type] - Figure out imperative + forward refs.
+        ref={ref}
         {...props}
         {...eventHandlers}
         accessible={accessible}
