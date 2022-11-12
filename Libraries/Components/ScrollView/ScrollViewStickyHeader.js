@@ -134,7 +134,7 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
   //    platform to JS, so we need the ShadowTree to have knowledge
   //    of the current position.
   const animatedValueListener = useCallback(
-    ({value}) => {
+    ({value}: $FlowFixMe) => {
       const _debounceTimeout: number = Platform.OS === 'android' ? 15 : 64;
       // When the AnimatedInterpolation is recreated, it always initializes
       // to a value of zero and emits a value change of 0 to its listeners.
