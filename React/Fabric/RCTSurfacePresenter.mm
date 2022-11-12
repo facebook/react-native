@@ -80,8 +80,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   RuntimeExecutor _runtimeExecutor; // Protected by `_schedulerLifeCycleMutex`.
 
   butter::shared_mutex _observerListMutex;
-  NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
-  RCTImageLoader *_imageLoader;
+  std::vector<__weak id<RCTSurfacePresenterObserver>> _observers; // Protected by `_observerListMutex`.
 }
 
 - (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
@@ -96,8 +95,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     _mountingManager = [RCTMountingManager new];
     _mountingManager.contextContainer = contextContainer;
     _mountingManager.delegate = self;
-
-    _observers = [NSMutableArray array];
 
     _scheduler = [self _createScheduler];
   }
@@ -364,13 +361,17 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
 {
   std::unique_lock<butter::shared_mutex> lock(_observerListMutex);
-  [self->_observers addObject:observer];
+  _observers.push_back(observer);
 }
 
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer
 {
   std::unique_lock<butter::shared_mutex> lock(_observerListMutex);
-  [self->_observers removeObject:observer];
+  std::vector<__weak id<RCTSurfacePresenterObserver>>::const_iterator it =
+      std::find(_observers.begin(), _observers.end(), observer);
+  if (it != _observers.end()) {
+    _observers.erase(it);
+  }
 }
 
 #pragma mark - RCTMountingManagerDelegate
@@ -379,8 +380,13 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   RCTAssertMainQueue();
 
-  std::shared_lock<butter::shared_mutex> lock(_observerListMutex);
-  for (id<RCTSurfacePresenterObserver> observer in _observers) {
+  NSArray<id<RCTSurfacePresenterObserver>> *observersCopy;
+  {
+    std::shared_lock<butter::shared_mutex> lock(_observerListMutex);
+    observersCopy = [self _getObservers];
+  }
+
+  for (id<RCTSurfacePresenterObserver> observer in observersCopy) {
     if ([observer respondsToSelector:@selector(willMountComponentsWithRootTag:)]) {
       [observer willMountComponentsWithRootTag:rootTag];
     }
@@ -391,12 +397,29 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   RCTAssertMainQueue();
 
-  std::shared_lock<butter::shared_mutex> lock(_observerListMutex);
-  for (id<RCTSurfacePresenterObserver> observer in _observers) {
+  NSArray<id<RCTSurfacePresenterObserver>> *observersCopy;
+  {
+    std::shared_lock<butter::shared_mutex> lock(_observerListMutex);
+    observersCopy = [self _getObservers];
+  }
+
+  for (id<RCTSurfacePresenterObserver> observer in observersCopy) {
     if ([observer respondsToSelector:@selector(didMountComponentsWithRootTag:)]) {
       [observer didMountComponentsWithRootTag:rootTag];
     }
   }
+}
+
+- (NSArray<id<RCTSurfacePresenterObserver>> *)_getObservers
+{
+  NSMutableArray<id<RCTSurfacePresenterObserver>> *observersCopy = [NSMutableArray new];
+  for (id<RCTSurfacePresenterObserver> observer : _observers) {
+    if (observer) {
+      [observersCopy addObject:observer];
+    }
+  }
+
+  return observersCopy;
 }
 
 @end
