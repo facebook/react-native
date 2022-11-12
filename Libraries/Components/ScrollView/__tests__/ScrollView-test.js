@@ -18,8 +18,12 @@ const ScrollView = require('../ScrollView');
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
-describe('<ScrollView />', () => {
-  it('should render as expected', () => {
+describe('ScrollView', () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
+  it('renders its children', () => {
     ReactNativeTestTools.expectRendersMatchingSnapshot(
       'ScrollView',
       () => (
@@ -34,34 +38,51 @@ describe('<ScrollView />', () => {
       },
     );
   });
-  it('should mock native methods and instance methods when mocked', () => {
-    jest.resetModules();
-    jest.mock('../ScrollView');
-    const ref = React.createRef();
 
+  it('mocks native methods and instance methods', () => {
+    jest.mock('../ScrollView');
+
+    const ref = React.createRef();
     ReactTestRenderer.create(<ScrollView ref={ref} />);
 
-    expect(ref.current != null && ref.current.measure).toBeInstanceOf(
-      jest.fn().constructor,
-    );
-    expect(ref.current != null && ref.current.scrollTo).toBeInstanceOf(
-      jest.fn().constructor,
-    );
+    expect(ref.current?.measure).toBeInstanceOf(jest.fn().constructor);
+    expect(ref.current?.scrollTo).toBeInstanceOf(jest.fn().constructor);
   });
-  it('getInnerViewRef for case where it returns a native view', () => {
-    jest.resetModules();
-    jest.unmock('../ScrollView');
 
-    const scrollViewRef = React.createRef(null);
+  describe('ref', () => {
+    it('receives an instance or null', () => {
+      jest.dontMock('../ScrollView');
 
-    ReactTestRenderer.create(<ScrollView ref={scrollViewRef} />);
+      const scrollViewRef = jest.fn();
+      const testRendererInstance = ReactTestRenderer.create(
+        <ScrollView ref={scrollViewRef} />,
+      );
 
-    const innerViewRef = scrollViewRef.current.getInnerViewRef();
+      expect(scrollViewRef).toHaveBeenLastCalledWith(
+        expect.objectContaining({_nativeTag: expect.any(Number)}),
+      );
 
-    // This is checking if the ref acts like a host component. If we had an
-    // `isHostComponent(ref)` method, that would be preferred.
-    expect(innerViewRef.measure).toBeInstanceOf(jest.fn().constructor);
-    expect(innerViewRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
-    expect(innerViewRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
+      testRendererInstance.unmount();
+
+      expect(scrollViewRef).toHaveBeenLastCalledWith(null);
+    });
+  });
+
+  describe('getInnerViewRef', () => {
+    it('returns an instance', () => {
+      jest.dontMock('../ScrollView');
+
+      const scrollViewRef = React.createRef(null);
+      ReactTestRenderer.create(<ScrollView ref={scrollViewRef} />);
+      const innerViewRef = scrollViewRef.current.getInnerViewRef();
+
+      // This is checking if the ref acts like a host component. If we had an
+      // `isHostComponent(ref)` method, that would be preferred.
+      expect(innerViewRef.measure).toBeInstanceOf(jest.fn().constructor);
+      expect(innerViewRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
+      expect(innerViewRef.measureInWindow).toBeInstanceOf(
+        jest.fn().constructor,
+      );
+    });
   });
 });
