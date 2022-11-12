@@ -108,6 +108,9 @@ class Scheduler final : public UIManagerDelegate {
 #pragma mark - ContextContainer
   ContextContainer::Shared getContextContainer() const;
 
+#pragma mark - UIManager
+  std::shared_ptr<UIManager> getUIManager() const;
+
 #pragma mark - Event listeners
   void addEventListener(const std::shared_ptr<EventListener const> &listener);
   void removeEventListener(
