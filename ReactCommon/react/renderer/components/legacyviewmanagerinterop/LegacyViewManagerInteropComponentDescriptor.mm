@@ -43,6 +43,11 @@ static std::string moduleNameFromComponentName(const std::string &componentName)
     return componentName + "Manager";
   }
 
+  std::string rnPrefix("RN");
+  if (std::mismatch(rnPrefix.begin(), rnPrefix.end(), componentName.begin()).first == rnPrefix.end()) {
+    return componentName + "Manager";
+  }
+
   return "RCT" + componentName + "Manager";
 }
 
