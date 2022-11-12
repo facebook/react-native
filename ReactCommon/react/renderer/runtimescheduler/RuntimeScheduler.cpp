@@ -22,10 +22,11 @@ RuntimeScheduler::RuntimeScheduler(
 
 void RuntimeScheduler::scheduleWork(
     std::function<void(jsi::Runtime &)> callback) const {
-  shouldYield_ = true;
+  runtimeAccessRequests_ += 1;
+
   runtimeExecutor_(
       [this, callback = std::move(callback)](jsi::Runtime &runtime) {
-        shouldYield_ = false;
+        runtimeAccessRequests_ -= 1;
         callback(runtime);
         startWorkLoop(runtime);
       });
