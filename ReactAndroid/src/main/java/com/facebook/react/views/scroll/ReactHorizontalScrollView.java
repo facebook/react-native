@@ -112,7 +112,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private long mLastScrollDispatchTime = 0;
   private int mScrollEventThrottle = 0;
   private @Nullable View mContentView;
-  private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper = null;
+  private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
 
   private final Rect mTempRect = new Rect();
 
