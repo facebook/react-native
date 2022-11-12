@@ -11,7 +11,7 @@
 
 'use strict';
 
-const TypeScriptParser = require('../../index.js');
+const {buildSchema} = require('../../index.js');
 const {parseFile} = require('../../../utils.js');
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const failureFixtures = require('../__test_fixtures__/failures.js');
@@ -31,7 +31,7 @@ describe('RN Codegen TypeScript Parser', () => {
     .sort()
     .forEach(fixtureName => {
       it(`can generate fixture ${fixtureName}`, () => {
-        const schema = parseFile(fixtureName, TypeScriptParser.buildSchema);
+        const schema = parseFile(fixtureName, buildSchema);
         const serializedSchema = JSON.stringify(schema, null, 2).replace(
           /"/g,
           "'",
@@ -45,7 +45,7 @@ describe('RN Codegen TypeScript Parser', () => {
     .forEach(fixtureName => {
       it(`Fails with error message ${fixtureName}`, () => {
         expect(() => {
-          parseFile(fixtureName, TypeScriptParser.buildSchema);
+          parseFile(fixtureName, buildSchema);
         }).toThrowErrorMatchingSnapshot();
       });
     });

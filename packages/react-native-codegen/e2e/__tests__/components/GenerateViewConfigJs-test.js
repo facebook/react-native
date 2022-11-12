@@ -12,7 +12,7 @@
 'use strict';
 
 const {parseFile} = require('../../../src/parsers/utils');
-const FlowParser = require('../../../src/parsers/flow');
+const {buildSchema} = require('../../../src/parsers/flow');
 const generator = require('../../../src/generators/components/GenerateViewConfigJs');
 const fs = require('fs');
 
@@ -23,10 +23,7 @@ const fixtures = fs.readdirSync(FIXTURE_DIR);
 fixtures.forEach(fixture => {
   it(`GenerateViewConfigJs can generate for '${fixture}'`, () => {
     const libName = 'RNCodegenModuleFixtures';
-    const schema = parseFile(
-      `${FIXTURE_DIR}/${fixture}`,
-      FlowParser.buildSchema,
-    );
+    const schema = parseFile(`${FIXTURE_DIR}/${fixture}`, buildSchema);
     const output = generator.generate(libName, schema);
     expect(output).toMatchSnapshot();
   });

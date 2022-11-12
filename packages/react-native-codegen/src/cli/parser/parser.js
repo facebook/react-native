@@ -12,8 +12,10 @@
 
 const path = require('path');
 const {parseFile} = require('../../parsers/utils');
-const FlowParser = require('../../parsers/flow');
-const TypeScriptParser = require('../../parsers/typescript');
+const {buildSchema: buildSchemaForFlow} = require('../../parsers/flow');
+const {
+  buildSchema: buildSchemaForTypescript,
+} = require('../../parsers/typescript');
 
 function parseFiles(files: Array<string>) {
   files.forEach(filename => {
@@ -25,7 +27,7 @@ function parseFiles(files: Array<string>) {
       JSON.stringify(
         parseFile(
           filename,
-          isTypeScript ? TypeScriptParser.buildSchema : FlowParser.buildSchema,
+          isTypeScript ? buildSchemaForTypescript : buildSchemaForFlow,
         ),
         null,
         2,

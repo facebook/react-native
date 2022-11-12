@@ -12,8 +12,10 @@
 import type {SchemaType} from '../../CodegenSchema.js';
 
 const {parseFile} = require('../../parsers/utils');
-const FlowParser = require('../../parsers/flow');
-const TypeScriptParser = require('../../parsers/typescript');
+const {buildSchema: buildSchemaForFlow} = require('../../parsers/flow');
+const {
+  buildSchema: buildSchemaForTypescript,
+} = require('../../parsers/typescript');
 const fs = require('fs');
 const path = require('path');
 
@@ -32,7 +34,7 @@ function combineSchemas(files: Array<string>): SchemaType {
 
         const schema = parseFile(
           filename,
-          isTypeScript ? TypeScriptParser.buildSchema : FlowParser.buildSchema,
+          isTypeScript ? buildSchemaForTypescript : buildSchemaForFlow,
         );
 
         if (schema && schema.modules) {

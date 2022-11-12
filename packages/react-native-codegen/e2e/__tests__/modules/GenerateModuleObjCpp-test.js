@@ -12,7 +12,7 @@
 'use strict';
 
 const {parseFile} = require('../../../src/parsers/utils');
-const FlowParser = require('../../../src/parsers/flow');
+const {buildSchema} = require('../../../src/parsers/flow');
 const generator = require('../../../src/generators/modules/GenerateModuleObjCpp');
 const fs = require('fs');
 
@@ -24,10 +24,7 @@ function getModules(): SchemaType {
   const filenames: Array<string> = fs.readdirSync(FIXTURE_DIR);
   return filenames.reduce<SchemaType>(
     (accumulator, file) => {
-      const schema = parseFile(
-        `${FIXTURE_DIR}/${file}`,
-        FlowParser.buildSchema,
-      );
+      const schema = parseFile(`${FIXTURE_DIR}/${file}`, buildSchema);
       return {
         modules: {
           ...accumulator.modules,
