@@ -11,7 +11,6 @@
 'use strict';
 
 import View from '../Components/View/View';
-import setAndForwardRef from '../Utilities/setAndForwardRef';
 import {AnimatedEvent} from './AnimatedEvent';
 import * as createAnimatedComponentInjection from './createAnimatedComponentInjection';
 import NativeAnimatedHelper from './NativeAnimatedHelper';
@@ -273,6 +272,29 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       />
     );
   });
+}
+
+function setAndForwardRef({
+  getForwardedRef,
+  setLocalRef,
+}: $ReadOnly<{|
+  getForwardedRef: () => ?React.Ref<any>,
+  setLocalRef: (ref: React.ElementRef<any>) => mixed,
+|}>): (ref: React.ElementRef<any>) => void {
+  return function forwardRef(ref: React.ElementRef<any>) {
+    const forwardedRef = getForwardedRef();
+
+    setLocalRef(ref);
+
+    // Forward to user ref prop (if one has been specified)
+    if (typeof forwardedRef === 'function') {
+      // Handle function-based refs. String-based refs are handled as functions.
+      forwardedRef(ref);
+    } else if (typeof forwardedRef === 'object' && forwardedRef != null) {
+      // Handle createRef-based refs
+      forwardedRef.current = ref;
+    }
+  };
 }
 
 export default (createAnimatedComponent: typeof createAnimatedComponent);
