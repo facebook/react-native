@@ -14,7 +14,7 @@ import type {ImageIOS} from './Image.flow';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
 import flattenStyle from '../StyleSheet/flattenStyle';
-import processLayoutProps from '../StyleSheet/processStyles';
+import processStyles from '../StyleSheet/processStyles';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
 import ImageInjection from './ImageInjection';
@@ -138,7 +138,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   // $FlowFixMe[prop-missing]
   const tintColor = props.tintColor || style.tintColor;
 
-  style = processLayoutProps(style);
+  style = processStyles(style);
 
   if (props.children != null) {
     throw new Error(

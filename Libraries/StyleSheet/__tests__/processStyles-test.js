@@ -10,9 +10,9 @@
 
 'use strict';
 
-const processLayoutProps = require('../processStyles');
+const processStyles = require('../processStyles');
 
-describe('processLayoutProps', () => {
+describe('processStyles', () => {
   it('it should map layout style properties', () => {
     const style = {
       backgroundColor: 'white',
@@ -30,7 +30,7 @@ describe('processLayoutProps', () => {
       paddingInline: 120,
       verticalAlign: 'middle',
     };
-    const processedStyle = processLayoutProps(style);
+    const processedStyle = processStyles(style);
     expect(processedStyle).toMatchInlineSnapshot(`
       Object {
         "backgroundColor": "white",
@@ -53,26 +53,26 @@ describe('processLayoutProps', () => {
 
   it('should override style properties', () => {
     const style = {marginStart: 20, marginInlineStart: 40};
-    const processedStyle = processLayoutProps(style);
+    const processedStyle = processStyles(style);
     expect(processedStyle.marginStart).toBe(40);
   });
 
   it('should overwrite properties with `undefined`', () => {
     const style = {marginInlineStart: 40, marginStart: undefined};
-    const processedStyle = processLayoutProps(style);
+    const processedStyle = processStyles(style);
     expect(processedStyle.marginStart).toBe(40);
   });
 
   it('should not fail on falsy values', () => {
-    expect(() => processLayoutProps({})).not.toThrow();
-    expect(() => processLayoutProps(null)).not.toThrow();
-    expect(() => processLayoutProps(false)).not.toThrow();
-    expect(() => processLayoutProps(undefined)).not.toThrow();
+    expect(() => processStyles({})).not.toThrow();
+    expect(() => processStyles(null)).not.toThrow();
+    expect(() => processStyles(false)).not.toThrow();
+    expect(() => processStyles(undefined)).not.toThrow();
   });
 
   it('should not change style if there is no  layout style property', () => {
     const style = {backgroundColor: '#000', width: 10};
-    const processedStyle = processLayoutProps(style);
+    const processedStyle = processStyles(style);
     expect(processedStyle).toStrictEqual(style);
   });
 });

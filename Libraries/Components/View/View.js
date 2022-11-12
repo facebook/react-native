@@ -11,7 +11,7 @@
 import type {ViewProps} from './ViewPropTypes';
 
 import flattenStyle from '../../StyleSheet/flattenStyle';
-import processLayoutProps from '../../StyleSheet/processStyles';
+import processStyles from '../../StyleSheet/processStyles';
 import TextAncestor from '../../Text/TextAncestor';
 import {getAccessibilityRoleFromRole} from '../../Utilities/AcessibilityMapping';
 import ViewNativeComponent from './ViewNativeComponent';
@@ -100,7 +100,7 @@ const View: React.AbstractComponent<
     }
 
     let style = flattenStyle(otherProps.style);
-    style = processLayoutProps(style);
+    style = processStyles(style);
 
     const newPointerEvents = style?.pointerEvents || pointerEvents;
 

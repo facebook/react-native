@@ -12,7 +12,7 @@
 
 import type {____FlattenStyleProp_Internal} from './StyleSheetTypes';
 
-const propMap = {
+const propMap: {[key: string]: string} = {
   marginInlineStart: 'marginStart',
   marginInlineEnd: 'marginEnd',
   marginBlockStart: 'marginTop',
@@ -28,7 +28,7 @@ const propMap = {
   verticalAlign: 'textAlignVertical',
 };
 
-const verticalAlignValueMap = {
+const verticalAlignValueMap: {[key: string]: string} = {
   auto: 'auto',
   top: 'top',
   bottom: 'bottom',
@@ -38,12 +38,12 @@ const verticalAlignValueMap = {
 function processStyles<T>(
   flattenedStyle: ____FlattenStyleProp_Internal<T>,
 ): ____FlattenStyleProp_Internal<T> {
-  const _flattenedStyle = {...flattenedStyle};
+  const _flattenedStyle: ____FlattenStyleProp_Internal<T> = {...flattenedStyle};
 
   if (_flattenedStyle != null) {
-    Object.keys(_flattenedStyle).forEach(key => {
+    Object.keys(_flattenedStyle).forEach((key: string) => {
       const alt = propMap[key];
-      const originalValue = _flattenedStyle[key];
+      const originalValue: string = _flattenedStyle[key];
       let _value = originalValue;
       if (key === 'verticalAlign') {
         _value = verticalAlignValueMap[originalValue];
