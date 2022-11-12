@@ -36,6 +36,12 @@ import * as React from 'react';
 const {useLayoutEffect, useRef, useState} = React;
 
 type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
+type TextInputInstance = React.ElementRef<HostComponent<mixed>> & {
+  +clear: () => void,
+  +isFocused: () => boolean,
+  +getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
+  +setSelection: (start: number, end: number) => void,
+};
 
 let AndroidTextInput;
 let AndroidTextInputCommands;
@@ -611,9 +617,7 @@ export type Props = $ReadOnly<{|
    */
   editable?: ?boolean,
 
-  forwardedRef?: ?ReactRefSetter<
-    React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
-  >,
+  forwardedRef?: ?ReactRefSetter<TextInputInstance>,
 
   /**
    * `enterKeyHint` defines what action label (or icon) to present for the enter key on virtual keyboards.
@@ -949,13 +953,6 @@ export type Props = $ReadOnly<{|
    * unwanted edits without flicker.
    */
   value?: ?Stringish,
-|}>;
-
-type ImperativeMethods = $ReadOnly<{|
-  clear: () => void,
-  isFocused: () => boolean,
-  getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
-  setSelection: (start: number, end: number) => void,
 |}>;
 
 const emptyFunctionThatReturnsTrue = () => true;
@@ -1591,7 +1588,7 @@ const autoCompleteWebToTextContentTypeMap = {
 
 const ExportedForwardRef: React.AbstractComponent<
   React.ElementConfig<typeof InternalTextInput>,
-  React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
+  TextInputInstance,
 > = React.forwardRef(function TextInput(
   {
     allowFontScaling = true,
@@ -1608,9 +1605,7 @@ const ExportedForwardRef: React.AbstractComponent<
     keyboardType,
     ...restProps
   },
-  forwardedRef: ReactRefSetter<
-    React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
-  >,
+  forwardedRef: ReactRefSetter<TextInputInstance>,
 ) {
   const style = flattenStyle(restProps.style);
 
