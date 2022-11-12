@@ -12,7 +12,6 @@
 'use strict';
 
 const {FlowParser} = require('../../../src/parsers/flow/parser');
-const {buildSchema} = require('../../../src/parsers/flow');
 const generator = require('../../../src/generators/components/GeneratePropsJavaDelegate');
 const fs = require('fs');
 
@@ -25,7 +24,7 @@ const parser = new FlowParser();
 fixtures.forEach(fixture => {
   it(`GeneratePropsJavaDelegate can generate for '${fixture}'`, () => {
     const libName = 'RNCodegenModuleFixtures';
-    const schema = parser.parseFile(`${FIXTURE_DIR}/${fixture}`, buildSchema);
+    const schema = parser.parseFile(`${FIXTURE_DIR}/${fixture}`);
     const output = generator.generate(libName, schema);
     expect(Object.fromEntries(output)).toMatchSnapshot();
   });

@@ -72,8 +72,5 @@ export interface Parser {
    * @parameter contents: the content of the file.
    * @returns: the AST of the file (given in program property for typescript).
    */
-  parseFile(
-    filename: string,
-    callback: (contents: string, filename: string) => SchemaType,
-  ): SchemaType;
+  parseFile(filename: string): SchemaType;
 }

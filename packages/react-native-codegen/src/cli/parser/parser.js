@@ -13,10 +13,6 @@
 const path = require('path');
 const {FlowParser} = require('../../parsers/flow/parser');
 const {TypeScriptParser} = require('../../parsers/typescript/parser');
-const {buildSchema: buildSchemaForFlow} = require('../../parsers/flow');
-const {
-  buildSchema: buildSchemaForTypescript,
-} = require('../../parsers/typescript');
 
 const flowParser = new FlowParser();
 const typescriptParser = new TypeScriptParser();
@@ -28,17 +24,7 @@ function parseFiles(files: Array<string>) {
 
     const parser = isTypeScript ? typescriptParser : flowParser;
 
-    console.log(
-      filename,
-      JSON.stringify(
-        parser.parseFile(
-          filename,
-          isTypeScript ? buildSchemaForTypescript : buildSchemaForFlow,
-        ),
-        null,
-        2,
-      ),
-    );
+    console.log(filename, JSON.stringify(parser.parseFile(filename), null, 2));
   });
 }
 

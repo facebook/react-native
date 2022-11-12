@@ -17,6 +17,8 @@ import type {
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
 
+const {buildSchema} = require('.');
+
 const fs = require('fs');
 
 const {
@@ -87,13 +89,10 @@ class TypeScriptParser implements Parser {
     return [...new Set(membersTypes.map(remapLiteral))];
   }
 
-  parseFile(
-    filename: string,
-    callback: (contents: string, filename: string) => SchemaType,
-  ): SchemaType {
+  parseFile(filename: string): SchemaType {
     const contents = fs.readFileSync(filename, 'utf8');
 
-    return callback(contents, filename);
+    return buildSchema(contents, filename);
   }
 }
 module.exports = {

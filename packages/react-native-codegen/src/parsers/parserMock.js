@@ -66,10 +66,7 @@ export class MockedParser implements Parser {
     return [];
   }
 
-  parseFile(
-    filename: string,
-    callback: (contents: string, filename: string) => SchemaType,
-  ): SchemaType {
+  parseFile(filename: string): SchemaType {
     return {
       modules: {
         StringPropNativeComponentView: {
