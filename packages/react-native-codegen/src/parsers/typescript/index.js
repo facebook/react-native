@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -12,6 +12,7 @@
 
 import type {SchemaType} from '../../CodegenSchema.js';
 
+// $FlowFixMe[untyped-import] Use flow-types for @babel/parser
 const babelParser = require('@babel/parser');
 const fs = require('fs');
 const {
