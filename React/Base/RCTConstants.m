@@ -11,21 +11,6 @@ NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceS
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
 /*
- * Preemptive View Allocation
- */
-static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
-
-BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
-{
-  return RCTExperimentPreemptiveViewAllocationDisabled;
-}
-
-void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
-{
-  RCTExperimentPreemptiveViewAllocationDisabled = value;
-}
-
-/*
  * W3C Pointer Events
  */
 static BOOL RCTDispatchW3CPointerEvents = NO;

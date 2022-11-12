@@ -71,13 +71,6 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   dispatch_once(&onceToken, ^{
     componentViewFactory = [RCTComponentViewFactory new];
     [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
-    [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
-    [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
-    [componentViewFactory registerComponentViewClass:[RCTTextInputComponentView class]];
-
-    Class<RCTComponentViewProtocol> imageClass = RCTComponentViewClassWithName("Image");
-    [componentViewFactory registerComponentViewClass:imageClass];
-
     componentViewFactory->_providerRegistry.setComponentDescriptorProviderRequest(
         [](ComponentName requestedComponentName) {
           [componentViewFactory registerComponentIfPossible:requestedComponentName];
