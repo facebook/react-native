@@ -103,6 +103,11 @@ typedef NS_ENUM(NSInteger, RCTTextEventType) {
                    eventCount:(NSInteger)eventCount;
 
 /**
+ * Notify Observers of event
+ */
+- (void)notifyObserversOfEvent:(id<RCTEvent>)event;
+
+/**
  * Send a pre-prepared event object.
  *
  * Events are sent to JS as soon as the thread is free to process them.
