@@ -60,8 +60,10 @@ NSArray<Class> *RCTGetModuleClasses(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
-  RCTLogNotAllowedForNewArchitecture(
-      @"RCTRegisterModule()", [NSString stringWithFormat:@"'%@' was registered unexpectedly", moduleClass]);
+  RCTLogNewArchitectureValidation(
+      RCTNotAllowedInBridgeless,
+      @"RCTRegisterModule()",
+      [NSString stringWithFormat:@"'%@' was registered unexpectedly", moduleClass]);
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -223,7 +225,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
-    RCTEnforceNotAllowedForNewArchitecture(self, nil);
+    RCTEnforceNewArchitectureValidation(RCTNotAllowedInBridgeless, self, nil);
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;
