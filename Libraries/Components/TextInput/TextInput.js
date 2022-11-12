@@ -1247,11 +1247,13 @@ function InternalTextInput(props: Props): React.Node {
         - Mutate this ref. :( Gross, but accomplishes what we need in the meantime
           before we can get to the long term breaking change.
         */
-      if (ref) {
-        ref.clear = clear;
-        ref.isFocused = isFocused;
-        ref.getNativeRef = getNativeRef;
-        ref.setSelection = setSelection;
+      if (ref != null) {
+        Object.assign(ref, {
+          clear,
+          isFocused,
+          getNativeRef,
+          setSelection,
+        });
       }
     },
   });
