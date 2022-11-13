@@ -11,28 +11,32 @@
 'use strict';
 
 import type {
+  Nullable,
+  NamedShape,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   Int32TypeAnnotation,
-  NamedShape,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
+  NativeModuleTypeAnnotation,
   NativeModuleFloatTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleGenericObjectTypeAnnotation,
   NativeModuleMixedTypeAnnotation,
   NativeModuleNumberTypeAnnotation,
   NativeModuleParamTypeAnnotation,
+  NativeModuleArrayTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
-  Nullable,
   ObjectTypeAnnotation,
   ReservedTypeAnnotation,
   StringTypeAnnotation,
   VoidTypeAnnotation,
 } from '../CodegenSchema';
+
 import type {ParserType} from './errors';
 import type {Parser} from './parser';
+
 import type {
   ParserErrorCapturer,
   TypeAliasResolutionStatus,
@@ -43,12 +47,23 @@ const {
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
 } = require('./error-utils');
-const {UnnamedFunctionParamParserError} = require('./errors');
+
+const {
+  UnnamedFunctionParamParserError,
+  UnsupportedArrayElementTypeAnnotationParserError,
+} = require('./errors');
+
 const {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   unwrapNullable,
   wrapNullable,
 } = require('./parsers-commons');
+
+const {nullGuard} = require('./parsers-utils');
+const {
+  typeScriptTranslateTypeAnnotation,
+} = require('./typescript/modules/index');
+const {flowTranslateTypeAnnotation} = require('./flow/modules/index');
 
 function emitBoolean(nullable: boolean): Nullable<BooleanTypeAnnotation> {
   return wrapNullable(nullable, {
@@ -353,6 +368,95 @@ function translateFunctionTypeAnnotation(
   };
 }
 
+function translateArrayTypeAnnotation(
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  cxxOnly: boolean,
+  arrayType: 'Array' | 'ReadonlyArray',
+  elementType: $FlowFixMe,
+  nullable: boolean,
+  language: ParserType,
+): Nullable<NativeModuleTypeAnnotation> {
+  try {
+    /**
+     * TODO(T72031674): Migrate all our NativeModule specs to not use
+     * invalid Array ElementTypes. Then, make the elementType a required
+     * parameter.
+     */
+    const [_elementType, isElementTypeNullable] = unwrapNullable(
+      language === 'TypeScript'
+        ? typeScriptTranslateTypeAnnotation(
+            hasteModuleName,
+            elementType,
+            types,
+            aliasMap,
+            /**
+             * TODO(T72031674): Ensure that all ParsingErrors that are thrown
+             * while parsing the array element don't get captured and collected.
+             * Why? If we detect any parsing error while parsing the element,
+             * we should default it to null down the line, here. This is
+             * the correct behaviour until we migrate all our NativeModule specs
+             * to be parseable.
+             */
+            nullGuard,
+            cxxOnly,
+          )
+        : flowTranslateTypeAnnotation(
+            hasteModuleName,
+            elementType,
+            types,
+            aliasMap,
+            nullGuard,
+            cxxOnly,
+          ),
+    );
+
+    if (_elementType.type === 'VoidTypeAnnotation') {
+      throw new UnsupportedArrayElementTypeAnnotationParserError(
+        hasteModuleName,
+        elementType,
+        arrayType,
+        'void',
+        language,
+      );
+    }
+
+    if (_elementType.type === 'PromiseTypeAnnotation') {
+      throw new UnsupportedArrayElementTypeAnnotationParserError(
+        hasteModuleName,
+        elementType,
+        arrayType,
+        'Promise',
+        language,
+      );
+    }
+
+    if (_elementType.type === 'FunctionTypeAnnotation') {
+      throw new UnsupportedArrayElementTypeAnnotationParserError(
+        hasteModuleName,
+        elementType,
+        arrayType,
+        'FunctionTypeAnnotation',
+        language,
+      );
+    }
+
+    const finalTypeAnnotation: NativeModuleArrayTypeAnnotation<
+      Nullable<NativeModuleBaseTypeAnnotation>,
+    > = {
+      type: 'ArrayTypeAnnotation',
+      elementType: wrapNullable(isElementTypeNullable, _elementType),
+    };
+
+    return wrapNullable(nullable, finalTypeAnnotation);
+  } catch (ex) {
+    return wrapNullable(nullable, {
+      type: 'ArrayTypeAnnotation',
+    });
+  }
+}
+
 module.exports = {
   emitBoolean,
   emitDouble,
@@ -369,4 +473,5 @@ module.exports = {
   emitMixedTypeAnnotation,
   typeAliasResolution,
   translateFunctionTypeAnnotation,
+  translateArrayTypeAnnotation,
 };
