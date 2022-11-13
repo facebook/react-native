@@ -14,6 +14,8 @@
 
 #import <React/RCTTextShadowView.h>
 
+#import <QuartzCore/QuartzCore.h>
+
 @implementation RCTTextView {
   CAShapeLayer *_highlightLayer;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
