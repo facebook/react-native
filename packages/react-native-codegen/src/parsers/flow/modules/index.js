@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -19,13 +19,10 @@ import type {
   NativeModuleSchema,
   Nullable,
 } from '../../../CodegenSchema.js';
-
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
-const {nullGuard} = require('../../parsers-utils');
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
 const {resolveTypeAnnotation, getTypes} = require('../utils.js');
-
 const {
   unwrapNullable,
   wrapNullable,
@@ -35,7 +32,6 @@ const {
   translateDefault,
   buildPropertySchema,
 } = require('../../parsers-commons');
-
 const {
   emitBoolean,
   emitDouble,
@@ -51,6 +47,7 @@ const {
   emitStringish,
   emitMixedTypeAnnotation,
   typeAliasResolution,
+  translateArrayTypeAnnotation,
 } = require('../../parsers-primitives');
 
 const {
@@ -61,7 +58,6 @@ const {
 const {
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
-  throwIfArrayElementTypeAnnotationIsUnsupported,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfMoreThanOneModuleRegistryCalls,
@@ -74,60 +70,6 @@ const {FlowParser} = require('../parser.js');
 
 const language = 'Flow';
 const parser = new FlowParser();
-
-function translateArrayTypeAnnotation(
-  hasteModuleName: string,
-  types: TypeDeclarationMap,
-  aliasMap: {...NativeModuleAliasMap},
-  cxxOnly: boolean,
-  flowArrayType: 'Array' | '$ReadOnlyArray',
-  flowElementType: $FlowFixMe,
-  nullable: boolean,
-): Nullable<NativeModuleTypeAnnotation> {
-  try {
-    /**
-     * TODO(T72031674): Migrate all our NativeModule specs to not use
-     * invalid Array ElementTypes. Then, make the elementType a required
-     * parameter.
-     */
-    const [elementType, isElementTypeNullable] = unwrapNullable(
-      translateTypeAnnotation(
-        hasteModuleName,
-        flowElementType,
-        types,
-        aliasMap,
-        /**
-         * TODO(T72031674): Ensure that all ParsingErrors that are thrown
-         * while parsing the array element don't get captured and collected.
-         * Why? If we detect any parsing error while parsing the element,
-         * we should default it to null down the line, here. This is
-         * the correct behaviour until we migrate all our NativeModule specs
-         * to be parseable.
-         */
-        nullGuard,
-        cxxOnly,
-      ),
-    );
-
-    throwIfArrayElementTypeAnnotationIsUnsupported(
-      hasteModuleName,
-      flowElementType,
-      flowArrayType,
-      elementType.type,
-      language,
-    );
-
-    return wrapNullable(nullable, {
-      type: 'ArrayTypeAnnotation',
-      // $FlowFixMe[incompatible-call]
-      elementType: wrapNullable(isElementTypeNullable, elementType),
-    });
-  } catch (ex) {
-    return wrapNullable(nullable, {
-      type: 'ArrayTypeAnnotation',
-    });
-  }
-}
 
 function translateTypeAnnotation(
   hasteModuleName: string,
@@ -178,6 +120,8 @@ function translateTypeAnnotation(
             typeAnnotation.type,
             typeAnnotation.typeParameters.params[0],
             nullable,
+            language,
+            translateTypeAnnotation,
           );
         }
         case '$ReadOnly': {
