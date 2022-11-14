@@ -184,36 +184,47 @@ function translateTypeAnnotation(
       }
     }
     case 'TSTypeLiteral': {
-      const objectTypeAnnotation = {
-        type: 'ObjectTypeAnnotation',
-        // $FlowFixMe[missing-type-arg]
-        properties: (typeAnnotation.members: Array<$FlowFixMe>)
-          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
-            property => {
-              return tryParse(() => {
-                return parseObjectProperty(
-                  property,
-                  hasteModuleName,
-                  types,
-                  aliasMap,
-                  tryParse,
-                  cxxOnly,
-                  nullable,
-                  translateTypeAnnotation,
-                  parser,
-                );
-              });
-            },
-          )
-          .filter(Boolean),
-      };
+      // if the only member is TSIndexSignature, then it is a dictionary
+      if (typeAnnotation.members && typeAnnotation.members[0] && typeAnnotation.members[0].type === 'TSIndexSignature') {
+        // no need to do further checking
+        return typeAliasResolution(
+          typeAliasResolutionStatus,
+          {type:'GenericObjectTypeAnnotation'},
+          aliasMap,
+          nullable,
+        );
+      } else {
+        const objectTypeAnnotation = {
+          type: 'ObjectTypeAnnotation',
+          // $FlowFixMe[missing-type-arg]
+          properties: (typeAnnotation.members: Array<$FlowFixMe>)
+            .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
+              property => {
+                return tryParse(() => {
+                  return parseObjectProperty(
+                    property,
+                    hasteModuleName,
+                    types,
+                    aliasMap,
+                    tryParse,
+                    cxxOnly,
+                    nullable,
+                    translateTypeAnnotation,
+                    parser,
+                  );
+                });
+              },
+            )
+            .filter(Boolean),
+        };
 
-      return typeAliasResolution(
-        typeAliasResolutionStatus,
-        objectTypeAnnotation,
-        aliasMap,
-        nullable,
-      );
+        return typeAliasResolution(
+          typeAliasResolutionStatus,
+          objectTypeAnnotation,
+          aliasMap,
+          nullable,
+        );
+      }
     }
     case 'TSBooleanKeyword': {
       return emitBoolean(nullable);
