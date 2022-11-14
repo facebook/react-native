@@ -97,7 +97,6 @@
     "react": "18.1.0"
   },
   "dependencies": {
-    "@jest/create-cache-key-function": "^29.0.3",
     "@react-native-community/cli": "9.3.2",
     "@react-native-community/cli-platform-android": "9.3.1",
     "@react-native-community/cli-platform-ios": "9.3.0",
