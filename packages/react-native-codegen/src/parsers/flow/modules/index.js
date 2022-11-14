@@ -166,39 +166,50 @@ function translateTypeAnnotation(
       }
     }
     case 'ObjectTypeAnnotation': {
-      const objectTypeAnnotation = {
-        type: 'ObjectTypeAnnotation',
-        // $FlowFixMe[missing-type-arg]
-        properties: ([
-          ...typeAnnotation.properties,
-          ...typeAnnotation.indexers,
-        ]: Array<$FlowFixMe>)
-          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
-            property => {
-              return tryParse(() => {
-                return parseObjectProperty(
-                  property,
-                  hasteModuleName,
-                  types,
-                  aliasMap,
-                  tryParse,
-                  cxxOnly,
-                  nullable,
-                  translateTypeAnnotation,
-                  parser,
-                );
-              });
-            },
-          )
-          .filter(Boolean),
-      };
+      // if there is any indexer, then it is a dictionary
+      if (typeAnnotation.indexers && typeAnnotation.indexers.filter((member)=>member.type === 'ObjectTypeIndexer').length > 0) {
+        // no need to do further checking
+        return typeAliasResolution(
+          typeAliasResolutionStatus,
+          {type:'GenericObjectTypeAnnotation'},
+          aliasMap,
+          nullable,
+        );
+      } else {
+        const objectTypeAnnotation = {
+          type: 'ObjectTypeAnnotation',
+          // $FlowFixMe[missing-type-arg]
+          properties: ([
+            ...typeAnnotation.properties,
+            ...typeAnnotation.indexers,
+          ]: Array<$FlowFixMe>)
+            .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
+              property => {
+                return tryParse(() => {
+                  return parseObjectProperty(
+                    property,
+                    hasteModuleName,
+                    types,
+                    aliasMap,
+                    tryParse,
+                    cxxOnly,
+                    nullable,
+                    translateTypeAnnotation,
+                    parser,
+                  );
+                });
+              },
+            )
+            .filter(Boolean),
+        };
 
-      return typeAliasResolution(
-        typeAliasResolutionStatus,
-        objectTypeAnnotation,
-        aliasMap,
-        nullable,
-      );
+        return typeAliasResolution(
+          typeAliasResolutionStatus,
+          objectTypeAnnotation,
+          aliasMap,
+          nullable,
+        );
+      }
     }
     case 'BooleanTypeAnnotation': {
       return emitBoolean(nullable);

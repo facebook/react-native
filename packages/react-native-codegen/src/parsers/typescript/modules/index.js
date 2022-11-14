@@ -184,8 +184,8 @@ function translateTypeAnnotation(
       }
     }
     case 'TSTypeLiteral': {
-      // if the only member is TSIndexSignature, then it is a dictionary
-      if (typeAnnotation.members && typeAnnotation.members[0] && typeAnnotation.members[0].type === 'TSIndexSignature') {
+      // if there is TSIndexSignature, then it is a dictionary
+      if (typeAnnotation.members && typeAnnotation.members.filter((member)=>member.type === 'TSIndexSignature').length > 0) {
         // no need to do further checking
         return typeAliasResolution(
           typeAliasResolutionStatus,
