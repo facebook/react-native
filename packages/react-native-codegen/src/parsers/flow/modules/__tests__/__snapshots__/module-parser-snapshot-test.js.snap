@@ -1506,7 +1506,20 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliases': {
+        'SomeObj': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
       'spec': {
         'properties': [
           {
@@ -1515,7 +1528,10 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'PromiseTypeAnnotation'
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'StringTypeAnnotation'
+                }
               },
               'params': []
             }
@@ -1526,7 +1542,10 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'PromiseTypeAnnotation'
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'StringTypeAnnotation'
+                }
               },
               'params': []
             }
@@ -1537,7 +1556,11 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'PromiseTypeAnnotation'
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'TypeAliasTypeAnnotation',
+                  'name': 'SomeObj'
+                }
               },
               'params': []
             }
