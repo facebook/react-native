@@ -186,6 +186,11 @@ function emitPromise(
   typeAnnotation: $FlowFixMe,
   parser: Parser,
   nullable: boolean,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  translateTypeAnnotation: $FlowFixMe,
 ): Nullable<NativeModulePromiseTypeAnnotation> {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter(
     hasteModuleName,
@@ -195,6 +200,14 @@ function emitPromise(
 
   return wrapNullable(nullable, {
     type: 'PromiseTypeAnnotation',
+    elementType: translateTypeAnnotation(
+      hasteModuleName,
+      typeAnnotation.typeParameters.params[0],
+      types,
+      aliasMap,
+      tryParse,
+      cxxOnly,
+    ),
   });
 }
 

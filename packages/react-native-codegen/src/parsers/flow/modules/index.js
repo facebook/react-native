@@ -150,7 +150,17 @@ function translateTypeAnnotation(
           return emitRootTag(nullable);
         }
         case 'Promise': {
-          return emitPromise(hasteModuleName, typeAnnotation, parser, nullable);
+          return emitPromise(
+            hasteModuleName,
+            typeAnnotation,
+            parser,
+            nullable,
+            types,
+            aliasMap,
+            tryParse,
+            cxxOnly,
+            translateTypeAnnotation,
+          );
         }
         case 'Array':
         case '$ReadOnlyArray': {
