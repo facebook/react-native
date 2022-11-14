@@ -297,9 +297,9 @@ export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{
   name: string,
 }>;
 
-export type NativeModulePromiseTypeAnnotation<T> = $ReadOnly<{
+export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   type: 'PromiseTypeAnnotation',
-  elementType?: T,
+  elementType?: Nullable<NativeModuleBaseTypeAnnotation>,
 }>;
 
 export type UnionTypeAnnotationMemberType =
@@ -347,5 +347,5 @@ export type NativeModuleTypeAnnotation =
 
 type NativeModuleParamOnlyTypeAnnotation = NativeModuleFunctionTypeAnnotation;
 type NativeModuleReturnOnlyTypeAnnotation =
-  | NativeModulePromiseTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>
+  | NativeModulePromiseTypeAnnotation
   | VoidTypeAnnotation;

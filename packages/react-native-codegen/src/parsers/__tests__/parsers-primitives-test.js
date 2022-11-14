@@ -351,7 +351,20 @@ describe('emitPromise', () => {
     it('throws an IncorrectlyParameterizedGenericParserError error', () => {
       const nullable = false;
       expect(() =>
-        emitPromise(moduleName, typeAnnotation, parser, nullable),
+        emitPromise(
+          moduleName,
+          typeAnnotation,
+          parser,
+          nullable,
+          // mock translateTypeAnnotation function
+          {},
+          {},
+          function <T>(_: () => T) {
+            return null;
+          },
+          false,
+          (_, elementType) => elementType,
+        ),
       ).toThrow();
     });
   });
@@ -376,10 +389,12 @@ describe('emitPromise', () => {
           parser,
           nullable,
           // mock translateTypeAnnotation function
-          undefined,
-          undefined,
-          undefined,
-          undefined,
+          {},
+          {},
+          function <T>(_: () => T) {
+            return null;
+          },
+          false,
           (_, elementType) => elementType,
         );
         const expected = {
@@ -402,10 +417,12 @@ describe('emitPromise', () => {
           parser,
           nullable,
           // mock translateTypeAnnotation function
-          undefined,
-          undefined,
-          undefined,
-          undefined,
+          {},
+          {},
+          function <T>(_: () => T) {
+            return null;
+          },
+          false,
           (_, elementType) => elementType,
         );
         const expected = {
