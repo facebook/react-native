@@ -25,9 +25,6 @@ class FlowParser implements Parser {
     switch (propertyOrIndex.type) {
       case 'ObjectTypeProperty':
         return propertyOrIndex.key.name;
-      case 'ObjectTypeIndexer':
-        // flow index name is optional
-        return propertyOrIndex.id?.name ?? 'key';
       default:
         throw new UnsupportedObjectPropertyTypeAnnotationParserError(
           hasteModuleName,

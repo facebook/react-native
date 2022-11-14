@@ -117,8 +117,7 @@ function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
   switch (language) {
     case 'Flow':
       return (
-        property.type === 'ObjectTypeProperty' ||
-        property.type === 'ObjectTypeIndexer'
+        property.type === 'ObjectTypeProperty'
       );
     case 'TypeScript':
       return (
@@ -157,18 +156,6 @@ function parseObjectProperty(
     language === 'TypeScript'
       ? property.typeAnnotation.typeAnnotation
       : property.value;
-
-  if (
-    property.type === 'ObjectTypeIndexer'
-  ) {
-    return {
-      name,
-      optional,
-      typeAnnotation: wrapNullable(nullable, {
-        type: 'GenericObjectTypeAnnotation',
-      }), //TODO: use `emitObject` for typeAnnotation
-    };
-  }
 
   const [propertyTypeAnnotation, isPropertyNullable] =
     unwrapNullable<$FlowFixMe>(

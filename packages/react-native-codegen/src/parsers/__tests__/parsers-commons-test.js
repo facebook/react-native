@@ -225,18 +225,7 @@ describe('isObjectProperty', () => {
       expect(result).toEqual(true);
     });
 
-    it("returns 'true' if 'property.type' is 'ObjectTypeIndexer'", () => {
-      const result = isObjectProperty(
-        {
-          type: 'ObjectTypeIndexer',
-          ...propertyStub,
-        },
-        language,
-      );
-      expect(result).toEqual(true);
-    });
-
-    it("returns 'false' if 'property.type' is not 'ObjectTypeProperty' or 'ObjectTypeIndexer'", () => {
+    it("returns 'false' if 'property.type' is not 'ObjectTypeProperty'", () => {
       const result = isObjectProperty(
         {
           type: 'notObjectTypeProperty',
@@ -284,7 +273,7 @@ describe('parseObjectProperty', () => {
 
   describe("when 'language' is 'Flow'", () => {
     const language: ParserType = 'Flow';
-    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'ObjectTypeProperty' or 'ObjectTypeIndexer'.", () => {
+    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'ObjectTypeProperty'.", () => {
       const property = {
         type: 'notObjectTypeProperty',
         typeAnnotation: {
