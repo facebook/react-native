@@ -33,7 +33,6 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import Dimensions from '../../Utilities/Dimensions';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Platform from '../../Utilities/Platform';
-import setAndForwardRef from '../../Utilities/setAndForwardRef';
 import Keyboard from '../Keyboard/Keyboard';
 import TextInputState from '../TextInput/TextInputState';
 import View from '../View/View';
@@ -46,6 +45,7 @@ import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
 import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 import ScrollViewStickyHeader from './ScrollViewStickyHeader';
 import invariant from 'invariant';
+import memoize from 'memoize-one';
 import * as React from 'react';
 
 if (Platform.OS === 'ios') {
@@ -164,6 +164,14 @@ export type ScrollViewImperativeMethods = $ReadOnly<{|
 
 export type DecelerationRateType = 'fast' | 'normal' | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
+
+type NativeScrollViewInstance = React.ElementRef<HostComponent<mixed>>;
+type PublicScrollViewInstance = $ReadOnly<{|
+  ...$Exact<NativeScrollViewInstance>,
+  ...ScrollViewImperativeMethods,
+|}>;
+
+type InnerViewInstance = React.ElementRef<typeof View>;
 
 type IOSProps = $ReadOnly<{|
   /**
@@ -658,15 +666,13 @@ export type Props = $ReadOnly<{|
    * A ref to the inner View element of the ScrollView. This should be used
    * instead of calling `getInnerViewRef`.
    */
-  innerViewRef?: React.Ref<typeof View>,
+  innerViewRef?: ForwardedRef<InnerViewInstance>,
   /**
    * A ref to the Native ScrollView component. This ref can be used to call
    * all of ScrollView's public methods, in addition to native methods like
    * measure, measureLayout, etc.
    */
-  scrollViewRef?: React.Ref<
-    typeof ScrollViewNativeComponent & ScrollViewImperativeMethods,
-  >,
+  scrollViewRef?: ForwardedRef<PublicScrollViewInstance>,
 |}>;
 
 type State = {|
@@ -826,36 +832,6 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  _setNativeRef: $FlowFixMe = setAndForwardRef({
-    getForwardedRef: () => this.props.scrollViewRef,
-    setLocalRef: ref => {
-      this._scrollViewRef = ref;
-
-      /*
-        This is a hack. Ideally we would forwardRef to the underlying
-        host component. However, since ScrollView has it's own methods that can be
-        called as well, if we used the standard forwardRef then these
-        methods wouldn't be accessible and thus be a breaking change.
-
-        Therefore we edit ref to include ScrollView's public methods so that
-        they are callable from the ref.
-      */
-      if (ref) {
-        ref.getScrollResponder = this.getScrollResponder;
-        ref.getScrollableNode = this.getScrollableNode;
-        ref.getInnerViewNode = this.getInnerViewNode;
-        ref.getInnerViewRef = this.getInnerViewRef;
-        ref.getNativeScrollRef = this.getNativeScrollRef;
-        ref.scrollTo = this.scrollTo;
-        ref.scrollToEnd = this.scrollToEnd;
-        ref.flashScrollIndicators = this.flashScrollIndicators;
-        ref.scrollResponderZoomTo = this.scrollResponderZoomTo;
-        ref.scrollResponderScrollNativeHandleToKeyboard =
-          this.scrollResponderScrollNativeHandleToKeyboard;
-      }
-    },
-  });
-
   /**
    * Returns a reference to the underlying scroll responder, which supports
    * operations like `scrollTo`. All ScrollView-like components should
@@ -868,19 +844,19 @@ class ScrollView extends React.Component<Props, State> {
   };
 
   getScrollableNode: () => ?number = () => {
-    return findNodeHandle(this._scrollViewRef);
+    return findNodeHandle(this._scrollView.nativeInstance);
   };
 
   getInnerViewNode: () => ?number = () => {
-    return findNodeHandle(this._innerViewRef);
+    return findNodeHandle(this._innerView.nativeInstance);
   };
 
-  getInnerViewRef: () => ?React.ElementRef<typeof View> = () => {
-    return this._innerViewRef;
+  getInnerViewRef: () => InnerViewInstance | null = () => {
+    return this._innerView.nativeInstance;
   };
 
-  getNativeScrollRef: () => ?React.ElementRef<HostComponent<mixed>> = () => {
-    return this._scrollViewRef;
+  getNativeScrollRef: () => NativeScrollViewInstance | null = () => {
+    return this._scrollView.nativeInstance;
   };
 
   /**
@@ -931,10 +907,15 @@ class ScrollView extends React.Component<Props, State> {
       x = options.x;
       animated = options.animated;
     }
-    if (this._scrollViewRef == null) {
+    if (this._scrollView.nativeInstance == null) {
       return;
     }
-    Commands.scrollTo(this._scrollViewRef, x || 0, y || 0, animated !== false);
+    Commands.scrollTo(
+      this._scrollView.nativeInstance,
+      x || 0,
+      y || 0,
+      animated !== false,
+    );
   };
 
   /**
@@ -950,10 +931,10 @@ class ScrollView extends React.Component<Props, State> {
   ) => {
     // Default to true
     const animated = (options && options.animated) !== false;
-    if (this._scrollViewRef == null) {
+    if (this._scrollView.nativeInstance == null) {
       return;
     }
-    Commands.scrollToEnd(this._scrollViewRef, animated);
+    Commands.scrollToEnd(this._scrollView.nativeInstance, animated);
   };
 
   /**
@@ -962,10 +943,10 @@ class ScrollView extends React.Component<Props, State> {
    * @platform ios
    */
   flashScrollIndicators: () => void = () => {
-    if (this._scrollViewRef == null) {
+    if (this._scrollView.nativeInstance == null) {
       return;
     }
-    Commands.flashScrollIndicators(this._scrollViewRef);
+    Commands.flashScrollIndicators(this._scrollView.nativeInstance);
   };
 
   /**
@@ -990,7 +971,7 @@ class ScrollView extends React.Component<Props, State> {
     this._additionalScrollOffset = additionalOffset || 0;
     this._preventNegativeScrollOffset = !!preventNegativeScrollOffset;
 
-    if (this._innerViewRef == null) {
+    if (this._innerView.nativeInstance == null) {
       return;
     }
 
@@ -1004,7 +985,7 @@ class ScrollView extends React.Component<Props, State> {
       );
     } else {
       nodeHandle.measureLayout(
-        this._innerViewRef,
+        this._innerView.nativeInstance,
         this._inputMeasureAndScrollToKeyboard,
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
@@ -1047,10 +1028,14 @@ class ScrollView extends React.Component<Props, State> {
       );
     }
 
-    if (this._scrollViewRef == null) {
+    if (this._scrollView.nativeInstance == null) {
       return;
     }
-    Commands.zoomToRect(this._scrollViewRef, rect, animated !== false);
+    Commands.zoomToRect(
+      this._scrollView.nativeInstance,
+      rect,
+      animated !== false,
+    );
   };
 
   _textInputFocusError() {
@@ -1123,7 +1108,7 @@ class ScrollView extends React.Component<Props, State> {
     ) {
       this._scrollAnimatedValueAttachment =
         AnimatedImplementation.attachNativeEvent(
-          this._scrollViewRef,
+          this._scrollView.nativeInstance,
           'onScroll',
           [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}],
         );
@@ -1202,15 +1187,45 @@ class ScrollView extends React.Component<Props, State> {
       this.props.onContentSizeChange(width, height);
   };
 
-  _scrollViewRef: ?React.ElementRef<HostComponent<mixed>> = null;
+  _innerView: RefForwarder<InnerViewInstance, InnerViewInstance> =
+    createRefForwarder(
+      (instance: InnerViewInstance): InnerViewInstance => instance,
+    );
 
-  _innerViewRef: ?React.ElementRef<typeof View> = null;
-  _setInnerViewRef: $FlowFixMe = setAndForwardRef({
-    getForwardedRef: () => this.props.innerViewRef,
-    setLocalRef: ref => {
-      this._innerViewRef = ref;
+  _scrollView: RefForwarder<
+    NativeScrollViewInstance,
+    PublicScrollViewInstance,
+  > = createRefForwarder(
+    (nativeInstance: NativeScrollViewInstance): PublicScrollViewInstance => {
+      // This is a hack. Ideally we would forwardRef  to the underlying
+      // host component. However, since ScrollView has it's own methods that can be
+      // called as well, if we used the standard forwardRef then these
+      // methods wouldn't be accessible and thus be a breaking change.
+      //
+      // Therefore we edit ref to include ScrollView's public methods so that
+      // they are callable from the ref.
+
+      // $FlowFixMe[prop-missing] - Known issue with appending custom methods.
+      const publicInstance: PublicScrollViewInstance = Object.assign(
+        nativeInstance,
+        {
+          getScrollResponder: this.getScrollResponder,
+          getScrollableNode: this.getScrollableNode,
+          getInnerViewNode: this.getInnerViewNode,
+          getInnerViewRef: this.getInnerViewRef,
+          getNativeScrollRef: this.getNativeScrollRef,
+          scrollTo: this.scrollTo,
+          scrollToEnd: this.scrollToEnd,
+          flashScrollIndicators: this.flashScrollIndicators,
+          scrollResponderZoomTo: this.scrollResponderZoomTo,
+          scrollResponderScrollNativeHandleToKeyboard:
+            this.scrollResponderScrollNativeHandleToKeyboard,
+        },
+      );
+
+      return publicInstance;
     },
-  });
+  );
 
   /**
    * Warning, this may be called several times for a single keyboard opening.
@@ -1718,7 +1733,7 @@ class ScrollView extends React.Component<Props, State> {
     const contentContainer = (
       <NativeDirectionalScrollContentView
         {...contentSizeChangeProps}
-        ref={this._setInnerViewRef}
+        ref={this._innerView.getForwardingRef(this.props.innerViewRef)}
         style={contentContainerStyle}
         removeClippedSubviews={
           // Subview clipping causes issues with sticky headers on Android and
@@ -1804,12 +1819,15 @@ class ScrollView extends React.Component<Props, State> {
     }
 
     const refreshControl = this.props.refreshControl;
+    const scrollViewRef = this._scrollView.getForwardingRef(
+      this.props.scrollViewRef,
+    );
 
     if (refreshControl) {
       if (Platform.OS === 'ios') {
         // On iOS the RefreshControl is a child of the ScrollView.
         return (
-          <NativeDirectionalScrollView {...props} ref={this._setNativeRef}>
+          <NativeDirectionalScrollView {...props} ref={scrollViewRef}>
             {refreshControl}
             {contentContainer}
           </NativeDirectionalScrollView>
@@ -1827,14 +1845,14 @@ class ScrollView extends React.Component<Props, State> {
           <NativeDirectionalScrollView
             {...props}
             style={StyleSheet.compose(baseStyle, inner)}
-            ref={this._setNativeRef}>
+            ref={scrollViewRef}>
             {contentContainer}
           </NativeDirectionalScrollView>,
         );
       }
     }
     return (
-      <NativeDirectionalScrollView {...props} ref={this._setNativeRef}>
+      <NativeDirectionalScrollView {...props} ref={scrollViewRef}>
         {contentContainer}
       </NativeDirectionalScrollView>
     );
@@ -1859,6 +1877,48 @@ const styles = StyleSheet.create({
   },
 });
 
+type ForwardedRef<T> = {current: null | T, ...} | ((null | T) => mixed);
+
+type RefForwarder<TNativeInstance, TPublicInstance> = {
+  getForwardingRef: (
+    ?ForwardedRef<TPublicInstance>,
+  ) => (TNativeInstance | null) => void,
+  nativeInstance: TNativeInstance | null,
+  publicInstance: TPublicInstance | null,
+};
+
+/**
+ * Helper function that should be replaced with `useCallback` and `useMergeRefs`
+ * once `ScrollView` is reimplemented as a functional component.
+ */
+function createRefForwarder<TNativeInstance, TPublicInstance>(
+  mutator: TNativeInstance => TPublicInstance,
+): RefForwarder<TNativeInstance, TPublicInstance> {
+  const state: RefForwarder<TNativeInstance, TPublicInstance> = {
+    getForwardingRef: memoize(forwardedRef => {
+      return (nativeInstance: TNativeInstance | null): void => {
+        const publicInstance =
+          nativeInstance == null ? null : mutator(nativeInstance);
+
+        state.nativeInstance = nativeInstance;
+        state.publicInstance = publicInstance;
+
+        if (forwardedRef != null) {
+          if (typeof forwardedRef === 'function') {
+            forwardedRef(publicInstance);
+          } else {
+            forwardedRef.current = publicInstance;
+          }
+        }
+      };
+    }),
+    nativeInstance: null,
+    publicInstance: null,
+  };
+
+  return state;
+}
+
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 function Wrapper(props, ref: (mixed => mixed) | {current: mixed, ...}) {
@@ -1874,9 +1934,6 @@ ForwardedScrollView.displayName = 'ScrollView';
 
 module.exports = ((ForwardedScrollView: $FlowFixMe): React.AbstractComponent<
   React.ElementConfig<typeof ScrollView>,
-  $ReadOnly<{|
-    ...$Exact<React.ElementRef<HostComponent<mixed>>>,
-    ...ScrollViewImperativeMethods,
-  |}>,
+  PublicScrollViewInstance,
 > &
   ScrollViewComponentStatics);

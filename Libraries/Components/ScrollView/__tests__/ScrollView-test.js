@@ -66,6 +66,67 @@ describe('ScrollView', () => {
 
       expect(scrollViewRef).toHaveBeenLastCalledWith(null);
     });
+
+    it('transitions between refs', () => {
+      jest.dontMock('../ScrollView');
+
+      const scrollViewRefA = jest.fn();
+      const testRendererInstance = ReactTestRenderer.create(
+        <ScrollView ref={scrollViewRefA} />,
+      );
+
+      expect(scrollViewRefA).toHaveBeenLastCalledWith(
+        expect.objectContaining({_nativeTag: expect.any(Number)}),
+      );
+
+      const scrollViewRefB = jest.fn();
+      testRendererInstance.update(<ScrollView ref={scrollViewRefB} />);
+
+      expect(scrollViewRefA).toHaveBeenLastCalledWith(null);
+      expect(scrollViewRefB).toHaveBeenLastCalledWith(
+        expect.objectContaining({_nativeTag: expect.any(Number)}),
+      );
+    });
+  });
+
+  describe('innerViewRef', () => {
+    it('receives an instance or null', () => {
+      jest.dontMock('../ScrollView');
+
+      const innerViewRef = jest.fn();
+      const testRendererInstance = ReactTestRenderer.create(
+        <ScrollView innerViewRef={innerViewRef} />,
+      );
+
+      expect(innerViewRef).toHaveBeenLastCalledWith(
+        expect.objectContaining({_nativeTag: expect.any(Number)}),
+      );
+
+      testRendererInstance.unmount();
+
+      expect(innerViewRef).toHaveBeenLastCalledWith(null);
+    });
+
+    it('transitions between refs', () => {
+      jest.dontMock('../ScrollView');
+
+      const innerViewRefA = jest.fn();
+      const testRendererInstance = ReactTestRenderer.create(
+        <ScrollView innerViewRef={innerViewRefA} />,
+      );
+
+      expect(innerViewRefA).toHaveBeenLastCalledWith(
+        expect.objectContaining({_nativeTag: expect.any(Number)}),
+      );
+
+      const innerViewRefB = jest.fn();
+      testRendererInstance.update(<ScrollView innerViewRef={innerViewRefB} />);
+
+      expect(innerViewRefA).toHaveBeenLastCalledWith(null);
+      expect(innerViewRefB).toHaveBeenLastCalledWith(
+        expect.objectContaining({_nativeTag: expect.any(Number)}),
+      );
+    });
   });
 
   describe('getInnerViewRef', () => {
