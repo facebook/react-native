@@ -50,6 +50,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable UIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(facebook::react::Tag)tag;
 
+/**
+ * Creates a component view with a given type and puts it to the recycle pool.
+ */
+- (void)optimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
+
 @end
 
 NS_ASSUME_NONNULL_END
