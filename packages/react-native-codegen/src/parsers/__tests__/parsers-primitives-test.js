@@ -375,11 +375,18 @@ describe('emitPromise', () => {
           typeAnnotation,
           parser,
           nullable,
+          // mock translateTypeAnnotation function
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          (_,elementType)=>elementType,
         );
         const expected = {
           type: 'NullableTypeAnnotation',
           typeAnnotation: {
             type: 'PromiseTypeAnnotation',
+            elementType:1,
           },
         };
 
@@ -394,9 +401,16 @@ describe('emitPromise', () => {
           typeAnnotation,
           parser,
           nullable,
+          // mock translateTypeAnnotation function
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          (_,elementType)=>elementType,
         );
         const expected = {
           type: 'PromiseTypeAnnotation',
+          elementType:1,
         };
 
         expect(result).toEqual(expected);

@@ -198,17 +198,24 @@ function emitPromise(
     parser,
   );
 
-  return wrapNullable(nullable, {
-    type: 'PromiseTypeAnnotation',
-    elementType: translateTypeAnnotation(
-      hasteModuleName,
-      typeAnnotation.typeParameters.params[0],
-      types,
-      aliasMap,
-      tryParse,
-      cxxOnly,
-    ),
-  });
+  const elementType = typeAnnotation.typeParameters.params[0];
+  if (elementType.type === 'ExistsTypeAnnotation') {
+    return wrapNullable(nullable, {
+      type: 'PromiseTypeAnnotation',
+    });
+  } else {
+    return wrapNullable(nullable, {
+      type: 'PromiseTypeAnnotation',
+      elementType: translateTypeAnnotation(
+        hasteModuleName,
+        typeAnnotation.typeParameters.params[0],
+        types,
+        aliasMap,
+        tryParse,
+        cxxOnly,
+      ),
+    });
+  }
 }
 
 function emitObject(
