@@ -380,13 +380,13 @@ describe('emitPromise', () => {
           undefined,
           undefined,
           undefined,
-          (_,elementType)=>elementType,
+          (_, elementType) => elementType,
         );
         const expected = {
           type: 'NullableTypeAnnotation',
           typeAnnotation: {
             type: 'PromiseTypeAnnotation',
-            elementType:1,
+            elementType: 1,
           },
         };
 
@@ -406,11 +406,11 @@ describe('emitPromise', () => {
           undefined,
           undefined,
           undefined,
-          (_,elementType)=>elementType,
+          (_, elementType) => elementType,
         );
         const expected = {
           type: 'PromiseTypeAnnotation',
-          elementType:1,
+          elementType: 1,
         };
 
         expect(result).toEqual(expected);
