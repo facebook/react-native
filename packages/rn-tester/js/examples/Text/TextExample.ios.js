@@ -722,14 +722,15 @@ exports.examples = [
         <View>
           <Text focusable={true}>
             This text is
-            <Text style={{fontWeight: 'bold'}}>not selectable</Text> yet{' '}
-            <Text style={{fontWeight: 'bold'}}>focusable</Text> with a visible
+            <Text style={{fontWeight: 'bold'}}> not selectable</Text> yet
+            <Text style={{fontWeight: 'bold'}}> focusable</Text> with a visible
             focus ring
           </Text>
           <Text selectable={true} focusable={true} style={{marginTop: 5}}>
             This text is <Text style={{fontWeight: 'bold'}}>selectable</Text>{' '}
-            and <Text style={{fontWeight: 'bold'}}>focusable</Text> with a
-            visible focus ring
+            and
+            <Text style={{fontWeight: 'bold'}}> focusable</Text> with a visible
+            focus ring
           </Text>
           <Text
             selectable={true}

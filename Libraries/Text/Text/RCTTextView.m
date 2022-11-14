@@ -527,7 +527,7 @@
   NSData *rtf = [attributedText dataFromRange:NSMakeRange(0, attributedText.length)
                            documentAttributes:@{NSDocumentTypeDocumentAttribute: NSRTFDTextDocumentType}
                                         error:nil];
-#if TARGET_OS_IPHONE // TODO(macOS GH#774)
+#if TARGET_OS_IPHONE // [TODO(macOS GH#774)
   NSMutableDictionary *item = [NSMutableDictionary new]; // TODO(macOS GH#774)
 
   if (rtf) {
@@ -538,13 +538,13 @@
 
   UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
   pasteboard.items = @[item];
-#elif TARGET_OS_OSX // TODO(macOS GH#774)
+#elif TARGET_OS_OSX
   [_textView copy:sender];
 
   NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
   [pasteboard clearContents];
-  [pasteboard writeObjects:[NSArray arrayWithObjects:attributedText.string, rtf, nil]];
-#endif // TODO(macOS GH#774)
+  [pasteboard setData:rtf forType:NSPasteboardTypeRTFD];
+#endif // ]TODO(macOS GH#774)
 }
 
 @end
