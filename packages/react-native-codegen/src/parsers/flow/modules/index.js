@@ -167,11 +167,16 @@ function translateTypeAnnotation(
     }
     case 'ObjectTypeAnnotation': {
       // if there is any indexer, then it is a dictionary
-      if (typeAnnotation.indexers && typeAnnotation.indexers.filter((member)=>member.type === 'ObjectTypeIndexer').length > 0) {
+      if (
+        typeAnnotation.indexers &&
+        typeAnnotation.indexers.filter(
+          member => member.type === 'ObjectTypeIndexer',
+        ).length > 0
+      ) {
         // no need to do further checking
         return typeAliasResolution(
           typeAliasResolutionStatus,
-          {type:'GenericObjectTypeAnnotation'},
+          {type: 'GenericObjectTypeAnnotation'},
           aliasMap,
           nullable,
         );

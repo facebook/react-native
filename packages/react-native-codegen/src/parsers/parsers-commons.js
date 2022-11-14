@@ -116,13 +116,9 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
 function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
   switch (language) {
     case 'Flow':
-      return (
-        property.type === 'ObjectTypeProperty'
-      );
+      return property.type === 'ObjectTypeProperty';
     case 'TypeScript':
-      return (
-        property.type === 'TSPropertySignature'
-      );
+      return property.type === 'TSPropertySignature';
     default:
       return false;
   }

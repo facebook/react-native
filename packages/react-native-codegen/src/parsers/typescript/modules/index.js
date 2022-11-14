@@ -185,11 +185,16 @@ function translateTypeAnnotation(
     }
     case 'TSTypeLiteral': {
       // if there is TSIndexSignature, then it is a dictionary
-      if (typeAnnotation.members && typeAnnotation.members.filter((member)=>member.type === 'TSIndexSignature').length > 0) {
+      if (
+        typeAnnotation.members &&
+        typeAnnotation.members.filter(
+          member => member.type === 'TSIndexSignature',
+        ).length > 0
+      ) {
         // no need to do further checking
         return typeAliasResolution(
           typeAliasResolutionStatus,
-          {type:'GenericObjectTypeAnnotation'},
+          {type: 'GenericObjectTypeAnnotation'},
           aliasMap,
           nullable,
         );
