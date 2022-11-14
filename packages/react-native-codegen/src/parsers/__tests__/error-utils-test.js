@@ -595,7 +595,7 @@ describe('throwIfModuleTypeIsUnsupported', () => {
 describe('throwIfMoreThanOneModuleInterfaceParserError', () => {
   it("don't throw error if module specs length is <= 1", () => {
     const nativeModuleName = 'moduleName';
-    const moduleSpecs = [];
+    const moduleSpecs: $ReadOnlyArray<$FlowFixMe> = [];
     const parserType = 'Flow';
 
     expect(() => {
