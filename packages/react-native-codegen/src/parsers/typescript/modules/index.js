@@ -15,7 +15,6 @@ import type {
   NativeModuleAliasMap,
   NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleFunctionTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleTypeAnnotation,
   NativeModuleSchema,
@@ -137,6 +136,16 @@ function translateArrayTypeAnnotation(
         tsElementType,
         tsArrayType,
         'FunctionTypeAnnotation',
+        language,
+      );
+    }
+
+    if (elementType.type === 'UnionTypeAnnotation') {
+      throw new UnsupportedArrayElementTypeAnnotationParserError(
+        hasteModuleName,
+        tsElementType,
+        tsArrayType,
+        'UnionTypeAnnotation',
         language,
       );
     }
@@ -315,15 +324,12 @@ function translateTypeAnnotation(
       );
     }
     case 'TSUnionType': {
-      if (cxxOnly) {
-        return emitUnionTypeAnnotation(
-          nullable,
-          hasteModuleName,
-          typeAnnotation,
-          language,
-        );
-      }
-      // Fallthrough
+      return emitUnionTypeAnnotation(
+        nullable,
+        hasteModuleName,
+        typeAnnotation,
+        language,
+      );
     }
     case 'TSUnknownKeyword': {
       if (cxxOnly) {

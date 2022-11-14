@@ -148,6 +148,20 @@ function translateFunctionParamToJavaType(
         default:
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
+    case 'UnionTypeAnnotation':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrapNullable('double', 'Double');
+        case 'ObjectTypeAnnotation':
+          imports.add('com.facebook.react.bridge.ReadableMap');
+          return wrapNullable('ReadableMap');
+        case 'StringTypeAnnotation':
+          return wrapNullable('String');
+        default:
+          throw new Error(
+            `Unsupported union member returning value, found: ${realTypeAnnotation.memberType}"`,
+          );
+      }
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.ReadableMap');
       return wrapNullable('ReadableMap');
@@ -162,10 +176,7 @@ function translateFunctionParamToJavaType(
       imports.add('com.facebook.react.bridge.Callback');
       return wrapNullable('Callback');
     default:
-      (realTypeAnnotation.type:
-        | 'EnumDeclaration'
-        | 'MixedTypeAnnotation'
-        | 'UnionTypeAnnotation');
+      (realTypeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -229,6 +240,20 @@ function translateFunctionReturnTypeToJavaType(
         default:
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
+    case 'UnionTypeAnnotation':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrapNullable('double', 'Double');
+        case 'ObjectTypeAnnotation':
+          imports.add('com.facebook.react.bridge.WritableMap');
+          return wrapNullable('WritableMap');
+        case 'StringTypeAnnotation':
+          return wrapNullable('String');
+        default:
+          throw new Error(
+            `Unsupported union member returning value, found: ${realTypeAnnotation.memberType}"`,
+          );
+      }
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableMap');
       return wrapNullable('WritableMap');
@@ -239,10 +264,7 @@ function translateFunctionReturnTypeToJavaType(
       imports.add('com.facebook.react.bridge.WritableArray');
       return wrapNullable('WritableArray');
     default:
-      (realTypeAnnotation.type:
-        | 'EnumDeclaration'
-        | 'MixedTypeAnnotation'
-        | 'UnionTypeAnnotation');
+      (realTypeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -294,6 +316,19 @@ function getFalsyReturnStatementFromReturnType(
         default:
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
+    case 'UnionTypeAnnotation':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return nullable ? 'return null;' : 'return 0;';
+        case 'ObjectTypeAnnotation':
+          return 'return null;';
+        case 'StringTypeAnnotation':
+          return nullable ? 'return null;' : 'return "";';
+        default:
+          throw new Error(
+            `Unsupported union member returning value, found: ${realTypeAnnotation.memberType}"`,
+          );
+      }
     case 'StringTypeAnnotation':
       return nullable ? 'return null;' : 'return "";';
     case 'ObjectTypeAnnotation':
@@ -303,10 +338,7 @@ function getFalsyReturnStatementFromReturnType(
     case 'ArrayTypeAnnotation':
       return 'return null;';
     default:
-      (realTypeAnnotation.type:
-        | 'EnumDeclaration'
-        | 'MixedTypeAnnotation'
-        | 'UnionTypeAnnotation');
+      (realTypeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
