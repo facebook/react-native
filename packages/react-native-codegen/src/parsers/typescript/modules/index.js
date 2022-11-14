@@ -192,12 +192,7 @@ function translateTypeAnnotation(
         ).length > 0
       ) {
         // no need to do further checking
-        return typeAliasResolution(
-          typeAliasResolutionStatus,
-          {type: 'GenericObjectTypeAnnotation'},
-          aliasMap,
-          nullable,
-        );
+        return emitObject(nullable);
       } else {
         const objectTypeAnnotation = {
           type: 'ObjectTypeAnnotation',
