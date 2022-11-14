@@ -15,7 +15,6 @@ import type {
   NativeModuleAliasMap,
   NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleFunctionTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleTypeAnnotation,
   NativeModuleSchema,
@@ -320,7 +319,7 @@ function translateTypeAnnotation(
           nullable,
           hasteModuleName,
           typeAnnotation,
-          language,
+          parser,
         );
       }
       // Fallthrough

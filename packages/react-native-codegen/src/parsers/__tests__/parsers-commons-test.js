@@ -29,8 +29,10 @@ const {
 
 import {MockedParser} from '../parserMock';
 import {TypeScriptParser} from '../typescript/parser';
+import {FlowParser} from '../flow/parser';
 
 const parser = new MockedParser();
+const flowParser = new FlowParser();
 const typeScriptParser = new TypeScriptParser();
 
 const flowTranslateTypeAnnotation = require('../flow/modules/index');
@@ -399,8 +401,6 @@ describe('emitUnionTypeAnnotation', () => {
   const hasteModuleName = 'SampleTurboModule';
 
   describe('when language is flow', () => {
-    const language: ParserType = 'Flow';
-
     describe('when members type is numeric', () => {
       const typeAnnotation = {
         type: 'UnionTypeAnnotation',
@@ -415,7 +415,7 @@ describe('emitUnionTypeAnnotation', () => {
             true,
             hasteModuleName,
             typeAnnotation,
-            language,
+            flowParser,
           );
 
           const expected = {
@@ -436,7 +436,7 @@ describe('emitUnionTypeAnnotation', () => {
             false,
             hasteModuleName,
             typeAnnotation,
-            language,
+            flowParser,
           );
 
           const expected = {
@@ -463,7 +463,7 @@ describe('emitUnionTypeAnnotation', () => {
             true,
             hasteModuleName,
             typeAnnotation,
-            language,
+            flowParser,
           );
 
           const expected = {
@@ -484,7 +484,7 @@ describe('emitUnionTypeAnnotation', () => {
             false,
             hasteModuleName,
             typeAnnotation,
-            language,
+            flowParser,
           );
 
           const expected = {
@@ -508,7 +508,7 @@ describe('emitUnionTypeAnnotation', () => {
             true,
             hasteModuleName,
             typeAnnotation,
-            language,
+            flowParser,
           );
 
           const expected = {
@@ -529,7 +529,7 @@ describe('emitUnionTypeAnnotation', () => {
             false,
             hasteModuleName,
             typeAnnotation,
-            language,
+            flowParser,
           );
 
           const expected = {
@@ -562,7 +562,7 @@ describe('emitUnionTypeAnnotation', () => {
             hasteModuleName,
             typeAnnotation,
             unionTypes,
-            language,
+            flowParser.language(),
           );
 
           expect(() => {
@@ -570,7 +570,7 @@ describe('emitUnionTypeAnnotation', () => {
               true,
               hasteModuleName,
               typeAnnotation,
-              language,
+              flowParser,
             );
           }).toThrow(expected);
         });
@@ -582,7 +582,7 @@ describe('emitUnionTypeAnnotation', () => {
             hasteModuleName,
             typeAnnotation,
             unionTypes,
-            language,
+            flowParser.language(),
           );
 
           expect(() => {
@@ -590,7 +590,7 @@ describe('emitUnionTypeAnnotation', () => {
               false,
               hasteModuleName,
               typeAnnotation,
-              language,
+              flowParser,
             );
           }).toThrow(expected);
         });
@@ -599,8 +599,6 @@ describe('emitUnionTypeAnnotation', () => {
   });
 
   describe('when language is typescript', () => {
-    const language: ParserType = 'TypeScript';
-
     describe('when members type is numeric', () => {
       const typeAnnotation = {
         type: 'TSUnionType',
@@ -621,7 +619,7 @@ describe('emitUnionTypeAnnotation', () => {
             true,
             hasteModuleName,
             typeAnnotation,
-            language,
+            typeScriptParser,
           );
 
           const expected = {
@@ -642,7 +640,7 @@ describe('emitUnionTypeAnnotation', () => {
             false,
             hasteModuleName,
             typeAnnotation,
-            language,
+            typeScriptParser,
           );
 
           const expected = {
@@ -675,7 +673,7 @@ describe('emitUnionTypeAnnotation', () => {
             true,
             hasteModuleName,
             typeAnnotation,
-            language,
+            typeScriptParser,
           );
 
           const expected = {
@@ -696,7 +694,7 @@ describe('emitUnionTypeAnnotation', () => {
             false,
             hasteModuleName,
             typeAnnotation,
-            language,
+            typeScriptParser,
           );
 
           const expected = {
@@ -727,7 +725,7 @@ describe('emitUnionTypeAnnotation', () => {
             true,
             hasteModuleName,
             typeAnnotation,
-            language,
+            typeScriptParser,
           );
 
           const expected = {
@@ -748,7 +746,7 @@ describe('emitUnionTypeAnnotation', () => {
             false,
             hasteModuleName,
             typeAnnotation,
-            language,
+            typeScriptParser,
           );
 
           const expected = {
@@ -789,7 +787,7 @@ describe('emitUnionTypeAnnotation', () => {
             hasteModuleName,
             typeAnnotation,
             unionTypes,
-            language,
+            typeScriptParser.language(),
           );
 
           expect(() => {
@@ -797,7 +795,7 @@ describe('emitUnionTypeAnnotation', () => {
               true,
               hasteModuleName,
               typeAnnotation,
-              language,
+              typeScriptParser,
             );
           }).toThrow(expected);
         });
@@ -809,7 +807,7 @@ describe('emitUnionTypeAnnotation', () => {
             hasteModuleName,
             typeAnnotation,
             unionTypes,
-            language,
+            typeScriptParser.language(),
           );
 
           expect(() => {
@@ -817,7 +815,7 @@ describe('emitUnionTypeAnnotation', () => {
               false,
               hasteModuleName,
               typeAnnotation,
-              language,
+              typeScriptParser,
             );
           }).toThrow(expected);
         });

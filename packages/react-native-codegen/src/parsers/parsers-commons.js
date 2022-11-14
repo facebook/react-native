@@ -20,7 +20,6 @@ import type {
   NativeModuleUnionTypeAnnotation,
   Nullable,
   SchemaType,
-  UnionTypeAnnotationMemberType,
 } from '../CodegenSchema.js';
 import type {ParserType} from './errors';
 import type {Parser} from './parser';
@@ -196,38 +195,14 @@ function parseObjectProperty(
   };
 }
 
-function remapUnionTypeAnnotationMemberNames(
-  types: $FlowFixMe,
-  language: ParserType,
-): UnionTypeAnnotationMemberType[] {
-  const remapLiteral = (item: $FlowFixMe) => {
-    if (language === 'Flow') {
-      return item.type
-        .replace('NumberLiteralTypeAnnotation', 'NumberTypeAnnotation')
-        .replace('StringLiteralTypeAnnotation', 'StringTypeAnnotation');
-    }
-
-    return item.literal
-      ? item.literal.type
-          .replace('NumericLiteral', 'NumberTypeAnnotation')
-          .replace('StringLiteral', 'StringTypeAnnotation')
-      : 'ObjectTypeAnnotation';
-  };
-
-  return types
-    .map(remapLiteral)
-    .filter((value, index, self) => self.indexOf(value) === index);
-}
-
 function emitUnionTypeAnnotation(
   nullable: boolean,
   hasteModuleName: string,
   typeAnnotation: $FlowFixMe,
-  language: ParserType,
+  parser: Parser,
 ): Nullable<NativeModuleUnionTypeAnnotation> {
-  const unionTypes = remapUnionTypeAnnotationMemberNames(
+  const unionTypes = parser.remapUnionTypeAnnotationMemberNames(
     typeAnnotation.types,
-    language,
   );
 
   // Only support unionTypes of the same kind
@@ -236,7 +211,7 @@ function emitUnionTypeAnnotation(
       hasteModuleName,
       typeAnnotation,
       unionTypes,
-      language,
+      parser.language(),
     );
   }
 

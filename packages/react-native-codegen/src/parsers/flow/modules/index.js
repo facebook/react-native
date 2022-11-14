@@ -314,7 +314,7 @@ function translateTypeAnnotation(
           nullable,
           hasteModuleName,
           typeAnnotation,
-          language,
+          parser,
         );
       }
       // Fallthrough
