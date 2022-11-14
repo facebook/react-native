@@ -8,6 +8,7 @@
 #import "RCTViewComponentView.h"
 
 #import <CoreGraphics/CoreGraphics.h>
+#import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 
 #import <React/RCTAssert.h>
