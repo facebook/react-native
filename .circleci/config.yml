@@ -55,8 +55,8 @@ references:
     hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v3-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
-    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v2-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v1-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v3-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v2-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}
     pods_cache_key: &pods_cache_key v8-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
@@ -303,8 +303,8 @@ commands:
                     exit 0
                   fi
 
-                  TARBALL_FILENAME=$(node ~/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>" --releaseVersion "*")
-                  TARBALL_PATH=$(ls $HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME)
+                  TARBALL_FILENAME=$(node ~/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>")
+                  TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
 
                   echo "Looking for $TARBALL_FILENAME in $HERMES_TARBALL_ARTIFACTS_DIR"
                   echo "$TARBALL_PATH"
@@ -852,7 +852,9 @@ jobs:
             - run:
                 name: Set HERMES_ENGINE_TARBALL_PATH
                 command: |
-                  echo "export HERMES_ENGINE_TARBALL_PATH=$(ls -AU $HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-*.tar.gz | head -1)" >> $BASH_ENV
+                  BUILD_TYPE="<< parameters.flavor >>"
+                  TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
+                  echo "export HERMES_ENGINE_TARBALL_PATH=$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME" >> $BASH_ENV
       - run:
           name: Create iOS template project
           command: |
@@ -1224,20 +1226,13 @@ jobs:
 
                   TARBALL_OUTPUT_DIR=$(mktemp -d /tmp/hermes-tarball-output-XXXXXXXX)
 
-                  # get_release_version() is defined in build-apple-framework.sh
-                  pushd ./sdks/hermes || exit 1
-                    BUILD_TYPE=$BUILD_TYPE source ./utils/build-apple-framework.sh
-                    RELEASE_VERSION=$(get_release_version)
-                  popd
-
-                  TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE" --releaseVersion "$RELEASE_VERSION")
+                  TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
 
                   echo "Packaging Hermes Apple frameworks for $BUILD_TYPE build type"
 
                   TARBALL_OUTPUT_PATH=$(node ./scripts/hermes/create-tarball.js \
                     --inputDir ./sdks/hermes \
                     --buildType "$BUILD_TYPE" \
-                    --releaseVersion "$RELEASE_VERSION" \
                     --outputDir $TARBALL_OUTPUT_DIR)
 
                   echo "Hermes tarball saved to $TARBALL_OUTPUT_PATH"
@@ -1406,8 +1401,8 @@ jobs:
             cp -r $HERMES_WS_DIR/win64-bin/* ./sdks/hermesc/win64-bin/.
             cp -r $HERMES_WS_DIR/linux64-bin/* ./sdks/hermesc/linux64-bin/.
             mkdir -p ./ReactAndroid/external-artifacts/artifacts/
-            cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-debug-*.tar.gz ./ReactAndroid/external-artifacts/artifacts/hermes-ios-debug.tar.gz
-            cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-release-*.tar.gz ./ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
+            cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz ./ReactAndroid/external-artifacts/artifacts/hermes-ios-debug.tar.gz
+            cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz ./ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
 
       - run_yarn
       - download_gradle_dependencies
