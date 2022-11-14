@@ -122,8 +122,7 @@ function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
       );
     case 'TypeScript':
       return (
-        property.type === 'TSPropertySignature' ||
-        property.type === 'TSIndexSignature'
+        property.type === 'TSPropertySignature'
       );
     default:
       return false;
@@ -160,8 +159,7 @@ function parseObjectProperty(
       : property.value;
 
   if (
-    property.type === 'ObjectTypeIndexer' ||
-    property.type === 'TSIndexSignature'
+    property.type === 'ObjectTypeIndexer'
   ) {
     return {
       name,

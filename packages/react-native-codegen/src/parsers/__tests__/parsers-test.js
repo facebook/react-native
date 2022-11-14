@@ -113,23 +113,6 @@ describe('TypeScriptParser', () => {
       });
     });
 
-    describe('when propertyOrIndex is TSIndexSignature', () => {
-      it('returns indexer name', () => {
-        const indexer = {
-          type: 'TSIndexSignature',
-          parameters: [
-            {
-              name: 'indexerName',
-            },
-          ],
-        };
-
-        const expected = 'indexerName';
-
-        expect(parser.getKeyName(indexer, hasteModuleName)).toEqual(expected);
-      });
-    });
-
     describe('when propertyOrIndex is not TSPropertySignature or TSIndexSignature', () => {
       it('throw UnsupportedObjectPropertyTypeAnnotationParserError', () => {
         const indexer = {

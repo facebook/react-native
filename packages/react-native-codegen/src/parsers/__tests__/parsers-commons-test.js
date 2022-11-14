@@ -261,18 +261,7 @@ describe('isObjectProperty', () => {
       expect(result).toEqual(true);
     });
 
-    it("returns 'true' if 'property.type' is 'TSIndexSignature'", () => {
-      const result = isObjectProperty(
-        {
-          type: 'TSIndexSignature',
-          ...propertyStub,
-        },
-        language,
-      );
-      expect(result).toEqual(true);
-    });
-
-    it("returns 'false' if 'property.type' is not 'TSPropertySignature' or 'TSIndexSignature'", () => {
+    it("returns 'false' if 'property.type' is not 'TSPropertySignature'", () => {
       const result = isObjectProperty(
         {
           type: 'notTSPropertySignature',
@@ -329,7 +318,7 @@ describe('parseObjectProperty', () => {
 
   describe("when 'language' is 'TypeScript'", () => {
     const language: ParserType = 'TypeScript';
-    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'TSPropertySignature' or 'TSIndexSignature'.", () => {
+    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'TSPropertySignature'.", () => {
       const property = {
         type: 'notTSPropertySignature',
         typeAnnotation: {
@@ -357,41 +346,6 @@ describe('parseObjectProperty', () => {
           parser,
         ),
       ).toThrow(expected);
-    });
-
-    it("returns a 'NativeModuleBaseTypeAnnotation' object with 'typeAnnotation.type' equal to 'GenericObjectTypeAnnotation', if 'property.type' is 'TSIndexSignature'.", () => {
-      const property = {
-        type: 'TSIndexSignature',
-        typeAnnotation: {
-          type: 'TSIndexSignature',
-          typeAnnotation: 'TSIndexSignature',
-        },
-        key: {
-          name: 'testKeyName',
-        },
-        value: 'wrongValue',
-        name: 'wrongName',
-        parameters: [{name: 'testName'}],
-      };
-      const result = parseObjectProperty(
-        property,
-        moduleName,
-        types,
-        aliasMap,
-        tryParse,
-        cxxOnly,
-        nullable,
-        typeScriptTranslateTypeAnnotation,
-        typeScriptParser,
-      );
-      const expected = {
-        name: 'testName',
-        optional: false,
-        typeAnnotation: wrapNullable(nullable, {
-          type: 'GenericObjectTypeAnnotation',
-        }),
-      };
-      expect(result).toEqual(expected);
     });
   });
 });

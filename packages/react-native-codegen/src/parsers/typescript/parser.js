@@ -25,8 +25,6 @@ class TypeScriptParser implements Parser {
     switch (propertyOrIndex.type) {
       case 'TSPropertySignature':
         return propertyOrIndex.key.name;
-      case 'TSIndexSignature':
-        return propertyOrIndex.parameters[0].name;
       default:
         throw new UnsupportedObjectPropertyTypeAnnotationParserError(
           hasteModuleName,
