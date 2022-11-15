@@ -193,38 +193,38 @@ function translateTypeAnnotation(
       ) {
         // no need to do further checking
         return emitObject(nullable);
-      } else {
-        const objectTypeAnnotation = {
-          type: 'ObjectTypeAnnotation',
-          // $FlowFixMe[missing-type-arg]
-          properties: (typeAnnotation.members: Array<$FlowFixMe>)
-            .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
-              property => {
-                return tryParse(() => {
-                  return parseObjectProperty(
-                    property,
-                    hasteModuleName,
-                    types,
-                    aliasMap,
-                    tryParse,
-                    cxxOnly,
-                    nullable,
-                    translateTypeAnnotation,
-                    parser,
-                  );
-                });
-              },
-            )
-            .filter(Boolean),
-        };
-
-        return typeAliasResolution(
-          typeAliasResolutionStatus,
-          objectTypeAnnotation,
-          aliasMap,
-          nullable,
-        );
       }
+
+      const objectTypeAnnotation = {
+        type: 'ObjectTypeAnnotation',
+        // $FlowFixMe[missing-type-arg]
+        properties: (typeAnnotation.members: Array<$FlowFixMe>)
+          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
+            property => {
+              return tryParse(() => {
+                return parseObjectProperty(
+                  property,
+                  hasteModuleName,
+                  types,
+                  aliasMap,
+                  tryParse,
+                  cxxOnly,
+                  nullable,
+                  translateTypeAnnotation,
+                  parser,
+                );
+              });
+            },
+          )
+          .filter(Boolean),
+      };
+
+      return typeAliasResolution(
+        typeAliasResolutionStatus,
+        objectTypeAnnotation,
+        aliasMap,
+        nullable,
+      );
     }
     case 'TSBooleanKeyword': {
       return emitBoolean(nullable);

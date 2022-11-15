@@ -21,18 +21,20 @@ const {
 class FlowParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
 
-  getKeyName(propertyOrIndex: $FlowFixMe, hasteModuleName: string): string {
-    switch (propertyOrIndex.type) {
-      case 'ObjectTypeProperty':
-        return propertyOrIndex.key.name;
-      default:
-        throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-          hasteModuleName,
-          propertyOrIndex,
-          propertyOrIndex.type,
-          this.language(),
-        );
+  isProperty(property: $FlowFixMe): boolean {
+    return property.type === 'ObjectTypeProperty';
+  }
+
+  getKeyName(property: $FlowFixMe, hasteModuleName: string): string {
+    if (!this.isProperty(property)) {
+      throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+        hasteModuleName,
+        property,
+        property.type,
+        this.language(),
+      );
     }
+    return property.key.name;
   }
 
   getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
