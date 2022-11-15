@@ -125,7 +125,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   // Setting the UIRefreshControl's frame breaks integration with ContentInset from the superview
   // if it is a UIScrollView. This integration happens when setting the UIScrollView's .refreshControl
   // property. For this reason, setting the frame manually should be avoided, if not needed.
-  if (_progressViewOffset > 0.f) {
+  if (_progressViewOffset != 0.f) {
     UIView *scrollView = self.superview;
     UIView *target = scrollView.superview;
     CGPoint rawOffset = CGPointMake(0, _progressViewOffset);
