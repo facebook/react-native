@@ -20,7 +20,7 @@ jni_instrumentation_test_lib(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
     ],
     soname = "libxplat-bridge.so",
     visibility = [

@@ -22,7 +22,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 #   ./../ == react
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
 
-LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
+LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture -std=c++17
 
 LOCAL_LDLIBS += -landroid
 
@@ -79,7 +79,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 #   ./../ == react
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
 
-LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
+LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture -std=c++17
 
 LOCAL_LDLIBS += -landroid
 
