@@ -33,6 +33,7 @@ const {
   parseObjectProperty,
   emitUnionTypeAnnotation,
   translateDefault,
+  translateFunctionTypeAnnotation,
 } = require('../../parsers-commons');
 const {
   emitBoolean,
@@ -49,7 +50,6 @@ const {
   emitStringish,
   emitMixedTypeAnnotation,
   typeAliasResolution,
-  translateFunctionTypeAnnotation,
 } = require('../../parsers-primitives');
 
 const {
