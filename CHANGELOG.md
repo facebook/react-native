@@ -4,7 +4,7 @@
 
 ### Fixed
 
-- Remove regression: unwanted @jest/create-cache-key-function dependency, inadvertedly added in 0.70.4 ([ef29c9b608](https://github.com/facebook/react-native/commit/ef29c9b608b567320d33c79d47b9e1fcd68d7e7d) by [@kelset](https://github.com/kelset))
+- Fixed regression: @jest/create-cache-key-function dependency was inadvertedly bumped to 29.x. We are bringing it back to 27.0.1. ([fb0e88beb9](https://github.com/facebook/react-native/commit/fb0e88beb9dc443abed3886e459e7a7715738adc) by [@kelset](https://github.com/kelset)) 
 
 ### Changed
 
