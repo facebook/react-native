@@ -8,12 +8,11 @@
 #include "PropsMapBuffer.h"
 #include "Props.h"
 
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#ifdef ANDROID
 
 namespace facebook {
 namespace react {
 
-#ifdef ANDROID
 void Props::propsDiffMapBuffer(
     Props const *oldPropsPtr,
     MapBufferBuilder &builder) const {
@@ -31,7 +30,7 @@ void Props::propsDiffMapBuffer(
     builder.putString(PROPS_NATIVE_ID, nativeId);
   }
 }
-#endif
 
 } // namespace react
 } // namespace facebook
+#endif
