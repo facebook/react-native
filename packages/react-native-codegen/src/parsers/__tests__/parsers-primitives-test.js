@@ -338,7 +338,10 @@ describe('typeAliasResolution', () => {
 describe('emitPromise', () => {
   const moduleName = 'testModuleName';
 
-  function emitPromiseForUnitTest(typeAnnotation: $FlowFixMe, nullable: boolean): $FlowFixMe {
+  function emitPromiseForUnitTest(
+    typeAnnotation: $FlowFixMe,
+    nullable: boolean,
+  ): $FlowFixMe {
     return emitPromise(
       moduleName,
       typeAnnotation,
@@ -357,7 +360,7 @@ describe('emitPromise', () => {
       false,
       /* the translateTypeAnnotation function */
       (_, elementType) => elementType,
-    )
+    );
   }
 
   describe("when typeAnnotation doesn't have exactly one typeParameter", () => {
@@ -372,12 +375,7 @@ describe('emitPromise', () => {
     };
     it('throws an IncorrectlyParameterizedGenericParserError error', () => {
       const nullable = false;
-      expect(() =>
-        emitPromiseForUnitTest(
-          typeAnnotation,
-          nullable,
-        ),
-      ).toThrow();
+      expect(() => emitPromiseForUnitTest(typeAnnotation, nullable)).toThrow();
     });
   });
 
@@ -395,10 +393,7 @@ describe('emitPromise', () => {
     describe('when nullable is true', () => {
       const nullable = true;
       it('returns nullable type annotation', () => {
-        const result = emitPromiseForUnitTest(
-          typeAnnotation,
-          nullable,
-        );
+        const result = emitPromiseForUnitTest(typeAnnotation, nullable);
         const expected = {
           type: 'NullableTypeAnnotation',
           typeAnnotation: {
@@ -413,10 +408,7 @@ describe('emitPromise', () => {
     describe('when nullable is false', () => {
       const nullable = false;
       it('returns non nullable type annotation', () => {
-        const result = emitPromiseForUnitTest(
-          typeAnnotation,
-          nullable,
-        );
+        const result = emitPromiseForUnitTest(typeAnnotation, nullable);
         const expected = {
           type: 'PromiseTypeAnnotation',
           elementType: 1,
