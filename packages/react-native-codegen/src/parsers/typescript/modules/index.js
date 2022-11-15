@@ -140,6 +140,18 @@ function translateArrayTypeAnnotation(
       );
     }
 
+    // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
+    // Right now they are partially treated as UnionTypeAnnotation
+    if (elementType.type === 'UnionTypeAnnotation') {
+      throw new UnsupportedArrayElementTypeAnnotationParserError(
+        hasteModuleName,
+        tsElementType,
+        tsArrayType,
+        'UnionTypeAnnotation',
+        language,
+      );
+    }
+
     const finalTypeAnnotation: NativeModuleArrayTypeAnnotation<
       Nullable<NativeModuleBaseTypeAnnotation>,
     > = {
@@ -314,15 +326,12 @@ function translateTypeAnnotation(
       );
     }
     case 'TSUnionType': {
-      if (cxxOnly) {
-        return emitUnionTypeAnnotation(
-          nullable,
-          hasteModuleName,
-          typeAnnotation,
-          parser,
-        );
-      }
-      // Fallthrough
+      return emitUnionTypeAnnotation(
+        nullable,
+        hasteModuleName,
+        typeAnnotation,
+        parser,
+      );
     }
     case 'TSUnknownKeyword': {
       if (cxxOnly) {
