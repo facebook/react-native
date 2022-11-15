@@ -37,7 +37,6 @@ const View: React.AbstractComponent<
       accessibilityLiveRegion,
       accessibilityRole,
       accessibilityState,
-      accessibilityUnit,
       accessibilityValue,
       'aria-busy': ariaBusy,
       'aria-checked': ariaChecked,

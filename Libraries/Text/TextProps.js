@@ -200,6 +200,7 @@ export type TextProps = $ReadOnly<{|
   /**
    * Android Only
    */
+  accessibilityUnit?: ?string,
 
   /**
    * Specifies the disabled state of the text view for testing purposes.
