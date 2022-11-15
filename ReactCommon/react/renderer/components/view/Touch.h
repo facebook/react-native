@@ -9,7 +9,7 @@
 
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
-#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/graphics/Point.h>
 
 namespace facebook {
 namespace react {
