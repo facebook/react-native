@@ -9,8 +9,6 @@
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 #import <MobileCoreServices/UTCoreTypes.h>
-#else
-#import <Quartz/Quartz.h> // TODO(macOS GH#774) for CATiledLayer
 #endif // TODO(macOS GH#774)
 
 #import <React/RCTAssert.h> // TODO(macOS GH#774)
@@ -20,7 +18,7 @@
 
 #import <React/RCTTextShadowView.h>
 
-#import <QuartzCore/QuartzCore.h> // TODO(macOS GH#774)
+#import <QuartzCore/QuartzCore.h>
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
 

@@ -7,7 +7,7 @@
 
 #import "RCTView.h"
 
-#import <QuartzCore/QuartzCore.h> // TODO(macOS GH#774) - import needed on macOS to prevent compiler error on invocation of CAShapeLayer further down
+#import <QuartzCore/QuartzCore.h>
 
 #import "RCTAutoInsetsProtocol.h"
 #import "RCTBorderDrawing.h"
