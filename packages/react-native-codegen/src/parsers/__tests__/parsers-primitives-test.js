@@ -338,6 +338,28 @@ describe('typeAliasResolution', () => {
 describe('emitPromise', () => {
   const moduleName = 'testModuleName';
 
+  function emitPromiseForUnitTest(typeAnnotation: $FlowFixMe, nullable: boolean): $FlowFixMe {
+    return emitPromise(
+      moduleName,
+      typeAnnotation,
+      parser,
+      nullable,
+      // mock translateTypeAnnotation function
+      /* types: TypeDeclarationMap */
+      {},
+      /* aliasMap: {...NativeModuleAliasMap} */
+      {},
+      /* tryParse: ParserErrorCapturer */
+      function <T>(_: () => T) {
+        return null;
+      },
+      /* cxxOnly: boolean */
+      false,
+      /* the translateTypeAnnotation function */
+      (_, elementType) => elementType,
+    )
+  }
+
   describe("when typeAnnotation doesn't have exactly one typeParameter", () => {
     const typeAnnotation = {
       typeParameters: {
@@ -351,19 +373,9 @@ describe('emitPromise', () => {
     it('throws an IncorrectlyParameterizedGenericParserError error', () => {
       const nullable = false;
       expect(() =>
-        emitPromise(
-          moduleName,
+        emitPromiseForUnitTest(
           typeAnnotation,
-          parser,
           nullable,
-          // mock translateTypeAnnotation function
-          {},
-          {},
-          function <T>(_: () => T) {
-            return null;
-          },
-          false,
-          (_, elementType) => elementType,
         ),
       ).toThrow();
     });
@@ -383,19 +395,9 @@ describe('emitPromise', () => {
     describe('when nullable is true', () => {
       const nullable = true;
       it('returns nullable type annotation', () => {
-        const result = emitPromise(
-          moduleName,
+        const result = emitPromiseForUnitTest(
           typeAnnotation,
-          parser,
           nullable,
-          // mock translateTypeAnnotation function
-          {},
-          {},
-          function <T>(_: () => T) {
-            return null;
-          },
-          false,
-          (_, elementType) => elementType,
         );
         const expected = {
           type: 'NullableTypeAnnotation',
@@ -411,19 +413,9 @@ describe('emitPromise', () => {
     describe('when nullable is false', () => {
       const nullable = false;
       it('returns non nullable type annotation', () => {
-        const result = emitPromise(
-          moduleName,
+        const result = emitPromiseForUnitTest(
           typeAnnotation,
-          parser,
           nullable,
-          // mock translateTypeAnnotation function
-          {},
-          {},
-          function <T>(_: () => T) {
-            return null;
-          },
-          false,
-          (_, elementType) => elementType,
         );
         const expected = {
           type: 'PromiseTypeAnnotation',
