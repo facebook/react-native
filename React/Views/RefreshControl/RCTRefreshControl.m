@@ -117,21 +117,22 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)_applyProgressViewOffset
 {
+  // Setting the UIRefreshControl's frame breaks integration with ContentInset from the superview
+  // if it is a UIScrollView. This integration happens when setting the UIScrollView's .refreshControl
+  // property. For this reason, setting the frame manually should be avoided, if not needed.
+  if (_progressViewOffset == 0.f) {
+    return;
+  }
+
   // progressViewOffset must be converted from the ScrollView parent's coordinate space to
   // the coordinate space of the RefreshControl. This ensures that the control respects any
   // offset in the view hierarchy, and that progressViewOffset is not inadvertently applied
   // multiple times.
-
-  // Setting the UIRefreshControl's frame breaks integration with ContentInset from the superview
-  // if it is a UIScrollView. This integration happens when setting the UIScrollView's .refreshControl
-  // property. For this reason, setting the frame manually should be avoided, if not needed.
-  if (_progressViewOffset != 0.f) {
-    UIView *scrollView = self.superview;
-    UIView *target = scrollView.superview;
-    CGPoint rawOffset = CGPointMake(0, _progressViewOffset);
-    CGPoint converted = [self convertPoint:rawOffset fromView:target];
-    self.frame = CGRectOffset(self.frame, 0, converted.y);
-  }
+  UIView *scrollView = self.superview;
+  UIView *target = scrollView.superview;
+  CGPoint rawOffset = CGPointMake(0, _progressViewOffset);
+  CGPoint converted = [self convertPoint:rawOffset fromView:target];
+  self.frame = CGRectOffset(self.frame, 0, converted.y);
 }
 
 - (NSString *)title
