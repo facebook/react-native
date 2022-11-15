@@ -318,12 +318,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
-  @ReactProp(name = ViewProps.ACCESSIBILITY_UNIT)
-  public void setAccessibilityUnit(@NonNull T view, @Nullable ReadableMap accessibilityUnit) {
-    // do nothing
-  }
-
   private void updateViewContentDescription(@NonNull T view) {
     final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
     final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);

@@ -6,7 +6,7 @@
  */
 
 package com.facebook.react.views.view
-import android.util.Log;
+
 import android.graphics.Color
 import android.graphics.Rect
 import androidx.core.view.ViewCompat
@@ -64,7 +64,6 @@ object ReactMapBufferPropSetter {
   private const val VP_POINTER_OVER_CAPTURE = 44
   private const val VP_BORDER_CURVES = 45 // iOS only
   private const val VP_FG_COLOR = 46 // iOS only?
-  private const val VP_ACCESSIBILITY_UNIT = 47
 
   // Yoga values
   private const val YG_BORDER_WIDTH = 100
@@ -108,7 +107,6 @@ object ReactMapBufferPropSetter {
   private const val UNDEF_COLOR = Int.MAX_VALUE
 
   fun setProps(view: ReactViewGroup, viewManager: ReactViewManager, props: MapBuffer) {
-    Log.w("TESTING::ReactMapBufferPropSetter", "props: " + ( props ));
     for (entry in props) {
       when (entry.key) {
         VP_ACCESSIBILITY_ACTIONS -> {
@@ -131,9 +129,6 @@ object ReactMapBufferPropSetter {
         }
         VP_ACCESSIBILITY_STATE -> {
           viewManager.accessibilityState(view, entry.mapBufferValue)
-        }
-        VP_ACCESSIBILITY_UNIT -> {
-          // viewManager.accessibilityUnit(view, entry.mapBufferValue)
         }
         VP_ACCESSIBILITY_VALUE -> {
           viewManager.accessibilityValue(view, entry.stringValue)
@@ -281,14 +276,6 @@ object ReactMapBufferPropSetter {
           else -> ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE
         }
     ViewCompat.setAccessibilityLiveRegion(this, mode)
-  }
-
-  private fun ReactViewManager.accessibilityUnit(view: ReactViewGroup, value: MapBuffer) {
-    Log.w("TESTING::ReactMapBufferPropSetter", "accessibilityUnit");
-    val accessibilityUnit = JavaOnlyMap()
-    accessibilityUnit.putString("hours", "10")
-
-    setAccessibilityUnit(view, accessibilityUnit)
   }
 
   private fun ReactViewManager.accessibilityState(view: ReactViewGroup, value: MapBuffer) {

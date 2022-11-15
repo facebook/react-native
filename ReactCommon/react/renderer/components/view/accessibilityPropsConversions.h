@@ -170,17 +170,6 @@ inline void fromRawValue(
   }
 }
 
-inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    AccessibilityUnit &result) {
-  auto map = (butter::map<std::string, RawValue>)value;
-  auto hours = map.find("hours");
-  if (hours != map.end()) {
-    fromRawValue(context, hours->second, result.hours);
-  }
-}
-
 inline std::string toString(
     const ImportantForAccessibility &importantForAccessibility) {
   switch (importantForAccessibility) {

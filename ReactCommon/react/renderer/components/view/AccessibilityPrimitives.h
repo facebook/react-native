@@ -88,22 +88,6 @@ constexpr bool operator!=(
   return !(rhs == lhs);
 }
 
-struct AccessibilityUnit {
-  std::optional<std::string> hours;
-};
-
-constexpr bool operator==(
-    AccessibilityUnit const &lhs,
-    AccessibilityUnit const &rhs) {
-  return lhs.hours == rhs.hours;
-}
-
-constexpr bool operator!=(
-    AccessibilityUnit const &lhs,
-    AccessibilityUnit const &rhs) {
-  return !(rhs == lhs);
-}
-
 struct AccessibilityLabelledBy {
   std::vector<std::string> value{};
 };

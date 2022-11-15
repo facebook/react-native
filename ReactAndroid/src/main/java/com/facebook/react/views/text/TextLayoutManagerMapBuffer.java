@@ -143,10 +143,22 @@ public class TextLayoutManagerMapBuffer {
         if (textAttributes.mIsAccessibilityLink) {
           ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
         }
-        if (textAttributes.mAccessibilityUnit != null && Build.VERSION.SDK_INT >= 21) {
+        if (textAttributes.mIsAccessibilityTtsSpan) {
+          // check that textAttributes.mAccessibilityRole == "time"
           ReactTtsSpan.Builder builder = new ReactTtsSpan.Builder(ReactTtsSpan.TYPE_TIME);
-          builder.setIntArgument(ReactTtsSpan.ARG_HOURS, 10);
-          builder.setIntArgument(ReactTtsSpan.ARG_MINUTES, 30);
+          if (textAttributes.mAccessibilityUnit != null) {
+            String[] time = textAttributes.mAccessibilityUnit.split(":");
+            if (time[0] != null && time[1] != null) {
+              try {
+                Integer hours = Integer.parseInt(time[0]);
+                Integer minutes = Integer.parseInt(time[1]);
+                builder.setIntArgument(ReactTtsSpan.ARG_HOURS, hours);
+                builder.setIntArgument(ReactTtsSpan.ARG_MINUTES, minutes);
+              } catch (Exception e) {
+                FLog.w(TAG, "TtsSpan with type Time failed to set hours and minutes. Error: " + e);
+              }
+            }
+          }
           ops.add(new SetSpanOperation(start, end, builder.build()));
         }
         if (textAttributes.mIsColorSet) {

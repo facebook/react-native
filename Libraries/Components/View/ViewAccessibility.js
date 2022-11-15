@@ -158,10 +158,6 @@ export type AccessibilityState = {
   ...
 };
 
-export type AccessibilityUnit = {
-  hours?: number,
-};
-
 export type AccessibilityValue = $ReadOnly<{|
   /**
    * The minimum value of this component's range. (should be an integer)

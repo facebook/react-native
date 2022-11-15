@@ -502,7 +502,7 @@ export type ViewProps = $ReadOnly<{|
    * Indicates to accessibility services that UI Component is in a specific State.
    */
   accessibilityState?: ?AccessibilityState,
-  accessibilityUnit?: ?AccessibilityUnit,
+  accessibilityUnit?: ?Stringish,
   accessibilityValue?: ?AccessibilityValue,
 
   /**

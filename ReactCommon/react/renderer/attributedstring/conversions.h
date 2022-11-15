@@ -1009,6 +1009,10 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "accessibilityRole", toString(*textAttributes.accessibilityRole));
   }
+  if (!textAttributes.accessibilityUnit.empty()) {
+    _textAttributes(
+        "accessibilityUnit", textAttributes.accessibilityUnit);
+  }
   return _textAttributes;
 }
 
@@ -1083,6 +1087,7 @@ constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 20;
 constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
 constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 22;
 constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 23;
+constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_UNIT = 47;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1228,6 +1233,10 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   if (textAttributes.accessibilityRole.has_value()) {
     builder.putString(
         TA_KEY_ACCESSIBILITY_ROLE, toString(*textAttributes.accessibilityRole));
+  }
+  if (!textAttributes.accessibilityUnit.empty()) {
+    builder.putString(
+        TA_KEY_ACCESSIBILITY_UNIT, textAttributes.accessibilityUnit);
   }
   return builder.build();
 }

@@ -98,6 +98,8 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   accessibilityRole = textAttributes.accessibilityRole.has_value()
       ? textAttributes.accessibilityRole
       : accessibilityRole;
+  accessibilityUnit = !textAttributes.accessibilityUnit.empty() ? textAttributes.accessibilityUnit
+                                                  : accessibilityUnit;
 }
 
 #pragma mark - Operators
@@ -122,6 +124,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              isHighlighted,
              layoutDirection,
              accessibilityRole,
+             accessibilityUnit,
              textTransform) ==
       std::tie(
              rhs.foregroundColor,
@@ -142,6 +145,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              rhs.isHighlighted,
              rhs.layoutDirection,
              rhs.accessibilityRole,
+             rhs.accessibilityUnit,
              rhs.textTransform) &&
       floatEquality(opacity, rhs.opacity) &&
       floatEquality(fontSize, rhs.fontSize) &&
@@ -209,6 +213,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem("isHighlighted", isHighlighted),
       debugStringConvertibleItem("layoutDirection", layoutDirection),
       debugStringConvertibleItem("accessibilityRole", accessibilityRole),
+      debugStringConvertibleItem("accessibilityUnit", accessibilityUnit),
   };
 }
 #endif
