@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.70.6
+
+### Fixed
+
+- Remove regression: unwanted @jest/create-cache-key-function dependency, inadvertedly added in 0.70.4 ([ef29c9b608](https://github.com/facebook/react-native/commit/ef29c9b608b567320d33c79d47b9e1fcd68d7e7d) by [@kelset](https://github.com/kelset))
+
+### Changed
+
+- Bump version of Promise from 8.0.3 to 8.3.0, enabling `Promise.allSettled` and `Promise.any` ([475310dbba](https://github.com/facebook/react-native/commit/475310dbbaec8048411edefc6cdddab330df7966) by [@retyui](https://github.com/retyui))
+- Bump CLI to 9.3.2 ([9bcc5e0373](https://github.com/facebook/react-native/commit/9bcc5e037391b45315dac3cb5f566e290cbf48cb) by [@kelset](https://github.com/kelset))
+
+#### iOS specific
+
+- Cleanup codegen build folder before installing the pods ([0e316ec671](https://github.com/facebook/react-native/commit/0e316ec671617f5e7c1985b4b05cd0d45bcea403) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.70.5
 
 ### Fixed
