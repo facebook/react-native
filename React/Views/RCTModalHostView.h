@@ -20,7 +20,7 @@
 
 @property (nonatomic, copy) NSString *animationType;
 @property (nonatomic, assign) UIModalPresentationStyle presentationStyle;
-@property (nonatomic, copy) NSArray<NSString *> *detents;
+@property (nonatomic, assign) id detents;
 @property (nonatomic, assign, getter=isTransparent) BOOL transparent;
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;

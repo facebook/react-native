@@ -45,11 +45,11 @@ type NativeProps = $ReadOnly<{|
   /**
    * The `detents` determines the height for modal,
    * based on the detents value.
-   * It can be a combination of `large`, `medium` or
-   * any number.
-   * for eg: ['140', 'medium', 'large']
+   * It can be a combination of `large`, `medium`
+   * for eg: ['medium', 'large']
    */
-  detents?: ?$ReadOnlyArray<string>,
+  detents?: WithDefault<$ReadOnlyArray<'medium' | 'large'>, 'large'>,
+
   /**
    * The `transparent` prop determines whether your modal will fill the
    * entire view.

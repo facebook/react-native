@@ -15,6 +15,7 @@
 
 @property (nonatomic, weak) id<RCTFabricModalHostViewControllerDelegate> delegate;
 
+@property (nonatomic, copy) NSArray *detents;
 @property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations;
 
 @end
