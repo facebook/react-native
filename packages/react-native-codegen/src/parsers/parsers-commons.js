@@ -40,7 +40,6 @@ const {
   MoreThanOneTypeParameterGenericParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
-  UnsupportedObjectPropertyTypeAnnotationParserError,
   UnnamedFunctionParamParserError,
 } = require('./errors');
 
