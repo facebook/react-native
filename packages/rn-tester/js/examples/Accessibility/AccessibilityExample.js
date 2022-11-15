@@ -414,7 +414,6 @@ class SwitchExample extends React.Component<
   _onSwitchToggle = () => {
     const switchState = !this.state.switchState;
 
-    console.log('switchState:', switchState);
     this.setState({
       switchState: switchState,
     });
@@ -422,12 +421,14 @@ class SwitchExample extends React.Component<
 
   render(): React.Node {
     return (
-      <Text
-        onPress={() => console.log('onPress')}
-        disabled
-        accessibilityState={{disabled: true}}>
-        This is a Switch example
-      </Text>
+      <TouchableOpacity
+        onPress={this._onSwitchToggle}
+        accessibilityLabel="element 12"
+        accessibilityRole="switch"
+        accessibilityState={{checked: this.state.switchState}}
+        accessible={true}>
+        <Text>Switch example</Text>
+      </TouchableOpacity>
     );
   }
 }

@@ -69,12 +69,4 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       return (C) this;
     }
   }
-  /*
-  public static class TimeBuilder extends SemioticClassBuilder<TimeBuilder> {
-
-    public TimeBuilder() {
-      super(TtsSpan.TYPE_TIME);
-    }
-  }
-  */
 }

@@ -27,7 +27,6 @@ import type {
   AccessibilityRole,
   AccessibilityState,
   AccessibilityValue,
-  AccessibilityUnit,
   Role,
 } from './ViewAccessibility';
 import type {Node} from 'react';
