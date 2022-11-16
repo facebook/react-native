@@ -267,6 +267,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTDevLoadingViewProtocol.h": RCTDEVSUPPORT_PATH + "RCTDevLoadingViewProtocol.h",
     "React/RCTDevLoadingViewSetEnabled.h": RCTDEVSUPPORT_PATH + "RCTDevLoadingViewSetEnabled.h",
     "React/RCTDisplayLink.h": RCTBASE_PATH + "RCTDisplayLink.h",
+    "React/RCTDynamicTypeRamp.h": RCTLIB_PATH + "Text/Text/RCTDynamicTypeRamp.h",
     "React/RCTErrorCustomizer.h": RCTBASE_PATH + "RCTErrorCustomizer.h",
     "React/RCTErrorInfo.h": RCTBASE_PATH + "RCTErrorInfo.h",
     # NOTE: RCTEventDispatcher.h is exported from CoreModules:CoreModulesApple
