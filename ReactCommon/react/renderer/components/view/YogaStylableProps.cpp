@@ -28,7 +28,11 @@ YogaStylableProps::YogaStylableProps(
       yogaStyle(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.yogaStyle
-              : convertRawProp(context, rawProps, sourceProps.yogaStyle)){};
+              : convertRawProp(context, rawProps, sourceProps.yogaStyle)) {
+  if (!CoreFeatures::enablePropIteratorSetter) {
+    convertRawPropAliases(context, sourceProps, rawProps);
+  }
+};
 
 template <typename T>
 static inline T const getFieldValue(
@@ -128,6 +132,32 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_YG_EDGES(margin, "margin", "");
     REBUILD_FIELD_YG_EDGES(padding, "padding", "");
     REBUILD_FIELD_YG_EDGES(border, "border", "Width");
+
+    // Aliases
+    RAW_SET_PROP_SWITCH_CASE(
+        marginInline, "marginInline", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        marginInlineStart, "marginInlineStart", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        marginInlineEnd, "marginInlineEnd", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        marginBlock, "marginBlock", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        marginBlockStart, "marginBlockStart", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        marginBlockEnd, "marginBlockEnd", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        paddingInline, "paddingInline", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        paddingInlineStart, "paddingInlineStart", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        paddingInlineEnd, "paddingInlineEnd", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        paddingBlock, "paddingBlock", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        paddingBlockStart, "paddingBlockStart", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        paddingBlockEnd, "paddingBlockEnd", CompactValue::ofUndefined());
   }
 }
 
@@ -210,5 +240,84 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
   };
 }
 #endif
+
+void YogaStylableProps::convertRawPropAliases(
+    const PropsParserContext &context,
+    YogaStylableProps const &sourceProps,
+    RawProps const &rawProps) {
+  marginInline = convertRawProp(
+      context,
+      rawProps,
+      "marginInline",
+      sourceProps.marginInline,
+      CompactValue::ofUndefined());
+  marginInlineStart = convertRawProp(
+      context,
+      rawProps,
+      "marginInlineStart",
+      sourceProps.marginInlineStart,
+      CompactValue::ofUndefined());
+  marginInlineEnd = convertRawProp(
+      context,
+      rawProps,
+      "marginInlineEnd",
+      sourceProps.marginInlineEnd,
+      CompactValue::ofUndefined());
+  marginBlock = convertRawProp(
+      context,
+      rawProps,
+      "marginBlock",
+      sourceProps.marginBlock,
+      CompactValue::ofUndefined());
+  marginBlockStart = convertRawProp(
+      context,
+      rawProps,
+      "marginBlockStart",
+      sourceProps.marginBlockStart,
+      CompactValue::ofUndefined());
+  marginBlockEnd = convertRawProp(
+      context,
+      rawProps,
+      "marginBlockEnd",
+      sourceProps.marginBlockEnd,
+      CompactValue::ofUndefined());
+
+  paddingInline = convertRawProp(
+      context,
+      rawProps,
+      "paddingInline",
+      sourceProps.paddingInline,
+      CompactValue::ofUndefined());
+  paddingInlineStart = convertRawProp(
+      context,
+      rawProps,
+      "paddingInlineStart",
+      sourceProps.paddingInlineStart,
+      CompactValue::ofUndefined());
+  paddingInlineEnd = convertRawProp(
+      context,
+      rawProps,
+      "paddingInlineEnd",
+      sourceProps.paddingInlineEnd,
+      CompactValue::ofUndefined());
+  paddingBlock = convertRawProp(
+      context,
+      rawProps,
+      "paddingBlock",
+      sourceProps.paddingBlock,
+      CompactValue::ofUndefined());
+  paddingBlockStart = convertRawProp(
+      context,
+      rawProps,
+      "paddingBlockStart",
+      sourceProps.paddingBlockStart,
+      CompactValue::ofUndefined());
+  paddingBlockEnd = convertRawProp(
+      context,
+      rawProps,
+      "paddingBlockEnd",
+      sourceProps.paddingBlockEnd,
+      CompactValue::ofUndefined());
+}
 
 } // namespace facebook::react

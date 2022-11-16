@@ -17,6 +17,8 @@ namespace facebook {
 namespace react {
 
 class YogaStylableProps : public Props {
+  using CompactValue = facebook::yoga::detail::CompactValue;
+
  public:
   YogaStylableProps() = default;
   YogaStylableProps(
@@ -37,8 +39,28 @@ class YogaStylableProps : public Props {
 #endif
 
 #pragma mark - Props
-
   YGStyle yogaStyle{};
+
+  // Duplicates of existing properties with different names, taking
+  // precendence. E.g. "marginBlock" instead of "marginVertical"
+  CompactValue marginInline;
+  CompactValue marginInlineStart;
+  CompactValue marginInlineEnd;
+  CompactValue marginBlock;
+
+  CompactValue paddingInline;
+  CompactValue paddingInlineStart;
+  CompactValue paddingInlineEnd;
+  CompactValue paddingBlock;
+
+  // BlockEnd/BlockStart map to top/bottom (no writing mode), but we preserve
+  // Yoga's precedence and prefer specific edges (e.g. top) to ones which are
+  // flow relative (e.g. blockStart).
+  CompactValue marginBlockStart;
+  CompactValue marginBlockEnd;
+
+  CompactValue paddingBlockStart;
+  CompactValue paddingBlockEnd;
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
@@ -47,6 +69,12 @@ class YogaStylableProps : public Props {
   SharedDebugStringConvertibleList getDebugProps() const override;
 
 #endif
+
+ private:
+  void convertRawPropAliases(
+      const PropsParserContext &context,
+      YogaStylableProps const &sourceProps,
+      RawProps const &rawProps);
 };
 
 } // namespace react
