@@ -184,14 +184,16 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   marginBlock?: DimensionValue,
 
-  /** `marginBlockEnd` works like `margin-bottom` in CSS.
-   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-block
+  /** `marginBlockEnd` works like `margin-block-end`in CSS. Because React
+   *  Native doesn not support `writing-mode` this is always mapped to
+   *  `margin-bottom`. See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-block-end
    *  for more details.
    */
   marginBlockEnd?: DimensionValue,
 
-  /** `marginBlockStart` works like `margin-top` in CSS.
-   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-block-end
+  /** `marginBlockEnd` works like `margin-block-end`in CSS. Because React
+   *  Native doesn not support `writing-mode` this is always mapped to
+   *  `margin-top`. See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-block-end
    *  for more details.
    */
   marginBlockStart?: DimensionValue,
