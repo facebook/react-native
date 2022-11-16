@@ -129,7 +129,7 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
-- (facebook::react::SharedProps)props
+- (facebook::react::Props::Shared)props
 {
   RCTAssert(NO, @"props access should be implemented by RCTViewComponentView.");
   return nullptr;
