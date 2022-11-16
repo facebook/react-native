@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "invariant": "^2.2.4",
+    "flow-enums-runtime": "^0.0.5",
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
@@ -29,6 +30,8 @@
   },
   "devDependencies": {
     "connect": "^3.6.5",
+    "babel-plugin-transform-flow-enums":"^0.0.1",
+    "jscodeshift": "^0.13.1",
     "ws": "^6.2.2"
   },
   "codegenConfig": {
