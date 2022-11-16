@@ -934,7 +934,7 @@
 - Rename deprecated `Keyboard.removeEventListener` to `Keyboard.removeListener`. ([8880c09076](https://github.com/facebook/react-native/commit/8880c09076e4727768ace26a74766cbe6f64021c) by [@yungsters](https://github.com/yungsters))
 - Update `Modal`'s mock to not render its children when it is not visible ([ec614c16b3](https://github.com/facebook/react-native/commit/ec614c16b331bf3f793fda5780fa273d181a8492) by [@AntoineDoubovetzky](https://github.com/AntoineDoubovetzky))
 - Upgraded `react-devtools-core` dependency to 4.19.1 ([356236471a](https://github.com/facebook/react-native/commit/356236471abc6b5b8c139223e15388fd1eecd2d1) by [@jstejada](https://github.com/jstejada))
-- React-native/normalize-color now supports Node.js ([65e58f26e1](https://github.com/facebook/react-native/commit/65e58f26e1fbd06b1ae32e2ab3a2616c8eef08e0) by [@yungsters](https://github.com/yungsters))
+- React-native/normalize-colors now supports Node.js ([65e58f26e1](https://github.com/facebook/react-native/commit/65e58f26e1fbd06b1ae32e2ab3a2616c8eef08e0) by [@yungsters](https://github.com/yungsters))
 - Updated to Contributor Covenant v2.1 ([19f8d2f7da](https://github.com/facebook/react-native/commit/19f8d2f7da13f4524f31acf7aa10cc0aa91b5da4))
 
 
