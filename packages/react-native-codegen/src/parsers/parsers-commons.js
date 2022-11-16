@@ -11,6 +11,7 @@
 'use strict';
 
 import type {
+  Nullable,
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
@@ -19,19 +20,22 @@ import type {
   NativeModuleTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
+  NativeModulePropertyShape,
   NativeModuleUnionTypeAnnotation,
-  Nullable,
   SchemaType,
 } from '../CodegenSchema.js';
-import type {ParserType} from './errors';
+
 import type {Parser} from './parser';
+import type {ParserType} from './errors';
 import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
 
 const {
   throwIfPropertyValueTypeIsUnsupported,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
+  throwIfModuleTypeIsUnsupported,
 } = require('./error-utils');
+
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
@@ -402,6 +406,62 @@ function translateFunctionTypeAnnotation(
   };
 }
 
+function buildPropertySchema(
+  hasteModuleName: string,
+  // TODO(T108222691): [TS] Use flow-types for @babel/parser
+  // TODO(T71778680): [Flow] This is an ObjectTypeProperty containing either:
+  // - a FunctionTypeAnnotation or GenericTypeAnnotation
+  // - a NullableTypeAnnoation containing a FunctionTypeAnnotation or GenericTypeAnnotation
+  // Flow type this node
+  property: $FlowFixMe,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  language: ParserType,
+  resolveTypeAnnotation: $FlowFixMe,
+  translateTypeAnnotation: $FlowFixMe,
+): NativeModulePropertyShape {
+  let nullable: boolean = false;
+  let {key, value} = property;
+  const methodName: string = key.name;
+
+  if (language === 'TypeScript') {
+    value =
+      property.type === 'TSMethodSignature'
+        ? property
+        : property.typeAnnotation;
+  }
+
+  ({nullable, typeAnnotation: value} = resolveTypeAnnotation(value, types));
+
+  throwIfModuleTypeIsUnsupported(
+    hasteModuleName,
+    property.value,
+    key.name,
+    value.type,
+    language,
+  );
+
+  return {
+    name: methodName,
+    optional: Boolean(property.optional),
+    typeAnnotation: wrapNullable(
+      nullable,
+      translateFunctionTypeAnnotation(
+        hasteModuleName,
+        value,
+        types,
+        aliasMap,
+        tryParse,
+        cxxOnly,
+        translateTypeAnnotation,
+        language,
+      ),
+    ),
+  };
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -412,4 +472,5 @@ module.exports = {
   emitUnionTypeAnnotation,
   translateDefault,
   translateFunctionTypeAnnotation,
+  buildPropertySchema,
 };
