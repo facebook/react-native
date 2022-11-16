@@ -9,6 +9,7 @@
 
 #import <React/RCTLog.h>
 #import <React/RCTSurface.h>
+#import <React/RCTSurfaceHostingView.h>
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 
@@ -32,6 +33,21 @@
   _rootViewController.view.backgroundColor = [UIColor clearColor];
   _rootViewController.modalPresentationStyle = UIModalPresentationFullScreen;
   self.rootViewController = _rootViewController;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  if (self = [super initWithFrame:frame]) {
+    id<RCTSurfaceProtocol> surface = [surfacePresenter createFabricSurfaceForModuleName:@"LogBox"
+                                                                      initialProperties:@{}];
+    [surface start];
+    RCTSurfaceHostingView *rootView = [[RCTSurfaceHostingView alloc]
+        initWithSurface:surface
+        sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
+
+    [self createRootViewController:rootView];
+  }
+  return self;
 }
 
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge
@@ -79,6 +95,26 @@
 
 @implementation RCTLogBoxView {
   RCTSurface *_surface;
+}
+
+- (instancetype)initWithSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  NSRect bounds = NSMakeRect(0, 0, 600, 800);
+  if ((self = [self initWithContentRect:bounds
+                                styleMask:NSWindowStyleMaskTitled
+                                  backing:NSBackingStoreBuffered
+                                    defer:YES])) {
+    id<RCTSurfaceProtocol> surface = [surfacePresenter createFabricSurfaceForModuleName:@"LogBox"
+                                                                        initialProperties:@{}];
+    [surface start];
+    RCTSurfaceHostingView *rootView = [[RCTSurfaceHostingView alloc]
+        initWithSurface:surface
+        sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];    
+      
+    self.contentView = rootView;
+    self.contentView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+  }
+  return self;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge

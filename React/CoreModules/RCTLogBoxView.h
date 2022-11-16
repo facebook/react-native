@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTBridge.h>
+#import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
@@ -17,6 +18,8 @@
 
 - (void)createRootViewController:(UIView *)view;
 
+- (instancetype)initWithFrame:(CGRect)frame surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
+
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge;
 
 - (void)show;
@@ -26,6 +29,8 @@
 #else // [TODO(macOS GH#774)
 
 @interface RCTLogBoxView : NSWindow // TODO(macOS GH#774)
+
+- (instancetype)initWithSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 

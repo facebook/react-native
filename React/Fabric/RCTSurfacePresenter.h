@@ -56,6 +56,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) RCTMountingManager *mountingManager;
 @property (readonly, nullable) RCTScheduler *scheduler;
 
+/*
+ * Allow callers to initialize a new fabric surface without adding Fabric as a Buck dependency.
+ */
+- (id<RCTSurfaceProtocol>)createFabricSurfaceForModuleName:(NSString *)moduleName
+                                         initialProperties:(NSDictionary *)initialProperties;
+
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
