@@ -10,7 +10,9 @@ package com.facebook.react.views.text;
 import android.os.Parcel;
 import android.os.PersistableBundle;
 import android.text.style.TtsSpan;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import java.util.Currency;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -29,7 +31,9 @@ import javax.annotation.Nullable;
  * TtsSpan type.
  */
 public class ReactTtsSpan extends TtsSpan implements ReactSpan {
-  private static final String TAG = TextLayoutManagerMapBuffer.class.getSimpleName();
+  private static final String TAG = ReactTtsSpan.class.getSimpleName();
+  // For additional logging change the below variable to true
+  public static final boolean DEBUG_MODE = true;
 
   // supported TYPES in react-native
   public static Set<String> SUPPORTED_UNIT_TYPES =
@@ -65,26 +69,61 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
 
     public Builder(AccessibilityRole type, @Nullable String accessibilityUnit) {
       String typeConvertedToString = AccessibilityRole.getValue(type);
+      mType = typeConvertedToString;
+      String roleClassName = AccessibilityRole.getValue(type);
       try {
-        if (typeConvertedToString == ReactTtsSpan.TYPE_TIME && accessibilityUnit != null) {
+        if (roleClassName == ReactTtsSpan.TYPE_TIME) {
           String[] time = accessibilityUnit.split(":");
           if (time[0] != null && time[1] != null) {
             Integer hours = Integer.parseInt(time[0]);
             Integer minutes = Integer.parseInt(time[1]);
             setIntArgument(ReactTtsSpan.ARG_HOURS, hours);
             setIntArgument(ReactTtsSpan.ARG_MINUTES, minutes);
+          } else if (DEBUG_MODE) {
+            FLog.w(
+                TAG,
+                "Failed to retrieve hours and minutes from accessibilityUnit: "
+                    + accessibilityUnit
+                    + ". Make sure the format is HH:MM");
           }
         }
       } catch (Exception e) {
-        // in reactnative we usually trigger an error in metro on Debug
+        // in reactnative we trigger an error in metro on Debug
         // (for ex. accessibilityHours should be a number and not a string)
         // accessibilityUnit uses a String type, there is no strict check on the type
         // will be improved in the future upcoming PRs
-        // for ex accessibilityHours should be a number, accessibilityCurrency would be
-        // "USD" or "EUR" https://bit.ly/3UG96lP
-        FLog.w(TAG, "TtsSpan with type Time failed to set hours and minutes. Error: " + e);
+        // multiple props could be added for different properties
+        // accessibilityHours number, accessibilityCurrency "USD" or "EUR" ISO 4217
+        // accessibilityAmount number https://bit.ly/3UG96lP
+        FLog.e(
+            TAG,
+            "Failed to create ReactTtsSpan.Builder with params type: "
+                + type
+                + " and accessibilityUnit: "
+                + accessibilityUnit
+                + "with Error: "
+                + e);
       }
-      mType = typeConvertedToString;
+      if (roleClassName == ReactTtsSpan.TYPE_MONEY) {
+        try {
+          String[] amount = accessibilityUnit.split(",");
+          if (amount[0] != null && amount[1] != null) {
+            setStringArgument(ReactTtsSpan.ARG_INTEGER_PART, amount[0]);
+            String currency = amount[1].trim();
+            Currency.getInstance(currency);
+            setStringArgument(ReactTtsSpan.ARG_CURRENCY, currency);
+          }
+        } catch (Exception e) {
+          FLog.e(
+              TAG,
+              "Failed to retrieve the currency from the accessibilityUnit: "
+                  + accessibilityUnit
+                  + ". The accessibilityUnit format may not be compatible"
+                  + " with the format supported ISO 4217 (for example '1, USD')."
+                  + "Error: "
+                  + e);
+        }
+      }
     }
 
     public ReactTtsSpan build() {
@@ -93,6 +132,11 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
 
     public C setIntArgument(String arg, int value) {
       mArgs.putInt(arg, value);
+      return (C) this;
+    }
+
+    public C setStringArgument(String arg, String value) {
+      mArgs.putString(arg, value);
       return (C) this;
     }
   }
