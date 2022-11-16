@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <butter/optional.h>
 #include <cinttypes>
+#include <optional>
 #include <string>
 
 namespace facebook {
@@ -50,7 +50,7 @@ constexpr enum AccessibilityTraits operator&(
 
 struct AccessibilityAction {
   std::string name{""};
-  butter::optional<std::string> label{};
+  std::optional<std::string> label{};
 };
 
 struct AccessibilityState {
@@ -76,10 +76,10 @@ constexpr bool operator!=(
 }
 
 struct AccessibilityValue {
-  butter::optional<int> min;
-  butter::optional<int> max;
-  butter::optional<int> now;
-  butter::optional<std::string> text{};
+  std::optional<int> min;
+  std::optional<int> max;
+  std::optional<int> now;
+  std::optional<std::string> text{};
 };
 
 constexpr bool operator==(

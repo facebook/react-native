@@ -8,8 +8,8 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <optional>
 
-#include <butter/optional.h>
 #include <folly/container/EvictingCacheMap.h>
 
 namespace facebook {
@@ -48,7 +48,7 @@ class SimpleThreadSafeCache {
    * If the value wasn't found in the cache, returns empty optional.
    * Can be called from any thread.
    */
-  butter::optional<ValueT> get(const KeyT &key) const {
+  std::optional<ValueT> get(const KeyT &key) const {
     std::lock_guard<std::mutex> lock(mutex_);
     auto iterator = map_.find(key);
     if (iterator == map_.end()) {

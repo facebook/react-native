@@ -11,6 +11,8 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
+#include <optional>
+
 namespace facebook {
 namespace react {
 

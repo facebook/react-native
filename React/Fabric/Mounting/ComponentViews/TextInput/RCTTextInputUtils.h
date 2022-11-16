@@ -7,8 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import <React/RCTBackedTextInputViewProtocol.h>
-#import <butter/optional.h>
 #import <react/renderer/components/iostextinput/primitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,7 +18,7 @@ void RCTCopyBackedTextInput(
     UIView<RCTBackedTextInputViewProtocol> *fromTextInput,
     UIView<RCTBackedTextInputViewProtocol> *toTextInput);
 
-UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(facebook::butter::optional<bool> autoCorrect);
+UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(std::optional<bool> autoCorrect);
 
 UITextAutocapitalizationType RCTUITextAutocapitalizationTypeFromAutocapitalizationType(
     facebook::react::AutocapitalizationType autocapitalizationType);
@@ -25,7 +26,7 @@ UITextAutocapitalizationType RCTUITextAutocapitalizationTypeFromAutocapitalizati
 UIKeyboardAppearance RCTUIKeyboardAppearanceFromKeyboardAppearance(
     facebook::react::KeyboardAppearance keyboardAppearance);
 
-UITextSpellCheckingType RCTUITextSpellCheckingTypeFromOptionalBool(facebook::butter::optional<bool> spellCheck);
+UITextSpellCheckingType RCTUITextSpellCheckingTypeFromOptionalBool(std::optional<bool> spellCheck);
 
 UITextFieldViewMode RCTUITextFieldViewModeFromTextInputAccessoryVisibilityMode(
     facebook::react::TextInputAccessoryVisibilityMode mode);

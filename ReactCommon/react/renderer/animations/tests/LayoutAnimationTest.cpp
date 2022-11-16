@@ -273,7 +273,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
       auto transaction =
           animationDriver->pullTransaction(surfaceId, 0, telemetry, {});
       // We have something to validate.
-      if (transaction.hasValue()) {
+      if (transaction.has_value()) {
         auto mutations = transaction->getMutations();
 
         // Mutating the view tree.

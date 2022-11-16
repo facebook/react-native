@@ -173,7 +173,7 @@ bool LayoutAnimationKeyFrameManager::shouldOverridePullTransaction() const {
   return shouldAnimateFrame();
 }
 
-butter::optional<MountingTransaction>
+std::optional<MountingTransaction>
 LayoutAnimationKeyFrameManager::pullTransaction(
     SurfaceId surfaceId,
     MountingTransaction::Number transactionNumber,
@@ -251,7 +251,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         surfaceId, mutations, conflictingAnimations);
 
     // Are we animating this list of mutations?
-    butter::optional<LayoutAnimation> currentAnimation{};
+    std::optional<LayoutAnimation> currentAnimation{};
     {
       std::lock_guard<std::mutex> lock(currentAnimationMutex_);
       if (currentAnimation_) {
@@ -260,7 +260,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       }
     }
 
-    if (currentAnimation.hasValue()) {
+    if (currentAnimation.has_value()) {
       LayoutAnimation animation = std::move(currentAnimation).value();
       animation.surfaceId = surfaceId;
       animation.startTime = now;
@@ -321,7 +321,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           continue;
         }
 
-        butter::optional<ShadowViewMutation> executeMutationImmediately{};
+        std::optional<ShadowViewMutation> executeMutationImmediately{};
 
         bool isRemoveReinserted =
             mutation.type == ShadowViewMutation::Type::Remove &&
@@ -703,7 +703,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           keyFramesToAnimate.push_back(keyFrame);
         }
 
-        if (executeMutationImmediately.hasValue()) {
+        if (executeMutationImmediately.has_value()) {
           PrintMutationInstruction(
               "Queue Up For Immediate Execution", *executeMutationImmediately);
           immediateMutations.push_back(*executeMutationImmediately);
@@ -1064,7 +1064,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
 void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
     LayoutAnimation layoutAnimation) const {
-  currentAnimation_ = butter::optional<LayoutAnimation>{layoutAnimation};
+  currentAnimation_ = std::optional<LayoutAnimation>{layoutAnimation};
 }
 
 void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(

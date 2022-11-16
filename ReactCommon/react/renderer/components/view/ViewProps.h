@@ -17,6 +17,8 @@
 #include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/Transform.h>
 
+#include <optional>
+
 namespace facebook {
 namespace react {
 
@@ -54,7 +56,7 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   Transform transform{};
   BackfaceVisibility backfaceVisibility{};
   bool shouldRasterize{};
-  butter::optional<int> zIndex{};
+  std::optional<int> zIndex{};
 
   // Events
   PointerEventsMode pointerEvents{};

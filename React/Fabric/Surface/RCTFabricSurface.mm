@@ -34,7 +34,7 @@ using namespace facebook::react;
   // `SurfaceHandler` is a thread-safe object, so we don't need additional synchronization.
   // Objective-C++ classes cannot have instance variables without default constructors,
   // hence we wrap a value into `optional` to workaround it.
-  butter::optional<SurfaceHandler> _surfaceHandler;
+  std::optional<SurfaceHandler> _surfaceHandler;
 
   // Protects Surface's start and stop processes.
   // Even though SurfaceHandler is tread-safe, it will crash if we try to stop a surface that is not running.

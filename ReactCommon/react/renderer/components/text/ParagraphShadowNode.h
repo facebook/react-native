@@ -102,7 +102,7 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   /*
    * Cached content of the subtree started from the node.
    */
-  mutable butter::optional<Content> content_{};
+  mutable std::optional<Content> content_{};
 };
 
 } // namespace react

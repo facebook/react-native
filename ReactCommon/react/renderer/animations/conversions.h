@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <butter/optional.h>
+#include <glog/logging.h>
 #include <react/renderer/animations/primitives.h>
 
-#include <glog/logging.h>
+#include <optional>
 
 namespace facebook {
 namespace react {
 
-static inline butter::optional<AnimationType> parseAnimationType(
+static inline std::optional<AnimationType> parseAnimationType(
     std::string param) {
   if (param == "spring") {
     return AnimationType::Spring;
@@ -38,7 +38,7 @@ static inline butter::optional<AnimationType> parseAnimationType(
   return {};
 }
 
-static inline butter::optional<AnimationProperty> parseAnimationProperty(
+static inline std::optional<AnimationProperty> parseAnimationProperty(
     std::string param) {
   if (param == "opacity") {
     return AnimationProperty::Opacity;
@@ -57,7 +57,7 @@ static inline butter::optional<AnimationProperty> parseAnimationProperty(
   return {};
 }
 
-static inline butter::optional<AnimationConfig> parseAnimationConfig(
+static inline std::optional<AnimationConfig> parseAnimationConfig(
     folly::dynamic const &config,
     double defaultDuration,
     bool parsePropertyType) {
@@ -163,7 +163,7 @@ static inline butter::optional<AnimationConfig> parseAnimationConfig(
     }
   }
 
-  return butter::optional<AnimationConfig>(AnimationConfig{
+  return std::optional<AnimationConfig>(AnimationConfig{
       *animationType,
       animationProperty,
       duration,
@@ -173,8 +173,8 @@ static inline butter::optional<AnimationConfig> parseAnimationConfig(
 }
 
 // Parse animation config from JS
-static inline butter::optional<LayoutAnimationConfig>
-parseLayoutAnimationConfig(folly::dynamic const &config) {
+static inline std::optional<LayoutAnimationConfig> parseLayoutAnimationConfig(
+    folly::dynamic const &config) {
   if (config.empty() || !config.isObject()) {
     return {};
   }
@@ -187,17 +187,17 @@ parseLayoutAnimationConfig(folly::dynamic const &config) {
 
   const auto createConfigIt = config.find("create");
   const auto createConfig = createConfigIt == config.items().end()
-      ? butter::optional<AnimationConfig>(AnimationConfig{})
+      ? std::optional<AnimationConfig>(AnimationConfig{})
       : parseAnimationConfig(createConfigIt->second, duration, true);
 
   const auto updateConfigIt = config.find("update");
   const auto updateConfig = updateConfigIt == config.items().end()
-      ? butter::optional<AnimationConfig>(AnimationConfig{})
+      ? std::optional<AnimationConfig>(AnimationConfig{})
       : parseAnimationConfig(updateConfigIt->second, duration, false);
 
   const auto deleteConfigIt = config.find("delete");
   const auto deleteConfig = deleteConfigIt == config.items().end()
-      ? butter::optional<AnimationConfig>(AnimationConfig{})
+      ? std::optional<AnimationConfig>(AnimationConfig{})
       : parseAnimationConfig(deleteConfigIt->second, duration, true);
 
   if (!createConfig || !updateConfig || !deleteConfig) {

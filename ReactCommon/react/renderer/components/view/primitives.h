@@ -7,11 +7,12 @@
 
 #pragma once
 
-#include <butter/optional.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
+
 #include <array>
 #include <cmath>
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -25,7 +26,7 @@ enum class BorderStyle { Solid, Dotted, Dashed };
 template <typename T>
 struct CascadedRectangleEdges {
   using Counterpart = RectangleEdges<T>;
-  using OptionalT = butter::optional<T>;
+  using OptionalT = std::optional<T>;
 
   OptionalT left{};
   OptionalT top{};
@@ -86,7 +87,7 @@ struct CascadedRectangleEdges {
 template <typename T>
 struct CascadedRectangleCorners {
   using Counterpart = RectangleCorners<T>;
-  using OptionalT = butter::optional<T>;
+  using OptionalT = std::optional<T>;
 
   OptionalT topLeft{};
   OptionalT topRight{};

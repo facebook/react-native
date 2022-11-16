@@ -860,7 +860,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   if (!std::isnan(textAttributes.letterSpacing)) {
     _textAttributes("letterSpacing", textAttributes.letterSpacing);
   }
-  if (textAttributes.textTransform.hasValue()) {
+  if (textAttributes.textTransform.has_value()) {
     _textAttributes("textTransform", toString(*textAttributes.textTransform));
   }
   if (!std::isnan(textAttributes.lineHeight)) {

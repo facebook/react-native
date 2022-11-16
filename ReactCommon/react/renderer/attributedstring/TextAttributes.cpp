@@ -37,20 +37,20 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   fontSizeMultiplier = !std::isnan(textAttributes.fontSizeMultiplier)
       ? textAttributes.fontSizeMultiplier
       : fontSizeMultiplier;
-  fontWeight = textAttributes.fontWeight.hasValue() ? textAttributes.fontWeight
-                                                    : fontWeight;
-  fontStyle = textAttributes.fontStyle.hasValue() ? textAttributes.fontStyle
-                                                  : fontStyle;
-  fontVariant = textAttributes.fontVariant.hasValue()
+  fontWeight = textAttributes.fontWeight.has_value() ? textAttributes.fontWeight
+                                                     : fontWeight;
+  fontStyle = textAttributes.fontStyle.has_value() ? textAttributes.fontStyle
+                                                   : fontStyle;
+  fontVariant = textAttributes.fontVariant.has_value()
       ? textAttributes.fontVariant
       : fontVariant;
-  allowFontScaling = textAttributes.allowFontScaling.hasValue()
+  allowFontScaling = textAttributes.allowFontScaling.has_value()
       ? textAttributes.allowFontScaling
       : allowFontScaling;
   letterSpacing = !std::isnan(textAttributes.letterSpacing)
       ? textAttributes.letterSpacing
       : letterSpacing;
-  textTransform = textAttributes.textTransform.hasValue()
+  textTransform = textAttributes.textTransform.has_value()
       ? textAttributes.textTransform
       : textTransform;
 
@@ -58,9 +58,9 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   lineHeight = !std::isnan(textAttributes.lineHeight)
       ? textAttributes.lineHeight
       : lineHeight;
-  alignment = textAttributes.alignment.hasValue() ? textAttributes.alignment
-                                                  : alignment;
-  baseWritingDirection = textAttributes.baseWritingDirection.hasValue()
+  alignment = textAttributes.alignment.has_value() ? textAttributes.alignment
+                                                   : alignment;
+  baseWritingDirection = textAttributes.baseWritingDirection.has_value()
       ? textAttributes.baseWritingDirection
       : baseWritingDirection;
 
@@ -68,15 +68,15 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   textDecorationColor = textAttributes.textDecorationColor
       ? textAttributes.textDecorationColor
       : textDecorationColor;
-  textDecorationLineType = textAttributes.textDecorationLineType.hasValue()
+  textDecorationLineType = textAttributes.textDecorationLineType.has_value()
       ? textAttributes.textDecorationLineType
       : textDecorationLineType;
-  textDecorationStyle = textAttributes.textDecorationStyle.hasValue()
+  textDecorationStyle = textAttributes.textDecorationStyle.has_value()
       ? textAttributes.textDecorationStyle
       : textDecorationStyle;
 
   // Shadow
-  textShadowOffset = textAttributes.textShadowOffset.hasValue()
+  textShadowOffset = textAttributes.textShadowOffset.has_value()
       ? textAttributes.textShadowOffset.value()
       : textShadowOffset;
   textShadowRadius = !std::isnan(textAttributes.textShadowRadius)
@@ -87,13 +87,13 @@ void TextAttributes::apply(TextAttributes textAttributes) {
       : textShadowColor;
 
   // Special
-  isHighlighted = textAttributes.isHighlighted.hasValue()
+  isHighlighted = textAttributes.isHighlighted.has_value()
       ? textAttributes.isHighlighted
       : isHighlighted;
-  layoutDirection = textAttributes.layoutDirection.hasValue()
+  layoutDirection = textAttributes.layoutDirection.has_value()
       ? textAttributes.layoutDirection
       : layoutDirection;
-  accessibilityRole = textAttributes.accessibilityRole.hasValue()
+  accessibilityRole = textAttributes.accessibilityRole.has_value()
       ? textAttributes.accessibilityRole
       : accessibilityRole;
 }

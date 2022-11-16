@@ -7,10 +7,11 @@
 
 #pragma once
 
-#include <butter/optional.h>
 #include <jsi/jsi.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/SchedulerPriority.h>
+
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -29,7 +30,7 @@ struct Task final {
   friend TaskPriorityComparer;
 
   SchedulerPriority priority;
-  butter::optional<jsi::Function> callback;
+  std::optional<jsi::Function> callback;
   RuntimeSchedulerClock::time_point expirationTime;
 
   jsi::Value execute(jsi::Runtime &runtime);
