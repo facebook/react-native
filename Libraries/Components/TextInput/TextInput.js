@@ -19,7 +19,6 @@ import type {TextInputType} from './TextInput.flow';
 
 import usePressability from '../../Pressability/usePressability';
 import flattenStyle from '../../StyleSheet/flattenStyle';
-import processStyles from '../../StyleSheet/processStyles';
 import StyleSheet, {
   type ColorValue,
   type TextStyleProp,
@@ -1420,19 +1419,15 @@ function InternalTextInput(props: Props): React.Node {
     };
   }
 
+  let style = flattenStyle(props.style);
+
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
       props.multiline === true
         ? RCTMultilineTextInputView
         : RCTSinglelineTextInputView;
 
-    let style =
-      props.multiline === true
-        ? [styles.multilineInput, props.style]
-        : props.style;
-
-    style = flattenStyle(style);
-    style = processStyles(style);
+    style = props.multiline === true ? [styles.multilineInput, style] : style;
 
     const useOnChangeSync =
       (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
@@ -1465,9 +1460,6 @@ function InternalTextInput(props: Props): React.Node {
       />
     );
   } else if (Platform.OS === 'android') {
-    let style = flattenStyle(props.style);
-    style = processStyles(style);
-
     const autoCapitalize = props.autoCapitalize || 'sentences';
     const _accessibilityLabelledBy =
       props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy;
@@ -1635,11 +1627,12 @@ const ExportedForwardRef: React.AbstractComponent<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
 ) {
-  const style = flattenStyle(restProps.style);
+  let style = flattenStyle(restProps.style);
 
   if (style?.verticalAlign != null) {
     style.textAlignVertical =
       verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+    delete style.verticalAlign;
   }
 
   return (

@@ -28,7 +28,6 @@ describe('Text', () => {
         ellipsizeMode="tail"
         isHighlighted={false}
         selectionColor={null}
-        style={Object {}}
       />
     `);
   });
@@ -56,7 +55,6 @@ describe('Text compat with web', () => {
         isHighlighted={false}
         nativeID="id"
         selectionColor={null}
-        style={Object {}}
         tabIndex={0}
         testID="testID"
       />
@@ -172,7 +170,6 @@ describe('Text compat with web', () => {
         ellipsizeMode="tail"
         isHighlighted={false}
         selectionColor={null}
-        style={Object {}}
       />
     `);
   });
@@ -202,9 +199,8 @@ describe('Text compat with web', () => {
             "backgroundColor": "white",
             "display": "flex",
             "flex": 1,
-            "marginStart": 10,
+            "marginInlineStart": 10,
             "textAlignVertical": "center",
-            "userSelect": "none",
           }
         }
       />

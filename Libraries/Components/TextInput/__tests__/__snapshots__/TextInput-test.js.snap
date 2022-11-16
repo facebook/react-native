@@ -23,7 +23,6 @@ exports[`TextInput tests should render as expected: should deep render when mock
   onStartShouldSetResponder={[Function]}
   rejectResponderTermination={true}
   selection={null}
-  style={Object {}}
   submitBehavior="blurAndSubmit"
   text=""
   underlineColorAndroid="transparent"
@@ -53,7 +52,6 @@ exports[`TextInput tests should render as expected: should deep render when not 
   onStartShouldSetResponder={[Function]}
   rejectResponderTermination={true}
   selection={null}
-  style={Object {}}
   submitBehavior="blurAndSubmit"
   text=""
   underlineColorAndroid="transparent"

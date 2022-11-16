@@ -207,7 +207,6 @@ describe('TextInput', () => {
         onStartShouldSetResponder={[Function]}
         rejectResponderTermination={true}
         selection={null}
-        style={Object {}}
         submitBehavior="blurAndSubmit"
         text=""
         underlineColorAndroid="transparent"
@@ -254,7 +253,6 @@ describe('TextInput compat with web', () => {
         onStartShouldSetResponder={[Function]}
         rejectResponderTermination={true}
         selection={null}
-        style={Object {}}
         submitBehavior="blurAndSubmit"
         tabIndex={0}
         testID="testID"
@@ -394,7 +392,6 @@ describe('TextInput compat with web', () => {
         rejectResponderTermination={true}
         role="main"
         selection={null}
-        style={Object {}}
         submitBehavior="blurAndSubmit"
         text=""
         underlineColorAndroid="transparent"
@@ -442,7 +439,7 @@ describe('TextInput compat with web', () => {
             "backgroundColor": "white",
             "display": "flex",
             "flex": 1,
-            "marginStart": 10,
+            "marginInlineStart": 10,
             "textAlignVertical": "center",
             "userSelect": "none",
           }

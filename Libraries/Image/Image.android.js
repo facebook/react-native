@@ -13,7 +13,6 @@ import type {ImageAndroid} from './Image.flow';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
 import flattenStyle from '../StyleSheet/flattenStyle';
-import processStyles from '../StyleSheet/processStyles';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import TextAncestor from '../Text/TextAncestor';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
@@ -159,15 +158,12 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     const {width = props.width, height = props.height, uri} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
     sources = [source];
-
     if (uri === '') {
       console.warn('source.uri should not be an empty string');
     }
   }
 
   const {height, width, ...restProps} = props;
-
-  style = processStyles(style);
 
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {

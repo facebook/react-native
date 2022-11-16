@@ -21,11 +21,7 @@ describe('View', () => {
   it('default render', () => {
     const instance = render.create(<View />);
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
-      <RCTView
-        style={Object {}}
-      />
-    `);
+    expect(instance.toJSON()).toMatchInlineSnapshot(`<RCTView />`);
   });
 
   it('has displayName', () => {
@@ -47,7 +43,6 @@ describe('View compat with web', () => {
       <RCTView
         focusable={true}
         nativeID="id"
-        style={Object {}}
         testID="testID"
       />
     `);
@@ -165,7 +160,6 @@ describe('View compat with web', () => {
         aria-setsize={5}
         aria-sort="ascending"
         importantForAccessibility="no-hide-descendants"
-        style={Object {}}
       />
     `);
   });
@@ -189,7 +183,7 @@ describe('View compat with web', () => {
             "backgroundColor": "white",
             "display": "flex",
             "flex": 1,
-            "marginStart": 10,
+            "marginInlineStart": 10,
             "pointerEvents": "none",
           }
         }

@@ -15,7 +15,6 @@ import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
-import processStyles from '../StyleSheet/processStyles';
 import {getAccessibilityRoleFromRole} from '../Utilities/AcessibilityMapping';
 import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
@@ -209,7 +208,6 @@ const Text: React.AbstractComponent<
   });
 
   style = flattenStyle(style);
-  style = processStyles(style);
 
   if (typeof style?.fontWeight === 'number') {
     style.fontWeight = style?.fontWeight.toString();
@@ -218,6 +216,13 @@ const Text: React.AbstractComponent<
   let _selectable = restProps.selectable;
   if (style?.userSelect != null) {
     _selectable = userSelectToSelectableMap[style.userSelect];
+    delete style.userSelect;
+  }
+
+  if (style?.verticalAlign != null) {
+    style.textAlignVertical =
+      verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+    delete style.verticalAlign;
   }
 
   const _hasOnPressOrOnLongPress =
@@ -298,6 +303,13 @@ const userSelectToSelectableMap = {
   none: false,
   contain: true,
   all: true,
+};
+
+const verticalAlignToTextAlignVerticalMap = {
+  auto: 'auto',
+  top: 'top',
+  bottom: 'bottom',
+  middle: 'center',
 };
 
 module.exports = Text;
