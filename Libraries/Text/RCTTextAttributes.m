@@ -11,6 +11,10 @@
 #import <React/RCTFont.h>
 #import <React/RCTLog.h>
 
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#import <React/RCTCursor.h>
+#endif // ]TODO(macOS GH#774)
+
 NSString *const RCTTextAttributesIsHighlightedAttributeName = @"RCTTextAttributesIsHighlightedAttributeName";
 NSString *const RCTTextAttributesFontSmoothingAttributeName = @"RCTTextAttributesFontSmoothingAttributeName"; // TODO(OSS Candidate ISS#2710739)
 NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttributeName";
@@ -45,6 +49,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     // [TODO(macOS GH#774)
     _foregroundColor = [RCTTextAttributes defaultForegroundColor];
     // ]TODO(macOS GH#774)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+    _cursor = RCTCursorAuto;
+#endif // ]TODO(macOS GH#774)
   }
 
   return self;
@@ -94,6 +101,10 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _tag = textAttributes->_tag ?: _tag;
   _layoutDirection = textAttributes->_layoutDirection != UIUserInterfaceLayoutDirectionLeftToRight ? textAttributes->_layoutDirection : _layoutDirection;
   _textTransform = textAttributes->_textTransform != RCTTextTransformUndefined ? textAttributes->_textTransform : _textTransform;
+
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+  _cursor = textAttributes->_cursor != RCTCursorAuto ? textAttributes->_cursor : _cursor;
+#endif // ]TODO(macOS GH#774)
 }
 
 - (NSParagraphStyle *)effectiveParagraphStyle
@@ -209,6 +220,12 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   if (_tag) {
     attributes[RCTTextAttributesTagAttributeName] = _tag;
   }
+
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+  if (_cursor != RCTCursorAuto) {
+    attributes[NSCursorAttributeName] = [RCTConvert NSCursor:_cursor];
+  }
+#endif // ]TODO(macOS GH#774)
 
   return [attributes copy];
 }

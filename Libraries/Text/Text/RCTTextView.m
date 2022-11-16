@@ -96,10 +96,6 @@
   return self;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-
-#endif // ]TODO(macOS GH#774)
-
 #if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {

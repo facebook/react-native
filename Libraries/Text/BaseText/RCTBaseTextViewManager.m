@@ -6,6 +6,9 @@
  */
 
 #import <React/RCTBaseTextViewManager.h>
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#import <React/RCTCursor.h>
+#endif // ]TODO(macOS GH#774)
 
 @implementation RCTBaseTextViewManager
 
@@ -55,5 +58,9 @@ RCT_REMAP_SHADOW_PROPERTY(textShadowColor, textAttributes.textShadowColor, UICol
 // Special
 RCT_REMAP_SHADOW_PROPERTY(isHighlighted, textAttributes.isHighlighted, BOOL)
 RCT_REMAP_SHADOW_PROPERTY(textTransform, textAttributes.textTransform, RCTTextTransform)
+
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+RCT_REMAP_SHADOW_PROPERTY(cursor, textAttributes.cursor, RCTCursor)
+#endif // ]TODO(macOS GH#774)
 
 @end
