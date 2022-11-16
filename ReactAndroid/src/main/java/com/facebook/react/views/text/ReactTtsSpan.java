@@ -10,7 +10,9 @@ package com.facebook.react.views.text;
 import android.os.Parcel;
 import android.os.PersistableBundle;
 import android.text.style.TtsSpan;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /*
  * Wraps {@link TtsSpan} as a {@link ReactSpan}.
@@ -27,6 +29,7 @@ import java.util.Set;
  * TtsSpan type.
  */
 public class ReactTtsSpan extends TtsSpan implements ReactSpan {
+  private static final String TAG = TextLayoutManagerMapBuffer.class.getSimpleName();
 
   // supported TYPES in react-native
   public static Set<String> SUPPORTED_UNIT_TYPES =
@@ -58,6 +61,30 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
 
     public Builder(String type) {
       mType = type;
+    }
+
+    public Builder(AccessibilityRole type, @Nullable String accessibilityUnit) {
+      String typeConvertedToString = AccessibilityRole.getValue(type);
+      try {
+        if (typeConvertedToString == ReactTtsSpan.TYPE_TIME && accessibilityUnit != null) {
+          String[] time = accessibilityUnit.split(":");
+          if (time[0] != null && time[1] != null) {
+            Integer hours = Integer.parseInt(time[0]);
+            Integer minutes = Integer.parseInt(time[1]);
+            setIntArgument(ReactTtsSpan.ARG_HOURS, hours);
+            setIntArgument(ReactTtsSpan.ARG_MINUTES, minutes);
+          }
+        }
+      } catch (Exception e) {
+        // in reactnative we usually trigger an error in metro on Debug
+        // (for ex. accessibilityHours should be a number and not a string)
+        // accessibilityUnit uses a String type, there is no strict check on the type
+        // will be improved in the future upcoming PRs
+        // for ex accessibilityHours should be a number, accessibilityCurrency would be
+        // "USD" or "EUR" https://bit.ly/3UG96lP
+        FLog.w(TAG, "TtsSpan with type Time failed to set hours and minutes. Error: " + e);
+      }
+      mType = typeConvertedToString;
     }
 
     public ReactTtsSpan build() {
