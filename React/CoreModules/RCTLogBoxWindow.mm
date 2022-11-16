@@ -11,7 +11,7 @@
 #import <React/RCTSurface.h>
 #import <React/RCTSurfaceHostingView.h>
 
-@implementation RCTLogBoxView {
+@implementation RCTLogBoxWindow {
   RCTSurface *_surface;
 }
 

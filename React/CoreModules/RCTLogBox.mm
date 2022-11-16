@@ -21,7 +21,7 @@
 @end
 
 @implementation RCTLogBox {
-  RCTLogBoxView *_view;
+  RCTLogBoxWindow *_window;
   __weak id<RCTSurfacePresenterStub> _bridgelessSurfacePresenter;
 }
 
@@ -49,23 +49,23 @@ RCT_EXPORT_METHOD(show)
         return;
       }
 
-      if (strongSelf->_view) {
-        [strongSelf->_view show];
+      if (strongSelf->_window) {
+        [strongSelf->_window show];
         return;
       }
 
       if (strongSelf->_bridgelessSurfacePresenter) {
-        strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
+        strongSelf->_window = [[RCTLogBoxWindow alloc] initWithWindow:RCTKeyWindow()
                                                  surfacePresenter:strongSelf->_bridgelessSurfacePresenter];
-        [strongSelf->_view show];
+        [strongSelf->_window show];
       } else if (strongSelf->_bridge && strongSelf->_bridge.valid) {
         if (strongSelf->_bridge.surfacePresenter) {
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
+          strongSelf->_window = [[RCTLogBoxWindow alloc] initWithWindow:RCTKeyWindow()
                                                    surfacePresenter:strongSelf->_bridge.surfacePresenter];
         } else {
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow() bridge:strongSelf->_bridge];
+          strongSelf->_window = [[RCTLogBoxWindow alloc] initWithWindow:RCTKeyWindow() bridge:strongSelf->_bridge];
         }
-        [strongSelf->_view show];
+        [strongSelf->_window show];
       }
     });
   }
@@ -80,8 +80,8 @@ RCT_EXPORT_METHOD(hide)
       if (!strongSelf) {
         return;
       }
-      [strongSelf->_view setHidden:YES];
-      strongSelf->_view = nil;
+      [strongSelf->_window setHidden:YES];
+      strongSelf->_window = nil;
     });
   }
 }
@@ -92,9 +92,9 @@ RCT_EXPORT_METHOD(hide)
   return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(params);
 }
 
-- (void)setRCTLogBoxView:(RCTLogBoxView *)view
+- (void)setRCTLogBoxView:(RCTLogBoxWindow *)window
 {
-  self->_view = view;
+  self->_window = window;
 }
 
 @end

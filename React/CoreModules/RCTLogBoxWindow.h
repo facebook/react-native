@@ -10,7 +10,7 @@
 #import <React/RCTSurfaceView.h>
 #import <UIKit/UIKit.h>
 
-@interface RCTLogBoxView : UIWindow
+@interface RCTLogBoxWindow : UIWindow
 
 - (instancetype)initWithFrame:(CGRect)frame;
 
