@@ -30,8 +30,6 @@ using namespace facebook::react;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
 
-@synthesize removeClippedSubviews = _removeClippedSubviews;
-
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
