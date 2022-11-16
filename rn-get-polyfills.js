@@ -9,4 +9,5 @@
 
 'use strict';
 
-module.exports = require('@react-native/polyfills');
+// Although symlink for @react-native/js-polyfills is present, Metro couldn't handle it
+module.exports = require('./packages/polyfills');
