@@ -1079,6 +1079,9 @@ function InternalTextInput(props: Props): React.Node {
     'aria-expanded': ariaExpanded,
     'aria-selected': ariaSelected,
     accessibilityState,
+    id,
+    tabIndex,
+    ...otherProps
   } = props;
 
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
@@ -1436,15 +1439,16 @@ function InternalTextInput(props: Props): React.Node {
     textInput = (
       <RCTTextInputView
         ref={_setNativeRef}
-        {...props}
+        {...otherProps}
         {...eventHandlers}
         accessibilityState={_accessibilityState}
         accessible={accessible}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
-        focusable={focusable}
+        focusable={tabIndex !== undefined ? !tabIndex : focusable}
         mostRecentEventCount={mostRecentEventCount}
+        nativeID={id ?? props.nativeID}
         onBlur={_onBlur}
         onKeyPressSync={props.unstable_onKeyPressSync}
         onChange={_onChange}
@@ -1485,7 +1489,7 @@ function InternalTextInput(props: Props): React.Node {
        * fixed */
       <AndroidTextInput
         ref={_setNativeRef}
-        {...props}
+        {...otherProps}
         {...eventHandlers}
         accessibilityState={_accessibilityState}
         accessibilityLabelledBy={_accessibilityLabelledBy}
@@ -1495,8 +1499,9 @@ function InternalTextInput(props: Props): React.Node {
         caretHidden={caretHidden}
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}
-        focusable={focusable}
+        focusable={tabIndex !== undefined ? !tabIndex : focusable}
         mostRecentEventCount={mostRecentEventCount}
+        nativeID={id ?? props.nativeID}
         numberOfLines={props.rows ?? props.numberOfLines}
         onBlur={_onBlur}
         onChange={_onChange}
