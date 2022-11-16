@@ -11,15 +11,6 @@
 let Animated = require('../Animated').default;
 let AnimatedProps = require('../nodes/AnimatedProps').default;
 
-jest.mock('../../BatchedBridge/NativeModules', () => ({
-  NativeAnimatedModule: {},
-  PlatformConstants: {
-    getConstants() {
-      return {};
-    },
-  },
-}));
-
 jest.mock('../../Utilities/Platform', () => {
   return {OS: 'web'};
 });
