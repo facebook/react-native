@@ -71,6 +71,9 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       String typeConvertedToString = AccessibilityRole.getValue(type);
       mType = typeConvertedToString;
       String roleClassName = AccessibilityRole.getValue(type);
+      if (accessibilityUnit == null) {
+        return;
+      }
       try {
         if (roleClassName == ReactTtsSpan.TYPE_TIME) {
           String[] time = accessibilityUnit.split(":");

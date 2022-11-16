@@ -161,9 +161,10 @@ class AccessibilityExample extends React.Component<{}> {
               My number is{' '}
               <Text
                 accessibilityRole="money"
+                accessibilityUnit="1, USD"
                 accessible={true}
                 style={{backgroundColor: 'red'}}>
-                10$
+                10
               </Text>
             </Text>
           </View>
