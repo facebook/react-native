@@ -11,7 +11,7 @@
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 
-@interface RCTLogBoxWindow : UIWindow // TODO(macOS GH#774) Renamed from _view to _window
+@interface RCTLogBoxView : UIWindow
 
 - (instancetype)initWithFrame:(CGRect)frame;
 
@@ -19,19 +19,17 @@
 
 - (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge;
 
-- (void)hide; // TODO(macOS GH#774)
-
 - (void)show;
 
 @end
 
 #else // [TODO(macOS GH#774)
 
-@interface RCTLogBoxWindow : NSWindow // TODO(macOS GH#774) Renamed from _view to _window
+@interface RCTLogBoxView : NSWindow // TODO(macOS GH#774)
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
-- (void)hide;
+- (void)setHidden:(BOOL)hidden;
 
 - (void)show;
 

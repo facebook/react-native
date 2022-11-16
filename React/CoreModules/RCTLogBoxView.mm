@@ -12,7 +12,7 @@
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 
-@implementation RCTLogBoxWindow { // TODO(macOS GH#774) Renamed from _view to _window
+@implementation RCTLogBoxView {
   RCTSurface *_surface;
 }
 
@@ -59,11 +59,6 @@
   [RCTSharedApplication().delegate.window makeKeyWindow];
 }
 
-- (void)hide // [TODO(macOS GH#774)
-{
-  [self setHidden:YES];
-} // ]TODO(macOS GH#774)
-
 - (void)show
 {
   [self becomeFirstResponder];
@@ -74,7 +69,7 @@
 
 #else // [TODO(macOS GH#774)
 
-@implementation RCTLogBoxWindow { // TODO(macOS GH#774) Renamed from _view to _window
+@implementation RCTLogBoxView {
   RCTSurface *_surface;
 }
 
@@ -100,13 +95,15 @@
   return self;
 }
 
-- (void)hide
+- (void)setHidden:(BOOL)hidden // [TODO(macOS GH#774)
 {
-  if (NSApp.modalWindow == self) {
-    [NSApp stopModal];
+  if (hidden) {
+    if (NSApp.modalWindow == self) {
+      [NSApp stopModal];
+    }
+    [self orderOut:nil];
   }
-  [self orderOut:nil];
-}
+} // ]TODO(macOS GH#774)
 
 - (void)show
 {

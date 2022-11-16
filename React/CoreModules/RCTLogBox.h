@@ -12,7 +12,7 @@
 
 #if RCT_DEV_MENU
 
-- (void)setRCTLogBoxWindow:(RCTLogBoxWindow *)window; // TODO(macOS GH#774) Renamed from _view to _window
+- (void)setRCTLogBoxView:(RCTLogBoxView *)view;
 
 #endif
 

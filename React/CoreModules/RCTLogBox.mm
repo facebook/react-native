@@ -22,7 +22,7 @@
 @end
 
 @implementation RCTLogBox {
-  RCTLogBoxWindow *_window; // TODO(macOS GH#774) Renamed from _view to _window
+  RCTLogBoxView *_view;
 }
 
 @synthesize bridge = _bridge;
@@ -44,20 +44,20 @@ RCT_EXPORT_METHOD(show)
         return;
       }
 
-      if (strongSelf->_window) { // TODO(macOS GH#774) Renamed from _view to _window
-        [strongSelf->_window show]; // TODO(macOS GH#774) Renamed from _view to _window
+      if (strongSelf->_view) {
+        [strongSelf->_view show];
         return;
       }
 
       if (strongSelf->_bridge) {
         if (strongSelf->_bridge.valid) {
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
-          strongSelf->_window = [[RCTLogBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds // TODO(macOS GH#774) Renamed from _view to _window
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds
                                                             bridge:strongSelf->_bridge];
 #else // [TODO(macOS GH#774)
-          strongSelf->_window = [[RCTLogBoxWindow alloc] initWithBridge:self->_bridge]; // TODO(macOS GH#774) Renamed from _view to _window
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithBridge:self->_bridge]; // TODO(macOS GH#774)
 #endif // ]TODO(macOS GH#774)
-          [strongSelf->_window show]; // TODO(macOS GH#774) Renamed from _view to _window
+          [strongSelf->_view show];
         }
       } else {
         NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:strongSelf, @"logbox", nil];
@@ -76,8 +76,8 @@ RCT_EXPORT_METHOD(hide)
       if (!strongSelf) {
         return;
       }
-      [strongSelf->_window hide]; // TODO(macOS GH#774) setHidden: -> hide
-      strongSelf->_window = nil;
+      [strongSelf->_view setHidden:YES];
+      strongSelf->_view = nil;
     });
   }
 }
@@ -88,9 +88,9 @@ RCT_EXPORT_METHOD(hide)
   return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(params);
 }
 
-- (void)setRCTLogBoxWindow:(RCTLogBoxWindow *)window // TODO(macOS GH#774) Renamed from _view to _window
+- (void)setRCTLogBoxView:(RCTLogBoxView *)view
 {
-  self->_window = window;
+  self->_view = view;
 }
 
 @end
