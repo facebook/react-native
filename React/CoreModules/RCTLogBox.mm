@@ -92,7 +92,7 @@ RCT_EXPORT_METHOD(hide)
   return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(params);
 }
 
-- (void)setRCTLogBoxView:(RCTLogBoxWindow *)window
+- (void)setRCTLogBoxWindow:(RCTLogBoxWindow *)window
 {
   self->_window = window;
 }
