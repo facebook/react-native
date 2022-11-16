@@ -52,8 +52,7 @@ RCT_EXPORT_METHOD(show)
       if (strongSelf->_bridge) {
         if (strongSelf->_bridge.valid) {
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:RCTKeyWindow().frame bridge:strongSelf->_bridge];
-
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow() bridge:strongSelf->_bridge];
 #else // [TODO(macOS GH#774)
           strongSelf->_view = [[RCTLogBoxView alloc] initWithBridge:self->_bridge]; // TODO(macOS GH#774)
 #endif // ]TODO(macOS GH#774)
