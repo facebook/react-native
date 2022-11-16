@@ -14,7 +14,7 @@
 #include <mutex>
 #include <unordered_set>
 
-#include <react/cxxcomponents/Component.h>
+#include <react/cxxcomponents/ComponentDeprecatedAPI.h>
 #include <react/cxxcomponents/ComponentManager.h>
 #include <react/fabric/ComponentRegistryResolver.h>
 
@@ -43,10 +43,11 @@ class CppComponentRegistry : public jni::HybridClass<CppComponentRegistry> {
   std::shared_ptr<facebook::react::ComponentManager> getComponentManager(
       const std::string &name) const;
 
-  std::shared_ptr<facebook::react::Component> getComponentInstance(
+  std::shared_ptr<facebook::react::ComponentDeprecatedAPI> getComponentInstance(
       Tag tag) const;
 
-  std::shared_ptr<facebook::react::Component> createComponentInstance(
+  std::shared_ptr<facebook::react::ComponentDeprecatedAPI>
+  createComponentInstance(
       const std::string &componentName,
       Tag tag,
       Props::Shared initialProps) const;
@@ -56,8 +57,9 @@ class CppComponentRegistry : public jni::HybridClass<CppComponentRegistry> {
  private:
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
   ComponentRegistryResolver componentManagerResolver_{};
-  mutable butter::map<Tag, std::shared_ptr<facebook::react::Component>>
-      components_{};
+  mutable butter::
+      map<Tag, std::shared_ptr<facebook::react::ComponentDeprecatedAPI>>
+          components_{};
 };
 
 } // namespace react

@@ -6,7 +6,6 @@
  */
 
 #include "CppComponentRegistry.h"
-#include <android/log.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
@@ -22,9 +21,8 @@ CppComponentRegistry::initHybrid(jni::alias_ref<jclass>) {
 }
 
 void CppComponentRegistry::registerNatives() {
-  registerHybrid({
-      makeNativeMethod("initHybrid", CppComponentRegistry::initHybrid),
-  });
+  registerHybrid(
+      {makeNativeMethod("initHybrid", CppComponentRegistry::initHybrid)});
 }
 
 void CppComponentRegistry::addComponentManager(
@@ -44,7 +42,7 @@ CppComponentRegistry::getComponentManager(const std::string &name) const {
   return componentManagerResolver_.getComponentManager(name);
 }
 
-std::shared_ptr<facebook::react::Component>
+std::shared_ptr<facebook::react::ComponentDeprecatedAPI>
 CppComponentRegistry::getComponentInstance(Tag tag) const {
   return components_[tag];
 }
@@ -53,7 +51,7 @@ bool CppComponentRegistry::isRootComponent(std::string name) const {
   return componentManagerResolver_.isRootComponent(name);
 }
 
-std::shared_ptr<facebook::react::Component>
+std::shared_ptr<facebook::react::ComponentDeprecatedAPI>
 CppComponentRegistry::createComponentInstance(
     const std::string &componentName,
     Tag tag,

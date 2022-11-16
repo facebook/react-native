@@ -28,6 +28,8 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
   private static final String DEVSUPPORT_IMPL_PACKAGE = "com.facebook.react.devsupport";
   private static final String DEVSUPPORT_IMPL_CLASS = "BridgeDevSupportManager";
 
+  /** @deprecated in favor of the customisable create for DevSupportManagerFactory */
+  @Deprecated
   public DevSupportManager create(
       Context applicationContext,
       ReactInstanceDevHelper reactInstanceDevHelper,

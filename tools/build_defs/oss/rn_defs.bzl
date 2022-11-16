@@ -146,7 +146,7 @@ def rn_xplat_cxx_library(
         **kwargs
     )
 
-rn_xplat_cxx_library2 = rn_xplat_cxx_library
+rn_apple_xplat_cxx_library = rn_xplat_cxx_library
 
 # Example: react_native_target('java/com/facebook/react/common:common')
 def react_native_target(path):

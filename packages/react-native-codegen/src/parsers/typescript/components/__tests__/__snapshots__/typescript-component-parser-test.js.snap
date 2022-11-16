@@ -1985,6 +1985,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_DEFINED_WITH
                 'params': [
                   {
                     'name': 'rootTag',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'ReservedTypeAnnotation',
                       'name': 'RootTag'
@@ -2004,12 +2005,14 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_DEFINED_WITH
                 'params': [
                   {
                     'name': 'x',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
                     }
                   },
                   {
                     'name': 'y',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
                     }
@@ -2028,24 +2031,28 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_DEFINED_WITH
                 'params': [
                   {
                     'name': 'x',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'FloatTypeAnnotation'
                     }
                   },
                   {
                     'name': 'y',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
                     }
                   },
                   {
                     'name': 'z',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'DoubleTypeAnnotation'
                     }
                   },
                   {
                     'name': 'animated',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'BooleanTypeAnnotation'
                     }
@@ -3603,12 +3610,14 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                 'params': [
                   {
                     'name': 'y',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
                     }
                   },
                   {
                     'name': 'animated',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'BooleanTypeAnnotation'
                     }
@@ -3651,12 +3660,14 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_WITH_EXTERNA
                 'params': [
                   {
                     'name': 'y',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
                     }
                   },
                   {
                     'name': 'animated',
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'BooleanTypeAnnotation'
                     }

@@ -106,7 +106,7 @@ if(EXISTS ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
         include(${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
         target_link_libraries(${CMAKE_PROJECT_NAME} ${AUTOLINKED_LIBRARIES})
         foreach(autolinked_library ${AUTOLINKED_LIBRARIES})
-            target_link_libraries(autolinked_library common_flags)
+            target_link_libraries(${autolinked_library} common_flags)
         endforeach()
 endif()
 

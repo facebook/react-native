@@ -19,7 +19,7 @@ import {TypeScriptParser} from '../typescript/parser';
 import {FlowParser} from '../flow/parser';
 
 const hasteModuleName = 'moduleName';
-describe('TypeScriptParser', () => {
+describe('FlowParser', () => {
   const parser = new FlowParser();
   describe('getKeyName', () => {
     describe('when propertyOrIndex is ObjectTypeProperty', () => {
@@ -76,9 +76,26 @@ describe('TypeScriptParser', () => {
       });
     });
   });
+
+  describe('remapUnionTypeAnnotationMemberNames', () => {
+    it('returns remaped union annotation member types without duplicates', () => {
+      const membersType = [
+        {type: 'NumberLiteralTypeAnnotation'},
+        {type: 'ObjectTypeAnnotation'},
+        {type: 'StringLiteralTypeAnnotation'},
+        {type: 'ObjectTypeAnnotation'},
+      ];
+
+      expect(parser.remapUnionTypeAnnotationMemberNames(membersType)).toEqual([
+        'NumberTypeAnnotation',
+        'ObjectTypeAnnotation',
+        'StringTypeAnnotation',
+      ]);
+    });
+  });
 });
 
-describe('FlowParser', () => {
+describe('TypeScriptParser', () => {
   const parser = new TypeScriptParser();
   describe('getKeyName', () => {
     describe('when propertyOrIndex is TSPropertySignature', () => {
@@ -124,6 +141,22 @@ describe('FlowParser', () => {
           UnsupportedObjectPropertyTypeAnnotationParserError,
         );
       });
+    });
+  });
+  describe('remapUnionTypeAnnotationMemberNames', () => {
+    it('returns remaped union annotation member types without duplicates', () => {
+      const membersType = [
+        {literal: {type: 'NumericLiteral'}},
+        {type: 'ObjectTypeAnnotation'},
+        {literal: {type: 'StringLiteral'}},
+        {type: 'ObjectTypeAnnotation'},
+      ];
+
+      expect(parser.remapUnionTypeAnnotationMemberNames(membersType)).toEqual([
+        'NumberTypeAnnotation',
+        'ObjectTypeAnnotation',
+        'StringTypeAnnotation',
+      ]);
     });
   });
 });

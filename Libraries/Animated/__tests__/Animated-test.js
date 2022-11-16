@@ -175,11 +175,13 @@ describe('Animated tests', () => {
 
       expect(testRenderer.toJSON().props.style.opacity).toEqual(0);
 
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 0,
-        useNativeDriver: false,
-      }).start();
+      TestRenderer.act(() => {
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 0,
+          useNativeDriver: false,
+        }).start();
+      });
 
       expect(testRenderer.toJSON().props.style.opacity).toEqual(1);
     });

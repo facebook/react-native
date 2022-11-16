@@ -8,7 +8,8 @@
 #pragma once
 
 #include <react/renderer/graphics/Color.h>
-#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/graphics/RectangleCorners.h>
+#include <react/renderer/graphics/RectangleEdges.h>
 
 #include <array>
 #include <bitset>

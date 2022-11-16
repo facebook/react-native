@@ -1835,6 +1835,69 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_SI
 }"
 `;
 
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UNION 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'ObjectTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'chooseInt',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseFloat',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseObject',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'ObjectTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseString',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleNames': [
+        'SampleTurboModule'
+      ]
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_OBJECT 1`] = `
 "{
   'modules': {
