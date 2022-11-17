@@ -28,13 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfaceHostingView : UIView <RCTSurfaceDelegate>
 
 /**
- * Create an instance of RCTSurface to be hosted.
- */
-+ (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
-                             moduleName:(NSString *)moduleName
-                      initialProperties:(NSDictionary *)initialProperties;
-
-/**
  * Designated initializer.
  * Instanciates a view with given Surface object.
  * Note: The view retains the surface object.
@@ -50,7 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
-               sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode;
+               sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
+                       surface:(id<RCTSurfaceProtocol>)surface;
 
 /**
  * Surface object which is currently using to power the view.

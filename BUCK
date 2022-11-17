@@ -484,7 +484,6 @@ rn_apple_xplat_cxx_library(
         "React/RCTComponentViewFactory.h": "React/Fabric/Mounting/RCTComponentViewFactory.h",
         "React/RCTComponentViewRegistry.h": "React/Fabric/Mounting/RCTComponentViewRegistry.h",
         "React/RCTFabricSurface.h": "React/Fabric/Surface/RCTFabricSurface.h",
-        "React/RCTFabricSurfaceHostingProxyRootView.h": "React/Fabric/Surface/RCTFabricSurfaceHostingProxyRootView.h",
         "React/RCTGenericDelegateSplitter.h": "React/Fabric/Utils/RCTGenericDelegateSplitter.h",
         "React/RCTLegacyViewManagerInteropComponentView.h": "React/Fabric/Mounting/ComponentViews/LegacyViewManagerInterop/RCTLegacyViewManagerInteropComponentView.h",
         "React/RCTLocalizationProvider.h": "React/Fabric/RCTLocalizationProvider.h",

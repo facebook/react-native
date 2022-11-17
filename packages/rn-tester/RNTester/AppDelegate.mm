@@ -43,7 +43,8 @@
 #endif
 
 #ifdef RN_FABRIC_ENABLED
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <React/RCTFabricSurface.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 
@@ -99,9 +100,13 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
   _bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
 
-  UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge
-                                                                       moduleName:@"RNTesterApp"
-                                                                initialProperties:initProps];
+  RCTFabricSurface *surface = [[RCTFabricSurface alloc] initWithBridge:_bridge
+                                                            moduleName:@"RNTesterApp"
+                                                     initialProperties:initProps];
+  UIView *rootView = [[RCTSurfaceHostingProxyRootView alloc] initWithBridge:_bridge
+                                                                 moduleName:@"RNTesterApp"
+                                                          initialProperties:initProps
+                                                                    surface:surface];
 #else
   UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #endif

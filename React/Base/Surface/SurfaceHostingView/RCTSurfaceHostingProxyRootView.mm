@@ -56,6 +56,7 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
+                       surface:(id<RCTSurfaceProtocol>)surface
 {
   RCTAssertMainQueue();
   RCTAssert(bridge, @"A bridge instance is required to create an RCTSurfaceHostingProxyRootView");
@@ -76,7 +77,8 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   self = [super initWithBridge:bridge
                     moduleName:moduleName
              initialProperties:initialProperties
-               sizeMeasureMode:sizeMeasureMode];
+               sizeMeasureMode:sizeMeasureMode
+                       surface:surface];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
@@ -89,8 +91,11 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
                     launchOptions:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:bundleURL moduleProvider:nil launchOptions:launchOptions];
+  RCTSurface *surface = [[RCTSurface alloc] initWithBridge:bridge
+                                                moduleName:moduleName
+                                         initialProperties:initialProperties];
 
-  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties surface:surface];
 }
 
 - (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface

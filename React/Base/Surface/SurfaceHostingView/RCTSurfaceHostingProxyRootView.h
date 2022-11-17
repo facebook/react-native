@@ -12,6 +12,8 @@
 
 #import "RCTSurfaceHostingView.h"
 
+@protocol RCTSurfaceProtocol;
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -43,7 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+             initialProperties:(NSDictionary *)initialProperties
+                       surface:(id<RCTSurfaceProtocol>)surface NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                        moduleName:(NSString *)moduleName
