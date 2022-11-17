@@ -85,8 +85,6 @@ try {
     );
   });
 
-
-
   describe('Scaffold a basic React Native app from template');
   exec(`rsync -a ${ROOT}/template ${REACT_NATIVE_TEMP_DIR}`);
   cd(REACT_NATIVE_APP_DIR);
