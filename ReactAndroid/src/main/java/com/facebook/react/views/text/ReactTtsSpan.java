@@ -38,24 +38,6 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
   private static final String TYPE_TIME_WARNING_MSG =
       "Failed to retrieve hours and minutes. Make sure the format is HH:MM. ";
 
-  // supported TYPES in react-native
-  public static final Set<String> SUPPORTED_TYPES =
-      Set.of(
-          TYPE_CARDINAL,
-          TYPE_ORDINAL,
-          TYPE_DECIMAL,
-          TYPE_FRACTION,
-          TYPE_MEASURE,
-          TYPE_TIME,
-          TYPE_DATE,
-          TYPE_TELEPHONE,
-          TYPE_ELECTRONIC,
-          TYPE_MONEY,
-          TYPE_DIGITS,
-          TYPE_VERBATIM);
-  // TYPES that currently support accessibilityUnit prop in react-native
-  private static final Set<String> SUPPORTED_UNIT_TYPES = Set.of(TYPE_TIME, TYPE_MONEY);
-
   public ReactTtsSpan(String type, PersistableBundle args) {
     super(type, args);
   }
@@ -77,7 +59,8 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       mType = typeConvertedToString;
       String roleClassName = AccessibilityRole.getValue(type);
       String warningMessage = "";
-      if (accessibilityUnit == null || !ReactTtsSpan.SUPPORTED_UNIT_TYPES.contains(roleClassName)) {
+      Set<String> supportedUnitTypes = Set.of(TYPE_TIME, TYPE_MONEY);
+      if (accessibilityUnit == null || !supportedUnitTypes.contains(roleClassName)) {
         return;
       }
       try {

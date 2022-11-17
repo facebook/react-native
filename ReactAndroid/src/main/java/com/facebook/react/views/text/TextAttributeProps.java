@@ -10,6 +10,7 @@ package com.facebook.react.views.text;
 import android.os.Build;
 import android.text.Layout;
 import android.text.TextUtils;
+import android.text.style.TtsSpan;
 import android.util.LayoutDirection;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
@@ -24,6 +25,7 @@ import com.facebook.react.uimanager.ViewProps;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 // TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
 // TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
@@ -612,8 +614,23 @@ public class TextAttributeProps {
       mIsAccessibilityLink = mAccessibilityRole.equals(AccessibilityRole.LINK);
       String roleClassName =
           AccessibilityRole.getValue(AccessibilityRole.fromValue(accessibilityRole));
+      Set<String> supportedTypes =
+          Set.of(
+              TtsSpan.TYPE_CARDINAL,
+              TtsSpan.TYPE_ORDINAL,
+              TtsSpan.TYPE_DECIMAL,
+              TtsSpan.TYPE_FRACTION,
+              TtsSpan.TYPE_MEASURE,
+              TtsSpan.TYPE_TIME,
+              TtsSpan.TYPE_DATE,
+              TtsSpan.TYPE_TELEPHONE,
+              TtsSpan.TYPE_ELECTRONIC,
+              TtsSpan.TYPE_MONEY,
+              TtsSpan.TYPE_DIGITS,
+              TtsSpan.TYPE_VERBATIM);
+
       mIsAccessibilityTtsSpan =
-          ReactTtsSpan.SUPPORTED_TYPES.contains(roleClassName) && Build.VERSION.SDK_INT >= 21;
+          supportedTypes.contains(roleClassName) && Build.VERSION.SDK_INT >= 21;
     }
   }
 
