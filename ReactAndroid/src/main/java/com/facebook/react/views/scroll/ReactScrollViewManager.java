@@ -375,4 +375,15 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   public void setScrollEventThrottle(ReactScrollView view, int scrollEventThrottle) {
     view.setScrollEventThrottle(scrollEventThrottle);
   }
+
+  @ReactProp(name = "verticalScrollbarPosition")
+  public void setVerticalScrollbarPosition(ReactScrollView view, String position) {
+    if ("right".equals(position)) {
+      view.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_RIGHT);
+    } else if ("left".equals(position)) {
+      view.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
+    } else {
+      view.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_DEFAULT);
+    }
+  }
 }
