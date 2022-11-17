@@ -39,7 +39,10 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
           + " with the format supported ISO 4217 (for example '1, USD'). ";
   private static final String TYPE_TIME_WARNING_MSG =
       "Failed to retrieve hours and minutes. Make sure the format is HH:MM. ";
-  private static final String TYPE_TELEPHONE_WARNING_MSG = "Failed to retrieve telephone number.";
+  private static final String TYPE_TELEPHONE_WARNING_MSG =
+      "Failed to retrieve telephone number (for example '0112123432').";
+  private static final String TYPE_MEASURE_WARNING_MSG =
+      "Failed to retrieve unit type (for ex. meter, second, milli).";
 
   public ReactTtsSpan(String type, PersistableBundle args) {
     super(type, args);
@@ -65,7 +68,9 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       Set<String> supportedTypes = new HashSet<String>();
       supportedTypes.addAll(
           Arrays.asList(
-              new String[] {TtsSpan.TYPE_TIME, TtsSpan.TYPE_MONEY, TtsSpan.TYPE_TELEPHONE}));
+              new String[] {
+                TtsSpan.TYPE_TIME, TtsSpan.TYPE_MONEY, TtsSpan.TYPE_TELEPHONE, TtsSpan.TYPE_MEASURE
+              }));
       if (accessibilityUnit == null || !supportedTypes.contains(roleClassName)) {
         return;
       }
@@ -93,6 +98,11 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
         if (roleClassName == ReactTtsSpan.TYPE_TELEPHONE) {
           warningMessage = ReactTtsSpan.TYPE_TELEPHONE_WARNING_MSG;
           setStringArgument(ReactTtsSpan.ARG_NUMBER_PARTS, accessibilityUnit);
+        }
+        // https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
+        if (roleClassName == ReactTtsSpan.TYPE_MEASURE) {
+          warningMessage = ReactTtsSpan.TYPE_MEASURE_WARNING_MSG;
+          setStringArgument(ReactTtsSpan.ARG_UNIT, accessibilityUnit);
         }
       } catch (Exception e) {
         // in reactnative we trigger an error in metro on Debug

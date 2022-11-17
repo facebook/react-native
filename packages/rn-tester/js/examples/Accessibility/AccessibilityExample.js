@@ -307,12 +307,29 @@ class TtsSpanExamples extends React.Component<{}> {
         </RNTesterBlock>
         <RNTesterBlock title="Text with child Text and accessibilityRole='measure'">
           <Text accessible={true}>
-            Unit of Measure like meters are spelled as
+            Unit of Measure like meters are spelled as 60
             <Text
               accessibilityRole="measure"
+              accessibilityUnit="second"
               accessible={true}
               style={styles.redBackground}>
-              10m
+              s
+            </Text>{' '}
+            or 10
+            <Text
+              accessibilityRole="measure"
+              accessibilityUnit="meter"
+              accessible={true}
+              style={styles.redBackground}>
+              m
+            </Text>{' '}
+            or 10
+            <Text
+              accessibilityRole="measure"
+              accessibilityUnit="milli"
+              accessible={true}
+              style={styles.redBackground}>
+              m
             </Text>
           </Text>
         </RNTesterBlock>
@@ -370,6 +387,19 @@ class TtsSpanExamples extends React.Component<{}> {
               accessibilityUnit="0118888888"
               style={styles.redBackground}>
               0118888888
+            </Text>
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="accessibilityUnit is not correct and logcat includes debug log">
+          <Text accessible={true}>
+            The accessibilityUnit passed does not exist. An error message is
+            logged with logcat with an explanation.
+            <Text
+              accessibilityRole="money"
+              accessibilityUnit="1, US"
+              accessible={true}
+              style={styles.redBackground}>
+              s
             </Text>
           </Text>
         </RNTesterBlock>
