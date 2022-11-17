@@ -27,9 +27,6 @@ packages:
   'react-native-codegen':
     access: $all
     publish: $all
-  'react-native-gradle-plugin':
-    access: $all
-    publish: $all
   '@*/*':
     access: $all
     publish: $authenticated
