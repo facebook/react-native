@@ -196,7 +196,7 @@ type IOSProps = $ReadOnly<{|
    * when using `automaticallyAdjustKeyboardInsets`.
    * @platform ios
    */
-   bottomKeyboardOffset?: ?number,
+  bottomKeyboardOffset?: ?number,
   /**
    * When true, the scroll view bounces when it reaches the end of the
    * content if the content is larger then the scroll view along the axis of
