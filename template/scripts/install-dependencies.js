@@ -9,35 +9,54 @@
 
 'use strict';
 
-const {exec, spawn} = require('child_process');
+const {execSync, spawn, spawnSync} = require('child_process');
 
-const {REPO_ROOT} = process.env;
+const [, , PATH_TO_REACT_NATIVE_ROOT, PATH_TO_TEMPLATE] = process.argv;
+
+if (!PATH_TO_REACT_NATIVE_ROOT) {
+  throw new Error(
+    'PATH_TO_REACT_NATIVE_ROOT is not specified. It should be the first argument from cli call',
+  );
+}
+
+if (!PATH_TO_TEMPLATE) {
+  throw new Error(
+    'PATH_TO_TEMPLATE is not specified. It should be the second argument from cli call',
+  );
+}
 
 function install() {
-  const verdaccioProcess = spawn('npx', [
-    'verdaccio@5.15.3',
-    '--config',
-    'configs/verdaccio.yml',
-  ]);
-  exec('echo "Bootstrapped Verdaccio \u2705"');
+  const verdaccioProcess = spawn(
+    'npx',
+    ['verdaccio@5.15.3', '--config', 'configs/verdaccio.yml'],
+    {detached: true, stdio: 'ignore'},
+  );
+  process.stdout.write('Bootstrapped Verdaccio \u2705\n');
 
   const VERDACCIO_PID = verdaccioProcess.pid;
 
-  exec('npx wait-on@6.0.1 http://localhost:4873');
+  execSync('npm set registry http://localhost:4873');
+  execSync(
+    `echo "//localhost:4873/:_authToken=secretToken" > ${PATH_TO_REACT_NATIVE_ROOT}/.npmrc`,
+  );
 
-  exec('npm set registry http://localhost:4873');
-  exec('echo "//localhost:4873/:_authToken=secretToken" > .npmrc');
+  execSync('npm publish --registry http://localhost:4873 --access public', {
+    cwd: `${PATH_TO_REACT_NATIVE_ROOT}/packages/eslint-config-react-native-community`,
+    stdio: [process.stdin, process.stdout, process.stderr],
+  });
+  process.stdout.write(
+    'Published @react-native/eslint-config to proxy \u2705\n',
+  );
 
-  exec(`cd ${REPO_ROOT}/packages/eslint-config-react-native-community`);
-  exec('npm publish --registry http://localhost:4873 --access public');
-  exec('echo "Published @react-native/eslint-config to proxy \u2705"');
+  spawnSync('yarn', ['install'], {
+    cwd: PATH_TO_TEMPLATE,
+    stdio: [process.stdin, process.stdout, process.stderr],
+  });
+  process.stdout.write('Installed dependencies via Yarn \u2705\n');
 
-  exec('yarn');
-  exec('echo "Installed dependencies via Yarn \u2705"');
-
-  exec(`echo "Killing verdaccio. PID — ${VERDACCIO_PID}"`);
-  exec(`kill -9 ${VERDACCIO_PID}`);
-  exec('echo "Killed Verdaccio process \u2705"');
+  process.stdout.write(`Killing verdaccio. PID — ${VERDACCIO_PID}...\n`);
+  execSync(`kill -9 ${VERDACCIO_PID}`);
+  process.stdout.write('Killed Verdaccio process \u2705\n');
 
   process.exit();
 }
