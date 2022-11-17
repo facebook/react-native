@@ -24,13 +24,6 @@ packages:
   '@react-native/*':
     access: $all
     publish: $all
-  # The below specific entries can be removed once they are renamed and have the @react-native prefix
-  '@react-native-community/eslint-config':
-    access: $all
-    publish: $all
-  '@react-native-community/eslint-plugin':
-    access: $all
-    publish: $all
   'react-native-codegen':
     access: $all
     publish: $all
