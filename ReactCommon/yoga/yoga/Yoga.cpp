@@ -2079,7 +2079,7 @@ static float YGDistributeFreeSpaceSecondPass(
     const float availableInnerCrossDim,
     const float availableInnerWidth,
     const float availableInnerHeight,
-    const bool mainAxisOverflows,
+    const bool flexBasisOverflows,
     const YGMeasureMode measureModeCrossDim,
     const bool performLayout,
     const YGConfigRef config,
@@ -2175,7 +2175,7 @@ static float YGDistributeFreeSpaceSecondPass(
         !YGNodeIsStyleDimDefined(
             currentRelativeChild, crossAxis, availableInnerCrossDim) &&
         measureModeCrossDim == YGMeasureModeExactly &&
-        !(isNodeFlexWrap && mainAxisOverflows) &&
+        !(isNodeFlexWrap && flexBasisOverflows) &&
         YGNodeAlignItem(node, currentRelativeChild) == YGAlignStretch &&
         currentRelativeChild->marginLeadingValue(crossAxis).unit !=
             YGUnitAuto &&
@@ -2383,7 +2383,7 @@ static void YGResolveFlexibleLength(
     const float availableInnerCrossDim,
     const float availableInnerWidth,
     const float availableInnerHeight,
-    const bool mainAxisOverflows,
+    const bool flexBasisOverflows,
     const YGMeasureMode measureModeCrossDim,
     const bool performLayout,
     const YGConfigRef config,
@@ -2411,7 +2411,7 @@ static void YGResolveFlexibleLength(
       availableInnerCrossDim,
       availableInnerWidth,
       availableInnerHeight,
-      mainAxisOverflows,
+      flexBasisOverflows,
       measureModeCrossDim,
       performLayout,
       config,
@@ -2884,9 +2884,7 @@ static void YGNodelayoutImpl(
 
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
 
-  // Computed basis + margins + gap
-  float totalMainDim = 0;
-  totalMainDim += YGNodeComputeFlexBasisForChildren(
+  float totalOuterFlexBasis = YGNodeComputeFlexBasisForChildren(
       node,
       availableInnerWidth,
       availableInnerHeight,
@@ -2901,17 +2899,10 @@ static void YGNodelayoutImpl(
       depth,
       generationCount);
 
-  if (childCount > 1) {
-    totalMainDim +=
-        node->getGapForAxis(mainAxis, availableInnerCrossDim).unwrap() *
-        (childCount - 1);
-  }
-
-  const bool mainAxisOverflows =
-      (measureModeMainDim != YGMeasureModeUndefined) &&
-      totalMainDim > availableInnerMainDim;
-
-  if (isNodeFlexWrap && mainAxisOverflows &&
+  const bool flexBasisOverflows = measureModeMainDim == YGMeasureModeUndefined
+      ? false
+      : totalOuterFlexBasis > availableInnerMainDim;
+  if (isNodeFlexWrap && flexBasisOverflows &&
       measureModeMainDim == YGMeasureModeAtMost) {
     measureModeMainDim = YGMeasureModeExactly;
   }
@@ -3034,7 +3025,7 @@ static void YGNodelayoutImpl(
           availableInnerCrossDim,
           availableInnerWidth,
           availableInnerHeight,
-          mainAxisOverflows,
+          flexBasisOverflows,
           measureModeCrossDim,
           performLayout,
           config,
