@@ -129,6 +129,12 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
+- (BOOL)shouldBeRecycled
+{
+  // Default implementation always returns `YES`.
+  return YES;
+}
+
 - (facebook::react::Props::Shared)props
 {
   RCTAssert(NO, @"props access should be implemented by RCTViewComponentView.");

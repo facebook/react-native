@@ -112,6 +112,11 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
 - (void)prepareForRecycle;
 
 /*
+ * Whether the component should go into recycle pool after being destroyed.
+ */
+- (BOOL)shouldBeRecycled;
+
+/*
  * Read the last props used to update the view.
  */
 - (facebook::react::Props::Shared)props;
