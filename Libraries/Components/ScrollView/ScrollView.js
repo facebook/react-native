@@ -192,6 +192,12 @@ type IOSProps = $ReadOnly<{|
    */
   contentInset?: ?EdgeInsetsProp,
   /**
+   * Controls the distance between the soft keyboard and the TextInput
+   * when using `automaticallyAdjustKeyboardInsets`.
+   * @platform ios
+   */
+   bottomKeyboardOffset?: ?number,
+  /**
    * When true, the scroll view bounces when it reaches the end of the
    * content if the content is larger then the scroll view along the axis of
    * the scroll direction. When false, it disables all bouncing even if

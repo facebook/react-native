@@ -332,9 +332,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   if ([firstResponder isKindOfClass: [UITextField class]] && [(UITextField *) firstResponder isDescendantOfView:_scrollView]) {
     UITextField *textField = [UIResponder currentFirstResponder];
     CGRect textFieldFrame = [textField.superview convertRect:textField.frame toView:nil];
-    // [32] is a placeholder. It's the distance between the bottom of the textfield and the top of the keyboard
-    // What value should be used? Should it be customizable with a prop?
-    CGFloat textFieldBottom = textFieldFrame.origin.y + textFieldFrame.size.height + 32;
+    CGFloat textFieldBottom = textFieldFrame.origin.y + textFieldFrame.size.height + _bottomKeyboardOffset;
     CGFloat contentDiff = textFieldBottom - endFrame.origin.y;
     if (textFieldBottom > endFrame.origin.y && endFrame.origin.y < beginFrame.origin.y) {
       if (self.inverted) {
