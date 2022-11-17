@@ -28,7 +28,7 @@ export const whenUserClicksOnTheCancelApplicationButton = (when) => {
 
 export const thenVerifyAlertBoxHasText = (then) => {
     then(/^Verify that the cancel|submit alert box has text: "(.*)"$/, async (alertBoxType, alertBoxText) => {
-        switch(alertBoxType) {
+        switch (alertBoxType) {
             case 'cancel':
                 expect(await buttonComponentScreen.getCancelAlertText()).toContain(alertBoxText);
                 break;
