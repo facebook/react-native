@@ -8,6 +8,7 @@
  * @oncall react_native
  */
 
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 let Animated = require('../Animated').default;
 let AnimatedProps = require('../nodes/AnimatedProps').default;
 
@@ -126,6 +127,10 @@ describe('Animated tests', () => {
       expect(callback.mock.calls.length).toBe(1);
     });
 
+    /**
+     * The behavior matters when the input style is a mix of values
+     * from StyleSheet.create and an inline style with an animation
+     */
     it('does not discard initial style', () => {
       const value1 = new Animated.Value(1);
       const scale = value1.interpolate({
@@ -135,22 +140,28 @@ describe('Animated tests', () => {
       const callback = jest.fn();
       const node = new AnimatedProps(
         {
-          style: {
-            transform: [
-              {
-                scale,
-              },
-            ],
-          },
+          style: [
+            styles.red,
+            {
+              transform: [
+                {
+                  scale,
+                },
+              ],
+            },
+          ],
         },
         callback,
       );
 
       expect(node.__getValue()).toEqual({
         style: [
-          {
-            transform: [{scale}],
-          },
+          [
+            styles.red,
+            {
+              transform: [{scale}],
+            },
+          ],
           {
             transform: [{scale: 2}],
           },
@@ -163,9 +174,12 @@ describe('Animated tests', () => {
       expect(callback.mock.calls.length).toBe(1);
       expect(node.__getValue()).toEqual({
         style: [
-          {
-            transform: [{scale}],
-          },
+          [
+            styles.red,
+            {
+              transform: [{scale}],
+            },
+          ],
           {
             transform: [{scale: 1.5}],
           },
@@ -175,4 +189,10 @@ describe('Animated tests', () => {
       node.__detach();
     });
   });
+});
+
+const styles = StyleSheet.create({
+  red: {
+    backgroundColor: 'red',
+  },
 });
