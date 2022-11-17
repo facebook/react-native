@@ -21,7 +21,6 @@
 #import "UIView+Private.h"
 #import "UIView+React.h"
 #import "UIResponder+FirstResponder.h"
-#import "RCTInputAccessoryView.h"
 
 /**
  * Include a custom scroll view subclass because we want to limit certain
@@ -309,7 +308,6 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }
 
   double duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-  if (duration == 0) return;
 
   UIViewAnimationCurve curve =
       (UIViewAnimationCurve)[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
@@ -340,10 +338,8 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       } else {
         newContentOffset.y += contentDiff;
       }
-    } else {
-      return;
     }
-  } else if ([firstResponder isKindOfClass: [UITextField class]] || [firstResponder isKindOfClass: [RCTInputAccessoryView class]]) {
+  } else {
     CGFloat contentDiff = endFrame.origin.y - beginFrame.origin.y;
     if (self.inverted) {
       newContentOffset.y += contentDiff;
