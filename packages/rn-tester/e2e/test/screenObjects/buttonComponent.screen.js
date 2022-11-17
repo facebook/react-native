@@ -1,99 +1,67 @@
 const Utils = require('../helpers/utils');
+import { Platform } from 'react-native';
 
 class ButtonComponentScreen {
 
-    buttonScreen = '//android.view.ViewGroup/android.widget.TextView[@text="Button"]';
+    buttonScreenElement = Platform.select({
+        ios: '[label="Button"]',
+        android: '//android.view.ViewGroup/android.widget.TextView[@text="Button"]',
+    })
 
-    btnSubmit = '//android.widget.Button[@resource-id="button_default_styling"]';
+    btnSubmitElement = Platform.select({
+        ios: '[label="Press to submit your application!"]',
+        android: '//android.widget.Button[@resource-id="button_default_styling"]',
+    })
 
-    alertBox = '//android.widget.TextView[@resource-id="android:id/alertTitle"]';
+    inputSearchElement = Platform.select({
+        ios: '[name="example_search"]',
+        android: '//android.widget.EditText[@resource-id="example_search"]',
+    })
 
-    inputSearch = '//android.widget.EditText[@resource-id="example_search"]';
+    btnOKElement = Platform.select({
+        ios: '[label="OK"]',
+        android: '//android.widget.Button[@text="OK"]',
+    })
 
-    btnOK = '//android.widget.Button[@text="OK"]';
+    btnCancelElement = Platform.select({
+        ios: '[label="Press to cancel your application!"]',
+        android: '//android.widget.Button[@resource-id="cancel_button"]',
+    })
 
-    btnCancel = '//android.widget.Button[@resource-id="cancel_button"]';
+    submitAlertBoxElement = Platform.select({
+        ios: '[label="Your application has been submitted!"]',
+        android: '//android.widget.TextView[@resource-id="android:id/alertTitle"]',
+    })
 
+    cancelAlertBoxElement = Platform.select({
+        ios: '[label="Your application has been cancelled!"]',
+        android: '//android.widget.TextView[@resource-id="android:id/alertTitle"]',
+    })
 
-    buttonScreenIOS = '[label="Button"]';
-
-    btnSubmitIOS = '[label="Press to submit your application!"]';
-
-    submitAlertBoxIOS = '[label="Your application has been submitted!"]';
-
-    inputSearchIOS = '[name="example_search"]';
-
-    btnOKIOS = '[label="OK"]';
-
-    btnCancelIOS = '[label="Press to cancel your application!"]';
-
-    cancelAlertBoxIOS = '[label="Your application has been cancelled!"]';
 
 
     async checkButtonsScreenIsDisplayed() {
-        let deviceLocator;
-        if (process.env.E2E_DEVICE.includes('ios')) {
-            deviceLocator = this.buttonScreenIOS;
-        }
-        if (process.env.E2E_DEVICE.includes('android')) {
-            deviceLocator = this.buttonScreen;
-        }
-        return await Utils.getElementText(deviceLocator);
+        return await Utils.getElementText(this.buttonScreenElement);
     }
 
     async clickSubmitApplication() {
-        let deviceLocator;
-        if (process.env.E2E_DEVICE.includes('ios')) {
-            deviceLocator = this.btnSubmitIOS;
-        }
-        if (process.env.E2E_DEVICE.includes('android')) {
-            deviceLocator = this.btnSubmit;
-        }
-        await Utils.clickElement(deviceLocator);
+        await Utils.clickElement(this.btnSubmitElement);
     }
 
     async clickCancelApplication() {
-        let deviceLocator;
-        if (process.env.E2E_DEVICE.includes('ios')) {
-            deviceLocator = this.btnCancelIOS;
-        }
-        if (process.env.E2E_DEVICE.includes('android')) {
-            deviceLocator = this.btnCancel;
-        }
-        await Utils.clickElement(deviceLocator);
+        await Utils.clickElement(this.btnCancelElement);
     }
 
     async getCancelAlertText() {
-        let deviceLocator;
-        if (process.env.E2E_DEVICE.includes('ios')) {
-            deviceLocator = this.cancelAlertBoxIOS;
-        }
-        if (process.env.E2E_DEVICE.includes('android')) {
-            deviceLocator = this.alertBox;
-        }
-        return await Utils.getElementText(deviceLocator);
+        return await Utils.getElementText(this.cancelAlertBoxElement);
     }
 
     async getSubmitAlertText() {
-        let deviceLocator;
-        if (process.env.E2E_DEVICE.includes('ios')) {
-            deviceLocator = this.submitAlertBoxIOS;
-        }
-        if (process.env.E2E_DEVICE.includes('android')) {
-            deviceLocator = this.alertBox;
-        }
-        return await Utils.getElementText(deviceLocator);
+        return await Utils.getElementText(this.submitAlertBoxElement);
     }
 
     async clickOkButton() {
-        let deviceLocator;
-        if (process.env.E2E_DEVICE.includes('ios')) {
-            deviceLocator = this.btnOKIOS;
-        }
-        if (process.env.E2E_DEVICE .includes('android')) {
-            deviceLocator = this.btnOK;
-        }
-        await Utils.clickElement(deviceLocator);
+        await Utils.clickElement(this.btnOKElement);
     }
 
 }

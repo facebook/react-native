@@ -29,6 +29,7 @@
         "ios": "E2E_DEVICE=\"ios\" npm run test"
     },
     "dependencies": {
-        "@types/jest": "^29.2.1"
+        "@types/jest": "^29.2.1",
+        "react-native": "^0.70.6"
     }
 }

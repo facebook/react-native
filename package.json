@@ -68,7 +68,8 @@
     "!template/package-lock.json",
     "!template/yarn.lock",
     "third-party-podspecs",
-    "types"
+    "types",
+    "!packages/rn-tester/e2e"
   ],
   "scripts": {
     "start": "react-native start",
