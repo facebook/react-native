@@ -14,14 +14,14 @@ let flowParser, typeScriptParser, RNCodegen;
 const {basename} = require('path');
 
 try {
-  flowParser = require('react-native-codegen/src/parsers/flow');
-  typeScriptParser = require('react-native-codegen/src/parsers/typescript');
-  RNCodegen = require('react-native-codegen/src/generators/RNCodegen');
+  flowParser = require('@react-native/codegen/src/parsers/flow');
+  typeScriptParser = require('@react-native/codegen/src/parsers/typescript');
+  RNCodegen = require('@react-native/codegen/src/generators/RNCodegen');
 } catch (e) {
   // Fallback to lib when source doesn't exit (e.g. when installed as a dev dependency)
-  flowParser = require('react-native-codegen/lib/parsers/flow');
-  typeScriptParser = require('react-native-codegen/lib/parsers/typescript');
-  RNCodegen = require('react-native-codegen/lib/generators/RNCodegen');
+  flowParser = require('@react-native/codegen/lib/parsers/flow');
+  typeScriptParser = require('@react-native/codegen/lib/parsers/typescript');
+  RNCodegen = require('@react-native/codegen/lib/generators/RNCodegen');
 }
 
 function parseFile(filename, code) {

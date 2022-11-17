@@ -20,7 +20,6 @@
     "flow-parser": "^0.185.0",
     "make-dir": "^2.1.0",
     "pirates": "^4.0.1",
-    "react-native-codegen": "*",
     "source-map-support": "0.5.0"
   },
   "license": "MIT"
