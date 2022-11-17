@@ -42,7 +42,8 @@ public abstract class ReactActivity extends AppCompatActivity
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+    // The view state is not persisted consistently across Activity restarts, which can lead to crashes in those cases.
+    super.onCreate(null);
     mDelegate.onCreate(savedInstanceState);
   }
 
