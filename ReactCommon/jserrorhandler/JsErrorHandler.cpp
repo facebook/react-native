@@ -82,7 +82,7 @@ parseErrorStack(const jsi::JSError &error, bool isFatal, bool isHermes) {
     }
   }
   errorObj.putMapBufferList(kAllStackFrames, std::move(frames));
-  errorObj.putString(kErrorMessage, error.getMessage());
+  errorObj.putString(kErrorMessage, "EarlyJsError: " + error.getMessage());
   // TODO: If needed, can increment exceptionId by 1 each time
   errorObj.putInt(kExceptionId, 0);
   errorObj.putBool(kIsFatal, isFatal);

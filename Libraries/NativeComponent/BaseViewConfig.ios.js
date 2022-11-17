@@ -271,6 +271,9 @@ const validAttributesForNonEventProps = {
 
   flex: true,
   flexGrow: true,
+  rowGap: true,
+  columnGap: true,
+  gap: true,
   flexShrink: true,
   flexBasis: true,
   flexDirection: true,

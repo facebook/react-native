@@ -123,7 +123,7 @@ class Alert {
     options?: Options,
   ): void {
     if (Platform.OS === 'ios') {
-      let callbacks = [];
+      let callbacks: Array<?any> = [];
       const buttons = [];
       let cancelButtonKey;
       let destructiveButtonKey;

@@ -4,23 +4,29 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
 'use strict';
 
+import type {NativeModuleTypeAnnotation} from '../CodegenSchema';
 import type {ParserType} from './errors';
+import type {Parser} from './parser';
 
 const {
   MisnamedModuleInterfaceParserError,
+  UnsupportedFunctionReturnTypeAnnotationParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
+  UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   UnsupportedModulePropertyParserError,
+  MoreThanOneModuleInterfaceParserError,
+  UnsupportedFunctionParamTypeAnnotationParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -106,7 +112,7 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
   typeArguments: $FlowFixMe,
   methodName: string,
   moduleName: string,
-  language: ParserType,
+  parser: Parser,
 ) {
   function throwError() {
     throw new IncorrectModuleRegistryCallTypeParameterParserError(
@@ -114,28 +120,30 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
       typeArguments,
       methodName,
       moduleName,
-      language,
+      parser.language(),
     );
   }
 
-  if (language === 'Flow') {
-    if (
-      typeArguments.type !== 'TypeParameterInstantiation' ||
-      typeArguments.params.length !== 1 ||
-      typeArguments.params[0].type !== 'GenericTypeAnnotation' ||
-      typeArguments.params[0].id.name !== 'Spec'
-    ) {
-      throwError();
-    }
-  } else if (language === 'TypeScript') {
-    if (
-      typeArguments.type !== 'TSTypeParameterInstantiation' ||
-      typeArguments.params.length !== 1 ||
-      typeArguments.params[0].type !== 'TSTypeReference' ||
-      typeArguments.params[0].typeName.name !== 'Spec'
-    ) {
-      throwError();
-    }
+  if (parser.checkIfInvalidModule(typeArguments)) {
+    throwError();
+  }
+}
+
+function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
+  nativeModuleName: string,
+  returnTypeAnnotation: $FlowFixMe,
+  invalidReturnType: string,
+  language: ParserType,
+  cxxOnly: boolean,
+  returnType: string,
+) {
+  if (!cxxOnly && returnType === 'FunctionTypeAnnotation') {
+    throw new UnsupportedFunctionReturnTypeAnnotationParserError(
+      nativeModuleName,
+      returnTypeAnnotation.returnType,
+      'FunctionTypeAnnotation',
+      language,
+    );
   }
 }
 
@@ -188,13 +196,71 @@ function throwIfModuleTypeIsUnsupported(
   }
 }
 
+const UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap = {
+  FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+  VoidTypeAnnotation: 'void',
+  PromiseTypeAnnotation: 'Promise',
+};
+
+function throwIfPropertyValueTypeIsUnsupported(
+  moduleName: string,
+  propertyValue: $FlowFixMe,
+  propertyKey: string,
+  type: string,
+  language: ParserType,
+) {
+  const invalidPropertyValueType =
+    UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap[type];
+
+  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+    moduleName,
+    propertyValue,
+    propertyKey,
+    invalidPropertyValueType,
+    language,
+  );
+}
+
+function throwIfMoreThanOneModuleInterfaceParserError(
+  nativeModuleName: string,
+  moduleSpecs: $ReadOnlyArray<$FlowFixMe>,
+  parserType: ParserType,
+) {
+  if (moduleSpecs.length > 1) {
+    throw new MoreThanOneModuleInterfaceParserError(
+      nativeModuleName,
+      moduleSpecs,
+      moduleSpecs.map(node => node.id.name),
+      parserType,
+    );
+  }
+}
+
+function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+  nativeModuleName: string,
+  languageParamTypeAnnotation: $FlowFixMe,
+  paramName: string,
+  paramTypeAnnotationType: NativeModuleTypeAnnotation['type'],
+) {
+  throw new UnsupportedFunctionParamTypeAnnotationParserError(
+    nativeModuleName,
+    languageParamTypeAnnotation,
+    paramName,
+    paramTypeAnnotationType,
+  );
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
+  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
+  throwIfPropertyValueTypeIsUnsupported,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfUntypedModule,
   throwIfModuleTypeIsUnsupported,
+  throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
 };

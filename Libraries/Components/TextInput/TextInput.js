@@ -1602,6 +1602,7 @@ const ExportedForwardRef: React.AbstractComponent<
     enterKeyHint,
     returnKeyType,
     inputMode,
+    showSoftInputOnFocus,
     keyboardType,
     ...restProps
   },
@@ -1628,6 +1629,9 @@ const ExportedForwardRef: React.AbstractComponent<
       keyboardType={
         inputMode ? inputModeToKeyboardTypeMap[inputMode] : keyboardType
       }
+      showSoftInputOnFocus={
+        inputMode == null ? showSoftInputOnFocus : inputMode !== 'none'
+      }
       autoComplete={
         Platform.OS === 'android'
           ? // $FlowFixMe
@@ -1649,6 +1653,13 @@ const ExportedForwardRef: React.AbstractComponent<
     />
   );
 });
+
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+ExportedForwardRef.propTypes =
+  require('deprecated-react-native-prop-types').TextInputPropTypes;
 
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {

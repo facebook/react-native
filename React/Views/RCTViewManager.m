@@ -28,6 +28,7 @@ RCT_MULTI_ENUM_CONVERTER(
     (@{
       @"none" : @(UIAccessibilityTraitNone),
       @"button" : @(UIAccessibilityTraitButton),
+      @"dropdownlist" : @(UIAccessibilityTraitNone),
       @"togglebutton" : @(UIAccessibilityTraitButton),
       @"link" : @(UIAccessibilityTraitLink),
       @"header" : @(UIAccessibilityTraitHeader),
@@ -63,7 +64,17 @@ RCT_MULTI_ENUM_CONVERTER(
       @"tablist" : @(UIAccessibilityTraitNone),
       @"timer" : @(UIAccessibilityTraitNone),
       @"toolbar" : @(UIAccessibilityTraitNone),
+      @"grid" : @(UIAccessibilityTraitNone),
+      @"pager" : @(UIAccessibilityTraitNone),
+      @"scrollview" : @(UIAccessibilityTraitNone),
+      @"horizontalscrollview" : @(UIAccessibilityTraitNone),
+      @"viewgroup" : @(UIAccessibilityTraitNone),
+      @"webview" : @(UIAccessibilityTraitNone),
+      @"drawerlayout" : @(UIAccessibilityTraitNone),
+      @"slidingdrawer" : @(UIAccessibilityTraitNone),
+      @"iconmenu" : @(UIAccessibilityTraitNone),
       @"list" : @(UIAccessibilityTraitNone),
+      @"grid" : @(UIAccessibilityTraitNone),
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
@@ -426,6 +437,9 @@ RCT_EXPORT_SHADOW_PROPERTY(alignSelf, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(alignContent, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(position, YGPositionType)
 RCT_EXPORT_SHADOW_PROPERTY(aspectRatio, float)
+RCT_EXPORT_SHADOW_PROPERTY(rowGap, float)
+RCT_EXPORT_SHADOW_PROPERTY(columnGap, float)
+RCT_EXPORT_SHADOW_PROPERTY(gap, float)
 
 RCT_EXPORT_SHADOW_PROPERTY(overflow, YGOverflow)
 RCT_EXPORT_SHADOW_PROPERTY(display, YGDisplay)

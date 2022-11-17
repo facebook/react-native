@@ -151,7 +151,6 @@ class Binding : public jni::HybridClass<Binding>,
       sharedCppComponentRegistry_{nullptr};
   bool disablePreallocateViews_{false};
   bool enableFabricLogs_{false};
-  bool dispatchPreallocationInBackground_{false};
 };
 
 } // namespace react

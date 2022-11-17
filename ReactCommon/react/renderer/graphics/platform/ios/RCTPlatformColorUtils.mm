@@ -8,7 +8,6 @@
 #import "RCTPlatformColorUtils.h"
 
 #import <Foundation/Foundation.h>
-#import <React/RCTUtils.h>
 #import <UIKit/UIKit.h>
 
 #include <string>
@@ -180,7 +179,7 @@ static inline NSString *_NSStringFromCString(
 static inline facebook::react::ColorComponents _ColorComponentsFromUIColor(UIColor *color)
 {
   CGFloat rgba[4];
-  RCTGetRGBAColorComponents(color.CGColor, rgba);
+  [color getRed:&rgba[0] green:&rgba[1] blue:&rgba[2] alpha:&rgba[3]];
   return {(float)rgba[0], (float)rgba[1], (float)rgba[2], (float)rgba[3]};
 }
 

@@ -71,7 +71,8 @@ inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &t
   fontProperties.weight = textAttributes.fontWeight.has_value()
       ? RCTUIFontWeightFromInteger((NSInteger)textAttributes.fontWeight.value())
       : NAN;
-  fontProperties.sizeMultiplier = textAttributes.fontSizeMultiplier;
+  fontProperties.sizeMultiplier =
+      textAttributes.allowFontScaling.value_or(true) ? textAttributes.fontSizeMultiplier : 1;
 
   return RCTFontWithFontProperties(fontProperties);
 }

@@ -20,6 +20,8 @@ folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 
 folly_version = '2021.07.22.00'
 boost_compiler_flags = '-Wno-documentation'
 
+use_hermes = ENV['USE_HERMES'] == '1'
+
 header_subspecs = {
   'CoreModulesHeaders'          => 'React/CoreModules/**/*.h',
   'RCTActionSheetHeaders'       => 'Libraries/ActionSheetIOS/*.h',
@@ -34,13 +36,26 @@ header_subspecs = {
   'RCTVibrationHeaders'         => 'Libraries/Vibration/*.h',
 }
 
+header_search_paths = [
+  "$(PODS_TARGET_SRCROOT)/ReactCommon",
+  "$(PODS_ROOT)/boost",
+  "$(PODS_ROOT)/DoubleConversion",
+  "$(PODS_ROOT)/RCT-Folly",
+  "${PODS_ROOT}/Headers/Public/FlipperKit",
+  "$(PODS_ROOT)/Headers/Public/ReactCommon",
+  "$(PODS_ROOT)/Headers/Public/React-RCTFabric"
+].concat(use_hermes ? [
+  "$(PODS_ROOT)/Headers/Public/React-hermes",
+  "$(PODS_ROOT)/Headers/Public/hermes-engine"
+] : []).map{|p| "\"#{p}\""}.join(" ")
+
 Pod::Spec.new do |s|
   s.name                   = "React-Core"
   s.version                = version
   s.summary                = "The core of React Native."
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
-  s.author                 = "Facebook, Inc. and its affiliates"
+  s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => "12.4" }
   s.source                 = source
   s.resource_bundle        = { "AccessibilityResources" => ["React/AccessibilityResources/*.lproj"]}
@@ -48,12 +63,13 @@ Pod::Spec.new do |s|
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
   s.pod_target_xcconfig    = {
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/RCT-Folly\" \"${PODS_ROOT}/Headers/Public/React-hermes\" \"${PODS_ROOT}/Headers/Public/hermes-engine\" \"${PODS_ROOT}/Headers/Public/FlipperKit\" \"$(PODS_ROOT)/Headers/Public/ReactCommon\" \"$(PODS_ROOT)/Headers/Public/React-RCTFabric\"",
-    "FRAMEWORK_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/React-hermes\"",
-    "DEFINES_MODULE" => "YES",
-    "GCC_PREPROCESSOR_DEFINITIONS" => "RCT_METRO_PORT=${RCT_METRO_PORT}",
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-  }
+                               "HEADER_SEARCH_PATHS" => header_search_paths,
+                               "DEFINES_MODULE" => "YES",
+                               "GCC_PREPROCESSOR_DEFINITIONS" => "RCT_METRO_PORT=${RCT_METRO_PORT}",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                             }.merge!(use_hermes ? {
+                               "FRAMEWORK_SEARCH_PATHS" => "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-hermes\""
+                             } : {})
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
   s.default_subspec        = "Default"
 

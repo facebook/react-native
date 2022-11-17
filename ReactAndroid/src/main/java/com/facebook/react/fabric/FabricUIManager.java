@@ -81,7 +81,6 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
-import com.facebook.react.uimanager.events.LockFreeEventDispatcherImpl;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import java.util.HashMap;
@@ -241,10 +240,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountingManager = new MountingManager(viewManagerRegistry, mMountItemExecutor);
     mMountItemDispatcher =
         new MountItemDispatcher(mMountingManager, new MountItemDispatchListener());
-    mEventDispatcher =
-        ReactFeatureFlags.enableLockFreeEventDispatcher
-            ? new LockFreeEventDispatcherImpl(reactContext)
-            : new EventDispatcherImpl(reactContext);
+    mEventDispatcher = new EventDispatcherImpl(reactContext);
     mShouldDeallocateEventDispatcher = true;
     mEventBeatManager = eventBeatManager;
     mReactApplicationContext.addLifecycleEventListener(this);

@@ -38,6 +38,14 @@ public class ReactFeatureFlags {
   public static boolean enableBridgelessArchitecture = false;
 
   /**
+   * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
+   */
+  public static volatile boolean enableBridgelessArchitectureSoftExceptions = false;
+
+  /** Does the bridgeless architecture use the new create/reload/destroy routines */
+  public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = false;
+
+  /**
    * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
    * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
    * is used.
@@ -73,9 +81,6 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 
-  /** Enables or disables MapBuffer Serialization */
-  public static boolean mapBufferSerializationEnabled = false;
-
   /* Enables or disables MapBuffer use in Props infrastructure. */
   public static boolean useMapBufferProps = false;
 
@@ -84,18 +89,6 @@ public class ReactFeatureFlags {
 
   /** Feature Flag to use overflowInset values provided by Yoga */
   public static boolean useOverflowInset = false;
-
-  public static boolean enableLockFreeEventDispatcher = false;
-
-  public static boolean enableAggressiveEventEmitterCleanup = false;
-
-  public static boolean insertZReorderBarriersOnViewGroupChildren = true;
-
-  /**
-   * Feature Flag to control the size of the cache used by TextLayoutManager in Fabric. Used from
-   * JNI.
-   */
-  public static boolean enableLargeTextMeasureCache = true;
 
   public static boolean dispatchPointerEvents = false;
 
@@ -130,4 +123,7 @@ public class ReactFeatureFlags {
 
   /** Temporary flag to allow execution of mount items up to 15ms earlier than normal. */
   public static boolean enableEarlyScheduledMountItemExecution = false;
+
+  // TODO (T136375139): Remove this once finish testing
+  public static boolean enableAtomicRegisterSegment = false;
 }

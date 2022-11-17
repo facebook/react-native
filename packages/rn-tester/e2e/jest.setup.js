@@ -3,7 +3,7 @@ import capabilities from './e2e-config.js';
 import { beforeEach, afterEach, jest } from '@jest/globals';
 
 
-jest.setTimeout(30000);
+jest.setTimeout(40000);
 
 let driver;
 const config = {

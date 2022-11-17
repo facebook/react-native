@@ -8,7 +8,7 @@
  */
 
 import type * as React from 'react';
-import {Insets} from 'Utilities';
+import {Insets} from '../../../types/public/Insets';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
 import {

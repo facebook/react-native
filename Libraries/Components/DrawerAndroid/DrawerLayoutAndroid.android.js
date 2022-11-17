@@ -21,6 +21,7 @@ import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Platform from '../../Utilities/Platform';
 import StatusBar from '../StatusBar/StatusBar';
 import View from '../View/View';
+import type {AccessibilityRole} from '../../Components/View/ViewAccessibility';
 import AndroidDrawerLayoutNativeComponent, {
   Commands,
 } from './AndroidDrawerLayoutNativeComponent';
@@ -36,6 +37,8 @@ type DrawerSlideEvent = $ReadOnly<{|
 |}>;
 
 type Props = $ReadOnly<{|
+  accessibilityRole?: ?AccessibilityRole,
+
   /**
    * Determines whether the keyboard gets dismissed in response to a drag.
    *   - 'none' (the default), drags do not dismiss the keyboard.

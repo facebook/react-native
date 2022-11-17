@@ -71,7 +71,7 @@ class TextMeasureCacheKey final {
  * The number was empirically chosen based on approximation of an average amount
  * of meaningful measures per surface.
  */
-constexpr auto kSimpleThreadSafeCacheSizeCap = size_t{256};
+constexpr auto kSimpleThreadSafeCacheSizeCap = size_t{1024};
 
 /*
  * Thread-safe, evicting hash table designed to store text measurement

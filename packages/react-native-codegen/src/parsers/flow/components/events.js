@@ -104,7 +104,11 @@ function findEventArgumentsAndType(
   types: TypeMap,
   bubblingType: void | 'direct' | 'bubble',
   paperName: ?$FlowFixMe,
-) {
+): {
+  argumentProps: $FlowFixMe,
+  bubblingType: ?('direct' | 'bubble'),
+  paperTopLevelNameDeprecated: ?$FlowFixMe,
+} {
   if (!typeAnnotation.id) {
     throw new Error("typeAnnotation of event doesn't have a name");
   }
