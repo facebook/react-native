@@ -363,7 +363,7 @@ class TtsSpanExamples extends React.Component<{}> {
               accessibilityUnit="USD"
               accessible={true}
               style={styles.redBackground}>
-              u
+              US
             </Text>
           </Text>
         </RNTesterBlock>
@@ -372,7 +372,6 @@ class TtsSpanExamples extends React.Component<{}> {
             The time is
             <Text
               accessibilityRole="time"
-              accessibilityUnit="10:30"
               accessible={true}
               style={styles.redBackground}>
               10:30
@@ -396,7 +395,7 @@ class TtsSpanExamples extends React.Component<{}> {
             logged with logcat with an explanation.
             <Text
               accessibilityRole="money"
-              accessibilityUnit="1, US"
+              accessibilityUnit="US"
               accessible={true}
               style={styles.redBackground}>
               s

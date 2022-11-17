@@ -13,6 +13,7 @@ import android.text.style.TtsSpan;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -72,6 +73,7 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       try {
         if (roleClassName == ReactTtsSpan.TYPE_MONEY) {
           warningMessage = ReactTtsSpan.TYPE_MONEY_WARNING_MSG;
+          Currency.getInstance(accessibilityUnit);
           setStringArgument(ReactTtsSpan.ARG_INTEGER_PART, "");
           setStringArgument(ReactTtsSpan.ARG_CURRENCY, accessibilityUnit);
         }
