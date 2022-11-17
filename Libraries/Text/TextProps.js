@@ -200,6 +200,13 @@ export type TextProps = $ReadOnly<{|
   /**
    * Android Only
    */
+
+  /**
+   * Used with nested Text and accessibilityRole measure, money or telephone to specify the unit to announce.
+   * Measure refer to https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
+   * Currency refer to https://developer.android.com/reference/android/text/style/TtsSpan#ARG_CURRENCY
+   * Telephone refer to  https://developer.android.com/reference/android/text/style/TtsSpan#ARG_NUMBER_PARTS
+   */
   accessibilityUnit?: ?string,
 
   /**

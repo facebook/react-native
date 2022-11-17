@@ -46,6 +46,13 @@ export interface AccessibilityProps
    * Accessibility State tells a person using either VoiceOver on iOS or TalkBack on Android the state of the element currently focused on.
    */
   accessibilityState?: AccessibilityState | undefined;
+
+  /**
+   * Used with nested Text and accessibilityRole measure, money or telephone to specify the unit to announce.
+   * Measure refer to https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
+   * Currency refer to https://developer.android.com/reference/android/text/style/TtsSpan#ARG_CURRENCY
+   * Telephone refer to  https://developer.android.com/reference/android/text/style/TtsSpan#ARG_NUMBER_PARTS
+   */
   accessibilityUnit?: string | undefined;
 
   /**
