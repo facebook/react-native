@@ -1,7 +1,8 @@
 import { defineFeature, loadFeature } from 'jest-cucumber';
 import { givenUserOnMainPage } from '../common_steps/commonSteps.steps';
-import { thenVerifyAlertBoxHasText, thenVerifyThatTheButtonComponentIsDisplayed, thenVerifyThatTheButtonHeaderIsDisplayed, whenUserClicksOnTheButtonComponent, whenUserClicksOnTheCancelApplicationButton, whenUserClicksOnTheOKButton, whenUserClicksOnTheSubmitApplicationButton } from '../steps/buttonComponentScreen.steps';
+import * as steps from '../steps/buttonComponentScreen.steps';
 
+Object.entries(steps).forEach(([name, exported]) => window[name] = exported);
 const feature = loadFeature('test/features/buttonComponentScreen.feature');
 
 defineFeature(feature, (test) => {
@@ -20,6 +21,8 @@ defineFeature(feature, (test) => {
         thenVerifyAlertBoxHasText(then);
 
         whenUserClicksOnTheOKButton(when);
+
+        thenVerifyThatTheButtonHeaderIsDisplayed(then);
     });
 
     test('Submit Button', ({ given, when, then }) => {
@@ -37,5 +40,7 @@ defineFeature(feature, (test) => {
         thenVerifyAlertBoxHasText(then);
 
         whenUserClicksOnTheOKButton(when);
+
+        thenVerifyThatTheButtonHeaderIsDisplayed(then);
     });
   });
