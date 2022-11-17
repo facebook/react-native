@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {AccessibilityRole} from '../../Components/View/ViewAccessibility';
 import type {
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
@@ -21,7 +22,6 @@ import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Platform from '../../Utilities/Platform';
 import StatusBar from '../StatusBar/StatusBar';
 import View from '../View/View';
-import type {AccessibilityRole} from '../../Components/View/ViewAccessibility';
 import AndroidDrawerLayoutNativeComponent, {
   Commands,
 } from './AndroidDrawerLayoutNativeComponent';

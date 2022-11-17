@@ -199,7 +199,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   marginBlockStart?: DimensionValue,
 
   /** `marginBottom` works like `margin-bottom` in CSS.
-   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-bottom
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-block-start
    *  for more details.
    */
   marginBottom?: DimensionValue,
@@ -270,17 +270,19 @@ type ____LayoutStyle_Internal = $ReadOnly<{
 
   /** Setting `paddingBlock` is like setting both of
    *  `paddingTop` and `paddingBottom`.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-block
+   * for more details.
    */
   paddingBlock?: DimensionValue,
 
   /** `paddingBlockEnd` works like `padding-bottom` in CSS.
-   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-bottom
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-block-end
    * for more details.
    */
   paddingBlockEnd?: DimensionValue,
 
   /** `paddingBlockStart` works like `padding-top` in CSS.
-   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-top
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-block-start
    * for more details.
    */
   paddingBlockStart?: DimensionValue,
