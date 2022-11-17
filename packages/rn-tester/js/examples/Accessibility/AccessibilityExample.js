@@ -357,13 +357,13 @@ class TtsSpanExamples extends React.Component<{}> {
         </RNTesterBlock>
         <RNTesterBlock title="Text with child Text and accessibilityRole='money' and accessibilityUnit='1, USD'">
           <Text accessible={true}>
-            Money is spelled with the currency
+            Money is spelled with the currency 1
             <Text
               accessibilityRole="money"
-              accessibilityUnit="1, USD"
+              accessibilityUnit="USD"
               accessible={true}
               style={styles.redBackground}>
-              1u
+              u
             </Text>
           </Text>
         </RNTesterBlock>
@@ -375,7 +375,7 @@ class TtsSpanExamples extends React.Component<{}> {
               accessibilityUnit="10:30"
               accessible={true}
               style={styles.redBackground}>
-              10n30
+              10:30
             </Text>
           </Text>
         </RNTesterBlock>

@@ -13,7 +13,6 @@ import android.text.style.TtsSpan;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import java.util.Arrays;
-import java.util.Currency;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -36,7 +35,7 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
   private static final String TAG = ReactTtsSpan.class.getSimpleName();
   private static final String TYPE_MONEY_WARNING_MSG =
       "The accessibilityUnit format may not be compatible"
-          + " with the format supported ISO 4217 (for example '1, USD'). ";
+          + " with the format supported ISO 4217 (for example 'USD').";
   private static final String TYPE_TIME_WARNING_MSG =
       "Failed to retrieve hours and minutes. Make sure the format is HH:MM. ";
   private static final String TYPE_TELEPHONE_WARNING_MSG =
@@ -68,32 +67,15 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       Set<String> supportedTypes = new HashSet<String>();
       supportedTypes.addAll(
           Arrays.asList(
-              new String[] {
-                TtsSpan.TYPE_TIME, TtsSpan.TYPE_MONEY, TtsSpan.TYPE_TELEPHONE, TtsSpan.TYPE_MEASURE
-              }));
+              new String[] {TtsSpan.TYPE_MONEY, TtsSpan.TYPE_TELEPHONE, TtsSpan.TYPE_MEASURE}));
       if (accessibilityUnit == null || !supportedTypes.contains(roleClassName)) {
         return;
       }
       try {
-        if (roleClassName == ReactTtsSpan.TYPE_TIME) {
-          warningMessage = ReactTtsSpan.TYPE_TIME_WARNING_MSG;
-          String[] time = accessibilityUnit.split(":");
-          if (time[0] != null && time[1] != null) {
-            Integer hours = Integer.parseInt(time[0]);
-            Integer minutes = Integer.parseInt(time[1]);
-            setIntArgument(ReactTtsSpan.ARG_HOURS, hours);
-            setIntArgument(ReactTtsSpan.ARG_MINUTES, minutes);
-          }
-        }
         if (roleClassName == ReactTtsSpan.TYPE_MONEY) {
           warningMessage = ReactTtsSpan.TYPE_MONEY_WARNING_MSG;
-          String[] amount = accessibilityUnit.split(",");
-          if (amount[0] != null && amount[1] != null) {
-            setStringArgument(ReactTtsSpan.ARG_INTEGER_PART, amount[0]);
-            String currency = amount[1].trim();
-            Currency.getInstance(currency);
-            setStringArgument(ReactTtsSpan.ARG_CURRENCY, currency);
-          }
+          setStringArgument(ReactTtsSpan.ARG_INTEGER_PART, "");
+          setStringArgument(ReactTtsSpan.ARG_CURRENCY, accessibilityUnit);
         }
         if (roleClassName == ReactTtsSpan.TYPE_TELEPHONE) {
           warningMessage = ReactTtsSpan.TYPE_TELEPHONE_WARNING_MSG;
