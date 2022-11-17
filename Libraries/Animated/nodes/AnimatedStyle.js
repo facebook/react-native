@@ -53,11 +53,12 @@ export default class AnimatedStyle extends AnimatedWithChildren {
 
   constructor(style: any) {
     super();
-    this._inputStyle = style;
-    this._style =
-      Platform.OS === 'web'
-        ? createAnimatedStyle(style)
-        : createStyleWithAnimatedTransform(style);
+    if (Platform.OS === 'web') {
+      this._inputStyle = style;
+      this._style = createAnimatedStyle(style);
+    } else {
+      this._style = createStyleWithAnimatedTransform(style);
+    }
   }
 
   // Recursively get values for nested styles (like iOS's shadowOffset)
