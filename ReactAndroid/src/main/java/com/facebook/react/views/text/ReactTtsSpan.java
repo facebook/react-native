@@ -39,6 +39,7 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
           + " with the format supported ISO 4217 (for example '1, USD'). ";
   private static final String TYPE_TIME_WARNING_MSG =
       "Failed to retrieve hours and minutes. Make sure the format is HH:MM. ";
+  private static final String TYPE_TELEPHONE_WARNING_MSG = "Failed to retrieve telephone number.";
 
   public ReactTtsSpan(String type, PersistableBundle args) {
     super(type, args);
@@ -64,9 +65,7 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       Set<String> supportedTypes = new HashSet<String>();
       supportedTypes.addAll(
           Arrays.asList(
-              new String[] {
-                TtsSpan.TYPE_TIME, TtsSpan.TYPE_MONEY,
-              }));
+              new String[] {TtsSpan.TYPE_TIME, TtsSpan.TYPE_MONEY, TtsSpan.TYPE_TELEPHONE}));
       if (accessibilityUnit == null || !supportedTypes.contains(roleClassName)) {
         return;
       }
@@ -90,6 +89,10 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
             Currency.getInstance(currency);
             setStringArgument(ReactTtsSpan.ARG_CURRENCY, currency);
           }
+        }
+        if (roleClassName == ReactTtsSpan.TYPE_TELEPHONE) {
+          warningMessage = ReactTtsSpan.TYPE_TELEPHONE_WARNING_MSG;
+          setStringArgument(ReactTtsSpan.ARG_NUMBER_PARTS, accessibilityUnit);
         }
       } catch (Exception e) {
         // in reactnative we trigger an error in metro on Debug

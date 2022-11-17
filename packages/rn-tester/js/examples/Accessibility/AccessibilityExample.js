@@ -365,8 +365,11 @@ class TtsSpanExamples extends React.Component<{}> {
         <RNTesterBlock title="Text with child Text and accessibilityRole='telephone'">
           <Text accessible={true}>
             The telephone is
-            <Text accessibilityRole="telephone" style={styles.redBackground}>
-              0111234234234
+            <Text
+              accessibilityRole="telephone"
+              accessibilityUnit="0118888888"
+              style={styles.redBackground}>
+              0118888888
             </Text>
           </Text>
         </RNTesterBlock>
