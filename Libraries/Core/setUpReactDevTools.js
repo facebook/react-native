@@ -62,6 +62,7 @@ if (__DEV__) {
       });
 
       const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+      const devToolsSettingsManager = require('../DevToolsSettings/DevToolsSettingsManager');
 
       reactDevTools.connectToDevTools({
         isAppActive,
@@ -70,6 +71,7 @@ if (__DEV__) {
           ReactNativeStyleAttributes,
         ),
         websocket: ws,
+        devToolsSettingsManager,
       });
     }
   };
