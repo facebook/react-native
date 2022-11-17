@@ -1,12 +1,11 @@
-const Utils = require('../helpers/utils');
-import { Platform } from 'react-native';
+import Utils from '../helpers/utils';
 
 class ComponentsScreen {
 
-  buttonComponentElement = Platform.select({
+  buttonComponentElement = Utils.platformSelect({
     ios: '[label="Button Simple React Native button component."]',
     android: '~Button Simple React Native button component.',
-  })
+  });
 
 
   async checkButtonComponentIsDisplayed() {

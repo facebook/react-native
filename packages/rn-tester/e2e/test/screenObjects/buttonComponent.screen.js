@@ -1,42 +1,41 @@
-const Utils = require('../helpers/utils');
-import { Platform } from 'react-native';
+import Utils from '../helpers/utils';
 
 class ButtonComponentScreen {
 
-    buttonScreenElement = Platform.select({
+    buttonScreenElement = Utils.platformSelect({
         ios: '[label="Button"]',
         android: '//android.view.ViewGroup/android.widget.TextView[@text="Button"]',
-    })
+    });
 
-    btnSubmitElement = Platform.select({
+    btnSubmitElement = Utils.platformSelect({
         ios: '[label="Press to submit your application!"]',
         android: '//android.widget.Button[@resource-id="button_default_styling"]',
-    })
+    });
 
-    inputSearchElement = Platform.select({
+    inputSearchElement = Utils.platformSelect({
         ios: '[name="example_search"]',
         android: '//android.widget.EditText[@resource-id="example_search"]',
-    })
+    });
 
-    btnOKElement = Platform.select({
+    btnOKElement = Utils.platformSelect({
         ios: '[label="OK"]',
         android: '//android.widget.Button[@text="OK"]',
-    })
+    });
 
-    btnCancelElement = Platform.select({
+    btnCancelElement = Utils.platformSelect({
         ios: '[label="Press to cancel your application!"]',
         android: '//android.widget.Button[@resource-id="cancel_button"]',
-    })
+    });
 
-    submitAlertBoxElement = Platform.select({
+    submitAlertBoxElement = Utils.platformSelect({
         ios: '[label="Your application has been submitted!"]',
         android: '//android.widget.TextView[@resource-id="android:id/alertTitle"]',
-    })
+    });
 
-    cancelAlertBoxElement = Platform.select({
+    cancelAlertBoxElement = Utils.platformSelect({
         ios: '[label="Your application has been cancelled!"]',
         android: '//android.widget.TextView[@resource-id="android:id/alertTitle"]',
-    })
+    });
 
 
 

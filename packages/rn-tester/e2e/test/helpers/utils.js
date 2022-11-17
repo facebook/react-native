@@ -18,5 +18,9 @@ class Utils {
     return driver.$(locator).getText();
   }
 
+
+  platformSelect(platforms) {
+    return platforms[process.env.E2E_DEVICE];
+  }
 }
 module.exports = new Utils();
