@@ -87,13 +87,6 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
           setStringArgument(ReactTtsSpan.ARG_UNIT, accessibilityUnit);
         }
       } catch (Exception e) {
-        // in reactnative we trigger an error in metro on Debug
-        // (for ex. accessibilityHours should be a number and not a string)
-        // accessibilityUnit uses a String type, there is no strict check on the type
-        // will be improved in the future upcoming PRs
-        // multiple props could be added for different properties
-        // accessibilityHours number, accessibilityCurrency "USD" or "EUR" ISO 4217
-        // accessibilityAmount number https://bit.ly/3UG96lP
         FLog.e(
             TAG,
             "Failed to create ReactTtsSpan.Builder with params type: "
