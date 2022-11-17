@@ -20,7 +20,7 @@
   "dependencies": {
     "@babel/parser": "^7.14.0",
     "flow-parser": "^0.185.0",
-    "jscodeshift": "^0.13.1",
+    "jscodeshift": "^0.14.0",
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
