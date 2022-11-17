@@ -613,7 +613,7 @@ public class TextAttributeProps {
       String roleClassName =
           AccessibilityRole.getValue(AccessibilityRole.fromValue(accessibilityRole));
       mIsAccessibilityTtsSpan =
-          ReactTtsSpan.SUPPORTED_UNIT_TYPES.contains(roleClassName) && Build.VERSION.SDK_INT >= 21;
+          ReactTtsSpan.SUPPORTED_TYPES.contains(roleClassName) && Build.VERSION.SDK_INT >= 21;
     }
   }
 

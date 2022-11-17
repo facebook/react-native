@@ -32,11 +32,14 @@ import javax.annotation.Nullable;
  */
 public class ReactTtsSpan extends TtsSpan implements ReactSpan {
   private static final String TAG = ReactTtsSpan.class.getSimpleName();
-  // For additional logging change the below variable to true
-  public static final boolean DEBUG_MODE = true;
+  private static final String TYPE_MONEY_WARNING_MSG =
+      "The accessibilityUnit format may not be compatible"
+          + " with the format supported ISO 4217 (for example '1, USD'). ";
+  private static final String TYPE_TIME_WARNING_MSG =
+      "Failed to retrieve hours and minutes. Make sure the format is HH:MM. ";
 
   // supported TYPES in react-native
-  public static Set<String> SUPPORTED_UNIT_TYPES =
+  public static Set<String> SUPPORTED_TYPES =
       Set.of(
           TYPE_CARDINAL,
           TYPE_ORDINAL,
@@ -50,6 +53,8 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
           TYPE_MONEY,
           TYPE_DIGITS,
           TYPE_VERBATIM);
+  // TYPES that currently support accessibilityUnit prop in react-native
+  private static Set<String> SUPPORTED_UNIT_TYPES = Set.of(TYPE_TIME, TYPE_MONEY);
 
   public ReactTtsSpan(String type, PersistableBundle args) {
     super(type, args);
@@ -71,23 +76,29 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       String typeConvertedToString = AccessibilityRole.getValue(type);
       mType = typeConvertedToString;
       String roleClassName = AccessibilityRole.getValue(type);
-      if (accessibilityUnit == null) {
+      String warningMessage = "";
+      if (accessibilityUnit == null || !ReactTtsSpan.SUPPORTED_UNIT_TYPES.contains(roleClassName)) {
         return;
       }
       try {
         if (roleClassName == ReactTtsSpan.TYPE_TIME) {
+          warningMessage = ReactTtsSpan.TYPE_TIME_WARNING_MSG;
           String[] time = accessibilityUnit.split(":");
           if (time[0] != null && time[1] != null) {
             Integer hours = Integer.parseInt(time[0]);
             Integer minutes = Integer.parseInt(time[1]);
             setIntArgument(ReactTtsSpan.ARG_HOURS, hours);
             setIntArgument(ReactTtsSpan.ARG_MINUTES, minutes);
-          } else if (DEBUG_MODE) {
-            FLog.w(
-                TAG,
-                "Failed to retrieve hours and minutes from accessibilityUnit: "
-                    + accessibilityUnit
-                    + ". Make sure the format is HH:MM");
+          }
+        }
+        if (roleClassName == ReactTtsSpan.TYPE_MONEY) {
+          warningMessage = ReactTtsSpan.TYPE_MONEY_WARNING_MSG;
+          String[] amount = accessibilityUnit.split(",");
+          if (amount[0] != null && amount[1] != null) {
+            setStringArgument(ReactTtsSpan.ARG_INTEGER_PART, amount[0]);
+            String currency = amount[1].trim();
+            Currency.getInstance(currency);
+            setStringArgument(ReactTtsSpan.ARG_CURRENCY, currency);
           }
         }
       } catch (Exception e) {
@@ -104,28 +115,10 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
                 + type
                 + " and accessibilityUnit: "
                 + accessibilityUnit
-                + "with Error: "
+                + " "
+                + warningMessage
+                + "Error: "
                 + e);
-      }
-      if (roleClassName == ReactTtsSpan.TYPE_MONEY) {
-        try {
-          String[] amount = accessibilityUnit.split(",");
-          if (amount[0] != null && amount[1] != null) {
-            setStringArgument(ReactTtsSpan.ARG_INTEGER_PART, amount[0]);
-            String currency = amount[1].trim();
-            Currency.getInstance(currency);
-            setStringArgument(ReactTtsSpan.ARG_CURRENCY, currency);
-          }
-        } catch (Exception e) {
-          FLog.e(
-              TAG,
-              "Failed to retrieve the currency from the accessibilityUnit: "
-                  + accessibilityUnit
-                  + ". The accessibilityUnit format may not be compatible"
-                  + " with the format supported ISO 4217 (for example '1, USD')."
-                  + "Error: "
-                  + e);
-        }
       }
     }
 

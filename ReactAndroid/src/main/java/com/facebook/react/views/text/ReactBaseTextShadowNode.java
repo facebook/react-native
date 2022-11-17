@@ -504,8 +504,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       String roleClassName =
           AccessibilityRole.getValue(AccessibilityRole.fromValue(accessibilityRole));
       mIsAccessibilityLink = Objects.equals(accessibilityRole, "link");
-      mAccessibilityUnit =
-          ReactTtsSpan.SUPPORTED_UNIT_TYPES.contains(roleClassName) ? roleClassName : null;
       markUpdated();
     }
   }
