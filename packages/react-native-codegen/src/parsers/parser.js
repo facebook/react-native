@@ -29,10 +29,10 @@ export interface Parser {
   isProperty(property: $FlowFixMe): boolean;
   /**
    * Given a property declaration, it returns the key name.
-   * @parameter propertyOrIndex: an object containing a property declaration.
+   * @parameter property: an object containing a property declaration.
    * @parameter hasteModuleName: a string with the native module name.
    * @returns: the key name.
-   * @throws if propertyOrIndex does not contain a property declaration.
+   * @throws if property does not contain a property declaration.
    */
   getKeyName(property: $FlowFixMe, hasteModuleName: string): string;
   /**

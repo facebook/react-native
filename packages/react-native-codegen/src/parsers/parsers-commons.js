@@ -136,7 +136,6 @@ function parseObjectProperty(
 ): NamedShape<Nullable<NativeModuleBaseTypeAnnotation>> {
   const language = parser.language();
 
-  // getKeyName throw UnsupportedObjectPropertyTypeAnnotationParserError if it is not a property
   const name = parser.getKeyName(property, hasteModuleName);
   const {optional = false} = property;
   const languageTypeAnnotation =
