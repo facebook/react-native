@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,10 +24,10 @@ class DebugStringConvertibleItem : public DebugStringConvertible {
   DebugStringConvertibleItem(const DebugStringConvertibleItem &item) = default;
 
   DebugStringConvertibleItem(
-      const std::string &name = "",
-      const std::string &value = "",
-      const SharedDebugStringConvertibleList &props = {},
-      const SharedDebugStringConvertibleList &children = {});
+      std::string name = "",
+      std::string value = "",
+      SharedDebugStringConvertibleList props = {},
+      SharedDebugStringConvertibleList children = {});
 
   std::string getDebugName() const override;
   std::string getDebugValue() const override;

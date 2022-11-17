@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -129,8 +129,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     @Override
     public void onClick(DialogInterface dialog, int which) {
       if (!mCallbackConsumed) {
-        if (getReactApplicationContext().isBridgeless()
-            || getReactApplicationContext().hasActiveCatalystInstance()) {
+        if (getReactApplicationContext().hasActiveReactInstance()) {
           mCallback.invoke(ACTION_BUTTON_CLICKED, which);
           mCallbackConsumed = true;
         }
@@ -140,8 +139,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     @Override
     public void onDismiss(DialogInterface dialog) {
       if (!mCallbackConsumed) {
-        if (getReactApplicationContext().isBridgeless()
-            || getReactApplicationContext().hasActiveCatalystInstance()) {
+        if (getReactApplicationContext().hasActiveReactInstance()) {
           mCallback.invoke(ACTION_DISMISSED);
           mCallbackConsumed = true;
         }
@@ -239,5 +237,15 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
       return null;
     }
     return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
   }
 }

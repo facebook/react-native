@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,24 +22,19 @@ using namespace facebook::react;
 @interface RCTDevSplitBundleLoader () <NativeDevSplitBundleLoaderSpec>
 @end
 
-#if RCT_DEV_MENU
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
 
 @implementation RCTDevSplitBundleLoader
 
 @synthesize bridge = _bridge;
 @synthesize loadScript = _loadScript;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
   return NO;
-}
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
 }
 
 RCT_EXPORT_METHOD(loadBundle
@@ -69,7 +64,7 @@ RCT_EXPORT_METHOD(loadBundle
           }
           __typeof(self) strongSelf = weakSelf;
           strongSelf->_loadScript(source);
-          RCTDevSettings *devSettings = [strongSelf->_turboModuleRegistry moduleForName:"RCTDevSettings"];
+          RCTDevSettings *devSettings = [strongSelf->_moduleRegistry moduleForName:"RCTDevSettings"];
           [devSettings setupHMRClientWithAdditionalBundleURL:source.url];
           resolve(@YES);
         }];

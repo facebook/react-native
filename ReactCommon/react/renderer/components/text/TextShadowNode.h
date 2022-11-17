@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,6 +34,7 @@ class TextShadowNode : public ConcreteShadowNode<
 #ifdef ANDROID
     traits.set(ShadowNodeTraits::Trait::FormsView);
 #endif
+    traits.set(ShadowNodeTraits::Trait::Text);
 
     return traits;
   }
@@ -56,6 +57,28 @@ class TextShadowNode : public ConcreteShadowNode<
   }
 #endif
 };
+
+template <>
+inline TextShadowNode const &traitCast<TextShadowNode const &>(
+    ShadowNode const &shadowNode) {
+  bool castable = shadowNode.getTraits().check(ShadowNodeTraits::Trait::Text);
+  react_native_assert(castable);
+  (void)castable;
+  return static_cast<TextShadowNode const &>(shadowNode);
+}
+
+template <>
+inline TextShadowNode const *traitCast<TextShadowNode const *>(
+    ShadowNode const *shadowNode) {
+  if (!shadowNode) {
+    return nullptr;
+  }
+  bool castable = shadowNode->getTraits().check(ShadowNodeTraits::Trait::Text);
+  if (!castable) {
+    return nullptr;
+  }
+  return static_cast<TextShadowNode const *>(shadowNode);
+}
 
 } // namespace react
 } // namespace facebook

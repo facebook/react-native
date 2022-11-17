@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,17 +8,15 @@
  * @format
  */
 
-'use strict';
-
 import type {LogLevel} from '../Data/LogBoxLog';
 
-import * as React from 'react';
-import DeviceInfo from '../../Utilities/DeviceInfo';
+import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import View from '../../Components/View/View';
+import DeviceInfo from '../../Utilities/DeviceInfo';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   onDismiss: () => void,
@@ -71,6 +69,7 @@ function FooterButton(props: ButtonProps): React.Node {
 const buttonStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    // $FlowFixMe[sketchy-null-bool]
     paddingBottom: DeviceInfo.getConstants().isIPhoneX_deprecated ? 30 : 0,
   },
   content: {

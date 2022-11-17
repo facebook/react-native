@@ -1,8 +1,8 @@
 {
   "name": "react-native-codegen",
-  "version": "0.0.3",
+  "version": "0.72.0",
   "description": "⚛️ Code generation tools for React Native",
-  "homepage": "https://github.com/facebook/react-native/tree/master/packages/react-native-codegen",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git",
@@ -10,20 +10,21 @@
   },
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose",
-    "clean": "rm -rf lib",
-    "prepublish": "yarn run build"
+    "clean": "rimraf lib",
+    "prepare": "yarn run build"
   },
   "license": "MIT",
   "files": [
     "lib"
   ],
   "dependencies": {
-    "flow-parser": "^0.121.0",
-    "jscodeshift": "^0.9.0",
+    "@babel/parser": "^7.14.0",
+    "flow-parser": "^0.185.0",
+    "jscodeshift": "^0.13.1",
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
+    "@babel/core": "^7.14.0",
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
@@ -32,10 +33,13 @@
     "@babel/plugin-transform-async-to-generator": "^7.0.0",
     "@babel/plugin-transform-destructuring": "^7.0.0",
     "@babel/plugin-transform-flow-strip-types": "^7.0.0",
+    "@babel/preset-env": "^7.14.0",
     "chalk": "^4.0.0",
     "glob": "^7.1.1",
-    "micromatch": "^4.0.2",
+    "invariant": "^2.2.4",
+    "micromatch": "^4.0.4",
     "mkdirp": "^0.5.1",
-    "prettier": "1.19.1"
+    "prettier": "^2.4.1",
+    "rimraf": "^3.0.2"
   }
 }

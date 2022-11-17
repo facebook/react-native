@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -211,6 +211,16 @@ m::runtime::RemoteObject m::runtime::makeRemoteObject(
   } else if (value.isString()) {
     result.type = "string";
     result.value = value.getString(runtime).utf8(runtime);
+  } else if (value.isSymbol()) {
+    result.type = "symbol";
+    auto sym = value.getSymbol(runtime);
+    result.description = sym.toString(runtime);
+    result.objectId =
+        objTable.addValue(jsi::Value(std::move(sym)), objectGroup);
+  } else if (value.isBigInt()) {
+    auto strRepresentation =
+        value.getBigInt(runtime).toString(runtime).utf8(runtime) + 'n';
+    result.description = result.unserializableValue = strRepresentation;
   } else if (value.isObject()) {
     jsi::Object obj = value.getObject(runtime);
 

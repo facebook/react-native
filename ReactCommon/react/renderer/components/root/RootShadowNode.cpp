@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,7 @@
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 const char RootComponentName[] = "RootView";
 
@@ -39,17 +38,22 @@ Transform RootShadowNode::getTransform() const {
 }
 
 RootShadowNode::Unshared RootShadowNode::clone(
+    PropsParserContext const &propsParserContext,
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext) const {
   auto props = std::make_shared<RootProps const>(
-      getConcreteProps(), layoutConstraints, layoutContext);
+      propsParserContext, getConcreteProps(), layoutConstraints, layoutContext);
   auto newRootShadowNode = std::make_shared<RootShadowNode>(
       *this,
       ShadowNodeFragment{
           /* .props = */ props,
       });
+
+  if (layoutConstraints != getConcreteProps().layoutConstraints) {
+    newRootShadowNode->dirtyLayout();
+  }
+
   return newRootShadowNode;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -116,9 +116,7 @@ class JSIExecutor : public JSExecutor {
   void callNativeModules(const jsi::Value &queue, bool isEndOfBatch);
   jsi::Value nativeCallSyncHook(const jsi::Value *args, size_t count);
   jsi::Value nativeRequire(const jsi::Value *args, size_t count);
-#ifdef DEBUG
   jsi::Value globalEvalWithSourceUrl(const jsi::Value *args, size_t count);
-#endif
 
   std::shared_ptr<jsi::Runtime> runtime_;
   std::shared_ptr<ExecutorDelegate> delegate_;

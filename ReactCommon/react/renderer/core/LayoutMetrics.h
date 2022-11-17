@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,12 @@
 
 #pragma once
 
+#include <folly/Hash.h>
 #include <react/renderer/core/LayoutPrimitives.h>
-#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
+#include <react/renderer/debug/flags.h>
+#include <react/renderer/graphics/Rect.h>
+#include <react/renderer/graphics/RectangleEdges.h>
 
 namespace facebook {
 namespace react {
@@ -28,8 +32,9 @@ struct LayoutMetrics {
   Rect getContentFrame() const {
     return Rect{
         Point{contentInsets.left, contentInsets.top},
-        Size{frame.size.width - contentInsets.left - contentInsets.right,
-             frame.size.height - contentInsets.top - contentInsets.bottom}};
+        Size{
+            frame.size.width - contentInsets.left - contentInsets.right,
+            frame.size.height - contentInsets.top - contentInsets.bottom}};
   }
 
   bool operator==(const LayoutMetrics &rhs) const {
@@ -39,14 +44,16 @@ struct LayoutMetrics {
                this->borderWidth,
                this->displayType,
                this->layoutDirection,
-               this->pointScaleFactor) ==
+               this->pointScaleFactor,
+               this->overflowInset) ==
         std::tie(
                rhs.frame,
                rhs.contentInsets,
                rhs.borderWidth,
                rhs.displayType,
                rhs.layoutDirection,
-               rhs.pointScaleFactor);
+               rhs.pointScaleFactor,
+               rhs.overflowInset);
   }
 
   bool operator!=(const LayoutMetrics &rhs) const {
@@ -62,5 +69,33 @@ struct LayoutMetrics {
 static LayoutMetrics const EmptyLayoutMetrics = {
     /* .frame = */ {{0, 0}, {-1.0, -1.0}}};
 
+#ifdef RN_DEBUG_STRING_CONVERTIBLE
+
+std::string getDebugName(LayoutMetrics const &object);
+std::vector<DebugStringConvertibleObject> getDebugProps(
+    LayoutMetrics const &object,
+    DebugStringConvertibleOptions options);
+
+#endif
+
 } // namespace react
 } // namespace facebook
+
+namespace std {
+
+template <>
+struct hash<facebook::react::LayoutMetrics> {
+  size_t operator()(const facebook::react::LayoutMetrics &layoutMetrics) const {
+    return folly::hash::hash_combine(
+        0,
+        layoutMetrics.frame,
+        layoutMetrics.contentInsets,
+        layoutMetrics.borderWidth,
+        layoutMetrics.displayType,
+        layoutMetrics.layoutDirection,
+        layoutMetrics.pointScaleFactor,
+        layoutMetrics.overflowInset);
+  }
+};
+
+} // namespace std

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,8 +15,9 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.provider.Settings;
 import androidx.annotation.Nullable;
-import com.facebook.fbreact.specs.NativeLinkingSpec;
+import com.facebook.fbreact.specs.NativeIntentAndroidSpec;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -26,9 +27,13 @@ import com.facebook.react.module.annotations.ReactModule;
 
 /** Intent module. Launch other activities or open URLs. */
 @ReactModule(name = IntentModule.NAME)
-public class IntentModule extends NativeLinkingSpec {
+public class IntentModule extends NativeIntentAndroidSpec {
 
   public static final String NAME = "IntentAndroid";
+
+  private @Nullable LifecycleEventListener mInitialURLListener = null;
+
+  private static final String EXTRA_MAP_KEY_FOR_VALUE = "value";
 
   public IntentModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -37,6 +42,15 @@ public class IntentModule extends NativeLinkingSpec {
   @Override
   public String getName() {
     return NAME;
+  }
+
+  @Override
+  public void invalidate() {
+    if (mInitialURLListener != null) {
+      getReactApplicationContext().removeLifecycleEventListener(mInitialURLListener);
+      mInitialURLListener = null;
+    }
+    super.invalidate();
   }
 
   /**
@@ -48,18 +62,20 @@ public class IntentModule extends NativeLinkingSpec {
   public void getInitialURL(Promise promise) {
     try {
       Activity currentActivity = getCurrentActivity();
+      if (currentActivity == null) {
+        waitForActivityAndGetInitialURL(promise);
+        return;
+      }
+
+      Intent intent = currentActivity.getIntent();
+      String action = intent.getAction();
+      Uri uri = intent.getData();
+
       String initialURL = null;
-
-      if (currentActivity != null) {
-        Intent intent = currentActivity.getIntent();
-        String action = intent.getAction();
-        Uri uri = intent.getData();
-
-        if (uri != null
-            && (Intent.ACTION_VIEW.equals(action)
-                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
-          initialURL = uri.toString();
-        }
+      if (uri != null
+          && (Intent.ACTION_VIEW.equals(action)
+              || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
+        initialURL = uri.toString();
       }
 
       promise.resolve(initialURL);
@@ -68,6 +84,33 @@ public class IntentModule extends NativeLinkingSpec {
           new JSApplicationIllegalArgumentException(
               "Could not get the initial URL : " + e.getMessage()));
     }
+  }
+
+  private void waitForActivityAndGetInitialURL(final Promise promise) {
+    if (mInitialURLListener != null) {
+      promise.reject(
+          new IllegalStateException(
+              "Cannot await activity from more than one call to getInitialURL"));
+      return;
+    }
+
+    mInitialURLListener =
+        new LifecycleEventListener() {
+          @Override
+          public void onHostResume() {
+            getInitialURL(promise);
+
+            getReactApplicationContext().removeLifecycleEventListener(this);
+            mInitialURLListener = null;
+          }
+
+          @Override
+          public void onHostPause() {}
+
+          @Override
+          public void onHostDestroy() {}
+        };
+    getReactApplicationContext().addLifecycleEventListener(mInitialURLListener);
   }
 
   /**
@@ -86,25 +129,8 @@ public class IntentModule extends NativeLinkingSpec {
     }
 
     try {
-      Activity currentActivity = getCurrentActivity();
       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url).normalizeScheme());
-
-      String selfPackageName = getReactApplicationContext().getPackageName();
-      ComponentName componentName =
-          intent.resolveActivity(getReactApplicationContext().getPackageManager());
-      String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
-
-      // If there is no currentActivity or we are launching to a different package we need to set
-      // the FLAG_ACTIVITY_NEW_TASK flag
-      if (currentActivity == null || !selfPackageName.equals(otherPackageName)) {
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      }
-
-      if (currentActivity != null) {
-        currentActivity.startActivity(intent);
-      } else {
-        getReactApplicationContext().startActivity(intent);
-      }
+      sendOSIntent(intent, false);
 
       promise.resolve(true);
     } catch (Exception e) {
@@ -201,13 +227,13 @@ public class IntentModule extends NativeLinkingSpec {
     if (extras != null) {
       for (int i = 0; i < extras.size(); i++) {
         ReadableMap map = extras.getMap(i);
-        String name = map.keySetIterator().nextKey();
-        ReadableType type = map.getType(name);
+        String name = map.getString("key");
+        ReadableType type = map.getType(EXTRA_MAP_KEY_FOR_VALUE);
 
         switch (type) {
           case String:
             {
-              intent.putExtra(name, map.getString(name));
+              intent.putExtra(name, map.getString(EXTRA_MAP_KEY_FOR_VALUE));
               break;
             }
           case Number:
@@ -215,13 +241,13 @@ public class IntentModule extends NativeLinkingSpec {
               // We cannot know from JS if is an Integer or Double
               // See: https://github.com/facebook/react-native/issues/4141
               // We might need to find a workaround if this is really an issue
-              Double number = map.getDouble(name);
+              Double number = map.getDouble(EXTRA_MAP_KEY_FOR_VALUE);
               intent.putExtra(name, number);
               break;
             }
           case Boolean:
             {
-              intent.putExtra(name, map.getBoolean(name));
+              intent.putExtra(name, map.getBoolean(EXTRA_MAP_KEY_FOR_VALUE));
               break;
             }
           default:
@@ -235,16 +261,27 @@ public class IntentModule extends NativeLinkingSpec {
       }
     }
 
-    getReactApplicationContext().startActivity(intent);
+    sendOSIntent(intent, true);
   }
 
-  @Override
-  public void addListener(String eventName) {
-    // iOS only
-  }
+  private void sendOSIntent(Intent intent, Boolean useNewTaskFlag) {
+    Activity currentActivity = getCurrentActivity();
 
-  @Override
-  public void removeListeners(double count) {
-    // iOS only
+    String selfPackageName = getReactApplicationContext().getPackageName();
+    ComponentName componentName =
+        intent.resolveActivity(getReactApplicationContext().getPackageManager());
+    String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
+
+    // If there is no currentActivity or we are launching to a different package we need to set
+    // the FLAG_ACTIVITY_NEW_TASK flag
+    if (useNewTaskFlag || currentActivity == null || !selfPackageName.equals(otherPackageName)) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+
+    if (currentActivity != null) {
+      currentActivity.startActivity(intent);
+    } else {
+      getReactApplicationContext().startActivity(intent);
+    }
   }
 }

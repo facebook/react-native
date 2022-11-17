@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -46,6 +46,9 @@ TEST(traitCastTest, testOne) {
   // clang-format on
 
   auto rootShadowNode = builder.build(element);
+
+  std::shared_ptr<ShadowNode> shadowNodeForRawTextShadowNode{rawTextShadowNode};
+  std::shared_ptr<ShadowNode> shadowNodeForTextShadowNode{textShadowNode};
 
   // Casting `nullptr` returns `nullptrs`.
   EXPECT_FALSE(traitCast<LayoutableShadowNode const *>(nullptr));
@@ -102,4 +105,32 @@ TEST(traitCastTest, testOne) {
       traitCast<LayoutableShadowNode const &>(*rawTextShadowNode), "");
   EXPECT_DEATH_IF_SUPPORTED(
       traitCast<YogaLayoutableShadowNode const &>(*rawTextShadowNode), "");
+
+  // trait cast to `RawTextShadowNode` works on `RawTextShadowNode`
+  // and not on TextShadowNode or ViewShadowNode
+  EXPECT_TRUE(traitCast<RawTextShadowNode const *>(
+      shadowNodeForRawTextShadowNode.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      traitCast<RawTextShadowNode const &>(*shadowNodeForRawTextShadowNode));
+  EXPECT_FALSE(
+      traitCast<RawTextShadowNode const *>(shadowNodeForTextShadowNode.get()));
+  EXPECT_DEATH_IF_SUPPORTED(
+      traitCast<RawTextShadowNode const &>(*shadowNodeForTextShadowNode), "");
+  EXPECT_FALSE(traitCast<RawTextShadowNode const *>(viewShadowNode.get()));
+  EXPECT_DEATH_IF_SUPPORTED(
+      traitCast<RawTextShadowNode const &>(*viewShadowNode), "");
+
+  // trait cast to `TextShadowNode` works on `TextShadowNode`
+  // and not on RawTextShadowNode or ViewShadowNode
+  EXPECT_TRUE(
+      traitCast<TextShadowNode const *>(shadowNodeForTextShadowNode.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      traitCast<TextShadowNode const &>(*shadowNodeForTextShadowNode));
+  EXPECT_FALSE(
+      traitCast<TextShadowNode const *>(shadowNodeForRawTextShadowNode.get()));
+  EXPECT_DEATH_IF_SUPPORTED(
+      traitCast<TextShadowNode const &>(*shadowNodeForRawTextShadowNode), "");
+  EXPECT_FALSE(traitCast<TextShadowNode const *>(viewShadowNode.get()));
+  EXPECT_DEATH_IF_SUPPORTED(
+      traitCast<TextShadowNode const &>(*viewShadowNode), "");
 }

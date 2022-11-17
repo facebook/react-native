@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -24,17 +24,15 @@
 # See http://sourceforge.net/p/proguard/bugs/466/
 -keep,allowobfuscation @interface com.facebook.proguard.annotations.DoNotStrip
 -keep,allowobfuscation @interface com.facebook.proguard.annotations.KeepGettersAndSetters
--keep,allowobfuscation @interface com.facebook.common.internal.DoNotStrip
--keep,allowobfuscation @interface com.facebook.jni.annotations.DoNotStrip
 
 # Do not strip any method/class that is annotated with @DoNotStrip
 -keep @com.facebook.proguard.annotations.DoNotStrip class *
--keep @com.facebook.common.internal.DoNotStrip class *
--keep @com.facebook.jni.annotations.DoNotStrip class *
 -keepclassmembers class * {
     @com.facebook.proguard.annotations.DoNotStrip *;
-    @com.facebook.common.internal.DoNotStrip *;
-    @com.facebook.jni.annotations.DoNotStrip *;
+}
+
+-keep @com.facebook.proguard.annotations.DoNotStripAny class * {
+    *;
 }
 
 -keepclassmembers @com.facebook.proguard.annotations.KeepGettersAndSetters class * {
@@ -50,17 +48,11 @@
 
 -dontwarn com.facebook.react.**
 -keep,includedescriptorclasses class com.facebook.react.bridge.** { *; }
+-keep,includedescriptorclasses class com.facebook.react.turbomodule.core.** { *; }
 
 # hermes
 -keep class com.facebook.jni.** { *; }
 
-# okhttp
-
--keepattributes Signature
--keepattributes *Annotation*
--keep class okhttp3.** { *; }
--keep interface okhttp3.** { *; }
--dontwarn okhttp3.**
 
 # okio
 

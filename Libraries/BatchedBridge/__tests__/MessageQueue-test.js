@@ -1,11 +1,11 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
  * @format
+ * @oncall react_native
  */
 
 'use strict';
@@ -30,8 +30,8 @@ const assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
 //
 // [ ] Local modules that throw exceptions are gracefully caught. In that case
 // local callbacks stored by IDs are cleaned up.
-describe('MessageQueue', function() {
-  beforeEach(function() {
+describe('MessageQueue', function () {
+  beforeEach(function () {
     jest.resetModules();
     MessageQueue = require('../MessageQueue');
     MessageQueueTestModule = require('../__mocks__/MessageQueueTestModule');
@@ -108,8 +108,8 @@ describe('MessageQueue', function() {
     const unknownModule = 'UnknownModule',
       unknownMethod = 'UnknownMethod';
     expect(() => queue.__callFunction(unknownModule, unknownMethod)).toThrow(
-      `Module ${unknownModule} is not a registered callable module (calling ${unknownMethod}). A frequent cause of the error is that the application entry file path is incorrect. 
-      This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
+      `Failed to call into JavaScript module method ${unknownModule}.${unknownMethod}(). Module has not been registered as callable. Bridgeless Mode: false. Registered callable JavaScript modules (n = 1): MessageQueueTestModule.
+        A frequent cause of the error is that the application entry file path is incorrect. This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
     );
   });
 
@@ -141,7 +141,7 @@ describe('MessageQueue', function() {
 
   it('should check if the global error handler is not overridden by the DebuggerInternal object', () => {
     const dummyModule = {
-      dummy: function() {},
+      dummy: function () {},
     };
     const name = 'emptyModuleName';
     const factory = jest.fn(() => dummyModule);
@@ -153,7 +153,7 @@ describe('MessageQueue', function() {
 
   it('should check if the global error handler is overridden by the DebuggerInternal object', () => {
     const dummyModule = {
-      dummy: function() {},
+      dummy: function () {},
     };
     const name = 'emptyModuleName';
     const factory = jest.fn(() => dummyModule);

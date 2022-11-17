@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,14 @@
 
 'use strict';
 
-const AnimatedInterpolation = require('./AnimatedInterpolation');
-const AnimatedNode = require('./AnimatedNode');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
-
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
+import type AnimatedNode from './AnimatedNode';
 
-class AnimatedModulo extends AnimatedWithChildren {
+import AnimatedInterpolation from './AnimatedInterpolation';
+import AnimatedWithChildren from './AnimatedWithChildren';
+
+export default class AnimatedModulo extends AnimatedWithChildren {
   _a: AnimatedNode;
   _modulus: number;
 
@@ -26,9 +27,9 @@ class AnimatedModulo extends AnimatedWithChildren {
     this._modulus = modulus;
   }
 
-  __makeNative() {
-    this._a.__makeNative();
-    super.__makeNative();
+  __makeNative(platformConfig: ?PlatformConfig) {
+    this._a.__makeNative(platformConfig);
+    super.__makeNative(platformConfig);
   }
 
   __getValue(): number {
@@ -37,7 +38,9 @@ class AnimatedModulo extends AnimatedWithChildren {
     );
   }
 
-  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+  interpolate<OutputT: number | string>(
+    config: InterpolationConfigType<OutputT>,
+  ): AnimatedInterpolation<OutputT> {
     return new AnimatedInterpolation(this, config);
   }
 
@@ -58,5 +61,3 @@ class AnimatedModulo extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedModulo;

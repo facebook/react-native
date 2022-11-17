@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +8,8 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <optional>
 
-#include <better/optional.h>
 #include <folly/container/EvictingCacheMap.h>
 
 namespace facebook {
@@ -22,6 +22,7 @@ template <typename KeyT, typename ValueT, int maxSize>
 class SimpleThreadSafeCache {
  public:
   SimpleThreadSafeCache() : map_{maxSize} {}
+  SimpleThreadSafeCache(unsigned long size) : map_{size} {}
 
   /*
    * Returns a value from the map with a given key.
@@ -47,7 +48,7 @@ class SimpleThreadSafeCache {
    * If the value wasn't found in the cache, returns empty optional.
    * Can be called from any thread.
    */
-  better::optional<ValueT> get(const KeyT &key) const {
+  std::optional<ValueT> get(const KeyT &key) const {
     std::lock_guard<std::mutex> lock(mutex_);
     auto iterator = map_.find(key);
     if (iterator == map_.end()) {

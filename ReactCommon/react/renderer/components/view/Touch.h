@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
 
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
-#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/graphics/Point.h>
 
 namespace facebook {
 namespace react {
@@ -80,7 +80,7 @@ using Touches = std::unordered_set<Touch, Touch::Hasher, Touch::Comparator>;
 
 std::string getDebugName(Touch const &touch);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    Touch const &object,
+    Touch const &touch,
     DebugStringConvertibleOptions options);
 
 #endif

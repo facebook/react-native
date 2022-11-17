@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,7 @@
 'use strict';
 
 const SamplingProfiler = {
-  poke: function(token: number): void {
+  poke: function (token: number): void {
     let error = null;
     let result = null;
     try {
@@ -28,8 +28,8 @@ const SamplingProfiler = {
       error = e.toString();
     }
 
-    const NativeJSCSamplingProfiler = require('./NativeJSCSamplingProfiler')
-      .default;
+    const NativeJSCSamplingProfiler =
+      require('./NativeJSCSamplingProfiler').default;
     if (NativeJSCSamplingProfiler) {
       NativeJSCSamplingProfiler.operationComplete(token, result, error);
     }

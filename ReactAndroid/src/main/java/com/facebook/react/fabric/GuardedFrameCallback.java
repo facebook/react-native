@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,20 +8,20 @@
 package com.facebook.react.fabric;
 
 import androidx.annotation.NonNull;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.ChoreographerCompat;
 
 public abstract class GuardedFrameCallback extends ChoreographerCompat.FrameCallback {
 
-  @NonNull private final NativeModuleCallExceptionHandler mExceptionHandler;
+  @NonNull private final JSExceptionHandler mExceptionHandler;
 
   @Deprecated
   protected GuardedFrameCallback(@NonNull ReactContext reactContext) {
     this(reactContext.getExceptionHandler());
   }
 
-  protected GuardedFrameCallback(@NonNull NativeModuleCallExceptionHandler exceptionHandler) {
+  protected GuardedFrameCallback(@NonNull JSExceptionHandler exceptionHandler) {
     mExceptionHandler = exceptionHandler;
   }
 

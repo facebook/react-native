@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,6 +38,49 @@
 #else
 #define YG_ENUM_BEGIN(name) enum name
 #define YG_ENUM_END(name) name
+#endif
+
+#ifdef __cplusplus
+namespace facebook {
+namespace yoga {
+namespace enums {
+
+template <typename T>
+constexpr int count(); // can't use `= delete` due to a defect in clang < 3.9
+
+namespace detail {
+template <int... xs>
+constexpr int n() {
+  return sizeof...(xs);
+}
+} // namespace detail
+
+} // namespace enums
+} // namespace yoga
+} // namespace facebook
+#endif
+
+#define YG_ENUM_DECL(NAME, ...)                               \
+  typedef YG_ENUM_BEGIN(NAME){__VA_ARGS__} YG_ENUM_END(NAME); \
+  WIN_EXPORT const char* NAME##ToString(NAME);
+
+#ifdef __cplusplus
+#define YG_ENUM_SEQ_DECL(NAME, ...)  \
+  YG_ENUM_DECL(NAME, __VA_ARGS__)    \
+  YG_EXTERN_C_END                    \
+  namespace facebook {               \
+  namespace yoga {                   \
+  namespace enums {                  \
+  template <>                        \
+  constexpr int count<NAME>() {      \
+    return detail::n<__VA_ARGS__>(); \
+  }                                  \
+  }                                  \
+  }                                  \
+  }                                  \
+  YG_EXTERN_C_BEGIN
+#else
+#define YG_ENUM_SEQ_DECL YG_ENUM_DECL
 #endif
 
 #ifdef __GNUC__

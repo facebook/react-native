@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,47 +10,74 @@
 NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
-/*
- * On-demand view mounting
- */
-static BOOL RCTExperimentOnDemandViewMounting = NO;
+NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
+NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
+NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWillStartExecutingNotification";
+NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 
-BOOL RCTExperimentGetOnDemandViewMounting()
-{
-  return RCTExperimentOnDemandViewMounting;
-}
-
-void RCTExperimentSetOnDemandViewMounting(BOOL value)
-{
-  RCTExperimentOnDemandViewMounting = value;
-}
+NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
+NSString *const RCTDidSetupModuleNotification = @"RCTDidSetupModuleNotification";
+NSString *const RCTDidSetupModuleNotificationModuleNameKey = @"moduleName";
+NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
 
 /*
- * Sync performance flag
+ * W3C Pointer Events
  */
-static BOOL RCTExperimentSyncPerformanceFlag = NO;
+static BOOL RCTDispatchW3CPointerEvents = NO;
 
-BOOL RCTExperimentGetSyncPerformanceFlag()
+BOOL RCTGetDispatchW3CPointerEvents()
 {
-  return RCTExperimentSyncPerformanceFlag;
+  return RCTDispatchW3CPointerEvents;
 }
 
-void RCTExperimentSetSyncPerformanceFlag(BOOL value)
+void RCTSetDispatchW3CPointerEvents(BOOL value)
 {
-  RCTExperimentSyncPerformanceFlag = value;
+  RCTDispatchW3CPointerEvents = value;
 }
 
 /*
- * Optimized hit-testing
+ * Validate RCTEventEmitter. For experimentation only.
  */
-static BOOL RCTExperimentOptimizedHitTesting = NO;
+static BOOL RCTValidateCanSendEventInRCTEventEmitter = NO;
 
-BOOL RCTExperimentGetOptimizedHitTesting()
+BOOL RCTGetValidateCanSendEventInRCTEventEmitter()
 {
-  return RCTExperimentOptimizedHitTesting;
+  return RCTValidateCanSendEventInRCTEventEmitter;
 }
 
-void RCTExperimentSetOptimizedHitTesting(BOOL value)
+void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value)
 {
-  RCTExperimentOptimizedHitTesting = value;
+  RCTValidateCanSendEventInRCTEventEmitter = value;
+}
+
+/*
+ * Memory Pressure Unloading Level for experimentation only.
+ * Default is 15, which is TRIM_MEMORY_RUNNING_CRITICAL.
+ */
+static int RCTMemoryPressureUnloadLevel = 15;
+
+BOOL RCTGetMemoryPressureUnloadLevel()
+{
+  return RCTMemoryPressureUnloadLevel;
+}
+
+void RCTSetMemoryPressureUnloadLevel(int value)
+{
+  RCTMemoryPressureUnloadLevel = value;
+}
+
+/*
+ * In Bridge mode, parse the JS stack for unhandled JS errors, to display in RedBox.
+ * When false (previous default behavior), a native stack is displayed in the RedBox.
+ */
+static BOOL RCTParseUnhandledJSErrorStackNatively = NO;
+
+BOOL RCTGetParseUnhandledJSErrorStackNatively()
+{
+  return RCTParseUnhandledJSErrorStackNatively;
+}
+
+void RCTSetParseUnhandledJSErrorStackNatively(BOOL value)
+{
+  RCTParseUnhandledJSErrorStackNatively = value;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,19 +14,18 @@
 
 #include "RawEvent.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // TODO(T29874519): Get rid of "top" prefix once and for all.
 /*
  * Capitalizes the first letter of the event type and adds "top" prefix if
  * necessary (e.g. "layout" becames "topLayout").
  */
-static std::string normalizeEventType(const std::string &type) {
-  auto prefixedType = type;
-  if (type.find("top", 0) != 0) {
+static std::string normalizeEventType(std::string type) {
+  auto prefixedType = std::move(type);
+  if (prefixedType.find("top", 0) != 0) {
     prefixedType.insert(0, "top");
-    prefixedType[3] = toupper(prefixedType[3]);
+    prefixedType[3] = static_cast<char>(toupper(prefixedType[3]));
   }
   return prefixedType;
 }
@@ -44,28 +43,39 @@ ValueFactory EventEmitter::defaultPayloadFactory() {
 
 EventEmitter::EventEmitter(
     SharedEventTarget eventTarget,
-    Tag tag,
+    Tag /*tag*/,
     EventDispatcher::Weak eventDispatcher)
     : eventTarget_(std::move(eventTarget)),
       eventDispatcher_(std::move(eventDispatcher)) {}
 
 void EventEmitter::dispatchEvent(
-    const std::string &type,
+    std::string type,
     const folly::dynamic &payload,
-    const EventPriority &priority) const {
+    EventPriority priority,
+    RawEvent::Category category) const {
   dispatchEvent(
-      type,
+      std::move(type),
       [payload](jsi::Runtime &runtime) {
         return valueFromDynamic(runtime, payload);
       },
-      priority);
+      priority,
+      category);
+}
+
+void EventEmitter::dispatchUniqueEvent(
+    std::string type,
+    const folly::dynamic &payload) const {
+  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime &runtime) {
+    return valueFromDynamic(runtime, payload);
+  });
 }
 
 void EventEmitter::dispatchEvent(
-    const std::string &type,
+    std::string type,
     const ValueFactory &payloadFactory,
-    const EventPriority &priority) const {
-  SystraceSection s("EventEmitter::dispatchEvent");
+    EventPriority priority,
+    RawEvent::Category category) const {
+  SystraceSection s("EventEmitter::dispatchEvent", "type", type);
 
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
@@ -73,12 +83,16 @@ void EventEmitter::dispatchEvent(
   }
 
   eventDispatcher->dispatchEvent(
-      RawEvent(normalizeEventType(type), payloadFactory, eventTarget_),
+      RawEvent(
+          normalizeEventType(std::move(type)),
+          payloadFactory,
+          eventTarget_,
+          category),
       priority);
 }
 
 void EventEmitter::dispatchUniqueEvent(
-    const std::string &type,
+    std::string type,
     const ValueFactory &payloadFactory) const {
   SystraceSection s("EventEmitter::dispatchUniqueEvent");
 
@@ -87,8 +101,11 @@ void EventEmitter::dispatchUniqueEvent(
     return;
   }
 
-  eventDispatcher->dispatchUniqueEvent(
-      RawEvent(normalizeEventType(type), payloadFactory, eventTarget_));
+  eventDispatcher->dispatchUniqueEvent(RawEvent(
+      normalizeEventType(std::move(type)),
+      payloadFactory,
+      eventTarget_,
+      RawEvent::Category::Continuous));
 }
 
 void EventEmitter::setEnabled(bool enabled) const {
@@ -114,5 +131,4 @@ void EventEmitter::setEnabled(bool enabled) const {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

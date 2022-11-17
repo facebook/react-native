@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,6 @@
 #import <React/RCTModuleMethod.h>
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/TurboModule.h>
-#import <ReactCommon/TurboModuleUtils.h>
 #import <string>
 #import <unordered_map>
 
@@ -27,7 +26,11 @@
 namespace facebook {
 namespace react {
 
+class CallbackWrapper;
 class Instance;
+
+typedef std::weak_ptr<CallbackWrapper> (
+    ^RCTRetainJSCallback)(jsi::Function &&callback, jsi::Runtime &runtime, std::shared_ptr<CallInvoker> jsInvoker);
 
 /**
  * ObjC++ specific TurboModule base class.
@@ -41,6 +44,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
     std::shared_ptr<CallInvoker> jsInvoker;
     std::shared_ptr<CallInvoker> nativeInvoker;
     bool isSyncModule;
+    RCTRetainJSCallback retainJSCallback;
   };
 
   ObjCTurboModule(const InitParams &params);
@@ -62,6 +66,8 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
  private:
   // Does the NativeModule dispatch async methods to the JS thread?
   const bool isSyncModule_;
+
+  RCTRetainJSCallback retainJSCallback_;
 
   /**
    * TODO(ramanpreet):
@@ -90,29 +96,15 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       NSMutableArray *retainedObjectsForInvocation);
 
   using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
-  jsi::Value
-  createPromise(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> jsInvoker, PromiseInvocationBlock invoke);
+  jsi::Value createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke);
 };
 
 } // namespace react
 } // namespace facebook
 
 @protocol RCTTurboModule <NSObject>
-@optional
-/**
- * Used by TurboModules to get access to other TurboModules.
- *
- * Usage:
- * Place `@synthesize turboModuleRegistry = _turboModuleRegistry`
- * in the @implementation section of your TurboModule.
- */
-@property (nonatomic, weak) id<RCTTurboModuleRegistry> turboModuleRegistry;
-
-@optional
-// This should be required, after migration is done.
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params;
-
 @end
 
 /**

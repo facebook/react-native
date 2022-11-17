@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,13 @@
 #include "ShadowNodeFamily.h"
 #include "ShadowNode.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/State.h>
 
-namespace facebook {
-namespace react {
+#include <utility>
+
+namespace facebook::react {
 
 using AncestorList = ShadowNode::AncestorList;
 
@@ -20,7 +22,7 @@ ShadowNodeFamily::ShadowNodeFamily(
     ShadowNodeFamilyFragment const &fragment,
     EventDispatcher::Weak eventDispatcher,
     ComponentDescriptor const &componentDescriptor)
-    : eventDispatcher_(eventDispatcher),
+    : eventDispatcher_(std::move(eventDispatcher)),
       tag_(fragment.tag),
       surfaceId_(fragment.surfaceId),
       eventEmitter_(fragment.eventEmitter),
@@ -29,7 +31,7 @@ ShadowNodeFamily::ShadowNodeFamily(
       componentName_(componentDescriptor.getComponentName()) {}
 
 void ShadowNodeFamily::setParent(ShadowNodeFamily::Shared const &parent) const {
-  assert(parent_.lock() == nullptr || parent_.lock() == parent);
+  react_native_assert(parent_.lock() == nullptr || parent_.lock() == parent);
   if (hasParent_) {
     return;
   }
@@ -56,11 +58,11 @@ const ComponentDescriptor &ShadowNodeFamily::getComponentDescriptor() const {
 
 AncestorList ShadowNodeFamily::getAncestors(
     ShadowNode const &ancestorShadowNode) const {
-  auto families = better::small_vector<ShadowNodeFamily const *, 64>{};
+  auto families = butter::small_vector<ShadowNodeFamily const *, 64>{};
   auto ancestorFamily = ancestorShadowNode.family_.get();
 
   auto family = this;
-  while (family && family != ancestorFamily) {
+  while ((family != nullptr) && family != ancestorFamily) {
     families.push_back(family);
     family = family->parent_.lock().get();
   }
@@ -77,7 +79,7 @@ AncestorList ShadowNodeFamily::getAncestors(
     auto childIndex = 0;
     for (const auto &childNode : *parentNode->children_) {
       if (childNode->family_.get() == childFamily) {
-        ancestors.push_back({*parentNode, childIndex});
+        ancestors.emplace_back(*parentNode, childIndex);
         parentNode = childNode.get();
         found = true;
         break;
@@ -95,12 +97,12 @@ AncestorList ShadowNodeFamily::getAncestors(
 }
 
 State::Shared ShadowNodeFamily::getMostRecentState() const {
-  std::unique_lock<better::shared_mutex> lock(mutex_);
+  std::unique_lock<butter::shared_mutex> lock(mutex_);
   return mostRecentState_;
 }
 
 void ShadowNodeFamily::setMostRecentState(State::Shared const &state) const {
-  std::unique_lock<better::shared_mutex> lock(mutex_);
+  std::unique_lock<butter::shared_mutex> lock(mutex_);
 
   /*
    * Checking and setting `isObsolete_` prevents old states to be recommitted
@@ -121,7 +123,7 @@ void ShadowNodeFamily::setMostRecentState(State::Shared const &state) const {
 
 std::shared_ptr<State const> ShadowNodeFamily::getMostRecentStateIfObsolete(
     State const &state) const {
-  std::unique_lock<better::shared_mutex> lock(mutex_);
+  std::unique_lock<butter::shared_mutex> lock(mutex_);
   if (!state.isObsolete_) {
     return {};
   }
@@ -139,5 +141,4 @@ void ShadowNodeFamily::dispatchRawState(
   eventDispatcher->dispatchStateUpdate(std::move(stateUpdate), priority);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,7 @@
 
 #pragma once
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class LayoutAnimationStatusDelegate {
  public:
@@ -24,7 +23,8 @@ class LayoutAnimationStatusDelegate {
    * Called when the LayoutAnimation engine completes all pending animations.
    */
   virtual void onAllAnimationsComplete() = 0;
+
+  virtual ~LayoutAnimationStatusDelegate() = default;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

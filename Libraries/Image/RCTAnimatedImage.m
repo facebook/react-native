@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,7 +49,10 @@
     }
     self = [super initWithCGImage:image.CGImage scale:MAX(scale, 1) orientation:image.imageOrientation];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveMemoryWarning:)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
   }
 
   return self;
@@ -65,7 +68,7 @@
   NSMutableArray<RCTGIFCoderFrame *> *frames = [NSMutableArray array];
 
   for (size_t i = 0; i < frameCount; i++) {
-    RCTGIFCoderFrame *frame = [[RCTGIFCoderFrame alloc] init];
+    RCTGIFCoderFrame *frame = [RCTGIFCoderFrame new];
     frame.index = i;
     frame.duration = [self frameDurationAtIndex:i source:imageSource];
     [frames addObject:frame];
@@ -87,9 +90,12 @@
     NSNumber *gifLoopCount = gifProperties[(__bridge NSString *)kCGImagePropertyGIFLoopCount];
     if (gifLoopCount != nil) {
       loopCount = gifLoopCount.unsignedIntegerValue;
-      // A loop count of 1 means it should repeat twice, 2 means, thrice, etc.
-      if (loopCount != 0) {
-        loopCount++;
+      if (@available(iOS 14, *)) {
+      } else {
+        // A loop count of 1 means it should animate twice, 2 means, thrice, etc.
+        if (loopCount != 0) {
+          loopCount++;
+        }
       }
     }
   }

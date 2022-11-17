@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,15 +8,15 @@
 #pragma once
 
 #include <limits>
+#include <optional>
 
-#include <better/map.h>
-#include <better/optional.h>
-#include <better/small_vector.h>
+#include <butter/map.h>
+#include <butter/small_vector.h>
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
-#include <react/renderer/core/RawPropsKey.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
 #include <react/renderer/core/RawValue.h>
 #include <vector>
@@ -74,7 +74,8 @@ class RawProps final {
   RawProps(RawProps const &other) noexcept = delete;
   RawProps &operator=(RawProps const &other) noexcept = delete;
 
-  void parse(RawPropsParser const &parser) const noexcept;
+  void parse(RawPropsParser const &parser, const PropsParserContext &)
+      const noexcept;
 
   /*
    * Deprecated. Do not use.
@@ -96,6 +97,15 @@ class RawProps final {
   const RawValue *at(char const *name, char const *prefix, char const *suffix)
       const noexcept;
 
+  /**
+   * Iterator functions: for when you want to iterate over values in-order
+   * instead of using `at` to access values randomly.
+   */
+  void iterateOverValues(
+      std::function<
+          void(RawPropsPropNameHash, const char *, RawValue const &)> const &fn)
+      const;
+
  private:
   friend class RawPropsParser;
 
@@ -108,7 +118,7 @@ class RawProps final {
   mutable Mode mode_;
 
   // Case 1: Source data is represented as `jsi::Object`.
-  jsi::Runtime *runtime_;
+  jsi::Runtime *runtime_{};
   jsi::Value value_;
 
   // Case 2: Source data is represented as `folly::dynamic`.
@@ -124,10 +134,10 @@ class RawProps final {
    * Parsed artefacts:
    * To be used by `RawPropParser`.
    */
-  mutable better::
+  mutable butter::
       small_vector<RawPropsValueIndex, kNumberOfPropsPerComponentSoftCap>
           keyIndexToValueIndex_;
-  mutable better::
+  mutable butter::
       small_vector<RawValue, kNumberOfExplicitlySpecifedPropsSoftCap>
           values_;
 };

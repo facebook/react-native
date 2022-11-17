@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,7 +21,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -30,7 +30,6 @@ import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,35 +50,18 @@ public class UIImplementation {
   private long mLastCalculateLayoutTime = 0;
   protected @Nullable LayoutUpdateListener mLayoutUpdateListener;
 
+  /**
+   * When react instance is being shutdown, there could be some pending operations queued in the JS
+   * thread. This flag ensures view related operations are not triggered if the Catalyst instance
+   * was destroyed.
+   */
+  private volatile boolean mViewOperationsEnabled = true;
+
   /** Interface definition for a callback to be invoked when the layout has been updated */
   public interface LayoutUpdateListener {
 
     /** Called when the layout has been updated */
     void onLayoutUpdated(ReactShadowNode root);
-  }
-
-  public UIImplementation(
-      ReactApplicationContext reactContext,
-      UIManagerModule.ViewManagerResolver viewManagerResolver,
-      EventDispatcher eventDispatcher,
-      int minTimeLeftInFrameForNonBatchedOperationMs) {
-    this(
-        reactContext,
-        new ViewManagerRegistry(viewManagerResolver),
-        eventDispatcher,
-        minTimeLeftInFrameForNonBatchedOperationMs);
-  }
-
-  public UIImplementation(
-      ReactApplicationContext reactContext,
-      List<ViewManager> viewManagers,
-      EventDispatcher eventDispatcher,
-      int minTimeLeftInFrameForNonBatchedOperationMs) {
-    this(
-        reactContext,
-        new ViewManagerRegistry(viewManagers),
-        eventDispatcher,
-        minTimeLeftInFrameForNonBatchedOperationMs);
   }
 
   UIImplementation(
@@ -234,6 +216,10 @@ public class UIImplementation {
 
   /** Invoked by React to create a new node with a given tag, class name and properties. */
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     synchronized (uiImplementationThreadLock) {
       ReactShadowNode cssNode = createShadowNode(className);
       ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
@@ -264,6 +250,10 @@ public class UIImplementation {
 
   /** Invoked by React to create a new node with a given tag has its properties changed. */
   public void updateView(int tag, String className, ReadableMap props) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     ViewManager viewManager = mViewManagers.get(className);
     if (viewManager == null) {
       throw new IllegalViewOperationException("Got unknown view type: " + className);
@@ -314,6 +304,10 @@ public class UIImplementation {
       @Nullable ReadableArray addChildTags,
       @Nullable ReadableArray addAtIndices,
       @Nullable ReadableArray removeFrom) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     synchronized (uiImplementationThreadLock) {
       ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
 
@@ -420,6 +414,10 @@ public class UIImplementation {
    * @param childrenTags tags of the children
    */
   public void setChildren(int viewTag, ReadableArray childrenTags) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     synchronized (uiImplementationThreadLock) {
       ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
 
@@ -530,6 +528,10 @@ public class UIImplementation {
    * view and returns the values via an async callback.
    */
   public void measure(int reactTag, Callback callback) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     // This method is called by the implementation of JS touchable interface (see Touchable.js for
     // more details) at the moment of touch activation. That is after user starts the gesture from
     // a touchable view with a given reactTag, or when user drag finger back into the press
@@ -543,6 +545,10 @@ public class UIImplementation {
    * things like the status bar
    */
   public void measureInWindow(int reactTag, Callback callback) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     mOperationsQueue.enqueueMeasureInWindow(reactTag, callback);
   }
 
@@ -554,6 +560,10 @@ public class UIImplementation {
    */
   public void measureLayout(
       int tag, int ancestorTag, Callback errorCallback, Callback successCallback) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     try {
       measureLayout(tag, ancestorTag, mMeasureBuffer);
       float relativeX = PixelUtil.toDIPFromPixel(mMeasureBuffer[0]);
@@ -571,6 +581,10 @@ public class UIImplementation {
    */
   public void measureLayoutRelativeToParent(
       int tag, Callback errorCallback, Callback successCallback) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     try {
       measureLayoutRelativeToParent(tag, mMeasureBuffer);
       float relativeX = PixelUtil.toDIPFromPixel(mMeasureBuffer[0]);
@@ -704,13 +718,23 @@ public class UIImplementation {
   @Deprecated
   public void dispatchViewManagerCommand(
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    assertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
+    boolean viewExists =
+        checkOrAssertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
+    if (!viewExists) {
+      return;
+    }
+
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
   public void dispatchViewManagerCommand(
       int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
-    assertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
+    boolean viewExists =
+        checkOrAssertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
+    if (!viewExists) {
+      return;
+    }
+
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
@@ -725,7 +749,11 @@ public class UIImplementation {
    *     no arguments if the menu is dismissed
    */
   public void showPopupMenu(int reactTag, ReadableArray items, Callback error, Callback success) {
-    assertViewExists(reactTag, "showPopupMenu");
+    boolean viewExists = checkOrAssertViewExists(reactTag, "showPopupMenu");
+    if (!viewExists) {
+      return;
+    }
+
     mOperationsQueue.enqueueShowPopupMenu(reactTag, items, error, success);
   }
 
@@ -746,6 +774,10 @@ public class UIImplementation {
   }
 
   public void onHostDestroy() {}
+
+  public void onCatalystInstanceDestroyed() {
+    mViewOperationsEnabled = false;
+  }
 
   public void setViewHierarchyUpdateDebugListener(
       @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
@@ -825,15 +857,30 @@ public class UIImplementation {
     outputBuffer[3] = node.getScreenHeight();
   }
 
-  private void assertViewExists(int reactTag, String operationNameForExceptionMessage) {
-    if (mShadowNodeRegistry.getNode(reactTag) == null) {
-      throw new IllegalViewOperationException(
-          "Unable to execute operation "
-              + operationNameForExceptionMessage
-              + " on view with "
-              + "tag: "
-              + reactTag
-              + ", since the view does not exists");
+  /**
+   * Returns whether a view identified by the tag exists. In debug mode, this will throw whenever
+   * the view doesn't exist. In production, it'll log a warning. Callers should use this and just
+   * return if the view doesn't exist to avoid crashing.
+   */
+  private boolean checkOrAssertViewExists(int reactTag, String operationNameForExceptionMessage) {
+    boolean viewExists = mShadowNodeRegistry.getNode(reactTag) != null;
+    if (viewExists) {
+      return true;
+    }
+
+    String message =
+        "Unable to execute operation "
+            + operationNameForExceptionMessage
+            + " on view with "
+            + "tag: "
+            + reactTag
+            + ", since the view does not exist";
+
+    if (ReactBuildConfig.DEBUG) {
+      throw new IllegalViewOperationException(message);
+    } else {
+      FLog.w(ReactConstants.TAG, message);
+      return false;
     }
   }
 
@@ -913,6 +960,7 @@ public class UIImplementation {
       if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
         mEventDispatcher.dispatchEvent(
             OnLayoutEvent.obtain(
+                -1, /* surfaceId not used in classic renderer */
                 tag,
                 cssNode.getScreenX(),
                 cssNode.getScreenY(),
@@ -921,9 +969,7 @@ public class UIImplementation {
       }
     }
     cssNode.markUpdateSeen();
-    if (ReactFeatureFlags.enableTransitionLayoutOnlyViewCleanup) {
-      mNativeViewHierarchyOptimizer.onViewUpdatesCompleted(cssNode);
-    }
+    mNativeViewHierarchyOptimizer.onViewUpdatesCompleted(cssNode);
   }
 
   public void addUIBlock(UIBlock block) {

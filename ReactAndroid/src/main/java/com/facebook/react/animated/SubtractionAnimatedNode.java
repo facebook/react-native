@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,12 +38,12 @@ import com.facebook.react.bridge.ReadableMap;
         double value = ((ValueAnimatedNode) animatedNode).getValue();
         if (i == 0) {
           mValue = value;
-          continue;
+        } else {
+          mValue -= value;
         }
-        mValue -= ((ValueAnimatedNode) animatedNode).getValue();
       } else {
         throw new JSApplicationCausedNativeException(
-            "Illegal node ID set as an input for " + "Animated.subtract node");
+            "Illegal node ID set as an input for Animated.subtract node");
       }
     }
   }

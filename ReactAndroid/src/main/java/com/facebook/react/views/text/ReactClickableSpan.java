@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,11 +39,9 @@ import com.facebook.react.views.view.ViewGroupClickEvent;
 class ReactClickableSpan extends ClickableSpan implements ReactSpan {
 
   private final int mReactTag;
-  private final int mForegroundColor;
 
-  ReactClickableSpan(int reactTag, int foregroundColor) {
+  ReactClickableSpan(int reactTag) {
     mReactTag = reactTag;
-    mForegroundColor = foregroundColor;
   }
 
   @Override
@@ -52,15 +50,15 @@ class ReactClickableSpan extends ClickableSpan implements ReactSpan {
     EventDispatcher eventDispatcher =
         UIManagerHelper.getEventDispatcherForReactTag(context, mReactTag);
     if (eventDispatcher != null) {
-      eventDispatcher.dispatchEvent(new ViewGroupClickEvent(mReactTag));
+      eventDispatcher.dispatchEvent(
+          new ViewGroupClickEvent(UIManagerHelper.getSurfaceId(context), mReactTag));
     }
   }
 
   @Override
   public void updateDrawState(@NonNull TextPaint ds) {
-    super.updateDrawState(ds);
-    ds.setColor(mForegroundColor);
-    ds.setUnderlineText(false);
+    // no-op to make sure we don't change the link color or add an underline by default, as the
+    // superclass does.
   }
 
   public int getReactTag() {

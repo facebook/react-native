@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,7 +23,7 @@ import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
-import com.facebook.react.modules.datepicker.DatePickerDialogModule;
+import com.facebook.react.modules.devtoolssettings.DevToolsSettingsManagerModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
@@ -34,7 +34,6 @@ import com.facebook.react.modules.permissions.PermissionsModule;
 import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
-import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.toast.ToastModule;
 import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
@@ -43,8 +42,6 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
 import com.facebook.react.views.modal.ReactModalHostManager;
-import com.facebook.react.views.picker.ReactDialogPickerManager;
-import com.facebook.react.views.picker.ReactDropdownPickerManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
@@ -72,9 +69,7 @@ import java.util.Map;
       AppStateModule.class,
       BlobModule.class,
       FileReaderModule.class,
-      AsyncStorageModule.class,
       ClipboardModule.class,
-      DatePickerDialogModule.class,
       DialogModule.class,
       FrescoModule.class,
       I18nManagerModule.class,
@@ -115,12 +110,8 @@ public class MainReactPackage extends TurboReactPackage {
         return new BlobModule(context);
       case FileReaderModule.NAME:
         return new FileReaderModule(context);
-      case AsyncStorageModule.NAME:
-        return new AsyncStorageModule(context);
       case ClipboardModule.NAME:
         return new ClipboardModule(context);
-      case DatePickerDialogModule.FRAGMENT_TAG:
-        return new DatePickerDialogModule(context);
       case DialogModule.NAME:
         return new DialogModule(context);
       case FrescoModule.NAME:
@@ -151,6 +142,8 @@ public class MainReactPackage extends TurboReactPackage {
         return new VibrationModule(context);
       case WebSocketModule.NAME:
         return new WebSocketModule(context);
+      case DevToolsSettingsManagerModule.NAME:
+        return new DevToolsSettingsManagerModule(context);
       default:
         return null;
     }
@@ -160,9 +153,7 @@ public class MainReactPackage extends TurboReactPackage {
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     List<ViewManager> viewManagers = new ArrayList<>();
 
-    viewManagers.add(new ReactDialogPickerManager());
     viewManagers.add(new ReactDrawerLayoutManager());
-    viewManagers.add(new ReactDropdownPickerManager());
     viewManagers.add(new ReactHorizontalScrollViewManager());
     viewManagers.add(new ReactHorizontalScrollContainerViewManager());
     viewManagers.add(new ReactProgressBarViewManager());
@@ -193,7 +184,8 @@ public class MainReactPackage extends TurboReactPackage {
           Class.forName("com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider");
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
-      // In OSS case, the annotation processor does not run. We fall back on creating this byhand
+      // In the OSS case, the annotation processor does not run. We fall back to creating this by
+      // hand
       Class<? extends NativeModule>[] moduleList =
           new Class[] {
             AccessibilityInfoModule.class,
@@ -201,9 +193,7 @@ public class MainReactPackage extends TurboReactPackage {
             AppStateModule.class,
             BlobModule.class,
             FileReaderModule.class,
-            AsyncStorageModule.class,
             ClipboardModule.class,
-            DatePickerDialogModule.class,
             DialogModule.class,
             FrescoModule.class,
             I18nManagerModule.class,
@@ -213,6 +203,7 @@ public class MainReactPackage extends TurboReactPackage {
             NativeAnimatedModule.class,
             NetworkingModule.class,
             PermissionsModule.class,
+            DevToolsSettingsManagerModule.class,
             ShareModule.class,
             StatusBarModule.class,
             SoundManagerModule.class,

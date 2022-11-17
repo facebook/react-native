@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,6 +14,7 @@
 #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
@@ -26,7 +27,16 @@ namespace react {
 class ParagraphProps : public ViewProps, public BaseTextProps {
  public:
   ParagraphProps() = default;
-  ParagraphProps(ParagraphProps const &sourceProps, RawProps const &rawProps);
+  ParagraphProps(
+      const PropsParserContext &context,
+      ParagraphProps const &sourceProps,
+      RawProps const &rawProps);
+
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
 
 #pragma mark - Props
 
@@ -34,14 +44,14 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
    * Contains all prop values that affect visual representation of the
    * paragraph.
    */
-  ParagraphAttributes const paragraphAttributes{};
+  ParagraphAttributes paragraphAttributes{};
 
   /*
    * Defines can the text be selected (and copied) or not.
    */
-  bool const isSelectable{};
+  bool isSelectable{};
 
-  bool const onTextLayout{};
+  bool onTextLayout{};
 
 #pragma mark - DebugStringConvertible
 

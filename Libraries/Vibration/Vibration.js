@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,15 +9,14 @@
  * @jsdoc
  */
 
-'use strict';
-
 import NativeVibration from './NativeVibration';
+
 const Platform = require('../Utilities/Platform');
 
 /**
  * Vibration API
  *
- * See https://reactnative.dev/docs/vibration.html
+ * See https://reactnative.dev/docs/vibration
  */
 
 let _vibrating: boolean = false;
@@ -42,7 +41,7 @@ function vibrateByPattern(pattern: Array<number>, repeat: boolean = false) {
 }
 
 function vibrateScheduler(
-  id,
+  id: number,
   pattern: Array<number>,
   repeat: boolean,
   nextIndex: number,
@@ -70,9 +69,9 @@ const Vibration = {
   /**
    * Trigger a vibration with specified `pattern`.
    *
-   * See https://reactnative.dev/docs/vibration.html#vibrate
+   * See https://reactnative.dev/docs/vibration#vibrate
    */
-  vibrate: function(
+  vibrate: function (
     pattern: number | Array<number> = _default_vibration_length,
     repeat: boolean = false,
   ) {
@@ -100,9 +99,9 @@ const Vibration = {
   /**
    * Stop vibration
    *
-   * See https://reactnative.dev/docs/vibration.html#cancel
+   * See https://reactnative.dev/docs/vibration#cancel
    */
-  cancel: function() {
+  cancel: function () {
     if (Platform.OS === 'ios') {
       _vibrating = false;
     } else {

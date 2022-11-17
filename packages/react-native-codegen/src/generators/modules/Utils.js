@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,6 @@
 import type {
   SchemaType,
   NativeModuleAliasMap,
-  Required,
   NativeModuleObjectTypeAnnotation,
   NativeModuleSchema,
 } from '../../CodegenSchema';
@@ -22,7 +21,7 @@ const invariant = require('invariant');
 
 export type AliasResolver = (
   aliasName: string,
-) => Required<NativeModuleObjectTypeAnnotation>;
+) => NativeModuleObjectTypeAnnotation;
 
 function createAliasResolver(aliasMap: NativeModuleAliasMap): AliasResolver {
   return (aliasName: string) => {
@@ -34,16 +33,18 @@ function createAliasResolver(aliasMap: NativeModuleAliasMap): AliasResolver {
 
 function getModules(
   schema: SchemaType,
-): $ReadOnly<{|[moduleName: string]: NativeModuleSchema|}> {
-  return Object.keys(schema.modules)
-    .map<?{+[string]: NativeModuleSchema}>(
-      moduleName => schema.modules[moduleName].nativeModules,
-    )
-    .filter(Boolean)
-    .reduce<{+[string]: NativeModuleSchema}>(
-      (acc, modules) => ({...acc, ...modules}),
-      {},
-    );
+): $ReadOnly<{[hasteModuleName: string]: NativeModuleSchema}> {
+  return Object.keys(schema.modules).reduce<{[string]: NativeModuleSchema}>(
+    (modules, hasteModuleName: string) => {
+      const module = schema.modules[hasteModuleName];
+      if (module == null || module.type === 'Component') {
+        return modules;
+      }
+      modules[hasteModuleName] = module;
+      return modules;
+    },
+    {},
+  );
 }
 
 module.exports = {

@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
+
+// foo bar 2
 
 // #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/core/Props.h>
@@ -16,6 +18,7 @@
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -31,17 +34,18 @@ struct AndroidTextInputSelectionStruct {
 };
 
 static inline void fromRawValue(
+    const PropsParserContext &context,
     const RawValue &value,
     AndroidTextInputSelectionStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto start = map.find("start");
   if (start != map.end()) {
-    fromRawValue(start->second, result.start);
+    fromRawValue(context, start->second, result.start);
   }
   auto end = map.find("end");
   if (end != map.end()) {
-    fromRawValue(end->second, result.end);
+    fromRawValue(context, end->second, result.end);
   }
 }
 
@@ -56,17 +60,18 @@ struct AndroidTextInputTextShadowOffsetStruct {
 };
 
 static inline void fromRawValue(
+    const PropsParserContext &context,
     const RawValue &value,
     AndroidTextInputTextShadowOffsetStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto width = map.find("width");
   if (width != map.end()) {
-    fromRawValue(width->second, result.width);
+    fromRawValue(context, width->second, result.width);
   }
   auto height = map.find("height");
   if (height != map.end()) {
-    fromRawValue(height->second, result.height);
+    fromRawValue(context, height->second, result.height);
   }
 }
 
@@ -96,83 +101,90 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
  public:
   AndroidTextInputProps() = default;
   AndroidTextInputProps(
+      const PropsParserContext &context,
       const AndroidTextInputProps &sourceProps,
       const RawProps &rawProps);
+
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
 
   folly::dynamic getDynamic() const;
 
 #pragma mark - Props
 
-  const std::string autoCompleteType{};
-  const std::string returnKeyLabel{};
-  const int numberOfLines{0};
-  const bool disableFullscreenUI{false};
-  const std::string textBreakStrategy{};
-  const SharedColor underlineColorAndroid{};
-  const std::string inlineImageLeft{};
-  const int inlineImagePadding{0};
-  const std::string importantForAutofill{};
-  const bool showSoftInputOnFocus{false};
-  const std::string autoCapitalize{};
-  const bool autoCorrect{false};
-  const bool autoFocus{false};
-  const bool allowFontScaling{false};
-  const Float maxFontSizeMultiplier{0.0};
-  const bool editable{false};
-  const std::string keyboardType{};
-  const std::string returnKeyType{};
-  const int maxLength{0};
-  const bool multiline{false};
-  const std::string placeholder{};
-  const SharedColor placeholderTextColor{};
-  const bool secureTextEntry{false};
-  const SharedColor selectionColor{};
-  const AndroidTextInputSelectionStruct selection{};
-  const std::string value{};
-  const std::string defaultValue{};
-  const bool selectTextOnFocus{false};
-  const bool blurOnSubmit{false};
-  const bool caretHidden{false};
-  const bool contextMenuHidden{false};
-  const SharedColor textShadowColor{};
-  const Float textShadowRadius{0.0};
-  const std::string textDecorationLine{};
-  const std::string fontStyle{};
-  const AndroidTextInputTextShadowOffsetStruct textShadowOffset{};
-  const Float lineHeight{0.0};
-  const std::string textTransform{};
-  const int color{0};
-  const Float letterSpacing{0.0};
-  const Float fontSize{0.0};
-  const std::string textAlign{};
-  const bool includeFontPadding{false};
-  const std::string fontWeight{};
-  const std::string fontFamily{};
-  const std::string textAlignVertical{};
-  const SharedColor cursorColor{};
-  const int mostRecentEventCount{0};
-  const std::string text{};
+  std::string autoComplete{};
+  std::string returnKeyLabel{};
+  int numberOfLines{0};
+  bool disableFullscreenUI{false};
+  std::string textBreakStrategy{};
+  SharedColor underlineColorAndroid{};
+  std::string inlineImageLeft{};
+  int inlineImagePadding{0};
+  std::string importantForAutofill{};
+  bool showSoftInputOnFocus{false};
+  std::string autoCapitalize{};
+  bool autoCorrect{false};
+  bool autoFocus{false};
+  bool allowFontScaling{false};
+  Float maxFontSizeMultiplier{0.0};
+  bool editable{false};
+  std::string keyboardType{};
+  std::string returnKeyType{};
+  int maxLength{0};
+  bool multiline{false};
+  std::string placeholder{};
+  SharedColor placeholderTextColor{};
+  bool secureTextEntry{false};
+  SharedColor selectionColor{};
+  AndroidTextInputSelectionStruct selection{};
+  std::string value{};
+  std::string defaultValue{};
+  bool selectTextOnFocus{false};
+  std::string submitBehavior{};
+  bool caretHidden{false};
+  bool contextMenuHidden{false};
+  SharedColor textShadowColor{};
+  Float textShadowRadius{0.0};
+  std::string textDecorationLine{};
+  std::string fontStyle{};
+  AndroidTextInputTextShadowOffsetStruct textShadowOffset{};
+  Float lineHeight{0.0};
+  std::string textTransform{};
+  SharedColor color{0};
+  Float letterSpacing{0.0};
+  Float fontSize{0.0};
+  std::string textAlign{};
+  bool includeFontPadding{false};
+  std::string fontWeight{};
+  std::string fontFamily{};
+  std::string textAlignVertical{};
+  SharedColor cursorColor{};
+  int mostRecentEventCount{0};
+  std::string text{};
 
   /*
    * Contains all prop values that affect visual representation of the
    * paragraph.
    */
-  ParagraphAttributes const paragraphAttributes{};
+  ParagraphAttributes paragraphAttributes{};
 
   /**
    * Auxiliary information to detect if these props are set or not.
    * See AndroidTextInputComponentDescriptor for usage.
    * TODO T63008435: can these, and this feature, be removed entirely?
    */
-  const bool hasPadding{};
-  const bool hasPaddingHorizontal{};
-  const bool hasPaddingVertical{};
-  const bool hasPaddingLeft{};
-  const bool hasPaddingTop{};
-  const bool hasPaddingRight{};
-  const bool hasPaddingBottom{};
-  const bool hasPaddingStart{};
-  const bool hasPaddingEnd{};
+  bool hasPadding{};
+  bool hasPaddingHorizontal{};
+  bool hasPaddingVertical{};
+  bool hasPaddingLeft{};
+  bool hasPaddingTop{};
+  bool hasPaddingRight{};
+  bool hasPaddingBottom{};
+  bool hasPaddingStart{};
+  bool hasPaddingEnd{};
 
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const;

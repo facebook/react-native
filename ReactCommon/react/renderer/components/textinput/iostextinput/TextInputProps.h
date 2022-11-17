@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,6 +14,7 @@
 #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -25,7 +26,16 @@ namespace react {
 class TextInputProps final : public ViewProps, public BaseTextProps {
  public:
   TextInputProps() = default;
-  TextInputProps(TextInputProps const &sourceProps, RawProps const &rawProps);
+  TextInputProps(
+      const PropsParserContext &context,
+      TextInputProps const &sourceProps,
+      RawProps const &rawProps);
+
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
 
 #pragma mark - Props
 
@@ -54,18 +64,18 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   int const mostRecentEventCount{0};
 
   bool autoFocus{false};
+  std::optional<Selection> selection{};
 
   std::string const inputAccessoryViewID{};
+
+  bool onKeyPressSync{false};
+  bool onChangeSync{false};
 
   /*
    * Accessors
    */
   TextAttributes getEffectiveTextAttributes(Float fontSizeMultiplier) const;
   ParagraphAttributes getEffectiveParagraphAttributes() const;
-
-#ifdef ANDROID
-  folly::dynamic getDynamic() const;
-#endif
 };
 
 } // namespace react

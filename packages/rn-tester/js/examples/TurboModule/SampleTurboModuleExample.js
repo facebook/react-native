@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,10 +8,8 @@
  * @flow strict-local
  */
 
-'use strict';
-
-import NativeSampleTurboModule from '../../../../../Libraries/TurboModule/samples/NativeSampleTurboModule';
-import type {RootTag} from '../../../../../Libraries/ReactNative/RootTag';
+import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
+import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 import {
   StyleSheet,
   Text,
@@ -19,7 +17,7 @@ import {
   FlatList,
   Platform,
   TouchableOpacity,
-  unstable_RootTagContext,
+  RootTagContext,
 } from 'react-native';
 import * as React from 'react';
 
@@ -30,18 +28,19 @@ type State = {|
       value: mixed,
       ...
     },
-    ...,
+    ...
   },
 |};
 
 class SampleTurboModuleExample extends React.Component<{||}, State> {
-  static contextType: React$Context<RootTag> = unstable_RootTagContext;
+  static contextType: React$Context<RootTag> = RootTagContext;
 
   state: State = {
     testResults: {},
   };
 
   // Add calls to methods in TurboModule here
+  // $FlowFixMe[missing-local-annot]
   _tests = {
     callback: () =>
       NativeSampleTurboModule.getValueWithCallback(callbackValue =>
@@ -68,27 +67,70 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       ]),
     getObject: () =>
       NativeSampleTurboModule.getObject({a: 1, b: 'foo', c: null}),
+    getUnsafeObject: () =>
+      NativeSampleTurboModule.getObject({a: 1, b: 'foo', c: null}),
     getRootTag: () => NativeSampleTurboModule.getRootTag(this.context),
     getValue: () =>
       NativeSampleTurboModule.getValue(5, 'test', {a: 1, b: 'foo'}),
   };
 
-  _setResult(name, result) {
+  _setResult(
+    name:
+      | string
+      | 'callback'
+      | 'getArray'
+      | 'getBool'
+      | 'getConstants'
+      | 'getNumber'
+      | 'getObject'
+      | 'getRootTag'
+      | 'getString'
+      | 'getUnsafeObject'
+      | 'getValue'
+      | 'promise'
+      | 'rejectPromise'
+      | 'voidFunc',
+    result:
+      | $FlowFixMe
+      | void
+      | RootTag
+      | Promise<mixed>
+      | number
+      | string
+      | boolean
+      | {const1: boolean, const2: number, const3: string}
+      | Array<$FlowFixMe>,
+  ) {
     this.setState(({testResults}) => ({
-      /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.122.0 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[cannot-spread-indexer] (>=0.122.0 site=react_native_fb)
+       * This comment suppresses an error found when Flow v0.122.0 was
+       * deployed. To see the error, delete this comment and run Flow. */
       testResults: {
         ...testResults,
-        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
-         * an error found when Flow v0.111 was deployed. To see the error,
-         * delete this comment and run Flow. */
+        /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb)
+         * This comment suppresses an error found when Flow v0.111 was
+         * deployed. To see the error, delete this comment and run Flow. */
         [name]: {value: result, type: typeof result},
       },
     }));
   }
 
-  _renderResult(name) {
+  _renderResult(
+    name:
+      | 'callback'
+      | 'getArray'
+      | 'getBool'
+      | 'getConstants'
+      | 'getNumber'
+      | 'getObject'
+      | 'getRootTag'
+      | 'getString'
+      | 'getUnsafeObject'
+      | 'getValue'
+      | 'promise'
+      | 'rejectPromise'
+      | 'voidFunc',
+  ): React.Node {
     const result = this.state.testResults[name] || {};
     return (
       <View style={styles.result}>
@@ -98,7 +140,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     );
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     if (global.__turboModuleProxy == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',

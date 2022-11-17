@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,11 +22,6 @@ public class PixelUtil {
   /** Convert from DIP to PX */
   public static float toPixelFromDIP(double value) {
     return toPixelFromDIP((float) value);
-  }
-
-  /** Convert from PX to SP */
-  public static float toSPFromPixel(float value) {
-    return value / DisplayMetricsHolder.getScreenDisplayMetrics().scaledDensity;
   }
 
   /** Convert from SP to PX */
@@ -58,6 +53,6 @@ public class PixelUtil {
 
   /** @return {@link float} that represents the density of the display metrics for device screen. */
   public static float getDisplayMetricDensity() {
-    return DisplayMetricsHolder.getScreenDisplayMetrics().density;
+    return DisplayMetricsHolder.getWindowDisplayMetrics().density;
   }
 }

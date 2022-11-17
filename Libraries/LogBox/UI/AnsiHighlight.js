@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,12 +8,13 @@
  * @format
  */
 
-import {ansiToJson} from 'anser';
-import Text from '../../Text/Text';
-import View from '../../Components/View/View';
-import * as React from 'react';
+import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 
-import type {TextStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import View from '../../Components/View/View';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import {ansiToJson} from 'anser';
+import * as React from 'react';
 
 // Afterglow theme from https://iterm2colorschemes.com/
 const COLORS = {
@@ -64,6 +65,8 @@ export default function Ansi({
     }
   });
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   const getText = (content, key) => {
     if (key === 1) {
       // Remove the vertical bar after line numbers
@@ -77,9 +80,9 @@ export default function Ansi({
   };
 
   return (
-    <View style={{flexDirection: 'column'}}>
+    <View>
       {parsedLines.map((items, i) => (
-        <View style={{flexDirection: 'row'}} key={i}>
+        <View style={styles.line} key={i}>
           {items.map((bundle, key) => {
             const textStyle =
               bundle.fg && COLORS[bundle.fg]
@@ -101,3 +104,9 @@ export default function Ansi({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  line: {
+    flexDirection: 'row',
+  },
+});

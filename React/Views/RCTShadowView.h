@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+// Keeps RCTConvert.h here before yoga for clang module to generate correct header imports.
+#import <React/RCTConvert.h>
 #import <React/RCTLayout.h>
 #import <React/RCTRootView.h>
 #import <yoga/Yoga.h>
@@ -150,6 +152,9 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 @property (nonatomic, assign) float flex;
 @property (nonatomic, assign) float flexGrow;
+@property (nonatomic, assign) float rowGap;
+@property (nonatomic, assign) float columnGap;
+@property (nonatomic, assign) float gap;
 @property (nonatomic, assign) float flexShrink;
 @property (nonatomic, assign) YGValue flexBasis;
 

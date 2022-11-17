@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,7 @@
 namespace facebook {
 namespace react {
 
-struct WritableNativeMap;
+struct ReadableNativeMap;
 
 struct WritableArray : jni::JavaClass<WritableArray> {
   static auto constexpr kJavaDescriptor =
@@ -29,6 +29,8 @@ struct WritableNativeArray
       "Lcom/facebook/react/bridge/WritableNativeArray;";
 
   WritableNativeArray();
+  WritableNativeArray(folly::dynamic &&val);
+
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
   void pushNull();
@@ -36,8 +38,8 @@ struct WritableNativeArray
   void pushDouble(jdouble value);
   void pushInt(jint value);
   void pushString(jstring value);
-  void pushNativeArray(WritableNativeArray *otherArray);
-  void pushNativeMap(WritableNativeMap *map);
+  void pushNativeArray(ReadableNativeArray *otherArray);
+  void pushNativeMap(ReadableNativeMap *map);
 
   static void registerNatives();
 };

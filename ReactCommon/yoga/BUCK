@@ -7,11 +7,7 @@ cxx_library(
     exported_headers = glob(["yoga/**/*.h"]),
     compiler_flags = [
         "-fno-omit-frame-pointer",
-        "-fexceptions",
-        "-Wall",
-        "-Werror",
-        "-std=c++1y",
-        "-O3",
+        "-O3"
     ],
     force_static = True,
     visibility = ["PUBLIC"],

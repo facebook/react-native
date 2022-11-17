@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@
 #import <react/renderer/textlayoutmanager/RCTTextLayoutManager.h>
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
+#import "RCTAccessibilityElement.h"
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
 #import "RCTLocalizationProvider.h"
@@ -56,15 +57,17 @@ using namespace facebook::react;
   // build an array of the accessibleElements
   NSMutableArray<UIAccessibilityElement *> *elements = [NSMutableArray new];
 
-  NSString *accessibilityLabel = [_view valueForKey:@"accessibilityLabel"];
-  if (!accessibilityLabel.length) {
+  NSString *accessibilityLabel = _view.accessibilityLabel;
+  if (accessibilityLabel.length == 0) {
     accessibilityLabel = RCTNSStringFromString(_attributedString.getString());
   }
   // add first element has the text for the whole textview in order to read out the whole text
-  UIAccessibilityElement *firstElement = [[UIAccessibilityElement alloc] initWithAccessibilityContainer:_view];
+  RCTAccessibilityElement *firstElement =
+      [[RCTAccessibilityElement alloc] initWithAccessibilityContainer:_view.superview];
   firstElement.isAccessibilityElement = YES;
-  firstElement.accessibilityTraits = UIAccessibilityTraitStaticText;
+  firstElement.accessibilityTraits = _view.accessibilityTraits;
   firstElement.accessibilityLabel = accessibilityLabel;
+  firstElement.accessibilityLanguage = _view.accessibilityLanguage;
   firstElement.accessibilityFrame = UIAccessibilityConvertFrameToScreenCoordinates(_view.bounds, _view);
   [firstElement setAccessibilityActivationPoint:CGPointMake(
                                                     firstElement.accessibilityFrame.origin.x + 1.0,
@@ -78,7 +81,11 @@ using namespace facebook::react;
                            enumerateAttribute:RCTTextAttributesAccessibilityRoleAttributeName
                                         frame:_frame
                                    usingBlock:^(CGRect fragmentRect, NSString *_Nonnull fragmentText, NSString *value) {
-                                     if (![value isEqualToString:@"button"] && ![value isEqualToString:@"link"]) {
+                                     if ([fragmentText isEqualToString:firstElement.accessibilityLabel]) {
+                                       // The fragment is the entire paragraph. This is handled as `firstElement`.
+                                       return;
+                                     }
+                                     if ((![value isEqualToString:@"button"] && ![value isEqualToString:@"link"])) {
                                        return;
                                      }
                                      if ([value isEqualToString:@"button"] &&
@@ -87,8 +94,8 @@ using namespace facebook::react;
                                        truncatedText = fragmentText;
                                        return;
                                      }
-                                     UIAccessibilityElement *element =
-                                         [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self->_view];
+                                     RCTAccessibilityElement *element =
+                                         [[RCTAccessibilityElement alloc] initWithAccessibilityContainer:self->_view];
                                      element.isAccessibilityElement = YES;
                                      if ([value isEqualToString:@"link"]) {
                                        element.accessibilityTraits = UIAccessibilityTraitLink;
@@ -98,8 +105,7 @@ using namespace facebook::react;
                                        numberOfButtons++;
                                      }
                                      element.accessibilityLabel = fragmentText;
-                                     element.accessibilityFrame =
-                                         UIAccessibilityConvertFrameToScreenCoordinates(fragmentRect, self->_view);
+                                     element.frame = fragmentRect;
                                      [elements addObject:element];
                                    }];
 

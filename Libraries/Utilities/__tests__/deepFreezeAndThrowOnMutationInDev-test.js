@@ -1,16 +1,16 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 const deepFreezeAndThrowOnMutationInDev = require('../deepFreezeAndThrowOnMutationInDev');
 
-describe('deepFreezeAndThrowOnMutationInDev', function() {
+describe('deepFreezeAndThrowOnMutationInDev', function () {
   it('should be a noop on non object values', () => {
     __DEV__ = true;
     expect(() => deepFreezeAndThrowOnMutationInDev('')).not.toThrow();

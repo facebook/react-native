@@ -1,18 +1,18 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
 const URL = require('../URL').URL;
 
-describe('URL', function() {
+describe('URL', function () {
   it('should pass Mozilla Dev Network examples', () => {
     const a = new URL('/', 'https://developer.mozilla.org');
     expect(a.href).toBe('https://developer.mozilla.org/');

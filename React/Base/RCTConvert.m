@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -91,7 +91,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     }
 
     // Check if it has a scheme
-    if ([path rangeOfString:@":"].location != NSNotFound) {
+    if ([path rangeOfString:@"://"].location != NSNotFound) {
       NSMutableCharacterSet *urlAllowedCharacterSet = [NSMutableCharacterSet new];
       [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLUserAllowedCharacterSet]];
       [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLPasswordAllowedCharacterSet]];
@@ -346,6 +346,15 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 RCT_ENUM_CONVERTER(
+    RCTBorderCurve,
+    (@{
+      @"circular" : @(RCTBorderCurveCircular),
+      @"continuous" : @(RCTBorderCurveContinuous),
+    }),
+    RCTBorderCurveCircular,
+    integerValue)
+
+RCT_ENUM_CONVERTER(
     RCTTextDecorationLineType,
     (@{
       @"none" : @(RCTTextDecorationLineTypeNone),
@@ -365,6 +374,25 @@ RCT_ENUM_CONVERTER(
     }),
     NSWritingDirectionNatural,
     integerValue)
+
++ (NSLineBreakStrategy)NSLineBreakStrategy:(id)json RCT_DYNAMIC
+{
+  if (@available(iOS 14.0, *)) {
+    static NSDictionary *mapping;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      mapping = @{
+        @"none" : @(NSLineBreakStrategyNone),
+        @"standard" : @(NSLineBreakStrategyStandard),
+        @"hangul-word" : @(NSLineBreakStrategyHangulWordPriority),
+        @"push-out" : @(NSLineBreakStrategyPushOut)
+      };
+    });
+    return RCTConvertEnumValue("NSLineBreakStrategy", mapping, @(NSLineBreakStrategyNone), json).integerValue;
+  } else {
+    return NSLineBreakStrategyNone;
+  }
+}
 
 RCT_ENUM_CONVERTER(
     UITextAutocapitalizationType,
@@ -554,7 +582,24 @@ RCT_CUSTOM_CONVERTER(CGFloat, CGFloat, [self double:json])
 RCT_CGSTRUCT_CONVERTER(CGPoint, (@[ @"x", @"y" ]))
 RCT_CGSTRUCT_CONVERTER(CGSize, (@[ @"width", @"height" ]))
 RCT_CGSTRUCT_CONVERTER(CGRect, (@[ @"x", @"y", @"width", @"height" ]))
-RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[ @"top", @"left", @"bottom", @"right" ]))
+
++ (UIEdgeInsets)UIEdgeInsets:(id)json
+{
+  static NSArray *fields;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    fields = @[ @"top", @"left", @"bottom", @"right" ];
+  });
+
+  if ([json isKindOfClass:[NSNumber class]]) {
+    CGFloat value = [json doubleValue];
+    return UIEdgeInsetsMake(value, value, value, value);
+  } else {
+    UIEdgeInsets result;
+    convertCGStruct("UIEdgeInsets", fields, (CGFloat *)&result, json);
+    return result;
+  }
+}
 
 RCT_ENUM_CONVERTER(
     CGLineJoin,
@@ -722,6 +767,11 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
         // iOS 13.0
         RCTFallbackARGB : @(0xFFf2f2f7)
       },
+      // Transparent Color
+      @"clearColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x00000000)
+      },
     } mutableCopy];
     // The color names are the Objective-C UIColor selector names,
     // but Swift selector names are valid as well, so make aliases.
@@ -802,11 +852,11 @@ static UIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
   return color;
 }
 
-/** Returns an alphabetically sorted comma seperated list of the valid semantic color names
+/** Returns an alphabetically sorted comma separated list of the valid semantic color names
  */
 static NSString *RCTSemanticColorNames()
 {
-  NSMutableString *names = [[NSMutableString alloc] init];
+  NSMutableString *names = [NSMutableString new];
   NSDictionary<NSString *, NSDictionary *> *colorMap = RCTSemanticColorsMap();
   NSArray *allKeys =
       [[[colorMap allKeys] mutableCopy] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
@@ -845,7 +895,11 @@ static NSString *RCTSemanticColorNames()
     if ((value = [dictionary objectForKey:@"semantic"])) {
       if ([value isKindOfClass:[NSString class]]) {
         NSString *semanticName = value;
-        UIColor *color = RCTColorFromSemanticColorName(semanticName);
+        UIColor *color = [UIColor colorNamed:semanticName];
+        if (color != nil) {
+          return color;
+        }
+        color = RCTColorFromSemanticColorName(semanticName);
         if (color == nil) {
           RCTLogConvertError(
               json,
@@ -854,7 +908,11 @@ static NSString *RCTSemanticColorNames()
         return color;
       } else if ([value isKindOfClass:[NSArray class]]) {
         for (id name in value) {
-          UIColor *color = RCTColorFromSemanticColorName(name);
+          UIColor *color = [UIColor colorNamed:name];
+          if (color != nil) {
+            return color;
+          }
+          color = RCTColorFromSemanticColorName(name);
           if (color != nil) {
             return color;
           }
@@ -874,13 +932,29 @@ static NSString *RCTSemanticColorNames()
       UIColor *lightColor = [RCTConvert UIColor:light];
       id dark = [appearances objectForKey:@"dark"];
       UIColor *darkColor = [RCTConvert UIColor:dark];
+      id highContrastLight = [appearances objectForKey:@"highContrastLight"];
+      UIColor *highContrastLightColor = [RCTConvert UIColor:highContrastLight];
+      id highContrastDark = [appearances objectForKey:@"highContrastDark"];
+      UIColor *highContrastDarkColor = [RCTConvert UIColor:highContrastDark];
       if (lightColor != nil && darkColor != nil) {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         if (@available(iOS 13.0, *)) {
-          UIColor *color =
-              [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(UITraitCollection *_Nonnull collection) {
-                return collection.userInterfaceStyle == UIUserInterfaceStyleDark ? darkColor : lightColor;
-              }];
+          UIColor *color = [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(
+                                        UITraitCollection *_Nonnull collection) {
+            if (collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+              if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastDarkColor != nil) {
+                return highContrastDarkColor;
+              } else {
+                return darkColor;
+              }
+            } else {
+              if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastLightColor != nil) {
+                return highContrastLightColor;
+              } else {
+                return lightColor;
+              }
+            }
+          }];
           return color;
         } else {
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -126,6 +126,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
       const std::shared_ptr<const PreparedJavaScript>& js) override {
     return plain().evaluatePreparedJavaScript(js);
   }
+  bool drainMicrotasks(int maxMicrotasksHint) override {
+    return plain().drainMicrotasks(maxMicrotasksHint);
+  }
   Object global() override {
     return plain().global();
   }
@@ -151,6 +154,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   Runtime::PointerValue* cloneSymbol(const Runtime::PointerValue* pv) override {
     return plain_.cloneSymbol(pv);
   };
+  Runtime::PointerValue* cloneBigInt(const Runtime::PointerValue* pv) override {
+    return plain_.cloneBigInt(pv);
+  };
   Runtime::PointerValue* cloneString(const Runtime::PointerValue* pv) override {
     return plain_.cloneString(pv);
   };
@@ -173,6 +179,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   PropNameID createPropNameIDFromString(const String& str) override {
     return plain_.createPropNameIDFromString(str);
   };
+  PropNameID createPropNameIDFromSymbol(const Symbol& sym) override {
+    return plain_.createPropNameIDFromSymbol(sym);
+  };
   std::string utf8(const PropNameID& id) override {
     return plain_.utf8(id);
   };
@@ -182,6 +191,25 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
 
   std::string symbolToString(const Symbol& sym) override {
     return plain_.symbolToString(sym);
+  }
+
+  BigInt createBigIntFromInt64(int64_t value) override {
+    return plain_.createBigIntFromInt64(value);
+  }
+  BigInt createBigIntFromUint64(uint64_t value) override {
+    return plain_.createBigIntFromUint64(value);
+  }
+  bool bigintIsInt64(const BigInt& b) override {
+    return plain_.bigintIsInt64(b);
+  }
+  bool bigintIsUint64(const BigInt& b) override {
+    return plain_.bigintIsUint64(b);
+  }
+  uint64_t truncate(const BigInt& b) override {
+    return plain_.truncate(b);
+  }
+  String bigintToString(const BigInt& bigint, int radix) override {
+    return plain_.bigintToString(bigint, radix);
   }
 
   String createStringFromAscii(const char* str, size_t length) override {
@@ -212,6 +240,17 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     // with RTTI.
     return dhf.target<DecoratedHostFunction>()->plainHF_;
   };
+
+  bool hasNativeState(const Object& o) override {
+    return plain_.hasNativeState(o);
+  }
+  std::shared_ptr<NativeState> getNativeState(const Object& o) override {
+    return plain_.getNativeState(o);
+  }
+  void setNativeState(const Object& o, std::shared_ptr<NativeState> state)
+      override {
+    plain_.setNativeState(o, state);
+  }
 
   Value getProperty(const Object& o, const PropNameID& name) override {
     return plain_.getProperty(o, name);
@@ -263,6 +302,10 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   Array createArray(size_t length) override {
     return plain_.createArray(length);
   };
+  ArrayBuffer createArrayBuffer(
+      std::shared_ptr<MutableBuffer> buffer) override {
+    return plain_.createArrayBuffer(std::move(buffer));
+  };
   size_t size(const Array& a) override {
     return plain_.size(a);
   };
@@ -309,6 +352,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   bool strictEquals(const Symbol& a, const Symbol& b) const override {
     return plain_.strictEquals(a, b);
   };
+  bool strictEquals(const BigInt& a, const BigInt& b) const override {
+    return plain_.strictEquals(a, b);
+  };
   bool strictEquals(const String& a, const String& b) const override {
     return plain_.strictEquals(a, b);
   };
@@ -335,12 +381,25 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain().instrumentation().collectGarbage(std::move(cause));
   }
 
-  void startTrackingHeapObjectStackTraces() override {
-    plain().instrumentation().startTrackingHeapObjectStackTraces();
+  void startTrackingHeapObjectStackTraces(
+      std::function<void(
+          uint64_t,
+          std::chrono::microseconds,
+          std::vector<HeapStatsUpdate>)> callback) override {
+    plain().instrumentation().startTrackingHeapObjectStackTraces(
+        std::move(callback));
   }
 
   void stopTrackingHeapObjectStackTraces() override {
     plain().instrumentation().stopTrackingHeapObjectStackTraces();
+  }
+
+  void startHeapSampling(size_t samplingInterval) override {
+    plain().instrumentation().startHeapSampling(samplingInterval);
+  }
+
+  void stopHeapSampling(std::ostream& os) override {
+    plain().instrumentation().stopHeapSampling(os);
   }
 
   void createSnapshotToFile(const std::string& path) override {
@@ -477,6 +536,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
       const std::shared_ptr<const PreparedJavaScript>& js) override {
     Around around{with_};
     return RD::evaluatePreparedJavaScript(js);
+  }
+  bool drainMicrotasks(int maxMicrotasksHint) override {
+    Around around{with_};
+    return RD::drainMicrotasks(maxMicrotasksHint);
   }
   Object global() override {
     Around around{with_};
@@ -641,6 +704,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
   Array createArray(size_t length) override {
     Around around{with_};
     return RD::createArray(length);
+  };
+  ArrayBuffer createArrayBuffer(
+      std::shared_ptr<MutableBuffer> buffer) override {
+    return RD::createArrayBuffer(std::move(buffer));
   };
   size_t size(const Array& a) override {
     Around around{with_};

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,9 @@
 
 #include "AsynchronousEventBeat.h"
 
-namespace facebook {
-namespace react {
+#include <react/debug/react_native_assert.h>
+
+namespace facebook::react {
 
 AsynchronousEventBeat::AsynchronousEventBeat(
     RunLoopObserver::Unique uiRunLoopObserver,
@@ -22,34 +23,36 @@ AsynchronousEventBeat::AsynchronousEventBeat(
 
 void AsynchronousEventBeat::activityDidChange(
     RunLoopObserver::Delegate const *delegate,
-    RunLoopObserver::Activity activity) const noexcept {
-  assert(delegate == this);
+    RunLoopObserver::Activity /*activity*/) const noexcept {
+  react_native_assert(delegate == this);
   induce();
 }
 
 void AsynchronousEventBeat::induce() const {
-  if (!isRequested_) {
+  if (!isRequested_ || isBeatCallbackScheduled_) {
     return;
   }
+
+  isRequested_ = false;
 
   // Here we know that `this` object exists because the caller has a strong
   // pointer to `owner`. To ensure the object will exist inside
   // `runtimeExecutor_` callback, we need to copy the  pointer there.
   auto weakOwner = uiRunLoopObserver_->getOwner();
 
-  runtimeExecutor_([this, weakOwner](jsi::Runtime &runtime) mutable {
+  isBeatCallbackScheduled_ = true;
+
+  runtimeExecutor_([this, weakOwner](jsi::Runtime &runtime) {
+    isBeatCallbackScheduled_ = false;
+
     auto owner = weakOwner.lock();
     if (!owner) {
       return;
     }
 
-    if (!isRequested_) {
-      return;
+    if (beatCallback_) {
+      beatCallback_(runtime);
     }
-
-    this->beat(runtime);
   });
 }
-
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

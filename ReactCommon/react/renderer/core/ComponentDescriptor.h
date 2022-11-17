@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,10 +9,12 @@
 
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawPropsParser.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/State.h>
 #include <react/renderer/core/StateData.h>
+#include <react/renderer/graphics/Float.h>
 #include <react/utils/ContextContainer.h>
 
 namespace facebook {
@@ -40,8 +42,8 @@ class ComponentDescriptor {
    * and `ComponentHandle` (the particular custom implementation might use
    * stored `flavor` to return different values from those virtual methods).
    * Since it's a very niche requirement (e.g. we plan to use it for
-   * an interoperability layer with Paper), we are thinking about removing this
-   * feature completely after it's no longer needed.
+   * an interoperability layer with old renderer), we are thinking about
+   * removing this feature completely after it's no longer needed.
    */
   using Flavor = std::shared_ptr<void const>;
 
@@ -82,7 +84,7 @@ class ComponentDescriptor {
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
    */
-  virtual UnsharedShadowNode cloneShadowNode(
+  virtual ShadowNode::Unshared cloneShadowNode(
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment) const = 0;
 
@@ -100,18 +102,20 @@ class ComponentDescriptor {
    * will be used.
    * Must return an object which is NOT pointer equal to `props`.
    */
-  virtual SharedProps cloneProps(
-      const SharedProps &props,
+  virtual Props::Shared cloneProps(
+      const PropsParserContext &context,
+      const Props::Shared &props,
       const RawProps &rawProps) const = 0;
 
   /*
    * Creates a new `Props` of a particular type with all values interpolated
    * between `props` and `newProps`.
    */
-  virtual SharedProps interpolateProps(
-      float animationProgress,
-      const SharedProps &props,
-      const SharedProps &newProps) const = 0;
+  virtual Props::Shared interpolateProps(
+      const PropsParserContext &context,
+      Float animationProgress,
+      const Props::Shared &props,
+      const Props::Shared &newProps) const = 0;
 
   /*
    * Create an initial State object that represents (and contains) an initial

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import NativeDeviceEventManager from '../../Libraries/NativeModules/specs/NativeDeviceEventManager';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
@@ -19,7 +17,7 @@ type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
 const _backPressSubscriptions = [];
 
-RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
+RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function () {
   for (let i = _backPressSubscriptions.length - 1; i >= 0; i--) {
     if (_backPressSubscriptions[i]()) {
       return;
@@ -67,7 +65,7 @@ type TBackHandler = {|
   ) => void,
 |};
 const BackHandler: TBackHandler = {
-  exitApp: function(): void {
+  exitApp: function (): void {
     if (!NativeDeviceEventManager) {
       return;
     }
@@ -80,7 +78,7 @@ const BackHandler: TBackHandler = {
    *
    * - `hardwareBackPress`: Fires when the Android hardware back button is pressed.
    */
-  addEventListener: function(
+  addEventListener: function (
     eventName: BackPressEventName,
     handler: () => ?boolean,
   ): {remove: () => void, ...} {
@@ -95,15 +93,13 @@ const BackHandler: TBackHandler = {
   /**
    * Removes the event handler.
    */
-  removeEventListener: function(
+  removeEventListener: function (
     eventName: BackPressEventName,
     handler: () => ?boolean,
   ): void {
-    if (_backPressSubscriptions.indexOf(handler) !== -1) {
-      _backPressSubscriptions.splice(
-        _backPressSubscriptions.indexOf(handler),
-        1,
-      );
+    const index = _backPressSubscriptions.indexOf(handler);
+    if (index !== -1) {
+      _backPressSubscriptions.splice(index, 1);
     }
   },
 };

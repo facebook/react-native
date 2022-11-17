@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,6 +33,7 @@ class RootViewSizeFlexibilityExampleApp extends React.Component<
       : styles.smallContainer;
 
     return (
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       <TouchableHighlight onPress={this._onPressButton.bind(this)}>
         <View style={viewStyle}>
           <View style={styles.center}>

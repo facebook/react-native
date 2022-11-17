@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,7 @@
 'use strict';
 
 import type {
-  Required,
+  Nullable,
   NativeModuleObjectTypeAnnotation,
   NativeModuleStringTypeAnnotation,
   NativeModuleNumberTypeAnnotation,
@@ -19,8 +19,9 @@ import type {
   NativeModuleDoubleTypeAnnotation,
   NativeModuleFloatTypeAnnotation,
   NativeModuleBooleanTypeAnnotation,
+  NativeModuleEnumDeclaration,
   NativeModuleGenericObjectTypeAnnotation,
-  NativeModuleReservedFunctionValueTypeAnnotation,
+  ReservedTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
@@ -28,29 +29,33 @@ import type {
 
 import type {AliasResolver} from '../Utils';
 
-const {capitalize} = require('./Utils');
+const {capitalize} = require('../../Utils');
+const {
+  unwrapNullable,
+  wrapNullable,
+} = require('../../../parsers/parsers-commons');
 
 type StructContext = 'CONSTANTS' | 'REGULAR';
 
-export type RegularStruct = $ReadOnly<{|
+export type RegularStruct = $ReadOnly<{
   context: 'REGULAR',
   name: string,
   properties: $ReadOnlyArray<StructProperty>,
-|}>;
+}>;
 
-export type ConstantsStruct = $ReadOnly<{|
+export type ConstantsStruct = $ReadOnly<{
   context: 'CONSTANTS',
   name: string,
   properties: $ReadOnlyArray<StructProperty>,
-|}>;
+}>;
 
 export type Struct = RegularStruct | ConstantsStruct;
 
-export type StructProperty = $ReadOnly<{|
+export type StructProperty = $ReadOnly<{
   name: string,
   optional: boolean,
-  typeAnnotation: StructTypeAnnotation,
-|}>;
+  typeAnnotation: Nullable<StructTypeAnnotation>,
+}>;
 
 export type StructTypeAnnotation =
   | NativeModuleStringTypeAnnotation
@@ -59,10 +64,11 @@ export type StructTypeAnnotation =
   | NativeModuleDoubleTypeAnnotation
   | NativeModuleFloatTypeAnnotation
   | NativeModuleBooleanTypeAnnotation
+  | NativeModuleEnumDeclaration
   | NativeModuleGenericObjectTypeAnnotation
-  | NativeModuleReservedFunctionValueTypeAnnotation
+  | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
-  | NativeModuleArrayTypeAnnotation<StructTypeAnnotation>;
+  | NativeModuleArrayTypeAnnotation<Nullable<StructTypeAnnotation>>;
 
 class StructCollector {
   _structs: Map<string, Struct> = new Map();
@@ -71,46 +77,51 @@ class StructCollector {
     structName: string,
     structContext: StructContext,
     resolveAlias: AliasResolver,
-    typeAnnotation: NativeModuleBaseTypeAnnotation,
-  ): StructTypeAnnotation {
+    nullableTypeAnnotation: Nullable<NativeModuleBaseTypeAnnotation>,
+  ): Nullable<StructTypeAnnotation> {
+    const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
     switch (typeAnnotation.type) {
       case 'ObjectTypeAnnotation': {
-        this._insertStruct(structName, structContext, resolveAlias, {
-          ...typeAnnotation,
-          // The nullability status of this struct is recorded in the type-alias we create for it below.
-          nullable: false,
-        });
-        return {
+        this._insertStruct(
+          structName,
+          structContext,
+          resolveAlias,
+          typeAnnotation,
+        );
+        return wrapNullable(nullable, {
           type: 'TypeAliasTypeAnnotation',
           name: structName,
-          nullable: typeAnnotation.nullable,
-        };
+        });
       }
       case 'ArrayTypeAnnotation': {
         if (typeAnnotation.elementType == null) {
-          return {
+          return wrapNullable(nullable, {
             type: 'ArrayTypeAnnotation',
-            nullable: typeAnnotation.nullable,
-          };
+          });
         }
 
-        return {
+        return wrapNullable(nullable, {
           type: 'ArrayTypeAnnotation',
-          nullable: typeAnnotation.nullable,
           elementType: this.process(
             structName + 'Element',
             structContext,
             resolveAlias,
             typeAnnotation.elementType,
           ),
-        };
+        });
       }
       case 'TypeAliasTypeAnnotation': {
         this._insertAlias(typeAnnotation.name, structContext, resolveAlias);
-        return typeAnnotation;
+        return wrapNullable(nullable, typeAnnotation);
       }
+      case 'EnumDeclaration':
+        return wrapNullable(nullable, typeAnnotation);
+      case 'MixedTypeAnnotation':
+        throw new Error('Mixed types are unsupported in structs');
+      case 'UnionTypeAnnotation':
+        throw new Error('Union types are unsupported in structs');
       default: {
-        return typeAnnotation;
+        return wrapNullable(nullable, typeAnnotation);
       }
     }
   }
@@ -139,10 +150,16 @@ class StructCollector {
     structName: string,
     structContext: StructContext,
     resolveAlias: AliasResolver,
-    objectTypeAnnotation: Required<NativeModuleObjectTypeAnnotation>,
+    objectTypeAnnotation: NativeModuleObjectTypeAnnotation,
   ): void {
-    const properties = objectTypeAnnotation.properties.map(property => {
-      const {typeAnnotation: propertyTypeAnnotation} = property;
+    // $FlowFixMe[missing-type-arg]
+    const properties = objectTypeAnnotation.properties.map<
+      $ReadOnly<{
+        name: string,
+        optional: boolean,
+        typeAnnotation: Nullable<StructTypeAnnotation>,
+      }>,
+    >(property => {
       const propertyStructName = structName + capitalize(property.name);
 
       return {
@@ -151,7 +168,7 @@ class StructCollector {
           propertyStructName,
           structContext,
           resolveAlias,
-          propertyTypeAnnotation,
+          property.typeAnnotation,
         ),
       };
     });

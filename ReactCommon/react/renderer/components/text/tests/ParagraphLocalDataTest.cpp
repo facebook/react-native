@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
 
 #include <assert.h>
 #include <gtest/gtest.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/primitives.h>
@@ -40,12 +41,14 @@ TEST(ParagraphLocalDataTest, testSomething) {
 
   auto result = toDynamic(paragraphState)["attributedString"];
 
-  assert(result["string"] == fragment.string);
+  react_native_assert(result["string"] == fragment.string);
   auto textAttribute = result["fragments"][0]["textAttributes"];
-  assert(textAttribute["foregroundColor"] == toDynamic(text.foregroundColor));
-  assert(textAttribute["opacity"] == text.opacity);
-  assert(textAttribute["fontStyle"] == toString(*text.fontStyle));
-  assert(textAttribute["fontWeight"] == toString(*text.fontWeight));
+  react_native_assert(
+      textAttribute["foregroundColor"] == toDynamic(text.foregroundColor));
+  react_native_assert(textAttribute["opacity"] == text.opacity);
+  react_native_assert(textAttribute["fontStyle"] == toString(*text.fontStyle));
+  react_native_assert(
+      textAttribute["fontWeight"] == toString(*text.fontWeight));
 }
 
 #endif

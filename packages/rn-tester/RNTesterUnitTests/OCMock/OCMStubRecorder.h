@@ -16,7 +16,6 @@
 
 #import "OCMRecorder.h"
 
-
 @interface OCMStubRecorder : OCMRecorder
 
 - (id)andReturn:(id)anObject;
@@ -29,25 +28,28 @@
 
 @end
 
-
 @interface OCMStubRecorder (Properties)
 
-#define andReturn(aValue) _andReturn(({ __typeof__(aValue) _v = (aValue); [NSValue value:&_v withObjCType:@encode(__typeof__(_v))]; }))
-@property (nonatomic, readonly) OCMStubRecorder *(^ _andReturn)(NSValue *);
+#define andReturn(aValue)                                     \
+  _andReturn(({                                               \
+    __typeof__(aValue) _v = (aValue);                         \
+    [NSValue value:&_v withObjCType:@encode(__typeof__(_v))]; \
+  }))
+@property (nonatomic, readonly) OCMStubRecorder * (^_andReturn)(NSValue *);
 
 #define andThrow(anException) _andThrow(anException)
-@property (nonatomic, readonly) OCMStubRecorder *(^ _andThrow)(NSException *);
+@property (nonatomic, readonly) OCMStubRecorder * (^_andThrow)(NSException *);
 
 #define andPost(aNotification) _andPost(aNotification)
-@property (nonatomic, readonly) OCMStubRecorder *(^ _andPost)(NSNotification *);
+@property (nonatomic, readonly) OCMStubRecorder * (^_andPost)(NSNotification *);
 
 #define andCall(anObject, aSelector) _andCall(anObject, aSelector)
-@property (nonatomic, readonly) OCMStubRecorder *(^ _andCall)(id, SEL);
+@property (nonatomic, readonly) OCMStubRecorder * (^_andCall)(id, SEL);
 
 #define andDo(aBlock) _andDo(aBlock)
-@property (nonatomic, readonly) OCMStubRecorder *(^ _andDo)(void (^)(NSInvocation *));
+@property (nonatomic, readonly) OCMStubRecorder * (^_andDo)(void (^)(NSInvocation *));
 
 #define andForwardToRealObject() _andForwardToRealObject()
-@property (nonatomic, readonly) OCMStubRecorder *(^ _andForwardToRealObject)(void);
+@property (nonatomic, readonly) OCMStubRecorder * (^_andForwardToRealObject)(void);
 
 @end

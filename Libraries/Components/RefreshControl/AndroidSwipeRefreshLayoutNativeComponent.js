@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,22 +8,18 @@
  * @flow strict-local
  */
 
-'use strict';
-
-import * as React from 'react';
-
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {
   DirectEventHandler,
   Float,
-  Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
+
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import * as React from 'react';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -41,17 +37,9 @@ type NativeProps = $ReadOnly<{|
    */
   progressBackgroundColor?: ?ColorValue,
   /**
-   * Size of the refresh indicator, see RefreshControl.SIZE.
-   *
-   * This type isn't currently accurate. It really is specific numbers
-   * hard coded in the Android platform.
-   *
-   * Also, 1 isn't actually a safe default. We are able to set this here
-   * because native code isn't currently consuming the generated artifact.
-   * This will end up being
-   * size?: WithDefault<'default' | 'large', 'default'>,
+   * Size of the refresh indicator.
    */
-  size?: WithDefault<Int32, 1>,
+  size?: WithDefault<'default' | 'large', 'default'>,
   /**
    * Progress view top offset
    */

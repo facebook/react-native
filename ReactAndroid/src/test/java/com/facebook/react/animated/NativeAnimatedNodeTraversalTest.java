@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 package com.facebook.react.animated;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
@@ -90,7 +90,7 @@ public class NativeAnimatedNodeTraversalTest {
     mFrameTimeNanos = INITIAL_FRAME_TIME_NANOS;
 
     mReactApplicationContextMock = mock(ReactApplicationContext.class);
-    PowerMockito.when(mReactApplicationContextMock.hasActiveCatalystInstance())
+    PowerMockito.when(mReactApplicationContextMock.hasActiveReactInstance())
         .thenAnswer(
             new Answer<Boolean>() {
               @Override

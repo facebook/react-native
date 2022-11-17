@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -249,10 +249,14 @@ std::pair<NextStatePtr, CommandPtr> InspectorState::Running::didPause(
   } else if (reason == debugger::PauseReason::EvalComplete) {
     assert(pendingEvalPromise_);
 
-    pendingEvalResultTransformer_(
-        inspector_.debugger_.getProgramState().getEvalResult());
-    pendingEvalPromise_->setValue(
-        inspector_.debugger_.getProgramState().getEvalResult());
+    if (auto userCallbackException = runUserCallback(
+            pendingEvalResultTransformer_,
+            inspector_.debugger_.getProgramState().getEvalResult())) {
+      pendingEvalPromise_->setException(*userCallbackException);
+    } else {
+      pendingEvalPromise_->setValue(
+          inspector_.debugger_.getProgramState().getEvalResult());
+    }
     pendingEvalPromise_.reset();
   } else if (
       reason == debugger::PauseReason::Breakpoint &&
@@ -299,9 +303,10 @@ void InspectorState::Running::pushPendingEval(
     std::shared_ptr<folly::Promise<debugger::EvalResult>> promise,
     folly::Function<void(const facebook::hermes::debugger::EvalResult &)>
         resultTransformer) {
-  PendingEval pendingEval{debugger::Command::eval(src, frameIndex),
-                          promise,
-                          std::move(resultTransformer)};
+  PendingEval pendingEval{
+      debugger::Command::eval(src, frameIndex),
+      promise,
+      std::move(resultTransformer)};
 
   pendingEvals_.emplace(std::move(pendingEval));
 
@@ -363,10 +368,14 @@ std::pair<NextStatePtr, CommandPtr> InspectorState::Paused::didPause(
       break;
     case debugger::PauseReason::EvalComplete: {
       assert(pendingEvalPromise_);
-      pendingEvalResultTransformer_(
-          inspector_.debugger_.getProgramState().getEvalResult());
-      pendingEvalPromise_->setValue(
-          inspector_.debugger_.getProgramState().getEvalResult());
+      if (auto userCallbackException = runUserCallback(
+              pendingEvalResultTransformer_,
+              inspector_.debugger_.getProgramState().getEvalResult())) {
+        pendingEvalPromise_->setException(*userCallbackException);
+      } else {
+        pendingEvalPromise_->setValue(
+            inspector_.debugger_.getProgramState().getEvalResult());
+      }
       pendingEvalPromise_.reset();
     } break;
     case debugger::PauseReason::ScriptLoaded:
@@ -476,9 +485,10 @@ void InspectorState::Paused::pushPendingEval(
     return;
   }
 
-  PendingEval pendingEval{debugger::Command::eval(src, frameIndex),
-                          promise,
-                          std::move(resultTransformer)};
+  PendingEval pendingEval{
+      debugger::Command::eval(src, frameIndex),
+      promise,
+      std::move(resultTransformer)};
   pendingEvals_.emplace(std::move(pendingEval));
   hasPendingWork_.notify_one();
 }

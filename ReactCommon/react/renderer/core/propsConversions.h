@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,12 @@
 
 #pragma once
 
-#include <better/optional.h>
+#include <optional>
+
 #include <folly/Likely.h>
-#include <folly/dynamic.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/conversions.h>
@@ -18,21 +20,56 @@
 namespace facebook {
 namespace react {
 
+/**
+ * Use this only when a prop update has definitely been sent from JS;
+ * essentially, cases where rawValue is virtually guaranteed to not be a
+ * nullptr.
+ */
 template <typename T>
-void fromRawValue(RawValue const &rawValue, T &result) {
+void fromRawValue(
+    const PropsParserContext &context,
+    RawValue const &rawValue,
+    T &result,
+    T defaultValue) {
+  if (!rawValue.hasValue()) {
+    result = std::move(defaultValue);
+    return;
+  }
+
+  fromRawValue(context, rawValue, result);
+}
+
+template <typename T>
+void fromRawValue(
+    const PropsParserContext &context,
+    RawValue const &rawValue,
+    T &result) {
   result = (T)rawValue;
 }
 
 template <typename T>
-void fromRawValue(RawValue const &rawValue, std::vector<T> &result) {
+void fromRawValue(
+    const PropsParserContext &context,
+    RawValue const &rawValue,
+    std::optional<T> &result) {
+  T resultValue;
+  fromRawValue(context, rawValue, resultValue);
+  result = std::optional<T>{std::move(resultValue)};
+}
+
+template <typename T>
+void fromRawValue(
+    const PropsParserContext &context,
+    RawValue const &rawValue,
+    std::vector<T> &result) {
   if (rawValue.hasType<std::vector<RawValue>>()) {
     auto items = (std::vector<RawValue>)rawValue;
     auto length = items.size();
     result.clear();
     result.reserve(length);
-    for (int i = 0; i < length; i++) {
+    for (size_t i = 0; i < length; i++) {
       T itemResult;
-      fromRawValue(items.at(i), itemResult);
+      fromRawValue(context, items.at(i), itemResult);
       result.push_back(itemResult);
     }
     return;
@@ -42,12 +79,13 @@ void fromRawValue(RawValue const &rawValue, std::vector<T> &result) {
   result.clear();
   result.reserve(1);
   T itemResult;
-  fromRawValue(rawValue, itemResult);
+  fromRawValue(context, rawValue, itemResult);
   result.push_back(itemResult);
 }
 
 template <typename T>
 void fromRawValue(
+    const PropsParserContext &context,
     RawValue const &rawValue,
     std::vector<std::vector<T>> &result) {
   if (rawValue.hasType<std::vector<std::vector<RawValue>>>()) {
@@ -57,7 +95,7 @@ void fromRawValue(
     result.reserve(length);
     for (int i = 0; i < length; i++) {
       T itemResult;
-      fromRawValue(items.at(i), itemResult);
+      fromRawValue(context, items.at(i), itemResult);
       result.push_back(itemResult);
     }
     return;
@@ -67,12 +105,13 @@ void fromRawValue(
   result.clear();
   result.reserve(1);
   T itemResult;
-  fromRawValue(rawValue, itemResult);
+  fromRawValue(context, rawValue, itemResult);
   result.push_back(itemResult);
 }
 
 template <typename T, typename U = T>
 T convertRawProp(
+    const PropsParserContext &context,
     RawProps const &rawProps,
     char const *name,
     T const &sourceValue,
@@ -80,7 +119,6 @@ T convertRawProp(
     char const *namePrefix = nullptr,
     char const *nameSuffix = nullptr) {
   const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
-
   if (LIKELY(rawValue == nullptr)) {
     return sourceValue;
   }
@@ -91,34 +129,18 @@ T convertRawProp(
     return defaultValue;
   }
 
-  T result;
-  fromRawValue(*rawValue, result);
-  return result;
-}
-
-template <typename T>
-static better::optional<T> convertRawProp(
-    RawProps const &rawProps,
-    char const *name,
-    better::optional<T> const &sourceValue,
-    better::optional<T> const &defaultValue,
-    char const *namePrefix = nullptr,
-    char const *nameSuffix = nullptr) {
-  const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
-
-  if (LIKELY(rawValue == nullptr)) {
-    return sourceValue;
-  }
-
-  // Special case: `null` always means `the prop was removed, use default
-  // value`.
-  if (UNLIKELY(!rawValue->hasValue())) {
+  try {
+    T result;
+    fromRawValue(context, *rawValue, result);
+    return result;
+  } catch (const std::exception &e) {
+    // In case of errors, log the error and fall back to the default
+    RawPropsKey key{namePrefix, name, nameSuffix};
+    // TODO: report this using ErrorUtils so it's more visible to the user
+    LOG(ERROR) << "Error while converting prop '"
+               << static_cast<std::string>(key) << "': " << e.what();
     return defaultValue;
   }
-
-  T result;
-  fromRawValue(*rawValue, result);
-  return better::optional<T>{result};
 }
 
 } // namespace react

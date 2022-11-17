@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,18 +8,22 @@
  * @format
  */
 
-'use strict';
 import type {Node} from 'react';
-import {ImageBackground, StyleSheet, Text, useColorScheme} from 'react-native';
-import React from 'react';
+
+import ImageBackground from '../../Image/ImageBackground';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import useColorScheme from '../../Utilities/useColorScheme';
 import Colors from './Colors';
 import HermesBadge from './HermesBadge';
+import React from 'react';
 
 const Header = (): Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <ImageBackground
       accessibilityRole="image"
+      testID="new-app-screen-header"
       source={require('./logo.png')}
       style={[
         styles.background,

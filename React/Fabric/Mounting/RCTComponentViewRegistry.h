@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,11 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
  * Returns `nil` if there is no registered component with the `tag`.
  */
 - (nullable UIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(facebook::react::Tag)tag;
-
-/**
- * Creates a component view with a given type and puts it to the recycle pool.
- */
-- (void)optimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 
 @end
 

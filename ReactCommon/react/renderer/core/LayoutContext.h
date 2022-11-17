@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -62,6 +62,25 @@ struct LayoutContext {
    */
   Point viewportOffset{};
 };
+
+inline bool operator==(LayoutContext const &lhs, LayoutContext const &rhs) {
+  return std::tie(
+             lhs.pointScaleFactor,
+             lhs.affectedNodes,
+             lhs.swapLeftAndRightInRTL,
+             lhs.fontSizeMultiplier,
+             lhs.viewportOffset) ==
+      std::tie(
+             rhs.pointScaleFactor,
+             rhs.affectedNodes,
+             rhs.swapLeftAndRightInRTL,
+             rhs.fontSizeMultiplier,
+             rhs.viewportOffset);
+}
+
+inline bool operator!=(LayoutContext const &lhs, LayoutContext const &rhs) {
+  return !(lhs == rhs);
+}
 
 } // namespace react
 } // namespace facebook

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,13 +8,20 @@
  * @format
  */
 
-import React from 'react';
 import type {Node} from 'react';
-import {StyleSheet, Text, useColorScheme, View} from 'react-native';
+
+import View from '../../Components/View/View';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import useColorScheme from '../../Utilities/useColorScheme';
 import Colors from './Colors';
+import React from 'react';
 
 const HermesBadge = (): Node => {
   const isDarkMode = useColorScheme() === 'dark';
+  const version =
+    global.HermesInternal?.getRuntimeProperties?.()['OSS Release Version'] ??
+    '';
   return global.HermesInternal ? (
     <View style={styles.badge}>
       <Text
@@ -24,7 +31,7 @@ const HermesBadge = (): Node => {
             color: isDarkMode ? Colors.light : Colors.dark,
           },
         ]}>
-        Engine: Hermes
+        {`Engine: Hermes ${version}`}
       </Text>
     </View>
   ) : null;

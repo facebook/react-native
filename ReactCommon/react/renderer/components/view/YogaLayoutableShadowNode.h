@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 
 #include <yoga/YGNode.h>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/YogaStylableProps.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/Sealable.h>
@@ -23,8 +24,10 @@ namespace facebook {
 namespace react {
 
 class YogaLayoutableShadowNode : public LayoutableShadowNode {
+  using CompactValue = facebook::yoga::detail::CompactValue;
+
  public:
-  using UnsharedList = better::small_vector<
+  using UnsharedList = butter::small_vector<
       YogaLayoutableShadowNode *,
       kShadowNodeChildrenSmallVectorSize>;
 
@@ -149,8 +152,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * - borderBottom(Left|Right)Radius → borderBottom(Start|End)Radius
    * - border(Left|Right)Width → border(Start|End)Width
    * - border(Left|Right)Color → border(Start|End)Color
-   * This is neccesarry to be backwards compatible with Paper, it swaps the
-   * values as well in https://fburl.com/diffusion/kl7bjr3h
+   * This is neccesarry to be backwards compatible with old renderer, it swaps
+   * the values as well in https://fburl.com/diffusion/kl7bjr3h
    */
   static void swapLeftAndRightInTree(
       YogaLayoutableShadowNode const &shadowNode);
@@ -172,6 +175,14 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   static void swapLeftAndRightInYogaStyleProps(
       YogaLayoutableShadowNode const &shadowNode);
 
+  /*
+   * Combine a base YGStyle with aliased properties which should be flattened
+   * into it. E.g. reconciling "marginInlineStart" and "marginStart".
+   */
+  static YGStyle applyAliasedProps(
+      const YGStyle &baseStyle,
+      const YogaStylableProps &props);
+
 #pragma mark - Consistency Ensuring Helpers
 
   void ensureConsistency() const;
@@ -185,10 +196,7 @@ inline YogaLayoutableShadowNode const &
 traitCast<YogaLayoutableShadowNode const &>(ShadowNode const &shadowNode) {
   bool castable =
       shadowNode.getTraits().check(ShadowNodeTraits::Trait::YogaLayoutableKind);
-  assert(
-      castable ==
-      (dynamic_cast<YogaLayoutableShadowNode const *>(&shadowNode) != nullptr));
-  assert(castable);
+  react_native_assert(castable);
   (void)castable;
   return static_cast<YogaLayoutableShadowNode const &>(shadowNode);
 }
@@ -201,9 +209,6 @@ traitCast<YogaLayoutableShadowNode const *>(ShadowNode const *shadowNode) {
   }
   bool castable = shadowNode->getTraits().check(
       ShadowNodeTraits::Trait::YogaLayoutableKind);
-  assert(
-      castable ==
-      (dynamic_cast<YogaLayoutableShadowNode const *>(shadowNode) != nullptr));
   if (!castable) {
     return nullptr;
   }

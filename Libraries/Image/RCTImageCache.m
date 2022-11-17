@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,22 +13,27 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTNetworking.h>
-#import <React/RCTUtils.h>
 #import <React/RCTResizeMode.h>
+#import <React/RCTUtils.h>
 
 #import <React/RCTImageUtils.h>
 
-static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2097152; // 2 MB
+static NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2 * 1024 * 1024;
+static NSUInteger RCTImageCacheTotalCostLimit = 20 * 1024 * 1024;
 
-static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale,
-                                     RCTResizeMode resizeMode)
+void RCTSetImageCacheLimits(NSUInteger maxCachableDecodedImageSizeInBytes, NSUInteger imageCacheTotalCostLimit)
 {
-  return [NSString stringWithFormat:@"%@|%g|%g|%g|%lld",
-          imageTag, size.width, size.height, scale, (long long)resizeMode];
+  RCTMaxCachableDecodedImageSizeInBytes = maxCachableDecodedImageSizeInBytes;
+  RCTImageCacheTotalCostLimit = imageCacheTotalCostLimit;
 }
 
-@implementation RCTImageCache
+static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale, RCTResizeMode resizeMode)
 {
+  return
+      [NSString stringWithFormat:@"%@|%g|%g|%g|%lld", imageTag, size.width, size.height, scale, (long long)resizeMode];
+}
+
+@implementation RCTImageCache {
   NSOperationQueue *_imageDecodeQueue;
   NSCache *_decodedImageCache;
   NSMutableDictionary *_cacheStaleTimes;
@@ -38,8 +43,8 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 {
   if (self = [super init]) {
     _decodedImageCache = [NSCache new];
-    _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
-    _cacheStaleTimes = [[NSMutableDictionary alloc] init];
+    _decodedImageCache.totalCostLimit = RCTImageCacheTotalCostLimit;
+    _cacheStaleTimes = [NSMutableDictionary new];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(clearCache)
@@ -62,24 +67,18 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   }
 }
 
-- (void)addImageToCache:(UIImage *)image
-                 forKey:(NSString *)cacheKey
+- (void)addImageToCache:(UIImage *)image forKey:(NSString *)cacheKey
 {
   if (!image) {
     return;
   }
   NSInteger bytes = image.reactDecodedImageBytes;
   if (bytes <= RCTMaxCachableDecodedImageSizeInBytes) {
-    [self->_decodedImageCache setObject:image
-                                 forKey:cacheKey
-                                   cost:bytes];
+    [self->_decodedImageCache setObject:image forKey:cacheKey cost:bytes];
   }
 }
 
-- (UIImage *)imageForUrl:(NSString *)url
-                    size:(CGSize)size
-                   scale:(CGFloat)scale
-              resizeMode:(RCTResizeMode)resizeMode
+- (UIImage *)imageForUrl:(NSString *)url size:(CGSize)size scale:(CGFloat)scale resizeMode:(RCTResizeMode)resizeMode
 {
   NSString *cacheKey = RCTCacheKeyForImage(url, size, scale, resizeMode);
   @synchronized(_cacheStaleTimes) {
@@ -112,7 +111,8 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
     NSDate *staleTime;
     NSArray<NSString *> *components = [cacheControl componentsSeparatedByString:@","];
     for (NSString *component in components) {
-      if ([component containsString:@"no-cache"] || [component containsString:@"no-store"] || [component hasSuffix:@"max-age=0"]) {
+      if ([component containsString:@"no-cache"] || [component containsString:@"no-store"] ||
+          [component hasSuffix:@"max-age=0"]) {
         shouldCache = NO;
         break;
       } else {
@@ -147,11 +147,12 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   }
 }
 
-- (NSDate *)dateWithHeaderString:(NSString *)headerDateString {
+- (NSDate *)dateWithHeaderString:(NSString *)headerDateString
+{
   static NSDateFormatter *formatter;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    formatter = [[NSDateFormatter alloc] init];
+    formatter = [NSDateFormatter new];
     formatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     formatter.dateFormat = @"EEE',' dd MMM yyyy HH':'mm':'ss 'GMT'";
     formatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];

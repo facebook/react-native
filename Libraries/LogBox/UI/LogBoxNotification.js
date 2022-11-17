@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,26 +8,26 @@
  * @format
  */
 
-'use strict';
+import type {Message as MessageType} from '../Data/parseLogBoxLog';
 
-import * as React from 'react';
+import View from '../../Components/View/View';
 import Image from '../../Image/Image';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import View from '../../Components/View/View';
-import LogBoxButton from './LogBoxButton';
-import * as LogBoxStyle from './LogBoxStyle';
-import LogBoxLog from '../Data/LogBoxLog';
-import LogBoxMessage from './LogBoxMessage';
 import * as LogBoxData from '../Data/LogBoxData';
+import LogBoxLog from '../Data/LogBoxLog';
+import LogBoxButton from './LogBoxButton';
+import LogBoxMessage from './LogBoxMessage';
+import * as LogBoxStyle from './LogBoxStyle';
+import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   log: LogBoxLog,
   totalLogCount: number,
   level: 'warn' | 'error',
   onPressOpen: () => void,
   onPressDismiss: () => void,
-|}>;
+}>;
 
 function LogBoxLogNotification(props: Props): React.Node {
   const {totalLogCount, level, log} = props;
@@ -56,11 +56,12 @@ function LogBoxLogNotification(props: Props): React.Node {
   );
 }
 
-function CountBadge(props) {
+function CountBadge(props: {count: number, level: 'error' | 'warn'}) {
   return (
     <View style={countStyles.outside}>
-      {/* $FlowFixMe(>=0.114.0) This suppression was added when fixing the type
-       * of `StyleSheet.create`. Remove this comment to see the error. */}
+      {/* $FlowFixMe[incompatible-type] (>=0.114.0) This suppression was added
+       * when fixing the type of `StyleSheet.create`. Remove this comment to
+       * see the error. */}
       <View style={[countStyles.inside, countStyles[props.level]]}>
         <Text style={countStyles.text}>
           {props.count <= 1 ? '!' : props.count}
@@ -70,7 +71,7 @@ function CountBadge(props) {
   );
 }
 
-function Message(props) {
+function Message(props: {message: MessageType}) {
   return (
     <View style={messageStyles.container}>
       <Text numberOfLines={1} style={messageStyles.text}>
@@ -86,7 +87,7 @@ function Message(props) {
   );
 }
 
-function DismissButton(props) {
+function DismissButton(props: {onPress: () => void}) {
   return (
     <View style={dismissStyles.container}>
       <LogBoxButton

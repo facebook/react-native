@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,14 +43,15 @@ class SliderShadowNode final : public ConcreteViewShadowNode<
       ShadowNodeFamilyFragment const &familyFragment,
       ComponentDescriptor const &componentDescriptor) {
     auto imageSource = ImageSource{ImageSource::Type::Invalid};
-    return {imageSource,
-            {imageSource, nullptr},
-            imageSource,
-            {imageSource, nullptr},
-            imageSource,
-            {imageSource, nullptr},
-            imageSource,
-            {imageSource, nullptr}};
+    return {
+        imageSource,
+        {imageSource, nullptr},
+        imageSource,
+        {imageSource, nullptr},
+        imageSource,
+        {imageSource, nullptr},
+        imageSource,
+        {imageSource, nullptr}};
   }
 
 #pragma mark - LayoutableShadowNode

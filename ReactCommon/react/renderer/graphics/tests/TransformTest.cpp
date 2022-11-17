@@ -1,13 +1,14 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include <react/renderer/graphics/Transform.h>
+
 #include <gtest/gtest.h>
-#include <math.h>
+#include <cmath>
 
 using namespace facebook::react;
 
@@ -38,6 +39,13 @@ TEST(TransformTest, scalingRect) {
   EXPECT_EQ(transformedRect.origin.y, 300);
   EXPECT_EQ(transformedRect.size.width, 150);
   EXPECT_EQ(transformedRect.size.height, 200);
+}
+
+TEST(TransformTest, invertingSize) {
+  auto size = facebook::react::Size{300, 400};
+  auto transformedSize = size * Transform::VerticalInversion();
+  EXPECT_EQ(transformedSize.width, 300);
+  EXPECT_EQ(transformedSize.height, 400);
 }
 
 TEST(TransformTest, rotatingRect) {

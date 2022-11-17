@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,10 @@
 
 'use strict';
 
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedValue from '../nodes/AnimatedValue';
+
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
 
 export type EndResult = {finished: boolean, ...};
 export type EndCallback = (result: EndResult) => void;
@@ -20,14 +21,17 @@ export type EndCallback = (result: EndResult) => void;
 export type AnimationConfig = {
   isInteraction?: boolean,
   useNativeDriver: boolean,
+  platformConfig?: PlatformConfig,
   onComplete?: ?EndCallback,
   iterations?: number,
 };
 
+let startNativeAnimationNextId = 1;
+
 // Important note: start() and stop() will only be called at most once.
 // Once an animation has been stopped or finished its course, it will
 // not be reused.
-class Animation {
+export default class Animation {
   __active: boolean;
   __isInteraction: boolean;
   __nativeId: number;
@@ -57,17 +61,28 @@ class Animation {
     onEnd && onEnd(result);
   }
   __startNativeAnimation(animatedValue: AnimatedValue): void {
-    NativeAnimatedHelper.API.enableQueue();
-    animatedValue.__makeNative();
-    NativeAnimatedHelper.API.disableQueue();
-    this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
-    NativeAnimatedHelper.API.startAnimatingNode(
-      this.__nativeId,
-      animatedValue.__getNativeTag(),
-      this.__getNativeAnimationConfig(),
-      this.__debouncedOnEnd.bind(this),
+    const startNativeAnimationWaitId = `${startNativeAnimationNextId}:startAnimation`;
+    startNativeAnimationNextId += 1;
+    NativeAnimatedHelper.API.setWaitingForIdentifier(
+      startNativeAnimationWaitId,
     );
+    try {
+      const config = this.__getNativeAnimationConfig();
+      animatedValue.__makeNative(config.platformConfig);
+      this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
+      NativeAnimatedHelper.API.startAnimatingNode(
+        this.__nativeId,
+        animatedValue.__getNativeTag(),
+        config,
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+        this.__debouncedOnEnd.bind(this),
+      );
+    } catch (e) {
+      throw e;
+    } finally {
+      NativeAnimatedHelper.API.unsetWaitingForIdentifier(
+        startNativeAnimationWaitId,
+      );
+    }
   }
 }
-
-module.exports = Animation;

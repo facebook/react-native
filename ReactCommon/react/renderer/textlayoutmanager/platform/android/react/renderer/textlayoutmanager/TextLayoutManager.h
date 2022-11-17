@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/config/ReactNativeConfig.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/core/LayoutConstraints.h>
@@ -25,15 +26,25 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  */
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared &contextContainer)
-      : contextContainer_(contextContainer){};
-  ~TextLayoutManager();
+  TextLayoutManager(const ContextContainer::Shared &contextContainer);
+
+  /*
+   * Not copyable.
+   */
+  TextLayoutManager(TextLayoutManager const &) = delete;
+  TextLayoutManager &operator=(TextLayoutManager const &) = delete;
+
+  /*
+   * Not movable.
+   */
+  TextLayoutManager(TextLayoutManager &&) = delete;
+  TextLayoutManager &operator=(TextLayoutManager &&) = delete;
 
   /*
    * Measures `attributedString` using native text rendering infrastructure.
    */
   TextMeasurement measure(
-      AttributedStringBox attributedStringBox,
+      AttributedStringBox const &attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
@@ -43,7 +54,7 @@ class TextLayoutManager {
    */
   TextMeasurement measureCachedSpannableById(
       int64_t cacheId,
-      ParagraphAttributes paragraphAttributes,
+      ParagraphAttributes const &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   /*
@@ -51,8 +62,8 @@ class TextLayoutManager {
    * infrastructure.
    */
   LinesMeasurements measureLines(
-      AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
+      AttributedString const &attributedString,
+      ParagraphAttributes const &paragraphAttributes,
       Size size) const;
 
   /*
@@ -64,12 +75,22 @@ class TextLayoutManager {
  private:
   TextMeasurement doMeasure(
       AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
+      ParagraphAttributes const &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
-  void *self_;
+  TextMeasurement doMeasureMapBuffer(
+      AttributedString attributedString,
+      ParagraphAttributes const &paragraphAttributes,
+      LayoutConstraints layoutConstraints) const;
+
+  LinesMeasurements measureLinesMapBuffer(
+      AttributedString const &attributedString,
+      ParagraphAttributes const &paragraphAttributes,
+      Size size) const;
+
+  void *self_{};
   ContextContainer::Shared contextContainer_;
-  TextMeasureCache measureCache_{};
+  TextMeasureCache measureCache_;
 };
 
 } // namespace react

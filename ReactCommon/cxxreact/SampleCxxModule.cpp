@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -163,7 +163,7 @@ void SampleCxxModule::save(folly::dynamic args) {
   sample_->save(std::move(m));
 }
 
-void SampleCxxModule::load(__unused folly::dynamic args, Callback cb) {
+void SampleCxxModule::load([[maybe_unused]] folly::dynamic args, Callback cb) {
   dynamic d = dynamic::object;
   for (const auto &p : sample_->load()) {
     d.insert(p.first, p.second);

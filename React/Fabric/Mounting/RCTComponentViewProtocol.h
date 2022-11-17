@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -111,10 +111,19 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  */
 - (void)prepareForRecycle;
 
-/**
+/*
  * Read the last props used to update the view.
  */
-- (facebook::react::SharedProps)props;
+- (facebook::react::Props::Shared)props;
+
+- (BOOL)isJSResponder;
+- (void)setIsJSResponder:(BOOL)isJSResponder;
+
+/*
+ * This is broken. Do not use.
+ */
+- (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)props;
+- (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 
 @end
 

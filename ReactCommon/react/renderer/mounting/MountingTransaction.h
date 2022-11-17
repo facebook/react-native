@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +8,8 @@
 #pragma once
 
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/mounting/SurfaceTelemetry.h>
-#include <react/renderer/mounting/TransactionTelemetry.h>
+#include <react/renderer/telemetry/SurfaceTelemetry.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 
 namespace facebook {
 namespace react {
@@ -65,7 +65,7 @@ class MountingTransaction final {
   /*
    * Returns telemetry associated with this transaction.
    */
-  TransactionTelemetry const &getTelemetry() const;
+  TransactionTelemetry &getTelemetry() const;
 
   /*
    * Returns the id of the surface that the transaction belongs to.
@@ -81,7 +81,7 @@ class MountingTransaction final {
   SurfaceId surfaceId_;
   Number number_;
   ShadowViewMutationList mutations_;
-  TransactionTelemetry telemetry_;
+  mutable TransactionTelemetry telemetry_;
 };
 
 } // namespace react

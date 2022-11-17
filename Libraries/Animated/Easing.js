@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -57,20 +57,20 @@ let ease;
  * - [`inOut`](docs/easing.html#inout) makes any easing function symmetrical
  * - [`out`](docs/easing.html#out) runs an easing function backwards
  */
-class Easing {
+const Easing = {
   /**
    * A stepping function, returns 1 for any positive value of `n`.
    */
-  static step0(n: number): number {
+  step0(n: number): number {
     return n > 0 ? 1 : 0;
-  }
+  },
 
   /**
    * A stepping function, returns 1 if `n` is greater than or equal to 1.
    */
-  static step1(n: number): number {
+  step1(n: number): number {
     return n >= 1 ? 1 : 0;
-  }
+  },
 
   /**
    * A linear function, `f(t) = t`. Position correlates to elapsed time one to
@@ -78,9 +78,9 @@ class Easing {
    *
    * http://cubic-bezier.com/#0,0,1,1
    */
-  static linear(t: number): number {
+  linear(t: number): number {
     return t;
-  }
+  },
 
   /**
    * A simple inertial interaction, similar to an object slowly accelerating to
@@ -88,12 +88,12 @@ class Easing {
    *
    * http://cubic-bezier.com/#.42,0,1,1
    */
-  static ease(t: number): number {
+  ease(t: number): number {
     if (!ease) {
       ease = Easing.bezier(0.42, 0, 1, 1);
     }
     return ease(t);
-  }
+  },
 
   /**
    * A quadratic function, `f(t) = t * t`. Position equals the square of elapsed
@@ -101,9 +101,9 @@ class Easing {
    *
    * http://easings.net/#easeInQuad
    */
-  static quad(t: number): number {
+  quad(t: number): number {
     return t * t;
-  }
+  },
 
   /**
    * A cubic function, `f(t) = t * t * t`. Position equals the cube of elapsed
@@ -111,9 +111,9 @@ class Easing {
    *
    * http://easings.net/#easeInCubic
    */
-  static cubic(t: number): number {
+  cubic(t: number): number {
     return t * t * t;
-  }
+  },
 
   /**
    * A power function. Position is equal to the Nth power of elapsed time.
@@ -121,36 +121,36 @@ class Easing {
    * n = 4: http://easings.net/#easeInQuart
    * n = 5: http://easings.net/#easeInQuint
    */
-  static poly(n: number): (t: number) => number {
+  poly(n: number): (t: number) => number {
     return (t: number) => Math.pow(t, n);
-  }
+  },
 
   /**
    * A sinusoidal function.
    *
    * http://easings.net/#easeInSine
    */
-  static sin(t: number): number {
+  sin(t: number): number {
     return 1 - Math.cos((t * Math.PI) / 2);
-  }
+  },
 
   /**
    * A circular function.
    *
    * http://easings.net/#easeInCirc
    */
-  static circle(t: number): number {
+  circle(t: number): number {
     return 1 - Math.sqrt(1 - t * t);
-  }
+  },
 
   /**
    * An exponential function.
    *
    * http://easings.net/#easeInExpo
    */
-  static exp(t: number): number {
+  exp(t: number): number {
     return Math.pow(2, 10 * (t - 1));
-  }
+  },
 
   /**
    * A simple elastic interaction, similar to a spring oscillating back and
@@ -162,29 +162,27 @@ class Easing {
    *
    * http://easings.net/#easeInElastic
    */
-  static elastic(bounciness: number = 1): (t: number) => number {
+  elastic(bounciness: number = 1): (t: number) => number {
     const p = bounciness * Math.PI;
     return t => 1 - Math.pow(Math.cos((t * Math.PI) / 2), 3) * Math.cos(t * p);
-  }
+  },
 
   /**
    * Use with `Animated.parallel()` to create a simple effect where the object
    * animates back slightly as the animation starts.
    *
-   * Wolfram Plot:
-   *
-   * - http://tiny.cc/back_default (s = 1.70158, default)
+   * https://easings.net/#easeInBack
    */
-  static back(s: number = 1.70158): (t: number) => number {
+  back(s: number = 1.70158): (t: number) => number {
     return t => t * t * ((s + 1) * t - s);
-  }
+  },
 
   /**
    * Provides a simple bouncing effect.
    *
    * http://easings.net/#easeInBounce
    */
-  static bounce(t: number): number {
+  bounce(t: number): number {
     if (t < 1 / 2.75) {
       return 7.5625 * t * t;
     }
@@ -201,7 +199,7 @@ class Easing {
 
     const t2 = t - 2.625 / 2.75;
     return 7.5625 * t2 * t2 + 0.984375;
-  }
+  },
 
   /**
    * Provides a cubic bezier curve, equivalent to CSS Transitions'
@@ -210,43 +208,43 @@ class Easing {
    * A useful tool to visualize cubic bezier curves can be found at
    * http://cubic-bezier.com/
    */
-  static bezier(
+  bezier(
     x1: number,
     y1: number,
     x2: number,
     y2: number,
   ): (t: number) => number {
-    const _bezier = require('./bezier');
+    const _bezier = require('./bezier').default;
     return _bezier(x1, y1, x2, y2);
-  }
+  },
 
   /**
    * Runs an easing function forwards.
    */
-  static in(easing: (t: number) => number): (t: number) => number {
+  in(easing: (t: number) => number): (t: number) => number {
     return easing;
-  }
+  },
 
   /**
    * Runs an easing function backwards.
    */
-  static out(easing: (t: number) => number): (t: number) => number {
+  out(easing: (t: number) => number): (t: number) => number {
     return t => 1 - easing(1 - t);
-  }
+  },
 
   /**
    * Makes any easing function symmetrical. The easing function will run
    * forwards for half of the duration, then backwards for the rest of the
    * duration.
    */
-  static inOut(easing: (t: number) => number): (t: number) => number {
+  inOut(easing: (t: number) => number): (t: number) => number {
     return t => {
       if (t < 0.5) {
         return easing(t * 2) / 2;
       }
       return 1 - easing((1 - t) * 2) / 2;
     };
-  }
-}
+  },
+};
 
-module.exports = Easing;
+export default Easing;

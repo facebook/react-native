@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -28,12 +28,11 @@ Pod::Spec.new do |spec|
   spec.preserve_paths = 'src/*.h',
                         'src/base/*.h'
   spec.exclude_files       = "src/windows/**/*"
-  spec.libraries           = "stdc++"
   spec.compiler_flags      = '-Wno-shorten-64-to-32'
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src" }
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "10.0" }
+  spec.platforms = { :ios => "12.4" }
 
 end

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,12 @@
  */
 
 'use strict';
+import type {DatePickerIOSType} from './DatePickerIOS.flow';
 
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const Text = require('../../Text/Text');
-const View = require('../View/View');
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import View from '../View/View';
+import * as React from 'react';
 
 class DummyDatePickerIOS extends React.Component {
   render() {
@@ -43,4 +44,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = DummyDatePickerIOS;
+module.exports = (DummyDatePickerIOS: DatePickerIOSType);

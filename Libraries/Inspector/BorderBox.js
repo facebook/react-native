@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,8 @@
 
 'use strict';
 
-const React = require('react');
 const View = require('../Components/View/View');
+const React = require('react');
 
 class BorderBox extends React.Component<$FlowFixMeProps> {
   render(): $FlowFixMe | React.Node {

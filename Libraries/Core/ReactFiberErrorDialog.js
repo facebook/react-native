@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,10 @@
  * @flow strict-local
  */
 
+import type {ExtendedError} from './ExtendedError';
+
+import {SyntheticError, handleException} from './ExceptionsManager';
+
 export type CapturedError = {
   +componentStack: string,
   +error: mixed,
@@ -15,38 +19,44 @@ export type CapturedError = {
   ...
 };
 
-import type {ExtendedError} from './Devtools/parseErrorStack';
+const ReactFiberErrorDialog = {
+  /**
+   * Intercept lifecycle errors and ensure they are shown with the correct stack
+   * trace within the native redbox component.
+   */
+  showErrorDialog({componentStack, error: errorValue}: CapturedError): boolean {
+    let error: ?ExtendedError;
 
-import {handleException, SyntheticError} from './ExceptionsManager';
+    // Typically, `errorValue` should be an error. However, other values such as
+    // strings (or even null) are sometimes thrown.
+    if (errorValue instanceof Error) {
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
+      error = (errorValue: ExtendedError);
+    } else if (typeof errorValue === 'string') {
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
+      error = (new SyntheticError(errorValue): ExtendedError);
+    } else {
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
+      error = (new SyntheticError('Unspecified error'): ExtendedError);
+    }
+    try {
+      error.componentStack = componentStack;
+      error.isComponentError = true;
+    } catch {
+      // Ignored.
+    }
 
-/**
- * Intercept lifecycle errors and ensure they are shown with the correct stack
- * trace within the native redbox component.
- */
-function showErrorDialog(capturedError: CapturedError): boolean {
-  const {componentStack, error} = capturedError;
+    handleException(error, false);
 
-  let errorToHandle;
+    // Return false here to prevent ReactFiberErrorLogger default behavior of
+    // logging error details to console.error. Calls to console.error are
+    // automatically routed to the native redbox controller, which we've already
+    // done above by calling ExceptionsManager.
+    return false;
+  },
+};
 
-  // Typically Errors are thrown but eg strings or null can be thrown as well.
-  if (error instanceof Error) {
-    errorToHandle = (error: ExtendedError);
-  } else if (typeof error === 'string') {
-    errorToHandle = (new SyntheticError(error): ExtendedError);
-  } else {
-    errorToHandle = (new SyntheticError('Unspecified error'): ExtendedError);
-  }
-  try {
-    errorToHandle.componentStack = componentStack;
-    errorToHandle.isComponentError = true;
-  } catch (e) {}
-  handleException(errorToHandle, false);
-
-  // Return false here to prevent ReactFiberErrorLogger default behavior of
-  // logging error details to console.error. Calls to console.error are
-  // automatically routed to the native redbox controller, which we've already
-  // done above by calling ExceptionsManager.
-  return false;
-}
-
-module.exports = {showErrorDialog};
+export default ReactFiberErrorDialog;

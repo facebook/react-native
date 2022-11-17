@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,31 +10,39 @@ package com.facebook.react.views.text;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.util.SparseArray;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class responsible to load and cache Typeface objects. It will first try to load typefaces inside
- * the assets/fonts folder and if it doesn't find the right Typeface in that folder will fall back
- * on the best matching system Typeface The supported custom fonts extensions are .ttf and .otf. For
- * each font family the bold, italic and bold_italic variants are supported. Given a "family" font
- * family the files in the assets/fonts folder need to be family.ttf(.otf) family_bold.ttf(.otf)
- * family_italic.ttf(.otf) and family_bold_italic.ttf(.otf)
+ * Responsible for loading and caching Typeface objects.
+ *
+ * <p>This will first try to load a typeface from the assets/fonts folder. If one is not found in
+ * that folder, this will fallback to the best matching system typeface.
+ *
+ * <p>Custom fonts support the extensions `.ttf` and `.otf` and the variants `bold`, `italic`, and
+ * `bold_italic`. For example, given a font named "ExampleFontFamily", the following are supported:
+ *
+ * <ul>
+ *   <li>ExampleFontFamily.ttf (or .otf)
+ *   <li>ExampleFontFamily_bold.ttf (or .otf)
+ *   <li>ExampleFontFamily_italic.ttf (or .otf)
+ *   <li>ExampleFontFamily_bold_italic.ttf (or .otf)
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactFontManager {
 
+  // NOTE: Indices in `EXTENSIONS` correspond to the `TypeFace` style constants.
   private static final String[] EXTENSIONS = {"", "_bold", "_italic", "_bold_italic"};
   private static final String[] FILE_EXTENSIONS = {".ttf", ".otf"};
   private static final String FONTS_ASSET_PATH = "fonts/";
 
   private static ReactFontManager sReactFontManagerInstance;
 
-  private final Map<String, FontFamily> mFontCache;
+  private final Map<String, AssetFontFamily> mFontCache;
   private final Map<String, Typeface> mCustomTypefaceCache;
 
   private ReactFontManager() {
@@ -49,36 +57,43 @@ public class ReactFontManager {
     return sReactFontManagerInstance;
   }
 
-  public @Nullable Typeface getTypeface(
-      String fontFamilyName, int style, AssetManager assetManager) {
-    return getTypeface(fontFamilyName, style, 0, assetManager);
+  public Typeface getTypeface(String fontFamilyName, int style, AssetManager assetManager) {
+    return getTypeface(fontFamilyName, new TypefaceStyle(style), assetManager);
   }
 
-  public @Nullable Typeface getTypeface(
+  public Typeface getTypeface(
+      String fontFamilyName, int weight, boolean italic, AssetManager assetManager) {
+    return getTypeface(fontFamilyName, new TypefaceStyle(weight, italic), assetManager);
+  }
+
+  public Typeface getTypeface(
       String fontFamilyName, int style, int weight, AssetManager assetManager) {
+    return getTypeface(fontFamilyName, new TypefaceStyle(style, weight), assetManager);
+  }
+
+  public Typeface getTypeface(
+      String fontFamilyName, TypefaceStyle typefaceStyle, AssetManager assetManager) {
     if (mCustomTypefaceCache.containsKey(fontFamilyName)) {
-      Typeface typeface = mCustomTypefaceCache.get(fontFamilyName);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && weight >= 100 && weight <= 1000) {
-        return Typeface.create(typeface, weight, (style & Typeface.ITALIC) != 0);
-      }
-      return Typeface.create(typeface, style);
+      // Apply `typefaceStyle` because custom fonts configure variants using `app:fontStyle` and
+      // `app:fontWeight` in their resource XML configuration file.
+      return typefaceStyle.apply(mCustomTypefaceCache.get(fontFamilyName));
     }
 
-    FontFamily fontFamily = mFontCache.get(fontFamilyName);
-    if (fontFamily == null) {
-      fontFamily = new FontFamily();
-      mFontCache.put(fontFamilyName, fontFamily);
+    AssetFontFamily assetFontFamily = mFontCache.get(fontFamilyName);
+    if (assetFontFamily == null) {
+      assetFontFamily = new AssetFontFamily();
+      mFontCache.put(fontFamilyName, assetFontFamily);
     }
 
-    Typeface typeface = fontFamily.getTypeface(style);
-    if (typeface == null) {
-      typeface = createTypeface(fontFamilyName, style, assetManager);
-      if (typeface != null) {
-        fontFamily.setTypeface(style, typeface);
-      }
-    }
+    int style = typefaceStyle.getNearestStyle();
 
-    return typeface;
+    Typeface assetTypeface = assetFontFamily.getTypefaceForStyle(style);
+    if (assetTypeface == null) {
+      assetTypeface = createAssetTypeface(fontFamilyName, style, assetManager);
+      assetFontFamily.setTypefaceForStyle(style, assetTypeface);
+    }
+    // Do not apply `typefaceStyle` because asset font files already incorporate the style.
+    return assetTypeface;
   }
 
   /*
@@ -88,8 +103,18 @@ public class ReactFontManager {
    *
    * ReactFontManager.getInstance().addCustomFont(this, "Srisakdi", R.font.srisakdi);
    */
-  public void addCustomFont(@NonNull Context context, @NonNull String fontFamily, int fontId) {
+  public void addCustomFont(Context context, String fontFamily, int fontId) {
     Typeface font = ResourcesCompat.getFont(context, fontId);
+    if (font != null) {
+      mCustomTypefaceCache.put(fontFamily, font);
+    }
+  }
+
+  /**
+   * Equivalent method to {@see addCustomFont(Context, String, int)} which accepts a Typeface
+   * object.
+   */
+  public void addCustomFont(String fontFamily, @Nullable Typeface font) {
     if (font != null) {
       mCustomTypefaceCache.put(fontFamily, font);
     }
@@ -106,16 +131,16 @@ public class ReactFontManager {
    */
   public void setTypeface(String fontFamilyName, int style, Typeface typeface) {
     if (typeface != null) {
-      FontFamily fontFamily = mFontCache.get(fontFamilyName);
-      if (fontFamily == null) {
-        fontFamily = new FontFamily();
-        mFontCache.put(fontFamilyName, fontFamily);
+      AssetFontFamily assetFontFamily = mFontCache.get(fontFamilyName);
+      if (assetFontFamily == null) {
+        assetFontFamily = new AssetFontFamily();
+        mFontCache.put(fontFamilyName, assetFontFamily);
       }
-      fontFamily.setTypeface(style, typeface);
+      assetFontFamily.setTypefaceForStyle(style, typeface);
     }
   }
 
-  private static @Nullable Typeface createTypeface(
+  private static Typeface createAssetTypeface(
       String fontFamilyName, int style, AssetManager assetManager) {
     String extension = EXTENSIONS[style];
     for (String fileExtension : FILE_EXTENSIONS) {
@@ -129,27 +154,27 @@ public class ReactFontManager {
       try {
         return Typeface.createFromAsset(assetManager, fileName);
       } catch (RuntimeException e) {
-        // unfortunately Typeface.createFromAsset throws an exception instead of returning null
-        // if the typeface doesn't exist
+        // If the typeface asset does not exist, try another extension.
+        continue;
       }
     }
-
     return Typeface.create(fontFamilyName, style);
   }
 
-  private static class FontFamily {
+  /** Responsible for caching typefaces for each custom font family. */
+  private static class AssetFontFamily {
 
     private SparseArray<Typeface> mTypefaceSparseArray;
 
-    private FontFamily() {
+    private AssetFontFamily() {
       mTypefaceSparseArray = new SparseArray<>(4);
     }
 
-    public Typeface getTypeface(int style) {
+    public @Nullable Typeface getTypefaceForStyle(int style) {
       return mTypefaceSparseArray.get(style);
     }
 
-    public void setTypeface(int style, Typeface typeface) {
+    public void setTypefaceForStyle(int style, Typeface typeface) {
       mTypefaceSparseArray.put(style, typeface);
     }
   }

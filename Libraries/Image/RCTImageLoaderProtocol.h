@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
-#import <React/RCTResizeMode.h>
-#import <React/RCTURLRequestHandler.h>
+#import <React/RCTImageCache.h>
 #import <React/RCTImageDataDecoder.h>
 #import <React/RCTImageURLLoader.h>
-#import <React/RCTImageCache.h>
+#import <React/RCTResizeMode.h>
+#import <React/RCTURLRequestHandler.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,12 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
  * Use PriorityPrefetch to prefetch images at a lower priority.
  * The priority logic is up to each @RCTImageLoaderProtocol implementation
  */
-typedef NS_ENUM(NSUInteger, RCTImageLoaderPriority) {
-  RCTImageLoaderPriorityImmediate,
-  RCTImageLoaderPriorityPrefetch
-};
+typedef NS_ENUM(NSInteger, RCTImageLoaderPriority) { RCTImageLoaderPriorityImmediate, RCTImageLoaderPriorityPrefetch };
 
-@protocol RCTImageLoaderProtocol<RCTURLRequestHandler>
+@protocol RCTImageLoaderProtocol <RCTURLRequestHandler>
 
 /**
  * The maximum number of concurrent image loading tasks. Loading and decoding
@@ -80,14 +77,14 @@ typedef NS_ENUM(NSUInteger, RCTImageLoaderPriority) {
                                                            callback:(RCTImageLoaderCompletionBlock)callback;
 
 /**
-* As above, but includes target `size`, `scale` and `resizeMode`, which are used to
-* select the optimal dimensions for the loaded image. The `clipped` option
-* controls whether the image will be clipped to fit the specified size exactly,
-* or if the original aspect ratio should be retained.
-* `partialLoadBlock` is meant for custom image loaders that do not ship with the core RN library.
-* It is meant to be called repeatedly while loading the image as higher quality versions are decoded,
-* for instance with progressive JPEGs.
-*/
+ * As above, but includes target `size`, `scale` and `resizeMode`, which are used to
+ * select the optimal dimensions for the loaded image. The `clipped` option
+ * controls whether the image will be clipped to fit the specified size exactly,
+ * or if the original aspect ratio should be retained.
+ * `partialLoadBlock` is meant for custom image loaders that do not ship with the core RN library.
+ * It is meant to be called repeatedly while loading the image as higher quality versions are decoded,
+ * for instance with progressive JPEGs.
+ */
 - (nullable RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                                                                size:(CGSize)size
                                                               scale:(CGFloat)scale
@@ -116,7 +113,7 @@ typedef NS_ENUM(NSUInteger, RCTImageLoaderPriority) {
  * the information, and won't decode the image if it doesn't have to.
  */
 - (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
-                                                       block:(void(^)(NSError *error, CGSize size))completionBlock;
+                                                       block:(void (^)(NSError *error, CGSize size))completionBlock;
 /**
  * Determines whether given image URLs are cached locally. The `requests` array is expected
  * to contain objects convertible to NSURLRequest. The return value maps URLs to strings:

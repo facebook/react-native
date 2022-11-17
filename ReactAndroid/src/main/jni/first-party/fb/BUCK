@@ -19,10 +19,14 @@ oss_cxx_library(
         "-fexceptions",
         "-Wall",
         "-Werror",
-        "-std=c++14",
+        "-std=c++17",
         "-DDISABLE_CPUCAP",
         "-DDISABLE_XPLAT",
     ],
+    linker_flags = [
+        "-llog",
+    ],
+    preferred_linkage = "static",
     soname = "libfb.$(ext)",
     visibility = ["PUBLIC"],
     deps = [

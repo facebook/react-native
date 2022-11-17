@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,14 +10,15 @@
 
 'use strict';
 
-const AnimatedInterpolation = require('./AnimatedInterpolation');
-const AnimatedNode = require('./AnimatedNode');
-const AnimatedValue = require('./AnimatedValue');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
-
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 
-class AnimatedDivision extends AnimatedWithChildren {
+import AnimatedInterpolation from './AnimatedInterpolation';
+import AnimatedNode from './AnimatedNode';
+import AnimatedValue from './AnimatedValue';
+import AnimatedWithChildren from './AnimatedWithChildren';
+
+export default class AnimatedDivision extends AnimatedWithChildren {
   _a: AnimatedNode;
   _b: AnimatedNode;
   _warnedAboutDivideByZero: boolean = false;
@@ -31,10 +32,10 @@ class AnimatedDivision extends AnimatedWithChildren {
     this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
   }
 
-  __makeNative() {
-    this._a.__makeNative();
-    this._b.__makeNative();
-    super.__makeNative();
+  __makeNative(platformConfig: ?PlatformConfig) {
+    this._a.__makeNative(platformConfig);
+    this._b.__makeNative(platformConfig);
+    super.__makeNative(platformConfig);
   }
 
   __getValue(): number {
@@ -53,7 +54,9 @@ class AnimatedDivision extends AnimatedWithChildren {
     return a / b;
   }
 
-  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+  interpolate<OutputT: number | string>(
+    config: InterpolationConfigType<OutputT>,
+  ): AnimatedInterpolation<OutputT> {
     return new AnimatedInterpolation(this, config);
   }
 
@@ -75,5 +78,3 @@ class AnimatedDivision extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedDivision;

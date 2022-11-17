@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@
 #include "CxxModuleWrapper.h"
 #include "JMessageQueueThread.h"
 #include "JRuntimeExecutor.h"
+#include "JRuntimeScheduler.h"
 #include "JSLoader.h"
 #include "JavaModuleWrapper.h"
 #include "ModuleRegistryBuilder.h"
@@ -61,6 +62,10 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
           cxxModules);
 
+  // When called from CatalystInstanceImpl.java, warnings will be logged when
+  // CxxNativeModules are used. Java NativeModule usages log error in Java.
+  void warnOnLegacyNativeModuleSystemUse();
+
   void extendNativeModules(
       jni::alias_ref<jni::JCollection<
           JavaModuleWrapper::javaobject>::javaobject> javaModules,
@@ -94,9 +99,12 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
   jni::alias_ref<CallInvokerHolder::javaobject> getNativeCallInvokerHolder();
   jni::alias_ref<JRuntimeExecutor::javaobject> getRuntimeExecutor();
+  jni::alias_ref<JRuntimeScheduler::javaobject> getRuntimeScheduler();
   void setGlobalVariable(std::string propName, std::string &&jsonValue);
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);
+
+  void createAndInstallRuntimeSchedulerIfNecessary();
 
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.
@@ -106,6 +114,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   jni::global_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder_;
   jni::global_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder_;
   jni::global_ref<JRuntimeExecutor::javaobject> runtimeExecutor_;
+  jni::global_ref<JRuntimeScheduler::javaobject> runtimeScheduler_;
 };
 
 } // namespace react

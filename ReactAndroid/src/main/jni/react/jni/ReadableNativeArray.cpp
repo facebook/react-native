@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,10 +20,20 @@ __attribute__((visibility("default")))
 ReadableNativeArray::ReadableNativeArray(folly::dynamic array)
     : HybridBase(std::move(array)) {}
 
+// TODO T112842309: Remove after fbjni upgraded in OSS
 void ReadableNativeArray::mapException(const std::exception &ex) {
   if (dynamic_cast<const folly::TypeError *>(&ex) != nullptr) {
     throwNewJavaException(
         exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
+  }
+}
+
+void ReadableNativeArray::mapException(std::exception_ptr ex) {
+  try {
+    std::rethrow_exception(ex);
+  } catch (const folly::TypeError &err) {
+    throwNewJavaException(
+        exceptions::gUnexpectedNativeTypeExceptionClass, err.what());
   }
 }
 

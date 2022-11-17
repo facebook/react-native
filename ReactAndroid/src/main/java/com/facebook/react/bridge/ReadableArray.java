@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,6 @@
 package com.facebook.react.bridge;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
@@ -27,13 +26,13 @@ public interface ReadableArray {
 
   int getInt(int index);
 
-  @Nullable
+  @NonNull
   String getString(int index);
 
-  @Nullable
+  @NonNull
   ReadableArray getArray(int index);
 
-  @Nullable
+  @NonNull
   ReadableMap getMap(int index);
 
   @NonNull

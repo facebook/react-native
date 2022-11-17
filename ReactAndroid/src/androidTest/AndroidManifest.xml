@@ -14,6 +14,7 @@
     <activity
       android:name="com.facebook.react.testing.ReactAppTestActivity"
       android:theme="@style/Theme.ReactNative.AppCompat.Light.NoActionBar.FullScreen"
+      android:exported="false"
     />
   </application>
 </manifest>

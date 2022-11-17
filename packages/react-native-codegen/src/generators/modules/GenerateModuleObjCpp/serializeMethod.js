@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,76 +11,83 @@
 'use strict';
 
 import type {
-  NativeModuleMethodParamSchema,
+  Nullable,
+  NamedShape,
+  NativeModuleParamTypeAnnotation,
   NativeModuleReturnTypeAnnotation,
-  NativeModulePropertySchema,
+  NativeModulePropertyShape,
 } from '../../../CodegenSchema';
 
 import type {AliasResolver} from '../Utils';
+import type {StructCollector} from './StructCollector';
 
 const invariant = require('invariant');
-const {StructCollector} = require('./StructCollector');
-const {capitalize, getNamespacedStructName} = require('./Utils');
+const {getNamespacedStructName} = require('./Utils');
+const {capitalize} = require('../../Utils');
+const {
+  wrapNullable,
+  unwrapNullable,
+} = require('../../../parsers/parsers-commons');
 
 const ProtocolMethodTemplate = ({
   returnObjCType,
   methodName,
   params,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   returnObjCType: string,
   methodName: string,
   params: string,
-|}>) => `- (${returnObjCType})${methodName}${params};`;
+}>) => `- (${returnObjCType})${methodName}${params};`;
 
-export type StructParameterRecord = $ReadOnly<{|
+export type StructParameterRecord = $ReadOnly<{
   paramIndex: number,
   structName: string,
-|}>;
+}>;
 
 type ReturnJSType =
   | 'VoidKind'
+  | 'BooleanKind'
   | 'PromiseKind'
   | 'ObjectKind'
   | 'ArrayKind'
   | 'NumberKind'
   | 'StringKind';
 
-export type MethodSerializationOutput = $ReadOnly<{|
+export type MethodSerializationOutput = $ReadOnly<{
   methodName: string,
   protocolMethod: string,
   selector: string,
   structParamRecords: $ReadOnlyArray<StructParameterRecord>,
   returnJSType: ReturnJSType,
   argCount: number,
-|}>;
+}>;
 
 function serializeMethod(
-  moduleName: string,
-  property: NativeModulePropertySchema,
+  hasteModuleName: string,
+  property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
 ): $ReadOnlyArray<MethodSerializationOutput> {
-  const {
-    name: methodName,
-    typeAnnotation: {params, returnTypeAnnotation},
-  } = property;
+  const {name: methodName, typeAnnotation: nullableTypeAnnotation} = property;
+  const [propertyTypeAnnotation] = unwrapNullable(nullableTypeAnnotation);
+  const {params} = propertyTypeAnnotation;
 
   if (methodName === 'getConstants') {
     return serializeConstantsProtocolMethods(
-      moduleName,
+      hasteModuleName,
       property,
       structCollector,
       resolveAlias,
     );
   }
 
-  const methodParams: Array<{|paramName: string, objCType: string|}> = [];
+  const methodParams: Array<{paramName: string, objCType: string}> = [];
   const structParamRecords: Array<StructParameterRecord> = [];
 
   params.forEach((param, index) => {
     const structName = getParamStructName(methodName, param);
     const {objCType, isStruct} = getParamObjCType(
-      moduleName,
+      hasteModuleName,
       methodName,
       param,
       structName,
@@ -95,6 +102,12 @@ function serializeMethod(
     }
   });
 
+  // Unwrap returnTypeAnnotation, so we check if the return type is Promise
+  // TODO(T76719514): Disallow nullable PromiseTypeAnnotations
+  const [returnTypeAnnotation] = unwrapNullable(
+    propertyTypeAnnotation.returnTypeAnnotation,
+  );
+
   if (returnTypeAnnotation.type === 'PromiseTypeAnnotation') {
     methodParams.push(
       {paramName: 'resolve', objCType: 'RCTPromiseResolveBlock'},
@@ -105,7 +118,10 @@ function serializeMethod(
   /**
    * Build Protocol Method
    **/
-  const returnObjCType = getReturnObjCType(methodName, returnTypeAnnotation);
+  const returnObjCType = getReturnObjCType(
+    methodName,
+    propertyTypeAnnotation.returnTypeAnnotation,
+  );
   const paddingMax = `- (${returnObjCType})${methodName}`.length;
 
   const objCParams = methodParams.reduce(
@@ -128,6 +144,7 @@ function serializeMethod(
   /**
    * Build ObjC Selector
    */
+  // $FlowFixMe[missing-type-arg]
   const selector = methodParams
     .map<string>(({paramName}) => paramName)
     .reduce(($selector, paramName, i) => {
@@ -151,32 +168,31 @@ function serializeMethod(
   ];
 }
 
-function getParamStructName(
-  methodName: string,
-  param: NativeModuleMethodParamSchema,
-): string {
-  if (param.typeAnnotation.type === 'TypeAliasTypeAnnotation') {
-    return param.typeAnnotation.name;
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
+function getParamStructName(methodName: string, param: Param): string {
+  const [typeAnnotation] = unwrapNullable(param.typeAnnotation);
+  if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    return typeAnnotation.name;
   }
 
   return `Spec${capitalize(methodName)}${capitalize(param.name)}`;
 }
 
 function getParamObjCType(
-  moduleName: string,
+  hasteModuleName: string,
   methodName: string,
-  param: NativeModuleMethodParamSchema,
+  param: Param,
   structName: string,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
-): $ReadOnly<{|objCType: string, isStruct: boolean|}> {
-  const {name: paramName, typeAnnotation} = param;
-  const notRequired = param.optional || typeAnnotation.nullable;
+): $ReadOnly<{objCType: string, isStruct: boolean}> {
+  const {name: paramName, typeAnnotation: nullableTypeAnnotation} = param;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const notRequired = param.optional || nullable;
 
   function wrapIntoNullableIfNeeded(generatedType: string) {
-    return typeAnnotation.nullable
-      ? `${generatedType} _Nullable`
-      : generatedType;
+    return nullable ? `${generatedType} _Nullable` : generatedType;
   }
 
   const isStruct = (objCType: string) => ({
@@ -202,18 +218,20 @@ function getParamObjCType(
        *
        * For example:
        *   Array<number> => NSArray<NSNumber *>
-       *   type Animal = {||};
+       *   type Animal = {};
        *   Array<Animal> => NSArray<JS::NativeSampleTurboModule::Animal *>, etc.
        */
       return notStruct(wrapIntoNullableIfNeeded('NSArray *'));
     }
   }
 
-  const structTypeAnnotation = structCollector.process(
-    structName,
-    'REGULAR',
-    resolveAlias,
-    typeAnnotation,
+  const [structTypeAnnotation] = unwrapNullable(
+    structCollector.process(
+      structName,
+      'REGULAR',
+      resolveAlias,
+      wrapNullable(nullable, typeAnnotation),
+    ),
   );
 
   invariant(
@@ -227,10 +245,11 @@ function getParamObjCType(
        * TODO(T73943261): Support nullable object literals and aliases?
        */
       return isStruct(
-        getNamespacedStructName(moduleName, structTypeAnnotation.name) + ' &',
+        getNamespacedStructName(hasteModuleName, structTypeAnnotation.name) +
+          ' &',
       );
     }
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (structTypeAnnotation.name) {
         case 'RootTag':
           return notStruct(notRequired ? 'NSNumber *' : 'double');
@@ -252,6 +271,17 @@ function getParamObjCType(
       return notStruct(notRequired ? 'NSNumber *' : 'double');
     case 'BooleanTypeAnnotation':
       return notStruct(notRequired ? 'NSNumber *' : 'BOOL');
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return notStruct(notRequired ? 'NSNumber *' : 'double');
+        case 'StringTypeAnnotation':
+          return notStruct(wrapIntoNullableIfNeeded('NSString *'));
+        default:
+          throw new Error(
+            `Unsupported enum type for param "${paramName}" in ${methodName}. Found: ${typeAnnotation.type}`,
+          );
+      }
     case 'GenericObjectTypeAnnotation':
       return notStruct(wrapIntoNullableIfNeeded('NSDictionary *'));
     default:
@@ -264,12 +294,12 @@ function getParamObjCType(
 
 function getReturnObjCType(
   methodName: string,
-  typeAnnotation: NativeModuleReturnTypeAnnotation,
-) {
+  nullableTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
+): string {
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+
   function wrapIntoNullableIfNeeded(generatedType: string) {
-    return typeAnnotation.nullable
-      ? `${generatedType} _Nullable`
-      : generatedType;
+    return nullable ? `${generatedType} _Nullable` : generatedType;
   }
 
   switch (typeAnnotation.type) {
@@ -292,7 +322,7 @@ function getReturnObjCType(
           typeAnnotation.elementType,
         )}> *`,
       );
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapIntoNullableIfNeeded('NSNumber *');
@@ -316,10 +346,36 @@ function getReturnObjCType(
       return wrapIntoNullableIfNeeded('NSNumber *');
     case 'BooleanTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSNumber *');
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrapIntoNullableIfNeeded('NSNumber *');
+        case 'StringTypeAnnotation':
+          return wrapIntoNullableIfNeeded('NSString *');
+        default:
+          throw new Error(
+            `Unsupported enum return type for ${methodName}. Found: ${typeAnnotation.type}`,
+          );
+      }
+    case 'UnionTypeAnnotation':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrapIntoNullableIfNeeded('NSNumber *');
+        case 'ObjectTypeAnnotation':
+          return wrapIntoNullableIfNeeded('NSDictionary *');
+        case 'StringTypeAnnotation':
+          // TODO: Can NSString * returns not be _Nullable?
+          // In the legacy codegen, we don't surround NSSTring * with _Nullable
+          return wrapIntoNullableIfNeeded('NSString *');
+        default:
+          throw new Error(
+            `Unsupported union return type for ${methodName}, found: ${typeAnnotation.memberType}"`,
+          );
+      }
     case 'GenericObjectTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSDictionary *');
     default:
-      (typeAnnotation.type: empty);
+      (typeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );
@@ -328,8 +384,9 @@ function getReturnObjCType(
 
 function getReturnJSType(
   methodName: string,
-  typeAnnotation: NativeModuleReturnTypeAnnotation,
+  nullableTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
 ): ReturnJSType {
+  const [typeAnnotation] = unwrapNullable(nullableTypeAnnotation);
   switch (typeAnnotation.type) {
     case 'VoidTypeAnnotation':
       return 'VoidKind';
@@ -341,7 +398,7 @@ function getReturnJSType(
       return 'ObjectKind';
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       return 'NumberKind';
     case 'StringTypeAnnotation':
       return 'StringKind';
@@ -354,11 +411,35 @@ function getReturnJSType(
     case 'Int32TypeAnnotation':
       return 'NumberKind';
     case 'BooleanTypeAnnotation':
-      return 'NumberKind';
+      return 'BooleanKind';
     case 'GenericObjectTypeAnnotation':
       return 'ObjectKind';
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return 'NumberKind';
+        case 'StringTypeAnnotation':
+          return 'StringKind';
+        default:
+          throw new Error(
+            `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
+          );
+      }
+    case 'UnionTypeAnnotation':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return 'NumberKind';
+        case 'ObjectTypeAnnotation':
+          return 'ObjectKind';
+        case 'StringTypeAnnotation':
+          return 'StringKind';
+        default:
+          throw new Error(
+            `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
+          );
+      }
     default:
-      (typeAnnotation.type: empty);
+      (typeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );
@@ -366,21 +447,22 @@ function getReturnJSType(
 }
 
 function serializeConstantsProtocolMethods(
-  moduleName: string,
-  property: NativeModulePropertySchema,
+  hasteModuleName: string,
+  property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
 ): $ReadOnlyArray<MethodSerializationOutput> {
-  if (property.typeAnnotation.params.length !== 0) {
+  const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
+  if (propertyTypeAnnotation.params.length !== 0) {
     throw new Error(
-      `${moduleName}.getConstants() may only accept 0 arguments.`,
+      `${hasteModuleName}.getConstants() may only accept 0 arguments.`,
     );
   }
 
-  const {returnTypeAnnotation} = property.typeAnnotation;
+  const {returnTypeAnnotation} = propertyTypeAnnotation;
   if (returnTypeAnnotation.type !== 'ObjectTypeAnnotation') {
     throw new Error(
-      `${moduleName}.getConstants() may only return an object literal: {|...|}.`,
+      `${hasteModuleName}.getConstants() may only return an object literal: {...}.`,
     );
   }
 
@@ -400,8 +482,9 @@ function serializeConstantsProtocolMethods(
     "Unable to generate C++ struct from module's getConstants() method return type.",
   );
 
-  const returnObjCType = `facebook::react::ModuleConstants<JS::Native${moduleName}::Constants::Builder>`;
+  const returnObjCType = `facebook::react::ModuleConstants<JS::${hasteModuleName}::Constants::Builder>`;
 
+  // $FlowFixMe[missing-type-arg]
   return ['constantsToExport', 'getConstants'].map<MethodSerializationOutput>(
     methodName => {
       const protocolMethod = ProtocolMethodTemplate({

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -83,36 +83,6 @@ class JavaNativeModule : public NativeModule {
   jni::global_ref<JavaModuleWrapper::javaobject> wrapper_;
   std::shared_ptr<MessageQueueThread> messageQueueThread_;
   std::vector<folly::Optional<MethodInvoker>> syncMethods_;
-};
-
-// Experimental new implementation that uses direct method invocation
-class NewJavaNativeModule : public NativeModule {
- public:
-  NewJavaNativeModule(
-      std::weak_ptr<Instance> instance,
-      jni::alias_ref<JavaModuleWrapper::javaobject> wrapper,
-      std::shared_ptr<MessageQueueThread> messageQueueThread);
-
-  std::string getName() override;
-  std::vector<MethodDescriptor> getMethods() override;
-  folly::dynamic getConstants() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic &&params, int callId)
-      override;
-  MethodCallResult callSerializableNativeHook(
-      unsigned int reactMethodId,
-      folly::dynamic &&params) override;
-
- private:
-  std::weak_ptr<Instance> instance_;
-  jni::global_ref<JavaModuleWrapper::javaobject> wrapper_;
-  jni::global_ref<JBaseJavaModule::javaobject> module_;
-  std::shared_ptr<MessageQueueThread> messageQueueThread_;
-  std::vector<MethodInvoker> methods_;
-  std::vector<MethodDescriptor> methodDescriptors_;
-
-  MethodCallResult invokeInner(
-      unsigned int reactMethodId,
-      folly::dynamic &&params);
 };
 
 } // namespace react

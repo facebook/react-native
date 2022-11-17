@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,7 +26,7 @@ TEST(ElementTest, testNormalCases) {
   auto shadowNodeAB = std::shared_ptr<ViewShadowNode>{};
   auto shadowNodeABA = std::shared_ptr<ViewShadowNode>{};
 
-  auto propsAA = std::make_shared<ViewProps>();
+  auto propsAA = std::make_shared<ViewShadowNodeProps>();
   propsAA->nativeId = "node AA";
 
   // clang-format off
@@ -51,7 +51,7 @@ TEST(ElementTest, testNormalCases) {
             .reference(shadowNodeAB)
             .tag(3)
             .props([]() {
-               auto props = std::make_shared<ViewProps>();
+               auto props = std::make_shared<ViewShadowNodeProps>();
                props->nativeId = "node AB";
                return props;
             })
@@ -60,7 +60,7 @@ TEST(ElementTest, testNormalCases) {
                 .reference(shadowNodeABA)
                 .tag(4)
                 .props([]() {
-                  auto props = std::make_shared<ViewProps>();
+                  auto props = std::make_shared<ViewShadowNodeProps>();
                   props->nativeId = "node ABA";
                   return props;
                 })

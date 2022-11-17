@@ -1,22 +1,22 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
- * @emails oncall+react_native
  * @flow
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
-const React = require('react');
+const render = require('../../../jest/renderer');
+const LogBoxLog = require('../Data/LogBoxLog').default;
 const {
   _LogBoxNotificationContainer: LogBoxNotificationContainer,
 } = require('../LogBoxNotificationContainer');
-const LogBoxLog = require('../Data/LogBoxLog').default;
-const render = require('../../../jest/renderer');
+const React = require('react');
 
 describe('LogBoxNotificationContainer', () => {
   it('should render null with no logs', () => {

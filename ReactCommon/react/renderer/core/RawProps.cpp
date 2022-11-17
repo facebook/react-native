@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,11 @@
 
 #include "RawProps.h"
 
+#include <react/debug/react_native_assert.h>
+#include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsParser.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 RawProps::RawProps() {
   mode_ = Mode::Empty;
@@ -46,8 +47,10 @@ RawProps::RawProps(folly::dynamic const &dynamic) noexcept {
   dynamic_ = dynamic;
 }
 
-void RawProps::parse(RawPropsParser const &parser) const noexcept {
-  assert(parser_ == nullptr && "A parser was already assigned.");
+void RawProps::parse(
+    RawPropsParser const &parser,
+    const PropsParserContext & /*unused*/) const noexcept {
+  react_native_assert(parser_ == nullptr && "A parser was already assigned.");
   parser_ = &parser;
   parser.preparse(*this);
 }
@@ -84,11 +87,17 @@ const RawValue *RawProps::at(
     char const *name,
     char const *prefix,
     char const *suffix) const noexcept {
-  assert(
+  react_native_assert(
       parser_ &&
       "The object is not parsed. `parse` must be called before `at`.");
   return parser_->at(*this, RawPropsKey{prefix, name, suffix});
 }
 
-} // namespace react
-} // namespace facebook
+void RawProps::iterateOverValues(
+    std::function<
+        void(RawPropsPropNameHash, const char *, RawValue const &)> const &fn)
+    const {
+  return parser_->iterateOverValues(*this, fn);
+}
+
+} // namespace facebook::react

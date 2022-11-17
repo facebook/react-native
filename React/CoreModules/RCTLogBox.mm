@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTSurface.h>
-
 #import "CoreModulesPlugins.h"
 
 #if RCT_DEV_MENU
@@ -23,6 +22,7 @@
 
 @implementation RCTLogBox {
   RCTLogBoxView *_view;
+  __weak id<RCTSurfacePresenterStub> _bridgelessSurfacePresenter;
 }
 
 @synthesize bridge = _bridge;
@@ -34,6 +34,11 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
+- (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  _bridgelessSurfacePresenter = surfacePresenter;
+}
+
 RCT_EXPORT_METHOD(show)
 {
   if (RCTRedBoxGetEnabled()) {
@@ -43,18 +48,25 @@ RCT_EXPORT_METHOD(show)
       if (!strongSelf) {
         return;
       }
-      if (!strongSelf->_view) {
-        if (self->_bridge) {
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds bridge:self->_bridge];
-        } else {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:strongSelf, @"logbox", nil];
-          [[NSNotificationCenter defaultCenter] postNotificationName:@"CreateLogBoxSurface"
-                                                              object:nil
-                                                            userInfo:userInfo];
-          return;
-        }
+
+      if (strongSelf->_view) {
+        [strongSelf->_view show];
+        return;
       }
-      [strongSelf->_view show];
+
+      if (strongSelf->_bridgelessSurfacePresenter) {
+        strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
+                                                 surfacePresenter:strongSelf->_bridgelessSurfacePresenter];
+        [strongSelf->_view show];
+      } else if (strongSelf->_bridge && strongSelf->_bridge.valid) {
+        if (strongSelf->_bridge.surfacePresenter) {
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
+                                                   surfacePresenter:strongSelf->_bridge.surfacePresenter];
+        } else {
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow() bridge:strongSelf->_bridge];
+        }
+        [strongSelf->_view show];
+      }
     });
   }
 }
@@ -68,6 +80,7 @@ RCT_EXPORT_METHOD(hide)
       if (!strongSelf) {
         return;
       }
+      [strongSelf->_view setHidden:YES];
       strongSelf->_view = nil;
     });
   }

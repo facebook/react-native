@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,12 +10,12 @@
 
 'use strict';
 
-const Animation = require('./Animation');
-
-const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
-
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedValue from '../nodes/AnimatedValue';
 import type {AnimationConfig, EndCallback} from './Animation';
+
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import Animation from './Animation';
 
 export type DecayAnimationConfig = {
   ...AnimationConfig,
@@ -35,7 +35,7 @@ export type DecayAnimationConfigSingle = {
   deceleration?: number,
 };
 
-class DecayAnimation extends Animation {
+export default class DecayAnimation extends Animation {
   _startTime: number;
   _lastValue: number;
   _fromValue: number;
@@ -44,12 +44,14 @@ class DecayAnimation extends Animation {
   _onUpdate: (value: number) => void;
   _animationFrame: any;
   _useNativeDriver: boolean;
+  _platformConfig: ?PlatformConfig;
 
   constructor(config: DecayAnimationConfigSingle) {
     super();
     this._deceleration = config.deceleration ?? 0.998;
     this._velocity = config.velocity;
-    this._useNativeDriver = shouldUseNativeDriver(config);
+    this._useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
+    this._platformConfig = config.platformConfig;
     this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
     this.__iterations = config.iterations ?? 1;
   }
@@ -57,6 +59,7 @@ class DecayAnimation extends Animation {
   __getNativeAnimationConfig(): {|
     deceleration: number,
     iterations: number,
+    platformConfig: ?PlatformConfig,
     type: $TEMPORARY$string<'decay'>,
     velocity: number,
   |} {
@@ -65,6 +68,7 @@ class DecayAnimation extends Animation {
       deceleration: this._deceleration,
       velocity: this._velocity,
       iterations: this.__iterations,
+      platformConfig: this._platformConfig,
     };
   }
 
@@ -84,6 +88,7 @@ class DecayAnimation extends Animation {
     if (this._useNativeDriver) {
       this.__startNativeAnimation(animatedValue);
     } else {
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
     }
   }
@@ -105,6 +110,7 @@ class DecayAnimation extends Animation {
 
     this._lastValue = value;
     if (this.__active) {
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
     }
   }
@@ -116,5 +122,3 @@ class DecayAnimation extends Animation {
     this.__debouncedOnEnd({finished: false});
   }
 }
-
-module.exports = DecayAnimation;

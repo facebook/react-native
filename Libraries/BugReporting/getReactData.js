@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@
  * Convert a react internal instance to a sanitized data object.
  *
  * This is shamelessly stolen from react-devtools:
- * https://github.com/facebook/react-devtools/blob/master/backend/getData.js
+ * https://github.com/facebook/react-devtools/blob/HEAD/backend/getData.js
  */
 function getData(element: Object): Object {
   let children = null;
@@ -121,7 +121,11 @@ function getData(element: Object): Object {
   };
 }
 
-function setInProps(internalInst, path: Array<string | number>, value: any) {
+function setInProps(
+  internalInst: any,
+  path: Array<string | number>,
+  value: any,
+) {
   const element = internalInst._currentElement;
   internalInst._currentElement = {
     ...element,
@@ -130,12 +134,12 @@ function setInProps(internalInst, path: Array<string | number>, value: any) {
   internalInst._instance.forceUpdate();
 }
 
-function setInState(inst, path: Array<string | number>, value: any) {
+function setInState(inst: any, path: Array<string | number>, value: any) {
   setIn(inst.state, path, value);
   inst.forceUpdate();
 }
 
-function setInContext(inst, path: Array<string | number>, value: any) {
+function setInContext(inst: any, path: Array<string | number>, value: any) {
   setIn(inst.context, path, value);
   inst.forceUpdate();
 }
@@ -148,7 +152,7 @@ function setIn(obj: Object, path: Array<string | number>, value: any) {
   }
 }
 
-function childrenList(children) {
+function childrenList(children: any) {
   const res = [];
   for (const name in children) {
     res.push(children[name]);
@@ -156,13 +160,18 @@ function childrenList(children) {
   return res;
 }
 
-function copyWithSetImpl(obj, path, idx, value) {
+function copyWithSetImpl(
+  obj: any | Array<any>,
+  path: Array<string | number>,
+  idx: number,
+  value: any,
+): any {
   if (idx >= path.length) {
     return value;
   }
   const key = path[idx];
   const updated = Array.isArray(obj) ? obj.slice() : {...obj};
-  // $FlowFixMe number or string is fine here
+  // $FlowFixMe[incompatible-use] number or string is fine here
   updated[key] = copyWithSetImpl(obj[key], path, idx + 1, value);
   return updated;
 }

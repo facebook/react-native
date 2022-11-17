@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,25 +7,88 @@
 
 #pragma once
 
-#include <better/optional.h>
 #include <react/renderer/graphics/Color.h>
-#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/graphics/RectangleCorners.h>
+#include <react/renderer/graphics/RectangleEdges.h>
+
 #include <array>
+#include <bitset>
 #include <cmath>
+#include <optional>
 
 namespace facebook {
 namespace react {
 
 enum class PointerEventsMode { Auto, None, BoxNone, BoxOnly };
 
+struct ViewEvents {
+  std::bitset<32> bits{};
+
+  enum class Offset : std::size_t {
+    // Pointer events
+    PointerEnter = 0,
+    PointerMove = 1,
+    PointerLeave = 2,
+
+    // PanResponder callbacks
+    MoveShouldSetResponder = 3,
+    MoveShouldSetResponderCapture = 4,
+    StartShouldSetResponder = 5,
+    StartShouldSetResponderCapture = 6,
+    ResponderGrant = 7,
+    ResponderReject = 8,
+    ResponderStart = 9,
+    ResponderEnd = 10,
+    ResponderRelease = 11,
+    ResponderMove = 12,
+    ResponderTerminate = 13,
+    ResponderTerminationRequest = 14,
+    ShouldBlockNativeResponder = 15,
+
+    // Touch events
+    TouchStart = 16,
+    TouchMove = 17,
+    TouchEnd = 18,
+    TouchCancel = 19,
+
+    // W3C Pointer Events
+    PointerEnterCapture = 23,
+    PointerLeaveCapture = 24,
+    PointerMoveCapture = 25,
+    PointerOver = 26,
+    PointerOut = 27,
+    PointerOverCapture = 28,
+    PointerOutCapture = 29,
+
+  };
+
+  constexpr bool operator[](const Offset offset) const {
+    return bits[static_cast<std::size_t>(offset)];
+  }
+
+  std::bitset<32>::reference operator[](const Offset offset) {
+    return bits[static_cast<std::size_t>(offset)];
+  }
+};
+
+inline static bool operator==(ViewEvents const &lhs, ViewEvents const &rhs) {
+  return lhs.bits == rhs.bits;
+}
+
+inline static bool operator!=(ViewEvents const &lhs, ViewEvents const &rhs) {
+  return lhs.bits != rhs.bits;
+}
+
 enum class BackfaceVisibility { Auto, Visible, Hidden };
+
+enum class BorderCurve { Circular, Continuous };
 
 enum class BorderStyle { Solid, Dotted, Dashed };
 
 template <typename T>
 struct CascadedRectangleEdges {
   using Counterpart = RectangleEdges<T>;
-  using OptionalT = better::optional<T>;
+  using OptionalT = std::optional<T>;
 
   OptionalT left{};
   OptionalT top{};
@@ -38,18 +101,19 @@ struct CascadedRectangleEdges {
   OptionalT all{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
-    const auto leading = isRTL ? end : start;
-    const auto trailing = isRTL ? start : end;
+    const auto leadingEdge = isRTL ? end : start;
+    const auto trailingEdge = isRTL ? start : end;
     const auto horizontalOrAllOrDefault =
         horizontal.value_or(all.value_or(defaults));
     const auto verticalOrAllOrDefault =
         vertical.value_or(all.value_or(defaults));
 
     return {
-        /* .left = */ left.value_or(leading.value_or(horizontalOrAllOrDefault)),
+        /* .left = */
+        left.value_or(leadingEdge.value_or(horizontalOrAllOrDefault)),
         /* .top = */ top.value_or(verticalOrAllOrDefault),
         /* .right = */
-        right.value_or(trailing.value_or(horizontalOrAllOrDefault)),
+        right.value_or(trailingEdge.value_or(horizontalOrAllOrDefault)),
         /* .bottom = */ bottom.value_or(verticalOrAllOrDefault),
     };
   }
@@ -85,7 +149,7 @@ struct CascadedRectangleEdges {
 template <typename T>
 struct CascadedRectangleCorners {
   using Counterpart = RectangleCorners<T>;
-  using OptionalT = better::optional<T>;
+  using OptionalT = std::optional<T>;
 
   OptionalT topLeft{};
   OptionalT topRight{};
@@ -144,11 +208,13 @@ struct CascadedRectangleCorners {
 };
 
 using BorderWidths = RectangleEdges<Float>;
+using BorderCurves = RectangleCorners<BorderCurve>;
 using BorderStyles = RectangleEdges<BorderStyle>;
 using BorderColors = RectangleEdges<SharedColor>;
 using BorderRadii = RectangleCorners<Float>;
 
 using CascadedBorderWidths = CascadedRectangleEdges<Float>;
+using CascadedBorderCurves = CascadedRectangleCorners<BorderCurve>;
 using CascadedBorderStyles = CascadedRectangleEdges<BorderStyle>;
 using CascadedBorderColors = CascadedRectangleEdges<SharedColor>;
 using CascadedBorderRadii = CascadedRectangleCorners<Float>;
@@ -157,6 +223,7 @@ struct BorderMetrics {
   BorderColors borderColors{};
   BorderWidths borderWidths{};
   BorderRadii borderRadii{};
+  BorderCurves borderCurves{};
   BorderStyles borderStyles{};
 
   bool operator==(const BorderMetrics &rhs) const {
@@ -164,11 +231,13 @@ struct BorderMetrics {
                this->borderColors,
                this->borderWidths,
                this->borderRadii,
+               this->borderCurves,
                this->borderStyles) ==
         std::tie(
                rhs.borderColors,
                rhs.borderWidths,
                rhs.borderRadii,
+               rhs.borderCurves,
                rhs.borderStyles);
   }
 
@@ -176,6 +245,49 @@ struct BorderMetrics {
     return !(*this == rhs);
   }
 };
+
+#ifdef ANDROID
+
+struct NativeDrawable {
+  enum class Kind {
+    Ripple,
+    ThemeAttr,
+  };
+
+  struct Ripple {
+    std::optional<int32_t> color{};
+    bool borderless{false};
+    std::optional<Float> rippleRadius{};
+
+    bool operator==(const Ripple &rhs) const {
+      return std::tie(this->color, this->borderless, this->rippleRadius) ==
+          std::tie(rhs.color, rhs.borderless, rhs.rippleRadius);
+    }
+  };
+
+  Kind kind;
+  std::string themeAttr;
+  Ripple ripple;
+
+  bool operator==(const NativeDrawable &rhs) const {
+    if (this->kind != rhs.kind)
+      return false;
+    switch (this->kind) {
+      case Kind::ThemeAttr:
+        return this->themeAttr == rhs.themeAttr;
+      case Kind::Ripple:
+        return this->ripple == rhs.ripple;
+    }
+  }
+
+  bool operator!=(const NativeDrawable &rhs) const {
+    return !(*this == rhs);
+  }
+
+  ~NativeDrawable() = default;
+};
+
+#endif
 
 } // namespace react
 } // namespace facebook

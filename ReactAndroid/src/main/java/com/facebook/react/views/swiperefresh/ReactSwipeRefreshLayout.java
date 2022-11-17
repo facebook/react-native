@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,6 +25,7 @@ public class ReactSwipeRefreshLayout extends SwipeRefreshLayout {
   private int mTouchSlop;
   private float mPrevTouchX;
   private boolean mIntercepted;
+  private boolean mNativeGestureStarted = false;
 
   public ReactSwipeRefreshLayout(ReactContext reactContext) {
     super(reactContext);
@@ -86,6 +87,7 @@ public class ReactSwipeRefreshLayout extends SwipeRefreshLayout {
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     if (shouldInterceptTouchEvent(ev) && super.onInterceptTouchEvent(ev)) {
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+      mNativeGestureStarted = true;
 
       // If the pull-to-refresh gesture is interrupted by a parent with its own
       // onInterceptTouchEvent then the refresh indicator gets stuck on-screen
@@ -97,6 +99,16 @@ public class ReactSwipeRefreshLayout extends SwipeRefreshLayout {
       return true;
     }
     return false;
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    int action = ev.getActionMasked();
+    if (action == MotionEvent.ACTION_UP && mNativeGestureStarted) {
+      NativeGestureUtil.notifyNativeGestureEnded(this, ev);
+      mNativeGestureStarted = false;
+    }
+    return super.onTouchEvent(ev);
   }
 
   /**

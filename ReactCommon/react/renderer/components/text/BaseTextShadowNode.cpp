@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,8 +13,7 @@
 #include <react/renderer/components/text/TextShadowNode.h>
 #include <react/renderer/mounting/ShadowView.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline ShadowView shadowViewFromShadowNode(ShadowNode const &shadowNode) {
   auto shadowView = ShadowView{shadowNode};
@@ -33,8 +32,8 @@ void BaseTextShadowNode::buildAttributedString(
   for (auto const &childNode : parentNode.getChildren()) {
     // RawShadowNode
     auto rawTextShadowNode =
-        std::dynamic_pointer_cast<RawTextShadowNode const>(childNode);
-    if (rawTextShadowNode) {
+        traitCast<RawTextShadowNode const *>(childNode.get());
+    if (rawTextShadowNode != nullptr) {
       auto fragment = AttributedString::Fragment{};
       fragment.string = rawTextShadowNode->getConcreteProps().text;
       fragment.textAttributes = baseTextAttributes;
@@ -49,9 +48,8 @@ void BaseTextShadowNode::buildAttributedString(
     }
 
     // TextShadowNode
-    auto textShadowNode =
-        std::dynamic_pointer_cast<TextShadowNode const>(childNode);
-    if (textShadowNode) {
+    auto textShadowNode = traitCast<TextShadowNode const *>(childNode.get());
+    if (textShadowNode != nullptr) {
       auto localTextAttributes = baseTextAttributes;
       localTextAttributes.apply(
           textShadowNode->getConcreteProps().textAttributes);
@@ -74,5 +72,4 @@ void BaseTextShadowNode::buildAttributedString(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

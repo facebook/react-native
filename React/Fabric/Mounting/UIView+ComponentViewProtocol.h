@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,7 +37,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareForRecycle;
 
-- (facebook::react::SharedProps)props;
+- (facebook::react::Props::Shared)props;
+
+- (void)setIsJSResponder:(BOOL)isJSResponder;
+
+- (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)props;
+- (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
+
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView;
 
 @end
 

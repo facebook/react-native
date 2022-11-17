@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,18 +8,17 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import * as React from 'react';
 import type {
+  BubblingEventHandler,
   Float,
   WithDefault,
-  BubblingEventHandler,
-} from 'react-native/Libraries/Types/CodegenTypes';
+} from '../../Types/CodegenTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import * as React from 'react';
 
 type Event = $ReadOnly<{|
   timestamp: Float,
@@ -39,6 +38,7 @@ type NativeProps = $ReadOnly<{|
   mode?: WithDefault<'date' | 'time' | 'datetime', 'date'>,
   onChange?: ?BubblingEventHandler<Event>,
   timeZoneOffsetInMinutes?: ?Float,
+  pickerStyle?: WithDefault<'compact' | 'spinner' | 'inline', 'spinner'>,
 |}>;
 
 type ComponentType = HostComponent<NativeProps>;

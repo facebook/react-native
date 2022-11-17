@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,9 +16,6 @@ using namespace facebook::react;
 
 // Backward-compatible export
 RCT_EXPORT_MODULE()
-
-@synthesize bridge = _bridge;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 // Backward-compatible queue configuration
 + (BOOL)requiresMainQueueSetup
@@ -93,6 +90,11 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSArray<id<NSObject>> *, getArray : (NSArray
 }
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObject : (NSDictionary *)arg)
+{
+  return arg;
+}
+
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getUnsafeObject : (NSDictionary *)arg)
 {
   return arg;
 }

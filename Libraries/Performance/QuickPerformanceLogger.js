@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,20 @@
 
 const AUTO_SET_TIMESTAMP = -1;
 const DUMMY_INSTANCE_KEY = 0;
+
+// Defines map of annotations
+// Use as following:
+// {string: {key1: value1, key2: value2}}
+export type AnnotationsMap = $Shape<{
+  string: ?{[string]: string, ...},
+  int: ?{[string]: number, ...},
+  double: ?{[string]: number, ...},
+  bool: ?{[string]: boolean, ...},
+  string_array: ?{[string]: $ReadOnlyArray<string>, ...},
+  int_array: ?{[string]: $ReadOnlyArray<number>, ...},
+  double_array: ?{[string]: $ReadOnlyArray<number>, ...},
+  bool_array: ?{[string]: $ReadOnlyArray<boolean>, ...},
+}>;
 
 const QuickPerformanceLogger = {
   markerStart(
@@ -47,17 +61,34 @@ const QuickPerformanceLogger = {
 
   markerAnnotate(
     markerId: number,
-    annotationKey: string,
-    annotationValue: string,
+    annotations: AnnotationsMap,
     instanceKey: number = DUMMY_INSTANCE_KEY,
   ): void {
-    if (global.nativeQPLMarkerAnnotate) {
-      global.nativeQPLMarkerAnnotate(
-        markerId,
-        instanceKey,
-        annotationKey,
-        annotationValue,
-      );
+    if (global.nativeQPLMarkerAnnotateWithMap) {
+      global.nativeQPLMarkerAnnotateWithMap(markerId, annotations, instanceKey);
+    } else if (global.nativeQPLMarkerAnnotate) {
+      for (const type of [
+        'string',
+        'int',
+        'double',
+        'bool',
+        'string_array',
+        'int_array',
+        'double_array',
+        'bool_array',
+      ]) {
+        const keyValsOfType = annotations[type];
+        if (keyValsOfType != null) {
+          for (const annotationKey of Object.keys(keyValsOfType)) {
+            global.nativeQPLMarkerAnnotate(
+              markerId,
+              instanceKey,
+              annotationKey,
+              keyValsOfType[annotationKey].toString(),
+            );
+          }
+        }
+      }
     }
   },
 
@@ -65,9 +96,8 @@ const QuickPerformanceLogger = {
     markerId: number,
     instanceKey?: number = DUMMY_INSTANCE_KEY,
   ): void {
-    if (global.nativeQPLMarkerCancel) {
-      global.nativeQPLMarkerCancel(markerId, instanceKey);
-    }
+    // $FlowFixMe[object-this-reference]
+    this.markerDrop(markerId, instanceKey);
   },
 
   markerPoint(
@@ -75,9 +105,10 @@ const QuickPerformanceLogger = {
     name: string,
     instanceKey: number = DUMMY_INSTANCE_KEY,
     timestamp: number = AUTO_SET_TIMESTAMP,
+    data: ?string = null,
   ): void {
     if (global.nativeQPLMarkerPoint) {
-      global.nativeQPLMarkerPoint(markerId, name, instanceKey, timestamp);
+      global.nativeQPLMarkerPoint(markerId, name, instanceKey, timestamp, data);
     }
   },
 
@@ -87,6 +118,16 @@ const QuickPerformanceLogger = {
   ): void {
     if (global.nativeQPLMarkerDrop) {
       global.nativeQPLMarkerDrop(markerId, instanceKey);
+    }
+  },
+
+  markEvent(
+    markerId: number,
+    type: string,
+    annotations: ?AnnotationsMap = null,
+  ): void {
+    if (global.nativeQPLMarkEvent) {
+      global.nativeQPLMarkEvent(markerId, type, annotations);
     }
   },
 

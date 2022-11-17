@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@ package com.facebook.react.modules.common;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 
 /**
@@ -36,8 +37,23 @@ public class ModuleDataCleaner {
     void clearSensitiveData();
   }
 
+  /**
+   * Please use the cleanDataFromModules(ReactContext) instead. This method is not compatible with
+   * bridgeless mode.
+   *
+   * @deprecated
+   */
   public static void cleanDataFromModules(CatalystInstance catalystInstance) {
     for (NativeModule nativeModule : catalystInstance.getNativeModules()) {
+      if (nativeModule instanceof Cleanable) {
+        FLog.d(ReactConstants.TAG, "Cleaning data from " + nativeModule.getName());
+        ((Cleanable) nativeModule).clearSensitiveData();
+      }
+    }
+  }
+
+  public static void cleanDataFromModules(ReactContext reactContext) {
+    for (NativeModule nativeModule : reactContext.getNativeModules()) {
       if (nativeModule instanceof Cleanable) {
         FLog.d(ReactConstants.TAG, "Cleaning data from " + nativeModule.getName());
         ((Cleanable) nativeModule).clearSensitiveData();

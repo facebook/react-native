@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,9 +14,6 @@ const React = require('react');
 
 const {
   Alert,
-  Platform,
-  ProgressBarAndroid,
-  ProgressViewIOS,
   StyleSheet,
   Switch,
   Text,
@@ -29,21 +26,6 @@ const {
  */
 function roundKilo(value: number): number {
   return Math.round(value / 1000);
-}
-
-class ProgressBar extends React.Component<$FlowFixMeProps> {
-  render() {
-    if (Platform.OS === 'android') {
-      return (
-        <ProgressBarAndroid
-          progress={this.props.progress}
-          styleAttr="Horizontal"
-          indeterminate={false}
-        />
-      );
-    }
-    return <ProgressViewIOS progress={this.props.progress} />;
-  }
 }
 
 class XHRExampleDownload extends React.Component<{...}, Object> {
@@ -89,7 +71,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
         });
       }
     };
-    const onprogress = event => {
+    const onprogress = (event: ProgressEvent) => {
       this.setState({
         progressTotal: event.total,
         progressLoaded: event.loaded,
@@ -126,7 +108,10 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
         Alert.alert('Error', xhr.responseText);
       }
     };
-    xhr.open('GET', 'http://aleph.gutenberg.org/cache/epub/100/pg100.txt.utf8');
+    xhr.open(
+      'GET',
+      'http://aleph.gutenberg.org/cache/epub/100/pg100-images.html.utf8',
+    );
     // Avoid gzip so we can actually show progress
     xhr.setRequestHeader('Accept-Encoding', '');
     xhr.send();
@@ -149,7 +134,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
     ) : (
       <TouchableHighlight style={styles.wrapper} onPress={this._download}>
         <View style={styles.button}>
-          <Text>Download 5MB Text File</Text>
+          <Text>Download 7MB Text File</Text>
         </View>
       </TouchableHighlight>
     );
@@ -164,7 +149,6 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
             responseText: {roundKilo(responseLength)}/{roundKilo(contentLength)}
             k chars
           </Text>
-          <ProgressBar progress={responseLength / contentLength} />
         </View>
       );
     }
@@ -176,7 +160,6 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
             onprogress: {roundKilo(progressLoaded)}/{roundKilo(progressTotal)}{' '}
             KB
           </Text>
-          <ProgressBar progress={progressLoaded / progressTotal} />
         </View>
       );
     }

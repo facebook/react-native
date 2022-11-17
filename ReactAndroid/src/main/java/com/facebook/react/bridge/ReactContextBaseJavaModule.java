@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -52,8 +52,7 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
    */
   @ThreadConfined(ANY)
   protected @Nullable final ReactApplicationContext getReactApplicationContextIfActiveOrWarn() {
-    if (mReactApplicationContext.hasActiveCatalystInstance()
-        || mReactApplicationContext.isBridgeless()) {
+    if (mReactApplicationContext.hasActiveReactInstance()) {
       return mReactApplicationContext;
     }
 
@@ -64,7 +63,7 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
     if (ReactBuildConfig.DEBUG) {
       FLog.w(tag, msg);
     } else {
-      ReactSoftException.logSoftException(tag, new RuntimeException(msg));
+      ReactSoftExceptionLogger.logSoftException(tag, new RuntimeException(msg));
     }
     return null;
   }

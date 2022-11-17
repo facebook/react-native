@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,18 +15,28 @@ public class HermesExecutorFactory implements JavaScriptExecutorFactory {
   private static final String TAG = "Hermes";
 
   private final RuntimeConfig mConfig;
+  private boolean mEnableDebugger = true;
+  private String mDebuggerName = "";
 
   public HermesExecutorFactory() {
-    this(new RuntimeConfig(1024));
+    this(null);
   }
 
   public HermesExecutorFactory(RuntimeConfig config) {
     mConfig = config;
   }
 
+  public void setEnableDebugger(boolean enableDebugger) {
+    mEnableDebugger = enableDebugger;
+  }
+
+  public void setDebuggerName(String debuggerName) {
+    mDebuggerName = debuggerName;
+  }
+
   @Override
   public JavaScriptExecutor create() {
-    return new HermesExecutor(mConfig);
+    return new HermesExecutor(mConfig, mEnableDebugger, mDebuggerName);
   }
 
   @Override

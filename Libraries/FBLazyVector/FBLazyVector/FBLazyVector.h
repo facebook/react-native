@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,8 +16,9 @@
 namespace FB {
 
 /**
- * Presents a type-safe wrapper around an arbitrary object that represents an _immutable_ array of objects.
- * Each item is constructed lazily on demand and reconstructed on each access; there is no caching.
+ * Presents a type-safe wrapper around an arbitrary object that represents an
+ * _immutable_ array of objects. Each item is constructed lazily on demand and
+ * reconstructed on each access; there is no caching.
  */
 template <typename T, typename U>
 class LazyVector {
@@ -30,7 +31,8 @@ class LazyVector {
   using size_type = std::int32_t;
   using convert_type = std::function<T(U)>;
 
-  static LazyVector<T, U> fromUnsafeRawValue(U v, size_type size, convert_type convert) {
+  static LazyVector<T, U>
+  fromUnsafeRawValue(U v, size_type size, convert_type convert) {
     return {v, size, convert};
   }
 
@@ -48,7 +50,8 @@ class LazyVector {
 
   const_reference at(size_type pos) const {
 #ifndef _LIBCPP_NO_EXCEPTIONS
-    if (!(pos < _size)) throw std::out_of_range("out of range");
+    if (!(pos < _size))
+      throw std::out_of_range("out of range");
 #else
     assert(pos < _size || !"out of range");
 #endif
@@ -89,11 +92,11 @@ class LazyVector {
  private:
   /** Wrapped vector */
   LazyVector(U vector, size_type size, convert_type convert)
-  : _v(vector), _size(size), _convert(convert) {}
+      : _v(vector), _size(size), _convert(convert) {}
 
   U _v;
   size_type _size;
   convert_type _convert;
 };
 
-}
+} // namespace FB

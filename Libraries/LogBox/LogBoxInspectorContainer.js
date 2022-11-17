@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,13 +8,13 @@
  * @format
  */
 
-'use strict';
+import type LogBoxLog from './Data/LogBoxLog';
 
-import * as React from 'react';
-import {View, StyleSheet} from 'react-native';
+import View from '../Components/View/View';
+import StyleSheet from '../StyleSheet/StyleSheet';
 import * as LogBoxData from './Data/LogBoxData';
 import LogBoxInspector from './UI/LogBoxInspector';
-import type LogBoxLog from './Data/LogBoxLog';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   logs: $ReadOnlyArray<LogBoxLog>,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,9 @@
 
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTBridgeModuleDecorator.h"
+#import "RCTConstants.h"
+#import "RCTInitializing.h"
 #import "RCTLog.h"
 #import "RCTModuleMethod.h"
 #import "RCTProfile.h"
@@ -48,6 +51,11 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
   RCTBridgeModuleProvider _moduleProvider;
   std::mutex _instanceLock;
   BOOL _setupComplete;
+  RCTModuleRegistry *_moduleRegistry;
+  RCTViewRegistry *_viewRegistry_DEPRECATED;
+  RCTBundleManager *_bundleManager;
+  RCTCallableJSModules *_callableJSModules;
+  BOOL _isInitialized;
 }
 
 @synthesize methods = _methods;
@@ -97,34 +105,60 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
   }
 }
 
-- (instancetype)initWithModuleClass:(Class)moduleClass bridge:(RCTBridge *)bridge
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   return [self initWithModuleClass:moduleClass
                     moduleProvider:^id<RCTBridgeModule> {
                       return [moduleClass new];
                     }
-                            bridge:bridge];
+                            bridge:bridge
+                    moduleRegistry:moduleRegistry
+           viewRegistry_DEPRECATED:viewRegistry_DEPRECATED
+                     bundleManager:bundleManager
+                 callableJSModules:callableJSModules];
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
                      moduleProvider:(RCTBridgeModuleProvider)moduleProvider
                              bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
     _bridge = bridge;
     _moduleClass = moduleClass;
     _moduleProvider = [moduleProvider copy];
+    _moduleRegistry = moduleRegistry;
+    _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
+    _bundleManager = bundleManager;
+    _callableJSModules = callableJSModules;
     [self setUp];
   }
   return self;
 }
 
-- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance bridge:(RCTBridge *)bridge
+- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
+                                bridge:(RCTBridge *)bridge
+                        moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+               viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                         bundleManager:(RCTBundleManager *)bundleManager
+                     callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
     _bridge = bridge;
     _instance = instance;
     _moduleClass = [instance class];
+    _moduleRegistry = moduleRegistry;
+    _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
+    _bundleManager = bundleManager;
+    _callableJSModules = callableJSModules;
     [self setUp];
   }
   return self;
@@ -185,9 +219,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       // initialization requires it (View Managers get their queue by calling
       // self.bridge.uiManager.methodQueue)
       [self setBridgeForInstance];
+
+      RCTBridgeModuleDecorator *moduleDecorator =
+          [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:_viewRegistry_DEPRECATED
+                                                  moduleRegistry:_moduleRegistry
+                                                   bundleManager:_bundleManager
+                                               callableJSModules:_callableJSModules];
+      [moduleDecorator attachInteropAPIsToModule:_instance];
     }
 
     [self setUpMethodQueue];
+
+    if (shouldSetup) {
+      [self _initializeModule];
+    }
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
@@ -228,6 +273,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
           self.name);
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)_initializeModule
+{
+  if (!_isInitialized && [_instance respondsToSelector:@selector(initialize)]) {
+    _isInitialized = YES;
+    [(id<RCTInitializing>)_instance initialize];
   }
 }
 

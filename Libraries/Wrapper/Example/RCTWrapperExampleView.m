@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,14 +20,10 @@
     self.backgroundColor = [UIColor whiteColor];
 
     _intrinsicContentSize = CGSizeMake(64, 64);
-    _timer = [NSTimer scheduledTimerWithTimeInterval:1.0
-                                              target:self
-                                            selector:@selector(tick)
-                                            userInfo:nil
-                                             repeats:YES];
+    _timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(tick) userInfo:nil repeats:YES];
 
-    UITapGestureRecognizer *gestureRecognizer =
-      [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tick)];
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                        action:@selector(tick)];
     [self addGestureRecognizer:gestureRecognizer];
   }
   return self;
@@ -49,10 +45,7 @@
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-  return CGSizeMake(
-    MIN(size.width, _intrinsicContentSize.width),
-    MIN(size.height, _intrinsicContentSize.height)
-  );
+  return CGSizeMake(MIN(size.width, _intrinsicContentSize.width), MIN(size.height, _intrinsicContentSize.height));
 }
 
 @end

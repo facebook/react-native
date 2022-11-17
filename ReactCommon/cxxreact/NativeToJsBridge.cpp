@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -52,7 +52,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
   }
 
   void callNativeModules(
-      __unused JSExecutor &executor,
+      [[maybe_unused]] JSExecutor &executor,
       folly::dynamic &&calls,
       bool isEndOfBatch) override {
     CHECK(m_registry || calls.empty())
@@ -85,7 +85,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
   }
 
   MethodCallResult callSerializableNativeHook(
-      __unused JSExecutor &executor,
+      [[maybe_unused]] JSExecutor &executor,
       unsigned int moduleId,
       unsigned int methodId,
       folly::dynamic &&args) override {
@@ -338,27 +338,6 @@ std::shared_ptr<CallInvoker> NativeToJsBridge::getDecoratedNativeCallInvoker(
   };
 
   return std::make_shared<NativeCallInvoker>(m_delegate, nativeInvoker);
-}
-
-RuntimeExecutor NativeToJsBridge::getRuntimeExecutor() {
-  auto runtimeExecutor =
-      [this, isDestroyed = m_destroyed](
-          std::function<void(jsi::Runtime & runtime)> &&callback) {
-        if (*isDestroyed) {
-          return;
-        }
-        runOnExecutorQueue(
-            [callback = std::move(callback)](JSExecutor *executor) {
-              jsi::Runtime *runtime =
-                  (jsi::Runtime *)executor->getJavaScriptContext();
-              try {
-                callback(*runtime);
-              } catch (jsi::JSError &originalError) {
-                handleJSError(*runtime, originalError, true);
-              }
-            });
-      };
-  return runtimeExecutor;
 }
 
 } // namespace react

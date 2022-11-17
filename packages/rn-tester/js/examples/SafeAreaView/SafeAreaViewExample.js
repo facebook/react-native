@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,6 @@ const {
   Modal,
   SafeAreaView,
   StyleSheet,
-  Switch,
   Text,
   View,
 } = require('react-native');
@@ -27,19 +26,17 @@ class SafeAreaViewExample extends React.Component<
   {...},
   {|
     modalVisible: boolean,
-    emulateUnlessSupported: boolean,
   |},
 > {
-  state = {
+  state: {modalVisible: boolean} = {
     modalVisible: false,
-    emulateUnlessSupported: true,
   };
 
-  _setModalVisible = visible => {
+  _setModalVisible = (visible: boolean) => {
     this.setState({modalVisible: visible});
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Modal
@@ -48,20 +45,11 @@ class SafeAreaViewExample extends React.Component<
           animationType="slide"
           supportedOrientations={['portrait', 'landscape']}>
           <View style={styles.modal}>
-            <SafeAreaView
-              style={styles.safeArea}
-              emulateUnlessSupported={this.state.emulateUnlessSupported}>
+            <SafeAreaView style={styles.safeArea}>
               <View style={styles.safeAreaContent}>
                 <Button
                   onPress={this._setModalVisible.bind(this, false)}
                   title="Close"
-                />
-                <Text>emulateUnlessSupported:</Text>
-                <Switch
-                  onValueChange={value =>
-                    this.setState({emulateUnlessSupported: value})
-                  }
-                  value={this.state.emulateUnlessSupported}
                 />
               </View>
             </SafeAreaView>
@@ -71,27 +59,23 @@ class SafeAreaViewExample extends React.Component<
           onPress={this._setModalVisible.bind(this, true)}
           title="Present Modal Screen with SafeAreaView"
         />
-        <Text>emulateUnlessSupported:</Text>
-        <Switch
-          onValueChange={value =>
-            this.setState({emulateUnlessSupported: value})
-          }
-          value={this.state.emulateUnlessSupported}
-        />
       </View>
     );
   }
 }
 
 class IsIPhoneXExample extends React.Component<{...}> {
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text>
           Is this an iPhone X:{' '}
-          {DeviceInfo.getConstants().isIPhoneX_deprecated
-            ? 'Yeah!'
-            : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'}
+          {
+            // $FlowFixMe[sketchy-null-bool]
+            DeviceInfo.getConstants().isIPhoneX_deprecated
+              ? 'Yeah!'
+              : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'
+          }
         </Text>
       </View>
     );
@@ -130,10 +114,11 @@ exports.examples = [
   },
   {
     title: 'isIPhoneX_deprecated Example',
-    description: ('`DeviceInfo.isIPhoneX_deprecated` returns true only on iPhone X. ' +
-      'Note: This prop is deprecated and will be removed in a future ' +
-      'release. Please use this only for a quick and temporary solution. ' +
-      'Use <SafeAreaView> instead.': string),
+    description:
+      ('`DeviceInfo.isIPhoneX_deprecated` returns true only on iPhone X. ' +
+        'Note: This prop is deprecated and will be removed in a future ' +
+        'release. Please use this only for a quick and temporary solution. ' +
+        'Use <SafeAreaView> instead.': string),
     render: (): React.Node => <IsIPhoneXExample />,
   },
 ];

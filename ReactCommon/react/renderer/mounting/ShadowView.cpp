@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,22 +7,25 @@
 
 #include "ShadowView.h"
 
+#include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static LayoutMetrics layoutMetricsFromShadowNode(ShadowNode const &shadowNode) {
   auto layoutableShadowNode =
       traitCast<LayoutableShadowNode const *>(&shadowNode);
-  return layoutableShadowNode ? layoutableShadowNode->getLayoutMetrics()
-                              : EmptyLayoutMetrics;
+  return layoutableShadowNode != nullptr
+      ? layoutableShadowNode->getLayoutMetrics()
+      : EmptyLayoutMetrics;
 }
 
 ShadowView::ShadowView(const ShadowNode &shadowNode)
     : componentName(shadowNode.getComponentName()),
       componentHandle(shadowNode.getComponentHandle()),
+      surfaceId(shadowNode.getSurfaceId()),
       tag(shadowNode.getTag()),
+      traits(shadowNode.getTraits()),
       props(shadowNode.getProps()),
       eventEmitter(shadowNode.getEventEmitter()),
       layoutMetrics(layoutMetricsFromShadowNode(shadowNode)),
@@ -30,6 +33,7 @@ ShadowView::ShadowView(const ShadowNode &shadowNode)
 
 bool ShadowView::operator==(const ShadowView &rhs) const {
   return std::tie(
+             this->surfaceId,
              this->tag,
              this->componentName,
              this->props,
@@ -37,6 +41,7 @@ bool ShadowView::operator==(const ShadowView &rhs) const {
              this->layoutMetrics,
              this->state) ==
       std::tie(
+             rhs.surfaceId,
              rhs.tag,
              rhs.componentName,
              rhs.props,
@@ -49,7 +54,7 @@ bool ShadowView::operator!=(const ShadowView &rhs) const {
   return !(*this == rhs);
 }
 
-#if RN_DEBUG_STRING_CONVERTIBLE
+#ifdef RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(ShadowView const &object) {
   return object.componentHandle == 0 ? "Invalid" : object.componentName;
@@ -59,7 +64,10 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
     ShadowView const &object,
     DebugStringConvertibleOptions options) {
   return {
+      {"surfaceId", getDebugDescription(object.surfaceId, options)},
       {"tag", getDebugDescription(object.tag, options)},
+      {"traits", getDebugDescription(object.traits, options)},
+      {"componentName", object.componentName},
       {"props", getDebugDescription(object.props, options)},
       {"eventEmitter", getDebugDescription(object.eventEmitter, options)},
       {"layoutMetrics", getDebugDescription(object.layoutMetrics, options)},
@@ -77,5 +85,14 @@ bool ShadowViewNodePair::operator!=(const ShadowViewNodePair &rhs) const {
   return !(*this == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+bool ShadowViewNodePairLegacy::operator==(
+    const ShadowViewNodePairLegacy &rhs) const {
+  return this->shadowNode == rhs.shadowNode;
+}
+
+bool ShadowViewNodePairLegacy::operator!=(
+    const ShadowViewNodePairLegacy &rhs) const {
+  return !(*this == rhs);
+}
+
+} // namespace facebook::react

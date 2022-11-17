@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@
 #include <memory>
 
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook {
@@ -22,7 +23,10 @@ using SharedRawTextProps = std::shared_ptr<const RawTextProps>;
 class RawTextProps : public Props {
  public:
   RawTextProps() = default;
-  RawTextProps(const RawTextProps &sourceProps, const RawProps &rawProps);
+  RawTextProps(
+      const PropsParserContext &context,
+      const RawTextProps &sourceProps,
+      const RawProps &rawProps);
 
 #pragma mark - Props
 

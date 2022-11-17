@@ -1,0 +1,65 @@
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID",
+    "APPLE",
+    "CXX",
+    "get_apple_compiler_flags",
+    "get_apple_inspector_flags",
+    "get_preprocessor_flags_for_build_mode",
+    "rn_xplat_cxx_library",
+    "subdir_glob",
+)
+
+APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
+
+rn_xplat_cxx_library(
+    name = "debug",
+    srcs = glob(
+        ["**/*.cpp"],
+        exclude = glob(["tests/**/*.cpp"]),
+    ),
+    headers = glob(
+        ["**/*.h"],
+        exclude = glob(["tests/**/*.h"]),
+    ),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "react/debug",
+    ),
+    compiler_flags_pedantic = True,
+    exported_platform_linker_flags = [
+        (
+            "^android.*",
+            ["-llog"],
+        ),
+    ],
+    fbandroid_linker_flags = [
+        # for android react_native_assert
+        "-llog",
+    ],
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+    force_static = True,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    macosx_tests_override = [],
+    platforms = (ANDROID, APPLE, CXX),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    tests = [],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:conv",
+        "//xplat/folly:format",
+    ],
+    exported_deps = [
+        "//third-party/glog:glog",
+    ],
+)

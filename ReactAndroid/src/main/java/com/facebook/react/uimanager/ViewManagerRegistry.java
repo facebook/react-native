@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,10 @@
 
 package com.facebook.react.uimanager;
 
+import android.content.ComponentCallbacks2;
+import android.content.res.Configuration;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import java.util.List;
 import java.util.Map;
@@ -16,12 +19,12 @@ import java.util.Map;
  * Class that stores the mapping between native view name used in JS and the corresponding instance
  * of {@link ViewManager}.
  */
-public final class ViewManagerRegistry {
+public final class ViewManagerRegistry implements ComponentCallbacks2 {
 
   private final Map<String, ViewManager> mViewManagers;
-  private final @Nullable UIManagerModule.ViewManagerResolver mViewManagerResolver;
+  private final @Nullable ViewManagerResolver mViewManagerResolver;
 
-  public ViewManagerRegistry(UIManagerModule.ViewManagerResolver viewManagerResolver) {
+  public ViewManagerRegistry(ViewManagerResolver viewManagerResolver) {
     mViewManagers = MapBuilder.newHashMap();
     mViewManagerResolver = viewManagerResolver;
   }
@@ -56,7 +59,11 @@ public final class ViewManagerRegistry {
     if (mViewManagerResolver != null) {
       viewManager = getViewManagerFromResolver(className);
       if (viewManager != null) return viewManager;
-      throw new IllegalViewOperationException("ViewManagerResolver returned null for " + className);
+      throw new IllegalViewOperationException(
+          "ViewManagerResolver returned null for "
+              + className
+              + ", existing names are: "
+              + mViewManagerResolver.getViewManagerNames());
     }
     throw new IllegalViewOperationException("No ViewManager found for class " + className);
   }
@@ -86,5 +93,52 @@ public final class ViewManagerRegistry {
       return getViewManagerFromResolver(className);
     }
     return null;
+  }
+
+  /** Send lifecycle signal to all ViewManagers that StopSurface has been called. */
+  public void onSurfaceStopped(final int surfaceId) {
+    Runnable runnable =
+        new Runnable() {
+          @Override
+          public void run() {
+            for (Map.Entry<String, ViewManager> entry : mViewManagers.entrySet()) {
+              entry.getValue().onSurfaceStopped(surfaceId);
+            }
+          }
+        };
+    if (UiThreadUtil.isOnUiThread()) {
+      runnable.run();
+    } else {
+      UiThreadUtil.runOnUiThread(runnable);
+    }
+  }
+
+  /** ComponentCallbacks2 method. */
+  @Override
+  public void onTrimMemory(int level) {
+    Runnable runnable =
+        new Runnable() {
+          @Override
+          public void run() {
+            for (Map.Entry<String, ViewManager> entry : mViewManagers.entrySet()) {
+              entry.getValue().trimMemory();
+            }
+          }
+        };
+    if (UiThreadUtil.isOnUiThread()) {
+      runnable.run();
+    } else {
+      UiThreadUtil.runOnUiThread(runnable);
+    }
+  }
+
+  /** ComponentCallbacks2 method. */
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {}
+
+  /** ComponentCallbacks2 method. */
+  @Override
+  public void onLowMemory() {
+    this.onTrimMemory(0);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,12 +15,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.ValueCallback;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
-import com.facebook.react.bridge.GuardedResultAsyncTask;
 import com.facebook.react.bridge.ReactContext;
 import java.io.IOException;
 import java.net.CookieHandler;
@@ -39,10 +37,6 @@ public class ForwardingCookieHandler extends CookieHandler {
   private static final String VERSION_ZERO_HEADER = "Set-cookie";
   private static final String VERSION_ONE_HEADER = "Set-cookie2";
   private static final String COOKIE_HEADER = "Cookie";
-
-  // As CookieManager was synchronous before API 21 this class emulates the async behavior on < 21.
-  private static final boolean USES_LEGACY_STORE =
-      Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
 
   private final CookieSaver mCookieSaver;
   private final ReactContext mContext;
@@ -79,26 +73,7 @@ public class ForwardingCookieHandler extends CookieHandler {
   }
 
   public void clearCookies(final Callback callback) {
-    if (USES_LEGACY_STORE) {
-      new GuardedResultAsyncTask<Boolean>(mContext) {
-        @Override
-        protected Boolean doInBackgroundGuarded() {
-          CookieManager cookieManager = getCookieManager();
-          if (cookieManager != null) {
-            cookieManager.removeAllCookie();
-          }
-          mCookieSaver.onCookiesModified();
-          return true;
-        }
-
-        @Override
-        protected void onPostExecuteGuarded(Boolean result) {
-          callback.invoke(result);
-        }
-      }.execute();
-    } else {
-      clearCookiesAsync(callback);
-    }
+    clearCookiesAsync(callback);
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -116,38 +91,17 @@ public class ForwardingCookieHandler extends CookieHandler {
     }
   }
 
-  public void destroy() {
-    if (USES_LEGACY_STORE) {
-      CookieManager cookieManager = getCookieManager();
-      if (cookieManager != null) {
-        cookieManager.removeExpiredCookie();
-      }
-      mCookieSaver.persistCookies();
-    }
-  }
+  public void destroy() {}
 
   public void addCookies(final String url, final List<String> cookies) {
     final CookieManager cookieManager = getCookieManager();
     if (cookieManager == null) return;
 
-    if (USES_LEGACY_STORE) {
-      runInBackground(
-          new Runnable() {
-            @Override
-            public void run() {
-              for (String cookie : cookies) {
-                cookieManager.setCookie(url, cookie);
-              }
-              mCookieSaver.onCookiesModified();
-            }
-          });
-    } else {
-      for (String cookie : cookies) {
-        addCookieAsync(url, cookie);
-      }
-      cookieManager.flush();
-      mCookieSaver.onCookiesModified();
+    for (String cookie : cookies) {
+      addCookieAsync(url, cookie);
     }
+    cookieManager.flush();
+    mCookieSaver.onCookiesModified();
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -172,8 +126,8 @@ public class ForwardingCookieHandler extends CookieHandler {
   }
 
   /**
-   * Instantiating CookieManager in KitKat+ will load the Chromium task taking a 100ish ms so we do
-   * it lazily to make sure it's done on a background thread as needed.
+   * Instantiating CookieManager will load the Chromium task taking a 100ish ms so we do it lazily
+   * to make sure it's done on a background thread as needed.
    */
   private @Nullable CookieManager getCookieManager() {
     if (mCookieManager == null) {
@@ -184,39 +138,25 @@ public class ForwardingCookieHandler extends CookieHandler {
         // https://bugs.chromium.org/p/chromium/issues/detail?id=559720
         return null;
       } catch (Exception exception) {
-        String message = exception.getMessage();
-        // We cannot catch MissingWebViewPackageException as it is in a private / system API
-        // class. This validates the exception's message to ensure we are only handling this
-        // specific exception.
-        // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/webkit/WebViewFactory.java#348
-        if (message != null
-            && exception
-                .getClass()
-                .getCanonicalName()
-                .equals("android.webkit.WebViewFactory.MissingWebViewPackageException")) {
-          return null;
-        } else {
-          throw exception;
-        }
-      }
-
-      if (USES_LEGACY_STORE) {
-        mCookieManager.removeExpiredCookie();
+        // Ideally we would like to catch a `MissingWebViewPackageException` here.
+        // That API is private so we can't access it.
+        // Historically we used string matching on the error message to understand
+        // if the exception was a Missing Webview One.
+        // OEMs have been customizing that message making really hard to catch it.
+        // Therefore we result to returning null as a default instead of rethrowing
+        // the exception as it will result in a app crash at runtime.
+        // a) We will return null for all the other unhandled conditions when a webview provider is
+        // not found.
+        // b) We already have null checks in place for `getCookieManager()` calls.
+        // c) We have annotated the method as @Nullable to notify future devs about our return type.
+        return null;
       }
     }
 
     return mCookieManager;
   }
 
-  private static void possiblyWorkaroundSyncManager(Context context) {
-    if (USES_LEGACY_STORE) {
-      // This is to work around a bug where CookieManager may fail to instantiate if
-      // CookieSyncManager has never been created. Note that the sync() may not be required but is
-      // here of legacy reasons.
-      CookieSyncManager syncManager = CookieSyncManager.createInstance(context);
-      syncManager.sync();
-    }
-  }
+  private static void possiblyWorkaroundSyncManager(Context context) {}
 
   /**
    * Responsible for flushing cookies to disk. Flushes to disk with a maximum delay of 30 seconds.
@@ -246,11 +186,7 @@ public class ForwardingCookieHandler extends CookieHandler {
               });
     }
 
-    public void onCookiesModified() {
-      if (USES_LEGACY_STORE) {
-        mHandler.sendEmptyMessageDelayed(MSG_PERSIST_COOKIES, TIMEOUT);
-      }
-    }
+    public void onCookiesModified() {}
 
     public void persistCookies() {
       mHandler.removeMessages(MSG_PERSIST_COOKIES);
@@ -258,12 +194,7 @@ public class ForwardingCookieHandler extends CookieHandler {
           new Runnable() {
             @Override
             public void run() {
-              if (USES_LEGACY_STORE) {
-                CookieSyncManager syncManager = CookieSyncManager.getInstance();
-                syncManager.sync();
-              } else {
-                flush();
-              }
+              flush();
             }
           });
     }

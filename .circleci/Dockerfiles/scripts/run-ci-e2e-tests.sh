@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -109,7 +109,7 @@ function e2e_suite() {
 
         # create virtual device
         if ! android list avd | grep "$AVD_UUID" > /dev/null; then
-            echo no | android create avd -n "$AVD_UUID" -f -t android-19 --abi default/armeabi-v7a
+            echo no | android create avd -n "$AVD_UUID" -f -t android-21 --abi default/armeabi-v7a
         fi
 
         # newline at end of adb devices call and first line is headers

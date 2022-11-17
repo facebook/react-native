@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,8 @@
 
 #import <React/RCTDecayAnimation.h>
 
-#import <UIKit/UIKit.h>
 #import <React/RCTConvert.h>
+#import <UIKit/UIKit.h>
 
 #import <React/RCTAnimationUtils.h>
 #import <React/RCTValueAnimatedNode.h>
@@ -22,8 +22,7 @@
 
 @end
 
-@implementation RCTDecayAnimation
-{
+@implementation RCTDecayAnimation {
   CGFloat _velocity;
   CGFloat _deceleration;
   NSTimeInterval _frameStartTime;
@@ -61,7 +60,7 @@
   _animationHasFinished = iterations.integerValue == 0;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)startAnimation
 {
@@ -73,9 +72,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   _valueNode = nil;
   if (_callback) {
-    _callback(@[@{
-      @"finished": @(_animationHasFinished)
-    }]);
+    _callback(@[ @{@"finished" : @(_animationHasFinished)} ]);
   }
 }
 
@@ -100,8 +97,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   CGFloat value = _fromValue +
-    (_velocity / (1 - _deceleration)) *
-    (1 - exp(-(1 - _deceleration) * (currentTime - _frameStartTime) * 1000.0 / RCTAnimationDragCoefficient()));
+      (_velocity / (1 - _deceleration)) *
+          (1 - exp(-(1 - _deceleration) * (currentTime - _frameStartTime) * 1000.0 / RCTAnimationDragCoefficient()));
 
   [self updateValue:value];
 

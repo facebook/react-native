@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,15 +8,14 @@
 #import <React/RCTPropsAnimatedNode.h>
 
 #import <React/RCTAnimationUtils.h>
+#import <React/RCTColorAnimatedNode.h>
 #import <React/RCTLog.h>
 #import <React/RCTStyleAnimatedNode.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTValueAnimatedNode.h>
 
-@implementation RCTPropsAnimatedNode
-{
+@implementation RCTPropsAnimatedNode {
   NSNumber *_connectedViewTag;
-  NSNumber *_rootTag;
   NSString *_connectedViewName;
   __weak RCTBridge *_bridge;
   __weak id<RCTSurfacePresenterStub> _surfacePresenter;
@@ -24,8 +23,7 @@
   BOOL _managedByFabric;
 }
 
-- (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config
+- (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
   if (self = [super initWithTag:tag config:config]) {
     _propsDictionary = [NSMutableDictionary new];
@@ -41,14 +39,13 @@
 - (void)connectToView:(NSNumber *)viewTag
              viewName:(NSString *)viewName
                bridge:(RCTBridge *)bridge
-     surfacePresenter:(id<RCTSurfacePresenterStub> )surfacePresenter
+     surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {
   _bridge = bridge;
   _surfacePresenter = surfacePresenter;
   _connectedViewTag = viewTag;
   _connectedViewName = viewName;
   _managedByFabric = RCTUIManagerTypeForTagIsFabric(viewTag);
-  _rootTag = nil;
 }
 
 - (void)disconnectFromView:(NSNumber *)viewTag
@@ -58,18 +55,15 @@
   _connectedViewTag = nil;
   _connectedViewName = nil;
   _managedByFabric = NO;
-  _rootTag = nil;
 }
 
 - (void)updateView
 {
   if (_managedByFabric) {
     if (_bridge.surfacePresenter) {
-      [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
-      props:_propsDictionary];
+      [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag props:_propsDictionary];
     } else {
-      [_surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
-      props:_propsDictionary];
+      [_surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag props:_propsDictionary];
     }
   } else {
     [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
@@ -98,12 +92,13 @@
 - (NSString *)propertyNameForParentTag:(NSNumber *)parentTag
 {
   __block NSString *propertyName;
-  [self.config[@"props"] enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull property, NSNumber *_Nonnull tag, BOOL *_Nonnull stop) {
-    if ([tag isEqualToNumber:parentTag]) {
-      propertyName = property;
-      *stop = YES;
-    }
-  }];
+  [self.config[@"props"]
+      enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull property, NSNumber *_Nonnull tag, BOOL *_Nonnull stop) {
+        if ([tag isEqualToNumber:parentTag]) {
+          propertyName = property;
+          *stop = YES;
+        }
+      }];
   return propertyName;
 }
 
@@ -121,17 +116,21 @@
   for (NSNumber *parentTag in self.parentNodes.keyEnumerator) {
     RCTAnimatedNode *parentNode = [self.parentNodes objectForKey:parentTag];
     if ([parentNode isKindOfClass:[RCTStyleAnimatedNode class]]) {
-      [self->_propsDictionary addEntriesFromDictionary:[(RCTStyleAnimatedNode *)parentNode propsDictionary]];
-
+      RCTStyleAnimatedNode *styleAnimatedNode = (RCTStyleAnimatedNode *)parentNode;
+      [_propsDictionary addEntriesFromDictionary:styleAnimatedNode.propsDictionary];
     } else if ([parentNode isKindOfClass:[RCTValueAnimatedNode class]]) {
+      RCTValueAnimatedNode *valueAnimatedNode = (RCTValueAnimatedNode *)parentNode;
       NSString *property = [self propertyNameForParentTag:parentTag];
-      id animatedObject = [(RCTValueAnimatedNode *)parentNode animatedObject];
+      id animatedObject = valueAnimatedNode.animatedObject;
       if (animatedObject) {
-        self->_propsDictionary[property] = animatedObject;
+        _propsDictionary[property] = animatedObject;
       } else {
-        CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
-        self->_propsDictionary[property] = @(value);
+        _propsDictionary[property] = @(valueAnimatedNode.value);
       }
+    } else if ([parentNode isKindOfClass:[RCTColorAnimatedNode class]]) {
+      RCTColorAnimatedNode *colorAnimatedNode = (RCTColorAnimatedNode *)parentNode;
+      NSString *property = [self propertyNameForParentTag:parentTag];
+      _propsDictionary[property] = @(colorAnimatedNode.color);
     }
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import androidx.annotation.Nullable;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -47,7 +48,7 @@ public class ResourceDrawableIdHelper {
     if (name == null || name.isEmpty()) {
       return 0;
     }
-    name = name.toLowerCase().replace("-", "_");
+    name = name.toLowerCase(Locale.ROOT).replace("-", "_");
 
     // name could be a resource id.
     try {

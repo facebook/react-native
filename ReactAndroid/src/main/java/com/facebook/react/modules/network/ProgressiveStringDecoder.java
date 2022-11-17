@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -58,20 +58,20 @@ public class ProgressiveStringDecoder {
     ByteBuffer decodeBuffer = ByteBuffer.wrap(decodeData, 0, length);
     CharBuffer result = null;
     boolean decoded = false;
-    int remainderLenght = 0;
-    while (!decoded && (remainderLenght < 4)) {
+    int remainderLength = 0;
+    while (!decoded && (remainderLength < 4)) {
       try {
         result = mDecoder.decode(decodeBuffer);
         decoded = true;
       } catch (CharacterCodingException e) {
-        remainderLenght++;
-        decodeBuffer = ByteBuffer.wrap(decodeData, 0, length - remainderLenght);
+        remainderLength++;
+        decodeBuffer = ByteBuffer.wrap(decodeData, 0, length - remainderLength);
       }
     }
-    boolean hasRemainder = decoded && remainderLenght > 0;
+    boolean hasRemainder = decoded && remainderLength > 0;
     if (hasRemainder) {
-      remainder = new byte[remainderLenght];
-      System.arraycopy(decodeData, length - remainderLenght, remainder, 0, remainderLenght);
+      remainder = new byte[remainderLength];
+      System.arraycopy(decodeData, length - remainderLength, remainder, 0, remainderLength);
     } else {
       remainder = null;
     }

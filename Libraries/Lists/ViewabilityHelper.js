@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,8 @@
  */
 
 'use strict';
+
+import type {FrameMetricProps} from './VirtualizedListProps';
 
 const invariant = require('invariant');
 
@@ -89,9 +91,9 @@ class ViewabilityHelper {
    * Cleanup, e.g. on unmount. Clears any pending timers.
    */
   dispose() {
-    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.63 was deployed. To see the error delete this
-     * comment and run Flow. */
+    /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
+     * comment suppresses an error found when Flow v0.63 was deployed. To see
+     * the error delete this comment and run Flow. */
     this._timers.forEach(clearTimeout);
   }
 
@@ -99,11 +101,12 @@ class ViewabilityHelper {
    * Determines which items are viewable based on the current metrics and config.
    */
   computeViewableItems(
-    itemCount: number,
+    props: FrameMetricProps,
     scrollOffset: number,
     viewportHeight: number,
     getFrameMetrics: (
       index: number,
+      props: FrameMetricProps,
     ) => ?{
       length: number,
       offset: number,
@@ -116,10 +119,9 @@ class ViewabilityHelper {
       ...
     },
   ): Array<number> {
-    const {
-      itemVisiblePercentThreshold,
-      viewAreaCoveragePercentThreshold,
-    } = this._config;
+    const itemCount = props.getItemCount(props.data);
+    const {itemVisiblePercentThreshold, viewAreaCoveragePercentThreshold} =
+      this._config;
     const viewAreaMode = viewAreaCoveragePercentThreshold != null;
     const viewablePercentThreshold = viewAreaMode
       ? viewAreaCoveragePercentThreshold
@@ -144,7 +146,7 @@ class ViewabilityHelper {
       return [];
     }
     for (let idx = first; idx <= last; idx++) {
-      const metrics = getFrameMetrics(idx);
+      const metrics = getFrameMetrics(idx, props);
       if (!metrics) {
         continue;
       }
@@ -176,17 +178,22 @@ class ViewabilityHelper {
    * `onViewableItemsChanged` as appropriate.
    */
   onUpdate(
-    itemCount: number,
+    props: FrameMetricProps,
     scrollOffset: number,
     viewportHeight: number,
     getFrameMetrics: (
       index: number,
+      props: FrameMetricProps,
     ) => ?{
       length: number,
       offset: number,
       ...
     },
-    createViewToken: (index: number, isViewable: boolean) => ViewToken,
+    createViewToken: (
+      index: number,
+      isViewable: boolean,
+      props: FrameMetricProps,
+    ) => ViewToken,
     onViewableItemsChanged: ({
       viewableItems: Array<ViewToken>,
       changed: Array<ViewToken>,
@@ -199,17 +206,18 @@ class ViewabilityHelper {
       ...
     },
   ): void {
+    const itemCount = props.getItemCount(props.data);
     if (
       (this._config.waitForInteraction && !this._hasInteracted) ||
       itemCount === 0 ||
-      !getFrameMetrics(0)
+      !getFrameMetrics(0, props)
     ) {
       return;
     }
-    let viewableIndices = [];
+    let viewableIndices: Array<number> = [];
     if (itemCount) {
       viewableIndices = this.computeViewableItems(
-        itemCount,
+        props,
         scrollOffset,
         viewportHeight,
         getFrameMetrics,
@@ -226,23 +234,25 @@ class ViewabilityHelper {
     }
     this._viewableIndices = viewableIndices;
     if (this._config.minimumViewTime) {
-      const handle = setTimeout(() => {
-        /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.63 was deployed. To see the error delete
-         * this comment and run Flow. */
+      const handle: TimeoutID = setTimeout(() => {
+        /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
+         * comment suppresses an error found when Flow v0.63 was deployed. To
+         * see the error delete this comment and run Flow. */
         this._timers.delete(handle);
         this._onUpdateSync(
+          props,
           viewableIndices,
           onViewableItemsChanged,
           createViewToken,
         );
       }, this._config.minimumViewTime);
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
+      /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
+       * comment suppresses an error found when Flow v0.63 was deployed. To see
+       * the error delete this comment and run Flow. */
       this._timers.add(handle);
     } else {
       this._onUpdateSync(
+        props,
         viewableIndices,
         onViewableItemsChanged,
         createViewToken,
@@ -265,9 +275,18 @@ class ViewabilityHelper {
   }
 
   _onUpdateSync(
-    viewableIndicesToCheck,
-    onViewableItemsChanged,
-    createViewToken,
+    props: FrameMetricProps,
+    viewableIndicesToCheck: Array<number>,
+    onViewableItemsChanged: ({
+      changed: Array<ViewToken>,
+      viewableItems: Array<ViewToken>,
+      ...
+    }) => void,
+    createViewToken: (
+      index: number,
+      isViewable: boolean,
+      props: FrameMetricProps,
+    ) => ViewToken,
   ) {
     // Filter out indices that have gone out of view since this call was scheduled.
     viewableIndicesToCheck = viewableIndicesToCheck.filter(ii =>
@@ -276,7 +295,7 @@ class ViewabilityHelper {
     const prevItems = this._viewableItems;
     const nextItems = new Map(
       viewableIndicesToCheck.map(ii => {
-        const viewable = createViewToken(ii, true);
+        const viewable = createViewToken(ii, true, props);
         return [viewable.key, viewable];
       }),
     );

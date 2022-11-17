@@ -3,7 +3,11 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_target", "rn_android_li
 rn_android_library(
     name = "appregistry",
     srcs = glob(["**/*.java"]),
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    autoglob = False,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,20 +22,19 @@ import type {PackagerAsset} from '@react-native/assets/registry';
 
 const PixelRatio = require('../Utilities/PixelRatio');
 const Platform = require('../Utilities/Platform');
-
-const invariant = require('invariant');
-
+const {pickScale} = require('./AssetUtils');
 const {
   getAndroidResourceFolderName,
   getAndroidResourceIdentifier,
   getBasePath,
 } = require('@react-native/assets/path-support');
+const invariant = require('invariant');
 
 /**
  * Returns a path like 'assets/AwesomeModule/icon@2x.png'
  */
-function getScaledAssetPath(asset): string {
-  const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
+function getScaledAssetPath(asset: PackagerAsset): string {
+  const scale = pickScale(asset.scales, PixelRatio.get());
   const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
   const assetDir = getBasePath(asset);
   return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
@@ -44,11 +43,11 @@ function getScaledAssetPath(asset): string {
 /**
  * Returns a path like 'drawable-mdpi/icon.png'
  */
-function getAssetPathInDrawableFolder(asset): string {
-  const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
-  const drawbleFolder = getAndroidResourceFolderName(asset, scale);
+function getAssetPathInDrawableFolder(asset: PackagerAsset): string {
+  const scale = pickScale(asset.scales, PixelRatio.get());
+  const drawableFolder = getAndroidResourceFolderName(asset, scale);
   const fileName = getAndroidResourceIdentifier(asset);
-  return drawbleFolder + '/' + fileName + '.' + asset.type;
+  return drawableFolder + '/' + fileName + '.' + asset.type;
 }
 
 class AssetSourceResolver {
@@ -154,23 +153,12 @@ class AssetSourceResolver {
       width: this.asset.width,
       height: this.asset.height,
       uri: source,
-      scale: AssetSourceResolver.pickScale(this.asset.scales, PixelRatio.get()),
+      scale: pickScale(this.asset.scales, PixelRatio.get()),
     };
   }
 
-  static pickScale(scales: Array<number>, deviceScale: number): number {
-    // Packager guarantees that `scales` array is sorted
-    for (let i = 0; i < scales.length; i++) {
-      if (scales[i] >= deviceScale) {
-        return scales[i];
-      }
-    }
-
-    // If nothing matches, device scale is larger than any available
-    // scales, so we return the biggest one. Unless the array is empty,
-    // in which case we default to 1
-    return scales[scales.length - 1] || 1;
-  }
+  static pickScale: (scales: Array<number>, deviceScale?: number) => number =
+    pickScale;
 }
 
 module.exports = AssetSourceResolver;

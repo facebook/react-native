@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,15 +8,12 @@
  * @flow strict-local
  */
 
-'use strict';
-
-const Platform = require('../Utilities/Platform');
-
-const invariant = require('invariant');
-const processColor = require('../StyleSheet/processColor');
-
 import NativeActionSheetManager from '../ActionSheetIOS/NativeActionSheetManager';
 import NativeShareModule from './NativeShareModule';
+
+const processColor = require('../StyleSheet/processColor');
+const Platform = require('../Utilities/Platform');
+const invariant = require('invariant');
 
 type Content =
   | {
@@ -34,6 +31,7 @@ type Options = {
   excludedActivityTypes?: Array<string>,
   tintColor?: string,
   subject?: string,
+  anchor?: number,
   ...
 };
 
@@ -53,7 +51,7 @@ class Share {
    *
    * #### iOS
    *
-   *  - `url` - an URL to share
+   *  - `url` - a URL to share
    *
    * At least one of URL and message is required.
    *
@@ -134,6 +132,8 @@ class Share {
             url: typeof content.url === 'string' ? content.url : undefined,
             subject: options.subject,
             tintColor: typeof tintColor === 'number' ? tintColor : undefined,
+            anchor:
+              typeof options.anchor === 'number' ? options.anchor : undefined,
             excludedActivityTypes: options.excludedActivityTypes,
           },
           error => reject(error),

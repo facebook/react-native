@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,11 +24,11 @@ extern const char AndroidTextInputComponentName[];
 /*
  * `ShadowNode` for <AndroidTextInput> component.
  */
-class AndroidTextInputShadowNode : public ConcreteViewShadowNode<
-                                       AndroidTextInputComponentName,
-                                       AndroidTextInputProps,
-                                       AndroidTextInputEventEmitter,
-                                       AndroidTextInputState> {
+class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
+                                             AndroidTextInputComponentName,
+                                             AndroidTextInputProps,
+                                             AndroidTextInputEventEmitter,
+                                             AndroidTextInputState> {
  public:
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
@@ -81,7 +81,7 @@ class AndroidTextInputShadowNode : public ConcreteViewShadowNode<
    * Cached attributed string that represents the content of the subtree started
    * from the node.
    */
-  mutable better::optional<AttributedString> cachedAttributedString_{};
+  mutable std::optional<AttributedString> cachedAttributedString_{};
 };
 
 } // namespace react

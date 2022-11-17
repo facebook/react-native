@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,26 +10,25 @@
 
 'use strict';
 
-const {
-  capitalize,
-  getSafePropertyName,
-  getNamespacedStructName,
-} = require('../Utils');
+const {getSafePropertyName, getNamespacedStructName} = require('../Utils');
+const {capitalize} = require('../../../Utils');
 
+import type {Nullable} from '../../../../CodegenSchema';
 import type {StructTypeAnnotation, RegularStruct} from '../StructCollector';
 import type {StructSerilizationOutput} from './serializeStruct';
 
+const {unwrapNullable} = require('../../../../parsers/parsers-commons');
+
 const StructTemplate = ({
-  moduleName,
+  hasteModuleName,
   structName,
   structProperties,
-}: $ReadOnly<{|
-  moduleName: string,
+}: $ReadOnly<{
+  hasteModuleName: string,
   structName: string,
   structProperties: string,
-|}>) => `
-namespace JS {
-  namespace Native${moduleName} {
+}>) => `namespace JS {
+  namespace ${hasteModuleName} {
     struct ${structName} {
       ${structProperties}
 
@@ -40,46 +39,46 @@ namespace JS {
   }
 }
 
-@interface RCTCxxConvert (Native${moduleName}_${structName})
-+ (RCTManagedPointer *)JS_Native${moduleName}_${structName}:(id)json;
-@end
-`;
+@interface RCTCxxConvert (${hasteModuleName}_${structName})
++ (RCTManagedPointer *)JS_${hasteModuleName}_${structName}:(id)json;
+@end`;
 
 const MethodTemplate = ({
   returnType,
   returnValue,
-  moduleName,
+  hasteModuleName,
   structName,
   propertyName,
-}: $ReadOnly<{|
+  safePropertyName,
+}: $ReadOnly<{
   returnType: string,
   returnValue: string,
-  moduleName: string,
+  hasteModuleName: string,
   structName: string,
   propertyName: string,
-|}>) => `
-inline ${returnType}JS::Native${moduleName}::${structName}::${propertyName}() const
+  safePropertyName: string,
+}>) => `inline ${returnType}JS::${hasteModuleName}::${structName}::${safePropertyName}() const
 {
   id const p = _v[@"${propertyName}"];
   return ${returnValue};
-}
-`;
+}`;
 
 function toObjCType(
-  moduleName: string,
-  typeAnnotation: StructTypeAnnotation,
+  hasteModuleName: string,
+  nullableTypeAnnotation: Nullable<StructTypeAnnotation>,
   isOptional: boolean = false,
 ): string {
-  const isRequired = !typeAnnotation.nullable && !isOptional;
-  const wrapFollyOptional = (type: string) => {
-    return isRequired ? type : `folly::Optional<${type}>`;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const isRequired = !nullable && !isOptional;
+  const wrapOptional = (type: string) => {
+    return isRequired ? type : `std::optional<${type}>`;
   };
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
-          return wrapFollyOptional('double');
+          return wrapOptional('double');
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
@@ -87,34 +86,45 @@ function toObjCType(
     case 'StringTypeAnnotation':
       return 'NSString *';
     case 'NumberTypeAnnotation':
-      return wrapFollyOptional('double');
+      return wrapOptional('double');
     case 'FloatTypeAnnotation':
-      return wrapFollyOptional('double');
+      return wrapOptional('double');
     case 'Int32TypeAnnotation':
-      return wrapFollyOptional('double');
+      return wrapOptional('double');
     case 'DoubleTypeAnnotation':
-      return wrapFollyOptional('double');
+      return wrapOptional('double');
     case 'BooleanTypeAnnotation':
-      return wrapFollyOptional('bool');
+      return wrapOptional('bool');
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrapOptional('double');
+        case 'StringTypeAnnotation':
+          return 'NSString *';
+        default:
+          throw new Error(
+            `Couldn't convert enum into ObjC type: ${typeAnnotation.type}"`,
+          );
+      }
     case 'GenericObjectTypeAnnotation':
       return isRequired ? 'id<NSObject> ' : 'id<NSObject> _Nullable';
     case 'ArrayTypeAnnotation':
       if (typeAnnotation.elementType == null) {
         return isRequired ? 'id<NSObject> ' : 'id<NSObject> _Nullable';
       }
-      return wrapFollyOptional(
+      return wrapOptional(
         `facebook::react::LazyVector<${toObjCType(
-          moduleName,
+          hasteModuleName,
           typeAnnotation.elementType,
         )}>`,
       );
     case 'TypeAliasTypeAnnotation':
       const structName = capitalize(typeAnnotation.name);
       const namespacedStructName = getNamespacedStructName(
-        moduleName,
+        hasteModuleName,
         structName,
       );
-      return wrapFollyOptional(namespacedStructName);
+      return wrapOptional(namespacedStructName);
     default:
       (typeAnnotation.type: empty);
       throw new Error(
@@ -124,13 +134,14 @@ function toObjCType(
 }
 
 function toObjCValue(
-  moduleName: string,
-  typeAnnotation: StructTypeAnnotation,
+  hasteModuleName: string,
+  nullableTypeAnnotation: Nullable<StructTypeAnnotation>,
   value: string,
   depth: number,
   isOptional: boolean = false,
 ): string {
-  const isRequired = !typeAnnotation.nullable && !isOptional;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const isRequired = !nullable && !isOptional;
   const RCTBridgingTo = (type: string, arg?: string) => {
     const args = [value, arg].filter(Boolean).join(', ');
     return isRequired
@@ -139,7 +150,7 @@ function toObjCValue(
   };
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return RCTBridgingTo('Double');
@@ -161,6 +172,17 @@ function toObjCValue(
       return RCTBridgingTo('Double');
     case 'BooleanTypeAnnotation':
       return RCTBridgingTo('Bool');
+    case 'EnumDeclaration':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return RCTBridgingTo('Double');
+        case 'StringTypeAnnotation':
+          return RCTBridgingTo('String');
+        default:
+          throw new Error(
+            `Couldn't convert enum into ObjC value: ${typeAnnotation.type}"`,
+          );
+      }
     case 'GenericObjectTypeAnnotation':
       return value;
     case 'ArrayTypeAnnotation':
@@ -170,9 +192,9 @@ function toObjCValue(
       }
 
       const localVarName = `itemValue_${depth}`;
-      const elementObjCType = toObjCType(moduleName, elementType);
+      const elementObjCType = toObjCType(hasteModuleName, elementType);
       const elementObjCValue = toObjCValue(
-        moduleName,
+        hasteModuleName,
         elementType,
         localVarName,
         depth + 1,
@@ -185,13 +207,13 @@ function toObjCValue(
     case 'TypeAliasTypeAnnotation':
       const structName = capitalize(typeAnnotation.name);
       const namespacedStructName = getNamespacedStructName(
-        moduleName,
+        hasteModuleName,
         structName,
       );
 
       return !isRequired
-        ? `(p == nil ? folly::none : folly::make_optional(${namespacedStructName}(p)))`
-        : `${namespacedStructName}(p)`;
+        ? `(${value} == nil ? std::nullopt : std::make_optional(${namespacedStructName}(${value})))`
+        : `${namespacedStructName}(${value})`;
     default:
       (typeAnnotation.type: empty);
       throw new Error(
@@ -201,31 +223,36 @@ function toObjCValue(
 }
 
 function serializeRegularStruct(
-  moduleName: string,
+  hasteModuleName: string,
   struct: RegularStruct,
 ): StructSerilizationOutput {
   const declaration = StructTemplate({
-    moduleName: moduleName,
+    hasteModuleName: hasteModuleName,
     structName: struct.name,
     structProperties: struct.properties
       .map(property => {
         const {typeAnnotation, optional} = property;
-        const propName = getSafePropertyName(property);
-        const returnType = toObjCType(moduleName, typeAnnotation, optional);
+        const safePropName = getSafePropertyName(property);
+        const returnType = toObjCType(
+          hasteModuleName,
+          typeAnnotation,
+          optional,
+        );
 
         const padding = ' '.repeat(returnType.endsWith('*') ? 0 : 1);
-        return `${returnType}${padding}${propName}() const;`;
+        return `${returnType}${padding}${safePropName}() const;`;
       })
       .join('\n      '),
   });
 
+  // $FlowFixMe[missing-type-arg]
   const methods = struct.properties
     .map<string>(property => {
-      const {typeAnnotation, optional} = property;
-      const propName = getSafePropertyName(property);
-      const returnType = toObjCType(moduleName, typeAnnotation, optional);
+      const {typeAnnotation, optional, name: propName} = property;
+      const safePropertyName = getSafePropertyName(property);
+      const returnType = toObjCType(hasteModuleName, typeAnnotation, optional);
       const returnValue = toObjCValue(
-        moduleName,
+        hasteModuleName,
         typeAnnotation,
         'p',
         0,
@@ -234,11 +261,12 @@ function serializeRegularStruct(
 
       const padding = ' '.repeat(returnType.endsWith('*') ? 0 : 1);
       return MethodTemplate({
-        moduleName,
+        hasteModuleName,
         structName: struct.name,
         returnType: returnType + padding,
         returnValue: returnValue,
         propertyName: propName,
+        safePropertyName,
       });
     })
     .join('\n');

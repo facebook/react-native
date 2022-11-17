@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -58,6 +58,9 @@ typedef void (^RCTConnectedHandler)(void);
 
 /** Disconnects and removes all handlers. */
 - (void)stop;
+
+/** Reconnect with given packager server. */
+- (void)reconnect:(NSString *)packagerServerHostPort;
 
 /**
  * Historically no distinction was made between notification and request

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,7 @@
 
 const React = require('react');
 const {
+  Button,
   Linking,
   Platform,
   StyleSheet,
@@ -32,7 +33,13 @@ class OpenURLButton extends React.Component<Props> {
       if (supported) {
         Linking.openURL(this.props.url);
       } else {
-        console.log("Don't know how to open URI: " + this.props.url);
+        console.log(
+          `Don't know how to open URI: ${
+            this.props.url
+          }, ensure you have an app installed that handles the "${
+            this.props.url.split(':')?.[0]
+          }" scheme`,
+        );
       }
     });
   };
@@ -45,6 +52,16 @@ class OpenURLButton extends React.Component<Props> {
         </View>
       </TouchableOpacity>
     );
+  }
+}
+
+class OpenSettingsExample extends React.Component<Props, any> {
+  openSettings() {
+    Linking.openSettings();
+  }
+
+  render() {
+    return <Button onPress={this.openSettings} title={'Open Settings'} />;
   }
 }
 
@@ -72,14 +89,14 @@ class IntentAndroidExample extends React.Component {
   render() {
     return (
       <View>
-        <RNTesterBlock title="Open external URLs">
+        <View>
           <OpenURLButton url={'https://www.facebook.com'} />
           <OpenURLButton url={'http://www.facebook.com'} />
           <OpenURLButton url={'http://facebook.com'} />
           <OpenURLButton url={'fb://notifications'} />
           <OpenURLButton url={'geo:37.484847,-122.148386'} />
           <OpenURLButton url={'tel:9876543210'} />
-        </RNTesterBlock>
+        </View>
         {Platform.OS === 'android' && (
           <RNTesterBlock title="Send intents">
             <SendIntentButton action="android.intent.action.POWER_USAGE_SUMMARY" />
@@ -122,9 +139,17 @@ exports.documentationURL = 'https://reactnative.dev/docs/linking';
 exports.description = 'Shows how to use Linking to open URLs.';
 exports.examples = [
   {
-    title: 'Simple list of items',
-    render: function(): React.Element<typeof IntentAndroidExample> {
+    title: 'Open external URLs',
+    description:
+      'Custom schemes may require specific apps to be installed on the device. Note: Phone app is not supported in the simulator.',
+    render: function (): React.Element<typeof IntentAndroidExample> {
       return <IntentAndroidExample />;
+    },
+  },
+  {
+    title: 'Open settings app',
+    render: function (): React.Element<typeof LinkingChangesListenerExample> {
+      return <OpenSettingsExample />;
     },
   },
 ];

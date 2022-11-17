@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,16 +8,13 @@
  * @format
  */
 
-'use strict';
-
-import * as React from 'react';
-
-const Image = require('../../Image/Image');
-const createAnimatedComponent = require('../createAnimatedComponent');
-
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-module.exports = (createAnimatedComponent(
+import Image from '../../Image/Image';
+import createAnimatedComponent from '../createAnimatedComponent';
+import * as React from 'react';
+
+export default (createAnimatedComponent(
   (Image: $FlowFixMe),
 ): AnimatedComponentType<
   React.ElementConfig<typeof Image>,

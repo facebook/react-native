@@ -106,7 +106,6 @@ exports[`<DrawerLayoutAndroid /> should render as expected: should deep render w
 
 exports[`<DrawerLayoutAndroid /> should render as expected: should shallow render as <DrawerLayoutAndroid /> when mocked 1`] = `
 <DrawerLayoutAndroid
-  drawerBackgroundColor="white"
   drawerPosition="left"
   drawerWidth={300}
   renderNavigationView={[Function]}
@@ -115,7 +114,6 @@ exports[`<DrawerLayoutAndroid /> should render as expected: should shallow rende
 
 exports[`<DrawerLayoutAndroid /> should render as expected: should shallow render as <DrawerLayoutAndroid /> when not mocked 1`] = `
 <DrawerLayoutAndroid
-  drawerBackgroundColor="white"
   drawerPosition="left"
   drawerWidth={300}
   renderNavigationView={[Function]}

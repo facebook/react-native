@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -61,6 +61,7 @@ class PureComponentDebug<
       }
     }
     for (const key in this.state) {
+      // $FlowFixMe[incompatible-use]
       if (this.state[key] !== (nextState || {})[key]) {
         ret = true;
         console.warn('PureComponentDebug: different state values', tag, key);

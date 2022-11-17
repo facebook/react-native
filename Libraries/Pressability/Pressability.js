@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,21 +8,24 @@
  * @format
  */
 
-'use strict';
-
-import {isHoverEnabled} from './HoverState';
-import invariant from 'invariant';
-import SoundManager from '../Components/Sound/SoundManager';
-import {normalizeRect, type RectOrSize} from '../StyleSheet/Rect';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {
   BlurEvent,
   FocusEvent,
-  PressEvent,
   MouseEvent,
+  PressEvent,
 } from '../Types/CoreEventTypes';
-import Platform from '../Utilities/Platform';
+
+import SoundManager from '../Components/Sound/SoundManager';
+import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import UIManager from '../ReactNative/UIManager';
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import {type RectOrSize, normalizeRect} from '../StyleSheet/Rect';
+import {type PointerEvent} from '../Types/CoreEventTypes';
+import Platform from '../Utilities/Platform';
+import {isHoverEnabled} from './HoverState';
+import PressabilityPerformanceEventEmitter from './PressabilityPerformanceEventEmitter.js';
+import {type PressabilityTouchSignal as TouchSignal} from './PressabilityTypes.js';
+import invariant from 'invariant';
 import * as React from 'react';
 
 export type PressabilityConfig = $ReadOnly<{|
@@ -158,6 +161,8 @@ export type EventHandlers = $ReadOnly<{|
   onFocus: (event: FocusEvent) => void,
   onMouseEnter?: (event: MouseEvent) => void,
   onMouseLeave?: (event: MouseEvent) => void,
+  onPointerEnter?: (event: PointerEvent) => void,
+  onPointerLeave?: (event: PointerEvent) => void,
   onResponderGrant: (event: PressEvent) => void,
   onResponderMove: (event: PressEvent) => void,
   onResponderRelease: (event: PressEvent) => void,
@@ -175,15 +180,6 @@ type TouchState =
   | 'RESPONDER_ACTIVE_LONG_PRESS_IN'
   | 'RESPONDER_ACTIVE_LONG_PRESS_OUT'
   | 'ERROR';
-
-type TouchSignal =
-  | 'DELAY'
-  | 'RESPONDER_GRANT'
-  | 'RESPONDER_RELEASE'
-  | 'RESPONDER_TERMINATED'
-  | 'ENTER_PRESS_RECT'
-  | 'LEAVE_PRESS_RECT'
-  | 'LONG_PRESS_DETECTED';
 
 const Transitions = Object.freeze({
   NOT_RESPONDER: {
@@ -260,20 +256,20 @@ const Transitions = Object.freeze({
   },
 });
 
-const isActiveSignal = signal =>
+const isActiveSignal = (signal: TouchState) =>
   signal === 'RESPONDER_ACTIVE_PRESS_IN' ||
   signal === 'RESPONDER_ACTIVE_LONG_PRESS_IN';
 
-const isActivationSignal = signal =>
+const isActivationSignal = (signal: TouchState) =>
   signal === 'RESPONDER_ACTIVE_PRESS_OUT' ||
   signal === 'RESPONDER_ACTIVE_PRESS_IN';
 
-const isPressInSignal = signal =>
+const isPressInSignal = (signal: TouchState) =>
   signal === 'RESPONDER_INACTIVE_PRESS_IN' ||
   signal === 'RESPONDER_ACTIVE_PRESS_IN' ||
   signal === 'RESPONDER_ACTIVE_LONG_PRESS_IN';
 
-const isTerminalSignal = signal =>
+const isTerminalSignal = (signal: TouchSignal) =>
   signal === 'RESPONDER_TERMINATED' || signal === 'RESPONDER_RELEASE';
 
 const DEFAULT_LONG_PRESS_DELAY_MS = 500;
@@ -491,8 +487,9 @@ export default class Pressability {
       },
 
       onResponderMove: (event: PressEvent): void => {
-        if (this._config.onPressMove != null) {
-          this._config.onPressMove(event);
+        const {onPressMove} = this._config;
+        if (onPressMove != null) {
+          onPressMove(event);
         }
 
         // Region may not have finished being measured, yet.
@@ -544,8 +541,8 @@ export default class Pressability {
       },
 
       onClick: (event: PressEvent): void => {
-        const {onPress} = this._config;
-        if (onPress != null) {
+        const {onPress, disabled} = this._config;
+        if (onPress != null && disabled !== true) {
           onPress(event);
         }
       },
@@ -553,62 +550,113 @@ export default class Pressability {
 
     if (process.env.NODE_ENV === 'test') {
       // We are setting this in order to find this node in ReactNativeTestTools
-      responderEventHandlers.onStartShouldSetResponder.testOnly_pressabilityConfig = () =>
-        this._config;
+      // $FlowFixMe[prop-missing]
+      responderEventHandlers.onStartShouldSetResponder.testOnly_pressabilityConfig =
+        () => this._config;
     }
 
-    const mouseEventHandlers =
-      Platform.OS === 'ios' || Platform.OS === 'android'
-        ? null
-        : {
-            onMouseEnter: (event: MouseEvent): void => {
-              if (isHoverEnabled()) {
-                this._isHovered = true;
-                this._cancelHoverOutDelayTimeout();
-                const {onHoverIn} = this._config;
-                if (onHoverIn != null) {
-                  const delayHoverIn = normalizeDelay(
-                    this._config.delayHoverIn,
-                  );
-                  if (delayHoverIn > 0) {
-                    event.persist();
-                    this._hoverInDelayTimeout = setTimeout(() => {
+    if (
+      ReactNativeFeatureFlags.shouldPressibilityUseW3CPointerEventsForHover()
+    ) {
+      const hoverPointerEvents = {
+        onPointerEnter: undefined,
+        onPointerLeave: undefined,
+      };
+      const {onHoverIn, onHoverOut} = this._config;
+      if (onHoverIn != null) {
+        hoverPointerEvents.onPointerEnter = (event: PointerEvent) => {
+          this._isHovered = true;
+          this._cancelHoverOutDelayTimeout();
+          if (onHoverIn != null) {
+            const delayHoverIn = normalizeDelay(this._config.delayHoverIn);
+            if (delayHoverIn > 0) {
+              event.persist();
+              this._hoverInDelayTimeout = setTimeout(() => {
+                onHoverIn(convertPointerEventToMouseEvent(event));
+              }, delayHoverIn);
+            } else {
+              onHoverIn(convertPointerEventToMouseEvent(event));
+            }
+          }
+        };
+      }
+      if (onHoverOut != null) {
+        hoverPointerEvents.onPointerLeave = (event: PointerEvent) => {
+          if (this._isHovered) {
+            this._isHovered = false;
+            this._cancelHoverInDelayTimeout();
+            if (onHoverOut != null) {
+              const delayHoverOut = normalizeDelay(this._config.delayHoverOut);
+              if (delayHoverOut > 0) {
+                event.persist();
+                this._hoverOutDelayTimeout = setTimeout(() => {
+                  onHoverOut(convertPointerEventToMouseEvent(event));
+                }, delayHoverOut);
+              } else {
+                onHoverOut(convertPointerEventToMouseEvent(event));
+              }
+            }
+          }
+        };
+      }
+      return {
+        ...focusEventHandlers,
+        ...responderEventHandlers,
+        ...hoverPointerEvents,
+      };
+    } else {
+      const mouseEventHandlers =
+        Platform.OS === 'ios' || Platform.OS === 'android'
+          ? null
+          : {
+              onMouseEnter: (event: MouseEvent): void => {
+                if (isHoverEnabled()) {
+                  this._isHovered = true;
+                  this._cancelHoverOutDelayTimeout();
+                  const {onHoverIn} = this._config;
+                  if (onHoverIn != null) {
+                    const delayHoverIn = normalizeDelay(
+                      this._config.delayHoverIn,
+                    );
+                    if (delayHoverIn > 0) {
+                      event.persist();
+                      this._hoverInDelayTimeout = setTimeout(() => {
+                        onHoverIn(event);
+                      }, delayHoverIn);
+                    } else {
                       onHoverIn(event);
-                    }, delayHoverIn);
-                  } else {
-                    onHoverIn(event);
+                    }
                   }
                 }
-              }
-            },
+              },
 
-            onMouseLeave: (event: MouseEvent): void => {
-              if (this._isHovered) {
-                this._isHovered = false;
-                this._cancelHoverInDelayTimeout();
-                const {onHoverOut} = this._config;
-                if (onHoverOut != null) {
-                  const delayHoverOut = normalizeDelay(
-                    this._config.delayHoverOut,
-                  );
-                  if (delayHoverOut > 0) {
-                    event.persist();
-                    this._hoverInDelayTimeout = setTimeout(() => {
+              onMouseLeave: (event: MouseEvent): void => {
+                if (this._isHovered) {
+                  this._isHovered = false;
+                  this._cancelHoverInDelayTimeout();
+                  const {onHoverOut} = this._config;
+                  if (onHoverOut != null) {
+                    const delayHoverOut = normalizeDelay(
+                      this._config.delayHoverOut,
+                    );
+                    if (delayHoverOut > 0) {
+                      event.persist();
+                      this._hoverInDelayTimeout = setTimeout(() => {
+                        onHoverOut(event);
+                      }, delayHoverOut);
+                    } else {
                       onHoverOut(event);
-                    }, delayHoverOut);
-                  } else {
-                    onHoverOut(event);
+                    }
                   }
                 }
-              }
-            },
-          };
-
-    return {
-      ...focusEventHandlers,
-      ...responderEventHandlers,
-      ...mouseEventHandlers,
-    };
+              },
+            };
+      return {
+        ...focusEventHandlers,
+        ...responderEventHandlers,
+        ...mouseEventHandlers,
+      };
+    }
   }
 
   /**
@@ -616,6 +664,19 @@ export default class Pressability {
    * and stores the new state. Validates the transition as well.
    */
   _receiveSignal(signal: TouchSignal, event: PressEvent): void {
+    // Especially on iOS, not all events have timestamps associated.
+    // For telemetry purposes, this doesn't matter too much, as long as *some* do.
+    // Since the native timestamp is integral for logging telemetry, just skip
+    // events if they don't have a timestamp attached.
+    if (event.nativeEvent.timestamp != null) {
+      PressabilityPerformanceEventEmitter.emitEvent(() => {
+        return {
+          signal,
+          nativeTimestamp: event.nativeEvent.timestamp,
+        };
+      });
+    }
+
     const prevState = this._touchState;
     const nextState = Transitions[prevState]?.[signal];
     if (this._responderID == null && signal === 'RESPONDER_RELEASE') {
@@ -655,10 +716,10 @@ export default class Pressability {
       prevState === 'NOT_RESPONDER' &&
       nextState === 'RESPONDER_INACTIVE_PRESS_IN';
 
-    const isActivationTransiton =
+    const isActivationTransition =
       !isActivationSignal(prevState) && isActivationSignal(nextState);
 
-    if (isInitialTransition || isActivationTransiton) {
+    if (isInitialTransition || isActivationTransition) {
       this._measureResponderRegion();
     }
 
@@ -704,11 +765,8 @@ export default class Pressability {
 
   _activate(event: PressEvent): void {
     const {onPressIn} = this._config;
-    const touch = getTouchFromPressEvent(event);
-    this._touchActivatePosition = {
-      pageX: touch.pageX,
-      pageY: touch.pageY,
-    };
+    const {pageX, pageY} = getTouchFromPressEvent(event);
+    this._touchActivatePosition = {pageX, pageY};
     this._touchActivateTime = Date.now();
     if (onPressIn != null) {
       onPressIn(event);
@@ -752,7 +810,14 @@ export default class Pressability {
     }
   }
 
-  _measureCallback = (left, top, width, height, pageX, pageY) => {
+  _measureCallback = (
+    left: number,
+    top: number,
+    width: number,
+    height: number,
+    pageX: number,
+    pageY: number,
+  ) => {
     if (!left && !top && !width && !height && !pageX && !pageY) {
       return;
     }
@@ -862,7 +927,11 @@ export default class Pressability {
   }
 }
 
-function normalizeDelay(delay: ?number, min = 0, fallback = 0): number {
+function normalizeDelay(
+  delay: ?number,
+  min: number = 0,
+  fallback: number = 0,
+): number {
   return Math.max(min, delay ?? fallback);
 }
 
@@ -877,3 +946,17 @@ const getTouchFromPressEvent = (event: PressEvent) => {
   }
   return event.nativeEvent;
 };
+
+function convertPointerEventToMouseEvent(input: PointerEvent): MouseEvent {
+  const {clientX, clientY} = input.nativeEvent;
+  return {
+    ...input,
+    nativeEvent: {
+      clientX,
+      clientY,
+      pageX: clientX,
+      pageY: clientY,
+      timestamp: input.timeStamp,
+    },
+  };
+}

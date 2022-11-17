@@ -6,13 +6,15 @@
 <PROJECT_ROOT>/template/.*
 
 ; Ignore the Dangerfile
-<PROJECT_ROOT>/bots/dangerfile.js
+<PROJECT_ROOT>/packages/react-native-bots/dangerfile.js
 
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
+
+.*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
 
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
@@ -29,10 +31,9 @@ flow/
 [options]
 emoji=true
 
-esproposal.optional_chaining=enable
-esproposal.nullish_coalescing=enable
-
 exact_by_default=true
+
+format.bracket_spacing=false
 
 module.file_ext=.js
 module.file_ext=.json
@@ -50,9 +51,8 @@ suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
-well_formed_exports=true
-types_first=true
-experimental.abstract_locations=true
+experimental.array_literal_providers=true
+inference_mode=constrain_writes
 
 [lints]
 sketchy-null-number=warn
@@ -60,10 +60,9 @@ sketchy-null-mixed=warn
 sketchy-number=warn
 untyped-type-import=warn
 nonstrict-import=warn
-deprecated-type=warn
+deprecated-type=error
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
-signature-verification-failure=warn
 
 [strict]
 deprecated-type
@@ -75,4 +74,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.134.0
+^0.193.0

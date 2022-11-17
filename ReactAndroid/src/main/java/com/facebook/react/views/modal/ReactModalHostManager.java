@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,6 +24,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.viewmanagers.ModalHostViewManagerDelegate;
 import com.facebook.react.viewmanagers.ModalHostViewManagerInterface;
+import java.util.HashMap;
 import java.util.Map;
 
 /** View manager for {@link ReactModalHostView} components. */
@@ -92,19 +93,30 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   }
 
   @Override
+  @ReactProp(name = "visible")
+  public void setVisible(ReactModalHostView view, boolean visible) {
+    // iOS only
+  }
+
+  @Override
+  @ReactProp(name = "presentationStyle")
   public void setPresentationStyle(ReactModalHostView view, @Nullable String value) {}
 
   @Override
+  @ReactProp(name = "animated")
   public void setAnimated(ReactModalHostView view, boolean value) {}
 
   @Override
+  @ReactProp(name = "supportedOrientations")
   public void setSupportedOrientations(ReactModalHostView view, @Nullable ReadableArray value) {}
 
   @Override
+  @ReactProp(name = "identifier")
   public void setIdentifier(ReactModalHostView view, int value) {}
 
   @Override
-  protected void addEventEmitters(ThemedReactContext reactContext, final ReactModalHostView view) {
+  protected void addEventEmitters(
+      final ThemedReactContext reactContext, final ReactModalHostView view) {
     final EventDispatcher dispatcher =
         UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.getId());
     if (dispatcher != null) {
@@ -112,25 +124,38 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
           new ReactModalHostView.OnRequestCloseListener() {
             @Override
             public void onRequestClose(DialogInterface dialog) {
-              dispatcher.dispatchEvent(new RequestCloseEvent(view.getId()));
+              dispatcher.dispatchEvent(
+                  new RequestCloseEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
             }
           });
       view.setOnShowListener(
           new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-              dispatcher.dispatchEvent(new ShowEvent(view.getId()));
+              dispatcher.dispatchEvent(
+                  new ShowEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
             }
           });
+      view.setEventDispatcher(dispatcher);
     }
   }
 
   @Override
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(RequestCloseEvent.EVENT_NAME, MapBuilder.of("registrationName", "onRequestClose"))
-        .put(ShowEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShow"))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(RequestCloseEvent.EVENT_NAME, MapBuilder.of("registrationName", "onRequestClose"))
+            .put(ShowEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShow"))
+            // iOS only
+            .put("topDismiss", MapBuilder.of("registrationName", "onDismiss"))
+            // iOS only
+            .put("topOrientationChange", MapBuilder.of("registrationName", "onOrientationChange"))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override
@@ -141,7 +166,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
 
   @Override
   public Object updateState(
-      ReactModalHostView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+      ReactModalHostView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     Point modalSize = ModalHostHelper.getModalHostSize(view.getContext());
     view.updateState(modalSize.x, modalSize.y);

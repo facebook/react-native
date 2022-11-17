@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -50,6 +50,8 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
         return "desk";
       case Configuration.UI_MODE_TYPE_WATCH:
         return "watch";
+      case Configuration.UI_MODE_TYPE_VR_HEADSET:
+        return "vrheadset";
       case Configuration.UI_MODE_TYPE_NORMAL:
         return "normal";
       default:

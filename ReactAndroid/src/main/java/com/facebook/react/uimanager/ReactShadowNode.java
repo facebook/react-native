@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -307,6 +307,12 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   void setFlex(float flex);
 
   void setFlexGrow(float flexGrow);
+
+  void setRowGap(float rowGap);
+
+  void setColumnGap(float columnGap);
+
+  void setGap(float gap);
 
   void setFlexShrink(float flexShrink);
 

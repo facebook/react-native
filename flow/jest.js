@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -810,7 +810,7 @@ type JestObjectType = {
    * Returns a new, unused mock function. Optionally takes a mock
    * implementation.
    */
-  fn<TArguments: $ReadOnlyArray<mixed>, TReturn>(
+  fn<TArguments: $ReadOnlyArray<mixed> = $ReadOnlyArray<any>, TReturn = any>(
     implementation?: (...args: TArguments) => TReturn,
   ): JestMockFn<TArguments, TReturn>,
   /**
@@ -900,7 +900,7 @@ type JestObjectType = {
    * (setTimeout, setInterval, clearTimeout, clearInterval, nextTick,
    * setImmediate and clearImmediate).
    */
-  useFakeTimers(): JestObjectType,
+  useFakeTimers(type?: 'legacy' | 'modern'): JestObjectType,
   /**
    * Instructs Jest to use the real versions of the standard timer functions.
    */

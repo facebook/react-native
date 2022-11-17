@@ -1,28 +1,29 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
 ('use strict');
 
-import * as React from 'react';
-import LogBoxLog from './LogBoxLog';
-import {parseLogBoxException} from './parseLogBoxLog';
+import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
 import type {
-  Message,
   Category,
   ComponentStack,
   ExtendedExceptionData,
+  Message,
 } from './parseLogBoxLog';
+
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
-import type {ExtendedError} from '../../Core/Devtools/parseErrorStack';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
+import LogBoxLog from './LogBoxLog';
+import {parseLogBoxException} from './parseLogBoxLog';
+import * as React from 'react';
 export type LogBoxLogs = Set<LogBoxLog>;
 export type LogData = $ReadOnly<{|
   level: LogLevel,
@@ -67,11 +68,11 @@ const observers: Set<{observer: Observer, ...}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 let appInfo: ?() => AppInfo = null;
 let logs: LogBoxLogs = new Set();
-let updateTimeout = null;
+let updateTimeout: $FlowFixMe | null = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 
-let warningFilter: WarningFilter = function(format) {
+let warningFilter: WarningFilter = function (format) {
   return {
     finalFormat: format,
     forceDialogImmediately: false,
@@ -100,7 +101,6 @@ export function reportLogBoxError(
 ): void {
   const ExceptionsManager = require('../../Core/ExceptionsManager');
 
-  error.forceRedbox = true;
   error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   if (componentStack != null) {
     error.componentStack = componentStack;
@@ -134,7 +134,7 @@ function handleUpdate(): void {
   }
 }
 
-function appendNewLog(newLog) {
+function appendNewLog(newLog: LogBoxLog) {
   // Don't want store these logs because they trigger a
   // state update when we add them to the store.
   if (isMessageIgnored(newLog.message.content)) {
@@ -157,7 +157,7 @@ function appendNewLog(newLog) {
     // sybolication for up to a second before adding the log.
     const OPTIMISTIC_WAIT_TIME = 1000;
 
-    let addPendingLog = () => {
+    let addPendingLog: ?() => void = () => {
       logs.add(newLog);
       if (_selectedIndex < 0) {
         setSelectedLog(logs.size - 1);
@@ -320,40 +320,40 @@ export function checkWarningFilter(format: string): WarningInfo {
   return warningFilter(format);
 }
 
+export function getIgnorePatterns(): $ReadOnlyArray<IgnorePattern> {
+  return Array.from(ignorePatterns);
+}
+
 export function addIgnorePatterns(
   patterns: $ReadOnlyArray<IgnorePattern>,
 ): void {
+  const existingSize = ignorePatterns.size;
   // The same pattern may be added multiple times, but adding a new pattern
   // can be expensive so let's find only the ones that are new.
-  const newPatterns = patterns.filter((pattern: IgnorePattern) => {
+  patterns.forEach((pattern: IgnorePattern) => {
     if (pattern instanceof RegExp) {
-      for (const existingPattern of ignorePatterns.entries()) {
+      for (const existingPattern of ignorePatterns) {
         if (
           existingPattern instanceof RegExp &&
           existingPattern.toString() === pattern.toString()
         ) {
-          return false;
+          return;
         }
       }
-      return true;
+      ignorePatterns.add(pattern);
     }
-    return !ignorePatterns.has(pattern);
+    ignorePatterns.add(pattern);
   });
-
-  if (newPatterns.length === 0) {
+  if (ignorePatterns.size === existingSize) {
     return;
   }
-  for (const pattern of newPatterns) {
-    ignorePatterns.add(pattern);
-
-    // We need to recheck all of the existing logs.
-    // This allows adding an ignore pattern anywhere in the codebase.
-    // Without this, if you ignore a pattern after the a log is created,
-    // then we would keep showing the log.
-    logs = new Set(
-      Array.from(logs).filter(log => !isMessageIgnored(log.message.content)),
-    );
-  }
+  // We need to recheck all of the existing logs.
+  // This allows adding an ignore pattern anywhere in the codebase.
+  // Without this, if you ignore a pattern after the a log is created,
+  // then we would keep showing the log.
+  logs = new Set(
+    Array.from(logs).filter(log => !isMessageIgnored(log.message.content)),
+  );
   handleUpdate();
 }
 
@@ -402,17 +402,19 @@ export function withSubscription(
   WrappedComponent: SubscribedComponent,
 ): React.AbstractComponent<{||}> {
   class LogBoxStateSubscription extends React.Component<Props, State> {
-    static getDerivedStateFromError() {
+    static getDerivedStateFromError(): {hasError: boolean} {
       return {hasError: true};
     }
 
     componentDidCatch(err: Error, errorInfo: {componentStack: string, ...}) {
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
       reportLogBoxError(err, errorInfo.componentStack);
     }
 
     _subscription: ?Subscription;
 
-    state = {
+    state: State = {
       logs: new Set(),
       isDisabled: false,
       hasError: false,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,6 +39,9 @@ RCT_EXTERN void RCTExecuteOnMainQueue(dispatch_block_t block);
 // Legacy function to execute the specified block on the main queue synchronously.
 // Please do not use this unless you know what you're doing.
 RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
+
+// Get screen scale, can be only used on main
+RCT_EXTERN void RCTComputeScreenScale(void);
 
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);
@@ -182,5 +185,7 @@ RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(
     NSString const *componentName,
     NSString const *commandName,
     NSString const *argPos);
+
+RCT_EXTERN BOOL RCTIsAppActive(void);
 
 NS_ASSUME_NONNULL_END

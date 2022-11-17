@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,21 +8,20 @@
  * @format
  */
 
-'use strict';
+import type {CodeFrame} from '../Data/parseLogBoxLog';
 
-import * as React from 'react';
-import Platform from '../../Utilities/Platform';
 import ScrollView from '../../Components/ScrollView/ScrollView';
+import View from '../../Components/View/View';
+import openFileInEditor from '../../Core/Devtools/openFileInEditor';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import View from '../../Components/View/View';
-import * as LogBoxStyle from './LogBoxStyle';
-import type {CodeFrame} from '../Data/parseLogBoxLog';
-import LogBoxButton from './LogBoxButton';
-import openFileInEditor from '../../Core/Devtools/openFileInEditor';
-import AnsiHighlight from './AnsiHighlight';
-import LogBoxInspectorSection from './LogBoxInspectorSection';
+import Platform from '../../Utilities/Platform';
 import * as LogBoxData from '../Data/LogBoxData';
+import AnsiHighlight from './AnsiHighlight';
+import LogBoxButton from './LogBoxButton';
+import LogBoxInspectorSection from './LogBoxInspectorSection';
+import * as LogBoxStyle from './LogBoxStyle';
+import * as React from 'react';
 type Props = $ReadOnly<{|
   codeFrame: ?CodeFrame,
 |}>;
@@ -34,15 +33,18 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
   }
 
   function getFileName() {
+    // $FlowFixMe[incompatible-use]
     const matches = /[^/]*$/.exec(codeFrame.fileName);
     if (matches && matches.length > 0) {
       return matches[0];
     }
 
+    // $FlowFixMe[incompatible-use]
     return codeFrame.fileName;
   }
 
   function getLocation() {
+    // $FlowFixMe[incompatible-use]
     const location = codeFrame.location;
     if (location != null) {
       return ` (${location.row}:${

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,6 +18,7 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaGutter;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
@@ -792,6 +793,21 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public void setFlexGrow(float flexGrow) {
     mYogaNode.setFlexGrow(flexGrow);
+  }
+
+  @Override
+  public void setRowGap(float rowGap) {
+    mYogaNode.setGap(YogaGutter.ROW, rowGap);
+  }
+
+  @Override
+  public void setColumnGap(float columnGap) {
+    mYogaNode.setGap(YogaGutter.COLUMN, columnGap);
+  }
+
+  @Override
+  public void setGap(float gap) {
+    mYogaNode.setGap(YogaGutter.ALL, gap);
   }
 
   @Override

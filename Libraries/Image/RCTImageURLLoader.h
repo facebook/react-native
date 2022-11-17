@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,10 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTImageLoaderPartialLoadBlock)(UIImage *image);
-typedef void (^RCTImageLoaderCompletionBlock)(NSError * _Nullable error, UIImage * _Nullable image);
+typedef void (^RCTImageLoaderCompletionBlock)(NSError *_Nullable error, UIImage *_Nullable image);
 // Metadata is passed as a id in an additional parameter because there are forks of RN without this parameter,
 // and the complexity of RCTImageLoader would make using protocols here difficult to typecheck.
-typedef void (^RCTImageLoaderCompletionBlockWithMetadata)(NSError * _Nullable error, UIImage * _Nullable image, id _Nullable metadata);
+typedef void (^RCTImageLoaderCompletionBlockWithMetadata)(
+    NSError *_Nullable error,
+    UIImage *_Nullable image,
+    id _Nullable metadata);
 typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 /**
@@ -41,12 +44,12 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  * applicable.
  */
 - (nullable RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
-                                              size:(CGSize)size
-                                             scale:(CGFloat)scale
-                                        resizeMode:(RCTResizeMode)resizeMode
-                                   progressHandler:(RCTImageLoaderProgressBlock)progressHandler
-                                partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+                                                       size:(CGSize)size
+                                                      scale:(CGFloat)scale
+                                                 resizeMode:(RCTResizeMode)resizeMode
+                                            progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                         partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
+                                          completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
 
 @optional
 

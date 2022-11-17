@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,16 +8,16 @@
  * @flow strict-local
  */
 
-'use strict';
-
-import type {ColorValue} from './StyleSheet';
 import type {ProcessedColorValue} from './processColor';
+import type {ColorValue} from './StyleSheet';
 
 export opaque type NativeColorValue = {
   semantic?: Array<string>,
   dynamic?: {
     light: ?(ColorValue | ProcessedColorValue),
     dark: ?(ColorValue | ProcessedColorValue),
+    highContrastLight?: ?(ColorValue | ProcessedColorValue),
+    highContrastDark?: ?(ColorValue | ProcessedColorValue),
   },
 };
 
@@ -28,12 +28,21 @@ export const PlatformColor = (...names: Array<string>): ColorValue => {
 export type DynamicColorIOSTuplePrivate = {
   light: ColorValue,
   dark: ColorValue,
+  highContrastLight?: ColorValue,
+  highContrastDark?: ColorValue,
 };
 
 export const DynamicColorIOSPrivate = (
   tuple: DynamicColorIOSTuplePrivate,
 ): ColorValue => {
-  return {dynamic: {light: tuple.light, dark: tuple.dark}};
+  return {
+    dynamic: {
+      light: tuple.light,
+      dark: tuple.dark,
+      highContrastLight: tuple.highContrastLight,
+      highContrastDark: tuple.highContrastDark,
+    },
+  };
 };
 
 export const normalizeColorObject = (
@@ -49,8 +58,14 @@ export const normalizeColorObject = (
     const dynamic = color.dynamic;
     const dynamicColor: NativeColorValue = {
       dynamic: {
+        // $FlowFixMe[incompatible-use]
         light: normalizeColor(dynamic.light),
+        // $FlowFixMe[incompatible-use]
         dark: normalizeColor(dynamic.dark),
+        // $FlowFixMe[incompatible-use]
+        highContrastLight: normalizeColor(dynamic.highContrastLight),
+        // $FlowFixMe[incompatible-use]
+        highContrastDark: normalizeColor(dynamic.highContrastDark),
       },
     };
     return dynamicColor;
@@ -67,8 +82,14 @@ export const processColorObject = (
     const dynamic = color.dynamic;
     const dynamicColor: NativeColorValue = {
       dynamic: {
+        // $FlowFixMe[incompatible-use]
         light: processColor(dynamic.light),
+        // $FlowFixMe[incompatible-use]
         dark: processColor(dynamic.dark),
+        // $FlowFixMe[incompatible-use]
+        highContrastLight: processColor(dynamic.highContrastLight),
+        // $FlowFixMe[incompatible-use]
+        highContrastDark: processColor(dynamic.highContrastDark),
       },
     };
     return dynamicColor;

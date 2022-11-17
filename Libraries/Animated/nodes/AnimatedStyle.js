@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,19 +10,20 @@
 
 'use strict';
 
-const AnimatedNode = require('./AnimatedNode');
-const AnimatedTransform = require('./AnimatedTransform');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-const flattenStyle = require('../../StyleSheet/flattenStyle');
+import flattenStyle from '../../StyleSheet/flattenStyle';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedNode from './AnimatedNode';
+import AnimatedTransform from './AnimatedTransform';
+import AnimatedWithChildren from './AnimatedWithChildren';
 
-class AnimatedStyle extends AnimatedWithChildren {
+export default class AnimatedStyle extends AnimatedWithChildren {
   _style: Object;
 
   constructor(style: any) {
     super();
-    style = flattenStyle(style) || {};
+    style = flattenStyle(style) || ({}: {[string]: any});
     if (style.transform) {
       style = {
         ...style,
@@ -33,16 +34,12 @@ class AnimatedStyle extends AnimatedWithChildren {
   }
 
   // Recursively get values for nested styles (like iOS's shadowOffset)
-  _walkStyleAndGetValues(style) {
-    const updatedStyle = {};
+  _walkStyleAndGetValues(style: any): {[string]: any | {...}} {
+    const updatedStyle: {[string]: any | {...}} = {};
     for (const key in style) {
       const value = style[key];
       if (value instanceof AnimatedNode) {
-        if (!value.__isNative) {
-          // We cannot use value of natively driven nodes this way as the value we have access from
-          // JS may not be up to date.
-          updatedStyle[key] = value.__getValue();
-        }
+        updatedStyle[key] = value.__getValue();
       } else if (value && !Array.isArray(value) && typeof value === 'object') {
         // Support animating nested values (for example: shadowOffset.height)
         updatedStyle[key] = this._walkStyleAndGetValues(value);
@@ -58,8 +55,8 @@ class AnimatedStyle extends AnimatedWithChildren {
   }
 
   // Recursively get animated values for nested styles (like iOS's shadowOffset)
-  _walkStyleAndGetAnimatedValues(style) {
-    const updatedStyle = {};
+  _walkStyleAndGetAnimatedValues(style: any): {[string]: any | {...}} {
+    const updatedStyle: {[string]: any | {...}} = {};
     for (const key in style) {
       const value = style[key];
       if (value instanceof AnimatedNode) {
@@ -95,22 +92,22 @@ class AnimatedStyle extends AnimatedWithChildren {
     super.__detach();
   }
 
-  __makeNative() {
+  __makeNative(platformConfig: ?PlatformConfig) {
     for (const key in this._style) {
       const value = this._style[key];
       if (value instanceof AnimatedNode) {
-        value.__makeNative();
+        value.__makeNative(platformConfig);
       }
     }
-    super.__makeNative();
+    super.__makeNative(platformConfig);
   }
 
   __getNativeConfig(): Object {
-    const styleConfig = {};
+    const styleConfig: {[string]: ?number} = {};
     for (const styleKey in this._style) {
       if (this._style[styleKey] instanceof AnimatedNode) {
         const style = this._style[styleKey];
-        style.__makeNative();
+        style.__makeNative(this.__getPlatformConfig());
         styleConfig[styleKey] = style.__getNativeTag();
       }
       // Non-animated styles are set using `setNativeProps`, no need
@@ -123,5 +120,3 @@ class AnimatedStyle extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedStyle;

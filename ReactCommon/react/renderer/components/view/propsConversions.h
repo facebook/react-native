@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,12 +8,18 @@
 #pragma once
 
 #include <react/renderer/components/view/conversions.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
+
+#include <optional>
 
 namespace facebook {
 namespace react {
 
+// Nearly this entire file can be deleted when iterator-style Prop parsing
+// ships fully for View
 static inline YGStyle::Dimensions convertRawProp(
+    const PropsParserContext &context,
     RawProps const &rawProps,
     char const *widthName,
     char const *heightName,
@@ -21,19 +27,22 @@ static inline YGStyle::Dimensions convertRawProp(
     YGStyle::Dimensions const &defaultValue) {
   auto dimensions = defaultValue;
   dimensions[YGDimensionWidth] = convertRawProp(
+      context,
       rawProps,
       widthName,
       sourceValue[YGDimensionWidth],
       defaultValue[YGDimensionWidth]);
   dimensions[YGDimensionHeight] = convertRawProp(
+      context,
       rawProps,
       heightName,
       sourceValue[YGDimensionHeight],
-      defaultValue[YGDimensionWidth]);
+      defaultValue[YGDimensionHeight]);
   return dimensions;
 }
 
 static inline YGStyle::Edges convertRawProp(
+    const PropsParserContext &context,
     RawProps const &rawProps,
     char const *prefix,
     char const *suffix,
@@ -41,6 +50,7 @@ static inline YGStyle::Edges convertRawProp(
     YGStyle::Edges const &defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
+      context,
       rawProps,
       "Left",
       sourceValue[YGEdgeLeft],
@@ -48,6 +58,7 @@ static inline YGStyle::Edges convertRawProp(
       prefix,
       suffix);
   result[YGEdgeTop] = convertRawProp(
+      context,
       rawProps,
       "Top",
       sourceValue[YGEdgeTop],
@@ -55,6 +66,7 @@ static inline YGStyle::Edges convertRawProp(
       prefix,
       suffix);
   result[YGEdgeRight] = convertRawProp(
+      context,
       rawProps,
       "Right",
       sourceValue[YGEdgeRight],
@@ -62,6 +74,7 @@ static inline YGStyle::Edges convertRawProp(
       prefix,
       suffix);
   result[YGEdgeBottom] = convertRawProp(
+      context,
       rawProps,
       "Bottom",
       sourceValue[YGEdgeBottom],
@@ -69,6 +82,7 @@ static inline YGStyle::Edges convertRawProp(
       prefix,
       suffix);
   result[YGEdgeStart] = convertRawProp(
+      context,
       rawProps,
       "Start",
       sourceValue[YGEdgeStart],
@@ -76,6 +90,7 @@ static inline YGStyle::Edges convertRawProp(
       prefix,
       suffix);
   result[YGEdgeEnd] = convertRawProp(
+      context,
       rawProps,
       "End",
       sourceValue[YGEdgeEnd],
@@ -83,6 +98,7 @@ static inline YGStyle::Edges convertRawProp(
       prefix,
       suffix);
   result[YGEdgeHorizontal] = convertRawProp(
+      context,
       rawProps,
       "Horizontal",
       sourceValue[YGEdgeHorizontal],
@@ -90,6 +106,7 @@ static inline YGStyle::Edges convertRawProp(
       prefix,
       suffix);
   result[YGEdgeVertical] = convertRawProp(
+      context,
       rawProps,
       "Vertical",
       sourceValue[YGEdgeVertical],
@@ -97,6 +114,7 @@ static inline YGStyle::Edges convertRawProp(
       prefix,
       suffix);
   result[YGEdgeAll] = convertRawProp(
+      context,
       rawProps,
       "",
       sourceValue[YGEdgeAll],
@@ -107,99 +125,199 @@ static inline YGStyle::Edges convertRawProp(
 }
 
 static inline YGStyle::Edges convertRawProp(
+    const PropsParserContext &context,
     RawProps const &rawProps,
     YGStyle::Edges const &sourceValue,
     YGStyle::Edges const &defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
-      rawProps, "left", sourceValue[YGEdgeLeft], defaultValue[YGEdgeLeft]);
+      context,
+      rawProps,
+      "left",
+      sourceValue[YGEdgeLeft],
+      defaultValue[YGEdgeLeft]);
   result[YGEdgeTop] = convertRawProp(
-      rawProps, "top", sourceValue[YGEdgeTop], defaultValue[YGEdgeTop]);
+      context,
+      rawProps,
+      "top",
+      sourceValue[YGEdgeTop],
+      defaultValue[YGEdgeTop]);
   result[YGEdgeRight] = convertRawProp(
-      rawProps, "right", sourceValue[YGEdgeRight], defaultValue[YGEdgeRight]);
+      context,
+      rawProps,
+      "right",
+      sourceValue[YGEdgeRight],
+      defaultValue[YGEdgeRight]);
   result[YGEdgeBottom] = convertRawProp(
+      context,
       rawProps,
       "bottom",
       sourceValue[YGEdgeBottom],
       defaultValue[YGEdgeBottom]);
   result[YGEdgeStart] = convertRawProp(
-      rawProps, "start", sourceValue[YGEdgeStart], defaultValue[YGEdgeStart]);
+      context,
+      rawProps,
+      "start",
+      sourceValue[YGEdgeStart],
+      defaultValue[YGEdgeStart]);
   result[YGEdgeEnd] = convertRawProp(
-      rawProps, "end", sourceValue[YGEdgeEnd], defaultValue[YGEdgeEnd]);
+      context,
+      rawProps,
+      "end",
+      sourceValue[YGEdgeEnd],
+      defaultValue[YGEdgeEnd]);
   return result;
 }
 
 static inline YGStyle convertRawProp(
+    const PropsParserContext &context,
     RawProps const &rawProps,
     YGStyle const &sourceValue) {
   auto yogaStyle = YGStyle{};
   yogaStyle.direction() = convertRawProp(
-      rawProps, "direction", sourceValue.direction(), yogaStyle.direction());
+      context,
+      rawProps,
+      "direction",
+      sourceValue.direction(),
+      yogaStyle.direction());
   yogaStyle.flexDirection() = convertRawProp(
+      context,
       rawProps,
       "flexDirection",
       sourceValue.flexDirection(),
       yogaStyle.flexDirection());
   yogaStyle.justifyContent() = convertRawProp(
+      context,
       rawProps,
       "justifyContent",
       sourceValue.justifyContent(),
       yogaStyle.justifyContent());
   yogaStyle.alignContent() = convertRawProp(
+      context,
       rawProps,
       "alignContent",
       sourceValue.alignContent(),
       yogaStyle.alignContent());
   yogaStyle.alignItems() = convertRawProp(
-      rawProps, "alignItems", sourceValue.alignItems(), yogaStyle.alignItems());
+      context,
+      rawProps,
+      "alignItems",
+      sourceValue.alignItems(),
+      yogaStyle.alignItems());
   yogaStyle.alignSelf() = convertRawProp(
-      rawProps, "alignSelf", sourceValue.alignSelf(), yogaStyle.alignSelf());
+      context,
+      rawProps,
+      "alignSelf",
+      sourceValue.alignSelf(),
+      yogaStyle.alignSelf());
   yogaStyle.positionType() = convertRawProp(
+      context,
       rawProps,
       "position",
       sourceValue.positionType(),
       yogaStyle.positionType());
   yogaStyle.flexWrap() = convertRawProp(
-      rawProps, "flexWrap", sourceValue.flexWrap(), yogaStyle.flexWrap());
+      context,
+      rawProps,
+      "flexWrap",
+      sourceValue.flexWrap(),
+      yogaStyle.flexWrap());
   yogaStyle.overflow() = convertRawProp(
-      rawProps, "overflow", sourceValue.overflow(), yogaStyle.overflow());
+      context,
+      rawProps,
+      "overflow",
+      sourceValue.overflow(),
+      yogaStyle.overflow());
   yogaStyle.display() = convertRawProp(
-      rawProps, "display", sourceValue.display(), yogaStyle.display());
-  yogaStyle.flex() =
-      convertRawProp(rawProps, "flex", sourceValue.flex(), yogaStyle.flex());
+      context, rawProps, "display", sourceValue.display(), yogaStyle.display());
+  yogaStyle.flex() = convertRawProp(
+      context, rawProps, "flex", sourceValue.flex(), yogaStyle.flex());
   yogaStyle.flexGrow() = convertRawProp(
-      rawProps, "flexGrow", sourceValue.flexGrow(), yogaStyle.flexGrow());
+      context,
+      rawProps,
+      "flexGrow",
+      sourceValue.flexGrow(),
+      yogaStyle.flexGrow());
   yogaStyle.flexShrink() = convertRawProp(
-      rawProps, "flexShrink", sourceValue.flexShrink(), yogaStyle.flexShrink());
+      context,
+      rawProps,
+      "flexShrink",
+      sourceValue.flexShrink(),
+      yogaStyle.flexShrink());
   yogaStyle.flexBasis() = convertRawProp(
-      rawProps, "flexBasis", sourceValue.flexBasis(), yogaStyle.flexBasis());
+      context,
+      rawProps,
+      "flexBasis",
+      sourceValue.flexBasis(),
+      yogaStyle.flexBasis());
   yogaStyle.margin() = convertRawProp(
-      rawProps, "margin", "", sourceValue.margin(), yogaStyle.margin());
-  yogaStyle.position() =
-      convertRawProp(rawProps, sourceValue.position(), yogaStyle.position());
+      context,
+      rawProps,
+      "margin",
+      "",
+      sourceValue.margin(),
+      yogaStyle.margin());
+  yogaStyle.position() = convertRawProp(
+      context, rawProps, sourceValue.position(), yogaStyle.position());
   yogaStyle.padding() = convertRawProp(
-      rawProps, "padding", "", sourceValue.padding(), yogaStyle.padding());
+      context,
+      rawProps,
+      "padding",
+      "",
+      sourceValue.padding(),
+      yogaStyle.padding());
+
+  yogaStyle.gap()[YGGutterRow] = convertRawProp(
+      context,
+      rawProps,
+      "rowGap",
+      sourceValue.gap()[YGGutterRow],
+      yogaStyle.gap()[YGGutterRow]);
+
+  yogaStyle.gap()[YGGutterColumn] = convertRawProp(
+      context,
+      rawProps,
+      "columnGap",
+      sourceValue.gap()[YGGutterColumn],
+      yogaStyle.gap()[YGGutterColumn]);
+
+  yogaStyle.gap()[YGGutterAll] = convertRawProp(
+      context,
+      rawProps,
+      "gap",
+      sourceValue.gap()[YGGutterAll],
+      yogaStyle.gap()[YGGutterAll]);
+
   yogaStyle.border() = convertRawProp(
-      rawProps, "border", "Width", sourceValue.border(), yogaStyle.border());
+      context,
+      rawProps,
+      "border",
+      "Width",
+      sourceValue.border(),
+      yogaStyle.border());
   yogaStyle.dimensions() = convertRawProp(
+      context,
       rawProps,
       "width",
       "height",
       sourceValue.dimensions(),
       yogaStyle.dimensions());
   yogaStyle.minDimensions() = convertRawProp(
+      context,
       rawProps,
       "minWidth",
       "minHeight",
       sourceValue.minDimensions(),
       yogaStyle.minDimensions());
   yogaStyle.maxDimensions() = convertRawProp(
+      context,
       rawProps,
       "maxWidth",
       "maxHeight",
       sourceValue.maxDimensions(),
       yogaStyle.maxDimensions());
   yogaStyle.aspectRatio() = convertRawProp(
+      context,
       rawProps,
       "aspectRatio",
       sourceValue.aspectRatio(),
@@ -207,8 +325,10 @@ static inline YGStyle convertRawProp(
   return yogaStyle;
 }
 
+// This can be deleted when non-iterator ViewProp parsing is deleted
 template <typename T>
 static inline CascadedRectangleCorners<T> convertRawProp(
+    const PropsParserContext &context,
     RawProps const &rawProps,
     char const *prefix,
     char const *suffix,
@@ -217,6 +337,7 @@ static inline CascadedRectangleCorners<T> convertRawProp(
   CascadedRectangleCorners<T> result;
 
   result.topLeft = convertRawProp(
+      context,
       rawProps,
       "TopLeft",
       sourceValue.topLeft,
@@ -224,6 +345,7 @@ static inline CascadedRectangleCorners<T> convertRawProp(
       prefix,
       suffix);
   result.topRight = convertRawProp(
+      context,
       rawProps,
       "TopRight",
       sourceValue.topRight,
@@ -231,6 +353,7 @@ static inline CascadedRectangleCorners<T> convertRawProp(
       prefix,
       suffix);
   result.bottomLeft = convertRawProp(
+      context,
       rawProps,
       "BottomLeft",
       sourceValue.bottomLeft,
@@ -238,6 +361,7 @@ static inline CascadedRectangleCorners<T> convertRawProp(
       prefix,
       suffix);
   result.bottomRight = convertRawProp(
+      context,
       rawProps,
       "BottomRight",
       sourceValue.bottomRight,
@@ -246,6 +370,7 @@ static inline CascadedRectangleCorners<T> convertRawProp(
       suffix);
 
   result.topStart = convertRawProp(
+      context,
       rawProps,
       "TopStart",
       sourceValue.topStart,
@@ -253,6 +378,7 @@ static inline CascadedRectangleCorners<T> convertRawProp(
       prefix,
       suffix);
   result.topEnd = convertRawProp(
+      context,
       rawProps,
       "TopEnd",
       sourceValue.topEnd,
@@ -260,6 +386,7 @@ static inline CascadedRectangleCorners<T> convertRawProp(
       prefix,
       suffix);
   result.bottomStart = convertRawProp(
+      context,
       rawProps,
       "BottomStart",
       sourceValue.bottomStart,
@@ -267,6 +394,7 @@ static inline CascadedRectangleCorners<T> convertRawProp(
       prefix,
       suffix);
   result.bottomEnd = convertRawProp(
+      context,
       rawProps,
       "BottomEnd",
       sourceValue.bottomEnd,
@@ -275,13 +403,14 @@ static inline CascadedRectangleCorners<T> convertRawProp(
       suffix);
 
   result.all = convertRawProp(
-      rawProps, "", sourceValue.all, defaultValue.all, prefix, suffix);
+      context, rawProps, "", sourceValue.all, defaultValue.all, prefix, suffix);
 
   return result;
 }
 
 template <typename T>
 static inline CascadedRectangleEdges<T> convertRawProp(
+    const PropsParserContext &context,
     RawProps const &rawProps,
     char const *prefix,
     char const *suffix,
@@ -290,12 +419,31 @@ static inline CascadedRectangleEdges<T> convertRawProp(
   CascadedRectangleEdges<T> result;
 
   result.left = convertRawProp(
-      rawProps, "Left", sourceValue.left, defaultValue.left, prefix, suffix);
+      context,
+      rawProps,
+      "Left",
+      sourceValue.left,
+      defaultValue.left,
+      prefix,
+      suffix);
   result.right = convertRawProp(
-      rawProps, "Right", sourceValue.right, defaultValue.right, prefix, suffix);
+      context,
+      rawProps,
+      "Right",
+      sourceValue.right,
+      defaultValue.right,
+      prefix,
+      suffix);
   result.top = convertRawProp(
-      rawProps, "Top", sourceValue.top, defaultValue.top, prefix, suffix);
+      context,
+      rawProps,
+      "Top",
+      sourceValue.top,
+      defaultValue.top,
+      prefix,
+      suffix);
   result.bottom = convertRawProp(
+      context,
       rawProps,
       "Bottom",
       sourceValue.bottom,
@@ -304,10 +452,23 @@ static inline CascadedRectangleEdges<T> convertRawProp(
       suffix);
 
   result.start = convertRawProp(
-      rawProps, "Start", sourceValue.start, defaultValue.start, prefix, suffix);
+      context,
+      rawProps,
+      "Start",
+      sourceValue.start,
+      defaultValue.start,
+      prefix,
+      suffix);
   result.end = convertRawProp(
-      rawProps, "End", sourceValue.end, defaultValue.end, prefix, suffix);
+      context,
+      rawProps,
+      "End",
+      sourceValue.end,
+      defaultValue.end,
+      prefix,
+      suffix);
   result.horizontal = convertRawProp(
+      context,
       rawProps,
       "Horizontal",
       sourceValue.horizontal,
@@ -315,6 +476,7 @@ static inline CascadedRectangleEdges<T> convertRawProp(
       prefix,
       suffix);
   result.vertical = convertRawProp(
+      context,
       rawProps,
       "Vertical",
       sourceValue.vertical,
@@ -323,10 +485,230 @@ static inline CascadedRectangleEdges<T> convertRawProp(
       suffix);
 
   result.all = convertRawProp(
-      rawProps, "", sourceValue.all, defaultValue.all, prefix, suffix);
+      context, rawProps, "", sourceValue.all, defaultValue.all, prefix, suffix);
 
   return result;
 }
+
+// This can be deleted when non-iterator ViewProp parsing is deleted
+static inline ViewEvents convertRawProp(
+    const PropsParserContext &context,
+    RawProps const &rawProps,
+    ViewEvents const &sourceValue,
+    ViewEvents const &defaultValue) {
+  ViewEvents result{};
+  using Offset = ViewEvents::Offset;
+
+  result[Offset::PointerEnter] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerEnter",
+      sourceValue[Offset::PointerEnter],
+      defaultValue[Offset::PointerEnter]);
+  result[Offset::PointerMove] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerMove",
+      sourceValue[Offset::PointerMove],
+      defaultValue[Offset::PointerMove]);
+  result[Offset::PointerLeave] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerLeave",
+      sourceValue[Offset::PointerLeave],
+      defaultValue[Offset::PointerLeave]);
+
+  // Experimental W3C Pointer callbacks
+  result[Offset::PointerEnterCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerEnterCapture",
+      sourceValue[Offset::PointerEnterCapture],
+      defaultValue[Offset::PointerEnterCapture]);
+  result[Offset::PointerMoveCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerMoveCapture",
+      sourceValue[Offset::PointerMoveCapture],
+      defaultValue[Offset::PointerMoveCapture]);
+  result[Offset::PointerLeaveCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerLeaveCapture",
+      sourceValue[Offset::PointerLeaveCapture],
+      defaultValue[Offset::PointerLeaveCapture]);
+  result[Offset::PointerOver] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerOver",
+      sourceValue[Offset::PointerOver],
+      defaultValue[Offset::PointerOver]);
+  result[Offset::PointerOut] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerOut",
+      sourceValue[Offset::PointerOut],
+      defaultValue[Offset::PointerOut]);
+
+  // PanResponder callbacks
+  result[Offset::MoveShouldSetResponder] = convertRawProp(
+      context,
+      rawProps,
+      "onMoveShouldSetResponder",
+      sourceValue[Offset::MoveShouldSetResponder],
+      defaultValue[Offset::MoveShouldSetResponder]);
+  result[Offset::MoveShouldSetResponderCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onMoveShouldSetResponderCapture",
+      sourceValue[Offset::MoveShouldSetResponderCapture],
+      defaultValue[Offset::MoveShouldSetResponderCapture]);
+  result[Offset::StartShouldSetResponder] = convertRawProp(
+      context,
+      rawProps,
+      "onStartShouldSetResponder",
+      sourceValue[Offset::StartShouldSetResponder],
+      defaultValue[Offset::StartShouldSetResponder]);
+  result[Offset::StartShouldSetResponderCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onStartShouldSetResponderCapture",
+      sourceValue[Offset::StartShouldSetResponderCapture],
+      defaultValue[Offset::StartShouldSetResponderCapture]);
+  result[Offset::ResponderGrant] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderGrant",
+      sourceValue[Offset::ResponderGrant],
+      defaultValue[Offset::ResponderGrant]);
+  result[Offset::ResponderReject] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderReject",
+      sourceValue[Offset::ResponderReject],
+      defaultValue[Offset::ResponderReject]);
+  result[Offset::ResponderStart] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderStart",
+      sourceValue[Offset::ResponderStart],
+      defaultValue[Offset::ResponderStart]);
+  result[Offset::ResponderEnd] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderEnd",
+      sourceValue[Offset::ResponderEnd],
+      defaultValue[Offset::ResponderEnd]);
+  result[Offset::ResponderRelease] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderRelease",
+      sourceValue[Offset::ResponderRelease],
+      defaultValue[Offset::ResponderRelease]);
+  result[Offset::ResponderMove] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderMove",
+      sourceValue[Offset::ResponderMove],
+      defaultValue[Offset::ResponderMove]);
+  result[Offset::ResponderTerminate] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderTerminate",
+      sourceValue[Offset::ResponderTerminate],
+      defaultValue[Offset::ResponderTerminate]);
+  result[Offset::ResponderTerminationRequest] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderTerminationRequest",
+      sourceValue[Offset::ResponderTerminationRequest],
+      defaultValue[Offset::ResponderTerminationRequest]);
+  result[Offset::ShouldBlockNativeResponder] = convertRawProp(
+      context,
+      rawProps,
+      "onShouldBlockNativeResponder",
+      sourceValue[Offset::ShouldBlockNativeResponder],
+      defaultValue[Offset::ShouldBlockNativeResponder]);
+
+  // Touch events
+  result[Offset::TouchStart] = convertRawProp(
+      context,
+      rawProps,
+      "onTouchStart",
+      sourceValue[Offset::TouchStart],
+      defaultValue[Offset::TouchStart]);
+  result[Offset::TouchMove] = convertRawProp(
+      context,
+      rawProps,
+      "onTouchMove",
+      sourceValue[Offset::TouchMove],
+      defaultValue[Offset::TouchMove]);
+  result[Offset::TouchEnd] = convertRawProp(
+      context,
+      rawProps,
+      "onTouchEnd",
+      sourceValue[Offset::TouchEnd],
+      defaultValue[Offset::TouchEnd]);
+  result[Offset::TouchCancel] = convertRawProp(
+      context,
+      rawProps,
+      "onTouchCancel",
+      sourceValue[Offset::TouchCancel],
+      defaultValue[Offset::TouchCancel]);
+
+  return result;
+}
+
+#ifdef ANDROID
+
+static inline void fromRawValue(
+    const PropsParserContext &context,
+    RawValue const &rawValue,
+    NativeDrawable &result) {
+  auto map = (butter::map<std::string, RawValue>)rawValue;
+
+  auto typeIterator = map.find("type");
+  react_native_assert(
+      typeIterator != map.end() && typeIterator->second.hasType<std::string>());
+  std::string type = (std::string)typeIterator->second;
+
+  if (type == "ThemeAttrAndroid") {
+    auto attrIterator = map.find("attribute");
+    react_native_assert(
+        attrIterator != map.end() &&
+        attrIterator->second.hasType<std::string>());
+
+    result = NativeDrawable{
+        NativeDrawable::Kind::ThemeAttr,
+        (std::string)attrIterator->second,
+    };
+  } else if (type == "RippleAndroid") {
+    auto color = map.find("color");
+    auto borderless = map.find("borderless");
+    auto rippleRadius = map.find("rippleRadius");
+
+    result = NativeDrawable{
+        NativeDrawable::Kind::Ripple,
+        std::string{},
+        NativeDrawable::Ripple{
+            color != map.end() && color->second.hasType<int32_t>()
+                ? (int32_t)color->second
+                : std::optional<int32_t>{},
+            borderless != map.end() && borderless->second.hasType<bool>()
+                ? (bool)borderless->second
+                : false,
+            rippleRadius != map.end() && rippleRadius->second.hasType<Float>()
+                ? (Float)rippleRadius->second
+                : std::optional<Float>{},
+        },
+    };
+  } else {
+    LOG(ERROR) << "Unknown native drawable type: " << type;
+    react_native_assert(false);
+  }
+}
+
+#endif
 
 } // namespace react
 } // namespace facebook

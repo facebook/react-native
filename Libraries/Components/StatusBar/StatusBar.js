@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,17 +8,14 @@
  * @flow
  */
 
-'use strict';
-
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-
-const invariant = require('invariant');
-const processColor = require('../../StyleSheet/processColor');
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
+import processColor from '../../StyleSheet/processColor';
+import Platform from '../../Utilities/Platform';
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
+import invariant from 'invariant';
+import * as React from 'react';
 
 /**
  * Status bar style
@@ -115,14 +112,17 @@ function mergePropsStack(
   propsStack: Array<Object>,
   defaultValues: Object,
 ): Object {
-  return propsStack.reduce((prev, cur) => {
-    for (const prop in cur) {
-      if (cur[prop] != null) {
-        prev[prop] = cur[prop];
+  return propsStack.reduce(
+    (prev, cur) => {
+      for (const prop in cur) {
+        if (cur[prop] != null) {
+          prev[prop] = cur[prop];
+        }
       }
-    }
-    return prev;
-  }, Object.assign({}, defaultValues));
+      return prev;
+    },
+    {...defaultValues},
+  );
 }
 
 /**
@@ -130,19 +130,21 @@ function mergePropsStack(
  * and the transition/animation info.
  */
 function createStackEntry(props: any): any {
+  const animated = props.animated ?? false;
+  const showHideTransition = props.showHideTransition ?? 'fade';
   return {
     backgroundColor:
       props.backgroundColor != null
         ? {
             value: props.backgroundColor,
-            animated: props.animated,
+            animated,
           }
         : null,
     barStyle:
       props.barStyle != null
         ? {
             value: props.barStyle,
-            animated: props.animated,
+            animated,
           }
         : null,
     translucent: props.translucent,
@@ -150,8 +152,8 @@ function createStackEntry(props: any): any {
       props.hidden != null
         ? {
             value: props.hidden,
-            animated: props.animated,
-            transition: props.showHideTransition,
+            animated,
+            transition: showHideTransition,
           }
         : null,
     networkActivityIndicatorVisible: props.networkActivityIndicatorVisible,
@@ -221,11 +223,9 @@ function createStackEntry(props: any): any {
  * `currentHeight` (Android only) The height of the status bar.
  */
 class StatusBar extends React.Component<Props> {
-  static _propsStack = [];
+  static _propsStack: Array<any> = [];
 
-  static _defaultProps = createStackEntry({
-    animated: false,
-    showHideTransition: 'fade',
+  static _defaultProps: any = createStackEntry({
     backgroundColor:
       Platform.OS === 'android'
         ? NativeStatusBarManagerAndroid.getConstants()
@@ -309,7 +309,7 @@ class StatusBar extends React.Component<Props> {
    * @param color Background color.
    * @param animated Animate the style change.
    */
-  static setBackgroundColor(color: string, animated?: boolean) {
+  static setBackgroundColor(color: string, animated?: boolean): void {
     if (Platform.OS !== 'android') {
       console.warn('`setBackgroundColor` is only available on Android');
       return;
@@ -386,14 +386,6 @@ class StatusBar extends React.Component<Props> {
     StatusBar._updatePropsStack();
     return newEntry;
   }
-
-  static defaultProps: {|
-    animated: boolean,
-    showHideTransition: $TEMPORARY$string<'fade'>,
-  |} = {
-    animated: false,
-    showHideTransition: 'fade',
-  };
 
   _stackEntry = null;
 
@@ -482,7 +474,12 @@ class StatusBar extends React.Component<Props> {
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
           NativeStatusBarManagerAndroid.setHidden(mergedProps.hidden.value);
         }
-        if (!oldProps || oldProps.translucent !== mergedProps.translucent) {
+        // Activities are not translucent by default, so always set if true.
+        if (
+          !oldProps ||
+          oldProps.translucent !== mergedProps.translucent ||
+          mergedProps.translucent
+        ) {
           NativeStatusBarManagerAndroid.setTranslucent(mergedProps.translucent);
         }
       }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,14 +8,11 @@
  * @flow
  */
 
-'use strict';
-
-const getNativeComponentAttributes = require('../ReactNative/getNativeComponentAttributes');
-
-import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
-import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
+import PlatformBaseViewConfig from '../NativeComponent/PlatformBaseViewConfig';
+import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
 const IGNORED_KEYS = ['transform', 'hitSlop'];
+
 /**
  * The purpose of this function is to validate that the view config that
  * native exposes for a given view manager is the same as the view config
@@ -39,35 +36,36 @@ const IGNORED_KEYS = ['transform', 'hitSlop'];
  * single source of truth. I wonder if this message will still be here two
  * years from now...
  */
-function verifyComponentAttributeEquivalence(
-  componentName: string,
-  config: ReactNativeBaseComponentViewConfig<>,
+export default function verifyComponentAttributeEquivalence(
+  nativeViewConfig: ViewConfig,
+  staticViewConfig: ViewConfig,
 ) {
-  if (!global.RN$Bridgeless) {
-    const nativeAttributes = getNativeComponentAttributes(componentName);
-
-    ['validAttributes', 'bubblingEventTypes', 'directEventTypes'].forEach(
-      prop => {
-        const diffKeys = Object.keys(
-          lefthandObjectDiff(nativeAttributes[prop], config[prop]),
-        );
-
-        if (diffKeys.length) {
-          console.error(
-            `${componentName} generated view config for ${prop} does not match native, missing: ${diffKeys.join(
-              ' ',
-            )}`,
-          );
-        }
-      },
+  for (const prop of [
+    'validAttributes',
+    'bubblingEventTypes',
+    'directEventTypes',
+  ]) {
+    const diff = Object.keys(
+      lefthandObjectDiff(nativeViewConfig[prop], staticViewConfig[prop]),
     );
+
+    if (diff.length > 0) {
+      const name =
+        staticViewConfig.uiViewClassName ?? nativeViewConfig.uiViewClassName;
+      console.error(
+        `'${name}' has a view config that does not match native. ` +
+          `'${prop}' is missing: ${diff.join(', ')}`,
+      );
+    }
   }
 }
 
-export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
-  const differentKeys = {};
+// Return the different key-value pairs of the right object, by iterating through the keys in the left object
+// Note it won't return a difference where a key is missing in the left but exists the right.
+function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
+  const differentKeys: {[string]: any | {...}} = {};
 
-  function compare(leftItem, rightItem, key) {
+  function compare(leftItem: any, rightItem: any, key: string) {
     if (typeof leftItem !== typeof rightItem && leftItem != null) {
       differentKeys[key] = rightItem;
       return;
@@ -103,7 +101,7 @@ export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
 }
 
 export function getConfigWithoutViewProps(
-  viewConfig: ReactNativeBaseComponentViewConfig<>,
+  viewConfig: ViewConfig,
   propName: string,
 ): {...} {
   if (!viewConfig[propName]) {
@@ -111,8 +109,8 @@ export function getConfigWithoutViewProps(
   }
 
   return Object.keys(viewConfig[propName])
-    .filter(prop => !ReactNativeViewViewConfig[propName][prop])
-    .reduce((obj, prop) => {
+    .filter(prop => !PlatformBaseViewConfig[propName][prop])
+    .reduce<{[string]: any}>((obj, prop) => {
       obj[prop] = viewConfig[propName][prop];
       return obj;
     }, {});
@@ -130,5 +128,3 @@ export function stringifyViewConfig(viewConfig: any): string {
     2,
   );
 }
-
-export default verifyComponentAttributeEquivalence;

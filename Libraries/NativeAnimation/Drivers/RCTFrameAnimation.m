@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,8 +24,7 @@
 
 @end
 
-@implementation RCTFrameAnimation
-{
+@implementation RCTFrameAnimation {
   NSArray<NSNumber *> *_frames;
   CGFloat _toValue;
   CGFloat _fromValue;
@@ -67,7 +66,7 @@
   _currentLoop = 1;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)startAnimation
 {
@@ -79,9 +78,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   _valueNode = nil;
   if (_callback) {
-    _callback(@[@{
-      @"finished": @(_animationHasFinished)
-    }]);
+    _callback(@[ @{@"finished" : @(_animationHasFinished)} ]);
   }
 }
 
@@ -124,31 +121,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Do a linear remap of the two frames to safeguard against variable framerates
   NSNumber *fromFrameValue = _frames[startIndex];
   NSNumber *toFrameValue = _frames[nextIndex];
-  NSTimeInterval fromInterval = startIndex * RCTSingleFrameInterval;
-  NSTimeInterval toInterval = nextIndex * RCTSingleFrameInterval;
+  NSTimeInterval fromInterval = (double)startIndex * RCTSingleFrameInterval;
+  NSTimeInterval toInterval = (double)nextIndex * RCTSingleFrameInterval;
 
   // Interpolate between the individual frames to ensure the animations are
-  //smooth and of the proper duration regardless of the framerate.
-  CGFloat frameOutput = RCTInterpolateValue(currentDuration,
-                                            fromInterval,
-                                            toInterval,
-                                            fromFrameValue.doubleValue,
-                                            toFrameValue.doubleValue,
-                                            EXTRAPOLATE_TYPE_EXTEND,
-                                            EXTRAPOLATE_TYPE_EXTEND);
+  // smooth and of the proper duration regardless of the framerate.
+  CGFloat frameOutput = RCTInterpolateValue(
+      currentDuration,
+      fromInterval,
+      toInterval,
+      fromFrameValue.doubleValue,
+      toFrameValue.doubleValue,
+      EXTRAPOLATE_TYPE_EXTEND,
+      EXTRAPOLATE_TYPE_EXTEND);
 
   [self updateOutputWithFrameOutput:frameOutput];
 }
 
 - (void)updateOutputWithFrameOutput:(CGFloat)frameOutput
 {
-  CGFloat outputValue = RCTInterpolateValue(frameOutput,
-                                            0,
-                                            1,
-                                            _fromValue,
-                                            _toValue,
-                                            EXTRAPOLATE_TYPE_EXTEND,
-                                            EXTRAPOLATE_TYPE_EXTEND);
+  CGFloat outputValue =
+      RCTInterpolateValue(frameOutput, 0, 1, _fromValue, _toValue, EXTRAPOLATE_TYPE_EXTEND, EXTRAPOLATE_TYPE_EXTEND);
 
   _lastPosition = outputValue;
   _valueNode.value = outputValue;

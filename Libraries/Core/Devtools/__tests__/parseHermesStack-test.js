@@ -1,12 +1,12 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict-local
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
@@ -33,6 +33,18 @@ describe('parseHermesStack', () => {
           'TypeError: undefined is not a function',
           '    at global (unknown:1:9)',
           '    at foo$bar (/js/foo.js:10:1234)',
+        ].join('\n'),
+      ),
+    ).toMatchSnapshot();
+  });
+
+  test('tolerate empty filename', () => {
+    expect(
+      parseHermesStack(
+        [
+          'TypeError: undefined is not a function',
+          '    at global (unknown:1:9)',
+          '    at foo$bar (:10:1234)',
         ].join('\n'),
       ),
     ).toMatchSnapshot();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,7 @@
 #import <UIKit/UIKit.h>
 
 #import <ComponentKit/CKComponentSubclass.h>
+#import <React/RCTFabricSurface.h>
 #import <React/RCTSurface.h>
 #import <React/RCTSurfaceView.h>
 
@@ -29,22 +30,20 @@
   return [RCTSurfaceHostingComponentState new];
 }
 
-+ (instancetype)newWithSurface:(RCTSurface *)surface options:(RCTSurfaceHostingComponentOptions)options
++ (instancetype)newWithSurface:(id<RCTSurfaceProtocol>)surface options:(RCTSurfaceHostingComponentOptions)options
 {
   CKComponentScope scope(self, surface);
 
   RCTSurfaceHostingComponentState *const state = scope.state();
 
   RCTSurfaceHostingComponentState *const newState =
-    [RCTSurfaceHostingComponentState newWithStage:surface.stage
-                                     intrinsicSize:surface.intrinsicSize];
+      [RCTSurfaceHostingComponentState newWithStage:surface.stage intrinsicSize:surface.intrinsicSize];
 
   if (![state isEqual:newState]) {
     CKComponentScope::replaceState(scope, newState);
   }
 
-  RCTSurfaceHostingComponent *const component =
-    [super newWithView:{[UIView class]} size:{}];
+  RCTSurfaceHostingComponent *const component = [super newWithView:{[UIView class]} size:{}];
 
   if (component) {
     component->_state = scope.state();
@@ -55,7 +54,7 @@
   return component;
 }
 
-- (CKComponentLayout)computeLayoutThatFits:(CKSizeRange)constrainedSize
+- (RCLayout)computeLayoutThatFits:(CKSizeRange)constrainedSize
 {
   // Optimistically communicating layout constraints to the `_surface`,
   // just to provide layout constraints to React Native as early as possible.
@@ -71,20 +70,29 @@
   // interop compatibilities of React Native which will enable us granularly
   // control React Native mounting blocks and, as a result, implement
   // truly synchronous mounting stage between React Native and ComponentKit.
-  [_surface setMinimumSize:constrainedSize.min
-               maximumSize:constrainedSize.max];
+  [_surface setMinimumSize:constrainedSize.min maximumSize:constrainedSize.max];
 
   // Just in case of the very first building pass, we give React Native a chance
   // to prepare its internals for coming synchronous measuring.
-  [_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialLayout
-                              timeout:_options.synchronousLayoutingTimeout];
+  if ([_surface isKindOfClass:[RCTSurface class]]) {
+    // Legacy Pre-Fabric Surface
+    [(RCTSurface *)_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialLayout
+                                              timeout:_options.synchronousLayoutingTimeout];
+  } else if ([_surface isKindOfClass:[RCTFabricSurface class]]) {
+    // Fabric Surface
+    // Hack: Increase timeout because RCTFabricSurface stage will be RCTSurfaceStageSurfaceDidInitialLayout
+    // before mounting has finished, which can cause sizeThatFitsMinimumSize to return the wrong value.
+    // Safe hack because timeout length can be increased without making the component seem slower.
+    // However if timeout length is less than the time to mount a surface, the size may be incorrect.
+    // TODO (T115399546) Allow RCTFabricSurface synchronouslyWaitFor to wait for mounting completion stage
+    NSTimeInterval timeout = 20;
+    [(RCTFabricSurface *)_surface synchronouslyWaitFor:timeout];
+  }
 
   CGSize fittingSize = CGSizeZero;
   if (_surface.stage & RCTSurfaceStageSurfaceDidInitialLayout) {
-    fittingSize = [_surface sizeThatFitsMinimumSize:constrainedSize.min
-                                        maximumSize:constrainedSize.max];
-  }
-  else {
+    fittingSize = [_surface sizeThatFitsMinimumSize:constrainedSize.min maximumSize:constrainedSize.max];
+  } else {
     fittingSize = _options.activityIndicatorSize;
   }
 
@@ -96,9 +104,9 @@
 {
   if (_options.boundsAnimations && (previousComponent->_state.stage != _state.stage)) {
     return {
-      .mode = CKComponentBoundsAnimationModeDefault,
-      .duration = 0.25,
-      .options = UIViewAnimationOptionCurveEaseInOut,
+        .mode = CKComponentBoundsAnimationModeDefault,
+        .duration = 0.25,
+        .options = UIViewAnimationOptionCurveEaseInOut,
     };
   }
 

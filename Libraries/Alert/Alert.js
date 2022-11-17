@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,12 +8,9 @@
  * @flow
  */
 
-'use strict';
+import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
 
 import Platform from '../Utilities/Platform';
-import NativeDialogManagerAndroid, {
-  type DialogOptions,
-} from '../NativeModules/specs/NativeDialogManagerAndroid';
 import RCTAlertManager from './RCTAlertManager';
 
 export type AlertType =
@@ -25,12 +22,14 @@ export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
 export type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
+  isPreferred?: boolean,
   style?: AlertButtonStyle,
   ...
 }>;
 
 type Options = {
   cancelable?: ?boolean,
+  userInterfaceStyle?: 'unspecified' | 'light' | 'dark',
   onDismiss?: ?() => void,
   ...
 };
@@ -38,7 +37,7 @@ type Options = {
 /**
  * Launches an alert dialog with the specified title and message.
  *
- * See https://reactnative.dev/docs/alert.html
+ * See https://reactnative.dev/docs/alert
  */
 class Alert {
   static alert(
@@ -48,8 +47,18 @@ class Alert {
     options?: Options,
   ): void {
     if (Platform.OS === 'ios') {
-      Alert.prompt(title, message, buttons, 'default');
+      Alert.prompt(
+        title,
+        message,
+        buttons,
+        'default',
+        undefined,
+        undefined,
+        options,
+      );
     } else if (Platform.OS === 'android') {
+      const NativeDialogManagerAndroid =
+        require('../NativeModules/specs/NativeDialogManagerAndroid').default;
       if (!NativeDialogManagerAndroid) {
         return;
       }
@@ -84,6 +93,8 @@ class Alert {
         config.buttonPositive = buttonPositive.text || defaultPositiveText;
       }
 
+      /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+       * Flow's LTI update could not be added via codemod */
       const onAction = (action, buttonKey) => {
         if (action === constants.buttonClicked) {
           if (buttonKey === constants.buttonNeutral) {
@@ -97,7 +108,7 @@ class Alert {
           options && options.onDismiss && options.onDismiss();
         }
       };
-      const onError = errorMessage => console.warn(errorMessage);
+      const onError = (errorMessage: string) => console.warn(errorMessage);
       NativeDialogManagerAndroid.showAlert(config, onError, onAction);
     }
   }
@@ -109,12 +120,14 @@ class Alert {
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,
     keyboardType?: string,
+    options?: Options,
   ): void {
     if (Platform.OS === 'ios') {
-      let callbacks = [];
+      let callbacks: Array<?any> = [];
       const buttons = [];
       let cancelButtonKey;
       let destructiveButtonKey;
+      let preferredButtonKey;
       if (typeof callbackOrButtons === 'function') {
         callbacks = [callbackOrButtons];
       } else if (Array.isArray(callbackOrButtons)) {
@@ -125,8 +138,11 @@ class Alert {
           } else if (btn.style === 'destructive') {
             destructiveButtonKey = String(index);
           }
+          if (btn.isPreferred) {
+            preferredButtonKey = String(index);
+          }
           if (btn.text || index < (callbackOrButtons || []).length - 1) {
-            const btnDef = {};
+            const btnDef: {[number]: string} = {};
             btnDef[index] = btn.text || '';
             buttons.push(btnDef);
           }
@@ -142,7 +158,9 @@ class Alert {
           defaultValue,
           cancelButtonKey,
           destructiveButtonKey,
+          preferredButtonKey,
           keyboardType,
+          userInterfaceStyle: options?.userInterfaceStyle || undefined,
         },
         (id, value) => {
           const cb = callbacks[id];

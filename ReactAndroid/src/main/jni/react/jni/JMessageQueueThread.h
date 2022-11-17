@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,10 +12,7 @@
 #include <cxxreact/MessageQueueThread.h>
 #include <fbjni/fbjni.h>
 
-using namespace facebook::jni;
-
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JavaMessageQueueThread : public jni::JavaClass<JavaMessageQueueThread> {
  public:
@@ -25,7 +22,7 @@ class JavaMessageQueueThread : public jni::JavaClass<JavaMessageQueueThread> {
 
 class JMessageQueueThread : public MessageQueueThread {
  public:
-  JMessageQueueThread(alias_ref<JavaMessageQueueThread::javaobject> jobj);
+  JMessageQueueThread(jni::alias_ref<JavaMessageQueueThread::javaobject> jobj);
 
   /**
    * Enqueues the given function to run on this MessageQueueThread.
@@ -50,8 +47,7 @@ class JMessageQueueThread : public MessageQueueThread {
   }
 
  private:
-  global_ref<JavaMessageQueueThread::javaobject> m_jobj;
+  jni::global_ref<JavaMessageQueueThread::javaobject> m_jobj;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

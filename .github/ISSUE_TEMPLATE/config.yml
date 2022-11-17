@@ -3,12 +3,12 @@ contact_links:
     - name: 📃 Documentation Issue
       url: https://github.com/facebook/react-native-website/issues
       about: Please report documentation issues in the React Native website repository.
-    - name: ⤴️ Upgrade Issue
-      url: https://github.com/react-native-community/upgrade-support
-      about: Need help upgrading to a newer React Native version? Visit the Upgrade Support repository.
     - name: 🤔 Questions and Help
       url: https://reactnative.dev/help
       about: Looking for help with your app? Please refer to the React Native community's support resources.
+    - name: 💫 New Architecture - Questions & Technical Deep dive insights
+      url: https://github.com/reactwg/react-native-new-architecture
+      about: Questions and doubts related to technical questions for the New Architecture should be directed to the Working Group. Instructions on how to join are available in the README.
     - name: 🚀 Discussions and Proposals
       url: https://github.com/react-native-community/discussions-and-proposals
       about: Discuss the future of React Native in the React Native community's discussions and proposals repository.

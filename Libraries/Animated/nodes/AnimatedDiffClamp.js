@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,14 @@
 
 'use strict';
 
-const AnimatedInterpolation = require('./AnimatedInterpolation');
-const AnimatedNode = require('./AnimatedNode');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
-
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
+import type AnimatedNode from './AnimatedNode';
 
-class AnimatedDiffClamp extends AnimatedWithChildren {
+import AnimatedInterpolation from './AnimatedInterpolation';
+import AnimatedWithChildren from './AnimatedWithChildren';
+
+export default class AnimatedDiffClamp extends AnimatedWithChildren {
   _a: AnimatedNode;
   _min: number;
   _max: number;
@@ -32,12 +33,14 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
     this._value = this._lastValue = this._a.__getValue();
   }
 
-  __makeNative() {
-    this._a.__makeNative();
-    super.__makeNative();
+  __makeNative(platformConfig: ?PlatformConfig) {
+    this._a.__makeNative(platformConfig);
+    super.__makeNative(platformConfig);
   }
 
-  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+  interpolate<OutputT: number | string>(
+    config: InterpolationConfigType<OutputT>,
+  ): AnimatedInterpolation<OutputT> {
     return new AnimatedInterpolation(this, config);
   }
 
@@ -67,5 +70,3 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedDiffClamp;

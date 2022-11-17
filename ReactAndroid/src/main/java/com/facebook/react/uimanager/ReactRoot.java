@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,9 +11,15 @@ import android.os.Bundle;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.common.UIManagerType;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Interface for the root native view of a React native application */
 public interface ReactRoot {
+
+  /** This constant represents that ReactRoot hasn't started yet or it has been destroyed. */
+  int STATE_STOPPED = 0;
+  /** This constant represents that ReactRoot has started. */
+  int STATE_STARTED = 1;
 
   /** Return cached launch properties for app */
   @Nullable
@@ -58,4 +64,7 @@ public interface ReactRoot {
   @Deprecated
   @Nullable
   String getSurfaceID();
+
+  /** @return an {@link AtomicInteger} that represents the state of the ReactRoot object. */
+  AtomicInteger getState();
 }

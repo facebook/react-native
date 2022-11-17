@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -21,4 +21,4 @@ then
 fi
 # Start packager from PROJECT_ROOT
 cd "$PROJECT_ROOT" || exit
-"$NODE_BINARY" "$REACT_NATIVE_ROOT/cli.js" start "$@"
+"$NODE_BINARY" "$REACT_NATIVE_ROOT/cli.js" start --custom-log-reporter-path "$THIS_DIR/packager-reporter.js" "$@"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTBackedTextInputDelegate.h>
+#import <React/RCTBackedTextInputViewProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,8 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
 // it's declared here only to conform to the interface.
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
 
-// The `caretHidden` property actually is not supported yet;
-// it's declared here only to conform to the interface.
 @property (nonatomic, assign) BOOL caretHidden;
 
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;

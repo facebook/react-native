@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 
 import android.graphics.Color;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -31,6 +32,9 @@ public class ViewProps {
   public static final String FLEX_BASIS = "flexBasis";
   public static final String FLEX_DIRECTION = "flexDirection";
   public static final String FLEX_WRAP = "flexWrap";
+  public static final String ROW_GAP = "rowGap";
+  public static final String COLUMN_GAP = "columnGap";
+  public static final String GAP = "gap";
   public static final String HEIGHT = "height";
   public static final String JUSTIFY_CONTENT = "justifyContent";
   public static final String LEFT = "left";
@@ -81,6 +85,7 @@ public class ViewProps {
   // Props that affect more than just layout
   public static final String ENABLED = "enabled";
   public static final String BACKGROUND_COLOR = "backgroundColor";
+  public static final String FOREGROUND_COLOR = "foregroundColor";
   public static final String COLOR = "color";
   public static final String FONT_SIZE = "fontSize";
   public static final String FONT_WEIGHT = "fontWeight";
@@ -144,12 +149,15 @@ public class ViewProps {
   public static final String Z_INDEX = "zIndex";
   public static final String RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   public static final String ACCESSIBILITY_LABEL = "accessibilityLabel";
+  public static final String ACCESSIBILITY_COLLECTION = "accessibilityCollection";
+  public static final String ACCESSIBILITY_COLLECTION_ITEM = "accessibilityCollectionItem";
   public static final String ACCESSIBILITY_HINT = "accessibilityHint";
   public static final String ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   public static final String ACCESSIBILITY_ROLE = "accessibilityRole";
   public static final String ACCESSIBILITY_STATE = "accessibilityState";
   public static final String ACCESSIBILITY_ACTIONS = "accessibilityActions";
   public static final String ACCESSIBILITY_VALUE = "accessibilityValue";
+  public static final String ACCESSIBILITY_LABELLED_BY = "accessibilityLabelledBy";
   public static final String IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
 
   // DEPRECATED
@@ -198,6 +206,9 @@ public class ViewProps {
               FLEX_BASIS,
               FLEX_DIRECTION,
               FLEX_GROW,
+              ROW_GAP,
+              COLUMN_GAP,
+              GAP,
               FLEX_SHRINK,
               FLEX_WRAP,
               JUSTIFY_CONTENT,
@@ -257,8 +268,14 @@ public class ViewProps {
         // Ignore if explicitly set to default opacity.
         return map.isNull(OPACITY) || map.getDouble(OPACITY) == 1d;
       case BORDER_RADIUS: // Without a background color or border width set, a border won't show.
-        if (map.hasKey(BACKGROUND_COLOR) && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
-          return false;
+        if (map.hasKey(BACKGROUND_COLOR)) {
+          ReadableType valueType = map.getType(BACKGROUND_COLOR);
+          if (valueType == ReadableType.Number
+              && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
+            return false;
+          } else if (valueType != ReadableType.Null) {
+            return false;
+          }
         }
         if (map.hasKey(BORDER_WIDTH)
             && !map.isNull(BORDER_WIDTH)
@@ -267,14 +284,16 @@ public class ViewProps {
         }
         return true;
       case BORDER_LEFT_COLOR:
-        return !map.isNull(BORDER_LEFT_COLOR) && map.getInt(BORDER_LEFT_COLOR) == Color.TRANSPARENT;
+        return map.getType(BORDER_LEFT_COLOR) == ReadableType.Number
+            && map.getInt(BORDER_LEFT_COLOR) == Color.TRANSPARENT;
       case BORDER_RIGHT_COLOR:
-        return !map.isNull(BORDER_RIGHT_COLOR)
+        return map.getType(BORDER_RIGHT_COLOR) == ReadableType.Number
             && map.getInt(BORDER_RIGHT_COLOR) == Color.TRANSPARENT;
       case BORDER_TOP_COLOR:
-        return !map.isNull(BORDER_TOP_COLOR) && map.getInt(BORDER_TOP_COLOR) == Color.TRANSPARENT;
+        return map.getType(BORDER_TOP_COLOR) == ReadableType.Number
+            && map.getInt(BORDER_TOP_COLOR) == Color.TRANSPARENT;
       case BORDER_BOTTOM_COLOR:
-        return !map.isNull(BORDER_BOTTOM_COLOR)
+        return map.getType(BORDER_BOTTOM_COLOR) == ReadableType.Number
             && map.getInt(BORDER_BOTTOM_COLOR) == Color.TRANSPARENT;
       case BORDER_WIDTH:
         return map.isNull(BORDER_WIDTH) || map.getDouble(BORDER_WIDTH) == 0d;

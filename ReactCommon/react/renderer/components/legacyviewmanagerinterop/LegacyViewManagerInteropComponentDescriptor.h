@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,7 +28,7 @@ class LegacyViewManagerInteropComponentDescriptor final
   ComponentName getComponentName() const override;
 
  protected:
-  void adopt(ShadowNode::Unshared shadowNode) const override;
+  void adopt(ShadowNode::Unshared const &shadowNode) const override;
 
  private:
   std::shared_ptr<void> const _coordinator;

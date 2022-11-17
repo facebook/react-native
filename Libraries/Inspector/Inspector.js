@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,81 +10,27 @@
 
 'use strict';
 
+import type {TouchedViewDataAtPoint} from '../Renderer/shims/ReactNativeTypes';
+import type {HostRef} from './getInspectorDataForViewAtPoint';
+
+const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const View = require('../Components/View/View');
+const PressabilityDebug = require('../Pressability/PressabilityDebug');
+const {findNodeHandle} = require('../ReactNative/RendererProxy');
+const StyleSheet = require('../StyleSheet/StyleSheet');
 const Dimensions = require('../Utilities/Dimensions');
+const Platform = require('../Utilities/Platform');
+const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
 const InspectorOverlay = require('./InspectorOverlay');
 const InspectorPanel = require('./InspectorPanel');
-const Platform = require('../Utilities/Platform');
 const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const Touchable = require('../Components/Touchable/Touchable');
-const View = require('../Components/View/View');
-
-const invariant = require('invariant');
-
-import type {
-  HostComponent,
-  TouchedViewDataAtPoint,
-} from '../Renderer/shims/ReactNativeTypes';
-
-type HostRef = React.ElementRef<HostComponent<mixed>>;
-
-export type ReactRenderer = {
-  rendererConfig: {
-    getInspectorDataForViewAtPoint: (
-      inspectedView: ?HostRef,
-      locationX: number,
-      locationY: number,
-      callback: Function,
-    ) => void,
-    ...
-  },
-};
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-const renderers = findRenderers();
 
 // Required for React DevTools to view/edit React Native styles in Flipper.
 // Flipper doesn't inject these values when initializing DevTools.
 hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
-const viewConfig = require('../Components/View/ReactNativeViewViewConfig');
-hook.nativeStyleEditorValidAttributes = Object.keys(
-  viewConfig.validAttributes.style,
-);
-
-function findRenderers(): $ReadOnlyArray<ReactRenderer> {
-  const allRenderers = Array.from(hook.renderers.values());
-  invariant(
-    allRenderers.length >= 1,
-    'Expected to find at least one React Native renderer on DevTools hook.',
-  );
-  return allRenderers;
-}
-
-function getInspectorDataForViewAtPoint(
-  inspectedView: ?HostRef,
-  locationX: number,
-  locationY: number,
-  callback: (viewData: TouchedViewDataAtPoint) => void,
-) {
-  // Check all renderers for inspector data.
-  for (let i = 0; i < renderers.length; i++) {
-    const renderer = renderers[i];
-    if (renderer?.rendererConfig?.getInspectorDataForViewAtPoint != null) {
-      renderer.rendererConfig.getInspectorDataForViewAtPoint(
-        inspectedView,
-        locationX,
-        locationY,
-        viewData => {
-          // Only return with non-empty view data since only one renderer will have this view.
-          if (viewData && viewData.hierarchy.length > 0) {
-            callback(viewData);
-          }
-        },
-      );
-    }
-  }
-}
+hook.nativeStyleEditorValidAttributes = Object.keys(ReactNativeStyleAttributes);
 
 class Inspector extends React.Component<
   {
@@ -146,8 +92,6 @@ class Inspector extends React.Component<
   }
 
   _attachToDevtools = (agent: Object) => {
-    agent.addListener('hideNativeHighlight', this._onAgentHideNativeHighlight);
-    agent.addListener('showNativeHighlight', this._onAgentShowNativeHighlight);
     agent.addListener('shutdown', this._onAgentShutdown);
 
     this.setState({
@@ -155,42 +99,9 @@ class Inspector extends React.Component<
     });
   };
 
-  _onAgentHideNativeHighlight = () => {
-    if (this.state.inspected === null) {
-      return;
-    }
-    // we wait to actually hide in order to avoid flicker
-    this._hideTimeoutID = setTimeout(() => {
-      this.setState({
-        inspected: null,
-      });
-    }, 100);
-  };
-
-  _onAgentShowNativeHighlight = node => {
-    clearTimeout(this._hideTimeoutID);
-
-    node.measure((x, y, width, height, left, top) => {
-      this.setState({
-        hierarchy: [],
-        inspected: {
-          frame: {left, top, width, height},
-        },
-      });
-    });
-  };
-
   _onAgentShutdown = () => {
     const agent = this.state.devtoolsAgent;
     if (agent != null) {
-      agent.removeListener(
-        'hideNativeHighlight',
-        this._onAgentHideNativeHighlight,
-      );
-      agent.removeListener(
-        'showNativeHighlight',
-        this._onAgentShowNativeHighlight,
-      );
       agent.removeListener('shutdown', this._onAgentShutdown);
 
       this.setState({devtoolsAgent: null});
@@ -199,10 +110,9 @@ class Inspector extends React.Component<
 
   setSelection(i: number) {
     const hierarchyItem = this.state.hierarchy[i];
-    // we pass in ReactNative.findNodeHandle as the method is injected
-    const {measure, props, source} = hierarchyItem.getInspectorData(
-      ReactNative.findNodeHandle,
-    );
+    // we pass in findNodeHandle as the method is injected
+    const {measure, props, source} =
+      hierarchyItem.getInspectorData(findNodeHandle);
 
     measure((x, y, width, height, left, top) => {
       this.setState({
@@ -226,15 +136,19 @@ class Inspector extends React.Component<
         frame,
         pointerY,
         touchedViewTag,
+        closestInstance,
       } = viewData;
 
       // Sync the touched view with React DevTools.
       // Note: This is Paper only. To support Fabric,
       // DevTools needs to be updated to not rely on view tags.
-      if (this.state.devtoolsAgent && touchedViewTag) {
-        this.state.devtoolsAgent.selectNode(
-          ReactNative.findNodeHandle(touchedViewTag),
-        );
+      if (this.state.devtoolsAgent) {
+        if (closestInstance != null) {
+          // Fabric
+          this.state.devtoolsAgent.selectNode(closestInstance);
+        } else if (touchedViewTag != null) {
+          this.state.devtoolsAgent.selectNode(findNodeHandle(touchedViewTag));
+        }
       }
 
       this.setState({
@@ -258,6 +172,7 @@ class Inspector extends React.Component<
           this._setTouchedViewData(viewData);
           this._setTouchedViewData = null;
         }
+        return false;
       },
     );
   }
@@ -279,7 +194,7 @@ class Inspector extends React.Component<
   }
 
   setTouchTargeting(val: boolean) {
-    Touchable.TOUCH_TARGET_DEBUG = val;
+    PressabilityDebug.setEnabled(val);
     this.props.onRequestRerenderApp(inspectedView => {
       this.setState({inspectedView});
     });
@@ -304,6 +219,7 @@ class Inspector extends React.Component<
         {this.state.inspecting && (
           <InspectorOverlay
             inspected={this.state.inspected}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onTouchPoint={this.onTouchPoint.bind(this)}
           />
         )}
@@ -312,15 +228,20 @@ class Inspector extends React.Component<
             devtoolsIsOpen={!!this.state.devtoolsAgent}
             inspecting={this.state.inspecting}
             perfing={this.state.perfing}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             setPerfing={this.setPerfing.bind(this)}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             setInspecting={this.setInspecting.bind(this)}
             inspected={this.state.inspected}
             hierarchy={this.state.hierarchy}
             selection={this.state.selection}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             setSelection={this.setSelection.bind(this)}
-            touchTargeting={Touchable.TOUCH_TARGET_DEBUG}
+            touchTargeting={PressabilityDebug.isEnabled()}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             setTouchTargeting={this.setTouchTargeting.bind(this)}
             networking={this.state.networking}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             setNetworking={this.setNetworking.bind(this)}
           />
         </View>

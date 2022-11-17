@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -107,7 +107,7 @@ WIN_EXPORT void YGNodeMarkDirty(YGNodeRef node);
 
 // Marks the current node and all its descendants as dirty.
 //
-// Intended to be used for Uoga benchmarks. Don't use in production, as calling
+// Intended to be used for Yoga benchmarks. Don't use in production, as calling
 // `YGCalculateLayout` will cause the recalculation of each and every node.
 WIN_EXPORT void YGNodeMarkDirtyAndPropogateToDescendants(YGNodeRef node);
 
@@ -232,6 +232,12 @@ WIN_EXPORT YGValue YGNodeStyleGetPadding(YGNodeConstRef node, YGEdge edge);
 WIN_EXPORT void YGNodeStyleSetBorder(YGNodeRef node, YGEdge edge, float border);
 WIN_EXPORT float YGNodeStyleGetBorder(YGNodeConstRef node, YGEdge edge);
 
+WIN_EXPORT void YGNodeStyleSetGap(
+    YGNodeRef node,
+    YGGutter gutter,
+    float gapLength);
+WIN_EXPORT float YGNodeStyleGetGap(YGNodeConstRef node, YGGutter gutter);
+
 WIN_EXPORT void YGNodeStyleSetWidth(YGNodeRef node, float width);
 WIN_EXPORT void YGNodeStyleSetWidthPercent(YGNodeRef node, float width);
 WIN_EXPORT void YGNodeStyleSetWidthAuto(YGNodeRef node);
@@ -318,6 +324,7 @@ void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
 // resulted in implicit behaviour similar to align-self: stretch; Because this
 // was such a long-standing bug we must allow legacy users to switch back to
 // this behaviour.
+WIN_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(YGConfigRef config);
 WIN_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
     YGConfigRef config,
     bool useLegacyStretchBehaviour);

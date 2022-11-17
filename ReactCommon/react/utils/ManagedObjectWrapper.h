@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,14 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
+
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#endif
+
 #if defined(__OBJC__) && defined(__cplusplus)
-#if TARGET_OS_MAC && TARGET_OS_IPHONE
+#if TARGET_OS_MAC
 
 #include <memory>
 
@@ -65,7 +71,7 @@ inline std::shared_ptr<void> wrapManagedObjectWeakly(id object) noexcept
 inline id unwrapManagedObjectWeakly(std::shared_ptr<void> const &object) noexcept
 {
   RCTInternalGenericWeakWrapper *weakWrapper = (RCTInternalGenericWeakWrapper *)unwrapManagedObject(object);
-  assert(weakWrapper && "`RCTInternalGenericWeakWrapper` instance must not be `nil`.");
+  react_native_assert(weakWrapper && "`RCTInternalGenericWeakWrapper` instance must not be `nil`.");
   return weakWrapper.object;
 }
 

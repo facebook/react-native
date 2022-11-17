@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,35 +11,17 @@
 #import <objc/runtime.h>
 
 #import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
 #import "RCTDevLoadingViewProtocol.h"
+#import "RCTJSThread.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
 #import "RCTReloadCommand.h"
 #import "RCTUtils.h"
-
-NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
-NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
-NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWillStartExecutingNotification";
-NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
-NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
-NSString *const RCTDidSetupModuleNotification = @"RCTDidSetupModuleNotification";
-NSString *const RCTDidSetupModuleNotificationModuleNameKey = @"moduleName";
-NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
-NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
-NSString *const RCTBridgeFastRefreshNotification = @"RCTBridgeFastRefreshNotification";
-NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
-NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
-NSString *const RCTBridgeWillInvalidateModulesNotification = @"RCTBridgeWillInvalidateModulesNotification";
-NSString *const RCTBridgeDidInvalidateModulesNotification = @"RCTBridgeDidInvalidateModulesNotification";
-NSString *const RCTBridgeWillBeInvalidatedNotification = @"RCTBridgeWillBeInvalidatedNotification";
-NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
-NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey = @"bridgeDescription";
 
 static NSMutableArray<Class> *RCTModuleClasses;
 static dispatch_queue_t RCTModuleClassesSyncQueue;
@@ -55,6 +37,7 @@ NSArray<Class> *RCTGetModuleClasses(void)
 /**
  * Register the given class as a bridge module. All modules must be registered
  * prior to the first bridge initialization.
+ * TODO: (T115656171) Refactor RCTRegisterModule out of Bridge.m since it doesn't use the Bridge.
  */
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
@@ -136,6 +119,41 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   turboModuleSharedMutexInitEnabled = enabled;
 }
 
+static RCTTurboModuleCleanupMode turboModuleCleanupMode = kRCTGlobalScope;
+RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void)
+{
+  return turboModuleCleanupMode;
+}
+
+void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode)
+{
+  turboModuleCleanupMode = mode;
+}
+
+// Turn off TurboModule delegate locking
+static BOOL turboModuleManagerDelegateLockingDisabled = YES;
+BOOL RCTTurboModuleManagerDelegateLockingDisabled(void)
+{
+  return turboModuleManagerDelegateLockingDisabled;
+}
+
+void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
+{
+  turboModuleManagerDelegateLockingDisabled = disabled;
+}
+
+// Turn off TurboModule delegate locking
+static BOOL viewConfigEventValidAttributesDisabled = NO;
+BOOL RCTViewConfigEventValidAttributesDisabled(void)
+{
+  return viewConfigEventValidAttributesDisabled;
+}
+
+void RCTDisableViewConfigEventValidAttributes(BOOL disabled)
+{
+  viewConfigEventValidAttributesDisabled = disabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
@@ -143,15 +161,9 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   NSURL *_delegateBundleURL;
 }
 
-dispatch_queue_t RCTJSThread;
-
 + (void)initialize
 {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // Set up JS thread
-    RCTJSThread = (id)kCFNull;
-  });
+  _RCTInitializeJSThreadConstantInternal();
 }
 
 static RCTBridge *RCTCurrentBridgeInstance = nil;
@@ -190,6 +202,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
+    RCTEnforceNewArchitectureValidation(RCTNotAllowedInBridgeless, self, nil);
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;
@@ -216,6 +229,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
+{
+  [self.batchedBridge attachBridgeAPIsToTurboModule:module];
+}
+
 - (void)didReceiveReloadCommand
 {
 #if RCT_ENABLE_INSPECTOR
@@ -236,6 +254,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     self->_launchOptions = nil;
     [self setUp];
   });
+}
+
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return self.batchedBridge.moduleRegistry;
 }
 
 - (NSArray<Class> *)moduleClasses

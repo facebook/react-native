@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,353 +14,325 @@ import type {SchemaType} from '../../../CodegenSchema.js';
 
 const EMPTY_NATIVE_MODULES: SchemaType = {
   modules: {
-    SampleTurboModule: {
-      nativeModules: {
-        SampleTurboModule: {
-          aliases: {},
-          properties: [],
-        },
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliases: {},
+      spec: {
+        properties: [],
       },
+      moduleNames: ['SampleTurboModule'],
     },
   },
 };
 
 const SIMPLE_NATIVE_MODULES: SchemaType = {
   modules: {
-    SampleTurboModule: {
-      nativeModules: {
-        SampleTurboModule: {
-          aliases: {},
-          properties: [
-            {
-              name: 'getConstants',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'ObjectTypeAnnotation',
-                  properties: [
-                    {
-                      optional: false,
-                      name: 'const1',
-                      typeAnnotation: {
-                        type: 'BooleanTypeAnnotation',
-                        nullable: false,
-                      },
-                    },
-                    {
-                      optional: false,
-                      name: 'const2',
-                      typeAnnotation: {
-                        type: 'NumberTypeAnnotation',
-                        nullable: false,
-                      },
-                    },
-                    {
-                      optional: false,
-                      name: 'const3',
-                      typeAnnotation: {
-                        type: 'StringTypeAnnotation',
-                        nullable: false,
-                      },
-                    },
-                  ],
-                },
-                params: [],
-                nullable: false,
-              },
-            },
-            {
-              name: 'voidFunc',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [],
-                nullable: false,
-              },
-            },
-            {
-              name: 'getBool',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'BooleanTypeAnnotation',
-                },
-                params: [
-                  {
-                    optional: false,
-                    name: 'arg',
-                    typeAnnotation: {
-                      type: 'BooleanTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
-              },
-            },
-            {
-              name: 'getNumber',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'NumberTypeAnnotation',
-                },
-                params: [
-                  {
-                    optional: false,
-                    name: 'arg',
-                    typeAnnotation: {
-                      type: 'NumberTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
-              },
-            },
-            {
-              name: 'getString',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'StringTypeAnnotation',
-                },
-                params: [
-                  {
-                    optional: false,
-                    name: 'arg',
-                    typeAnnotation: {
-                      type: 'StringTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
-              },
-            },
-            {
-              name: 'getArray',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'ArrayTypeAnnotation',
-                  elementType: {
-                    type: 'GenericObjectTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                params: [
-                  {
-                    name: 'arg',
-                    optional: false,
-                    typeAnnotation: {
-                      type: 'ArrayTypeAnnotation',
-                      nullable: false,
-                      elementType: {
-                        type: 'GenericObjectTypeAnnotation',
-                        nullable: false,
-                      },
-                    },
-                  },
-                ],
-                nullable: false,
-              },
-            },
-            {
-              name: 'getObject',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'GenericObjectTypeAnnotation',
-                },
-                params: [
-                  {
-                    optional: false,
-                    name: 'arg',
-                    typeAnnotation: {
-                      type: 'GenericObjectTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
-              },
-            },
-            {
-              name: 'getRootTag',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'ReservedFunctionValueTypeAnnotation',
-                  name: 'RootTag',
-                },
-                params: [
-                  {
-                    optional: false,
-                    name: 'arg',
-                    typeAnnotation: {
-                      type: 'ReservedFunctionValueTypeAnnotation',
-                      name: 'RootTag',
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
-              },
-            },
-            {
-              name: 'getValue',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'GenericObjectTypeAnnotation',
-                },
-                params: [
-                  {
-                    optional: false,
-                    name: 'x',
-                    typeAnnotation: {
-                      type: 'NumberTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                  {
-                    optional: false,
-                    name: 'y',
-                    typeAnnotation: {
-                      type: 'StringTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                  {
-                    optional: false,
-                    name: 'z',
-                    typeAnnotation: {
-                      type: 'GenericObjectTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
-              },
-            },
-            {
-              name: 'getValueWithCallback',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [
-                  {
-                    name: 'callback',
-                    optional: false,
-                    typeAnnotation: {
-                      type: 'FunctionTypeAnnotation',
-                      params: [],
-                      returnTypeAnnotation: {
-                        type: 'VoidTypeAnnotation',
-                        nullable: false,
-                      },
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
-              },
-            },
-            {
-              name: 'getValueWithPromise',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'PromiseTypeAnnotation',
-                },
-                params: [
-                  {
-                    optional: false,
-                    name: 'error',
-                    typeAnnotation: {
-                      type: 'BooleanTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
-              },
-            },
-          ],
-        },
-      },
-    },
-  },
-};
-
-const TWO_MODULES_SAME_FILE: SchemaType = {
-  modules: {
     NativeSampleTurboModule: {
-      nativeModules: {
-        SampleTurboModule: {
-          aliases: {},
-          properties: [
-            {
-              name: 'voidFunc',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [],
-                nullable: false,
+      type: 'NativeModule',
+      aliases: {},
+      spec: {
+        properties: [
+          {
+            name: 'getConstants',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    optional: false,
+                    name: 'const1',
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                    },
+                  },
+                  {
+                    optional: false,
+                    name: 'const2',
+                    typeAnnotation: {
+                      type: 'NumberTypeAnnotation',
+                    },
+                  },
+                  {
+                    optional: false,
+                    name: 'const3',
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                    },
+                  },
+                ],
               },
+              params: [],
             },
-          ],
-        },
-        Sample2TurboModule: {
-          aliases: {},
-          properties: [
-            {
-              name: 'voidFunc',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [],
-                nullable: false,
+          },
+          {
+            name: 'voidFunc',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
               },
+              params: [],
             },
-          ],
-        },
+          },
+          {
+            name: 'getBool',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'arg',
+                  typeAnnotation: {
+                    type: 'BooleanTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getNumber',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'arg',
+                  typeAnnotation: {
+                    type: 'NumberTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getString',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'arg',
+                  typeAnnotation: {
+                    type: 'StringTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getArray',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'GenericObjectTypeAnnotation',
+                },
+              },
+              params: [
+                {
+                  name: 'arg',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'ArrayTypeAnnotation',
+
+                    elementType: {
+                      type: 'GenericObjectTypeAnnotation',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getObject',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'GenericObjectTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'arg',
+                  typeAnnotation: {
+                    type: 'GenericObjectTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getRootTag',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'ReservedTypeAnnotation',
+                name: 'RootTag',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'arg',
+                  typeAnnotation: {
+                    type: 'ReservedTypeAnnotation',
+                    name: 'RootTag',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getValue',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'GenericObjectTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'x',
+                  typeAnnotation: {
+                    type: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  optional: false,
+                  name: 'y',
+                  typeAnnotation: {
+                    type: 'StringTypeAnnotation',
+                  },
+                },
+                {
+                  optional: false,
+                  name: 'z',
+                  typeAnnotation: {
+                    type: 'GenericObjectTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getValueWithCallback',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'callback',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'FunctionTypeAnnotation',
+                    params: [],
+                    returnTypeAnnotation: {
+                      type: 'VoidTypeAnnotation',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getValueWithPromise',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'PromiseTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'error',
+                  typeAnnotation: {
+                    type: 'BooleanTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getValueWithOptionalArg',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'PromiseTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: true,
+                  name: 'parameter',
+                  typeAnnotation: {
+                    type: 'GenericObjectTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getEnums',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'enumInt',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'enumFloat',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'enumString',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'StringTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+        ],
       },
+      moduleNames: ['SampleTurboModule'],
     },
   },
 };
@@ -368,62 +340,56 @@ const TWO_MODULES_SAME_FILE: SchemaType = {
 const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
-      nativeModules: {
-        SampleTurboModule: {
-          aliases: {},
-          properties: [
-            {
-              name: 'voidFunc',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [],
-                nullable: false,
+      type: 'NativeModule',
+      aliases: {},
+      spec: {
+        properties: [
+          {
+            name: 'voidFunc',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
               },
+              params: [],
             },
-          ],
-        },
+          },
+        ],
       },
+      moduleNames: ['SampleTurboModule'],
     },
     NativeSampleTurboModule2: {
-      nativeModules: {
-        Sample2TurboModule: {
-          aliases: {},
-          properties: [
-            {
-              name: 'getConstants',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'ObjectTypeAnnotation',
-                  properties: [],
-                },
-                params: [],
-                nullable: false,
+      type: 'NativeModule',
+      aliases: {},
+      spec: {
+        properties: [
+          {
+            name: 'getConstants',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [],
               },
+              params: [],
             },
-            {
-              name: 'voidFunc',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [],
-                nullable: false,
+          },
+          {
+            name: 'voidFunc',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
               },
+              params: [],
             },
-          ],
-        },
+          },
+        ],
       },
+      moduleNames: ['SampleTurboModule2'],
     },
   },
 };
@@ -431,211 +397,188 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
 const COMPLEX_OBJECTS: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
-      nativeModules: {
-        SampleTurboModule: {
-          aliases: {},
-          properties: [
-            {
-              name: 'difficult',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'ObjectTypeAnnotation',
-                  properties: [
-                    {
-                      optional: false,
-                      name: 'D',
-                      typeAnnotation: {
-                        type: 'BooleanTypeAnnotation',
-                        nullable: false,
-                      },
-                    },
-                    {
-                      optional: false,
-                      name: 'E',
-                      typeAnnotation: {
-                        type: 'NumberTypeAnnotation',
-                        nullable: false,
-                      },
-                    },
-                    {
-                      optional: false,
-                      name: 'F',
-                      typeAnnotation: {
-                        type: 'StringTypeAnnotation',
-                        nullable: false,
-                      },
-                    },
-                  ],
-                },
-                params: [
+      type: 'NativeModule',
+      aliases: {},
+      spec: {
+        properties: [
+          {
+            name: 'difficult',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
                   {
                     optional: false,
-                    name: 'A',
+                    name: 'D',
                     typeAnnotation: {
-                      type: 'ObjectTypeAnnotation',
-                      nullable: false,
-                      properties: [
-                        {
-                          optional: false,
-                          name: 'D',
-                          typeAnnotation: {
-                            type: 'BooleanTypeAnnotation',
-                            nullable: false,
-                          },
-                        },
-                        {
-                          optional: false,
-                          name: 'E',
-                          typeAnnotation: {
-                            type: 'ObjectTypeAnnotation',
-                            nullable: false,
-                            properties: [
-                              {
-                                optional: false,
-                                name: 'D',
-                                typeAnnotation: {
-                                  type: 'BooleanTypeAnnotation',
-                                  nullable: false,
-                                },
-                              },
-                              {
-                                optional: false,
-                                name: 'E',
-                                typeAnnotation: {
-                                  type: 'NumberTypeAnnotation',
-                                  nullable: false,
-                                },
-                              },
-                              {
-                                optional: false,
-                                name: 'F',
-                                typeAnnotation: {
-                                  type: 'StringTypeAnnotation',
-                                  nullable: false,
-                                },
-                              },
-                              {
-                                optional: false,
-                                name: 'id',
-                                typeAnnotation: {
-                                  type: 'NumberTypeAnnotation',
-                                  nullable: false,
-                                },
-                              },
-                            ],
-                          },
-                        },
-                        {
-                          optional: false,
-                          name: 'F',
-                          typeAnnotation: {
-                            type: 'StringTypeAnnotation',
-                            nullable: false,
-                          },
-                        },
-                      ],
+                      type: 'BooleanTypeAnnotation',
+                    },
+                  },
+                  {
+                    optional: false,
+                    name: 'E',
+                    typeAnnotation: {
+                      type: 'NumberTypeAnnotation',
+                    },
+                  },
+                  {
+                    optional: false,
+                    name: 'F',
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
                     },
                   },
                 ],
-                nullable: false,
               },
-            },
-            {
-              name: 'optionals',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [
-                  {
-                    optional: false,
-                    name: 'A',
-                    typeAnnotation: {
-                      type: 'ObjectTypeAnnotation',
-                      nullable: false,
-                      properties: [
-                        {
-                          optional: true,
-                          name: 'optionalNumberProperty',
-                          typeAnnotation: {
-                            type: 'NumberTypeAnnotation',
-                            nullable: false,
-                          },
+              params: [
+                {
+                  optional: false,
+                  name: 'A',
+                  typeAnnotation: {
+                    type: 'ObjectTypeAnnotation',
+                    properties: [
+                      {
+                        optional: false,
+                        name: 'D',
+                        typeAnnotation: {
+                          type: 'BooleanTypeAnnotation',
                         },
-                        {
-                          optional: true,
-                          name: 'optionalArrayProperty',
-                          typeAnnotation: {
-                            type: 'ArrayTypeAnnotation',
-                            nullable: false,
-                            elementType: {
-                              type: 'NumberTypeAnnotation',
-                              nullable: false,
+                      },
+                      {
+                        optional: false,
+                        name: 'E',
+                        typeAnnotation: {
+                          type: 'ObjectTypeAnnotation',
+                          properties: [
+                            {
+                              optional: false,
+                              name: 'D',
+                              typeAnnotation: {
+                                type: 'BooleanTypeAnnotation',
+                              },
                             },
-                          },
-                        },
-                        {
-                          optional: true,
-                          name: 'optionalObjectProperty',
-                          typeAnnotation: {
-                            type: 'ObjectTypeAnnotation',
-                            nullable: false,
-                            properties: [
-                              {
-                                optional: false,
-                                name: 'x',
-                                typeAnnotation: {
-                                  type: 'NumberTypeAnnotation',
-                                  nullable: false,
-                                },
+                            {
+                              optional: false,
+                              name: 'E',
+                              typeAnnotation: {
+                                type: 'NumberTypeAnnotation',
                               },
-                              {
-                                optional: false,
-                                name: 'y',
-                                typeAnnotation: {
-                                  type: 'NumberTypeAnnotation',
-                                  nullable: false,
-                                },
+                            },
+                            {
+                              optional: false,
+                              name: 'F',
+                              typeAnnotation: {
+                                type: 'StringTypeAnnotation',
                               },
-                            ],
-                          },
+                            },
+                            {
+                              optional: false,
+                              name: 'id',
+                              typeAnnotation: {
+                                type: 'NumberTypeAnnotation',
+                              },
+                            },
+                          ],
                         },
-                        {
-                          optional: true,
-                          name: 'optionalGenericObjectProperty',
-                          typeAnnotation: {
-                            type: 'GenericObjectTypeAnnotation',
-                            nullable: false,
-                          },
+                      },
+                      {
+                        optional: false,
+                        name: 'F',
+                        typeAnnotation: {
+                          type: 'StringTypeAnnotation',
                         },
-                        {
-                          optional: true,
-                          name: 'optionalBooleanTypeProperty',
-                          typeAnnotation: {
-                            type: 'BooleanTypeAnnotation',
-                            nullable: false,
-                          },
-                        },
-                      ],
-                    },
+                      },
+                    ],
                   },
-                ],
-                nullable: false,
-              },
+                },
+              ],
             },
-            {
-              name: 'optionalMethod',
-              optional: true,
+          },
+          {
+            name: 'optionals',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'A',
+                  typeAnnotation: {
+                    type: 'ObjectTypeAnnotation',
+                    properties: [
+                      {
+                        optional: true,
+                        name: 'optionalNumberProperty',
+                        typeAnnotation: {
+                          type: 'NumberTypeAnnotation',
+                        },
+                      },
+                      {
+                        optional: true,
+                        name: 'optionalArrayProperty',
+                        typeAnnotation: {
+                          type: 'ArrayTypeAnnotation',
+                          elementType: {
+                            type: 'NumberTypeAnnotation',
+                          },
+                        },
+                      },
+                      {
+                        optional: true,
+                        name: 'optionalObjectProperty',
+                        typeAnnotation: {
+                          type: 'ObjectTypeAnnotation',
+                          properties: [
+                            {
+                              optional: false,
+                              name: 'x',
+                              typeAnnotation: {
+                                type: 'NumberTypeAnnotation',
+                              },
+                            },
+                            {
+                              optional: false,
+                              name: 'y',
+                              typeAnnotation: {
+                                type: 'NumberTypeAnnotation',
+                              },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        optional: true,
+                        name: 'optionalGenericObjectProperty',
+                        typeAnnotation: {
+                          type: 'GenericObjectTypeAnnotation',
+                        },
+                      },
+                      {
+                        optional: true,
+                        name: 'optionalBooleanTypeProperty',
+                        typeAnnotation: {
+                          type: 'BooleanTypeAnnotation',
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'optionalMethod',
+            optional: true,
+            typeAnnotation: {
+              type: 'NullableTypeAnnotation',
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [
@@ -644,7 +587,6 @@ const COMPLEX_OBJECTS: SchemaType = {
                     name: 'options',
                     typeAnnotation: {
                       type: 'GenericObjectTypeAnnotation',
-                      nullable: false,
                     },
                   },
                   {
@@ -655,9 +597,7 @@ const COMPLEX_OBJECTS: SchemaType = {
                       params: [],
                       returnTypeAnnotation: {
                         type: 'VoidTypeAnnotation',
-                        nullable: false,
                       },
-                      nullable: false,
                     },
                   },
                   {
@@ -665,17 +605,14 @@ const COMPLEX_OBJECTS: SchemaType = {
                     optional: true,
                     typeAnnotation: {
                       type: 'ArrayTypeAnnotation',
-                      nullable: false,
                       elementType: {
                         type: 'ObjectTypeAnnotation',
-                        nullable: false,
                         properties: [
                           {
                             optional: false,
                             name: 'key',
                             typeAnnotation: {
                               type: 'StringTypeAnnotation',
-                              nullable: false,
                             },
                           },
                           {
@@ -683,7 +620,6 @@ const COMPLEX_OBJECTS: SchemaType = {
                             name: 'value',
                             typeAnnotation: {
                               type: 'GenericObjectTypeAnnotation',
-                              nullable: false,
                             },
                           },
                         ],
@@ -691,106 +627,135 @@ const COMPLEX_OBJECTS: SchemaType = {
                     },
                   },
                 ],
-                nullable: true,
               },
             },
-            {
-              name: 'getArrays',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [
-                  {
-                    optional: false,
-                    name: 'options',
-                    typeAnnotation: {
-                      type: 'ObjectTypeAnnotation',
-                      nullable: false,
-                      properties: [
-                        {
-                          optional: false,
-                          name: 'arrayOfNumbers',
-                          typeAnnotation: {
-                            type: 'ArrayTypeAnnotation',
-                            nullable: false,
-                            elementType: {
-                              type: 'NumberTypeAnnotation',
-                              nullable: false,
-                            },
+          },
+          {
+            name: 'getArrays',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'options',
+                  typeAnnotation: {
+                    type: 'ObjectTypeAnnotation',
+                    properties: [
+                      {
+                        optional: false,
+                        name: 'arrayOfNumbers',
+                        typeAnnotation: {
+                          type: 'ArrayTypeAnnotation',
+                          elementType: {
+                            type: 'NumberTypeAnnotation',
                           },
                         },
-                        {
-                          optional: true,
-                          name: 'optionalArrayOfNumbers',
-                          typeAnnotation: {
-                            type: 'ArrayTypeAnnotation',
-                            nullable: false,
-                            elementType: {
-                              type: 'NumberTypeAnnotation',
-                              nullable: false,
-                            },
+                      },
+                      {
+                        optional: true,
+                        name: 'optionalArrayOfNumbers',
+                        typeAnnotation: {
+                          type: 'ArrayTypeAnnotation',
+                          elementType: {
+                            type: 'NumberTypeAnnotation',
                           },
                         },
-                        {
-                          optional: false,
-                          name: 'arrayOfStrings',
-                          typeAnnotation: {
-                            type: 'ArrayTypeAnnotation',
-                            nullable: false,
-                            elementType: {
-                              type: 'StringTypeAnnotation',
-                              nullable: false,
-                            },
+                      },
+                      {
+                        optional: false,
+                        name: 'arrayOfStrings',
+                        typeAnnotation: {
+                          type: 'ArrayTypeAnnotation',
+                          elementType: {
+                            type: 'StringTypeAnnotation',
                           },
                         },
-                        {
-                          optional: true,
-                          name: 'optionalArrayOfStrings',
-                          typeAnnotation: {
-                            type: 'ArrayTypeAnnotation',
-                            nullable: false,
-                            elementType: {
-                              type: 'StringTypeAnnotation',
-                              nullable: false,
-                            },
+                      },
+                      {
+                        optional: true,
+                        name: 'optionalArrayOfStrings',
+                        typeAnnotation: {
+                          type: 'ArrayTypeAnnotation',
+                          elementType: {
+                            type: 'StringTypeAnnotation',
                           },
                         },
-                        {
-                          optional: false,
-                          name: 'arrayOfObjects',
-                          typeAnnotation: {
-                            type: 'ArrayTypeAnnotation',
-                            nullable: false,
-                            elementType: {
-                              type: 'ObjectTypeAnnotation',
-                              nullable: false,
-                              properties: [
-                                {
-                                  optional: false,
-                                  name: 'numberProperty',
-                                  typeAnnotation: {
-                                    type: 'NumberTypeAnnotation',
-                                    nullable: false,
-                                  },
+                      },
+                      {
+                        optional: false,
+                        name: 'arrayOfObjects',
+                        typeAnnotation: {
+                          type: 'ArrayTypeAnnotation',
+                          elementType: {
+                            type: 'ObjectTypeAnnotation',
+                            properties: [
+                              {
+                                optional: false,
+                                name: 'numberProperty',
+                                typeAnnotation: {
+                                  type: 'NumberTypeAnnotation',
                                 },
-                              ],
-                            },
+                              },
+                            ],
                           },
                         },
-                      ],
-                    },
+                      },
+                    ],
                   },
-                ],
-                nullable: false,
-              },
+                },
+              ],
             },
-          ],
-        },
+          },
+          {
+            name: 'getNullableObject',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [],
+                },
+              },
+              params: [],
+            },
+          },
+          {
+            name: 'getNullableGenericObject',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'GenericObjectTypeAnnotation',
+                },
+              },
+              params: [],
+            },
+          },
+          {
+            name: 'getNullableArray',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'ArrayTypeAnnotation',
+                },
+              },
+              params: [],
+            },
+          },
+        ],
       },
+      moduleNames: ['SampleTurboModule'],
     },
   },
 };
@@ -798,151 +763,134 @@ const COMPLEX_OBJECTS: SchemaType = {
 const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
   modules: {
     AliasTurboModule: {
-      nativeModules: {
-        AliasTurboModule: {
-          aliases: {
-            Options: {
-              type: 'ObjectTypeAnnotation',
-              nullable: false,
-              properties: [
-                {
-                  optional: false,
-                  name: 'offset',
-                  typeAnnotation: {
-                    type: 'ObjectTypeAnnotation',
-                    nullable: false,
-                    properties: [
-                      {
-                        optional: false,
-                        name: 'x',
-                        typeAnnotation: {
-                          type: 'NumberTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                      {
-                        optional: false,
-                        name: 'y',
-                        typeAnnotation: {
-                          type: 'NumberTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  optional: false,
-                  name: 'size',
-                  typeAnnotation: {
-                    type: 'ObjectTypeAnnotation',
-                    nullable: false,
-                    properties: [
-                      {
-                        optional: false,
-                        name: 'width',
-                        typeAnnotation: {
-                          type: 'NumberTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                      {
-                        optional: false,
-                        name: 'height',
-                        typeAnnotation: {
-                          type: 'NumberTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'displaySize',
-                  typeAnnotation: {
-                    type: 'ObjectTypeAnnotation',
-                    nullable: false,
-                    properties: [
-                      {
-                        optional: false,
-                        name: 'width',
-                        typeAnnotation: {
-                          type: 'NumberTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                      {
-                        optional: false,
-                        name: 'height',
-                        typeAnnotation: {
-                          type: 'NumberTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'resizeMode',
-                  typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'allowExternalStorage',
-                  typeAnnotation: {
-                    type: 'BooleanTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-              ],
-            },
-          },
+      type: 'NativeModule',
+      aliases: {
+        Options: {
+          type: 'ObjectTypeAnnotation',
           properties: [
             {
-              name: 'getConstants',
               optional: false,
+              name: 'offset',
               typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'ObjectTypeAnnotation',
-                  properties: [],
-                },
-                params: [],
-                nullable: false,
-              },
-            },
-            {
-              name: 'cropImage',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [
+                type: 'ObjectTypeAnnotation',
+                properties: [
                   {
                     optional: false,
-                    name: 'cropData',
+                    name: 'x',
                     typeAnnotation: {
-                      type: 'TypeAliasTypeAnnotation',
-                      name: 'Options',
-                      nullable: false,
+                      type: 'NumberTypeAnnotation',
+                    },
+                  },
+                  {
+                    optional: false,
+                    name: 'y',
+                    typeAnnotation: {
+                      type: 'NumberTypeAnnotation',
                     },
                   },
                 ],
-                nullable: false,
+              },
+            },
+            {
+              optional: false,
+              name: 'size',
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    optional: false,
+                    name: 'width',
+                    typeAnnotation: {
+                      type: 'NumberTypeAnnotation',
+                    },
+                  },
+                  {
+                    optional: false,
+                    name: 'height',
+                    typeAnnotation: {
+                      type: 'NumberTypeAnnotation',
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              optional: true,
+              name: 'displaySize',
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    optional: false,
+                    name: 'width',
+                    typeAnnotation: {
+                      type: 'NumberTypeAnnotation',
+                    },
+                  },
+                  {
+                    optional: false,
+                    name: 'height',
+                    typeAnnotation: {
+                      type: 'NumberTypeAnnotation',
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              optional: true,
+              name: 'resizeMode',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              optional: true,
+              name: 'allowExternalStorage',
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
               },
             },
           ],
         },
       },
+      spec: {
+        properties: [
+          {
+            name: 'getConstants',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [],
+              },
+              params: [],
+            },
+          },
+          {
+            name: 'cropImage',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'cropData',
+                  typeAnnotation: {
+                    type: 'TypeAliasTypeAnnotation',
+                    name: 'Options',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleNames: ['AliasTurboModule'],
     },
   },
 };
@@ -950,336 +898,70 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
 const REAL_MODULE_EXAMPLE: SchemaType = {
   modules: {
     NativeCameraRollManager: {
-      nativeModules: {
-        CameraRollManager: {
-          aliases: {
-            PhotoIdentifierImage: {
-              type: 'ObjectTypeAnnotation',
-              nullable: false,
-              properties: [
-                {
-                  optional: false,
-                  name: 'uri',
-                  typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: false,
-                  name: 'playableDuration',
-                  typeAnnotation: {
-                    type: 'NumberTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: false,
-                  name: 'width',
-                  typeAnnotation: {
-                    type: 'NumberTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: false,
-                  name: 'height',
-                  typeAnnotation: {
-                    type: 'NumberTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'isStored',
-                  typeAnnotation: {
-                    type: 'BooleanTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: false,
-                  name: 'filename',
-                  typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-              ],
-            },
-            PhotoIdentifier: {
-              type: 'ObjectTypeAnnotation',
-              nullable: false,
-              properties: [
-                {
-                  optional: false,
-                  name: 'node',
-                  typeAnnotation: {
-                    type: 'ObjectTypeAnnotation',
-                    nullable: false,
-                    properties: [
-                      {
-                        optional: false,
-                        name: 'image',
-                        typeAnnotation: {
-                          type: 'TypeAliasTypeAnnotation',
-                          name: 'PhotoIdentifierImage',
-                          nullable: false,
-                        },
-                      },
-                      {
-                        optional: false,
-                        name: 'type',
-                        typeAnnotation: {
-                          type: 'StringTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                      {
-                        optional: false,
-                        name: 'group_name',
-                        typeAnnotation: {
-                          type: 'StringTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                      {
-                        optional: false,
-                        name: 'timestamp',
-                        typeAnnotation: {
-                          type: 'NumberTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                      {
-                        optional: false,
-                        name: 'location',
-                        typeAnnotation: {
-                          type: 'ObjectTypeAnnotation',
-                          nullable: false,
-                          properties: [
-                            {
-                              optional: false,
-                              name: 'longitude',
-                              typeAnnotation: {
-                                type: 'NumberTypeAnnotation',
-                                nullable: false,
-                              },
-                            },
-                            {
-                              optional: false,
-                              name: 'latitude',
-                              typeAnnotation: {
-                                type: 'NumberTypeAnnotation',
-                                nullable: false,
-                              },
-                            },
-                            {
-                              optional: true,
-                              name: 'altitude',
-                              typeAnnotation: {
-                                type: 'NumberTypeAnnotation',
-                                nullable: false,
-                              },
-                            },
-                            {
-                              optional: true,
-                              name: 'heading',
-                              typeAnnotation: {
-                                type: 'NumberTypeAnnotation',
-                                nullable: false,
-                              },
-                            },
-                            {
-                              optional: true,
-                              name: 'speed',
-                              typeAnnotation: {
-                                type: 'NumberTypeAnnotation',
-                                nullable: false,
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-            PhotoIdentifiersPage: {
-              type: 'ObjectTypeAnnotation',
-              nullable: false,
-              properties: [
-                {
-                  optional: false,
-                  name: 'edges',
-                  typeAnnotation: {
-                    type: 'ArrayTypeAnnotation',
-                    nullable: false,
-                    elementType: {
-                      type: 'TypeAliasTypeAnnotation',
-                      name: 'PhotoIdentifier',
-                      nullable: false,
-                    },
-                  },
-                },
-                {
-                  optional: false,
-                  name: 'page_info',
-                  typeAnnotation: {
-                    type: 'ObjectTypeAnnotation',
-                    nullable: false,
-                    properties: [
-                      {
-                        optional: false,
-                        name: 'has_next_page',
-                        typeAnnotation: {
-                          type: 'BooleanTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                      {
-                        optional: true,
-                        name: 'start_cursor',
-                        typeAnnotation: {
-                          type: 'StringTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                      {
-                        optional: true,
-                        name: 'end_cursor',
-                        typeAnnotation: {
-                          type: 'StringTypeAnnotation',
-                          nullable: false,
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-            GetPhotosParams: {
-              type: 'ObjectTypeAnnotation',
-              nullable: false,
-              properties: [
-                {
-                  optional: false,
-                  name: 'first',
-                  typeAnnotation: {
-                    type: 'NumberTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'after',
-                  typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'groupName',
-                  typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'groupTypes',
-                  typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'assetType',
-                  typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'maxSize',
-                  typeAnnotation: {
-                    type: 'NumberTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'mimeTypes',
-                  typeAnnotation: {
-                    type: 'ArrayTypeAnnotation',
-                    nullable: false,
-                    elementType: {
-                      type: 'StringTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                },
-              ],
-            },
-          },
+      type: 'NativeModule',
+      aliases: {
+        PhotoIdentifierImage: {
+          type: 'ObjectTypeAnnotation',
           properties: [
             {
-              name: 'getConstants',
               optional: false,
+              name: 'uri',
               typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'ObjectTypeAnnotation',
-                  properties: [],
-                },
-                params: [],
-                nullable: false,
+                type: 'StringTypeAnnotation',
               },
             },
             {
-              name: 'getPhotos',
               optional: false,
+              name: 'playableDuration',
               typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  type: 'PromiseTypeAnnotation',
-                  nullable: false,
-                },
-                params: [
+                type: 'NumberTypeAnnotation',
+              },
+            },
+            {
+              optional: false,
+              name: 'width',
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+            {
+              optional: false,
+              name: 'height',
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+            {
+              optional: true,
+              name: 'isStored',
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+              },
+            },
+            {
+              optional: false,
+              name: 'filename',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+          ],
+        },
+        PhotoIdentifier: {
+          type: 'ObjectTypeAnnotation',
+          properties: [
+            {
+              optional: false,
+              name: 'node',
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
                   {
                     optional: false,
-                    name: 'params',
+                    name: 'image',
                     typeAnnotation: {
                       type: 'TypeAliasTypeAnnotation',
-                      name: 'GetPhotosParams',
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
-              },
-            },
-            {
-              name: 'saveToCameraRoll',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  type: 'PromiseTypeAnnotation',
-                  nullable: false,
-                },
-                params: [
-                  {
-                    optional: false,
-                    name: 'uri',
-                    typeAnnotation: {
-                      type: 'StringTypeAnnotation',
-                      nullable: false,
+                      name: 'PhotoIdentifierImage',
                     },
                   },
                   {
@@ -1287,338 +969,454 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                     name: 'type',
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
-                      nullable: false,
                     },
                   },
-                ],
-                nullable: false,
-              },
-            },
-            {
-              name: 'deletePhotos',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  type: 'PromiseTypeAnnotation',
-                  nullable: false,
-                },
-                params: [
                   {
-                    name: 'assets',
                     optional: false,
+                    name: 'group_name',
                     typeAnnotation: {
-                      type: 'ArrayTypeAnnotation',
-                      nullable: false,
-                      elementType: {
-                        type: 'StringTypeAnnotation',
-                        nullable: false,
-                      },
+                      type: 'StringTypeAnnotation',
                     },
                   },
-                ],
-                nullable: false,
-              },
-            },
-          ],
-        },
-      },
-    },
-    NativeImagePickerIOS: {
-      nativeModules: {
-        ImagePickerIOS: {
-          aliases: {},
-          properties: [
-            {
-              name: 'openCameraDialog',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [
                   {
                     optional: false,
-                    name: 'config',
+                    name: 'timestamp',
+                    typeAnnotation: {
+                      type: 'NumberTypeAnnotation',
+                    },
+                  },
+                  {
+                    optional: false,
+                    name: 'location',
                     typeAnnotation: {
                       type: 'ObjectTypeAnnotation',
-                      nullable: false,
                       properties: [
                         {
                           optional: false,
-                          name: 'unmirrorFrontFacingCamera',
+                          name: 'longitude',
                           typeAnnotation: {
-                            type: 'BooleanTypeAnnotation',
-                            nullable: false,
+                            type: 'NumberTypeAnnotation',
                           },
                         },
                         {
                           optional: false,
-                          name: 'videoMode',
+                          name: 'latitude',
                           typeAnnotation: {
-                            type: 'BooleanTypeAnnotation',
-                            nullable: false,
+                            type: 'NumberTypeAnnotation',
+                          },
+                        },
+                        {
+                          optional: true,
+                          name: 'altitude',
+                          typeAnnotation: {
+                            type: 'NumberTypeAnnotation',
+                          },
+                        },
+                        {
+                          optional: true,
+                          name: 'heading',
+                          typeAnnotation: {
+                            type: 'NumberTypeAnnotation',
+                          },
+                        },
+                        {
+                          optional: true,
+                          name: 'speed',
+                          typeAnnotation: {
+                            type: 'NumberTypeAnnotation',
                           },
                         },
                       ],
                     },
                   },
+                ],
+              },
+            },
+          ],
+        },
+        PhotoIdentifiersPage: {
+          type: 'ObjectTypeAnnotation',
+          properties: [
+            {
+              optional: false,
+              name: 'edges',
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'TypeAliasTypeAnnotation',
+                  name: 'PhotoIdentifier',
+                },
+              },
+            },
+            {
+              optional: false,
+              name: 'page_info',
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
                   {
-                    name: 'successCallback',
                     optional: false,
+                    name: 'has_next_page',
                     typeAnnotation: {
-                      type: 'FunctionTypeAnnotation',
-                      params: [],
-                      returnTypeAnnotation: {
-                        nullable: false,
-                        type: 'VoidTypeAnnotation',
-                      },
-                      nullable: false,
+                      type: 'BooleanTypeAnnotation',
                     },
                   },
                   {
-                    name: 'cancelCallback',
-                    optional: false,
+                    optional: true,
+                    name: 'start_cursor',
                     typeAnnotation: {
-                      type: 'FunctionTypeAnnotation',
-                      params: [],
-                      returnTypeAnnotation: {
-                        nullable: false,
-                        type: 'VoidTypeAnnotation',
-                      },
-                      nullable: false,
+                      type: 'StringTypeAnnotation',
+                    },
+                  },
+                  {
+                    optional: true,
+                    name: 'end_cursor',
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
                     },
                   },
                 ],
-                nullable: false,
+              },
+            },
+          ],
+        },
+        GetPhotosParams: {
+          type: 'ObjectTypeAnnotation',
+          properties: [
+            {
+              optional: false,
+              name: 'first',
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+            {
+              optional: true,
+              name: 'after',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              optional: true,
+              name: 'groupName',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              optional: true,
+              name: 'groupTypes',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              optional: true,
+              name: 'assetType',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              optional: true,
+              name: 'maxSize',
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+            {
+              optional: true,
+              name: 'mimeTypes',
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'StringTypeAnnotation',
+                },
               },
             },
           ],
         },
       },
-    },
-    NativeExceptionsManager: {
-      nativeModules: {
-        ExceptionsManager: {
-          aliases: {
-            StackFrame: {
-              properties: [
-                {
-                  optional: true,
-                  name: 'column',
-                  typeAnnotation: {
-                    type: 'NumberTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: false,
-                  name: 'file',
-                  typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'lineNumber',
-                  typeAnnotation: {
-                    type: 'NumberTypeAnnotation',
-                    nullable: false,
-                  },
-                },
+      spec: {
+        properties: [
+          {
+            name: 'getConstants',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [],
+              },
+              params: [],
+            },
+          },
+          {
+            name: 'getPhotos',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'PromiseTypeAnnotation',
+              },
+              params: [
                 {
                   optional: false,
-                  name: 'methodName',
+                  name: 'params',
                   typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'collapse',
-                  typeAnnotation: {
-                    type: 'BooleanTypeAnnotation',
-                    nullable: false,
+                    type: 'TypeAliasTypeAnnotation',
+                    name: 'GetPhotosParams',
                   },
                 },
               ],
-              type: 'ObjectTypeAnnotation',
-              nullable: false,
             },
-            ExceptionData: {
-              properties: [
+          },
+          {
+            name: 'saveToCameraRoll',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'PromiseTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'uri',
+                  typeAnnotation: {
+                    type: 'StringTypeAnnotation',
+                  },
+                },
+                {
+                  optional: false,
+                  name: 'type',
+                  typeAnnotation: {
+                    type: 'StringTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'deletePhotos',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'PromiseTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'assets',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'ArrayTypeAnnotation',
+                    elementType: {
+                      type: 'StringTypeAnnotation',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleNames: ['CameraRollManager'],
+    },
+    NativeExceptionsManager: {
+      type: 'NativeModule',
+      aliases: {
+        StackFrame: {
+          properties: [
+            {
+              optional: true,
+              name: 'column',
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+            {
+              optional: false,
+              name: 'file',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              optional: true,
+              name: 'lineNumber',
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+            {
+              optional: false,
+              name: 'methodName',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              optional: true,
+              name: 'collapse',
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+              },
+            },
+          ],
+          type: 'ObjectTypeAnnotation',
+        },
+        ExceptionData: {
+          properties: [
+            {
+              optional: false,
+              name: 'message',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              optional: false,
+              name: 'originalMessage',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              optional: false,
+              name: 'name',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              optional: false,
+              name: 'componentStack',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              optional: false,
+              name: 'stack',
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'TypeAliasTypeAnnotation',
+                  name: 'StackFrame',
+                },
+              },
+            },
+            {
+              optional: false,
+              name: 'id',
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+            {
+              optional: false,
+              name: 'isFatal',
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+              },
+            },
+            {
+              optional: true,
+              name: 'extraData',
+              typeAnnotation: {
+                type: 'GenericObjectTypeAnnotation',
+              },
+            },
+          ],
+          type: 'ObjectTypeAnnotation',
+        },
+      },
+      spec: {
+        properties: [
+          {
+            name: 'reportFatalException',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [
                 {
                   optional: false,
                   name: 'message',
                   typeAnnotation: {
                     type: 'StringTypeAnnotation',
-                    nullable: false,
                   },
                 },
                 {
-                  optional: false,
-                  name: 'originalMessage',
-                  typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: false,
-                  name: 'name',
-                  typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: false,
-                  name: 'componentStack',
-                  typeAnnotation: {
-                    type: 'StringTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: false,
                   name: 'stack',
+                  optional: false,
                   typeAnnotation: {
                     type: 'ArrayTypeAnnotation',
-                    nullable: false,
                     elementType: {
                       type: 'TypeAliasTypeAnnotation',
                       name: 'StackFrame',
-                      nullable: false,
                     },
                   },
                 },
                 {
                   optional: false,
-                  name: 'id',
+                  name: 'exceptionId',
                   typeAnnotation: {
                     type: 'NumberTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: false,
-                  name: 'isFatal',
-                  typeAnnotation: {
-                    type: 'BooleanTypeAnnotation',
-                    nullable: false,
-                  },
-                },
-                {
-                  optional: true,
-                  name: 'extraData',
-                  typeAnnotation: {
-                    type: 'GenericObjectTypeAnnotation',
-                    nullable: false,
                   },
                 },
               ],
-              type: 'ObjectTypeAnnotation',
-              nullable: false,
             },
           },
-          properties: [
-            {
-              name: 'reportFatalException',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [
-                  {
-                    optional: false,
-                    name: 'message',
-                    typeAnnotation: {
-                      type: 'StringTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                  {
-                    name: 'stack',
-                    optional: false,
-                    typeAnnotation: {
-                      type: 'ArrayTypeAnnotation',
-                      nullable: false,
-                      elementType: {
-                        type: 'TypeAliasTypeAnnotation',
-                        name: 'StackFrame',
-                        nullable: false,
-                      },
-                    },
-                  },
-                  {
-                    optional: false,
-                    name: 'exceptionId',
-                    typeAnnotation: {
-                      type: 'NumberTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
+          {
+            name: 'reportSoftException',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
               },
-            },
-            {
-              name: 'reportSoftException',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
+              params: [
+                {
+                  optional: false,
+                  name: 'message',
+                  typeAnnotation: {
+                    type: 'StringTypeAnnotation',
+                  },
                 },
-                params: [
-                  {
-                    optional: false,
-                    name: 'message',
-                    typeAnnotation: {
-                      type: 'StringTypeAnnotation',
-                      nullable: false,
+                {
+                  name: 'stack',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'ArrayTypeAnnotation',
+                    elementType: {
+                      type: 'TypeAliasTypeAnnotation',
+                      name: 'StackFrame',
                     },
                   },
-                  {
-                    name: 'stack',
-                    optional: false,
-                    typeAnnotation: {
-                      type: 'ArrayTypeAnnotation',
-                      nullable: false,
-                      elementType: {
-                        type: 'TypeAliasTypeAnnotation',
-                        name: 'StackFrame',
-                        nullable: false,
-                      },
-                    },
+                },
+                {
+                  optional: false,
+                  name: 'exceptionId',
+                  typeAnnotation: {
+                    type: 'NumberTypeAnnotation',
                   },
-                  {
-                    optional: false,
-                    name: 'exceptionId',
-                    typeAnnotation: {
-                      type: 'NumberTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
-              },
+                },
+              ],
             },
-            {
-              name: 'reportException',
-              optional: true,
+          },
+          {
+            name: 'reportException',
+            optional: true,
+            typeAnnotation: {
+              type: 'NullableTypeAnnotation',
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [
@@ -1628,81 +1426,244 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                     typeAnnotation: {
                       type: 'TypeAliasTypeAnnotation',
                       name: 'ExceptionData',
-                      nullable: false,
                     },
                   },
                 ],
-                nullable: true,
               },
             },
-            {
-              name: 'updateExceptionMessage',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
+          },
+          {
+            name: 'updateExceptionMessage',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [
+                {
+                  optional: false,
+                  name: 'message',
+                  typeAnnotation: {
+                    type: 'StringTypeAnnotation',
+                  },
                 },
-                params: [
-                  {
-                    optional: false,
-                    name: 'message',
-                    typeAnnotation: {
-                      type: 'StringTypeAnnotation',
-                      nullable: false,
+                {
+                  name: 'stack',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'ArrayTypeAnnotation',
+                    elementType: {
+                      type: 'TypeAliasTypeAnnotation',
+                      name: 'StackFrame',
                     },
                   },
-                  {
-                    name: 'stack',
-                    optional: false,
-                    typeAnnotation: {
-                      type: 'ArrayTypeAnnotation',
-                      nullable: false,
-                      elementType: {
-                        type: 'TypeAliasTypeAnnotation',
-                        name: 'StackFrame',
-                        nullable: false,
-                      },
-                    },
+                },
+                {
+                  optional: false,
+                  name: 'exceptionId',
+                  typeAnnotation: {
+                    type: 'NumberTypeAnnotation',
                   },
-                  {
-                    optional: false,
-                    name: 'exceptionId',
-                    typeAnnotation: {
-                      type: 'NumberTypeAnnotation',
-                      nullable: false,
-                    },
-                  },
-                ],
-                nullable: false,
-              },
+                },
+              ],
             },
-            {
-              name: 'dismissRedbox',
-              optional: true,
+          },
+          {
+            name: 'dismissRedbox',
+            optional: true,
+            typeAnnotation: {
+              type: 'NullableTypeAnnotation',
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [],
-                nullable: true,
+              },
+            },
+          },
+        ],
+      },
+      moduleNames: ['ExceptionsManager'],
+    },
+  },
+};
+
+const CXX_ONLY_NATIVE_MODULES: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliases: {
+        ObjectAlias: {
+          type: 'ObjectTypeAnnotation',
+          properties: [
+            {
+              name: 'x',
+              optional: false,
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
               },
             },
           ],
         },
       },
+      spec: {
+        properties: [
+          {
+            name: 'getMixed',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'MixedTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'arg',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'MixedTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getNullableNumberFromNullableAlias',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'NumberTypeAnnotation',
+                },
+              },
+              params: [
+                {
+                  name: 'a',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'NullableTypeAnnotation',
+                    typeAnnotation: {
+                      type: 'TypeAliasTypeAnnotation',
+                      name: 'ObjectAlias',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getEnums',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'enumInt',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'enumFloat',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'enumString',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'StringTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getUnion',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'UnionTypeAnnotation',
+                memberType: 'ObjectTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'chooseInt',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseFloat',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseObject',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'ObjectTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseString',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'StringTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleNames: ['SampleTurboModuleCxx'],
+      excludedPlatforms: ['iOS', 'android'],
     },
   },
 };
+
+const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliases: {},
+      spec: {
+        properties: [],
+      },
+      moduleNames: ['SampleTurboModule'],
+    },
+  },
+};
+
 module.exports = {
-  COMPLEX_OBJECTS,
-  TWO_MODULES_SAME_FILE,
-  TWO_MODULES_DIFFERENT_FILES,
-  EMPTY_NATIVE_MODULES,
-  SIMPLE_NATIVE_MODULES,
-  NATIVE_MODULES_WITH_TYPE_ALIASES,
-  REAL_MODULE_EXAMPLE,
+  complex_objects: COMPLEX_OBJECTS,
+  two_modules_different_files: TWO_MODULES_DIFFERENT_FILES,
+  empty_native_modules: EMPTY_NATIVE_MODULES,
+  simple_native_modules: SIMPLE_NATIVE_MODULES,
+  native_modules_with_type_aliases: NATIVE_MODULES_WITH_TYPE_ALIASES,
+  real_module_example: REAL_MODULE_EXAMPLE,
+  cxx_only_native_modules: CXX_ONLY_NATIVE_MODULES,
+  SampleWithUppercaseName: SAMPLE_WITH_UPPERCASE_NAME,
 };

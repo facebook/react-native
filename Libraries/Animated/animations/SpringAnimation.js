@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,17 +10,17 @@
 
 'use strict';
 
-const AnimatedValue = require('../nodes/AnimatedValue');
-const AnimatedValueXY = require('../nodes/AnimatedValueXY');
-const AnimatedInterpolation = require('../nodes/AnimatedInterpolation');
-const Animation = require('./Animation');
-const SpringConfig = require('../SpringConfig');
-
-const invariant = require('invariant');
-
-const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
-
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
+import type AnimatedValue from '../nodes/AnimatedValue';
+import type AnimatedValueXY from '../nodes/AnimatedValueXY';
 import type {AnimationConfig, EndCallback} from './Animation';
+
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedColor from '../nodes/AnimatedColor';
+import * as SpringConfig from '../SpringConfig';
+import Animation from './Animation';
+import invariant from 'invariant';
 
 export type SpringAnimationConfig = {
   ...AnimationConfig,
@@ -33,7 +33,15 @@ export type SpringAnimationConfig = {
         ...
       }
     | AnimatedValueXY
-    | AnimatedInterpolation,
+    | {
+        r: number,
+        g: number,
+        b: number,
+        a: number,
+        ...
+      }
+    | AnimatedColor
+    | AnimatedInterpolation<number>,
   overshootClamping?: boolean,
   restDisplacementThreshold?: number,
   restSpeedThreshold?: number,
@@ -56,7 +64,7 @@ export type SpringAnimationConfig = {
 
 export type SpringAnimationConfigSingle = {
   ...AnimationConfig,
-  toValue: number | AnimatedValue | AnimatedInterpolation,
+  toValue: number,
   overshootClamping?: boolean,
   restDisplacementThreshold?: number,
   restSpeedThreshold?: number,
@@ -71,7 +79,7 @@ export type SpringAnimationConfigSingle = {
   delay?: number,
 };
 
-class SpringAnimation extends Animation {
+export default class SpringAnimation extends Animation {
   _overshootClamping: boolean;
   _restDisplacementThreshold: number;
   _restSpeedThreshold: number;
@@ -79,7 +87,7 @@ class SpringAnimation extends Animation {
   _startPosition: number;
   _lastPosition: number;
   _fromValue: number;
-  _toValue: any;
+  _toValue: number;
   _stiffness: number;
   _damping: number;
   _mass: number;
@@ -92,6 +100,7 @@ class SpringAnimation extends Animation {
   _onUpdate: (value: number) => void;
   _animationFrame: any;
   _useNativeDriver: boolean;
+  _platformConfig: ?PlatformConfig;
 
   constructor(config: SpringAnimationConfigSingle) {
     super();
@@ -103,7 +112,8 @@ class SpringAnimation extends Animation {
     this._lastVelocity = config.velocity ?? 0;
     this._toValue = config.toValue;
     this._delay = config.delay ?? 0;
-    this._useNativeDriver = shouldUseNativeDriver(config);
+    this._useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
+    this._platformConfig = config.platformConfig;
     this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
     this.__iterations = config.iterations ?? 1;
 
@@ -162,6 +172,7 @@ class SpringAnimation extends Animation {
     initialVelocity: number,
     iterations: number,
     mass: number,
+    platformConfig: ?PlatformConfig,
     overshootClamping: boolean,
     restDisplacementThreshold: number,
     restSpeedThreshold: number,
@@ -180,6 +191,7 @@ class SpringAnimation extends Animation {
       initialVelocity: this._initialVelocity ?? this._lastVelocity,
       toValue: this._toValue,
       iterations: this.__iterations,
+      platformConfig: this._platformConfig,
     };
   }
 
@@ -344,6 +356,7 @@ class SpringAnimation extends Animation {
       this.__debouncedOnEnd({finished: true});
       return;
     }
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
   }
 
@@ -355,5 +368,3 @@ class SpringAnimation extends Animation {
     this.__debouncedOnEnd({finished: false});
   }
 }
-
-module.exports = SpringAnimation;

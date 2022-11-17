@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+		<string>telprompt</string>
+		<string>http</string>
+		<string>fb</string>
+		<string>geo</string>
+	</array>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleBlackTranslucent</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -60,7 +68,5 @@
 	<false/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>You need to add NSPhotoLibraryUsageDescription key in Info.plist to enable photo library usage, otherwise it is going to *fail silently*!</string>
-	<key>RN_BUNDLE_PREFIX</key>
-	<string>$(RN_BUNDLE_PREFIX)</string>
 </dict>
 </plist>

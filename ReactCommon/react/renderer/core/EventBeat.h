@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,7 +47,7 @@ class EventBeat {
 
   using BeatCallback = std::function<void(jsi::Runtime &runtime)>;
 
-  EventBeat(SharedOwnerBox const &ownerBox);
+  EventBeat(SharedOwnerBox ownerBox);
 
   virtual ~EventBeat() = default;
 
@@ -73,7 +73,7 @@ class EventBeat {
    * Sets the beat callback function.
    * The callback is must be called on the proper thread.
    */
-  void setBeatCallback(const BeatCallback &beatCallback);
+  void setBeatCallback(BeatCallback beatCallback);
 
  protected:
   /*

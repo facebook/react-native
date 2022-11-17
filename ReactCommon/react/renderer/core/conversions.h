@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,6 +30,17 @@ inline int toInt(const LayoutDirection &layoutDirection) {
     case LayoutDirection::LeftToRight:
       return 1;
     case LayoutDirection::RightToLeft:
+      return 2;
+  }
+}
+
+inline int toInt(const DisplayType &displayType) {
+  switch (displayType) {
+    case DisplayType::None:
+      return 0;
+    case DisplayType::Flex:
+      return 1;
+    case DisplayType::Inline:
       return 2;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,9 @@
 #import "RCTBridge.h"
 #import "RCTBridgeModule.h"
 #import "RCTComponentEvent.h"
+#import "RCTConstants.h"
 #import "RCTConvert.h"
+#import "RCTEventDispatcherProtocol.h"
 #import "RCTParserUtils.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
@@ -36,14 +38,19 @@ static SEL selectorForType(NSString *type)
   RCTPropBlockDictionary *_viewPropBlocks;
   RCTPropBlockDictionary *_shadowPropBlocks;
   __weak RCTBridge *_bridge;
+  __weak id<RCTEventDispatcherProtocol> _eventDispatcher;
 }
 
 @synthesize manager = _manager;
+@synthesize bridgelessViewManager = _bridgelessViewManager;
 
-- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge
+- (instancetype)initWithManagerClass:(Class)managerClass
+                              bridge:(RCTBridge *)bridge
+                     eventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   if ((self = [super init])) {
     _bridge = bridge;
+    _eventDispatcher = eventDispatcher;
     _managerClass = managerClass;
     _viewPropBlocks = [NSMutableDictionary new];
     _shadowPropBlocks = [NSMutableDictionary new];
@@ -55,10 +62,15 @@ static SEL selectorForType(NSString *type)
 
 - (RCTViewManager *)manager
 {
-  if (!_manager) {
+  if (!_manager && _bridge) {
     _manager = [_bridge moduleForClass:_managerClass];
+  } else if (!_manager && !_bridgelessViewManager) {
+    _bridgelessViewManager = [_managerClass new];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
+                                                        object:nil
+                                                      userInfo:@{@"module" : _bridgelessViewManager}];
   }
-  return _manager;
+  return _manager ?: _bridgelessViewManager;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
@@ -98,10 +110,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   }
 }
 
-static RCTPropBlock
-createEventSetter(NSString *propName, SEL setter, InterceptorBlock eventInterceptor, RCTBridge *bridge)
+static RCTPropBlock createEventSetter(
+    NSString *propName,
+    SEL setter,
+    InterceptorBlock eventInterceptor,
+    id<RCTEventDispatcherProtocol> eventDispatcher)
 {
-  __weak RCTBridge *weakBridge = bridge;
+  __weak id<RCTEventDispatcherProtocol> weakEventDispatcher = eventDispatcher;
   return ^(id target, id json) {
     void (^eventHandler)(NSDictionary *event) = nil;
     if ([RCTConvert BOOL:json]) {
@@ -119,7 +134,7 @@ createEventSetter(NSString *propName, SEL setter, InterceptorBlock eventIntercep
           RCTComponentEvent *componentEvent = [[RCTComponentEvent alloc] initWithName:propName
                                                                               viewTag:strongTarget.reactTag
                                                                                  body:event];
-          [weakBridge.eventDispatcher sendEvent:componentEvent];
+          [weakEventDispatcher sendEvent:componentEvent];
         }
       };
     }
@@ -246,9 +261,11 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     // Build setter block
     void (^setterBlock)(id target, id json) = nil;
     if (type == NSSelectorFromString(@"RCTBubblingEventBlock:") ||
-        type == NSSelectorFromString(@"RCTDirectEventBlock:")) {
+        type == NSSelectorFromString(@"RCTDirectEventBlock:") ||
+        type == NSSelectorFromString(@"RCTCapturingEventBlock:")) {
       // Special case for event handlers
-      setterBlock = createEventSetter(name, setter, self.eventInterceptor, _bridge);
+      setterBlock =
+          createEventSetter(name, setter, self.eventInterceptor, _bridge ? _bridge.eventDispatcher : _eventDispatcher);
     } else {
       // Ordinary property handlers
       NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];
@@ -371,6 +388,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 - (NSDictionary<NSString *, id> *)viewConfig
 {
   NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
+  NSMutableArray<NSString *> *capturingEvents = [NSMutableArray new];
   NSMutableArray<NSString *> *directEvents = [NSMutableArray new];
 
 #pragma clang diagnostic push
@@ -413,10 +431,25 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
     if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
       [bubblingEvents addObject:RCTNormalizeInputEventName(name)];
-      propTypes[name] = @"BOOL";
+
+      // TODO(109509380): Remove this gating
+      if (!RCTViewConfigEventValidAttributesDisabled()) {
+        propTypes[name] = @"BOOL";
+      }
+    } else if ([type isEqualToString:@"RCTCapturingEventBlock"]) {
+      [capturingEvents addObject:RCTNormalizeInputEventName(name)];
+
+      // TODO(109509380): Remove this gating
+      if (!RCTViewConfigEventValidAttributesDisabled()) {
+        propTypes[name] = @"BOOL";
+      }
     } else if ([type isEqualToString:@"RCTDirectEventBlock"]) {
       [directEvents addObject:RCTNormalizeInputEventName(name)];
-      propTypes[name] = @"BOOL";
+
+      // TODO(109509380): Remove this gating
+      if (!RCTViewConfigEventValidAttributesDisabled()) {
+        propTypes[name] = @"BOOL";
+      }
     } else {
       propTypes[name] = type;
     }
@@ -441,6 +474,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     @"propTypes" : propTypes,
     @"directEvents" : directEvents,
     @"bubblingEvents" : bubblingEvents,
+    @"capturingEvents" : capturingEvents,
     @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : moduleNameForClass(superClass),
   };
 }

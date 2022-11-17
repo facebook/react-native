@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,8 +15,10 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.devsupport.RedBoxHandler;
-import com.facebook.react.uimanager.UIImplementationProvider;
+import com.facebook.react.common.SurfaceDelegate;
+import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.devsupport.DevSupportManagerFactory;
+import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import java.util.List;
 
 /**
@@ -68,11 +70,16 @@ public abstract class ReactNativeHost {
             .setApplication(mApplication)
             .setJSMainModulePath(getJSMainModuleName())
             .setUseDeveloperSupport(getUseDeveloperSupport())
+            .setDevSupportManagerFactory(getDevSupportManagerFactory())
+            .setRequireActivity(getShouldRequireActivity())
+            .setSurfaceDelegateFactory(getSurfaceDelegateFactory())
+            .setLazyViewManagersEnabled(getLazyViewManagersEnabled())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
-            .setUIImplementationProvider(getUIImplementationProvider())
             .setJSIModulesPackage(getJSIModulePackage())
-            .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
+            .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
+            .setReactPackageTurboModuleManagerDelegateBuilder(
+                getReactPackageTurboModuleManagerDelegateBuilder());
 
     for (ReactPackage reactPackage : getPackages()) {
       builder.addPackage(reactPackage);
@@ -99,22 +106,47 @@ public abstract class ReactNativeHost {
     return null;
   }
 
+  protected @Nullable ReactPackageTurboModuleManagerDelegate.Builder
+      getReactPackageTurboModuleManagerDelegateBuilder() {
+    return null;
+  }
+
   protected final Application getApplication() {
     return mApplication;
   }
 
-  /**
-   * Get the {@link UIImplementationProvider} to use. Override this method if you want to use a
-   * custom UI implementation.
-   *
-   * <p>Note: this is very advanced functionality, in 99% of cases you don't need to override this.
-   */
-  protected UIImplementationProvider getUIImplementationProvider() {
-    return new UIImplementationProvider();
-  }
-
   protected @Nullable JSIModulePackage getJSIModulePackage() {
     return null;
+  }
+
+  /** Returns whether or not to treat it as normal if Activity is null. */
+  public boolean getShouldRequireActivity() {
+    return true;
+  }
+
+  /**
+   * Returns whether view managers should be created lazily. See {@link
+   * ViewManagerOnDemandReactPackage} for details.
+   *
+   * @experimental
+   */
+  public boolean getLazyViewManagersEnabled() {
+    return false;
+  }
+
+  /**
+   * Return the {@link SurfaceDelegateFactory} used by NativeModules to get access to a {@link
+   * SurfaceDelegate} to interact with a surface. By default in the mobile platform the {@link
+   * SurfaceDelegate} it returns is null, and the NativeModule needs to implement its own {@link
+   * SurfaceDelegate} to decide how it would interact with its own container surface.
+   */
+  public SurfaceDelegateFactory getSurfaceDelegateFactory() {
+    return new SurfaceDelegateFactory() {
+      @Override
+      public @Nullable SurfaceDelegate createSurfaceDelegate(String moduleName) {
+        return null;
+      }
+    };
   }
 
   /**
@@ -147,10 +179,23 @@ public abstract class ReactNativeHost {
   /** Returns whether dev mode should be enabled. This enables e.g. the dev menu. */
   public abstract boolean getUseDeveloperSupport();
 
+  /** Get the {@link DevSupportManagerFactory}. Override this to use a custom dev support manager */
+  protected @Nullable DevSupportManagerFactory getDevSupportManagerFactory() {
+    return null;
+  }
+
   /**
    * Returns a list of {@link ReactPackage} used by the app. You'll most likely want to return at
    * least the {@code MainReactPackage}. If your app uses additional views or modules besides the
    * default ones, you'll want to include more packages here.
    */
   protected abstract List<ReactPackage> getPackages();
+
+  /**
+   * Returns the {@link JSEngineResolutionAlgorithm} to be used when loading the JS engine. If null,
+   * will try to load JSC first and fallback to Hermes if JSC is not available.
+   */
+  protected @Nullable JSEngineResolutionAlgorithm getJSEngineResolutionAlgorithm() {
+    return null;
+  }
 }

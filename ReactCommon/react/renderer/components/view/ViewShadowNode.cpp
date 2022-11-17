@@ -1,17 +1,28 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "ViewShadowNode.h"
+#include <react/config/ReactNativeConfig.h>
 #include <react/renderer/components/view/primitives.h>
+#include <react/renderer/core/CoreFeatures.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 char const ViewComponentName[] = "View";
+
+ViewShadowNodeProps::ViewShadowNodeProps(
+    PropsParserContext const &context,
+    ViewShadowNodeProps const &sourceProps,
+    RawProps const &rawProps)
+    : ViewProps(
+          context,
+          sourceProps,
+          rawProps,
+          !CoreFeatures::enableMapBuffer){};
 
 ViewShadowNode::ViewShadowNode(
     ShadowNodeFragment const &fragment,
@@ -28,14 +39,6 @@ ViewShadowNode::ViewShadowNode(
   initialize();
 }
 
-static bool isColorMeaningful(SharedColor const &color) noexcept {
-  if (!color) {
-    return false;
-  }
-
-  return colorComponentsFromColor(color).alpha > 0;
-}
-
 void ViewShadowNode::initialize() noexcept {
   auto &viewProps = static_cast<ViewProps const &>(*props_);
 
@@ -43,26 +46,32 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.pointerEvents == PointerEventsMode::None ||
       !viewProps.nativeId.empty() || viewProps.accessible ||
       viewProps.opacity != 1.0 || viewProps.transform != Transform{} ||
-      viewProps.elevation != 0 ||
       (viewProps.zIndex.has_value() &&
        viewProps.yogaStyle.positionType() != YGPositionTypeStatic) ||
       viewProps.yogaStyle.display() == YGDisplayNone ||
-      viewProps.getClipsContentToBounds() ||
+      viewProps.getClipsContentToBounds() || viewProps.events.bits.any() ||
       isColorMeaningful(viewProps.shadowColor) ||
       viewProps.accessibilityElementsHidden ||
-      viewProps.importantForAccessibility != ImportantForAccessibility::Auto;
-
-  bool formsView = isColorMeaningful(viewProps.backgroundColor) ||
-      isColorMeaningful(viewProps.foregroundColor) ||
-      !(viewProps.yogaStyle.border() == YGStyle::Edges{});
-
-  formsView = formsView || formsStackingContext;
+      viewProps.accessibilityViewIsModal ||
+      viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
+      viewProps.removeClippedSubviews;
 
 #ifdef ANDROID
-  // Force `formsStackingContext` trait for nodes which have `formsView`.
-  // TODO: T63560216 Investigate why/how `formsView` entangled with
-  // `formsStackingContext`.
-  formsStackingContext = formsStackingContext || formsView;
+  formsStackingContext = formsStackingContext || viewProps.elevation != 0;
+#endif
+
+  bool formsView = formsStackingContext ||
+      isColorMeaningful(viewProps.backgroundColor) ||
+      isColorMeaningful(viewProps.foregroundColor) ||
+      !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
+      !viewProps.testId.empty();
+
+#ifdef ANDROID
+  formsView = formsView || viewProps.nativeBackground.has_value() ||
+      viewProps.nativeForeground.has_value() || viewProps.focusable ||
+      viewProps.hasTVPreferredFocus ||
+      viewProps.needsOffscreenAlphaCompositing ||
+      viewProps.renderToHardwareTextureAndroid;
 #endif
 
   if (formsView) {
@@ -76,7 +85,10 @@ void ViewShadowNode::initialize() noexcept {
   } else {
     traits_.unset(ShadowNodeTraits::Trait::FormsStackingContext);
   }
+
+#ifdef ANDROID
+  traits_.set(ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported);
+#endif
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

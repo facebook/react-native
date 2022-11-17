@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {TypeAliasResolutionStatus, TypeDeclarationMap} from '../utils';
+
 /**
  * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
  * declaration type. Unfortunately, we don't have those types, because flow-parser
@@ -18,21 +20,39 @@
  *
  * TODO(T71778680): Flow type AST Nodes
  */
-export type TypeDeclarationMap = {|[declarationName: string]: $FlowFixMe|};
 
-// $FlowFixMe there's no flowtype for ASTs
+function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
+  return ast.body.reduce((types, node) => {
+    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
+      if (
+        node.declaration != null &&
+        (node.declaration.type === 'TypeAlias' ||
+          node.declaration.type === 'InterfaceDeclaration')
+      ) {
+        types[node.declaration.id.name] = node.declaration;
+      }
+    } else if (
+      node.type === 'ExportNamedDeclaration' &&
+      node.exportKind === 'value' &&
+      node.declaration &&
+      node.declaration.type === 'EnumDeclaration'
+    ) {
+      types[node.declaration.id.name] = node.declaration;
+    } else if (
+      node.type === 'TypeAlias' ||
+      node.type === 'InterfaceDeclaration' ||
+      node.type === 'EnumDeclaration'
+    ) {
+      types[node.id.name] = node;
+    }
+    return types;
+  }, {});
+}
+
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 export type ASTNode = Object;
 
 const invariant = require('invariant');
-
-type TypeAliasResolutionStatus =
-  | $ReadOnly<{|
-      successful: true,
-      aliasName: string,
-    |}>
-  | $ReadOnly<{|
-      successful: false,
-    |}>;
 
 function resolveTypeAnnotation(
   // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this
@@ -64,7 +84,10 @@ function resolveTypeAnnotation(
         aliasName: node.id.name,
       };
       const resolvedTypeAnnotation = types[node.id.name];
-      if (resolvedTypeAnnotation == null) {
+      if (
+        resolvedTypeAnnotation == null ||
+        resolvedTypeAnnotation.type === 'EnumDeclaration'
+      ) {
         break;
       }
 
@@ -72,6 +95,7 @@ function resolveTypeAnnotation(
         resolvedTypeAnnotation.type === 'TypeAlias',
         `GenericTypeAnnotation '${node.id.name}' must resolve to a TypeAlias. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
       );
+
       node = resolvedTypeAnnotation.right;
     } else {
       break;
@@ -95,4 +119,5 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
+  getTypes,
 };

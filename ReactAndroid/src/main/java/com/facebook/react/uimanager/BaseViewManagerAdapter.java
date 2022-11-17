@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@ package com.facebook.react.uimanager;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
@@ -29,6 +30,14 @@ public abstract class BaseViewManagerAdapter<T extends View>
 
   @Override
   public void setAccessibilityRole(@NonNull T view, @Nullable String accessibilityRole) {}
+
+  @Override
+  public void setAccessibilityCollection(
+      @NonNull T view, @Nullable ReadableMap accessibilityCollection) {}
+
+  @Override
+  public void setAccessibilityCollectionItem(
+      @NonNull T view, @Nullable ReadableMap accessibilityCollectionItem) {}
 
   @Override
   public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {}
@@ -63,6 +72,9 @@ public abstract class BaseViewManagerAdapter<T extends View>
 
   @Override
   public void setNativeId(@NonNull T view, String nativeId) {}
+
+  @Override
+  public void setAccessibilityLabelledBy(@NonNull T view, Dynamic nativeId) {}
 
   @Override
   public void setOpacity(@NonNull T view, float opacity) {}

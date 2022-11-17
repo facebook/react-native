@@ -1,0 +1,19 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.java_library(
+    name = "robolectric",
+    srcs = [],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    resources = [
+        "robolectric.properties",
+    ],
+    resources_root = ".",
+    visibility = ["PUBLIC"],
+)

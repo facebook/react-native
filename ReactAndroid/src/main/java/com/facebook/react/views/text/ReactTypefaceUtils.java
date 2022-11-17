@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,33 +11,52 @@ import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactTypefaceUtils {
-  public static final int UNSET = -1;
 
   public static int parseFontWeight(@Nullable String fontWeightString) {
-    int fontWeightNumeric =
-        fontWeightString != null ? parseNumericFontWeight(fontWeightString) : UNSET;
-    int fontWeight = fontWeightNumeric != UNSET ? fontWeightNumeric : Typeface.NORMAL;
-
-    if (fontWeight == 700 || "bold".equals(fontWeightString)) fontWeight = Typeface.BOLD;
-    else if (fontWeight == 400 || "normal".equals(fontWeightString)) fontWeight = Typeface.NORMAL;
-
-    return fontWeight;
+    if (fontWeightString != null) {
+      switch (fontWeightString) {
+        case "100":
+          return 100;
+        case "200":
+          return 200;
+        case "300":
+          return 300;
+        case "normal":
+        case "400":
+          return 400;
+        case "500":
+          return 500;
+        case "600":
+          return 600;
+        case "bold":
+        case "700":
+          return 700;
+        case "800":
+          return 800;
+        case "900":
+          return 900;
+      }
+    }
+    return ReactBaseTextShadowNode.UNSET;
   }
 
   public static int parseFontStyle(@Nullable String fontStyleString) {
-    int fontStyle = UNSET;
-    if ("italic".equals(fontStyleString)) {
-      fontStyle = Typeface.ITALIC;
-    } else if ("normal".equals(fontStyleString)) {
-      fontStyle = Typeface.NORMAL;
+    if (fontStyleString != null) {
+      if ("italic".equals(fontStyleString)) {
+        return Typeface.ITALIC;
+      }
+      if ("normal".equals(fontStyleString)) {
+        return Typeface.NORMAL;
+      }
     }
-
-    return fontStyle;
+    return ReactBaseTextShadowNode.UNSET;
   }
 
   public static @Nullable String parseFontVariant(@Nullable ReadableArray fontVariantArray) {
@@ -66,6 +85,66 @@ public class ReactTypefaceUtils {
           case "proportional-nums":
             features.add("'pnum'");
             break;
+          case "stylistic-one":
+            features.add("'ss01'");
+            break;
+          case "stylistic-two":
+            features.add("'ss02'");
+            break;
+          case "stylistic-three":
+            features.add("'ss03'");
+            break;
+          case "stylistic-four":
+            features.add("'ss04'");
+            break;
+          case "stylistic-five":
+            features.add("'ss05'");
+            break;
+          case "stylistic-six":
+            features.add("'ss06'");
+            break;
+          case "stylistic-seven":
+            features.add("'ss07'");
+            break;
+          case "stylistic-eight":
+            features.add("'ss08'");
+            break;
+          case "stylistic-nine":
+            features.add("'ss09'");
+            break;
+          case "stylistic-ten":
+            features.add("'ss10'");
+            break;
+          case "stylistic-eleven":
+            features.add("'ss11'");
+            break;
+          case "stylistic-twelve":
+            features.add("'ss12'");
+            break;
+          case "stylistic-thirteen":
+            features.add("'ss13'");
+            break;
+          case "stylistic-fourteen":
+            features.add("'ss14'");
+            break;
+          case "stylistic-fifteen":
+            features.add("'ss15'");
+            break;
+          case "stylistic-sixteen":
+            features.add("'ss16'");
+            break;
+          case "stylistic-seventeen":
+            features.add("'ss17'");
+            break;
+          case "stylistic-eighteen":
+            features.add("'ss18'");
+            break;
+          case "stylistic-nineteen":
+            features.add("'ss19'");
+            break;
+          case "stylistic-twenty":
+            features.add("'ss20'");
+            break;
         }
       }
     }
@@ -77,51 +156,14 @@ public class ReactTypefaceUtils {
       @Nullable Typeface typeface,
       int style,
       int weight,
-      @Nullable String family,
+      @Nullable String fontFamilyName,
       AssetManager assetManager) {
-    int oldStyle;
-    if (typeface == null) {
-      oldStyle = 0;
+    TypefaceStyle typefaceStyle = new TypefaceStyle(style, weight);
+    if (fontFamilyName == null) {
+      return typefaceStyle.apply(typeface == null ? Typeface.DEFAULT : typeface);
     } else {
-      oldStyle = typeface.getStyle();
+      return ReactFontManager.getInstance()
+          .getTypeface(fontFamilyName, typefaceStyle, assetManager);
     }
-
-    int want = 0;
-    if ((weight == Typeface.BOLD)
-        || ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.BOLD;
-    }
-
-    if ((style == Typeface.ITALIC)
-        || ((oldStyle & Typeface.ITALIC) != 0 && style == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.ITALIC;
-    }
-
-    if (family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(family, want, weight, assetManager);
-    } else if (typeface != null) {
-      // TODO(t9055065): Fix custom fonts getting applied to text children with different style
-      typeface = Typeface.create(typeface, want);
-    }
-
-    if (typeface != null) {
-      return typeface;
-    } else {
-      return Typeface.defaultFromStyle(want);
-    }
-  }
-
-  /**
-   * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
-   * return the weight.
-   */
-  private static int parseNumericFontWeight(String fontWeightString) {
-    // This should be much faster than using regex to verify input and Integer.parseInt
-    return fontWeightString.length() == 3
-            && fontWeightString.endsWith("00")
-            && fontWeightString.charAt(0) <= '9'
-            && fontWeightString.charAt(0) >= '1'
-        ? 100 * (fontWeightString.charAt(0) - '0')
-        : UNSET;
   }
 }

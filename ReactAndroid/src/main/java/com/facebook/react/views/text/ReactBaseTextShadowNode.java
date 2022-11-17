@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * {@link ReactShadowNode} abstract class for spannable text nodes.
@@ -178,15 +179,16 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(
                 start, end, new ReactBackgroundColorSpan(textShadowNode.mBackgroundColor)));
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
-        if (!Float.isNaN(effectiveLetterSpacing)
-            && (parentTextAttributes == null
-                || parentTextAttributes.getEffectiveLetterSpacing() != effectiveLetterSpacing)) {
-          ops.add(
-              new SetSpanOperation(
-                  start, end, new CustomLetterSpacingSpan(effectiveLetterSpacing)));
-        }
+      if (textShadowNode.mIsAccessibilityLink) {
+        ops.add(
+            new SetSpanOperation(start, end, new ReactClickableSpan(textShadowNode.getReactTag())));
+      }
+      float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
+      if (!Float.isNaN(effectiveLetterSpacing)
+          && (parentTextAttributes == null
+              || parentTextAttributes.getEffectiveLetterSpacing() != effectiveLetterSpacing)) {
+        ops.add(
+            new SetSpanOperation(start, end, new CustomLetterSpacingSpan(effectiveLetterSpacing)));
       }
       int effectiveFontSize = textAttributes.getEffectiveFontSize();
       if ( // `getEffectiveFontSize` always returns a value so don't need to check for anything like
@@ -322,6 +324,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mColor;
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
+  protected boolean mIsAccessibilityLink = false;
 
   protected int mNumberOfLines = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
@@ -489,6 +492,14 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (mIsBackgroundColorSet) {
         mBackgroundColor = color;
       }
+      markUpdated();
+    }
+  }
+
+  @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
+  public void setIsAccessibilityLink(@Nullable String accessibilityRole) {
+    if (isVirtual()) {
+      mIsAccessibilityLink = Objects.equals(accessibilityRole, "link");
       markUpdated();
     }
   }

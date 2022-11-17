@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -85,8 +85,8 @@ class ShadowNodeTest : public ::testing::Test {
         familyABB,
         traits);
 
-    auto nodeABChildren = std::make_shared<SharedShadowNodeList>(
-        SharedShadowNodeList{nodeABA_, nodeABB_});
+    auto nodeABChildren = std::make_shared<ShadowNode::ListOfShared>(
+        ShadowNode::ListOfShared{nodeABA_, nodeABB_});
 
     auto familyAB = std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
@@ -120,8 +120,8 @@ class ShadowNodeTest : public ::testing::Test {
         familyAC,
         traits);
 
-    auto nodeAChildren = std::make_shared<SharedShadowNodeList>(
-        SharedShadowNodeList{nodeAA_, nodeAB_, nodeAC_});
+    auto nodeAChildren = std::make_shared<ShadowNode::ListOfShared>(
+        ShadowNode::ListOfShared{nodeAA_, nodeAB_, nodeAC_});
 
     auto familyA = std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{

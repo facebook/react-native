@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,90 +11,357 @@
 
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 #include <react/renderer/graphics/conversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-ViewProps::ViewProps(ViewProps const &sourceProps, RawProps const &rawProps)
-    : YogaStylableProps(sourceProps, rawProps),
-      AccessibilityProps(sourceProps, rawProps),
+ViewProps::ViewProps(
+    const PropsParserContext &context,
+    ViewProps const &sourceProps,
+    RawProps const &rawProps,
+    bool shouldSetRawProps)
+    : YogaStylableProps(context, sourceProps, rawProps, shouldSetRawProps),
+      AccessibilityProps(context, sourceProps, rawProps),
       opacity(
-          convertRawProp(rawProps, "opacity", sourceProps.opacity, (Float)1.0)),
-      foregroundColor(convertRawProp(
-          rawProps,
-          "foregroundColor",
-          sourceProps.foregroundColor,
-          {})),
-      backgroundColor(convertRawProp(
-          rawProps,
-          "backgroundColor",
-          sourceProps.backgroundColor,
-          {})),
-      borderRadii(convertRawProp(
-          rawProps,
-          "border",
-          "Radius",
-          sourceProps.borderRadii,
-          {})),
-      borderColors(convertRawProp(
-          rawProps,
-          "border",
-          "Color",
-          sourceProps.borderColors,
-          {})),
-      borderStyles(convertRawProp(
-          rawProps,
-          "border",
-          "Style",
-          sourceProps.borderStyles,
-          {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.opacity
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "opacity",
+                                                       sourceProps.opacity,
+                                                       (Float)1.0)),
+      foregroundColor(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.foregroundColor
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "foregroundColor",
+                    sourceProps.foregroundColor,
+                    {})),
+      backgroundColor(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.backgroundColor
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "backgroundColor",
+                    sourceProps.backgroundColor,
+                    {})),
+      borderRadii(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.borderRadii
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "border",
+                                                       "Radius",
+                                                       sourceProps.borderRadii,
+                                                       {})),
+      borderColors(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.borderColors
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "border",
+                                                       "Color",
+                                                       sourceProps.borderColors,
+                                                       {})),
+      borderCurves(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.borderCurves
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "border",
+                                                       "Curve",
+                                                       sourceProps.borderCurves,
+                                                       {})),
+      borderStyles(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.borderStyles
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "border",
+                                                       "Style",
+                                                       sourceProps.borderStyles,
+                                                       {})),
       shadowColor(
-          convertRawProp(rawProps, "shadowColor", sourceProps.shadowColor, {})),
-      shadowOffset(convertRawProp(
-          rawProps,
-          "shadowOffset",
-          sourceProps.shadowOffset,
-          {})),
-      shadowOpacity(convertRawProp(
-          rawProps,
-          "shadowOpacity",
-          sourceProps.shadowOpacity,
-          {})),
-      shadowRadius(convertRawProp(
-          rawProps,
-          "shadowRadius",
-          sourceProps.shadowRadius,
-          {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.shadowColor
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "shadowColor",
+                                                       sourceProps.shadowColor,
+                                                       {})),
+      shadowOffset(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.shadowOffset
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "shadowOffset",
+                                                       sourceProps.shadowOffset,
+                                                       {})),
+      shadowOpacity(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.shadowOpacity
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "shadowOpacity",
+                    sourceProps.shadowOpacity,
+                    {})),
+      shadowRadius(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.shadowRadius
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "shadowRadius",
+                                                       sourceProps.shadowRadius,
+                                                       {})),
       transform(
-          convertRawProp(rawProps, "transform", sourceProps.transform, {})),
-      backfaceVisibility(convertRawProp(
-          rawProps,
-          "backfaceVisibility",
-          sourceProps.backfaceVisibility,
-          {})),
-      shouldRasterize(convertRawProp(
-          rawProps,
-          "shouldRasterize",
-          sourceProps.shouldRasterize,
-          {})),
-      zIndex(convertRawProp(rawProps, "zIndex", sourceProps.zIndex, {})),
-      pointerEvents(convertRawProp(
-          rawProps,
-          "pointerEvents",
-          sourceProps.pointerEvents,
-          {})),
-      hitSlop(convertRawProp(rawProps, "hitSlop", sourceProps.hitSlop, {})),
-      onLayout(convertRawProp(rawProps, "onLayout", sourceProps.onLayout, {})),
-      collapsable(convertRawProp(
-          rawProps,
-          "collapsable",
-          sourceProps.collapsable,
-          true)),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.transform
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "transform",
+                                                       sourceProps.transform,
+                                                       {})),
+      backfaceVisibility(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.backfaceVisibility
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "backfaceVisibility",
+                    sourceProps.backfaceVisibility,
+                    {})),
+      shouldRasterize(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.shouldRasterize
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "shouldRasterize",
+                    sourceProps.shouldRasterize,
+                    {})),
+      zIndex(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.zIndex
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "zIndex",
+                                                       sourceProps.zIndex,
+                                                       {})),
+      pointerEvents(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.pointerEvents
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "pointerEvents",
+                    sourceProps.pointerEvents,
+                    {})),
+      hitSlop(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.hitSlop
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "hitSlop",
+                                                       sourceProps.hitSlop,
+                                                       {})),
+      onLayout(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.onLayout
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "onLayout",
+                                                       sourceProps.onLayout,
+                                                       {})),
+      events(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.events
+              : convertRawProp(context, rawProps, sourceProps.events, {})),
+      collapsable(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.collapsable
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "collapsable",
+                                                       sourceProps.collapsable,
+                                                       true)),
+      removeClippedSubviews(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.removeClippedSubviews
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "removeClippedSubviews",
+                    sourceProps.removeClippedSubviews,
+                    false))
+#ifdef ANDROID
+      ,
       elevation(
-          convertRawProp(rawProps, "elevation", sourceProps.elevation, {})){};
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.elevation
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "elevation",
+                                                       sourceProps.elevation,
+                                                       {})),
+      nativeBackground(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.nativeBackground
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nativeBackgroundAndroid",
+                    sourceProps.nativeBackground,
+                    {})),
+      nativeForeground(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.nativeForeground
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nativeForegroundAndroid",
+                    sourceProps.nativeForeground,
+                    {})),
+      focusable(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.focusable
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "focusable",
+                                                       sourceProps.focusable,
+                                                       {})),
+      hasTVPreferredFocus(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.hasTVPreferredFocus
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "hasTVPreferredFocus",
+                    sourceProps.hasTVPreferredFocus,
+                    {})),
+      needsOffscreenAlphaCompositing(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.needsOffscreenAlphaCompositing
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "needsOffscreenAlphaCompositing",
+                    sourceProps.needsOffscreenAlphaCompositing,
+                    {})),
+      renderToHardwareTextureAndroid(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.renderToHardwareTextureAndroid
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "renderToHardwareTextureAndroid",
+                    sourceProps.renderToHardwareTextureAndroid,
+                    {}))
+
+#endif
+          {};
+
+#define VIEW_EVENT_CASE(eventType, eventString)     \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(eventString): { \
+    ViewEvents defaultViewEvents{};                 \
+    bool res = defaultViewEvents[eventType];        \
+    if (value.hasValue()) {                         \
+      fromRawValue(context, value, res);            \
+    }                                               \
+    events[eventType] = res;                        \
+    return;                                         \
+  }
+
+void ViewProps::setProp(
+    const PropsParserContext &context,
+    RawPropsPropNameHash hash,
+    const char *propName,
+    RawValue const &value) {
+  // All Props structs setProp methods must always, unconditionally,
+  // call all super::setProp methods, since multiple structs may
+  // reuse the same values.
+  YogaStylableProps::setProp(context, hash, propName, value);
+  AccessibilityProps::setProp(context, hash, propName, value);
+
+  switch (hash) {
+    RAW_SET_PROP_SWITCH_CASE_BASIC(opacity, (Float)1.0);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(foregroundColor, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(backgroundColor, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowColor, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOffset, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOpacity, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowRadius, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(transform, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(backfaceVisibility, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shouldRasterize, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(zIndex, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(pointerEvents, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(hitSlop, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(onLayout, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(collapsable, true);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews, false);
+    // events field
+    VIEW_EVENT_CASE(ViewEvents::Offset::PointerEnter, "onPointerEnter");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::PointerEnterCapture, "onPointerEnterCapture");
+    VIEW_EVENT_CASE(ViewEvents::Offset::PointerMove, "onPointerMove");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::PointerMoveCapture, "onPointerMoveCapture");
+    VIEW_EVENT_CASE(ViewEvents::Offset::PointerLeave, "onPointerLeave");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::PointerLeaveCapture, "onPointerLeaveCapture");
+    VIEW_EVENT_CASE(ViewEvents::Offset::PointerOver, "onPointerOver");
+    VIEW_EVENT_CASE(ViewEvents::Offset::PointerOut, "onPointerOut");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::MoveShouldSetResponder, "onMoveShouldSetResponder");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::MoveShouldSetResponderCapture,
+        "onMoveShouldSetResponderCapture");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::StartShouldSetResponder,
+        "onStartShouldSetResponder");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::StartShouldSetResponderCapture,
+        "onStartShouldSetResponderCapture");
+    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderGrant, "onResponderGrant");
+    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderReject, "onResponderReject");
+    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderStart, "onResponderStart");
+    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderEnd, "onResponderEnd");
+    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderRelease, "onResponderRelease");
+    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderMove, "ResponderMove");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::ResponderTerminate, "onResponderTerminate");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::ResponderTerminationRequest,
+        "onResponderTerminationRequest");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::ShouldBlockNativeResponder,
+        "onShouldBlockNativeResponder");
+    VIEW_EVENT_CASE(ViewEvents::Offset::TouchStart, "onTouchStart");
+    VIEW_EVENT_CASE(ViewEvents::Offset::TouchMove, "onTouchMove");
+    VIEW_EVENT_CASE(ViewEvents::Offset::TouchEnd, "onTouchEnd");
+    VIEW_EVENT_CASE(ViewEvents::Offset::TouchCancel, "onTouchCancel");
+#ifdef ANDROID
+    RAW_SET_PROP_SWITCH_CASE_BASIC(elevation, {});
+    RAW_SET_PROP_SWITCH_CASE(nativeBackground, "nativeBackgroundAndroid", {});
+    RAW_SET_PROP_SWITCH_CASE(nativeForeground, "nativeForegroundAndroid", {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(focusable, false);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(hasTVPreferredFocus, false);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(needsOffscreenAlphaCompositing, false);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(renderToHardwareTextureAndroid, false);
+#endif
+    // BorderRadii
+    SET_CASCADED_RECTANGLE_CORNERS(borderRadii, "border", "Radius", value);
+    SET_CASCADED_RECTANGLE_EDGES(borderColors, "border", "Color", value);
+    SET_CASCADED_RECTANGLE_EDGES(borderStyles, "border", "Style", value);
+  }
+}
 
 #pragma mark - Convenience Methods
 
@@ -161,6 +428,7 @@ BorderMetrics ViewProps::resolveBorderMetrics(
       /* .borderWidths = */ borderWidths.resolve(isRTL, 0),
       /* .borderRadii = */
       ensureNoOverlap(borderRadii.resolve(isRTL, 0), layoutMetrics.frame.size),
+      /* .borderCurves = */ borderCurves.resolve(isRTL, BorderCurve::Circular),
       /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
 }
@@ -185,8 +453,6 @@ SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
       YogaStylableProps::getDebugProps() +
       SharedDebugStringConvertibleList{
           debugStringConvertibleItem(
-              "zIndex", zIndex, defaultViewProps.zIndex.value_or(0)),
-          debugStringConvertibleItem(
               "opacity", opacity, defaultViewProps.opacity),
           debugStringConvertibleItem(
               "foregroundColor",
@@ -196,9 +462,10 @@ SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
               "backgroundColor",
               backgroundColor,
               defaultViewProps.backgroundColor),
+          debugStringConvertibleItem(
+              "zIndex", zIndex, defaultViewProps.zIndex.value_or(0)),
       };
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

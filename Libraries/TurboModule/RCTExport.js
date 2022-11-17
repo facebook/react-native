@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,4 +35,4 @@ export interface DEPRECATED_RCTExport<T: void = void> {
 
 export interface TurboModule extends DEPRECATED_RCTExport<void> {}
 
-export type {RootTag} from '../ReactNative/RootTag.js';
+export type {RootTag} from '../Types/RootTagTypes.js';

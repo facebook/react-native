@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,14 +18,17 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
     return inputImage;
   }
 
-  //convert to ARGB if it isn't
-  if (CGImageGetBitsPerPixel(imageRef) != 32 ||
-      CGImageGetBitsPerComponent(imageRef) != 8 ||
+  // convert to ARGB if it isn't
+  if (CGImageGetBitsPerPixel(imageRef) != 32 || CGImageGetBitsPerComponent(imageRef) != 8 ||
       !((CGImageGetBitmapInfo(imageRef) & kCGBitmapAlphaInfoMask))) {
-    UIGraphicsBeginImageContextWithOptions(inputImage.size, NO, inputImage.scale);
-    [inputImage drawAtPoint:CGPointZero];
-    imageRef = UIGraphicsGetImageFromCurrentImageContext().CGImage;
-    UIGraphicsEndImageContext();
+    UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
+    rendererFormat.scale = inputImage.scale;
+    UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:inputImage.size
+                                                                                     format:rendererFormat];
+
+    imageRef = [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
+                 [inputImage drawAtPoint:CGPointZero];
+               }].CGImage;
   }
 
   vImage_Buffer buffer1, buffer2;
@@ -34,12 +37,13 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   buffer1.rowBytes = buffer2.rowBytes = CGImageGetBytesPerRow(imageRef);
   size_t bytes = buffer1.rowBytes * buffer1.height;
   buffer1.data = malloc(bytes);
+  if (!buffer1.data) {
+    return inputImage;
+  }
   buffer2.data = malloc(bytes);
-  if (!buffer1.data || !buffer2.data) {
-    // CWE - 391 : Unchecked error condition
-    // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
-    // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
-    abort();
+  if (!buffer2.data) {
+    free(buffer1.data);
+    return inputImage;
   }
 
   // A description of how to compute the box kernel width from the Gaussian
@@ -48,36 +52,46 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   uint32_t boxSize = floor((radius * imageScale * 3 * sqrt(2 * M_PI) / 4 + 0.5) / 2);
   boxSize |= 1; // Ensure boxSize is odd
 
-  //create temp buffer
-  void *tempBuffer = malloc((size_t)vImageBoxConvolve_ARGB8888(&buffer1, &buffer2, NULL, 0, 0, boxSize, boxSize,
-                                                               NULL, kvImageEdgeExtend + kvImageGetTempBufferSize));
+  // create temp buffer
+  vImage_Error tempBufferSize = vImageBoxConvolve_ARGB8888(
+      &buffer1, &buffer2, NULL, 0, 0, boxSize, boxSize, NULL, kvImageGetTempBufferSize | kvImageEdgeExtend);
+  if (tempBufferSize < 0) {
+    free(buffer1.data);
+    free(buffer2.data);
+    return inputImage;
+  }
+  void *tempBuffer = malloc(tempBufferSize);
   if (!tempBuffer) {
-    // CWE - 391 : Unchecked error condition
-    // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
-    // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
-    abort();
+    free(buffer1.data);
+    free(buffer2.data);
+    return inputImage;
   }
 
-  //copy image data
+  // copy image data
   CFDataRef dataSource = CGDataProviderCopyData(CGImageGetDataProvider(imageRef));
   memcpy(buffer1.data, CFDataGetBytePtr(dataSource), bytes);
   CFRelease(dataSource);
 
-  //perform blur
+  // perform blur
   vImageBoxConvolve_ARGB8888(&buffer1, &buffer2, tempBuffer, 0, 0, boxSize, boxSize, NULL, kvImageEdgeExtend);
   vImageBoxConvolve_ARGB8888(&buffer2, &buffer1, tempBuffer, 0, 0, boxSize, boxSize, NULL, kvImageEdgeExtend);
   vImageBoxConvolve_ARGB8888(&buffer1, &buffer2, tempBuffer, 0, 0, boxSize, boxSize, NULL, kvImageEdgeExtend);
 
-  //free buffers
+  // free buffers
   free(buffer2.data);
   free(tempBuffer);
 
-  //create image context from buffer
-  CGContextRef ctx = CGBitmapContextCreate(buffer1.data, buffer1.width, buffer1.height,
-                                           8, buffer1.rowBytes, CGImageGetColorSpace(imageRef),
-                                           CGImageGetBitmapInfo(imageRef));
+  // create image context from buffer
+  CGContextRef ctx = CGBitmapContextCreate(
+      buffer1.data,
+      buffer1.width,
+      buffer1.height,
+      8,
+      buffer1.rowBytes,
+      CGImageGetColorSpace(imageRef),
+      CGImageGetBitmapInfo(imageRef));
 
-  //create image from context
+  // create image from context
   imageRef = CGBitmapContextCreateImage(ctx);
   UIImage *outputImage = [UIImage imageWithCGImage:imageRef scale:imageScale orientation:imageOrientation];
   CGImageRelease(imageRef);

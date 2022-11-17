@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.timing;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import com.facebook.react.bridge.Arguments;
@@ -75,7 +75,7 @@ public class TimingModuleTest {
     CatalystInstance reactInstance = mock(CatalystInstance.class);
     ReactApplicationContext reactContext = mock(ReactApplicationContext.class);
     when(reactContext.getCatalystInstance()).thenReturn(reactInstance);
-    when(reactContext.hasActiveCatalystInstance()).thenReturn(true);
+    when(reactContext.hasActiveReactInstance()).thenReturn(true);
 
     mCurrentTimeNs = 0;
     mPostFrameCallbackHandler = new PostFrameCallbackHandler();

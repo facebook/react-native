@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -44,6 +44,7 @@ public class ReactProgressBarViewManager
   private final WeakHashMap<Integer, Pair<Integer, Integer>> mMeasuredStyles = new WeakHashMap<>();
 
   /* package */ static final String PROP_STYLE = "styleAttr";
+  /* package */ static final String PROP_ATTR = "typeAttr";
   /* package */ static final String PROP_INDETERMINATE = "indeterminate";
   /* package */ static final String PROP_PROGRESS = "progress";
   /* package */ static final String PROP_ANIMATING = "animating";
@@ -115,6 +116,7 @@ public class ReactProgressBarViewManager
   }
 
   @Override
+  @ReactProp(name = PROP_ATTR)
   public void setTypeAttr(ProgressBarContainerView view, @Nullable String value) {}
 
   @Override

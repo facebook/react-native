@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,8 @@
 #import "OCMock/OCMock.h"
 
 #import <React/RCTNativeAnimatedNodesManager.h>
-#import <React/RCTValueAnimatedNode.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTValueAnimatedNode.h>
 
 static const NSTimeInterval FRAME_LENGTH = 1.0 / 60.0;
 
@@ -19,8 +19,7 @@ static const NSTimeInterval FRAME_LENGTH = 1.0 / 60.0;
 
 @end
 
-@implementation RCTFakeDisplayLink
-{
+@implementation RCTFakeDisplayLink {
   NSTimeInterval _timestamp;
 }
 
@@ -41,7 +40,7 @@ static const NSTimeInterval FRAME_LENGTH = 1.0 / 60.0;
 
 @end
 
-@interface RCTFakeValueObserver : NSObject<RCTValueAnimatedNodeObserver>
+@interface RCTFakeValueObserver : NSObject <RCTValueAnimatedNodeObserver>
 
 @property (nonatomic, strong) NSMutableArray<NSNumber *> *calls;
 
@@ -65,12 +64,11 @@ static const NSTimeInterval FRAME_LENGTH = 1.0 / 60.0;
 
 @end
 
-@interface RCTFakeEvent : NSObject<RCTEvent>
+@interface RCTFakeEvent : NSObject <RCTEvent>
 
 @end
 
-@implementation RCTFakeEvent
-{
+@implementation RCTFakeEvent {
   NSArray *_arguments;
 }
 
@@ -94,9 +92,9 @@ static const NSTimeInterval FRAME_LENGTH = 1.0 / 60.0;
   return _arguments;
 }
 
-RCT_NOT_IMPLEMENTED(+ (NSString *)moduleDotMethod);
-RCT_NOT_IMPLEMENTED(- (BOOL)canCoalesce);
-RCT_NOT_IMPLEMENTED(- (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent);
+RCT_NOT_IMPLEMENTED(+(NSString *)moduleDotMethod);
+RCT_NOT_IMPLEMENTED(-(BOOL)canCoalesce);
+RCT_NOT_IMPLEMENTED(-(id<RCTEvent>)coalesceWithEvent : (id<RCTEvent>)newEvent);
 
 @end
 
@@ -115,8 +113,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 
 @end
 
-@implementation RCTNativeAnimatedNodesManagerTests
-{
+@implementation RCTNativeAnimatedNodesManagerTests {
   id _uiManager;
   RCTNativeAnimatedNodesManager *_nodesManager;
   RCTFakeDisplayLink *_displayLink;
@@ -129,7 +126,8 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   RCTBridge *bridge = [OCMockObject niceMockForClass:[RCTBridge class]];
   _uiManager = [OCMockObject niceMockForClass:[RCTUIManager class]];
   OCMStub([bridge uiManager]).andReturn(_uiManager);
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:bridge surfacePresenter:bridge.surfacePresenter];
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:bridge
+                                                       surfacePresenter:bridge.surfacePresenter];
   _displayLink = [RCTFakeDisplayLink new];
 }
 
@@ -142,12 +140,9 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
  */
 - (void)createSimpleAnimatedView:(NSNumber *)viewTag withOpacity:(CGFloat)opacity
 {
-  [_nodesManager createAnimatedNode:@101
-                             config:@{@"type": @"value", @"value": @(opacity), @"offset": @0}];
-  [_nodesManager createAnimatedNode:@201
-                             config:@{@"type": @"style", @"style": @{@"opacity": @101}}];
-  [_nodesManager createAnimatedNode:@301
-                             config:@{@"type": @"props", @"props": @{@"style": @201}}];
+  [_nodesManager createAnimatedNode:@101 config:@{@"type" : @"value", @"value" : @(opacity), @"offset" : @0}];
+  [_nodesManager createAnimatedNode:@201 config:@{@"type" : @"style", @"style" : @{@"opacity" : @101}}];
+  [_nodesManager createAnimatedNode:@301 config:@{@"type" : @"props", @"props" : @{@"style" : @201}}];
 
   [_nodesManager connectAnimatedNodes:@101 childTag:@201];
   [_nodesManager connectAnimatedNodes:@201 childTag:@301];
@@ -157,10 +152,10 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 - (void)testFramesAnimation
 {
   [self createSimpleAnimatedView:@1001 withOpacity:0];
-  NSArray<NSNumber *> *frames = @[@0, @0.2, @0.4, @0.6, @0.8, @1];
+  NSArray<NSNumber *> *frames = @[ @0, @0.2, @0.4, @0.6, @0.8, @1 ];
   [_nodesManager startAnimatingNode:@1
                             nodeTag:@101
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @1}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @1}
                         endCallback:nil];
 
   for (NSNumber *frame in frames) {
@@ -171,9 +166,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
     [_uiManager verify];
   }
 
-  [[_uiManager expect] synchronouslyUpdateViewOnUIThread:@1001
-                                                viewName:@"UIView"
-                                                   props:RCTPropChecker(@"opacity", @1)];
+  [[_uiManager expect] synchronouslyUpdateViewOnUIThread:@1001 viewName:@"UIView" props:RCTPropChecker(@"opacity", @1)];
   [_nodesManager stepAnimations:_displayLink];
   [_uiManager verify];
 
@@ -185,10 +178,10 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 - (void)testFramesAnimationLoop
 {
   [self createSimpleAnimatedView:@1001 withOpacity:0];
-  NSArray<NSNumber *> *frames = @[@0, @0.2, @0.4, @0.6, @0.8, @1];
+  NSArray<NSNumber *> *frames = @[ @0, @0.2, @0.4, @0.6, @0.8, @1 ];
   [_nodesManager startAnimatingNode:@1
                             nodeTag:@101
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @1, @"iterations": @5}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @1, @"iterations" : @5}
                         endCallback:nil];
 
   for (NSUInteger it = 0; it < 5; it++) {
@@ -201,9 +194,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
     }
   }
 
-  [[_uiManager expect] synchronouslyUpdateViewOnUIThread:@1001
-                                                viewName:@"UIView"
-                                                   props:RCTPropChecker(@"opacity", @1)];
+  [[_uiManager expect] synchronouslyUpdateViewOnUIThread:@1001 viewName:@"UIView" props:RCTPropChecker(@"opacity", @1)];
 
   [_nodesManager stepAnimations:_displayLink];
   [_uiManager verify];
@@ -217,14 +208,14 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 {
   NSNumber *nodeId = @101;
   [self createSimpleAnimatedView:@1001 withOpacity:0];
-  NSArray<NSNumber *> *frames = @[@0, @0.2, @0.4, @0.6, @0.8, @1];
+  NSArray<NSNumber *> *frames = @[ @0, @0.2, @0.4, @0.6, @0.8, @1 ];
 
   RCTFakeValueObserver *observer = [RCTFakeValueObserver new];
   [_nodesManager startListeningToAnimatedNodeValue:nodeId valueObserver:observer];
 
   [_nodesManager startAnimatingNode:@1
                             nodeTag:nodeId
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @1}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @1}
                         endCallback:nil];
 
   [_nodesManager stepAnimations:_displayLink];
@@ -241,14 +232,14 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 {
   NSNumber *nodeId = @101;
   [self createSimpleAnimatedView:@1001 withOpacity:0];
-  NSArray<NSNumber *> *frames = @[@0, @0.2, @0.4, @0.6, @0.8, @1];
+  NSArray<NSNumber *> *frames = @[ @0, @0.2, @0.4, @0.6, @0.8, @1 ];
 
   RCTFakeValueObserver *observer = [RCTFakeValueObserver new];
   [_nodesManager startListeningToAnimatedNodeValue:nodeId valueObserver:observer];
 
   [_nodesManager startAnimatingNode:@1
                             nodeTag:nodeId
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @1}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @1}
                         endCallback:nil];
 
   for (NSUInteger i = 0; i < frames.count; i++) {
@@ -265,13 +256,10 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   XCTAssertEqual(observer.calls.count, 7UL);
 }
 
-- (void)performSpringAnimationTestWithConfig:(NSDictionary*)config isCriticallyDamped:(BOOL)testForCriticallyDamped
+- (void)performSpringAnimationTestWithConfig:(NSDictionary *)config isCriticallyDamped:(BOOL)testForCriticallyDamped
 {
   [self createSimpleAnimatedView:@1001 withOpacity:0];
-  [_nodesManager startAnimatingNode:@1
-                            nodeTag:@101
-                             config:config
-                        endCallback:nil];
+  [_nodesManager startAnimatingNode:@1 nodeTag:@101 config:config endCallback:nil];
 
   BOOL wasGreaterThanOne = NO;
   CGFloat previousValue = 0;
@@ -313,29 +301,33 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 
 - (void)testUnderdampedSpringAnimation
 {
-  [self performSpringAnimationTestWithConfig:@{@"type": @"spring",
-                                               @"stiffness": @230.3,
-                                               @"damping": @22,
-                                               @"mass": @1,
-                                               @"initialVelocity": @0,
-                                               @"toValue": @1,
-                                               @"restSpeedThreshold": @0.001,
-                                               @"restDisplacementThreshold": @0.001,
-                                               @"overshootClamping": @NO}
+  [self performSpringAnimationTestWithConfig:@{
+    @"type" : @"spring",
+    @"stiffness" : @230.3,
+    @"damping" : @22,
+    @"mass" : @1,
+    @"initialVelocity" : @0,
+    @"toValue" : @1,
+    @"restSpeedThreshold" : @0.001,
+    @"restDisplacementThreshold" : @0.001,
+    @"overshootClamping" : @NO
+  }
                           isCriticallyDamped:NO];
 }
 
 - (void)testCritcallyDampedSpringAnimation
 {
-  [self performSpringAnimationTestWithConfig:@{@"type": @"spring",
-                                               @"stiffness": @1000,
-                                               @"damping": @500,
-                                               @"mass": @3,
-                                               @"initialVelocity": @0,
-                                               @"toValue": @1,
-                                               @"restSpeedThreshold": @0.001,
-                                               @"restDisplacementThreshold": @0.001,
-                                               @"overshootClamping": @NO}
+  [self performSpringAnimationTestWithConfig:@{
+    @"type" : @"spring",
+    @"stiffness" : @1000,
+    @"damping" : @500,
+    @"mass" : @3,
+    @"initialVelocity" : @0,
+    @"toValue" : @1,
+    @"restSpeedThreshold" : @0.001,
+    @"restDisplacementThreshold" : @0.001,
+    @"overshootClamping" : @NO
+  }
                           isCriticallyDamped:YES];
 }
 
@@ -344,11 +336,8 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   [self createSimpleAnimatedView:@1001 withOpacity:0];
   [_nodesManager startAnimatingNode:@1
                             nodeTag:@101
-                             config:@{@"type": @"decay",
-                                      @"velocity": @0.5,
-                                      @"deceleration": @0.998}
+                             config:@{@"type" : @"decay", @"velocity" : @0.5, @"deceleration" : @0.998}
                         endCallback:nil];
-
 
   __block CGFloat previousValue;
   __block CGFloat currentValue;
@@ -384,14 +373,11 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 - (void)testDecayAnimationLoop
 {
   [self createSimpleAnimatedView:@1001 withOpacity:0];
-  [_nodesManager startAnimatingNode:@1
-                            nodeTag:@101
-                             config:@{@"type": @"decay",
-                                      @"velocity": @0.5,
-                                      @"deceleration": @0.998,
-                                      @"iterations": @5}
-                        endCallback:nil];
-
+  [_nodesManager
+      startAnimatingNode:@1
+                 nodeTag:@101
+                  config:@{@"type" : @"decay", @"velocity" : @0.5, @"deceleration" : @0.998, @"iterations" : @5}
+             endCallback:nil];
 
   __block CGFloat previousValue;
   __block CGFloat currentValue;
@@ -437,18 +423,20 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   [self createSimpleAnimatedView:@1001 withOpacity:0];
   [_nodesManager startAnimatingNode:@1
                             nodeTag:@101
-                             config:@{@"type": @"spring",
-                                      @"iterations": @5,
-                                      @"stiffness": @230.2,
-                                      @"damping": @22,
-                                      @"mass": @1,
-                                      @"initialVelocity": @0,
-                                      @"toValue": @1,
-                                      @"restSpeedThreshold": @0.001,
-                                      @"restDisplacementThreshold": @0.001,
-                                      @"overshootClamping": @NO}
+                             config:@{
+                               @"type" : @"spring",
+                               @"iterations" : @5,
+                               @"stiffness" : @230.2,
+                               @"damping" : @22,
+                               @"mass" : @1,
+                               @"initialVelocity" : @0,
+                               @"toValue" : @1,
+                               @"restSpeedThreshold" : @0.001,
+                               @"restDisplacementThreshold" : @0.001,
+                               @"overshootClamping" : @NO
+                             }
                         endCallback:nil];
-  
+
   BOOL didComeToRest = NO;
   CGFloat previousValue = 0;
   NSUInteger numberOfResets = 0;
@@ -458,32 +446,32 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
     [invocation getArgument:&props atIndex:4];
     currentValue = props[@"opacity"].doubleValue;
   }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
-  
+
   // Run for 3 seconds five times.
   for (NSUInteger i = 0; i < 3 * 60 * 5; i++) {
     [_nodesManager stepAnimations:_displayLink];
-    
+
     if (!didComeToRest) {
       // Verify that animation step is relatively small.
       XCTAssertLessThan(fabs(currentValue - previousValue), 0.12);
     }
-    
+
     // Test to see if it reset after coming to rest
     if (didComeToRest && currentValue == 0) {
       didComeToRest = NO;
       numberOfResets++;
     }
-    
+
     // Record that the animation did come to rest when it rests on toValue.
     didComeToRest = fabs(currentValue - 1) < 0.001 && fabs(currentValue - previousValue) < 0.001;
-    
+
     previousValue = currentValue;
   }
-  
+
   // Verify that value reset 4 times after finishing a full animation and is currently resting.
   XCTAssertEqual(numberOfResets, 4u);
   XCTAssertTrue(didComeToRest);
-  
+
   [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
   [_nodesManager stepAnimations:_displayLink];
   [_uiManager verify];
@@ -492,18 +480,18 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 - (void)testAnimationCallbackFinish
 {
   [self createSimpleAnimatedView:@1001 withOpacity:0];
-  NSArray<NSNumber *> *frames = @[@0, @1];
+  NSArray<NSNumber *> *frames = @[ @0, @1 ];
 
   __block NSInteger endCallbackCalls = 0;
 
   RCTResponseSenderBlock endCallback = ^(NSArray *response) {
     endCallbackCalls++;
-    XCTAssertEqualObjects(response, @[@{@"finished": @YES}]);
+    XCTAssertEqualObjects(response, @[ @{@"finished" : @YES} ]);
   };
 
   [_nodesManager startAnimatingNode:@1
                             nodeTag:@101
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @1}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @1}
                         endCallback:endCallback];
 
   [_nodesManager stepAnimations:_displayLink];
@@ -527,16 +515,11 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
                                  firstValue:(CGFloat)firstValue
                                 secondValue:(CGFloat)secondValue
 {
-  [_nodesManager createAnimatedNode:@101
-                             config:@{@"type": @"value", @"value": @(firstValue), @"offset": @0}];
-  [_nodesManager createAnimatedNode:@201
-                             config:@{@"type": @"value", @"value": @(secondValue), @"offset": @0}];
-  [_nodesManager createAnimatedNode:@301
-                             config:@{@"type": @"addition", @"input": @[@101, @201]}];
-  [_nodesManager createAnimatedNode:@401
-                             config:@{@"type": @"style", @"style": @{@"translateX": @301}}];
-  [_nodesManager createAnimatedNode:@501
-                             config:@{@"type": @"props", @"props": @{@"style": @401}}];
+  [_nodesManager createAnimatedNode:@101 config:@{@"type" : @"value", @"value" : @(firstValue), @"offset" : @0}];
+  [_nodesManager createAnimatedNode:@201 config:@{@"type" : @"value", @"value" : @(secondValue), @"offset" : @0}];
+  [_nodesManager createAnimatedNode:@301 config:@{@"type" : @"addition", @"input" : @[ @101, @201 ]}];
+  [_nodesManager createAnimatedNode:@401 config:@{@"type" : @"style", @"style" : @{@"translateX" : @301}}];
+  [_nodesManager createAnimatedNode:@501 config:@{@"type" : @"props", @"props" : @{@"style" : @401}}];
 
   [_nodesManager connectAnimatedNodes:@101 childTag:@301];
   [_nodesManager connectAnimatedNodes:@201 childTag:@301];
@@ -550,14 +533,14 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   NSNumber *viewTag = @51;
   [self createAnimatedGraphWithAdditionNode:viewTag firstValue:100 secondValue:1000];
 
-  NSArray<NSNumber *> *frames = @[@0, @1];
+  NSArray<NSNumber *> *frames = @[ @0, @1 ];
   [_nodesManager startAnimatingNode:@1
                             nodeTag:@101
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @101}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @101}
                         endCallback:nil];
   [_nodesManager startAnimatingNode:@2
                             nodeTag:@201
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @1010}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @1010}
                         endCallback:nil];
 
   [[_uiManager expect] synchronouslyUpdateViewOnUIThread:viewTag
@@ -595,10 +578,10 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   NSNumber *viewTag = @51;
   [self createAnimatedGraphWithAdditionNode:viewTag firstValue:100 secondValue:1000];
 
-  NSArray<NSNumber *> *frames = @[@0, @1];
+  NSArray<NSNumber *> *frames = @[ @0, @1 ];
   [_nodesManager startAnimatingNode:@1
                             nodeTag:@101
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @101}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @101}
                         endCallback:nil];
 
   [[_uiManager expect] synchronouslyUpdateViewOnUIThread:viewTag
@@ -637,15 +620,15 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   NSNumber *viewTag = @51;
   [self createAnimatedGraphWithAdditionNode:viewTag firstValue:100 secondValue:1000];
 
-  NSArray<NSNumber *> *firstFrames = @[@0, @1];
+  NSArray<NSNumber *> *firstFrames = @[ @0, @1 ];
   [_nodesManager startAnimatingNode:@1
                             nodeTag:@101
-                             config:@{@"type": @"frames", @"frames": firstFrames, @"toValue": @200}
+                             config:@{@"type" : @"frames", @"frames" : firstFrames, @"toValue" : @200}
                         endCallback:nil];
-  NSArray<NSNumber *> *secondFrames = @[@0, @0.2, @0.4, @0.6, @0.8, @1];
+  NSArray<NSNumber *> *secondFrames = @[ @0, @0.2, @0.4, @0.6, @0.8, @1 ];
   [_nodesManager startAnimatingNode:@2
                             nodeTag:@201
-                             config:@{@"type": @"frames", @"frames": secondFrames, @"toValue": @1010}
+                             config:@{@"type" : @"frames", @"frames" : secondFrames, @"toValue" : @1010}
                         endCallback:nil];
 
   [[_uiManager expect] synchronouslyUpdateViewOnUIThread:viewTag
@@ -677,16 +660,11 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 - (void)testMultiplicationNode
 {
   NSNumber *viewTag = @51;
-  [_nodesManager createAnimatedNode:@101
-                             config:@{@"type": @"value", @"value": @1, @"offset": @0}];
-  [_nodesManager createAnimatedNode:@201
-                             config:@{@"type": @"value", @"value": @5, @"offset": @0}];
-  [_nodesManager createAnimatedNode:@301
-                             config:@{@"type": @"multiplication", @"input": @[@101, @201]}];
-  [_nodesManager createAnimatedNode:@401
-                             config:@{@"type": @"style", @"style": @{@"translateX": @301}}];
-  [_nodesManager createAnimatedNode:@501
-                             config:@{@"type": @"props", @"props": @{@"style": @401}}];
+  [_nodesManager createAnimatedNode:@101 config:@{@"type" : @"value", @"value" : @1, @"offset" : @0}];
+  [_nodesManager createAnimatedNode:@201 config:@{@"type" : @"value", @"value" : @5, @"offset" : @0}];
+  [_nodesManager createAnimatedNode:@301 config:@{@"type" : @"multiplication", @"input" : @[ @101, @201 ]}];
+  [_nodesManager createAnimatedNode:@401 config:@{@"type" : @"style", @"style" : @{@"translateX" : @301}}];
+  [_nodesManager createAnimatedNode:@501 config:@{@"type" : @"props", @"props" : @{@"style" : @401}}];
 
   [_nodesManager connectAnimatedNodes:@101 childTag:@301];
   [_nodesManager connectAnimatedNodes:@201 childTag:@301];
@@ -694,14 +672,14 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   [_nodesManager connectAnimatedNodes:@401 childTag:@501];
   [_nodesManager connectAnimatedNodeToView:@501 viewTag:viewTag viewName:@"UIView"];
 
-  NSArray<NSNumber *> *frames = @[@0, @1];
+  NSArray<NSNumber *> *frames = @[ @0, @1 ];
   [_nodesManager startAnimatingNode:@1
                             nodeTag:@101
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @2}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @2}
                         endCallback:nil];
   [_nodesManager startAnimatingNode:@2
                             nodeTag:@201
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @10}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @10}
                         endCallback:nil];
 
   [[_uiManager expect] synchronouslyUpdateViewOnUIThread:viewTag
@@ -730,18 +708,18 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 - (void)testHandleStoppingAnimation
 {
   [self createSimpleAnimatedView:@1001 withOpacity:0];
-  NSArray<NSNumber *> *frames = @[@0, @0.2, @0.4, @0.6, @0.8, @1];
+  NSArray<NSNumber *> *frames = @[ @0, @0.2, @0.4, @0.6, @0.8, @1 ];
 
   __block BOOL endCallbackCalled = NO;
 
   RCTResponseSenderBlock endCallback = ^(NSArray *response) {
     endCallbackCalled = YES;
-    XCTAssertEqualObjects(response, @[@{@"finished": @NO}]);
+    XCTAssertEqualObjects(response, @[ @{@"finished" : @NO} ]);
   };
 
   [_nodesManager startAnimatingNode:@404
                             nodeTag:@101
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @1}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @1}
                         endCallback:endCallback];
 
   [[_uiManager expect] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
@@ -766,28 +744,27 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 - (void)testInterpolationNode
 {
   NSNumber *viewTag = @51;
-  [_nodesManager createAnimatedNode:@101
-                             config:@{@"type": @"value", @"value": @10, @"offset": @0}];
+  [_nodesManager createAnimatedNode:@101 config:@{@"type" : @"value", @"value" : @10, @"offset" : @0}];
   [_nodesManager createAnimatedNode:@201
-                             config:@{@"type": @"interpolation",
-                                      @"inputRange": @[@10, @20],
-                                      @"outputRange": @[@0, @1],
-                                      @"extrapolateLeft": @"extend",
-                                      @"extrapolateRight": @"extend"}];
-  [_nodesManager createAnimatedNode:@301
-                             config:@{@"type": @"style", @"style": @{@"opacity": @201}}];
-  [_nodesManager createAnimatedNode:@401
-                             config:@{@"type": @"props", @"props": @{@"style": @301}}];
+                             config:@{
+                               @"type" : @"interpolation",
+                               @"inputRange" : @[ @10, @20 ],
+                               @"outputRange" : @[ @0, @1 ],
+                               @"extrapolateLeft" : @"extend",
+                               @"extrapolateRight" : @"extend"
+                             }];
+  [_nodesManager createAnimatedNode:@301 config:@{@"type" : @"style", @"style" : @{@"opacity" : @201}}];
+  [_nodesManager createAnimatedNode:@401 config:@{@"type" : @"props", @"props" : @{@"style" : @301}}];
 
   [_nodesManager connectAnimatedNodes:@101 childTag:@201];
   [_nodesManager connectAnimatedNodes:@201 childTag:@301];
   [_nodesManager connectAnimatedNodes:@301 childTag:@401];
   [_nodesManager connectAnimatedNodeToView:@401 viewTag:viewTag viewName:@"UIView"];
 
-  NSArray<NSNumber *> *frames = @[@0, @0.2, @0.4, @0.6, @0.8, @1];
+  NSArray<NSNumber *> *frames = @[ @0, @0.2, @0.4, @0.6, @0.8, @1 ];
   [_nodesManager startAnimatingNode:@1
                             nodeTag:@101
-                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @20}
+                             config:@{@"type" : @"frames", @"frames" : frames, @"toValue" : @20}
                         endCallback:nil];
 
   for (NSNumber *frame in frames) {
@@ -804,7 +781,6 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   [_nodesManager stepAnimations:_displayLink];
   [_uiManager verify];
 
-
   [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
   [_nodesManager stepAnimations:_displayLink];
   [_uiManager verify];
@@ -813,10 +789,8 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 - (id<RCTEvent>)createScrollEventWithTag:(NSNumber *)viewTag value:(CGFloat)value
 {
   // The event value is the 3rd argument.
-  NSArray *arguments = @[@1, @1, @{@"contentOffset": @{@"y": @(value)}}];
-  return [[RCTFakeEvent alloc] initWithName:@"topScroll"
-                                    viewTag:viewTag
-                                  arguments:arguments];
+  NSArray *arguments = @[ @1, @1, @{@"contentOffset" : @{@"y" : @(value)}} ];
+  return [[RCTFakeEvent alloc] initWithName:@"topScroll" viewTag:viewTag arguments:arguments];
 }
 
 - (void)testNativeAnimatedEventDoUpdate
@@ -824,12 +798,10 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   NSNumber *viewTag = @1001;
   [self createSimpleAnimatedView:viewTag withOpacity:0];
 
-  [_nodesManager addAnimatedEventToView:viewTag
-                              eventName:@"topScroll"
-                           eventMapping:@{@"animatedValueTag": @101,
-                                          @"nativeEventPath": @[@"contentOffset", @"y"]}];
-
-
+  [_nodesManager
+      addAnimatedEventToView:viewTag
+                   eventName:@"topScroll"
+                eventMapping:@{@"animatedValueTag" : @101, @"nativeEventPath" : @[ @"contentOffset", @"y" ]}];
 
   // Make sure that the update actually happened synchronously in `handleAnimatedEvent` and does
   // not wait for the next animation loop.
@@ -849,34 +821,33 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   NSNumber *viewTag = @1001;
   [self createSimpleAnimatedView:viewTag withOpacity:0];
 
-  [_nodesManager addAnimatedEventToView:viewTag
-                              eventName:@"otherEvent"
-                           eventMapping:@{@"animatedValueTag": @101,
-                                          @"nativeEventPath": @[@"contentOffset", @"y"]}];
+  [_nodesManager
+      addAnimatedEventToView:viewTag
+                   eventName:@"otherEvent"
+                eventMapping:@{@"animatedValueTag" : @101, @"nativeEventPath" : @[ @"contentOffset", @"y" ]}];
 
-  [_nodesManager addAnimatedEventToView:@999
-                              eventName:@"topScroll"
-                           eventMapping:@{@"animatedValueTag": @101,
-                                          @"nativeEventPath": @[@"contentOffset", @"y"]}];
+  [_nodesManager
+      addAnimatedEventToView:@999
+                   eventName:@"topScroll"
+                eventMapping:@{@"animatedValueTag" : @101, @"nativeEventPath" : @[ @"contentOffset", @"y" ]}];
 
   [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
   [_nodesManager handleAnimatedEvent:[self createScrollEventWithTag:viewTag value:10]];
   [_uiManager verify];
 }
 
-- (void) testGetValue
+- (void)testGetValue
 {
   __block NSInteger saveValueCallbackCalls = 0;
   NSNumber *nodeTag = @100;
-  [_nodesManager createAnimatedNode:nodeTag
-                             config:@{@"type": @"value", @"value": @1, @"offset": @0}];
+  [_nodesManager createAnimatedNode:nodeTag config:@{@"type" : @"value", @"value" : @1, @"offset" : @0}];
   RCTResponseSenderBlock saveValueCallback = ^(NSArray *response) {
     saveValueCallbackCalls++;
-    XCTAssertEqualObjects(response, @[@1]);
+    XCTAssertEqualObjects(response, @[ @1 ]);
   };
-  
+
   XCTAssertEqual(saveValueCallbackCalls, 0);
-  
+
   [_nodesManager getValue:nodeTag saveCallback:saveValueCallback];
   XCTAssertEqual(saveValueCallbackCalls, 1);
 }
@@ -891,21 +862,19 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
                                initialValue:(CGFloat)initialValue
                             animationConfig:(NSDictionary *)animationConfig
 {
-  [_nodesManager createAnimatedNode:@101
-                             config:@{@"type": @"value", @"value": @(initialValue), @"offset": @0}];
-  [_nodesManager createAnimatedNode:@301
-                             config:@{@"type": @"value", @"value": @(initialValue), @"offset": @0}];
+  [_nodesManager createAnimatedNode:@101 config:@{@"type" : @"value", @"value" : @(initialValue), @"offset" : @0}];
+  [_nodesManager createAnimatedNode:@301 config:@{@"type" : @"value", @"value" : @(initialValue), @"offset" : @0}];
 
   [_nodesManager createAnimatedNode:@201
-                             config:@{@"type": @"tracking",
-                                      @"animationId": @70,
-                                      @"value": @301,
-                                      @"toValue": @101,
-                                      @"animationConfig": animationConfig}];
-  [_nodesManager createAnimatedNode:@401
-                             config:@{@"type": @"style", @"style": @{@"translateX": @301}}];
-  [_nodesManager createAnimatedNode:@501
-                             config:@{@"type": @"props", @"props": @{@"style": @401}}];
+                             config:@{
+                               @"type" : @"tracking",
+                               @"animationId" : @70,
+                               @"value" : @301,
+                               @"toValue" : @101,
+                               @"animationConfig" : animationConfig
+                             }];
+  [_nodesManager createAnimatedNode:@401 config:@{@"type" : @"style", @"style" : @{@"translateX" : @301}}];
+  [_nodesManager createAnimatedNode:@501 config:@{@"type" : @"props", @"props" : @{@"style" : @401}}];
 
   [_nodesManager connectAnimatedNodes:@101 childTag:@201];
   [_nodesManager connectAnimatedNodes:@301 childTag:@401];
@@ -920,8 +889,8 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
  */
 - (void)testTracking
 {
-  NSArray *frames = @[@0, @0.25, @0.5, @0.75, @1];
-  NSDictionary *animationConfig = @{@"type": @"frames", @"frames": frames};
+  NSArray *frames = @[ @0, @0.25, @0.5, @0.75, @1 ];
+  NSDictionary *animationConfig = @{@"type" : @"frames", @"frames" : frames};
   [self createAnimatedGraphWithTrackingNode:@1001 initialValue:0 animationConfig:animationConfig];
   [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
 
@@ -986,17 +955,17 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
  * end.
  */
 
- - (void)testTrackingPausesWhenEndValueIsReached
+- (void)testTrackingPausesWhenEndValueIsReached
 {
-  NSArray *frames = @[@0, @0.5, @1];
-  NSDictionary *animationConfig = @{@"type": @"frames", @"frames": frames};
+  NSArray *frames = @[ @0, @0.5, @1 ];
+  NSDictionary *animationConfig = @{@"type" : @"frames", @"frames" : frames};
   [self createAnimatedGraphWithTrackingNode:@1001 initialValue:0 animationConfig:animationConfig];
 
   [_nodesManager setAnimatedNodeValue:@101 value:@100];
   [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
 
   __block int callCount = 0;
-  [[[_uiManager stub] andDo:^(NSInvocation* __unused invocation) {
+  [[[_uiManager stub] andDo:^(NSInvocation *__unused invocation) {
     callCount++;
   }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
 
@@ -1007,7 +976,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   XCTAssertEqual(callCount, 4);
 
   // the animation has completed, we expect no updates to be done
-  [[[_uiManager stub] andDo:^(NSInvocation* __unused invocation) {
+  [[[_uiManager stub] andDo:^(NSInvocation *__unused invocation) {
     XCTFail("Expected not to be called");
   }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
   [_nodesManager stepAnimations:_displayLink];
@@ -1015,7 +984,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 
   // restore rejected method, we will use it later on
   callCount = 0;
-  [[[_uiManager stub] andDo:^(NSInvocation* __unused invocation) {
+  [[[_uiManager stub] andDo:^(NSInvocation *__unused invocation) {
     callCount++;
   }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
 
@@ -1040,18 +1009,20 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
  * destination value updates the current speed of the animated value will be taken into account
  * while updating the spring animation and it will smoothly transition to the new end value.
  */
-- (void) testSpringTrackingRetainsSpeed
+- (void)testSpringTrackingRetainsSpeed
 {
   // this spring config corresponds to tension 20 and friction 0.5 which makes the spring settle
   // very slowly
-  NSDictionary *springConfig = @{@"type": @"spring",
-                                 @"restSpeedThreshold": @0.001,
-                                 @"mass": @1,
-                                 @"restDisplacementThreshold": @0.001,
-                                 @"initialVelocity": @0.5,
-                                 @"damping": @2.5,
-                                 @"stiffness": @157.8,
-                                 @"overshootClamping": @NO};
+  NSDictionary *springConfig = @{
+    @"type" : @"spring",
+    @"restSpeedThreshold" : @0.001,
+    @"mass" : @1,
+    @"restDisplacementThreshold" : @0.001,
+    @"initialVelocity" : @0.5,
+    @"damping" : @2.5,
+    @"stiffness" : @157.8,
+    @"overshootClamping" : @NO
+  };
   [self createAnimatedGraphWithTrackingNode:@1001 initialValue:0 animationConfig:springConfig];
 
   __block CGFloat lastTranslateX = 0;

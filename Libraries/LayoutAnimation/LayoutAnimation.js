@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,15 +10,17 @@
 
 'use strict';
 
-const UIManager = require('../ReactNative/UIManager');
 import type {Spec as FabricUIManagerSpec} from '../ReactNative/FabricUIManager';
 import type {
   LayoutAnimationConfig as LayoutAnimationConfig_,
-  LayoutAnimationType,
   LayoutAnimationProperty,
+  LayoutAnimationType,
 } from '../Renderer/shims/ReactNativeTypes';
 
+import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import Platform from '../Utilities/Platform';
+
+const UIManager = require('../ReactNative/UIManager');
 
 // Reexport type
 export type LayoutAnimationConfig = LayoutAnimationConfig_;
@@ -26,29 +28,76 @@ export type LayoutAnimationConfig = LayoutAnimationConfig_;
 type OnAnimationDidEndCallback = () => void;
 type OnAnimationDidFailCallback = () => void;
 
+let isLayoutAnimationEnabled: boolean =
+  ReactNativeFeatureFlags.isLayoutAnimationEnabled();
+
+function setEnabled(value: boolean) {
+  isLayoutAnimationEnabled = isLayoutAnimationEnabled;
+}
+
+/**
+ * Configures the next commit to be animated.
+ *
+ * onAnimationDidEnd is guaranteed to be called when the animation completes.
+ * onAnimationDidFail is *never* called in the classic, pre-Fabric renderer,
+ * and never has been. In the new renderer (Fabric) it is called only if configuration
+ * parsing fails.
+ */
 function configureNext(
   config: LayoutAnimationConfig,
   onAnimationDidEnd?: OnAnimationDidEndCallback,
   onAnimationDidFail?: OnAnimationDidFailCallback,
 ) {
-  if (!Platform.isTesting) {
-    if (UIManager?.configureNextLayoutAnimation) {
-      UIManager.configureNextLayoutAnimation(
-        config,
-        onAnimationDidEnd ?? function() {},
-        onAnimationDidFail ??
-          function() {} /* this should never be called in Non-Fabric */,
-      );
+  if (Platform.isTesting) {
+    return;
+  }
+
+  if (!isLayoutAnimationEnabled) {
+    return;
+  }
+
+  // Since LayoutAnimations may possibly be disabled for now on iOS (Fabric),
+  // or Android (non-Fabric) we race a setTimeout with animation completion,
+  // in case onComplete is never called
+  // from native. Once LayoutAnimations+Fabric unconditionally ship everywhere, we can
+  // delete this mechanism at least in the Fabric branch.
+  let animationCompletionHasRun = false;
+  const onAnimationComplete = () => {
+    if (animationCompletionHasRun) {
+      return;
     }
-    const FabricUIManager: FabricUIManagerSpec = global?.nativeFabricUIManager;
-    if (FabricUIManager?.configureNextLayoutAnimation) {
-      global?.nativeFabricUIManager?.configureNextLayoutAnimation(
-        config,
-        onAnimationDidEnd ?? function() {},
-        onAnimationDidFail ??
-          function() {} /* this will only be called if configuration fails */,
-      );
-    }
+    animationCompletionHasRun = true;
+    clearTimeout(raceWithAnimationId);
+    onAnimationDidEnd?.();
+  };
+  const raceWithAnimationId = setTimeout(
+    onAnimationComplete,
+    (config.duration ?? 0) + 17 /* one frame + 1ms */,
+  );
+
+  // In Fabric, LayoutAnimations are unconditionally enabled for Android, and
+  // conditionally enabled on iOS (pending fully shipping; this is a temporary state).
+  const FabricUIManager: FabricUIManagerSpec = global?.nativeFabricUIManager;
+  if (FabricUIManager?.configureNextLayoutAnimation) {
+    global?.nativeFabricUIManager?.configureNextLayoutAnimation(
+      config,
+      onAnimationComplete,
+      onAnimationDidFail ??
+        function () {} /* this will only be called if configuration parsing fails */,
+    );
+    return;
+  }
+
+  // This will only run if Fabric is *not* installed.
+  // If you have Fabric + non-Fabric running in the same VM, non-Fabric LayoutAnimations
+  // will not work.
+  if (UIManager?.configureNextLayoutAnimation) {
+    UIManager.configureNextLayoutAnimation(
+      config,
+      onAnimationComplete ?? function () {},
+      onAnimationDidFail ??
+        function () {} /* this should never be called in Non-Fabric */,
+    );
   }
 }
 
@@ -145,6 +194,7 @@ const LayoutAnimation = {
   spring: (configureNext.bind(null, Presets.spring): (
     onAnimationDidEnd?: OnAnimationDidEndCallback,
   ) => void),
+  setEnabled,
 };
 
 module.exports = LayoutAnimation;

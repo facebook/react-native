@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,6 +29,10 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
 
   public static JavaOnlyMap of(Object... keysAndValues) {
     return new JavaOnlyMap(keysAndValues);
+  }
+
+  public static JavaOnlyMap from(Map<String, Object> map) {
+    return new JavaOnlyMap(map);
   }
 
   public static JavaOnlyMap deepClone(ReadableMap map) {

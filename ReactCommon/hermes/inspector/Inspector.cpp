@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -85,7 +85,7 @@ namespace debugger = ::facebook::hermes::debugger;
  */
 
 // TODO: read this out of an env variable or config
-static constexpr bool kShouldLog = true;
+static constexpr bool kShouldLog = false;
 
 // Logging state transitions is done outside of transition() in a macro so that
 // function and line numbers in the log will be accurate.
@@ -108,7 +108,7 @@ Inspector::Inspector(
     InspectorObserver &observer,
     bool pauseOnFirstStatement)
     : adapter_(adapter),
-      debugger_(adapter->getDebugger()),
+      debugger_(adapter->getRuntime().getDebugger()),
       observer_(observer),
       executor_(std::make_unique<detail::SerialExecutor>("hermes-inspector")) {
   // TODO (t26491391): make tickleJs a real Hermes runtime API
@@ -132,7 +132,6 @@ Inspector::Inspector(
 }
 
 Inspector::~Inspector() {
-  // TODO: think about expected detach flow
   debugger_.setEventObserver(nullptr);
 }
 
@@ -186,7 +185,7 @@ void Inspector::installConsoleFunction(
                 auto obj = val.getObject(runtime);
                 if (obj.isFunction(runtime)) {
                   auto func = obj.getFunction(runtime);
-                  func.call(runtime, args, count);
+                  func.callWithThis(runtime, *originalConsole, args, count);
                 }
               }
             }
@@ -590,8 +589,11 @@ void Inspector::executeIfEnabledOnExecutor(
 
   state_->pushPendingFunc(
       [wrappedFunc = std::move(wrappedFunc), promise]() mutable {
-        wrappedFunc();
-        promise->setValue();
+        if (auto userCallbackException = runUserCallback(wrappedFunc)) {
+          promise->setException(*userCallbackException);
+        } else {
+          promise->setValue();
+        }
       });
 }
 

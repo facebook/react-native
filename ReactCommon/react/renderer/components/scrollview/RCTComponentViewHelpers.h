@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)flashScrollIndicators;
 - (void)scrollTo:(double)x y:(double)y animated:(BOOL)animated;
 - (void)scrollToEnd:(BOOL)animated;
+- (void)zoomToRect:(CGRect)rect animated:(BOOL)animated;
 @end
 
 RCT_EXTERN inline void
@@ -88,6 +89,43 @@ RCTScrollViewHandleCommand(id<RCTScrollViewProtocol> componentView, NSString con
     BOOL animated = [(NSNumber *)arg0 boolValue];
 
     [componentView scrollToEnd:animated];
+    return;
+  }
+
+  if ([commandName isEqualToString:@"zoomToRect"]) {
+#if RCT_DEBUG
+    if ([args count] != 2) {
+      RCTLogError(
+          @"%@ command %@ received %d arguments, expected %d.", @"ScrollView", commandName, (int)[args count], 2);
+      return;
+    }
+#endif
+
+    NSObject *arg0 = args[0];
+
+#if RCT_DEBUG
+    if (!RCTValidateTypeOfViewCommandArgument(
+            arg0, [NSDictionary class], @"dictionary", @"ScrollView", commandName, @"1st")) {
+      return;
+    }
+#endif
+
+    NSDictionary *rectDict = (NSDictionary *)arg0;
+    NSNumber *x = rectDict[@"x"];
+    NSNumber *y = rectDict[@"y"];
+    NSNumber *width = rectDict[@"width"];
+    NSNumber *height = rectDict[@"height"];
+    CGRect rect = CGRectMake(x.doubleValue, y.doubleValue, width.doubleValue, height.doubleValue);
+
+    NSObject *arg1 = args[1];
+#if RCT_DEBUG
+    if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSNumber class], @"boolean", @"ScrollView", commandName, @"2nd")) {
+      return;
+    }
+#endif
+
+    BOOL animated = [(NSNumber *)arg1 boolValue];
+    [componentView zoomToRect:rect animated:animated];
     return;
   }
 }

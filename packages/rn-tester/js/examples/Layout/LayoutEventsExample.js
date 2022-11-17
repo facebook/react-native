@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,7 +23,7 @@ const {
 import type {
   ViewLayout,
   ViewLayoutEvent,
-} from '../../../../../Libraries/Components/View/ViewPropTypes';
+} from 'react-native/Libraries/Components/View/ViewPropTypes';
 
 type Props = $ReadOnly<{||}>;
 type State = {
@@ -81,7 +81,7 @@ class LayoutEventExample extends React.Component<Props, State> {
     this.setState({imageLayout: e.nativeEvent.layout});
   };
 
-  render() {
+  render(): React.Node {
     const viewStyle = [styles.view, this.state.viewStyle];
     const textLayout = this.state.textLayout || {width: '?', height: '?'};
     const imageLayout = this.state.imageLayout || {x: '?', y: '?'};
@@ -96,9 +96,8 @@ class LayoutEventExample extends React.Component<Props, State> {
             Press here to change layout.
           </Text>
         </Text>
-        <View ref="view" onLayout={this.onViewLayout} style={viewStyle}>
+        <View onLayout={this.onViewLayout} style={viewStyle}>
           <Image
-            ref="img"
             onLayout={this.onImageLayout}
             style={styles.image}
             source={{
@@ -107,12 +106,15 @@ class LayoutEventExample extends React.Component<Props, State> {
           />
           <Text>
             ViewLayout:{' '}
-            {/* $FlowFixMe(>=0.95.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.95 was deployed. To see
-             * the error, delete this comment and run Flow. */
-            JSON.stringify(this.state.viewLayout, null, '  ') + '\n\n'}
+            {
+              /* $FlowFixMe[incompatible-type] (>=0.95.0 site=react_native_fb)
+               * This comment suppresses an error found when Flow v0.95 was
+               * deployed. To see the error, delete this comment and run Flow.
+               */
+              JSON.stringify(this.state.viewLayout, null, '  ') + '\n\n'
+            }
           </Text>
-          <Text ref="txt" onLayout={this.onTextLayout} style={styles.text}>
+          <Text onLayout={this.onTextLayout} style={styles.text}>
             A simple piece of text.{this.state.extraText}
           </Text>
           <Text>
@@ -159,7 +161,7 @@ exports.description = ('Examples that show how Layout events can be used to ' +
 exports.examples = [
   {
     title: 'LayoutEventExample',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <LayoutEventExample />;
     },
   },

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,16 +8,13 @@
  * @format
  */
 
-'use strict';
-
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-
+import StyleSheet, {
+  type ColorValue,
+  type ViewStyleProp,
+} from '../../StyleSheet/StyleSheet';
+import Platform from '../../Utilities/Platform';
 import RCTInputAccessoryViewNativeComponent from './RCTInputAccessoryViewNativeComponent';
-
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import * as React from 'react';
 
 /**
  * Note: iOS only
@@ -90,22 +87,23 @@ type Props = $ReadOnly<{|
 
 class InputAccessoryView extends React.Component<Props> {
   render(): React.Node {
-    if (Platform.OS !== 'ios') {
-      console.warn('<InputAccessoryView> is only supported on iOS.');
-    }
+    if (Platform.OS === 'ios') {
+      if (React.Children.count(this.props.children) === 0) {
+        return null;
+      }
 
-    if (React.Children.count(this.props.children) === 0) {
+      return (
+        <RCTInputAccessoryViewNativeComponent
+          style={[this.props.style, styles.container]}
+          nativeID={this.props.nativeID}
+          backgroundColor={this.props.backgroundColor}>
+          {this.props.children}
+        </RCTInputAccessoryViewNativeComponent>
+      );
+    } else {
+      console.warn('<InputAccessoryView> is only supported on iOS.');
       return null;
     }
-
-    return (
-      <RCTInputAccessoryViewNativeComponent
-        style={[this.props.style, styles.container]}
-        nativeID={this.props.nativeID}
-        backgroundColor={this.props.backgroundColor}>
-        {this.props.children}
-      </RCTInputAccessoryViewNativeComponent>
-    );
   }
 }
 

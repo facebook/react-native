@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,7 @@
 #import "RCTStatusBarManager.h"
 #import "CoreModulesPlugins.h"
 
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
@@ -181,7 +181,7 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
   RCTUnsafeExecuteOnMainQueueSync(^{
     constants = facebook::react::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
         .HEIGHT = RCTSharedApplication().statusBarFrame.size.height,
-        .DEFAULT_BACKGROUND_COLOR = folly::none,
+        .DEFAULT_BACKGROUND_COLOR = std::nullopt,
     });
   });
 

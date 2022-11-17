@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,11 +10,8 @@
 
 'use strict';
 
-const MatrixMath = require('../Utilities/MatrixMath');
-const Platform = require('../Utilities/Platform');
-
-const invariant = require('invariant');
 const stringifySafe = require('../Utilities/stringifySafe').default;
+const invariant = require('invariant');
 
 /**
  * Generate a transform matrix based on the provided transforms, and use that
@@ -25,116 +22,130 @@ const stringifySafe = require('../Utilities/stringifySafe').default;
  * interface to native code.
  */
 function processTransform(
-  transform: Array<Object>,
+  transform: Array<Object> | string,
 ): Array<Object> | Array<number> {
+  if (typeof transform === 'string') {
+    const regex = new RegExp(/(\w+)\(([^)]+)\)/g);
+    let transformArray: Array<Object> = [];
+    let matches;
+
+    while ((matches = regex.exec(transform))) {
+      const {key, value} = _getKeyAndValueFromCSSTransform(
+        matches[1],
+        matches[2],
+      );
+
+      if (value !== undefined) {
+        transformArray.push({[key]: value});
+      }
+    }
+    transform = transformArray;
+  }
+
   if (__DEV__) {
     _validateTransforms(transform);
   }
 
-  // Android & iOS implementations of transform property accept the list of
-  // transform properties as opposed to a transform Matrix. This is necessary
-  // to control transform property updates completely on the native thread.
-  if (Platform.OS === 'android' || Platform.OS === 'ios') {
-    return transform;
+  return transform;
+}
+
+const _getKeyAndValueFromCSSTransform: (
+  key:
+    | string
+    | $TEMPORARY$string<'matrix'>
+    | $TEMPORARY$string<'perspective'>
+    | $TEMPORARY$string<'rotate'>
+    | $TEMPORARY$string<'rotateX'>
+    | $TEMPORARY$string<'rotateY'>
+    | $TEMPORARY$string<'rotateZ'>
+    | $TEMPORARY$string<'scale'>
+    | $TEMPORARY$string<'scaleX'>
+    | $TEMPORARY$string<'scaleY'>
+    | $TEMPORARY$string<'skewX'>
+    | $TEMPORARY$string<'skewY'>
+    | $TEMPORARY$string<'translate'>
+    | $TEMPORARY$string<'translate3d'>
+    | $TEMPORARY$string<'translateX'>
+    | $TEMPORARY$string<'translateY'>,
+  args: string,
+) => {key: string, value?: number[] | number | string} = (key, args) => {
+  const argsWithUnitsRegex = new RegExp(/([+-]?\d+(\.\d+)?)([a-zA-Z]+)?/g);
+
+  switch (key) {
+    case 'matrix':
+      return {key, value: args.match(/[+-]?\d+(\.\d+)?/g)?.map(Number)};
+    case 'translate':
+    case 'translate3d':
+      const parsedArgs = [];
+      let missingUnitOfMeasurement = false;
+
+      let matches;
+      while ((matches = argsWithUnitsRegex.exec(args))) {
+        const value = Number(matches[1]);
+        const unitOfMeasurement = matches[3];
+
+        if (value !== 0 && !unitOfMeasurement) {
+          missingUnitOfMeasurement = true;
+        }
+
+        parsedArgs.push(value);
+      }
+
+      if (__DEV__) {
+        invariant(
+          !missingUnitOfMeasurement,
+          `Transform with key ${key} must have units unless the provided value is 0, found %s`,
+          `${key}(${args})`,
+        );
+
+        if (key === 'translate') {
+          invariant(
+            parsedArgs?.length === 1 || parsedArgs?.length === 2,
+            'Transform with key translate must be an string with 1 or 2 parameters, found %s: %s',
+            parsedArgs?.length,
+            `${key}(${args})`,
+          );
+        } else {
+          invariant(
+            parsedArgs?.length === 3,
+            'Transform with key translate3d must be an string with 3 parameters, found %s: %s',
+            parsedArgs?.length,
+            `${key}(${args})`,
+          );
+        }
+      }
+
+      if (parsedArgs?.length === 1) {
+        parsedArgs.push(0);
+      }
+
+      return {key: 'translate', value: parsedArgs};
+    case 'translateX':
+    case 'translateY':
+    case 'perspective':
+      const argMatches = argsWithUnitsRegex.exec(args);
+
+      if (!argMatches?.length) {
+        return {key, value: undefined};
+      }
+
+      const value = Number(argMatches[1]);
+      const unitOfMeasurement = argMatches[3];
+
+      if (__DEV__) {
+        invariant(
+          value === 0 || unitOfMeasurement,
+          `Transform with key ${key} must have units unless the provided value is 0, found %s`,
+          `${key}(${args})`,
+        );
+      }
+
+      return {key, value};
+
+    default:
+      return {key, value: !isNaN(args) ? Number(args) : args};
   }
-
-  const result = MatrixMath.createIdentityMatrix();
-
-  transform.forEach(transformation => {
-    const key = Object.keys(transformation)[0];
-    const value = transformation[key];
-
-    switch (key) {
-      case 'matrix':
-        MatrixMath.multiplyInto(result, result, value);
-        break;
-      case 'perspective':
-        _multiplyTransform(result, MatrixMath.reusePerspectiveCommand, [value]);
-        break;
-      case 'rotateX':
-        _multiplyTransform(result, MatrixMath.reuseRotateXCommand, [
-          _convertToRadians(value),
-        ]);
-        break;
-      case 'rotateY':
-        _multiplyTransform(result, MatrixMath.reuseRotateYCommand, [
-          _convertToRadians(value),
-        ]);
-        break;
-      case 'rotate':
-      case 'rotateZ':
-        _multiplyTransform(result, MatrixMath.reuseRotateZCommand, [
-          _convertToRadians(value),
-        ]);
-        break;
-      case 'scale':
-        _multiplyTransform(result, MatrixMath.reuseScaleCommand, [value]);
-        break;
-      case 'scaleX':
-        _multiplyTransform(result, MatrixMath.reuseScaleXCommand, [value]);
-        break;
-      case 'scaleY':
-        _multiplyTransform(result, MatrixMath.reuseScaleYCommand, [value]);
-        break;
-      case 'translate':
-        _multiplyTransform(result, MatrixMath.reuseTranslate3dCommand, [
-          value[0],
-          value[1],
-          value[2] || 0,
-        ]);
-        break;
-      case 'translateX':
-        _multiplyTransform(result, MatrixMath.reuseTranslate2dCommand, [
-          value,
-          0,
-        ]);
-        break;
-      case 'translateY':
-        _multiplyTransform(result, MatrixMath.reuseTranslate2dCommand, [
-          0,
-          value,
-        ]);
-        break;
-      case 'skewX':
-        _multiplyTransform(result, MatrixMath.reuseSkewXCommand, [
-          _convertToRadians(value),
-        ]);
-        break;
-      case 'skewY':
-        _multiplyTransform(result, MatrixMath.reuseSkewYCommand, [
-          _convertToRadians(value),
-        ]);
-        break;
-      default:
-        throw new Error('Invalid transform name: ' + key);
-    }
-  });
-
-  return result;
-}
-
-/**
- * Performs a destructive operation on a transform matrix.
- */
-function _multiplyTransform(
-  result: Array<number>,
-  matrixMathFunction: Function,
-  args: Array<number>,
-): void {
-  const matrixToApply = MatrixMath.createIdentityMatrix();
-  const argsWithIdentity = [matrixToApply].concat(args);
-  matrixMathFunction.apply(this, argsWithIdentity);
-  MatrixMath.multiplyInto(result, result, matrixToApply);
-}
-
-/**
- * Parses a string like '0.5rad' or '60deg' into radians expressed in a float.
- * Note that validation on the string is done in `_validateTransform()`.
- */
-function _convertToRadians(value: string): number {
-  const floatValue = parseFloat(value);
-  return value.indexOf('rad') > -1 ? floatValue : (floatValue * Math.PI) / 180;
-}
+};
 
 function _validateTransforms(transform: Array<Object>): void {
   transform.forEach(transformation => {
@@ -150,7 +161,26 @@ function _validateTransforms(transform: Array<Object>): void {
   });
 }
 
-function _validateTransform(key, value, transformation) {
+function _validateTransform(
+  key:
+    | string
+    | $TEMPORARY$string<'matrix'>
+    | $TEMPORARY$string<'perspective'>
+    | $TEMPORARY$string<'rotate'>
+    | $TEMPORARY$string<'rotateX'>
+    | $TEMPORARY$string<'rotateY'>
+    | $TEMPORARY$string<'rotateZ'>
+    | $TEMPORARY$string<'scale'>
+    | $TEMPORARY$string<'scaleX'>
+    | $TEMPORARY$string<'scaleY'>
+    | $TEMPORARY$string<'skewX'>
+    | $TEMPORARY$string<'skewY'>
+    | $TEMPORARY$string<'translate'>
+    | $TEMPORARY$string<'translateX'>
+    | $TEMPORARY$string<'translateY'>,
+  value: any | number | string,
+  transformation: any,
+) {
   invariant(
     !value.getValue,
     'You passed an Animated.Value to a normal component. ' +
@@ -173,9 +203,9 @@ function _validateTransform(key, value, transformation) {
         value.length === 9 || value.length === 16,
         'Matrix transform must have a length of 9 (2d) or 16 (3d). ' +
           'Provided matrix has a length of %s: %s',
-        /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.84 was deployed. To see the error, delete
-         * this comment and run Flow. */
+        /* $FlowFixMe[prop-missing] (>=0.84.0 site=react_native_fb) This
+         * comment suppresses an error found when Flow v0.84 was deployed. To
+         * see the error, delete this comment and run Flow. */
         value.length,
         stringifySafe(transformation),
       );
@@ -184,9 +214,9 @@ function _validateTransform(key, value, transformation) {
       invariant(
         value.length === 2 || value.length === 3,
         'Transform with key translate must be an array of length 2 or 3, found %s: %s',
-        /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.84 was deployed. To see the error, delete
-         * this comment and run Flow. */
+        /* $FlowFixMe[prop-missing] (>=0.84.0 site=react_native_fb) This
+         * comment suppresses an error found when Flow v0.84 was deployed. To
+         * see the error, delete this comment and run Flow. */
         value.length,
         stringifySafe(transformation),
       );

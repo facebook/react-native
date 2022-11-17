@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -15,7 +15,7 @@ if [ -z "$ANDROID_NDK" ]; then
   echo "Error: \$ANDROID_NDK is not configured."
   echo "You must first install the Android NDK and then set \$ANDROID_NDK."
   echo "If you already installed the Android SDK, well, the NDK is a different thing that you also need to install."
-  echo "See https://github.com/facebook/react-native/wiki/Building-from-source for instructions."
+  echo "See https://reactnative.dev/contributing/how-to-build-from-source for instructions."
   exit 1
 fi
 

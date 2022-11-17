@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,7 @@
 
 #include "TextInputEventEmitter.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value textInputMetricsPayload(
     jsi::Runtime &runtime,
@@ -75,9 +74,10 @@ void TextInputEventEmitter::onChange(
   dispatchTextInputEvent("change", textInputMetrics);
 }
 
-void TextInputEventEmitter::onChangeText(
+void TextInputEventEmitter::onChangeSync(
     TextInputMetrics const &textInputMetrics) const {
-  dispatchTextInputEvent("changeText", textInputMetrics);
+  dispatchTextInputEvent(
+      "changeSync", textInputMetrics, EventPriority::SynchronousBatched);
 }
 
 void TextInputEventEmitter::onContentSizeChange(
@@ -110,6 +110,21 @@ void TextInputEventEmitter::onKeyPress(
       EventPriority::AsynchronousBatched);
 }
 
+void TextInputEventEmitter::onKeyPressSync(
+    KeyPressMetrics const &keyPressMetrics) const {
+  dispatchEvent(
+      "keyPressSync",
+      [keyPressMetrics](jsi::Runtime &runtime) {
+        return keyPressMetricsPayload(runtime, keyPressMetrics);
+      },
+      EventPriority::SynchronousBatched);
+}
+
+void TextInputEventEmitter::onScroll(
+    TextInputMetrics const &textInputMetrics) const {
+  dispatchTextInputEvent("scroll", textInputMetrics);
+}
+
 void TextInputEventEmitter::dispatchTextInputEvent(
     std::string const &name,
     TextInputMetrics const &textInputMetrics,
@@ -122,5 +137,4 @@ void TextInputEventEmitter::dispatchTextInputEvent(
       priority);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

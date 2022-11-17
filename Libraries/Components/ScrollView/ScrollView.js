@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,60 +8,142 @@
  * @flow strict-local
  */
 
-'use strict';
-
-import AnimatedImplementation from '../../Animated/AnimatedImplementation';
-import Platform from '../../Utilities/Platform';
-import * as React from 'react';
-import ReactNative from '../../Renderer/shims/ReactNative';
-require('../../Renderer/shims/ReactNative'); // Force side effects to prevent T55744311
-import ScrollResponder from '../ScrollResponder';
-import ScrollViewStickyHeader from './ScrollViewStickyHeader';
-import StyleSheet from '../../StyleSheet/StyleSheet';
-import View from '../View/View';
-
-import dismissKeyboard from '../../Utilities/dismissKeyboard';
-import flattenStyle from '../../StyleSheet/flattenStyle';
-import invariant from 'invariant';
-import processDecelerationRate from './processDecelerationRate';
-import resolveAssetSource from '../../Image/resolveAssetSource';
-import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
-import setAndForwardRef from '../../Utilities/setAndForwardRef';
-
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {
+  LayoutEvent,
   PressEvent,
   ScrollEvent,
-  LayoutEvent,
 } from '../../Types/CoreEventTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {State as ScrollResponderState} from '../ScrollResponder';
+import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {KeyboardEvent, KeyboardMetrics} from '../Keyboard/Keyboard';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
+import AnimatedImplementation from '../../Animated/AnimatedImplementation';
+import FrameRateLogger from '../../Interaction/FrameRateLogger';
+import {findNodeHandle} from '../../ReactNative/RendererProxy';
+import UIManager from '../../ReactNative/UIManager';
+import flattenStyle from '../../StyleSheet/flattenStyle';
+import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Dimensions from '../../Utilities/Dimensions';
+import dismissKeyboard from '../../Utilities/dismissKeyboard';
+import Platform from '../../Utilities/Platform';
+import Keyboard from '../Keyboard/Keyboard';
+import TextInputState from '../TextInput/TextInputState';
+import View from '../View/View';
+import AndroidHorizontalScrollContentViewNativeComponent from './AndroidHorizontalScrollContentViewNativeComponent';
+import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrollViewNativeComponent';
+import processDecelerationRate from './processDecelerationRate';
+import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent';
+import Commands from './ScrollViewCommands';
 import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
 import ScrollViewNativeComponent from './ScrollViewNativeComponent';
-import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent';
-import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrollViewNativeComponent';
-import AndroidHorizontalScrollContentViewNativeComponent from './AndroidHorizontalScrollContentViewNativeComponent';
+import ScrollViewStickyHeader from './ScrollViewStickyHeader';
+import invariant from 'invariant';
+import memoize from 'memoize-one';
+import * as React from 'react';
 
-let AndroidScrollView;
-let AndroidHorizontalScrollContentView;
-let AndroidHorizontalScrollView;
-let RCTScrollView;
-let RCTScrollContentView;
-
-if (Platform.OS === 'android') {
-  AndroidScrollView = ScrollViewNativeComponent;
-  AndroidHorizontalScrollView = AndroidHorizontalScrollViewNativeComponent;
-  AndroidHorizontalScrollContentView = AndroidHorizontalScrollContentViewNativeComponent;
-} else {
-  RCTScrollView = ScrollViewNativeComponent;
-  RCTScrollContentView = ScrollContentViewNativeComponent;
+if (Platform.OS === 'ios') {
+  require('../../Renderer/shims/ReactNative'); // Force side effects to prevent T55744311
 }
+
+const {NativeHorizontalScrollViewTuple, NativeVerticalScrollViewTuple} =
+  Platform.OS === 'android'
+    ? {
+        NativeHorizontalScrollViewTuple: [
+          AndroidHorizontalScrollViewNativeComponent,
+          AndroidHorizontalScrollContentViewNativeComponent,
+        ],
+        NativeVerticalScrollViewTuple: [ScrollViewNativeComponent, View],
+      }
+    : {
+        NativeHorizontalScrollViewTuple: [
+          ScrollViewNativeComponent,
+          ScrollContentViewNativeComponent,
+        ],
+        NativeVerticalScrollViewTuple: [
+          ScrollViewNativeComponent,
+          ScrollContentViewNativeComponent,
+        ],
+      };
+
+/*
+ * iOS scroll event timing nuances:
+ * ===============================
+ *
+ *
+ * Scrolling without bouncing, if you touch down:
+ * -------------------------------
+ *
+ * 1. `onMomentumScrollBegin` (when animation begins after letting up)
+ *    ... physical touch starts ...
+ * 2. `onTouchStartCapture`   (when you press down to stop the scroll)
+ * 3. `onTouchStart`          (same, but bubble phase)
+ * 4. `onResponderRelease`    (when lifting up - you could pause forever before * lifting)
+ * 5. `onMomentumScrollEnd`
+ *
+ *
+ * Scrolling with bouncing, if you touch down:
+ * -------------------------------
+ *
+ * 1. `onMomentumScrollBegin` (when animation begins after letting up)
+ *    ... bounce begins ...
+ *    ... some time elapses ...
+ *    ... physical touch during bounce ...
+ * 2. `onMomentumScrollEnd`   (Makes no sense why this occurs first during bounce)
+ * 3. `onTouchStartCapture`   (immediately after `onMomentumScrollEnd`)
+ * 4. `onTouchStart`          (same, but bubble phase)
+ * 5. `onTouchEnd`            (You could hold the touch start for a long time)
+ * 6. `onMomentumScrollBegin` (When releasing the view starts bouncing back)
+ *
+ * So when we receive an `onTouchStart`, how can we tell if we are touching
+ * *during* an animation (which then causes the animation to stop)? The only way
+ * to tell is if the `touchStart` occurred immediately after the
+ * `onMomentumScrollEnd`.
+ *
+ * This is abstracted out for you, so you can just call this.scrollResponderIsAnimating() if
+ * necessary
+ *
+ * `ScrollView` also includes logic for blurring a currently focused input
+ * if one is focused while scrolling. This is a natural place
+ * to put this logic since it can support not dismissing the keyboard while
+ * scrolling, unless a recognized "tap"-like gesture has occurred.
+ *
+ * The public lifecycle API includes events for keyboard interaction, responder
+ * interaction, and scrolling (among others). The keyboard callbacks
+ * `onKeyboardWill/Did/*` are *global* events, but are invoked on scroll
+ * responder's props so that you can guarantee that the scroll responder's
+ * internal state has been updated accordingly (and deterministically) by
+ * the time the props callbacks are invoke. Otherwise, you would always wonder
+ * if the scroll responder is currently in a state where it recognizes new
+ * keyboard positions etc. If coordinating scrolling with keyboard movement,
+ * *always* use these hooks instead of listening to your own global keyboard
+ * events.
+ *
+ * Public keyboard lifecycle API: (props callbacks)
+ *
+ * Standard Keyboard Appearance Sequence:
+ *
+ *   this.props.onKeyboardWillShow
+ *   this.props.onKeyboardDidShow
+ *
+ * `onScrollResponderKeyboardDismissed` will be invoked if an appropriate
+ * tap inside the scroll responder's scrollable region was responsible
+ * for the dismissal of the keyboard. There are other reasons why the
+ * keyboard could be dismissed.
+ *
+ *   this.props.onScrollResponderKeyboardDismissed
+ *
+ * Standard Keyboard Hide Sequence:
+ *
+ *   this.props.onKeyboardWillHide
+ *   this.props.onKeyboardDidHide
+ */
 
 // Public methods for ScrollView
 export type ScrollViewImperativeMethods = $ReadOnly<{|
@@ -73,19 +155,23 @@ export type ScrollViewImperativeMethods = $ReadOnly<{|
   scrollTo: $PropertyType<ScrollView, 'scrollTo'>,
   scrollToEnd: $PropertyType<ScrollView, 'scrollToEnd'>,
   flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>,
-
-  // ScrollResponder.Mixin public methods
-  scrollResponderZoomTo: $PropertyType<
-    typeof ScrollResponder.Mixin,
-    'scrollResponderZoomTo',
-  >,
+  scrollResponderZoomTo: $PropertyType<ScrollView, 'scrollResponderZoomTo'>,
   scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
-    typeof ScrollResponder.Mixin,
+    ScrollView,
     'scrollResponderScrollNativeHandleToKeyboard',
   >,
 |}>;
 
+export type DecelerationRateType = 'fast' | 'normal' | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
+
+type NativeScrollViewInstance = React.ElementRef<HostComponent<mixed>>;
+type PublicScrollViewInstance = $ReadOnly<{|
+  ...$Exact<NativeScrollViewInstance>,
+  ...ScrollViewImperativeMethods,
+|}>;
+
+type InnerViewInstance = React.ElementRef<typeof View>;
 
 type IOSProps = $ReadOnly<{|
   /**
@@ -96,17 +182,23 @@ type IOSProps = $ReadOnly<{|
    */
   automaticallyAdjustContentInsets?: ?boolean,
   /**
+   * Controls whether the ScrollView should automatically adjust its `contentInset`
+   * and `scrollViewInsets` when the Keyboard changes its size. The default value is false.
+   * @platform ios
+   */
+  automaticallyAdjustKeyboardInsets?: ?boolean,
+  /**
+   * Controls whether iOS should automatically adjust the scroll indicator
+   * insets. The default value is true. Available on iOS 13 and later.
+   * @platform ios
+   */
+  automaticallyAdjustsScrollIndicatorInsets?: ?boolean,
+  /**
    * The amount by which the scroll view content is inset from the edges
    * of the scroll view. Defaults to `{top: 0, left: 0, bottom: 0, right: 0}`.
    * @platform ios
    */
   contentInset?: ?EdgeInsetsProp,
-  /**
-   * Used to manually set the starting scroll offset.
-   * The default value is `{x: 0, y: 0}`.
-   * @platform ios
-   */
-  contentOffset?: ?PointProp,
   /**
    * When true, the scroll view bounces when it reaches the end of the
    * content if the content is larger then the scroll view along the axis of
@@ -265,17 +357,6 @@ type IOSProps = $ReadOnly<{|
    */
   showsHorizontalScrollIndicator?: ?boolean,
   /**
-   * When `snapToInterval` is set, `snapToAlignment` will define the relationship
-   * of the snapping to the scroll view.
-   *
-   *   - `'start'` (the default) will align the snap at the left (horizontal) or top (vertical)
-   *   - `'center'` will align the snap in the center
-   *   - `'end'` will align the snap at the right (horizontal) or bottom (vertical)
-   *
-   * @platform ios
-   */
-  snapToAlignment?: ?('start' | 'center' | 'end'),
-  /**
    * The current scale of the scroll view content. The default value is 1.0.
    * @platform ios
    */
@@ -338,7 +419,7 @@ type AndroidProps = $ReadOnly<{|
    */
   persistentScrollbar?: ?boolean,
   /**
-   * Fades out the edges of the the scroll content.
+   * Fades out the edges of the scroll content.
    *
    * If the value is greater than 0, the fading edges will be set accordingly
    * to the current scroll direction and position,
@@ -351,32 +432,15 @@ type AndroidProps = $ReadOnly<{|
   fadingEdgeLength?: ?number,
 |}>;
 
-type VRProps = $ReadOnly<{|
-  /**
-   * Optionally an image can be used for the scroll bar thumb. This will
-   * override the color. While the image is loading or the image fails to
-   * load the color will be used instead. Use an alpha of 0 in the color
-   * to avoid seeing it while the image is loading.
-   *
-   * - `uri` - a string representing the resource identifier for the image, which
-   * should be either a local file path or the name of a static image resource
-   * - `number` - Opaque type returned by something like
-   * `import IMAGE from './image.jpg'`.
-   * @platform vr
-   */
-  scrollBarThumbImage?: ?($ReadOnly<{||}> | number), // Opaque type returned by import IMAGE from './image.jpg'
-|}>;
-
 type StickyHeaderComponentType = React.AbstractComponent<
   ScrollViewStickyHeaderProps,
-  $ReadOnly<{setNextHeaderY: number => void, ...}>,
+  $ReadOnly<interface {setNextHeaderY: number => void}>,
 >;
 
 export type Props = $ReadOnly<{|
   ...ViewProps,
   ...IOSProps,
   ...AndroidProps,
-  ...VRProps,
 
   /**
    * These styles will be applied to the scroll view content container which
@@ -397,6 +461,11 @@ export type Props = $ReadOnly<{|
    */
   contentContainerStyle?: ?ViewStyleProp,
   /**
+   * Used to manually set the starting scroll offset.
+   * The default value is `{x: 0, y: 0}`.
+   */
+  contentOffset?: ?PointProp,
+  /**
    * When true, the scroll view stops on the next index (in relation to scroll
    * position at release) regardless of how fast the gesture is. This can be
    * used for pagination when the page is less than the width of the
@@ -413,7 +482,7 @@ export type Props = $ReadOnly<{|
    *   - `'normal'`: 0.998 on iOS, 0.985 on Android (the default)
    *   - `'fast'`: 0.99 on iOS, 0.9 on Android
    */
-  decelerationRate?: ?('fast' | 'normal' | number),
+  decelerationRate?: ?DecelerationRateType,
   /**
    * When true, the scroll view's children are arranged horizontally in a row
    * instead of vertically in a column. The default value is false.
@@ -439,10 +508,8 @@ export type Props = $ReadOnly<{|
    *     On android this is not supported and it will have the same behavior as 'none'.
    */
   keyboardDismissMode?: ?// default
-  (| 'none' // cross-platform
-    | 'on-drag'
-    | 'interactive'
-  ), // ios only
+  // cross-platform
+  ('none' | 'on-drag' | 'interactive'), // ios only
   /**
    * Determines when the keyboard should stay visible after a tap.
    *
@@ -489,7 +556,10 @@ export type Props = $ReadOnly<{|
    * which this ScrollView renders.
    */
   onContentSizeChange?: (contentWidth: number, contentHeight: number) => void,
-  onKeyboardDidShow?: (event: PressEvent) => void,
+  onKeyboardDidShow?: (event: KeyboardEvent) => void,
+  onKeyboardDidHide?: (event: KeyboardEvent) => void,
+  onKeyboardWillShow?: (event: KeyboardEvent) => void,
+  onKeyboardWillHide?: (event: KeyboardEvent) => void,
   /**
    * When true, the scroll view stops on multiples of the scroll view's size
    * when scrolling. This can be used for horizontal pagination. The default
@@ -512,6 +582,11 @@ export type Props = $ReadOnly<{|
    */
   showsVerticalScrollIndicator?: ?boolean,
   /**
+   * When true, Sticky header is hidden when scrolling down, and dock at the top
+   * when scrolling up
+   */
+  stickyHeaderHiddenOnScroll?: ?boolean,
+  /**
    * An array of child indices determining which children get docked to the
    * top of the screen when scrolling. For example, passing
    * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
@@ -526,6 +601,15 @@ export type Props = $ReadOnly<{|
    * for example when you want your list to have an animated hidable header.
    */
   StickyHeaderComponent?: StickyHeaderComponentType,
+  /**
+   * When `snapToInterval` is set, `snapToAlignment` will define the relationship
+   * of the snapping to the scroll view.
+   *
+   *   - `'start'` (the default) will align the snap at the left (horizontal) or top (vertical)
+   *   - `'center'` will align the snap in the center
+   *   - `'end'` will align the snap at the right (horizontal) or bottom (vertical)
+   */
+  snapToAlignment?: ?('start' | 'center' | 'end'),
   /**
    * When set, causes the scroll view to stop at multiples of the value of
    * `snapToInterval`. This can be used for paginating through children
@@ -574,44 +658,30 @@ export type Props = $ReadOnly<{|
    *
    * See [RefreshControl](docs/refreshcontrol.html).
    */
-  // $FlowFixMe - how to handle generic type without existential operator?
+  /* $FlowFixMe[unclear-type] - how to handle generic type without existential
+   * operator? */
   refreshControl?: ?React.Element<any>,
   children?: React.Node,
   /**
    * A ref to the inner View element of the ScrollView. This should be used
    * instead of calling `getInnerViewRef`.
    */
-  innerViewRef?: React.Ref<typeof View>,
+  innerViewRef?: ForwardedRef<InnerViewInstance>,
   /**
    * A ref to the Native ScrollView component. This ref can be used to call
    * all of ScrollView's public methods, in addition to native methods like
    * measure, measureLayout, etc.
    */
-  scrollViewRef?: React.Ref<
-    typeof ScrollViewNativeComponent & ScrollViewImperativeMethods,
-  >,
+  scrollViewRef?: ForwardedRef<PublicScrollViewInstance>,
 |}>;
 
 type State = {|
   layoutHeight: ?number,
-  ...ScrollResponderState,
 |};
 
-function createScrollResponder(
-  node: React.ElementRef<typeof ScrollView>,
-): typeof ScrollResponder.Mixin {
-  const scrollResponder = {...ScrollResponder.Mixin};
+const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
-  for (const key in scrollResponder) {
-    if (typeof scrollResponder[key] === 'function') {
-      scrollResponder[key] = scrollResponder[key].bind(node);
-    }
-  }
-
-  return scrollResponder;
-}
-
-type ScrollViewComponentStatics = $ReadOnly<{|
+export type ScrollViewComponentStatics = $ReadOnly<{|
   Context: typeof ScrollViewContext,
 |}>;
 
@@ -631,7 +701,7 @@ type ScrollViewComponentStatics = $ReadOnly<{|
  * view from becoming the responder.
  *
  *
- * `<ScrollView>` vs [`<FlatList>`](https://reactnative.dev/docs/flatlist.html) - which one to use?
+ * `<ScrollView>` vs [`<FlatList>`](https://reactnative.dev/docs/flatlist) - which one to use?
  *
  * `ScrollView` simply renders all its react child components at once. That
  * makes it very easy to understand and use.
@@ -652,141 +722,115 @@ type ScrollViewComponentStatics = $ReadOnly<{|
  */
 class ScrollView extends React.Component<Props, State> {
   static Context: typeof ScrollViewContext = ScrollViewContext;
-  /**
-   * Part 1: Removing ScrollResponder.Mixin:
-   *
-   * 1. Mixin methods should be flow typed. That's why we create a
-   *    copy of ScrollResponder.Mixin and attach it to this._scrollResponder.
-   *    Otherwise, we'd have to manually declare each method on the component
-   *    class and assign it a flow type.
-   * 2. Mixin methods can call component methods, and access the component's
-   *    props and state. So, we need to bind all mixin methods to the
-   *    component instance.
-   * 3. Continued...
-   */
-  _scrollResponder: typeof ScrollResponder.Mixin = createScrollResponder(this);
 
   constructor(props: Props) {
     super(props);
 
-    /**
-     * Part 2: Removing ScrollResponder.Mixin
-     *
-     * 3. Mixin methods access other mixin methods via dynamic dispatch using
-     *    this. Since mixin methods are bound to the component instance, we need
-     *    to copy all mixin methods to the component instance. This is also
-     *    necessary because getScrollResponder() is a public method that returns
-     *    an object that can be used to execute all scrollResponder methods.
-     *    Since the object returned from that method is the ScrollView instance,
-     *    we need to bind all mixin methods to the ScrollView instance.
-     */
-    for (const key in ScrollResponder.Mixin) {
-      if (
-        typeof ScrollResponder.Mixin[key] === 'function' &&
-        key.startsWith('scrollResponder')
-      ) {
-        // $FlowFixMe - dynamically adding properties to a class
-        (this: any)[key] = ScrollResponder.Mixin[key].bind(this);
-      }
-    }
-
-    /**
-     * Part 3: Removing ScrollResponder.Mixin
-     *
-     * 4. Mixins can initialize properties and use properties on the component
-     *    instance.
-     */
-    Object.keys(ScrollResponder.Mixin)
-      .filter(key => typeof ScrollResponder.Mixin[key] !== 'function')
-      .forEach(key => {
-        // $FlowFixMe - dynamically adding properties to a class
-        (this: any)[key] = ScrollResponder.Mixin[key];
-      });
-  }
-
-  _scrollAnimatedValue: AnimatedImplementation.Value = new AnimatedImplementation.Value(
-    0,
-  );
-  _scrollAnimatedValueAttachment: ?{detach: () => void, ...} = null;
-  _stickyHeaderRefs: Map<
-    string,
-    React.ElementRef<StickyHeaderComponentType>,
-  > = new Map();
-  _headerLayoutYs: Map<string, number> = new Map();
-
-  state: State = {
-    layoutHeight: null,
-    ...ScrollResponder.Mixin.scrollResponderMixinGetInitialState(),
-  };
-
-  UNSAFE_componentWillMount() {
-    this._scrollResponder.UNSAFE_componentWillMount();
     this._scrollAnimatedValue = new AnimatedImplementation.Value(
       this.props.contentOffset?.y ?? 0,
     );
     this._scrollAnimatedValue.setOffset(this.props.contentInset?.top ?? 0);
-    this._stickyHeaderRefs = new Map();
-    this._headerLayoutYs = new Map();
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    const currentContentInsetTop = this.props.contentInset
-      ? this.props.contentInset.top
-      : 0;
-    const nextContentInsetTop = nextProps.contentInset
-      ? nextProps.contentInset.top
-      : 0;
-    if (currentContentInsetTop !== nextContentInsetTop) {
-      this._scrollAnimatedValue.setOffset(nextContentInsetTop || 0);
-    }
-  }
+  _scrollAnimatedValue: AnimatedImplementation.Value;
+  _scrollAnimatedValueAttachment: ?{detach: () => void, ...} = null;
+  _stickyHeaderRefs: Map<string, React.ElementRef<StickyHeaderComponentType>> =
+    new Map();
+  _headerLayoutYs: Map<string, number> = new Map();
+
+  _keyboardMetrics: ?KeyboardMetrics = null;
+  _additionalScrollOffset: number = 0;
+  _isTouching: boolean = false;
+  _lastMomentumScrollBeginTime: number = 0;
+  _lastMomentumScrollEndTime: number = 0;
+
+  // Reset to false every time becomes responder. This is used to:
+  // - Determine if the scroll view has been scrolled and therefore should
+  // refuse to give up its responder lock.
+  // - Determine if releasing should dismiss the keyboard when we are in
+  // tap-to-dismiss mode (this.props.keyboardShouldPersistTaps !== 'always').
+  _observedScrollSinceBecomingResponder: boolean = false;
+  _becameResponderWhileAnimating: boolean = false;
+  _preventNegativeScrollOffset: ?boolean = null;
+
+  _animated = null;
+
+  _subscriptionKeyboardWillShow: ?EventSubscription = null;
+  _subscriptionKeyboardWillHide: ?EventSubscription = null;
+  _subscriptionKeyboardDidShow: ?EventSubscription = null;
+  _subscriptionKeyboardDidHide: ?EventSubscription = null;
+
+  state: State = {
+    layoutHeight: null,
+  };
 
   componentDidMount() {
+    if (typeof this.props.keyboardShouldPersistTaps === 'boolean') {
+      console.warn(
+        `'keyboardShouldPersistTaps={${
+          this.props.keyboardShouldPersistTaps === true ? 'true' : 'false'
+        }}' is deprecated. ` +
+          `Use 'keyboardShouldPersistTaps="${
+            this.props.keyboardShouldPersistTaps ? 'always' : 'never'
+          }"' instead`,
+      );
+    }
+
+    this._keyboardMetrics = Keyboard.metrics();
+    this._additionalScrollOffset = 0;
+
+    this._subscriptionKeyboardWillShow = Keyboard.addListener(
+      'keyboardWillShow',
+      this.scrollResponderKeyboardWillShow,
+    );
+    this._subscriptionKeyboardWillHide = Keyboard.addListener(
+      'keyboardWillHide',
+      this.scrollResponderKeyboardWillHide,
+    );
+    this._subscriptionKeyboardDidShow = Keyboard.addListener(
+      'keyboardDidShow',
+      this.scrollResponderKeyboardDidShow,
+    );
+    this._subscriptionKeyboardDidHide = Keyboard.addListener(
+      'keyboardDidHide',
+      this.scrollResponderKeyboardDidHide,
+    );
+
     this._updateAnimatedNodeAttachment();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: Props) {
+    const prevContentInsetTop = prevProps.contentInset
+      ? prevProps.contentInset.top
+      : 0;
+    const newContentInsetTop = this.props.contentInset
+      ? this.props.contentInset.top
+      : 0;
+    if (prevContentInsetTop !== newContentInsetTop) {
+      this._scrollAnimatedValue.setOffset(newContentInsetTop || 0);
+    }
+
     this._updateAnimatedNodeAttachment();
   }
 
   componentWillUnmount() {
-    this._scrollResponder.componentWillUnmount();
+    if (this._subscriptionKeyboardWillShow != null) {
+      this._subscriptionKeyboardWillShow.remove();
+    }
+    if (this._subscriptionKeyboardWillHide != null) {
+      this._subscriptionKeyboardWillHide.remove();
+    }
+    if (this._subscriptionKeyboardDidShow != null) {
+      this._subscriptionKeyboardDidShow.remove();
+    }
+    if (this._subscriptionKeyboardDidHide != null) {
+      this._subscriptionKeyboardDidHide.remove();
+    }
+
     if (this._scrollAnimatedValueAttachment) {
       this._scrollAnimatedValueAttachment.detach();
     }
   }
-
-  _setNativeRef = setAndForwardRef({
-    getForwardedRef: () => this.props.scrollViewRef,
-    setLocalRef: ref => {
-      this._scrollViewRef = ref;
-
-      /*
-        This is a hack. Ideally we would forwardRef to the underlying
-        host component. However, since ScrollView has it's own methods that can be
-        called as well, if we used the standard forwardRef then these
-        methods wouldn't be accessible and thus be a breaking change.
-
-        Therefore we edit ref to include ScrollView's public methods so that
-        they are callable from the ref.
-      */
-      if (ref) {
-        ref.getScrollResponder = this.getScrollResponder;
-        ref.getScrollableNode = this.getScrollableNode;
-        ref.getInnerViewNode = this.getInnerViewNode;
-        ref.getInnerViewRef = this.getInnerViewRef;
-        ref.getNativeScrollRef = this.getNativeScrollRef;
-        ref.scrollTo = this.scrollTo;
-        ref.scrollToEnd = this.scrollToEnd;
-        ref.flashScrollIndicators = this.flashScrollIndicators;
-
-        // $FlowFixMe - This method was manually bound from ScrollResponder.mixin
-        ref.scrollResponderZoomTo = this.scrollResponderZoomTo;
-        // $FlowFixMe - This method was manually bound from ScrollResponder.mixin
-        ref.scrollResponderScrollNativeHandleToKeyboard = this.scrollResponderScrollNativeHandleToKeyboard;
-      }
-    },
-  });
 
   /**
    * Returns a reference to the underlying scroll responder, which supports
@@ -795,24 +839,24 @@ class ScrollView extends React.Component<Props, State> {
    * to the underlying scroll responder's methods.
    */
   getScrollResponder: () => ScrollResponderType = () => {
-    // $FlowFixMe - overriding type to include ScrollResponder.Mixin
+    // $FlowFixMe[unclear-type]
     return ((this: any): ScrollResponderType);
   };
 
   getScrollableNode: () => ?number = () => {
-    return ReactNative.findNodeHandle(this._scrollViewRef);
+    return findNodeHandle(this._scrollView.nativeInstance);
   };
 
-  getInnerViewNode(): ?number {
-    return ReactNative.findNodeHandle(this._innerViewRef);
-  }
+  getInnerViewNode: () => ?number = () => {
+    return findNodeHandle(this._innerView.nativeInstance);
+  };
 
-  getInnerViewRef(): ?React.ElementRef<typeof View> {
-    return this._innerViewRef;
-  }
+  getInnerViewRef: () => InnerViewInstance | null = () => {
+    return this._innerView.nativeInstance;
+  };
 
-  getNativeScrollRef: () => ?React.ElementRef<HostComponent<mixed>> = () => {
-    return this._scrollViewRef;
+  getNativeScrollRef: () => NativeScrollViewInstance | null = () => {
+    return this._scrollView.nativeInstance;
   };
 
   /**
@@ -863,11 +907,15 @@ class ScrollView extends React.Component<Props, State> {
       x = options.x;
       animated = options.animated;
     }
-    this._scrollResponder.scrollResponderScrollTo({
-      x: x || 0,
-      y: y || 0,
-      animated: animated !== false,
-    });
+    if (this._scrollView.nativeInstance == null) {
+      return;
+    }
+    Commands.scrollTo(
+      this._scrollView.nativeInstance,
+      x || 0,
+      y || 0,
+      animated !== false,
+    );
   };
 
   /**
@@ -883,9 +931,10 @@ class ScrollView extends React.Component<Props, State> {
   ) => {
     // Default to true
     const animated = (options && options.animated) !== false;
-    this._scrollResponder.scrollResponderScrollToEnd({
-      animated: animated,
-    });
+    if (this._scrollView.nativeInstance == null) {
+      return;
+    }
+    Commands.scrollToEnd(this._scrollView.nativeInstance, animated);
   };
 
   /**
@@ -894,10 +943,157 @@ class ScrollView extends React.Component<Props, State> {
    * @platform ios
    */
   flashScrollIndicators: () => void = () => {
-    this._scrollResponder.scrollResponderFlashScrollIndicators();
+    if (this._scrollView.nativeInstance == null) {
+      return;
+    }
+    Commands.flashScrollIndicators(this._scrollView.nativeInstance);
   };
 
-  _getKeyForIndex(index, childArray) {
+  /**
+   * This method should be used as the callback to onFocus in a TextInputs'
+   * parent view. Note that any module using this mixin needs to return
+   * the parent view's ref in getScrollViewRef() in order to use this method.
+   * @param {number} nodeHandle The TextInput node handle
+   * @param {number} additionalOffset The scroll view's bottom "contentInset".
+   *        Default is 0.
+   * @param {bool} preventNegativeScrolling Whether to allow pulling the content
+   *        down to make it meet the keyboard's top. Default is false.
+   */
+  scrollResponderScrollNativeHandleToKeyboard: <T>(
+    nodeHandle: number | React.ElementRef<HostComponent<T>>,
+    additionalOffset?: number,
+    preventNegativeScrollOffset?: boolean,
+  ) => void = <T>(
+    nodeHandle: number | React.ElementRef<HostComponent<T>>,
+    additionalOffset?: number,
+    preventNegativeScrollOffset?: boolean,
+  ) => {
+    this._additionalScrollOffset = additionalOffset || 0;
+    this._preventNegativeScrollOffset = !!preventNegativeScrollOffset;
+
+    if (this._innerView.nativeInstance == null) {
+      return;
+    }
+
+    if (typeof nodeHandle === 'number') {
+      UIManager.measureLayout(
+        nodeHandle,
+        findNodeHandle(this),
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+        this._textInputFocusError,
+        this._inputMeasureAndScrollToKeyboard,
+      );
+    } else {
+      nodeHandle.measureLayout(
+        this._innerView.nativeInstance,
+        this._inputMeasureAndScrollToKeyboard,
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+        this._textInputFocusError,
+      );
+    }
+  };
+
+  /**
+   * A helper function to zoom to a specific rect in the scrollview. The argument has the shape
+   * {x: number; y: number; width: number; height: number; animated: boolean = true}
+   *
+   * @platform ios
+   */
+  scrollResponderZoomTo: (
+    rect: {|
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      animated?: boolean,
+    |},
+    animated?: boolean, // deprecated, put this inside the rect argument instead
+  ) => void = (
+    rect: {|
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      animated?: boolean,
+    |},
+    animated?: boolean, // deprecated, put this inside the rect argument instead
+  ) => {
+    invariant(Platform.OS === 'ios', 'zoomToRect is not implemented');
+    if ('animated' in rect) {
+      this._animated = rect.animated;
+      delete rect.animated;
+    } else if (typeof animated !== 'undefined') {
+      console.warn(
+        '`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead',
+      );
+    }
+
+    if (this._scrollView.nativeInstance == null) {
+      return;
+    }
+    Commands.zoomToRect(
+      this._scrollView.nativeInstance,
+      rect,
+      animated !== false,
+    );
+  };
+
+  _textInputFocusError() {
+    console.warn('Error measuring text field.');
+  }
+
+  /**
+   * The calculations performed here assume the scroll view takes up the entire
+   * screen - even if has some content inset. We then measure the offsets of the
+   * keyboard, and compensate both for the scroll view's "contentInset".
+   *
+   * @param {number} left Position of input w.r.t. table view.
+   * @param {number} top Position of input w.r.t. table view.
+   * @param {number} width Width of the text input.
+   * @param {number} height Height of the text input.
+   */
+  _inputMeasureAndScrollToKeyboard: (
+    left: number,
+    top: number,
+    width: number,
+    height: number,
+  ) => void = (left: number, top: number, width: number, height: number) => {
+    let keyboardScreenY = Dimensions.get('window').height;
+
+    const scrollTextInputIntoVisibleRect = () => {
+      if (this._keyboardMetrics != null) {
+        keyboardScreenY = this._keyboardMetrics.screenY;
+      }
+      let scrollOffsetY =
+        top - keyboardScreenY + height + this._additionalScrollOffset;
+
+      // By default, this can scroll with negative offset, pulling the content
+      // down so that the target component's bottom meets the keyboard's top.
+      // If requested otherwise, cap the offset at 0 minimum to avoid content
+      // shifting down.
+      if (this._preventNegativeScrollOffset === true) {
+        scrollOffsetY = Math.max(0, scrollOffsetY);
+      }
+      this.scrollTo({x: 0, y: scrollOffsetY, animated: true});
+
+      this._additionalScrollOffset = 0;
+      this._preventNegativeScrollOffset = false;
+    };
+
+    if (this._keyboardMetrics == null) {
+      // `_keyboardMetrics` is set inside `scrollResponderKeyboardWillShow` which
+      // is not guaranteed to be called before `_inputMeasureAndScrollToKeyboard` but native has already scheduled it.
+      // In case it was not called before `_inputMeasureAndScrollToKeyboard`, we postpone scrolling to
+      // text input.
+      setTimeout(() => {
+        scrollTextInputIntoVisibleRect();
+      }, 0);
+    } else {
+      scrollTextInputIntoVisibleRect();
+    }
+  };
+
+  _getKeyForIndex(index: $FlowFixMe, childArray: $FlowFixMe): $FlowFixMe {
     const child = childArray[index];
     return child && child.key;
   }
@@ -910,11 +1106,12 @@ class ScrollView extends React.Component<Props, State> {
       this.props.stickyHeaderIndices &&
       this.props.stickyHeaderIndices.length > 0
     ) {
-      this._scrollAnimatedValueAttachment = AnimatedImplementation.attachNativeEvent(
-        this._scrollViewRef,
-        'onScroll',
-        [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}],
-      );
+      this._scrollAnimatedValueAttachment =
+        AnimatedImplementation.attachNativeEvent(
+          this._scrollView.nativeInstance,
+          'onScroll',
+          [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}],
+        );
     }
   }
 
@@ -929,12 +1126,12 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  _onStickyHeaderLayout(index, event, key) {
+  _onStickyHeaderLayout(index: $FlowFixMe, event: $FlowFixMe, key: $FlowFixMe) {
     const {stickyHeaderIndices} = this.props;
     if (!stickyHeaderIndices) {
       return;
     }
-    const childArray = React.Children.toArray(this.props.children);
+    const childArray = React.Children.toArray<$FlowFixMe>(this.props.children);
     if (key !== this._getKeyForIndex(index, childArray)) {
       // ignore stale layout update
       return;
@@ -971,15 +1168,8 @@ class ScrollView extends React.Component<Props, State> {
         );
       }
     }
-    if (Platform.OS === 'android') {
-      if (
-        this.props.keyboardDismissMode === 'on-drag' &&
-        this.state.isTouching
-      ) {
-        dismissKeyboard();
-      }
-    }
-    this._scrollResponder.scrollResponderHandleScroll(e);
+    this._observedScrollSinceBecomingResponder = true;
+    this.props.onScroll && this.props.onScroll(e);
   };
 
   _handleLayout = (e: LayoutEvent) => {
@@ -997,41 +1187,478 @@ class ScrollView extends React.Component<Props, State> {
       this.props.onContentSizeChange(width, height);
   };
 
-  _scrollViewRef: ?React.ElementRef<HostComponent<mixed>> = null;
+  _innerView: RefForwarder<InnerViewInstance, InnerViewInstance> =
+    createRefForwarder(
+      (instance: InnerViewInstance): InnerViewInstance => instance,
+    );
 
-  _innerViewRef: ?React.ElementRef<typeof View> = null;
-  _setInnerViewRef = setAndForwardRef({
-    getForwardedRef: () => this.props.innerViewRef,
-    setLocalRef: ref => {
-      this._innerViewRef = ref;
+  _scrollView: RefForwarder<
+    NativeScrollViewInstance,
+    PublicScrollViewInstance,
+  > = createRefForwarder(
+    (nativeInstance: NativeScrollViewInstance): PublicScrollViewInstance => {
+      // This is a hack. Ideally we would forwardRef  to the underlying
+      // host component. However, since ScrollView has it's own methods that can be
+      // called as well, if we used the standard forwardRef then these
+      // methods wouldn't be accessible and thus be a breaking change.
+      //
+      // Therefore we edit ref to include ScrollView's public methods so that
+      // they are callable from the ref.
+
+      // $FlowFixMe[prop-missing] - Known issue with appending custom methods.
+      const publicInstance: PublicScrollViewInstance = Object.assign(
+        nativeInstance,
+        {
+          getScrollResponder: this.getScrollResponder,
+          getScrollableNode: this.getScrollableNode,
+          getInnerViewNode: this.getInnerViewNode,
+          getInnerViewRef: this.getInnerViewRef,
+          getNativeScrollRef: this.getNativeScrollRef,
+          scrollTo: this.scrollTo,
+          scrollToEnd: this.scrollToEnd,
+          flashScrollIndicators: this.flashScrollIndicators,
+          scrollResponderZoomTo: this.scrollResponderZoomTo,
+          scrollResponderScrollNativeHandleToKeyboard:
+            this.scrollResponderScrollNativeHandleToKeyboard,
+        },
+      );
+
+      return publicInstance;
     },
-  });
+  );
 
-  render(): React.Node | React.Element<string> {
-    let ScrollViewClass;
-    let ScrollContentContainerViewClass;
-    if (Platform.OS === 'android') {
-      if (this.props.horizontal === true) {
-        ScrollViewClass = AndroidHorizontalScrollView;
-        ScrollContentContainerViewClass = AndroidHorizontalScrollContentView;
-      } else {
-        ScrollViewClass = AndroidScrollView;
-        ScrollContentContainerViewClass = View;
-      }
-    } else {
-      ScrollViewClass = RCTScrollView;
-      ScrollContentContainerViewClass = RCTScrollContentView;
+  /**
+   * Warning, this may be called several times for a single keyboard opening.
+   * It's best to store the information in this method and then take any action
+   * at a later point (either in `keyboardDidShow` or other).
+   *
+   * Here's the order that events occur in:
+   * - focus
+   * - willShow {startCoordinates, endCoordinates} several times
+   * - didShow several times
+   * - blur
+   * - willHide {startCoordinates, endCoordinates} several times
+   * - didHide several times
+   *
+   * The `ScrollResponder` module callbacks for each of these events.
+   * Even though any user could have easily listened to keyboard events
+   * themselves, using these `props` callbacks ensures that ordering of events
+   * is consistent - and not dependent on the order that the keyboard events are
+   * subscribed to. This matters when telling the scroll view to scroll to where
+   * the keyboard is headed - the scroll responder better have been notified of
+   * the keyboard destination before being instructed to scroll to where the
+   * keyboard will be. Stick to the `ScrollResponder` callbacks, and everything
+   * will work.
+   *
+   * WARNING: These callbacks will fire even if a keyboard is displayed in a
+   * different navigation pane. Filter out the events to determine if they are
+   * relevant to you. (For example, only if you receive these callbacks after
+   * you had explicitly focused a node etc).
+   */
+
+  scrollResponderKeyboardWillShow: (e: KeyboardEvent) => void = (
+    e: KeyboardEvent,
+  ) => {
+    this._keyboardMetrics = e.endCoordinates;
+    this.props.onKeyboardWillShow && this.props.onKeyboardWillShow(e);
+  };
+
+  scrollResponderKeyboardWillHide: (e: KeyboardEvent) => void = (
+    e: KeyboardEvent,
+  ) => {
+    this._keyboardMetrics = null;
+    this.props.onKeyboardWillHide && this.props.onKeyboardWillHide(e);
+  };
+
+  scrollResponderKeyboardDidShow: (e: KeyboardEvent) => void = (
+    e: KeyboardEvent,
+  ) => {
+    this._keyboardMetrics = e.endCoordinates;
+    this.props.onKeyboardDidShow && this.props.onKeyboardDidShow(e);
+  };
+
+  scrollResponderKeyboardDidHide: (e: KeyboardEvent) => void = (
+    e: KeyboardEvent,
+  ) => {
+    this._keyboardMetrics = null;
+    this.props.onKeyboardDidHide && this.props.onKeyboardDidHide(e);
+  };
+
+  /**
+   * Invoke this from an `onMomentumScrollBegin` event.
+   */
+  _handleMomentumScrollBegin: (e: ScrollEvent) => void = (e: ScrollEvent) => {
+    this._lastMomentumScrollBeginTime = global.performance.now();
+    this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
+  };
+
+  /**
+   * Invoke this from an `onMomentumScrollEnd` event.
+   */
+  _handleMomentumScrollEnd: (e: ScrollEvent) => void = (e: ScrollEvent) => {
+    FrameRateLogger.endScroll();
+    this._lastMomentumScrollEndTime = global.performance.now();
+    this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e);
+  };
+
+  /**
+   * Unfortunately, `onScrollBeginDrag` also fires when *stopping* the scroll
+   * animation, and there's not an easy way to distinguish a drag vs. stopping
+   * momentum.
+   *
+   * Invoke this from an `onScrollBeginDrag` event.
+   */
+  _handleScrollBeginDrag: (e: ScrollEvent) => void = (e: ScrollEvent) => {
+    FrameRateLogger.beginScroll(); // TODO: track all scrolls after implementing onScrollEndAnimation
+
+    if (
+      Platform.OS === 'android' &&
+      this.props.keyboardDismissMode === 'on-drag'
+    ) {
+      dismissKeyboard();
     }
 
-    invariant(
-      ScrollViewClass !== undefined,
-      'ScrollViewClass must not be undefined',
-    );
+    this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
+  };
 
-    invariant(
-      ScrollContentContainerViewClass !== undefined,
-      'ScrollContentContainerViewClass must not be undefined',
-    );
+  /**
+   * Invoke this from an `onScrollEndDrag` event.
+   */
+  _handleScrollEndDrag: (e: ScrollEvent) => void = (e: ScrollEvent) => {
+    const {velocity} = e.nativeEvent;
+    // - If we are animating, then this is a "drag" that is stopping the scrollview and momentum end
+    //   will fire.
+    // - If velocity is non-zero, then the interaction will stop when momentum scroll ends or
+    //   another drag starts and ends.
+    // - If we don't get velocity, better to stop the interaction twice than not stop it.
+    if (
+      !this._isAnimating() &&
+      (!velocity || (velocity.x === 0 && velocity.y === 0))
+    ) {
+      FrameRateLogger.endScroll();
+    }
+    this.props.onScrollEndDrag && this.props.onScrollEndDrag(e);
+  };
+
+  /**
+   * A helper function for this class that lets us quickly determine if the
+   * view is currently animating. This is particularly useful to know when
+   * a touch has just started or ended.
+   */
+  _isAnimating: () => boolean = () => {
+    const now = global.performance.now();
+    const timeSinceLastMomentumScrollEnd =
+      now - this._lastMomentumScrollEndTime;
+    const isAnimating =
+      timeSinceLastMomentumScrollEnd < IS_ANIMATING_TOUCH_START_THRESHOLD_MS ||
+      this._lastMomentumScrollEndTime < this._lastMomentumScrollBeginTime;
+    return isAnimating;
+  };
+
+  /**
+   * Invoke this from an `onResponderGrant` event.
+   */
+  _handleResponderGrant: (e: PressEvent) => void = (e: PressEvent) => {
+    this._observedScrollSinceBecomingResponder = false;
+    this.props.onResponderGrant && this.props.onResponderGrant(e);
+    this._becameResponderWhileAnimating = this._isAnimating();
+  };
+
+  /**
+   * Invoke this from an `onResponderReject` event.
+   *
+   * Some other element is not yielding its role as responder. Normally, we'd
+   * just disable the `UIScrollView`, but a touch has already began on it, the
+   * `UIScrollView` will not accept being disabled after that. The easiest
+   * solution for now is to accept the limitation of disallowing this
+   * altogether. To improve this, find a way to disable the `UIScrollView` after
+   * a touch has already started.
+   */
+  _handleResponderReject: () => void = () => {};
+
+  /**
+   * Invoke this from an `onResponderRelease` event.
+   */
+  _handleResponderRelease: (e: PressEvent) => void = (e: PressEvent) => {
+    this._isTouching = e.nativeEvent.touches.length !== 0;
+    this.props.onResponderRelease && this.props.onResponderRelease(e);
+
+    if (typeof e.target === 'number') {
+      if (__DEV__) {
+        console.error(
+          'Did not expect event target to be a number. Should have been a native component',
+        );
+      }
+
+      return;
+    }
+
+    // By default scroll views will unfocus a textField
+    // if another touch occurs outside of it
+    const currentlyFocusedTextInput = TextInputState.currentlyFocusedInput();
+    if (
+      currentlyFocusedTextInput != null &&
+      this.props.keyboardShouldPersistTaps !== true &&
+      this.props.keyboardShouldPersistTaps !== 'always' &&
+      this._keyboardIsDismissible() &&
+      e.target !== currentlyFocusedTextInput &&
+      !this._observedScrollSinceBecomingResponder &&
+      !this._becameResponderWhileAnimating
+    ) {
+      TextInputState.blurTextInput(currentlyFocusedTextInput);
+    }
+  };
+
+  /**
+   * We will allow the scroll view to give up its lock iff it acquired the lock
+   * during an animation. This is a very useful default that happens to satisfy
+   * many common user experiences.
+   *
+   * - Stop a scroll on the left edge, then turn that into an outer view's
+   *   backswipe.
+   * - Stop a scroll mid-bounce at the top, continue pulling to have the outer
+   *   view dismiss.
+   * - However, without catching the scroll view mid-bounce (while it is
+   *   motionless), if you drag far enough for the scroll view to become
+   *   responder (and therefore drag the scroll view a bit), any backswipe
+   *   navigation of a swipe gesture higher in the view hierarchy, should be
+   *   rejected.
+   */
+  _handleResponderTerminationRequest: () => boolean = () => {
+    return !this._observedScrollSinceBecomingResponder;
+  };
+
+  /**
+   * Invoke this from an `onScroll` event.
+   */
+  _handleScrollShouldSetResponder: () => boolean = () => {
+    // Allow any event touch pass through if the default pan responder is disabled
+    if (this.props.disableScrollViewPanResponder === true) {
+      return false;
+    }
+    return this._isTouching;
+  };
+
+  /**
+   * Merely touch starting is not sufficient for a scroll view to become the
+   * responder. Being the "responder" means that the very next touch move/end
+   * event will result in an action/movement.
+   *
+   * Invoke this from an `onStartShouldSetResponder` event.
+   *
+   * `onStartShouldSetResponder` is used when the next move/end will trigger
+   * some UI movement/action, but when you want to yield priority to views
+   * nested inside of the view.
+   *
+   * There may be some cases where scroll views actually should return `true`
+   * from `onStartShouldSetResponder`: Any time we are detecting a standard tap
+   * that gives priority to nested views.
+   *
+   * - If a single tap on the scroll view triggers an action such as
+   *   recentering a map style view yet wants to give priority to interaction
+   *   views inside (such as dropped pins or labels), then we would return true
+   *   from this method when there is a single touch.
+   *
+   * - Similar to the previous case, if a two finger "tap" should trigger a
+   *   zoom, we would check the `touches` count, and if `>= 2`, we would return
+   *   true.
+   *
+   */
+  _handleStartShouldSetResponder: (e: PressEvent) => boolean = (
+    e: PressEvent,
+  ) => {
+    // Allow any event touch pass through if the default pan responder is disabled
+    if (this.props.disableScrollViewPanResponder === true) {
+      return false;
+    }
+
+    const currentlyFocusedInput = TextInputState.currentlyFocusedInput();
+    if (
+      this.props.keyboardShouldPersistTaps === 'handled' &&
+      this._keyboardIsDismissible() &&
+      e.target !== currentlyFocusedInput
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  /**
+   * There are times when the scroll view wants to become the responder
+   * (meaning respond to the next immediate `touchStart/touchEnd`), in a way
+   * that *doesn't* give priority to nested views (hence the capture phase):
+   *
+   * - Currently animating.
+   * - Tapping anywhere that is not a text input, while the keyboard is
+   *   up (which should dismiss the keyboard).
+   *
+   * Invoke this from an `onStartShouldSetResponderCapture` event.
+   */
+  _handleStartShouldSetResponderCapture: (e: PressEvent) => boolean = (
+    e: PressEvent,
+  ) => {
+    // The scroll view should receive taps instead of its descendants if:
+    // * it is already animating/decelerating
+    if (this._isAnimating()) {
+      return true;
+    }
+
+    // Allow any event touch pass through if the default pan responder is disabled
+    if (this.props.disableScrollViewPanResponder === true) {
+      return false;
+    }
+
+    // * the keyboard is up, keyboardShouldPersistTaps is 'never' (the default),
+    // and a new touch starts with a non-textinput target (in which case the
+    // first tap should be sent to the scroll view and dismiss the keyboard,
+    // then the second tap goes to the actual interior view)
+    const {keyboardShouldPersistTaps} = this.props;
+    const keyboardNeverPersistTaps =
+      !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
+
+    if (typeof e.target === 'number') {
+      if (__DEV__) {
+        console.error(
+          'Did not expect event target to be a number. Should have been a native component',
+        );
+      }
+
+      return false;
+    }
+
+    // Let presses through if the soft keyboard is detached from the viewport
+    if (this._softKeyboardIsDetached()) {
+      return false;
+    }
+
+    if (
+      keyboardNeverPersistTaps &&
+      this._keyboardIsDismissible() &&
+      e.target != null &&
+      // $FlowFixMe[incompatible-call]
+      !TextInputState.isTextInput(e.target)
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
+  /**
+   * Do we consider there to be a dismissible soft-keyboard open?
+   */
+  _keyboardIsDismissible: () => boolean = () => {
+    const currentlyFocusedInput = TextInputState.currentlyFocusedInput();
+
+    // We cannot dismiss the keyboard without an input to blur, even if a soft
+    // keyboard is open (e.g. when keyboard is open due to a native component
+    // not participating in TextInputState). It's also possible that the
+    // currently focused input isn't a TextInput (such as by calling ref.focus
+    // on a non-TextInput).
+    const hasFocusedTextInput =
+      currentlyFocusedInput != null &&
+      TextInputState.isTextInput(currentlyFocusedInput);
+
+    // Even if an input is focused, we may not have a keyboard to dismiss. E.g
+    // when using a physical keyboard. Ensure we have an event for an opened
+    // keyboard.
+    const softKeyboardMayBeOpen =
+      this._keyboardMetrics != null || this._keyboardEventsAreUnreliable();
+
+    return hasFocusedTextInput && softKeyboardMayBeOpen;
+  };
+
+  /**
+   * Whether an open soft keyboard is present which does not overlap the
+   * viewport. E.g. for a VR soft-keyboard which is detached from the app
+   * viewport.
+   */
+  _softKeyboardIsDetached: () => boolean = () => {
+    return this._keyboardMetrics != null && this._keyboardMetrics.height === 0;
+  };
+
+  _keyboardEventsAreUnreliable: () => boolean = () => {
+    // Android versions prior to API 30 rely on observing layout changes when
+    // `android:windowSoftInputMode` is set to `adjustResize` or `adjustPan`.
+    return Platform.OS === 'android' && Platform.Version < 30;
+  };
+
+  /**
+   * Invoke this from an `onTouchEnd` event.
+   *
+   * @param {PressEvent} e Event.
+   */
+  _handleTouchEnd: (e: PressEvent) => void = (e: PressEvent) => {
+    const nativeEvent = e.nativeEvent;
+    this._isTouching = nativeEvent.touches.length !== 0;
+
+    const {keyboardShouldPersistTaps} = this.props;
+    const keyboardNeverPersistsTaps =
+      !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
+
+    // Dismiss the keyboard now if we didn't become responder in capture phase
+    // to eat presses, but still want to dismiss on interaction.
+    // Don't do anything if the target of the touch event is the current input.
+    const currentlyFocusedTextInput = TextInputState.currentlyFocusedInput();
+    if (
+      currentlyFocusedTextInput != null &&
+      e.target !== currentlyFocusedTextInput &&
+      this._softKeyboardIsDetached() &&
+      this._keyboardIsDismissible() &&
+      keyboardNeverPersistsTaps
+    ) {
+      TextInputState.blurTextInput(currentlyFocusedTextInput);
+    }
+
+    this.props.onTouchEnd && this.props.onTouchEnd(e);
+  };
+
+  /**
+   * Invoke this from an `onTouchCancel` event.
+   *
+   * @param {PressEvent} e Event.
+   */
+  _handleTouchCancel: (e: PressEvent) => void = (e: PressEvent) => {
+    this._isTouching = false;
+    this.props.onTouchCancel && this.props.onTouchCancel(e);
+  };
+
+  /**
+   * Invoke this from an `onTouchStart` event.
+   *
+   * Since we know that the `SimpleEventPlugin` occurs later in the plugin
+   * order, after `ResponderEventPlugin`, we can detect that we were *not*
+   * permitted to be the responder (presumably because a contained view became
+   * responder). The `onResponderReject` won't fire in that case - it only
+   * fires when a *current* responder rejects our request.
+   *
+   * @param {PressEvent} e Touch Start event.
+   */
+  _handleTouchStart: (e: PressEvent) => void = (e: PressEvent) => {
+    this._isTouching = true;
+    this.props.onTouchStart && this.props.onTouchStart(e);
+  };
+
+  /**
+   * Invoke this from an `onTouchMove` event.
+   *
+   * Since we know that the `SimpleEventPlugin` occurs later in the plugin
+   * order, after `ResponderEventPlugin`, we can detect that we were *not*
+   * permitted to be the responder (presumably because a contained view became
+   * responder). The `onResponderReject` won't fire in that case - it only
+   * fires when a *current* responder rejects our request.
+   *
+   * @param {PressEvent} e Touch Start event.
+   */
+  _handleTouchMove: (e: PressEvent) => void = (e: PressEvent) => {
+    this.props.onTouchMove && this.props.onTouchMove(e);
+  };
+
+  render(): React.Node | React.Element<string> {
+    const [NativeDirectionalScrollView, NativeDirectionalScrollContentView] =
+      this.props.horizontal === true
+        ? NativeHorizontalScrollViewTuple
+        : NativeVerticalScrollViewTuple;
 
     const contentContainerStyle = [
       this.props.horizontal === true && styles.contentContainerHorizontal,
@@ -1050,18 +1677,20 @@ class ScrollView extends React.Component<Props, State> {
       );
     }
 
-    let contentSizeChangeProps = {};
-    if (this.props.onContentSizeChange) {
-      contentSizeChangeProps = {
-        onLayout: this._handleContentOnLayout,
-      };
-    }
+    const contentSizeChangeProps =
+      this.props.onContentSizeChange == null
+        ? null
+        : {
+            onLayout: this._handleContentOnLayout,
+          };
 
     const {stickyHeaderIndices} = this.props;
     let children = this.props.children;
 
     if (stickyHeaderIndices != null && stickyHeaderIndices.length > 0) {
-      const childArray = React.Children.toArray(this.props.children);
+      const childArray = React.Children.toArray<$FlowFixMe>(
+        this.props.children,
+      );
 
       children = childArray.map((child, index) => {
         const indexOfIndex = child ? stickyHeaderIndices.indexOf(index) : -1;
@@ -1081,6 +1710,7 @@ class ScrollView extends React.Component<Props, State> {
               onLayout={event => this._onStickyHeaderLayout(index, event, key)}
               scrollAnimatedValue={this._scrollAnimatedValue}
               inverted={this.props.invertStickyHeaders}
+              hiddenOnScroll={this.props.stickyHeaderHiddenOnScroll}
               scrollViewHeight={this.state.layoutHeight}>
               {child}
             </StickyHeaderComponent>
@@ -1101,12 +1731,9 @@ class ScrollView extends React.Component<Props, State> {
       Array.isArray(stickyHeaderIndices) && stickyHeaderIndices.length > 0;
 
     const contentContainer = (
-      /* $FlowFixMe(>=0.112.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.112 was deployed. To see the error, delete
-       * this comment and run Flow. */
-      <ScrollContentContainerViewClass
+      <NativeDirectionalScrollContentView
         {...contentSizeChangeProps}
-        ref={this._setInnerViewRef}
+        ref={this._innerView.getForwardingRef(this.props.innerViewRef)}
         style={contentContainerStyle}
         removeClippedSubviews={
           // Subview clipping causes issues with sticky headers on Android and
@@ -1117,7 +1744,7 @@ class ScrollView extends React.Component<Props, State> {
         }
         collapsable={false}>
         {children}
-      </ScrollContentContainerViewClass>
+      </NativeDirectionalScrollContentView>
     );
 
     const alwaysBounceHorizontal =
@@ -1138,38 +1765,28 @@ class ScrollView extends React.Component<Props, State> {
       ...this.props,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
-      style: [baseStyle, this.props.style],
+      style: StyleSheet.compose(baseStyle, this.props.style),
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
       onContentSizeChange: null,
       onLayout: this._handleLayout,
-      onMomentumScrollBegin: this._scrollResponder
-        .scrollResponderHandleMomentumScrollBegin,
-      onMomentumScrollEnd: this._scrollResponder
-        .scrollResponderHandleMomentumScrollEnd,
-      onResponderGrant: this._scrollResponder
-        .scrollResponderHandleResponderGrant,
-      onResponderReject: this._scrollResponder
-        .scrollResponderHandleResponderReject,
-      onResponderRelease: this._scrollResponder
-        .scrollResponderHandleResponderRelease,
-      onResponderTerminationRequest: this._scrollResponder
-        .scrollResponderHandleTerminationRequest,
-      onScrollBeginDrag: this._scrollResponder
-        .scrollResponderHandleScrollBeginDrag,
-      onScrollEndDrag: this._scrollResponder.scrollResponderHandleScrollEndDrag,
-      onScrollShouldSetResponder: this._scrollResponder
-        .scrollResponderHandleScrollShouldSetResponder,
-      onStartShouldSetResponder: this._scrollResponder
-        .scrollResponderHandleStartShouldSetResponder,
-      onStartShouldSetResponderCapture: this._scrollResponder
-        .scrollResponderHandleStartShouldSetResponderCapture,
-      onTouchEnd: this._scrollResponder.scrollResponderHandleTouchEnd,
-      onTouchMove: this._scrollResponder.scrollResponderHandleTouchMove,
-      onTouchStart: this._scrollResponder.scrollResponderHandleTouchStart,
-      onTouchCancel: this._scrollResponder.scrollResponderHandleTouchCancel,
+      onMomentumScrollBegin: this._handleMomentumScrollBegin,
+      onMomentumScrollEnd: this._handleMomentumScrollEnd,
+      onResponderGrant: this._handleResponderGrant,
+      onResponderReject: this._handleResponderReject,
+      onResponderRelease: this._handleResponderRelease,
+      onResponderTerminationRequest: this._handleResponderTerminationRequest,
+      onScrollBeginDrag: this._handleScrollBeginDrag,
+      onScrollEndDrag: this._handleScrollEndDrag,
+      onScrollShouldSetResponder: this._handleScrollShouldSetResponder,
+      onStartShouldSetResponder: this._handleStartShouldSetResponder,
+      onStartShouldSetResponderCapture:
+        this._handleStartShouldSetResponderCapture,
+      onTouchEnd: this._handleTouchEnd,
+      onTouchMove: this._handleTouchMove,
+      onTouchStart: this._handleTouchStart,
+      onTouchCancel: this._handleTouchCancel,
       onScroll: this._handleScroll,
-      scrollBarThumbImage: resolveAssetSource(this.props.scrollBarThumbImage),
       scrollEventThrottle: hasStickyHeaders
         ? 1
         : this.props.scrollEventThrottle,
@@ -1202,18 +1819,18 @@ class ScrollView extends React.Component<Props, State> {
     }
 
     const refreshControl = this.props.refreshControl;
+    const scrollViewRef = this._scrollView.getForwardingRef(
+      this.props.scrollViewRef,
+    );
 
     if (refreshControl) {
       if (Platform.OS === 'ios') {
         // On iOS the RefreshControl is a child of the ScrollView.
         return (
-          /* $FlowFixMe(>=0.117.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.117 was deployed. To see the error,
-           * delete this comment and run Flow. */
-          <ScrollViewClass {...props} ref={this._setNativeRef}>
+          <NativeDirectionalScrollView {...props} ref={scrollViewRef}>
             {refreshControl}
             {contentContainer}
-          </ScrollViewClass>
+          </NativeDirectionalScrollView>
         );
       } else if (Platform.OS === 'android') {
         // On Android wrap the ScrollView with a AndroidSwipeRefreshLayout.
@@ -1224,20 +1841,20 @@ class ScrollView extends React.Component<Props, State> {
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         return React.cloneElement(
           refreshControl,
-          {style: [baseStyle, outer]},
-          <ScrollViewClass
+          {style: StyleSheet.compose(baseStyle, outer)},
+          <NativeDirectionalScrollView
             {...props}
-            style={[baseStyle, inner]}
-            ref={this._setNativeRef}>
+            style={StyleSheet.compose(baseStyle, inner)}
+            ref={scrollViewRef}>
             {contentContainer}
-          </ScrollViewClass>,
+          </NativeDirectionalScrollView>,
         );
       }
     }
     return (
-      <ScrollViewClass {...props} ref={this._setNativeRef}>
+      <NativeDirectionalScrollView {...props} ref={scrollViewRef}>
         {contentContainer}
-      </ScrollViewClass>
+      </NativeDirectionalScrollView>
     );
   }
 }
@@ -1260,22 +1877,63 @@ const styles = StyleSheet.create({
   },
 });
 
-function Wrapper(props, ref) {
+type ForwardedRef<T> = {current: null | T, ...} | ((null | T) => mixed);
+
+type RefForwarder<TNativeInstance, TPublicInstance> = {
+  getForwardingRef: (
+    ?ForwardedRef<TPublicInstance>,
+  ) => (TNativeInstance | null) => void,
+  nativeInstance: TNativeInstance | null,
+  publicInstance: TPublicInstance | null,
+};
+
+/**
+ * Helper function that should be replaced with `useCallback` and `useMergeRefs`
+ * once `ScrollView` is reimplemented as a functional component.
+ */
+function createRefForwarder<TNativeInstance, TPublicInstance>(
+  mutator: TNativeInstance => TPublicInstance,
+): RefForwarder<TNativeInstance, TPublicInstance> {
+  const state: RefForwarder<TNativeInstance, TPublicInstance> = {
+    getForwardingRef: memoize(forwardedRef => {
+      return (nativeInstance: TNativeInstance | null): void => {
+        const publicInstance =
+          nativeInstance == null ? null : mutator(nativeInstance);
+
+        state.nativeInstance = nativeInstance;
+        state.publicInstance = publicInstance;
+
+        if (forwardedRef != null) {
+          if (typeof forwardedRef === 'function') {
+            forwardedRef(publicInstance);
+          } else {
+            forwardedRef.current = publicInstance;
+          }
+        }
+      };
+    }),
+    nativeInstance: null,
+    publicInstance: null,
+  };
+
+  return state;
+}
+
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
+function Wrapper(props, ref: (mixed => mixed) | {current: mixed, ...}) {
   return <ScrollView {...props} scrollViewRef={ref} />;
 }
 Wrapper.displayName = 'ScrollView';
 const ForwardedScrollView = React.forwardRef(Wrapper);
 
-// $FlowFixMe Add static context to ForwardedScrollView
+// $FlowFixMe[prop-missing] Add static context to ForwardedScrollView
 ForwardedScrollView.Context = ScrollViewContext;
 
 ForwardedScrollView.displayName = 'ScrollView';
 
 module.exports = ((ForwardedScrollView: $FlowFixMe): React.AbstractComponent<
   React.ElementConfig<typeof ScrollView>,
-  $ReadOnly<{|
-    ...$Exact<React.ElementRef<HostComponent<mixed>>>,
-    ...ScrollViewImperativeMethods,
-  |}>,
+  PublicScrollViewInstance,
 > &
   ScrollViewComponentStatics);

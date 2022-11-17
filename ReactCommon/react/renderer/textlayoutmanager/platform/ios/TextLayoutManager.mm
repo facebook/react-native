@@ -1,11 +1,12 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "TextLayoutManager.h"
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/utils/ManagedObjectWrapper.h>
 
 #import "RCTTextLayoutManager.h"
@@ -39,9 +40,20 @@ TextMeasurement TextLayoutManager::measure(
 
       measurement = measureCache_.get(
           {attributedString, paragraphAttributes, layoutConstraints}, [&](TextMeasureCacheKey const &key) {
-            return [textLayoutManager measureAttributedString:attributedString
-                                          paragraphAttributes:paragraphAttributes
-                                            layoutConstraints:layoutConstraints];
+            auto telemetry = TransactionTelemetry::threadLocalTelemetry();
+            if (telemetry) {
+              telemetry->willMeasureText();
+            }
+
+            auto measurement = [textLayoutManager measureAttributedString:attributedString
+                                                      paragraphAttributes:paragraphAttributes
+                                                        layoutConstraints:layoutConstraints];
+
+            if (telemetry) {
+              telemetry->didMeasureText();
+            }
+
+            return measurement;
           });
       break;
     }
@@ -50,9 +62,19 @@ TextMeasurement TextLayoutManager::measure(
       NSAttributedString *nsAttributedString =
           (NSAttributedString *)unwrapManagedObject(attributedStringBox.getOpaquePointer());
 
+      auto telemetry = TransactionTelemetry::threadLocalTelemetry();
+      if (telemetry) {
+        telemetry->willMeasureText();
+      }
+
       measurement = [textLayoutManager measureNSAttributedString:nsAttributedString
                                              paragraphAttributes:paragraphAttributes
                                                layoutConstraints:layoutConstraints];
+
+      if (telemetry) {
+        telemetry->didMeasureText();
+      }
+
       break;
     }
   }

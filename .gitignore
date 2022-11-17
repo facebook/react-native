@@ -20,20 +20,28 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+**/.xcode.env.local
 
 # Gradle
 /build/
-/packages/react-native-codegen/android/build/
-/packages/react-native-codegen/android/gradlePlugin-build/gradlePlugin/build
+/packages/react-native-gradle-plugin/build/
+/packages/rn-tester/build
 /packages/rn-tester/android/app/.cxx/
 /packages/rn-tester/android/app/build/
 /packages/rn-tester/android/app/gradle/
 /packages/rn-tester/android/app/gradlew
 /packages/rn-tester/android/app/gradlew.bat
 /ReactAndroid/build/
+/ReactAndroid/.cxx/
 /ReactAndroid/gradle/
 /ReactAndroid/gradlew
 /ReactAndroid/gradlew.bat
+/ReactAndroid/external-artifacts/build/
+/ReactAndroid/external-artifacts/artifacts/
+/ReactAndroid/hermes-engine/build/
+/ReactAndroid/hermes-engine/.cxx/
+/template/android/app/build/
+/template/android/build/
 
 # Buck
 .buckd
@@ -62,7 +70,6 @@ local.properties
 node_modules
 *.log
 .nvm
-/bots/node_modules/
 package-lock.json
 
 # OS X
@@ -80,30 +87,42 @@ package-lock.json
 
 # ReactCommon subdir shouldn't have Xcode project
 /ReactCommon/**/*.xcodeproj
-/packages/rn-tester/build
-/packages/rn-tester/android/app/build/*
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
-/Libraries/FBReactNativeSpec/**/*.xcodeproj
 /Libraries/RCTRequired/**/*.xcodeproj
 /React/CoreModules/**/*.xcodeproj
+/React/FBReactNativeSpec/**/*.xcodeproj
 /packages/react-native-codegen/**/*.xcodeproj
 
-# CocoaPods
+# Ruby Gems (Bundler)
+/vendor
+/template/vendor
+
+# iOS / CocoaPods
+/template/ios/build/
 /template/ios/Pods/
 /template/ios/Podfile.lock
 /packages/rn-tester/Gemfile.lock
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*
-!/packages/rn-tester/Pods/__offline_mirrors__
+!/packages/rn-tester/Pods/__offline_mirrors_hermes__
+!/packages/rn-tester/Pods/__offline_mirrors_jsc__
 
 # react-native-codegen
+/React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
-/ReactCommon/fabric/components/rncore/
-/schema-native-modules.json
-/schema-rncore.json
+/packages/react-native-codegen/tmp/
+/ReactCommon/react/renderer/components/rncore/
+/packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
+
+
+# Additional SDKs
+/sdks/download
+/sdks/hermes
+/sdks/hermesc
+/sdks/hermes-engine/build_host_hermesc
 
 # Visual studio
 .vscode
@@ -111,3 +130,6 @@ package-lock.json
 
 # Android memory profiler files
 *.hprof
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*

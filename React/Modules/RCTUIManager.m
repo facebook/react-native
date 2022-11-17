@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@
 #import "RCTComponentData.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
-#import "RCTEventDispatcher.h"
+#import "RCTEventDispatcherProtocol.h"
 #import "RCTLayoutAnimation.h"
 #import "RCTLayoutAnimationGroup.h"
 #import "RCTLog.h"
@@ -81,6 +81,7 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -146,6 +147,9 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
+  RCTEnforceNewArchitectureValidation(
+      RCTNotAllowedInBridgeless, self, @"RCTUIManager must not be initialized for the new architecture");
+
   RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;
 
@@ -166,7 +170,9 @@ RCT_EXPORT_MODULE()
   _componentDataByName = [NSMutableDictionary new];
   for (Class moduleClass in _bridge.moduleClasses) {
     if ([moduleClass isSubclassOfClass:[RCTViewManager class]]) {
-      RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:_bridge];
+      RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass
+                                                                                bridge:_bridge
+                                                                       eventDispatcher:_bridge.eventDispatcher];
       _componentDataByName[componentData.name] = componentData;
     }
   }
@@ -196,7 +202,8 @@ RCT_EXPORT_MODULE()
   id multiplier = [[self->_bridge moduleForName:@"AccessibilityManager"
                           lazilyLoadIfNecessary:YES] valueForKey:@"multiplier"];
   if (multiplier) {
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier" body:multiplier];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
+                                                                          body:multiplier];
   }
 #pragma clang diagnostic pop
 
@@ -256,7 +263,8 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"namedOrientationDidChange" body:orientationEvent];
+  [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"namedOrientationDidChange"
+                                                                        body:orientationEvent];
 #pragma clang diagnostic pop
 }
 
@@ -552,11 +560,12 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     for (RCTShadowView *shadowView in affectedShadowViews) {
       reactTags[index] = shadowView.reactTag;
       RCTLayoutMetrics layoutMetrics = shadowView.layoutMetrics;
-      frameDataArray[index++] = (RCTFrameData){layoutMetrics.frame,
-                                               layoutMetrics.layoutDirection,
-                                               shadowView.isNewView,
-                                               shadowView.superview.isNewView,
-                                               layoutMetrics.displayType};
+      frameDataArray[index++] = (RCTFrameData){
+          layoutMetrics.frame,
+          layoutMetrics.layoutDirection,
+          shadowView.isNewView,
+          shadowView.superview.isNewView,
+          layoutMetrics.displayType};
     }
   }
 
@@ -1514,6 +1523,28 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
     }
   }
 
+  // Add capturing events (added as bubbling events but with the 'skipBubbling' flag)
+  for (NSString *eventName in viewConfig[@"capturingEvents"]) {
+    if (!bubblingEvents[eventName]) {
+      NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
+      bubblingEvents[eventName] = @{
+        @"phasedRegistrationNames" : @{
+          @"bubbled" : bubbleName,
+          @"captured" : [bubbleName stringByAppendingString:@"Capture"],
+          @"skipBubbling" : @YES
+        }
+      };
+    }
+    bubblingEventTypes[eventName] = bubblingEvents[eventName];
+    if (RCT_DEBUG && directEvents[eventName]) {
+      RCTLogError(
+          @"Component '%@' re-registered direct event '%@' as a "
+           "bubbling event",
+          componentData.name,
+          eventName);
+    }
+  }
+
   return moduleConstants;
 }
 
@@ -1573,7 +1604,9 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView : (NSString *)name)
     return @{};
   }
 
-  RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:[module class] bridge:self.bridge];
+  RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:[module class]
+                                                                            bridge:self.bridge
+                                                                   eventDispatcher:self.bridge.eventDispatcher];
   _componentDataByName[componentData.name] = componentData;
   NSMutableDictionary *directEvents = [NSMutableDictionary new];
   NSMutableDictionary *bubblingEvents = [NSMutableDictionary new];
@@ -1623,6 +1656,8 @@ static UIView *_jsResponder;
 
 + (UIView *)JSResponder
 {
+  RCTErrorNewArchitectureValidation(
+      RCTNotAllowedInFabricWithoutLegacy, @"RCTUIManager", @"Please migrate this legacy surface to Fabric.");
   return _jsResponder;
 }
 

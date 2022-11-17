@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,7 @@
 #import "RCTKeyboardObserver.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -60,7 +60,7 @@ RCT_EXPORT_MODULE()
 #define IMPLEMENT_KEYBOARD_HANDLER(EVENT)                                              \
   -(void)EVENT : (NSNotification *)notification                                        \
   {                                                                                    \
-    if (!self.bridge && !self.invokeJS) {                                              \
+    if (!self.callableJSModules) {                                                     \
       return;                                                                          \
     }                                                                                  \
     [self sendEventWithName:@ #EVENT body:RCTParseKeyboardNotification(notification)]; \

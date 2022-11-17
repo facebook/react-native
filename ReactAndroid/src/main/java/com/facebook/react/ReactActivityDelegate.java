@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,18 +11,20 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
- * Delegate class for {@link ReactActivity} and {@link ReactFragmentActivity}. You can subclass this
- * to provide custom implementations for e.g. {@link #getReactNativeHost()}, if your Application
- * class doesn't implement {@link ReactApplication}.
+ * Delegate class for {@link ReactActivity}. You can subclass this to provide custom implementations
+ * for e.g. {@link #getReactNativeHost()}, if your Application class doesn't implement {@link
+ * ReactApplication}.
  */
 public class ReactActivityDelegate {
 
@@ -32,6 +34,7 @@ public class ReactActivityDelegate {
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
   private ReactDelegate mReactDelegate;
+  private boolean mConcurrentRootEnabled;
 
   @Deprecated
   public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
@@ -44,8 +47,25 @@ public class ReactActivityDelegate {
     mMainComponentName = mainComponentName;
   }
 
+  /**
+   * Public API to populate the launch options that will be passed to React. Here you can customize
+   * the values that will be passed as `initialProperties` to the Renderer.
+   *
+   * @return Either null or a key-value map as a Bundle
+   */
   protected @Nullable Bundle getLaunchOptions() {
     return null;
+  }
+
+  private @NonNull Bundle composeLaunchOptions() {
+    Bundle composedLaunchOptions = getLaunchOptions();
+    if (isConcurrentRootEnabled()) {
+      if (composedLaunchOptions == null) {
+        composedLaunchOptions = new Bundle();
+      }
+      composedLaunchOptions.putBoolean("concurrentRoot", true);
+    }
+    return composedLaunchOptions;
   }
 
   protected ReactRootView createRootView() {
@@ -73,15 +93,16 @@ public class ReactActivityDelegate {
 
   protected void onCreate(Bundle savedInstanceState) {
     String mainComponentName = getMainComponentName();
+    Bundle launchOptions = composeLaunchOptions();
     mReactDelegate =
         new ReactDelegate(
-            getPlainActivity(), getReactNativeHost(), mainComponentName, getLaunchOptions()) {
+            getPlainActivity(), getReactNativeHost(), mainComponentName, launchOptions) {
           @Override
           protected ReactRootView createRootView() {
             return ReactActivityDelegate.this.createRootView();
           }
         };
-    if (mMainComponentName != null) {
+    if (mainComponentName != null) {
       loadApp(mainComponentName);
     }
   }
@@ -154,6 +175,12 @@ public class ReactActivityDelegate {
     }
   }
 
+  public void onConfigurationChanged(Configuration newConfig) {
+    if (getReactNativeHost().hasInstance()) {
+      getReactInstanceManager().onConfigurationChanged(getContext(), newConfig);
+    }
+  }
+
   @TargetApi(Build.VERSION_CODES.M)
   public void requestPermissions(
       String[] permissions, int requestCode, PermissionListener listener) {
@@ -182,5 +209,17 @@ public class ReactActivityDelegate {
 
   protected Activity getPlainActivity() {
     return ((Activity) getContext());
+  }
+
+  /**
+   * Override this method to enable Concurrent Root on the surface for this Activity. See:
+   * https://reactjs.org/blog/2022/03/29/react-v18.html
+   *
+   * <p>This requires to be rendering on Fabric (i.e. on the New Architecture).
+   *
+   * @return Wether you want to enable Concurrent Root for this surface or not.
+   */
+  protected boolean isConcurrentRootEnabled() {
+    return false;
   }
 }

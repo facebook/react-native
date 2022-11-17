@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,10 +11,7 @@
 
 extern NSString *const RCTJavaScriptLoaderErrorDomain;
 
-extern const UInt32 RCT_BYTECODE_ALIGNMENT;
-
-UInt32 RCTReadUInt32LE(NSData *script, UInt32 offset);
-bool RCTIsBytecodeBundle(NSData *script);
+extern const uint32_t RCT_BYTECODE_ALIGNMENT;
 
 NS_ENUM(NSInteger){
     RCTJavaScriptLoaderErrorNoScriptURL = 1,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,29 +10,32 @@
 #include <react/renderer/components/text/conversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 
-namespace facebook {
-namespace react {
+#ifdef ANDROID
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#endif
+
+#include <utility>
+
+namespace facebook::react {
 
 AndroidTextInputState::AndroidTextInputState(
     int64_t mostRecentEventCount,
-    AttributedString const &attributedString,
-    AttributedString const &reactTreeAttributedString,
-    ParagraphAttributes const &paragraphAttributes,
-    TextAttributes const &defaultTextAttributes,
-    ShadowView const &defaultParentShadowView,
-    SharedTextLayoutManager const &layoutManager,
+    AttributedString attributedString,
+    AttributedString reactTreeAttributedString,
+    ParagraphAttributes paragraphAttributes,
+    TextAttributes defaultTextAttributes,
+    ShadowView defaultParentShadowView,
     float defaultThemePaddingStart,
     float defaultThemePaddingEnd,
     float defaultThemePaddingTop,
     float defaultThemePaddingBottom)
     : mostRecentEventCount(mostRecentEventCount),
-      cachedAttributedStringId(0),
-      attributedString(attributedString),
-      reactTreeAttributedString(reactTreeAttributedString),
-      paragraphAttributes(paragraphAttributes),
-      defaultTextAttributes(defaultTextAttributes),
-      defaultParentShadowView(defaultParentShadowView),
-      layoutManager(layoutManager),
+      attributedString(std::move(attributedString)),
+      reactTreeAttributedString(std::move(reactTreeAttributedString)),
+      paragraphAttributes(std::move(paragraphAttributes)),
+      defaultTextAttributes(std::move(defaultTextAttributes)),
+      defaultParentShadowView(std::move(defaultParentShadowView)),
       defaultThemePaddingStart(defaultThemePaddingStart),
       defaultThemePaddingEnd(defaultThemePaddingEnd),
       defaultThemePaddingTop(defaultThemePaddingTop),
@@ -54,7 +57,6 @@ AndroidTextInputState::AndroidTextInputState(
       paragraphAttributes(previousState.paragraphAttributes),
       defaultTextAttributes(previousState.defaultTextAttributes),
       defaultParentShadowView(previousState.defaultParentShadowView),
-      layoutManager(previousState.layoutManager),
       defaultThemePaddingStart(data.getDefault(
                                        "themePaddingStart",
                                        previousState.defaultThemePaddingStart)
@@ -91,7 +93,23 @@ folly::dynamic AndroidTextInputState::getDynamic() const {
   }
   return newState;
 }
+
+MapBuffer AndroidTextInputState::getMapBuffer() const {
+  auto builder = MapBufferBuilder();
+  // See comment in getDynamic block.
+  if (cachedAttributedStringId == 0) {
+    builder.putInt(TX_STATE_KEY_MOST_RECENT_EVENT_COUNT, mostRecentEventCount);
+
+    auto attStringMapBuffer = toMapBuffer(attributedString);
+    builder.putMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING, attStringMapBuffer);
+    auto paMapBuffer = toMapBuffer(paragraphAttributes);
+    builder.putMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES, paMapBuffer);
+
+    builder.putInt(TX_STATE_KEY_HASH, attStringMapBuffer.getInt(AS_KEY_HASH));
+  }
+  return builder.build();
+}
+
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

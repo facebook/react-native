@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,16 +10,16 @@
 
 'use strict';
 
-const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
-const React = require('react');
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
-const renderApplication = require('react-native/Libraries/ReactNative/renderApplication');
-
-const {StyleSheet, Text, View} = require('react-native');
+import * as React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import BatchedBridge from 'react-native/Libraries/BatchedBridge/BatchedBridge';
+import renderApplication from 'react-native/Libraries/ReactNative/renderApplication';
 
 type FlexTestAppProps = $ReadOnly<{||}>;
 class FlexTestApp extends React.Component<FlexTestAppProps> {
-  render() {
+  render(): React.Node {
     return (
       <View
         style={FlexTestAppStyles.container}
@@ -57,7 +57,7 @@ const FlexTestAppStyles = StyleSheet.create({
 
 type FlexWithTextProps = $ReadOnly<{||}>;
 class FlexWithText extends React.Component<FlexWithTextProps> {
-  render() {
+  render(): React.Node {
     return (
       <View
         style={FlexWithTextStyles.container}
@@ -90,7 +90,7 @@ const FlexWithTextStyles = StyleSheet.create({
 
 type AbsolutePositionTestAppProps = $ReadOnly<{||}>;
 class AbsolutePositionTestApp extends React.Component<AbsolutePositionTestAppProps> {
-  render() {
+  render(): React.Node {
     return (
       <View
         style={AbsolutePositionTestAppStyles.absolute}
@@ -113,7 +113,7 @@ const AbsolutePositionTestAppStyles = StyleSheet.create({
 
 type AbsolutePositionBottomRightTestAppProps = $ReadOnly<{||}>;
 class AbsolutePositionBottomRightTestApp extends React.Component<AbsolutePositionBottomRightTestAppProps> {
-  render() {
+  render(): React.Node {
     return (
       <View
         style={AbsolutePositionBottomRightTestAppStyles.container}
@@ -146,7 +146,7 @@ type CenteredTextViewProps = $ReadOnly<{|
   text?: ?string,
 |}>;
 class CenteredTextView extends React.Component<CenteredTextViewProps> {
-  render() {
+  render(): React.Node {
     return (
       <View collapsable={false}>
         <View style={CenteredTextViewStyles.parent} collapsable={false}>
@@ -183,16 +183,18 @@ class UpdatePositionInListTestApp extends React.Component<
   UpdatePositionInListTestAppProps,
   UpdatePositionInListTestAppState,
 > {
-  state = {
+  state: UpdatePositionInListTestAppState = {
     active: false,
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   constructor(...args) {
     super(...args);
     flushUpdatePositionInList = () => this.setState({active: true});
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View collapsable={false} testID="container">
         <View
@@ -234,26 +236,26 @@ const UpdatePositionInListTestAppStyles = StyleSheet.create({
 const emptyExactProps = Object.freeze({});
 
 const UIManagerTestModule = {
-  renderFlexTestApplication(rootTag: number) {
+  renderFlexTestApplication(rootTag: RootTag) {
     renderApplication(FlexTestApp, emptyExactProps, rootTag);
   },
-  renderFlexWithTextApplication(rootTag: number) {
+  renderFlexWithTextApplication(rootTag: RootTag) {
     renderApplication(FlexWithText, emptyExactProps, rootTag);
   },
-  renderAbsolutePositionBottomRightTestApplication(rootTag: number) {
+  renderAbsolutePositionBottomRightTestApplication(rootTag: RootTag) {
     renderApplication(
       AbsolutePositionBottomRightTestApp,
       emptyExactProps,
       rootTag,
     );
   },
-  renderAbsolutePositionTestApplication(rootTag: number) {
+  renderAbsolutePositionTestApplication(rootTag: RootTag) {
     renderApplication(AbsolutePositionTestApp, emptyExactProps, rootTag);
   },
-  renderCenteredTextViewTestApplication(rootTag: number, text: string) {
+  renderCenteredTextViewTestApplication(rootTag: RootTag, text: string) {
     renderApplication(CenteredTextView, {text: text}, rootTag);
   },
-  renderUpdatePositionInListTestApplication(rootTag: number) {
+  renderUpdatePositionInListTestApplication(rootTag: RootTag) {
     renderApplication(UpdatePositionInListTestApp, emptyExactProps, rootTag);
   },
   flushUpdatePositionInList,
@@ -264,4 +266,4 @@ BatchedBridge.registerCallableModule(
   UIManagerTestModule,
 );
 
-module.exports = UIManagerTestModule;
+export default UIManagerTestModule;

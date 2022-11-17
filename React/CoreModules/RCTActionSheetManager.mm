@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,17 +21,30 @@
 using namespace facebook::react;
 
 @interface RCTActionSheetManager () <UIActionSheetDelegate, NativeActionSheetManagerSpec>
+
+@property (nonatomic, strong) NSMutableArray<UIAlertController *> *alertControllers;
+
 @end
 
-@implementation RCTActionSheetManager {
-  // Use NSMapTable, as UIAlertViews do not implement <NSCopying>
-  // which is required for NSDictionary keys
-  NSMapTable *_callbacks;
+@implementation RCTActionSheetManager
+
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    _alertControllers = [NSMutableArray new];
+  }
+  return self;
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
 }
 
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
+@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 
 - (dispatch_queue_t)methodQueue
 {
@@ -46,7 +59,7 @@ RCT_EXPORT_MODULE()
   UIView *sourceView = parentViewController.view;
 
   if (anchorViewTag) {
-    sourceView = [self.bridge.uiManager viewForReactTag:anchorViewTag];
+    sourceView = [self.viewRegistry_DEPRECATED viewForReactTag:anchorViewTag];
   } else {
     alertController.popoverPresentationController.permittedArrowDirections = 0;
   }
@@ -64,18 +77,20 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     return;
   }
 
-  if (!_callbacks) {
-    _callbacks = [NSMapTable strongToStrongObjectsMapTable];
-  }
-
   NSString *title = options.title();
   NSString *message = options.message();
   NSArray<NSString *> *buttons = RCTConvertOptionalVecToArray(options.options(), ^id(NSString *element) {
     return element;
   });
+  NSArray<NSNumber *> *disabledButtonIndices;
   NSInteger cancelButtonIndex =
       options.cancelButtonIndex() ? [RCTConvert NSInteger:@(*options.cancelButtonIndex())] : -1;
   NSArray<NSNumber *> *destructiveButtonIndices;
+  if (options.disabledButtonIndices()) {
+    disabledButtonIndices = RCTConvertVecToArray(*options.disabledButtonIndices(), ^id(double element) {
+      return @(element);
+    });
+  }
   if (options.destructiveButtonIndices()) {
     destructiveButtonIndices = RCTConvertVecToArray(*options.destructiveButtonIndices(), ^id(double element) {
       return @(element);
@@ -88,17 +103,22 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   UIViewController *controller = RCTPresentedViewController();
   NSNumber *anchor = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
   UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
+  UIColor *cancelButtonTintColor =
+      [RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];
 
   if (controller == nil) {
-    RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", @{
-      @"title" : title,
-      @"message" : message,
-      @"options" : buttons,
-      @"cancelButtonIndex" : @(cancelButtonIndex),
-      @"destructiveButtonIndices" : destructiveButtonIndices,
-      @"anchor" : anchor,
-      @"tintColor" : tintColor,
-    });
+    RCTLogError(
+        @"Tried to display action sheet but there is no application window. options: %@", @{
+          @"title" : title,
+          @"message" : message,
+          @"options" : buttons,
+          @"cancelButtonIndex" : @(cancelButtonIndex),
+          @"destructiveButtonIndices" : destructiveButtonIndices,
+          @"anchor" : anchor,
+          @"tintColor" : tintColor,
+          @"cancelButtonTintColor" : cancelButtonTintColor,
+          @"disabledButtonIndices" : disabledButtonIndices,
+        });
     return;
   }
 
@@ -114,22 +134,50 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                                     preferredStyle:UIAlertControllerStyleActionSheet];
 
   NSInteger index = 0;
+  bool isCancelButtonIndex = false;
+  // The handler for a button might get called more than once when tapping outside
+  // the action sheet on iPad. RCTResponseSenderBlock can only be called once so
+  // keep track of callback invocation here.
+  __block bool callbackInvoked = false;
   for (NSString *option in buttons) {
     UIAlertActionStyle style = UIAlertActionStyleDefault;
     if ([destructiveButtonIndices containsObject:@(index)]) {
       style = UIAlertActionStyleDestructive;
     } else if (index == cancelButtonIndex) {
       style = UIAlertActionStyleCancel;
+      isCancelButtonIndex = true;
     }
 
     NSInteger localIndex = index;
-    [alertController addAction:[UIAlertAction actionWithTitle:option
-                                                        style:style
-                                                      handler:^(__unused UIAlertAction *action) {
-                                                        callback(@[ @(localIndex) ]);
-                                                      }]];
+    UIAlertAction *actionButton = [UIAlertAction actionWithTitle:option
+                                                           style:style
+                                                         handler:^(__unused UIAlertAction *action) {
+                                                           if (!callbackInvoked) {
+                                                             callbackInvoked = true;
+                                                             [self->_alertControllers removeObject:alertController];
+                                                             callback(@[ @(localIndex) ]);
+                                                           }
+                                                         }];
+    if (isCancelButtonIndex) {
+      [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
+    }
+    [alertController addAction:actionButton];
 
     index++;
+  }
+
+  if (disabledButtonIndices) {
+    for (NSNumber *disabledButtonIndex in disabledButtonIndices) {
+      if ([disabledButtonIndex integerValue] < buttons.count) {
+        [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
+      } else {
+        RCTLogError(
+            @"Index %@ from `disabledButtonIndices` is out of bounds. Maximum index value is %@.",
+            @([disabledButtonIndex integerValue]),
+            @(buttons.count - 1));
+        return;
+      }
+    }
   }
 
   alertController.view.tintColor = tintColor;
@@ -148,7 +196,19 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   }
 #endif
 
+  [_alertControllers addObject:alertController];
   [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
+}
+
+RCT_EXPORT_METHOD(dismissActionSheet)
+{
+  if (_alertControllers.count == 0) {
+    RCTLogWarn(@"Unable to dismiss action sheet");
+  }
+
+  id _alertController = [_alertControllers lastObject];
+  [_alertController dismissViewControllerAnimated:YES completion:nil];
+  [_alertControllers removeLastObject];
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions

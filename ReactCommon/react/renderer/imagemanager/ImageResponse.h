@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,9 +23,7 @@ class ImageResponse final {
     Failed,
   };
 
-  ImageResponse(
-      const std::shared_ptr<void> &image,
-      const std::shared_ptr<void> &metadata);
+  ImageResponse(std::shared_ptr<void> image, std::shared_ptr<void> metadata);
 
   std::shared_ptr<void> getImage() const;
 

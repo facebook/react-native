@@ -1,21 +1,20 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
- * @emails oncall+react_native
  * @flow strict-local
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
-const React = require('react');
+const render = require('../../../jest/renderer');
 const View = require('../../Components/View/View');
 const Modal = require('../Modal');
-
-const render = require('../../../jest/renderer');
+const React = require('react');
 
 describe('<Modal />', () => {
   it('should render as <Modal> when mocked', () => {
@@ -25,6 +24,15 @@ describe('<Modal />', () => {
       </Modal>,
     );
     expect(instance).toMatchSnapshot();
+  });
+
+  it('should not render its children when mocked with visible=false', () => {
+    const instance = render.create(
+      <Modal visible={false}>
+        <View testID="child" />
+      </Modal>,
+    );
+    expect(instance.root.findAllByProps({testID: 'child'})).toHaveLength(0);
   });
 
   it('should shallow render as <Modal> when mocked', () => {

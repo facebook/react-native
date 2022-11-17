@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,8 +12,7 @@
 #include <react/renderer/graphics/conversions.h>
 #include <react/utils/FloatComparison.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 bool ParagraphAttributes::operator==(const ParagraphAttributes &rhs) const {
   return std::tie(
@@ -21,13 +20,15 @@ bool ParagraphAttributes::operator==(const ParagraphAttributes &rhs) const {
              ellipsizeMode,
              textBreakStrategy,
              adjustsFontSizeToFit,
-             includeFontPadding) ==
+             includeFontPadding,
+             android_hyphenationFrequency) ==
       std::tie(
              rhs.maximumNumberOfLines,
              rhs.ellipsizeMode,
              rhs.textBreakStrategy,
              rhs.adjustsFontSizeToFit,
-             rhs.includeFontPadding) &&
+             rhs.includeFontPadding,
+             rhs.android_hyphenationFrequency) &&
       floatEquality(minimumFontSize, rhs.minimumFontSize) &&
       floatEquality(maximumFontSize, rhs.maximumFontSize);
 }
@@ -47,9 +48,10 @@ SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
       debugStringConvertibleItem("adjustsFontSizeToFit", adjustsFontSizeToFit),
       debugStringConvertibleItem("minimumFontSize", minimumFontSize),
       debugStringConvertibleItem("maximumFontSize", maximumFontSize),
-      debugStringConvertibleItem("includeFontPadding", includeFontPadding)};
+      debugStringConvertibleItem("includeFontPadding", includeFontPadding),
+      debugStringConvertibleItem(
+          "android_hyphenationFrequency", android_hyphenationFrequency)};
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

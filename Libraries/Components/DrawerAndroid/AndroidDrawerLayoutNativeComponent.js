@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,19 +8,18 @@
  * @flow strict-local
  */
 
-'use strict';
-
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {
-  WithDefault,
   DirectEventHandler,
-  Int32,
   Float,
-} from 'react-native/Libraries/Types/CodegenTypes';
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+  Int32,
+  WithDefault,
+} from '../../Types/CodegenTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import * as React from 'react';
 
 type DrawerStateEvent = $ReadOnly<{|
@@ -94,12 +93,12 @@ type NativeProps = $ReadOnly<{|
   /**
    * Function called whenever the navigation view has been opened.
    */
-  onDrawerOpen?: ?DirectEventHandler<null, 'topDrawerOpened'>,
+  onDrawerOpen?: ?DirectEventHandler<null>,
 
   /**
    * Function called whenever the navigation view has been closed.
    */
-  onDrawerClose?: ?DirectEventHandler<null, 'topDrawerClosed'>,
+  onDrawerClose?: ?DirectEventHandler<null>,
 
   /**
    * Make the drawer take the entire screen and draw the background of the

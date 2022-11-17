@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,11 +15,13 @@
 #include <unordered_map>
 
 #include <folly/Executor.h>
+#include <folly/Optional.h>
 #include <folly/Unit.h>
 #include <folly/futures/Future.h>
 #include <hermes/DebuggerAPI.h>
 #include <hermes/hermes.h>
 #include <hermes/inspector/AsyncPauseState.h>
+#include <hermes/inspector/Exceptions.h>
 #include <hermes/inspector/RuntimeAdapter.h>
 
 namespace facebook {
@@ -319,11 +321,6 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   facebook::hermes::debugger::Debugger &debugger_;
   InspectorObserver &observer_;
 
-  // All client methods (e.g. enable, setBreakpoint, resume, etc.) are executed
-  // on executor_ to prevent deadlocking on mutex_. See the implementation for
-  // more comments on the threading invariants used in this class.
-  std::unique_ptr<folly::Executor> executor_;
-
   // All of the following member variables are guarded by mutex_.
   std::mutex mutex_;
   std::unique_ptr<InspectorState> state_;
@@ -360,7 +357,25 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   // Are we currently waiting for a debugger to attach, because we
   // requested 'pauseOnFirstStatement'?
   bool awaitingDebuggerOnStart_;
+
+  // All client methods (e.g. enable, setBreakpoint, resume, etc.) are executed
+  // on executor_ to prevent deadlocking on mutex_. See the implementation for
+  // more comments on the threading invariants used in this class.
+  // NOTE: This needs to be declared LAST because it should be destroyed FIRST.
+  std::unique_ptr<folly::Executor> executor_;
 };
+
+/// Helper function that guards user code execution in a try-catch block.
+template <typename C, typename... A>
+folly::Optional<UserCallbackException> runUserCallback(C &cb, A &&...arg) {
+  try {
+    cb(std::forward<A>(arg)...);
+  } catch (const std::exception &e) {
+    return UserCallbackException(e);
+  }
+
+  return {};
+}
 
 } // namespace inspector
 } // namespace hermes

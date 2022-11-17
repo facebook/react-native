@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,8 +23,7 @@
 
 @implementation RCTExceptionsManager
 
-@synthesize bridge = _bridge;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -37,55 +36,44 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)reportSoft:(NSString *)message
-             stack:(NSArray<NSDictionary *> *)stack
-       exceptionId:(double)exceptionId
-    suppressRedBox:(BOOL)suppressRedBox
+              stack:(NSArray<NSDictionary *> *)stack
+        exceptionId:(double)exceptionId
+    extraDataAsJSON:(nullable NSString *)extraDataAsJSON
 {
-  if (!suppressRedBox) {
-    // TODO T5287269 - Delete _bridge case when TM ships.
-    if (_bridge) {
-      [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
-    } else {
-      RCTRedBox *redbox = [_turboModuleRegistry moduleForName:"RCTRedBox"];
-      [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
-    }
-  }
+  RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+  [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
 
   if (_delegate) {
     [_delegate handleSoftJSExceptionWithMessage:message
                                           stack:stack
-                                    exceptionId:[NSNumber numberWithDouble:exceptionId]];
+                                    exceptionId:[NSNumber numberWithDouble:exceptionId]
+                                extraDataAsJSON:extraDataAsJSON];
   }
 }
 
 - (void)reportFatal:(NSString *)message
               stack:(NSArray<NSDictionary *> *)stack
         exceptionId:(double)exceptionId
-     suppressRedBox:(BOOL)suppressRedBox
+    extraDataAsJSON:(nullable NSString *)extraDataAsJSON
 {
-  if (!suppressRedBox) {
-    // TODO T5287269 - Delete _bridge case when TM ships.
-    if (_bridge) {
-      [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
-    } else {
-      RCTRedBox *redbox = [_turboModuleRegistry moduleForName:"RCTRedBox"];
-      [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
-    }
-  }
+  RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+  [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
 
   if (_delegate) {
     [_delegate handleFatalJSExceptionWithMessage:message
                                            stack:stack
-                                     exceptionId:[NSNumber numberWithDouble:exceptionId]];
+                                     exceptionId:[NSNumber numberWithDouble:exceptionId]
+                                 extraDataAsJSON:extraDataAsJSON];
   }
 
   static NSUInteger reloadRetries = 0;
   if (!RCT_DEBUG && reloadRetries < _maxReloadAttempts) {
     reloadRetries++;
     RCTTriggerReloadCommandListeners(@"JS Crash Reload");
-  } else if (!RCT_DEV || !suppressRedBox) {
+  } else if (!RCT_DEV) {
     NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
-    NSDictionary *errorInfo = @{NSLocalizedDescriptionKey : description, RCTJSStackTraceKey : stack};
+    NSDictionary *errorInfo =
+        @{NSLocalizedDescriptionKey : description, RCTJSStackTraceKey : stack, RCTJSExtraDataKey : extraDataAsJSON};
     RCTFatal([NSError errorWithDomain:RCTErrorDomain code:0 userInfo:errorInfo]);
   }
 }
@@ -95,7 +83,7 @@ RCT_EXPORT_METHOD(reportSoftException
                   : (NSArray<NSDictionary *> *)stack exceptionId
                   : (double)exceptionId)
 {
-  [self reportSoft:message stack:stack exceptionId:exceptionId suppressRedBox:NO];
+  [self reportSoft:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }
 
 RCT_EXPORT_METHOD(reportFatalException
@@ -103,7 +91,7 @@ RCT_EXPORT_METHOD(reportFatalException
                   : (NSArray<NSDictionary *> *)stack exceptionId
                   : (double)exceptionId)
 {
-  [self reportFatal:message stack:stack exceptionId:exceptionId suppressRedBox:NO];
+  [self reportFatal:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }
 
 RCT_EXPORT_METHOD(updateExceptionMessage
@@ -111,13 +99,8 @@ RCT_EXPORT_METHOD(updateExceptionMessage
                   : (NSArray<NSDictionary *> *)stack exceptionId
                   : (double)exceptionId)
 {
-  // TODO T5287269 - Delete _bridge case when TM ships.
-  if (_bridge) {
-    [_bridge.redBox updateErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
-  } else {
-    RCTRedBox *redbox = [_turboModuleRegistry moduleForName:"RCTRedBox"];
-    [redbox updateErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
-  }
+  RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+  [redbox updateErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
 
   if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
     [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
@@ -136,7 +119,6 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
 {
   NSString *message = data.message();
   double exceptionId = data.id_();
-  id<NSObject> extraData = data.extraData();
 
   // Reserialize data.stack() into an array of untyped dictionaries.
   // TODO: (moti) T53588496 Replace `(NSArray<NSDictionary *> *)stack` in
@@ -144,26 +126,39 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   NSMutableArray<NSDictionary *> *stackArray = [NSMutableArray<NSDictionary *> new];
   for (auto frame : data.stack()) {
     NSMutableDictionary *frameDict = [NSMutableDictionary new];
-    if (frame.column().hasValue()) {
+    if (frame.column().has_value()) {
       frameDict[@"column"] = @(frame.column().value());
     }
     frameDict[@"file"] = frame.file();
-    if (frame.lineNumber().hasValue()) {
+    if (frame.lineNumber().has_value()) {
       frameDict[@"lineNumber"] = @(frame.lineNumber().value());
     }
     frameDict[@"methodName"] = frame.methodName();
-    if (frame.collapse().hasValue()) {
+    if (frame.collapse().has_value()) {
       frameDict[@"collapse"] = @(frame.collapse().value());
     }
     [stackArray addObject:frameDict];
   }
-  NSDictionary *dict = (NSDictionary *)extraData;
-  BOOL suppressRedBox = [[dict objectForKey:@"suppressRedBox"] boolValue];
+
+  NSDictionary *extraData = (NSDictionary *)data.extraData();
+  NSString *extraDataAsJSON = RCTJSONStringify(extraData, NULL);
 
   if (data.isFatal()) {
-    [self reportFatal:message stack:stackArray exceptionId:exceptionId suppressRedBox:suppressRedBox];
+    [self reportFatal:message stack:stackArray exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
   } else {
-    [self reportSoft:message stack:stackArray exceptionId:exceptionId suppressRedBox:suppressRedBox];
+    [self reportSoft:message stack:stackArray exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
+  }
+}
+
+- (void)reportJsException:(nullable NSString *)message
+                    stack:(nullable NSArray<NSDictionary *> *)stack
+              exceptionId:(double)exceptionId
+                  isFatal:(bool)isFatal
+{
+  if (isFatal) {
+    [self reportFatalException:message stack:stack exceptionId:exceptionId];
+  } else {
+    [self reportSoftException:message stack:stack exceptionId:exceptionId];
   }
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,13 +23,14 @@ const {
   Switch,
   Alert,
 } = require('react-native');
+import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/TextInput';
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.labelContainer}>
         <View style={styles.label}>
@@ -41,16 +42,20 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class TextInputAccessoryViewExample extends React.Component<{...}, *> {
-  constructor(props) {
+class TextInputAccessoryViewChangeTextExample extends React.Component<
+  {...},
+  {text: string},
+> {
+  constructor(props: void | {...}) {
     super(props);
     this.state = {text: 'Placeholder Text'};
   }
 
-  render() {
+  render(): React.Node {
     const inputAccessoryViewID = 'inputAccessoryView1';
     return (
       <View>
+        <Text>Set InputAccessoryView with ID & reset text:</Text>
         <TextInput
           style={styles.default}
           inputAccessoryViewID={inputAccessoryViewID}
@@ -70,12 +75,77 @@ class TextInputAccessoryViewExample extends React.Component<{...}, *> {
   }
 }
 
-class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
-  constructor(props) {
+class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
+  {...},
+  {keyboardType: string, text: string},
+> {
+  constructor(props: void | {...}) {
+    super(props);
+    this.state = {text: '', keyboardType: 'default'};
+  }
+
+  _switchKeyboard = () => {
+    this.setState({
+      keyboardType:
+        this.state.keyboardType === 'default' ? 'number-pad' : 'default',
+    });
+  };
+
+  render(): React.Node {
+    const inputAccessoryViewID = 'inputAccessoryView2';
+    return (
+      <View>
+        <Text>Set InputAccessoryView with ID & switch keyboard:</Text>
+        {/* $FlowFixMe[incompatible-use] */}
+        <TextInput
+          style={styles.default}
+          inputAccessoryViewID={inputAccessoryViewID}
+          onChangeText={text => this.setState({text})}
+          value={this.state.text}
+          // $FlowFixMe[incompatible-type]
+          keyboardType={this.state.keyboardType}
+          returnKeyType="done"
+        />
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <View style={{backgroundColor: 'white'}}>
+            <Button onPress={this._switchKeyboard} title="Switch Keyboard" />
+          </View>
+        </InputAccessoryView>
+      </View>
+    );
+  }
+}
+
+class TextInputAccessoryViewDefaultDoneButtonExample extends React.Component<
+  $ReadOnly<{|
+    keyboardType: KeyboardType,
+  |}>,
+  {text: string},
+> {
+  constructor(props: void | $ReadOnly<{keyboardType: KeyboardType}>) {
     super(props);
     this.state = {text: ''};
   }
-  render() {
+
+  render(): React.Node {
+    return (
+      <TextInput
+        style={styles.default}
+        onChangeText={text => this.setState({text})}
+        value={this.state.text}
+        keyboardType={this.props.keyboardType}
+        returnKeyType="done"
+      />
+    );
+  }
+}
+
+class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
+  constructor(props: any | void) {
+    super(props);
+    this.state = {text: ''};
+  }
+  render(): React.Node {
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
@@ -92,7 +162,7 @@ class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
 }
 
 class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
-  constructor(props) {
+  constructor(props: any | void) {
     super(props);
     this.state = {
       text: '',
@@ -100,7 +170,7 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
       isSecureTextEntry: true,
     };
   }
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TextInput
@@ -140,7 +210,7 @@ class AutogrowingTextInputExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  constructor(props) {
+  constructor(props: any | void) {
     super(props);
 
     this.state = {
@@ -154,13 +224,13 @@ class AutogrowingTextInputExample extends React.Component<
     };
   }
 
-  UNSAFE_componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props: any) {
     this.setState({
       multiline: props.multiline,
     });
   }
 
-  render() {
+  render(): React.Node {
     const {style, multiline, ...props} = this.props;
     return (
       <View>
@@ -263,19 +333,46 @@ exports.examples = ([
   ...TextInputSharedExamples,
   {
     title: 'Live Re-Write (ひ -> 日)',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteExampleKana />;
     },
   },
   {
-    title: 'Keyboard Accessory View',
-    render: function(): React.Node {
-      return <TextInputAccessoryViewExample />;
+    title: 'Keyboard Input Accessory View',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInputAccessoryViewChangeTextExample />
+          <TextInputAccessoryViewChangeKeyboardExample />
+        </View>
+      );
+    },
+  },
+  {
+    title: "Default Input Accessory View with returnKeyType = 'done'",
+    render: function (): React.Node {
+      const keyboardTypesWithDoneButton = [
+        'number-pad',
+        'phone-pad',
+        'decimal-pad',
+        'ascii-capable-number-pad',
+      ];
+      const examples = keyboardTypesWithDoneButton.map(type => {
+        return (
+          <WithLabel key={'keyboardType: ' + type} label={type}>
+            <TextInputAccessoryViewDefaultDoneButtonExample
+              key={type}
+              keyboardType={type}
+            />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
     },
   },
   {
     title: 'Nested content and `value` property',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="singleline">
@@ -301,7 +398,7 @@ exports.examples = ([
   },
   {
     title: 'Keyboard appearance',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const keyboardAppearance = ['default', 'light', 'dark'];
       const examples = keyboardAppearance.map(type => {
         return (
@@ -315,7 +412,7 @@ exports.examples = ([
   },
   {
     title: 'Return key types',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const returnKeyTypes = [
         'default',
         'go',
@@ -341,7 +438,7 @@ exports.examples = ([
   },
   {
     title: 'Enable return key automatically',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="true">
@@ -356,13 +453,13 @@ exports.examples = ([
   },
   {
     title: 'Secure text entry',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <SecureEntryExample />;
     },
   },
   {
     title: 'Colored input text',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -379,7 +476,7 @@ exports.examples = ([
   },
   {
     title: 'Colored highlight/cursor for text input',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -398,7 +495,7 @@ exports.examples = ([
   },
   {
     title: 'Clear button mode',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const clearButtonModes = [
         'never',
         'while-editing',
@@ -421,7 +518,7 @@ exports.examples = ([
   },
   {
     title: 'Clear and select',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="clearTextOnFocus">
@@ -464,7 +561,7 @@ exports.examples = ([
   },
   {
     title: 'Multiline blur on submit',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -483,7 +580,7 @@ exports.examples = ([
   },
   {
     title: 'Multiline',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -525,8 +622,37 @@ exports.examples = ([
     },
   },
   {
+    title: 'Editable and Read only',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            placeholder="editable text input using editable prop"
+            style={styles.default}
+            editable
+          />
+          <TextInput
+            placeholder="uneditable text input using editable prop"
+            style={styles.default}
+            editable={false}
+          />
+          <TextInput
+            placeholder="editable text input using readOnly prop"
+            style={styles.default}
+            readOnly={false}
+          />
+          <TextInput
+            placeholder="uneditable text input using readOnly prop"
+            style={styles.default}
+            readOnly
+          />
+        </View>
+      );
+    },
+  },
+  {
     title: 'TextInput Intrinsic Size',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>Singleline TextInput</Text>
@@ -593,7 +719,7 @@ exports.examples = ([
   },
   {
     title: 'Auto-expanding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -610,7 +736,7 @@ exports.examples = ([
   },
   {
     title: 'Auto-expanding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <AutogrowingTextInputExample
@@ -641,7 +767,7 @@ exports.examples = ([
   },
   {
     title: 'TextInput maxLength',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="maxLength: 5">
@@ -673,8 +799,23 @@ exports.examples = ([
     },
   },
   {
+    title: 'Text Auto Complete',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="country">
+            <TextInput autoComplete="country" style={styles.default} />
+          </WithLabel>
+          <WithLabel label="one-time-code">
+            <TextInput autoComplete="one-time-code" style={styles.default} />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
     title: 'Text Content Type',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="emailAddress">
@@ -689,7 +830,7 @@ exports.examples = ([
   },
   {
     title: 'TextInput Placeholder Styles',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="letterSpacing: 10 lineHeight: 20 textAlign: 'center'">
@@ -711,7 +852,7 @@ exports.examples = ([
   },
   {
     title: 'showSoftInputOnFocus',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="showSoftInputOnFocus: false">
@@ -721,4 +862,43 @@ exports.examples = ([
       );
     },
   },
-]: Array<RNTesterExampleModuleItem>);
+  {
+    title: 'Line Break Strategy',
+    render: function (): React.Node {
+      const lineBreakStrategy = ['none', 'standard', 'hangul-word', 'push-out'];
+      const textByCode = {
+        en: 'lineBreakStrategy lineBreakStrategy lineBreakStrategy lineBreakStrategy',
+        ko: '한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행',
+        ja: 'かいぎょう かいぎょう かいぎょう かいぎょう かいぎょう かいぎょう',
+        cn: '改行 改行 改行 改行 改行 改行 改行 改行 改行 改行 改行 改行',
+      };
+      return (
+        <View>
+          {lineBreakStrategy.map(strategy => {
+            return (
+              <View key={strategy} style={{marginBottom: 12}}>
+                <Text
+                  style={{
+                    backgroundColor: 'lightgrey',
+                  }}>{`Strategy: ${strategy}`}</Text>
+                {Object.keys(textByCode).map(code => {
+                  return (
+                    <View key={code}>
+                      <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
+                      <TextInput
+                        multiline
+                        lineBreakStrategyIOS={strategy}
+                        style={styles.default}
+                        defaultValue={textByCode[code]}
+                      />
+                    </View>
+                  );
+                })}
+              </View>
+            );
+          })}
+        </View>
+      );
+    },
+  },
+]: Array<RNTesterModuleExample>);

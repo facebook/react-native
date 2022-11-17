@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@
 #include <functional>
 #include <memory>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/State.h>
 
 namespace facebook {
@@ -60,55 +61,23 @@ class ConcreteState : public State {
    */
   void updateState(
       Data &&newData,
-      std::function<void()> failureCallback = nullptr,
       EventPriority priority = EventPriority::AsynchronousUnbatched) const {
     updateState(
-        [data = std::move(newData)](Data const &oldData) mutable -> Data && {
-          return std::move(data);
+        [data{std::move(newData)}](Data const &oldData) -> SharedData {
+          return std::make_shared<Data const>(data);
         },
-        failureCallback,
         priority);
   }
 
   /*
    * Initiate a state update process with a given function (that transforms an
-   * old data value to a new one) and priority. The update function can be
-   * called from any thread any moment later. The function can be called only
-   * once or not called at all (in the case where the node was already unmounted
-   * and updating makes no sense). The state update operation might fail in case
-   * of conflict.
+   * old data value to a new one) and priority. The callback function can be
+   * called from any thread any moment later.
+   * In case of a conflict, the `callback` might be called several times until
+   * it succeeded. To cancel the state update operation, the callback needs to
+   * return `nullptr`.
    */
   void updateState(
-      std::function<Data(Data const &oldData)> callback,
-      std::function<void()> failureCallback = nullptr,
-      EventPriority priority = EventPriority::AsynchronousBatched) const {
-    auto family = family_.lock();
-
-    if (!family) {
-      // No more nodes of this family exist anymore,
-      // updating state is impossible.
-      return;
-    }
-
-    auto stateUpdate = StateUpdate{
-        family,
-        [=](StateData::Shared const &oldData) -> StateData::Shared {
-          assert(oldData);
-          return std::make_shared<Data const>(
-              callback(*std::static_pointer_cast<Data const>(oldData)));
-        },
-        failureCallback,
-        false};
-
-    family->dispatchRawState(std::move(stateUpdate), priority);
-  }
-
-  /*
-   * An experimental version of `updateState` function that re-commit the state
-   * update over and over again until it succeeded. To cancel the state update
-   * operation, the state update lambda needs to return `nullptr`.
-   */
-  void updateStateWithAutorepeat(
       std::function<StateData::Shared(Data const &oldData)> callback,
       EventPriority priority = EventPriority::AsynchronousBatched) const {
     auto family = family_.lock();
@@ -120,14 +89,10 @@ class ConcreteState : public State {
     }
 
     auto stateUpdate = StateUpdate{
-        family,
-        [=](StateData::Shared const &oldData) -> StateData::Shared {
-          assert(oldData);
+        family, [=](StateData::Shared const &oldData) -> StateData::Shared {
+          react_native_assert(oldData);
           return callback(*std::static_pointer_cast<Data const>(oldData));
-        },
-        nullptr,
-        true,
-    };
+        }};
 
     family->dispatchRawState(std::move(stateUpdate), priority);
   }
@@ -137,9 +102,11 @@ class ConcreteState : public State {
     return getData().getDynamic();
   }
 
-  void updateState(folly::dynamic data, std::function<void()> failureCallback)
-      const override {
-    updateState(std::move(Data(getData(), data)), failureCallback);
+  void updateState(folly::dynamic data) const override {
+    updateState(std::move(Data(getData(), data)));
+  }
+  MapBuffer getMapBuffer() const override {
+    return getData().getMapBuffer();
   }
 #endif
 };

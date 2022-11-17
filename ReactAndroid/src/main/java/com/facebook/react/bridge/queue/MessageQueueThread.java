@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,7 +19,7 @@ public interface MessageQueueThread {
    * if it is being submitted from the same queue Thread.
    */
   @DoNotStrip
-  void runOnQueue(Runnable runnable);
+  boolean runOnQueue(Runnable runnable);
 
   /**
    * Runs the given Callable on this Thread. It will be submitted to the end of the event queue even

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,12 +37,12 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 /**
  * Deprecated, use RCTDevSettings instead.
  */
-@property (nonatomic, assign) BOOL liveReloadEnabled DEPRECATED_ATTRIBUTE;
+@property (nonatomic, assign) BOOL hotLoadingEnabled DEPRECATED_ATTRIBUTE;
 
 /**
- * Deprecated, use RCTDevSettings instead.
+ * Whether the hotkeys that toggles the developer menu is enabled.
  */
-@property (nonatomic, assign) BOOL hotLoadingEnabled DEPRECATED_ATTRIBUTE;
+@property (nonatomic, assign) BOOL hotkeysEnabled;
 
 /**
  * Presented items in development menu

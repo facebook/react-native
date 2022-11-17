@@ -1,14 +1,17 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
- * @flow
+ * @noformat
+ * @flow strict
+ * @generated SignedSource<<d9fed8e0aacc3113ceaf7d8e266300c6>>
+ *
+ * This file was sync'd from the facebook/react repository.
  */
 
-import type {ElementRef, AbstractComponent} from 'react';
+import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
 
 export type MeasureOnSuccessCallback = (
   x: number,
@@ -33,51 +36,69 @@ export type MeasureLayoutOnSuccessCallback = (
   height: number,
 ) => void;
 
-type AttributeType =
+export type AttributeType<T, V> =
   | true
-  | $ReadOnly<{|
-      diff?: <T>(arg1: T, arg2: T) => boolean,
-      process?: (arg1: any) => any,
-    |}>;
+  | $ReadOnly<{
+      diff?: (arg1: T, arg2: T) => boolean,
+      process?: (arg1: V) => T,
+    }>;
 
-export type AttributeConfiguration<
-  TProps = string,
-  TStyleProps = string,
-> = $ReadOnly<{
-  [propName: TProps]: AttributeType,
-  style: $ReadOnly<{[propName: TStyleProps]: AttributeType, ...}>,
+// We either force that `diff` and `process` always use mixed,
+// or we allow them to define specific types and use this hack
+export type AnyAttributeType = AttributeType<$FlowFixMe, $FlowFixMe>;
+
+export type AttributeConfiguration = $ReadOnly<{
+  [propName: string]: AnyAttributeType,
+  style: $ReadOnly<{
+    [propName: string]: AnyAttributeType,
+    ...,
+  }>,
   ...
 }>;
 
-export type ReactNativeBaseComponentViewConfig<
-  TProps = string,
-  TStyleProps = string,
-> = $ReadOnly<{|
-  baseModuleName?: string,
+export type PartialAttributeConfiguration = $ReadOnly<{
+  [propName: string]: AnyAttributeType,
+  style?: $ReadOnly<{
+    [propName: string]: AnyAttributeType,
+    ...,
+  }>,
+  ...
+}>;
+
+export type ViewConfig = $ReadOnly<{
+  Commands?: $ReadOnly<{[commandName: string]: number, ...}>,
+  Constants?: $ReadOnly<{[name: string]: mixed, ...}>,
+  Manager?: string,
+  NativeProps?: $ReadOnly<{[propName: string]: string, ...}>,
+  baseModuleName?: ?string,
   bubblingEventTypes?: $ReadOnly<{
-    [eventName: string]: $ReadOnly<{|
-      phasedRegistrationNames: $ReadOnly<{|
+    [eventName: string]: $ReadOnly<{
+      phasedRegistrationNames: $ReadOnly<{
         captured: string,
         bubbled: string,
-      |}>,
-    |}>,
+        skipBubbling?: ?boolean,
+      }>,
+    }>,
     ...,
   }>,
-  Commands?: $ReadOnly<{[commandName: string]: number, ...}>,
   directEventTypes?: $ReadOnly<{
-    [eventName: string]: $ReadOnly<{|
+    [eventName: string]: $ReadOnly<{
       registrationName: string,
-    |}>,
+    }>,
     ...,
   }>,
-  NativeProps?: $ReadOnly<{[propName: string]: string, ...}>,
   uiViewClassName: string,
-  validAttributes: AttributeConfiguration<TProps, TStyleProps>,
-|}>;
+  validAttributes: AttributeConfiguration,
+}>;
 
-export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig<>;
+export type PartialViewConfig = $ReadOnly<{
+  bubblingEventTypes?: $PropertyType<ViewConfig, 'bubblingEventTypes'>,
+  directEventTypes?: $PropertyType<ViewConfig, 'directEventTypes'>,
+  uiViewClassName: string,
+  validAttributes?: PartialAttributeConfiguration,
+}>;
 
-export type NativeMethods = {
+export type NativeMethods = $ReadOnly<{
   blur(): void,
   focus(): void,
   measure(callback: MeasureOnSuccessCallback): void,
@@ -87,9 +108,8 @@ export type NativeMethods = {
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void,
   ): void,
-  setNativeProps(nativeProps: Object): void,
-  ...
-};
+  setNativeProps(nativeProps: {...}): void,
+}>;
 
 export type HostComponent<T> = AbstractComponent<T, $ReadOnly<NativeMethods>>;
 
@@ -105,92 +125,115 @@ type InspectorDataProps = $ReadOnly<{
   ...,
 }>;
 
-type InspectorDataSource = $ReadOnly<{|
+type InspectorDataSource = $ReadOnly<{
   fileName?: string,
   lineNumber?: number,
-|}>;
+}>;
 
 type InspectorDataGetter = (
-  (componentOrHandle: any) => ?number,
-) => $ReadOnly<{|
-  measure: Function,
+  <TElementType: ElementType>(
+    componentOrHandle: ElementRef<TElementType> | number,
+  ) => ?number,
+) => $ReadOnly<{
+  measure: (callback: MeasureOnSuccessCallback) => void,
   props: InspectorDataProps,
   source: InspectorDataSource,
-|}>;
+}>;
 
-export type InspectorData = $ReadOnly<{|
-  hierarchy: Array<{|
+export type InspectorData = $ReadOnly<{
+  closestInstance?: mixed,
+  hierarchy: Array<{
     name: ?string,
     getInspectorData: InspectorDataGetter,
-  |}>,
+  }>,
   selectedIndex: ?number,
   props: InspectorDataProps,
   source: ?InspectorDataSource,
-|}>;
+}>;
 
-export type TouchedViewDataAtPoint = $ReadOnly<{|
+export type TouchedViewDataAtPoint = $ReadOnly<{
   pointerY: number,
   touchedViewTag?: number,
-  frame: $ReadOnly<{|
+  frame: $ReadOnly<{
     top: number,
     left: number,
     width: number,
     height: number,
-  |}>,
+  }>,
   ...InspectorData,
-|}>;
+}>;
 
 /**
  * Flat ReactNative renderer bundles are too big for Flow to parse efficiently.
  * Provide minimal Flow typing for the high-level RN API and call it a day.
  */
 export type ReactNativeType = {
-  findHostInstance_DEPRECATED(
-    componentOrHandle: any,
+  findHostInstance_DEPRECATED<TElementType: ElementType>(
+    componentOrHandle: ?(ElementRef<TElementType> | number),
   ): ?ElementRef<HostComponent<mixed>>,
-  findNodeHandle(componentOrHandle: any): ?number,
-  dispatchCommand(handle: any, command: string, args: Array<any>): void,
+  findNodeHandle<TElementType: ElementType>(
+    componentOrHandle: ?(ElementRef<TElementType> | number),
+  ): ?number,
+  dispatchCommand(
+    handle: ElementRef<HostComponent<mixed>>,
+    command: string,
+    args: Array<mixed>,
+  ): void,
+  sendAccessibilityEvent(
+    handle: ElementRef<HostComponent<mixed>>,
+    eventType: string,
+  ): void,
   render(
-    element: React$Element<any>,
-    containerTag: any,
-    callback: ?Function,
-  ): any,
-  unmountComponentAtNode(containerTag: number): any,
-  unmountComponentAtNodeAndRemoveContainer(containerTag: number): any,
-  // TODO (bvaughn) Add types
-  unstable_batchedUpdates: any,
+    element: Element<ElementType>,
+    containerTag: number,
+    callback: ?() => void,
+  ): ?ElementRef<ElementType>,
+  unmountComponentAtNode(containerTag: number): void,
+  unmountComponentAtNodeAndRemoveContainer(containerTag: number): void,
+  unstable_batchedUpdates: <T>(fn: (T) => void, bookkeeping: T) => void,
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsType,
   ...
 };
 
 export type ReactFabricType = {
-  findHostInstance_DEPRECATED(
-    componentOrHandle: any,
+  findHostInstance_DEPRECATED<TElementType: ElementType>(
+    componentOrHandle: ?(ElementRef<TElementType> | number),
   ): ?ElementRef<HostComponent<mixed>>,
-  findNodeHandle(componentOrHandle: any): ?number,
-  dispatchCommand(handle: any, command: string, args: Array<any>): void,
+  findNodeHandle<TElementType: ElementType>(
+    componentOrHandle: ?(ElementRef<TElementType> | number),
+  ): ?number,
+  dispatchCommand(
+    handle: ElementRef<HostComponent<mixed>>,
+    command: string,
+    args: Array<mixed>,
+  ): void,
+  sendAccessibilityEvent(
+    handle: ElementRef<HostComponent<mixed>>,
+    eventType: string,
+  ): void,
   render(
-    element: React$Element<any>,
-    containerTag: any,
-    callback: ?Function,
-  ): any,
-  unmountComponentAtNode(containerTag: number): any,
+    element: Element<ElementType>,
+    containerTag: number,
+    callback: ?() => void,
+    concurrentRoot: ?boolean,
+  ): ?ElementRef<ElementType>,
+  unmountComponentAtNode(containerTag: number): void,
   ...
 };
 
 export type ReactNativeEventTarget = {
-  node: Object,
+  node: {...},
   canonical: {
     _nativeTag: number,
-    viewConfig: ReactNativeBaseComponentViewConfig<>,
-    currentProps: Object,
-    _internalInstanceHandle: Object,
+    viewConfig: ViewConfig,
+    currentProps: {...},
+    _internalInstanceHandle: {...},
     ...
   },
   ...
 };
 
-export type ReactFaricEventTouch = {
+export type ReactFabricEventTouch = {
   identifier: number,
   locationX: number,
   locationY: number,
@@ -204,10 +247,10 @@ export type ReactFaricEventTouch = {
   ...
 };
 
-export type ReactFaricEvent = {
-  touches: Array<ReactFaricEventTouch>,
-  changedTouches: Array<ReactFaricEventTouch>,
-  targetTouches: Array<ReactFaricEventTouch>,
+export type ReactFabricEvent = {
+  touches: Array<ReactFabricEventTouch>,
+  changedTouches: Array<ReactFabricEventTouch>,
+  targetTouches: Array<ReactFabricEventTouch>,
   target: number,
   ...
 };
@@ -228,18 +271,18 @@ export type LayoutAnimationProperty =
   | 'scaleY'
   | 'scaleXY';
 
-export type LayoutAnimationAnimationConfig = $ReadOnly<{|
+export type LayoutAnimationAnimationConfig = $ReadOnly<{
   duration?: number,
   delay?: number,
   springDamping?: number,
   initialVelocity?: number,
   type?: LayoutAnimationType,
   property?: LayoutAnimationProperty,
-|}>;
+}>;
 
-export type LayoutAnimationConfig = $ReadOnly<{|
+export type LayoutAnimationConfig = $ReadOnly<{
   duration: number,
   create?: LayoutAnimationAnimationConfig,
   update?: LayoutAnimationAnimationConfig,
   delete?: LayoutAnimationAnimationConfig,
-|}>;
+}>;

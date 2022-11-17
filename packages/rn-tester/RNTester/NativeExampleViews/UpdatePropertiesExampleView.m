@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,8 +27,7 @@ RCT_EXPORT_MODULE();
 
 @end
 
-@implementation UpdatePropertiesExampleView
-{
+@implementation UpdatePropertiesExampleView {
   RCTRootView *_rootView;
   UIButton *_button;
   BOOL _beige;
@@ -44,16 +43,14 @@ RCT_EXPORT_MODULE();
 
     _rootView = [[RCTRootView alloc] initWithBridge:appDelegate.bridge
                                          moduleName:@"SetPropertiesExampleApp"
-                                  initialProperties:@{@"color":@"beige"}];
+                                  initialProperties:@{@"color" : @"beige"}];
 
     _button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [_button setTitle:@"Native Button" forState:UIControlStateNormal];
     [_button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_button setBackgroundColor:[UIColor grayColor]];
 
-    [_button addTarget:self
-                action:@selector(changeColor)
-      forControlEvents:UIControlEventTouchUpInside];
+    [_button addTarget:self action:@selector(changeColor) forControlEvents:UIControlEventTouchUpInside];
 
     [self addSubview:_button];
     [self addSubview:_rootView];
@@ -75,7 +72,7 @@ RCT_EXPORT_MODULE();
 - (void)changeColor
 {
   _beige = !_beige;
-  [_rootView setAppProperties:@{@"color":_beige ? @"beige" : @"purple"}];
+  [_rootView setAppProperties:@{@"color" : _beige ? @"beige" : @"purple"}];
 }
 
 - (NSArray<UIView<RCTComponent> *> *)reactSubviews

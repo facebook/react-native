@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,9 +7,11 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ConcreteState.h>
-#include <react/renderer/core/ConcreteStateTeller.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/StateData.h>
 
@@ -45,11 +47,11 @@ class ConcreteShadowNode : public BaseShadowNodeT {
 
   using ConcreteProps = PropsT;
   using SharedConcreteProps = std::shared_ptr<PropsT const>;
+  using UnsharedConcreteProps = std::shared_ptr<PropsT>;
   using ConcreteEventEmitter = EventEmitterT;
   using SharedConcreteEventEmitter = std::shared_ptr<EventEmitterT const>;
   using SharedConcreteShadowNode = std::shared_ptr<ConcreteShadowNode const>;
   using ConcreteState = ConcreteState<StateDataT>;
-  using ConcreteStateTeller = ConcreteStateTeller<ConcreteState>;
   using ConcreteStateData = StateDataT;
 
   static ComponentName Name() {
@@ -68,10 +70,12 @@ class ConcreteShadowNode : public BaseShadowNodeT {
     return BaseShadowNodeT::BaseTraits();
   }
 
-  static SharedConcreteProps Props(
+  static UnsharedConcreteProps Props(
+      const PropsParserContext &context,
       RawProps const &rawProps,
-      SharedProps const &baseProps = nullptr) {
-    return std::make_shared<PropsT const>(
+      Props::Shared const &baseProps = nullptr) {
+    return std::make_shared<PropsT>(
+        context,
         baseProps ? static_cast<PropsT const &>(*baseProps) : PropsT(),
         rawProps);
   }
@@ -94,10 +98,8 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Thread-safe after the node is sealed.
    */
   ConcreteProps const &getConcreteProps() const {
-    assert(BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
-    assert(
-        std::dynamic_pointer_cast<ConcreteProps const>(props_) &&
-        "Props must be an instance of ConcreteProps class.");
+    react_native_assert(
+        BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
     return static_cast<ConcreteProps const &>(*props_);
   }
 
@@ -106,10 +108,6 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Thread-safe after the node is sealed.
    */
   ConcreteEventEmitter const &getConcreteEventEmitter() const {
-    assert(
-        std::dynamic_pointer_cast<ConcreteEventEmitter const>(
-            BaseShadowNodeT::getEventEmitter()) &&
-        "EventEmitter must be an instance of ConcreteEventEmitter class.");
     return static_cast<ConcreteEventEmitter const &>(
         *BaseShadowNodeT::getEventEmitter());
   }
@@ -119,10 +117,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Thread-safe after the node is sealed.
    */
   ConcreteStateData const &getStateData() const {
-    assert(state_ && "State must not be `nullptr`.");
-    assert(
-        std::dynamic_pointer_cast<ConcreteState const>(state_) &&
-        "State must be an instance of ConcreteState class.");
+    react_native_assert(state_ && "State must not be `nullptr`.");
     return static_cast<ConcreteState const *>(state_.get())->getData();
   }
 

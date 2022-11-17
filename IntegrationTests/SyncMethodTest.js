@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@ const {View} = ReactNative;
 const {TestModule, RNTesterTestModule} = ReactNative.NativeModules;
 
 class SyncMethodTest extends React.Component<{...}> {
-  componentDidMount() {
+  componentDidMount(): void {
     if (
       RNTesterTestModule.echoString('test string value') !== 'test string value'
     ) {

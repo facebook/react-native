@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,18 +8,18 @@
  * @format
  */
 
-'use strict';
+import type {ImageSource} from '../../Image/ImageSource';
+import type {LogLevel} from '../Data/LogBoxLog';
 
+import StatusBar from '../../Components/StatusBar/StatusBar';
+import View from '../../Components/View/View';
 import Image from '../../Image/Image';
-import Platform from '../../Utilities/Platform';
-import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import View from '../../Components/View/View';
-import StatusBar from '../../Components/StatusBar/StatusBar';
+import Platform from '../../Utilities/Platform';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
-import type {LogLevel} from '../Data/LogBoxLog';
+import * as React from 'react';
 type Props = $ReadOnly<{|
   onSelectIndex: (selectedIndex: number) => void,
   selectedIndex: number,
@@ -93,7 +93,7 @@ const backgroundForLevel = (level: LogLevel) =>
 function LogBoxInspectorHeaderButton(
   props: $ReadOnly<{|
     disabled: boolean,
-    image: number,
+    image: ImageSource,
     level: LogLevel,
     onPress?: ?() => void,
   |}>,

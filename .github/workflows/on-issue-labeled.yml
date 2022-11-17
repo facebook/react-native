@@ -1,0 +1,22 @@
+name: On Issue Labeled
+# This workflow is triggered when a label is added to an issue.
+on:
+  issues:
+    types: labeled
+
+permissions:
+  contents: read
+
+jobs:
+  respondToIssueBasedOnLabel:
+    permissions:
+      contents: read  # for hramos/respond-to-issue-based-on-label to fetch config file
+      issues: write  # for hramos/respond-to-issue-based-on-label to update issues
+    name: Respond to Issue Based on Label
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Respond to Issue Based on Label
+        uses: hramos/respond-to-issue-based-on-label@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

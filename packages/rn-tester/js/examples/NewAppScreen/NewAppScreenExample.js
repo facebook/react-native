@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@ const {
   Colors,
   DebugInstructions,
   ReloadInstructions,
-} = require('../../../../../Libraries/NewAppScreen');
+} = require('react-native/Libraries/NewAppScreen');
 
 exports.title = 'New App Screen';
 exports.description = 'Displays the content of the new app screen';

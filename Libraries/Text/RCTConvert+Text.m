@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,25 +11,27 @@
 
 + (UITextAutocorrectionType)UITextAutocorrectionType:(id)json
 {
-  return
-    json == nil ? UITextAutocorrectionTypeDefault :
-    [RCTConvert BOOL:json] ? UITextAutocorrectionTypeYes :
-    UITextAutocorrectionTypeNo;
+  return json == nil           ? UITextAutocorrectionTypeDefault
+      : [RCTConvert BOOL:json] ? UITextAutocorrectionTypeYes
+                               : UITextAutocorrectionTypeNo;
 }
 
 + (UITextSpellCheckingType)UITextSpellCheckingType:(id)json
 {
-  return
-    json == nil ? UITextSpellCheckingTypeDefault :
-    [RCTConvert BOOL:json] ? UITextSpellCheckingTypeYes :
-    UITextSpellCheckingTypeNo;
+  return json == nil           ? UITextSpellCheckingTypeDefault
+      : [RCTConvert BOOL:json] ? UITextSpellCheckingTypeYes
+                               : UITextSpellCheckingTypeNo;
 }
 
-RCT_ENUM_CONVERTER(RCTTextTransform, (@{
-  @"none": @(RCTTextTransformNone),
-  @"capitalize": @(RCTTextTransformCapitalize),
-  @"uppercase": @(RCTTextTransformUppercase),
-  @"lowercase": @(RCTTextTransformLowercase),
-}), RCTTextTransformUndefined, integerValue)
+RCT_ENUM_CONVERTER(
+    RCTTextTransform,
+    (@{
+      @"none" : @(RCTTextTransformNone),
+      @"capitalize" : @(RCTTextTransformCapitalize),
+      @"uppercase" : @(RCTTextTransformUppercase),
+      @"lowercase" : @(RCTTextTransformLowercase),
+    }),
+    RCTTextTransformUndefined,
+    integerValue)
 
 @end

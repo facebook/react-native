@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,26 +15,26 @@ const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridg
 const {Recording} = NativeModules;
 
 const TestJSToJavaParametersModule = {
-  returnBasicTypes: function() {
+  returnBasicTypes: function () {
     Recording.receiveBasicTypes('foo', 3.14, true, null);
   },
-  returnBoxedTypes: function() {
+  returnBoxedTypes: function () {
     Recording.receiveBoxedTypes(42, 3.14, true);
   },
-  returnDynamicTypes: function() {
+  returnDynamicTypes: function () {
     Recording.receiveDynamic('foo');
     Recording.receiveDynamic(3.14);
   },
-  returnArrayWithBasicTypes: function() {
+  returnArrayWithBasicTypes: function () {
     Recording.receiveArray(['foo', 3.14, -111, true, null]);
   },
-  returnNestedArray: function() {
+  returnNestedArray: function () {
     Recording.receiveArray(['we', ['have', ['to', ['go', ['deeper']]]]]);
   },
-  returnArrayWithMaps: function() {
+  returnArrayWithMaps: function () {
     Recording.receiveArray([{m1k1: 'm1v1', m1k2: 'm1v2'}, {m2k1: 'm2v1'}]);
   },
-  returnMapWithBasicTypes: function() {
+  returnMapWithBasicTypes: function () {
     Recording.receiveMap({
       stringKey: 'stringValue',
       doubleKey: 3.14,
@@ -43,24 +43,24 @@ const TestJSToJavaParametersModule = {
       nullKey: null,
     });
   },
-  returnNestedMap: function() {
+  returnNestedMap: function () {
     Recording.receiveMap({
       weHaveToGoDeeper: {
         inception: true,
       },
     });
   },
-  returnMapWithArrays: function() {
+  returnMapWithArrays: function () {
     Recording.receiveMap({
       empty: [],
       ints: [43, 44],
       mixed: [77, 'string', ['another', 'array']],
     });
   },
-  returnArrayWithStringDoubleIntMapArrayBooleanNull: function() {
+  returnArrayWithStringDoubleIntMapArrayBooleanNull: function () {
     Recording.receiveArray(['string', 3.14, 555, {}, [], true, null]);
   },
-  returnMapWithStringDoubleIntMapArrayBooleanNull: function() {
+  returnMapWithStringDoubleIntMapArrayBooleanNull: function () {
     Recording.receiveMap({
       string: 'string',
       double: 3,
@@ -71,13 +71,13 @@ const TestJSToJavaParametersModule = {
       null: null,
     });
   },
-  returnArrayWithLargeInts: function() {
+  returnArrayWithLargeInts: function () {
     Recording.receiveArray([2147483648, -5555555555]);
   },
-  returnMapWithLargeInts: function() {
+  returnMapWithLargeInts: function () {
     Recording.receiveMap({first: -2147483649, second: 5551231231});
   },
-  returnMapForMerge1: function() {
+  returnMapForMerge1: function () {
     Recording.receiveMap({
       a: 1,
       b: 41,
@@ -87,7 +87,7 @@ const TestJSToJavaParametersModule = {
       f: null,
     });
   },
-  returnMapForMerge2: function() {
+  returnMapForMerge2: function () {
     Recording.receiveMap({
       a: 'overwrite',
       d: 77,
@@ -96,7 +96,7 @@ const TestJSToJavaParametersModule = {
       newkey: 'newvalue',
     });
   },
-  returnMapWithMultibyteUTF8CharacterString: function() {
+  returnMapWithMultibyteUTF8CharacterString: function () {
     Recording.receiveMap({
       'one-byte': 'a',
       'two-bytes': '\u00A2',
@@ -106,7 +106,7 @@ const TestJSToJavaParametersModule = {
         '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107',
     });
   },
-  returnArrayWithMultibyteUTF8CharacterString: function() {
+  returnArrayWithMultibyteUTF8CharacterString: function () {
     Recording.receiveArray([
       'a',
       '\u00A2',

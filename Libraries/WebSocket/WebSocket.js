@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,13 +8,14 @@
  * @flow
  */
 
-'use strict';
+import type {BlobData} from '../Blob/BlobTypes';
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
 import Blob from '../Blob/Blob';
 import BlobManager from '../Blob/BlobManager';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import binaryToBase64 from '../Utilities/binaryToBase64';
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import Platform from '../Utilities/Platform';
 import NativeWebSocketModule from './NativeWebSocketModule';
 import WebSocketEvent from './WebSocketEvent';
 import base64 from 'base64-js';
@@ -42,9 +43,24 @@ const CLOSED = 3;
 
 const CLOSE_NORMAL = 1000;
 
+// Abnormal closure where no code is provided in a control frame
+// https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
+const CLOSE_ABNORMAL = 1006;
+
 const WEBSOCKET_EVENTS = ['close', 'error', 'message', 'open'];
 
 let nextWebSocketId = 0;
+
+type WebSocketEventDefinitions = {
+  websocketOpen: [{id: number, protocol: string}],
+  websocketClosed: [{id: number, code: number, reason: string}],
+  websocketMessage: [
+    | {type: 'binary', id: number, data: string}
+    | {type: 'text', id: number, data: string}
+    | {type: 'blob', id: number, data: BlobData},
+  ],
+  websocketFailed: [{id: number, message: string}],
+};
 
 /**
  * Browser-compatible WebSockets implementation.
@@ -64,7 +80,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
   CLOSED: number = CLOSED;
 
   _socketId: number;
-  _eventEmitter: NativeEventEmitter;
+  _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
   _subscriptions: Array<EventSubscription>;
   _binaryType: ?BinaryType;
 
@@ -85,6 +101,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
     options: ?{headers?: {origin?: string, ...}, ...},
   ) {
     super();
+    this.url = url;
     if (typeof protocols === 'string') {
       protocols = [protocols];
     }
@@ -92,20 +109,18 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
     const {headers = {}, ...unrecognized} = options || {};
 
     // Preserve deprecated backwards compatibility for the 'origin' option
-    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.68 was deployed. To see the error delete this
-     * comment and run Flow. */
+    // $FlowFixMe[prop-missing]
     if (unrecognized && typeof unrecognized.origin === 'string') {
       console.warn(
         'Specifying `origin` as a WebSocket connection option is deprecated. Include it under `headers` instead.',
       );
-      /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This
-       * comment suppresses an error found when Flow v0.54 was deployed. To see
-       * the error delete this comment and run Flow. */
+      /* $FlowFixMe[prop-missing] (>=0.54.0 site=react_native_fb,react_native_
+       * oss) This comment suppresses an error found when Flow v0.54 was
+       * deployed. To see the error delete this comment and run Flow. */
       headers.origin = unrecognized.origin;
-      /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This
-       * comment suppresses an error found when Flow v0.54 was deployed. To see
-       * the error delete this comment and run Flow. */
+      /* $FlowFixMe[prop-missing] (>=0.54.0 site=react_native_fb,react_native_
+       * oss) This comment suppresses an error found when Flow v0.54 was
+       * deployed. To see the error delete this comment and run Flow. */
       delete unrecognized.origin;
     }
 
@@ -123,7 +138,11 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
       protocols = null;
     }
 
-    this._eventEmitter = new NativeEventEmitter(NativeWebSocketModule);
+    this._eventEmitter = new NativeEventEmitter(
+      // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+      // If you want to use the native module on other platforms, please remove this condition and test its behavior
+      Platform.OS !== 'ios' ? null : NativeWebSocketModule,
+    );
     this._socketId = nextWebSocketId++;
     this._registerEvents();
     NativeWebSocketModule.connect(url, protocols, {headers}, this._socketId);
@@ -217,7 +236,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
         if (ev.id !== this._socketId) {
           return;
         }
-        let data = ev.data;
+        let data: Blob | BlobData | ArrayBuffer | string = ev.data;
         switch (ev.type) {
           case 'binary':
             data = base64.toByteArray(ev.data).buffer;
@@ -245,6 +264,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
           new WebSocketEvent('close', {
             code: ev.code,
             reason: ev.reason,
+            // TODO: missing `wasClean` (exposed on iOS as `clean` but missing on Android)
           }),
         );
         this._unregisterEvents();
@@ -262,7 +282,9 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
         );
         this.dispatchEvent(
           new WebSocketEvent('close', {
-            message: ev.message,
+            code: CLOSE_ABNORMAL,
+            reason: ev.message,
+            // TODO: Expose `wasClean`
           }),
         );
         this._unregisterEvents();

@@ -19,11 +19,12 @@
         <item name="android:datePickerMode">spinner</item>
     </style>
 
-    <style name="CalendarDatePickerDialog" parent="Theme.AppCompat.Light.Dialog" tools:targetApi="lollipop">
+    <style name="CalendarDatePickerDialog" parent="android:Theme.Material.Dialog.Alert" tools:targetApi="lollipop">
         <item name="android:datePickerStyle">@style/CalendarDatePickerStyle</item>
+        <item name="android:windowIsFloating">true</item>
     </style>
 
-    <style name="CalendarDatePickerStyle" parent="android:Widget.Material.Light.DatePicker" tools:targetApi="lollipop">
+    <style name="CalendarDatePickerStyle" parent="android:Widget.Material.DatePicker" tools:targetApi="lollipop">
         <item name="android:datePickerMode">calendar</item>
     </style>
 

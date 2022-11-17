@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,18 +8,17 @@
  * @format
  */
 
-'use strict';
-
-import * as React from 'react';
-import StyleSheet from '../../StyleSheet/StyleSheet';
-import Platform from '../../Utilities/Platform';
-import Text from '../../Text/Text';
-import View from '../../Components/View/View';
-import LogBoxButton from './LogBoxButton';
-import * as LogBoxStyle from './LogBoxStyle';
-import LogBoxInspectorSection from './LogBoxInspectorSection';
-import openFileInEditor from '../../Core/Devtools/openFileInEditor';
 import type LogBoxLog from '../Data/LogBoxLog';
+
+import View from '../../Components/View/View';
+import openFileInEditor from '../../Core/Devtools/openFileInEditor';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import Platform from '../../Utilities/Platform';
+import LogBoxButton from './LogBoxButton';
+import LogBoxInspectorSection from './LogBoxInspectorSection';
+import * as LogBoxStyle from './LogBoxStyle';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   log: LogBoxLog,
@@ -28,7 +27,7 @@ type Props = $ReadOnly<{|
 const BEFORE_SLASH_RE = /^(.*)[\\/]/;
 
 // Taken from React https://github.com/facebook/react/blob/206d61f72214e8ae5b935f0bf8628491cb7f0797/packages/react-devtools-shared/src/backend/describeComponentFrame.js#L27-L41
-function getPrettyFileName(path) {
+function getPrettyFileName(path: string) {
   let fileName = path.replace(BEFORE_SLASH_RE, '');
 
   // In DEV, include code for a common special case:

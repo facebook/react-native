@@ -1,20 +1,18 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #import <React/RCTSurfaceProtocol.h>
-#import <React/RCTSurfaceStage.h>
-#import <react/renderer/mounting/MountingCoordinator.h>
+#import <react/renderer/scheduler/SurfaceHandler.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class RCTBridge;
 @class RCTSurfaceView;
 @class RCTSurfacePresenter;
-@protocol RCTSurfaceDelegate;
 
 /**
  * (This is Fabric-compatible RCTSurface implementation.)
@@ -40,6 +38,15 @@ NS_ASSUME_NONNULL_BEGIN
                               moduleName:(NSString *)moduleName
                        initialProperties:(NSDictionary *)initialProperties;
 
+#pragma mark - Surface presenter
+
+/**
+ * EXPERIMENTAL
+ * Reset's the Surface to it's initial stage.
+ * It uses the passed in surface presenter, and whatever else was passed in init.
+ */
+- (void)resetWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter;
+
 #pragma mark - Dealing with UIView representation, the Main thread only access
 
 /**
@@ -55,20 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
  * This method must be called only from the main queue.
  */
 - (RCTSurfaceView *)view;
-
-#pragma mark - Start & Stop
-
-/**
- * Starts or stops the Surface.
- * A Surface object can be stopped and then restarted.
- * The starting process includes initializing all underlying React Native
- * infrastructure and running React app.
- * Surface stops itself on deallocation automatically.
- * Returns YES in case of success. Returns NO if the Surface is already
- * started or stopped.
- */
-- (BOOL)start;
-- (BOOL)stop;
 
 #pragma mark - Layout: Setting the size constrains
 
@@ -121,12 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTFabricSurface (Internal)
 
-/**
- * Sets and clears given stage flags (bitmask).
- * Returns `YES` if the actual state was changed.
- */
-- (BOOL)_setStage:(RCTSurfaceStage)stage;
-- (BOOL)_unsetStage:(RCTSurfaceStage)stage;
+- (facebook::react::SurfaceHandler const &)surfaceHandler;
 
 @end
 

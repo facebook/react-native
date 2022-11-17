@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,19 +10,17 @@
 
 // This is a controlled component version of RCTDatePickerIOS.
 
-'use strict';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {DatePickerIOSType} from './DatePickerIOS.flow';
 
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
 import RCTDatePickerNativeComponent, {
   Commands as DatePickerCommands,
 } from './RCTDatePickerNativeComponent';
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
-
-const invariant = require('invariant');
-
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
+import invariant from 'invariant';
+import * as React from 'react';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -103,6 +101,13 @@ type Props = $ReadOnly<{|
    * instance, to show times in Pacific Standard Time, pass -7 * 60.
    */
   timeZoneOffsetInMinutes?: ?number,
+
+  /**
+   * The date picker style
+   * This is only available on devices with iOS 14.0 and later.
+   * 'spinner' is the default style if this prop isn't set.
+   */
+  pickerStyle?: ?('compact' | 'spinner' | 'inline'),
 |}>;
 
 /**
@@ -113,10 +118,6 @@ type Props = $ReadOnly<{|
  * source of truth.
  */
 class DatePickerIOS extends React.Component<Props> {
-  static DefaultProps: {|mode: $TEMPORARY$string<'datetime'>|} = {
-    mode: 'datetime',
-  };
-
   _picker: ?React.ElementRef<typeof RCTDatePickerNativeComponent> = null;
 
   componentDidUpdate() {
@@ -138,6 +139,7 @@ class DatePickerIOS extends React.Component<Props> {
 
   render(): React.Node {
     const props = this.props;
+    const mode = props.mode ?? 'datetime';
     invariant(
       props.date || props.initialDate,
       'A selected date or initial date should be specified.',
@@ -149,7 +151,7 @@ class DatePickerIOS extends React.Component<Props> {
           ref={picker => {
             this._picker = picker;
           }}
-          style={styles.datePickerIOS}
+          style={getHeight(props.pickerStyle, mode)}
           date={
             props.date
               ? props.date.getTime()
@@ -168,22 +170,73 @@ class DatePickerIOS extends React.Component<Props> {
           minimumDate={
             props.minimumDate ? props.minimumDate.getTime() : undefined
           }
-          mode={props.mode}
+          mode={mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}
           onStartShouldSetResponder={() => true}
           onResponderTerminationRequest={() => false}
+          pickerStyle={props.pickerStyle}
         />
       </View>
     );
   }
 }
 
+const inlineHeightForDatePicker = 318.5;
+const inlineHeightForTimePicker = 49.5;
+const compactHeight = 40;
+const spinnerHeight = 216;
+
 const styles = StyleSheet.create({
   datePickerIOS: {
-    height: 216,
+    height: spinnerHeight,
+  },
+  datePickerIOSCompact: {
+    height: compactHeight,
+  },
+  datePickerIOSInline: {
+    height: inlineHeightForDatePicker + inlineHeightForTimePicker * 2,
+  },
+  datePickerIOSInlineDate: {
+    height: inlineHeightForDatePicker + inlineHeightForTimePicker,
+  },
+  datePickerIOSInlineTime: {
+    height: inlineHeightForTimePicker,
   },
 });
 
-module.exports = DatePickerIOS;
+function getHeight(
+  pickerStyle: ?(
+    | 'compact'
+    | 'inline'
+    | 'spinner'
+    | $TEMPORARY$string<'compact'>
+    | $TEMPORARY$string<'inline'>
+    | $TEMPORARY$string<'spinner'>
+  ),
+  mode:
+    | 'date'
+    | 'datetime'
+    | 'time'
+    | $TEMPORARY$string<'date'>
+    | $TEMPORARY$string<'datetime'>
+    | $TEMPORARY$string<'time'>,
+) {
+  if (pickerStyle === 'compact') {
+    return styles.datePickerIOSCompact;
+  }
+  if (pickerStyle === 'inline') {
+    switch (mode) {
+      case 'date':
+        return styles.datePickerIOSInlineDate;
+      case 'time':
+        return styles.datePickerIOSInlineTime;
+      default:
+        return styles.datePickerIOSInline;
+    }
+  }
+  return styles.datePickerIOS;
+}
+
+module.exports = (DatePickerIOS: DatePickerIOSType);

@@ -1,75 +1,87 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @flow
  */
 
-'use strict';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../../Renderer/shims/ReactNativeTypes';
 
-const Platform = require('../../Utilities/Platform');
-const ReactNativeViewViewConfigAndroid = require('./ReactNativeViewViewConfigAndroid');
-
-const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import Platform from '../../Utilities/Platform';
+import {type ViewProps as Props} from './ViewPropTypes';
 import * as React from 'react';
 
-import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
-import type {ViewProps} from './ViewPropTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
+  Platform.OS === 'android'
+    ? {
+        uiViewClassName: 'RCTView',
+        validAttributes: {
+          // ReactClippingViewManager @ReactProps
+          removeClippedSubviews: true,
 
-export type ViewNativeComponentType = HostComponent<ViewProps>;
+          // ReactViewManager @ReactProps
+          accessible: true,
+          hasTVPreferredFocus: true,
+          nextFocusDown: true,
+          nextFocusForward: true,
+          nextFocusLeft: true,
+          nextFocusRight: true,
+          nextFocusUp: true,
 
-let NativeViewComponent;
-let viewConfig:
-  | {...}
-  | {|
-      bubblingEventTypes?: $ReadOnly<{
-        [eventName: string]: $ReadOnly<{|
-          phasedRegistrationNames: $ReadOnly<{|
-            bubbled: string,
-            captured: string,
-          |}>,
-        |}>,
-        ...,
-      }>,
-      directEventTypes?: $ReadOnly<{
-        [eventName: string]: $ReadOnly<{|registrationName: string|}>,
-        ...,
-      }>,
-      uiViewClassName: string,
-      validAttributes?: {
-        [propName: string]:
-          | true
-          | $ReadOnly<{|
-              diff?: <T>(arg1: any, arg2: any) => boolean,
-              process?: (arg1: any) => any,
-            |}>,
-        ...,
-      },
-    |};
+          borderRadius: true,
+          borderTopLeftRadius: true,
+          borderTopRightRadius: true,
+          borderBottomRightRadius: true,
+          borderBottomLeftRadius: true,
+          borderTopStartRadius: true,
+          borderTopEndRadius: true,
+          borderBottomStartRadius: true,
+          borderBottomEndRadius: true,
 
-if (__DEV__ || global.RN$Bridgeless) {
-  // On Android, View extends the base component with additional view-only props
-  // On iOS, the base component is View
-  if (Platform.OS === 'android') {
-    viewConfig = ReactNativeViewViewConfigAndroid;
-    registerGeneratedViewConfig('RCTView', ReactNativeViewViewConfigAndroid);
-  } else {
-    viewConfig = {};
-    registerGeneratedViewConfig('RCTView', {uiViewClassName: 'RCTView'});
-  }
+          borderStyle: true,
+          hitSlop: true,
+          pointerEvents: true,
+          nativeBackgroundAndroid: true,
+          nativeForegroundAndroid: true,
+          needsOffscreenAlphaCompositing: true,
 
-  NativeViewComponent = 'RCTView';
-} else {
-  NativeViewComponent = requireNativeComponent('RCTView');
-}
+          borderWidth: true,
+          borderLeftWidth: true,
+          borderRightWidth: true,
+          borderTopWidth: true,
+          borderBottomWidth: true,
+          borderStartWidth: true,
+          borderEndWidth: true,
 
-export const __INTERNAL_VIEW_CONFIG = viewConfig;
+          borderColor: {process: require('../../StyleSheet/processColor')},
+          borderLeftColor: {process: require('../../StyleSheet/processColor')},
+          borderRightColor: {process: require('../../StyleSheet/processColor')},
+          borderTopColor: {process: require('../../StyleSheet/processColor')},
+          borderBottomColor: {
+            process: require('../../StyleSheet/processColor'),
+          },
+          borderStartColor: {process: require('../../StyleSheet/processColor')},
+          borderEndColor: {process: require('../../StyleSheet/processColor')},
+
+          focusable: true,
+          overflow: true,
+          backfaceVisibility: true,
+        },
+      }
+    : {
+        uiViewClassName: 'RCTView',
+      };
+
+const ViewNativeComponent: HostComponent<Props> =
+  NativeComponentRegistry.get<Props>('RCTView', () => __INTERNAL_VIEW_CONFIG);
 
 interface NativeCommands {
   +hotspotUpdate: (
@@ -87,4 +99,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate', 'setPressed'],
 });
 
-export default ((NativeViewComponent: any): ViewNativeComponentType);
+export default ViewNativeComponent;
+
+export type ViewNativeComponentType = HostComponent<Props>;

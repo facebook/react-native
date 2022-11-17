@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,8 @@ RCTDimensions RCTGetDimensions(CGFloat fontScale)
 
   UIView *mainWindow;
   mainWindow = RCTKeyWindow();
-  CGSize windowSize = mainWindow.bounds.size;
+  // We fallback to screen size if a key window is not found.
+  CGSize windowSize = mainWindow ? mainWindow.bounds.size : screenSize;
 
   RCTDimensions result;
   typeof(result.screen) dimsScreen = {

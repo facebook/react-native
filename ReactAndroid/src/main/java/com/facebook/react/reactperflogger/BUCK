@@ -7,9 +7,11 @@ rn_android_library(
             "*.java",
         ],
     ),
+    autoglob = False,
     labels = [
-        "supermodule:xplat/default/public.react_native.infra",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
+    language = "JAVA",
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
@@ -17,6 +19,6 @@ rn_android_library(
     deps = [
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
         react_native_dep("libraries/fbjni:java"),
-        react_native_target("java/com/facebook/react/reactperflogger/jni:jni"),
+        react_native_target("jni/react/reactperflogger:jni"),
     ],
 )

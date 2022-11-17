@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,15 +14,13 @@
  * Sets up global variables for React Native.
  * You can use this module directly, or just require InitializeCore.
  */
-if (global.GLOBAL === undefined) {
-  global.GLOBAL = global;
-}
-
 if (global.window === undefined) {
+  // $FlowFixMe[cannot-write]
   global.window = global;
 }
 
 if (global.self === undefined) {
+  // $FlowFixMe[cannot-write]
   global.self = global;
 }
 

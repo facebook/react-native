@@ -1,19 +1,19 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
-'use strict';
-
-import React, {useState} from 'react';
+import * as React from 'react';
+import type {RNTesterModule} from '../../types/RNTesterTypes';
 import {Alert, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 
 // Shows log on the screen
-const Log = ({message}) =>
+const Log = ({message}: {message: string}) =>
   message ? (
     <View style={styles.logContainer}>
       <Text>
@@ -44,7 +44,7 @@ const AlertWithDefaultButton = () => {
 };
 
 const AlertWithTwoButtons = () => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = React.useState('');
 
   const alertMessage = 'Your subscription has expired!';
 
@@ -68,7 +68,7 @@ const AlertWithTwoButtons = () => {
 };
 
 const AlertWithThreeButtons = () => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = React.useState('');
 
   const alertMessage = 'Do you want to save your changes?';
 
@@ -94,7 +94,7 @@ const AlertWithThreeButtons = () => {
 };
 
 const AlertWithManyButtons = () => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = React.useState('');
 
   const alertMessage =
     'Credibly reintermediate next-generation potentialities after goal-oriented ' +
@@ -124,7 +124,7 @@ const AlertWithManyButtons = () => {
 };
 
 const AlertWithCancelableTrue = () => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = React.useState('');
 
   const alertMessage = 'Tapping outside this dialog will dismiss this alert.';
 
@@ -156,7 +156,7 @@ const AlertWithCancelableTrue = () => {
 };
 
 const AlertWithStyles = () => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = React.useState('');
 
   const alertMessage = 'Look at the button styles!';
 
@@ -192,6 +192,39 @@ const AlertWithStyles = () => {
   );
 };
 
+const AlertWithStylesPreferred = () => {
+  const [message, setMessage] = React.useState('');
+
+  const alertMessage =
+    "The Preferred button is styled with 'preferred', so it is emphasized over the cancel button.";
+
+  return (
+    <View>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() =>
+          Alert.alert('Foo Title', alertMessage, [
+            {
+              text: 'Preferred',
+              isPreferred: true,
+              onPress: () => setMessage('Preferred Pressed!'),
+            },
+            {
+              text: 'Cancel',
+              style: 'cancel',
+              onPress: () => setMessage('Cancel Pressed!'),
+            },
+          ])
+        }>
+        <View style={styles.button}>
+          <Text>Tap to view alert</Text>
+        </View>
+      </TouchableHighlight>
+      <Log message={message} />
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
@@ -210,12 +243,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = 'Alerts';
-exports.description =
-  'Alerts display a concise and informative message ' +
-  'and prompt the user to make a decision.';
-exports.documentationURL = 'https://reactnative.dev/docs/alert';
-exports.examples = [
+export const examples = [
   {
     title: 'Alert with default Button',
     description:
@@ -264,4 +292,24 @@ exports.examples = [
       return <AlertWithStyles />;
     },
   },
+  {
+    title: 'Alert with styles + preferred',
+    platform: 'ios',
+    description:
+      "Alert buttons with 'isPreferred' will be emphasized, even over cancel buttons",
+    render(): React.Node {
+      return <AlertWithStylesPreferred />;
+    },
+  },
 ];
+
+export default ({
+  framework: 'React',
+  title: 'Alerts',
+  category: 'UI',
+  documentationURL: 'https://reactnative.dev/docs/alert',
+  description:
+    'Alerts display a concise and informative message and prompt the user to make a decision.',
+  showIndividualExamples: true,
+  examples,
+}: RNTesterModule);

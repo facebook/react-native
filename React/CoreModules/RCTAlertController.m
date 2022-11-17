@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #import <React/RCTUtils.h>
 
-#import "RCTAlertController.h"
+#import <React/RCTAlertController.h>
 
 @interface RCTAlertController ()
 
@@ -29,8 +29,24 @@
 
 - (void)show:(BOOL)animated completion:(void (^)(void))completion
 {
+  if (@available(iOS 13.0, *)) {
+    UIUserInterfaceStyle style =
+        RCTSharedApplication().delegate.window.overrideUserInterfaceStyle ?: UIUserInterfaceStyleUnspecified;
+    self.overrideUserInterfaceStyle = style;
+  }
   [self.alertWindow makeKeyAndVisible];
   [self.alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
+}
+
+- (void)hide
+{
+  [_alertWindow setHidden:YES];
+
+  if (@available(iOS 13, *)) {
+    _alertWindow.windowScene = nil;
+  }
+
+  _alertWindow = nil;
 }
 
 @end

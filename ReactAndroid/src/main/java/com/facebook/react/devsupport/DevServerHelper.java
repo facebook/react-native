@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,6 +14,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
@@ -40,7 +41,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import okio.Okio;
 import okio.Sink;
 import org.json.JSONArray;
@@ -61,8 +61,6 @@ import org.json.JSONObject;
  */
 public class DevServerHelper {
   public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
-
-  private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
 
@@ -112,6 +110,7 @@ public class DevServerHelper {
   private final DevInternalSettings mSettings;
   private final OkHttpClient mClient;
   private final BundleDownloader mBundleDownloader;
+  private final PackagerStatusCheck mPackagerStatusCheck;
   private final String mPackageName;
 
   private @Nullable JSPackagerClient mPackagerClient;
@@ -131,7 +130,7 @@ public class DevServerHelper {
             .writeTimeout(0, TimeUnit.MILLISECONDS)
             .build();
     mBundleDownloader = new BundleDownloader(mClient);
-
+    mPackagerStatusCheck = new PackagerStatusCheck(mClient);
     mPackageName = packageName;
   }
 
@@ -428,9 +427,13 @@ public class DevServerHelper {
 
   private String createBundleURL(
       String mainModuleID, BundleType type, String host, boolean modulesOnly, boolean runModule) {
+    String runtimeBytecodeVersion =
+        ReactBuildConfig.HERMES_BYTECODE_VERSION != 0
+            ? "&runtimeBytecodeVersion=" + ReactBuildConfig.HERMES_BYTECODE_VERSION
+            : "";
     return String.format(
         Locale.US,
-        "http://%s/%s.%s?platform=android&dev=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
+        "http://%s/%s.%s?platform=android&dev=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s%s",
         host,
         mainModuleID,
         type.typeID(),
@@ -438,7 +441,8 @@ public class DevServerHelper {
         getJSMinifyMode(),
         mPackageName,
         modulesOnly ? "true" : "false",
-        runModule ? "true" : "false");
+        runModule ? "true" : "false",
+        runtimeBytecodeVersion);
   }
 
   private String createBundleURL(String mainModuleID, BundleType type) {
@@ -471,60 +475,13 @@ public class DevServerHelper {
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
-    String statusURL =
-        createPackagerStatusURL(mSettings.getPackagerConnectionSettings().getDebugServerHost());
-    Request request = new Request.Builder().url(statusURL).build();
-
-    mClient
-        .newCall(request)
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(Call call, IOException e) {
-                FLog.w(
-                    ReactConstants.TAG,
-                    "The packager does not seem to be running as we got an IOException requesting "
-                        + "its status: "
-                        + e.getMessage());
-                callback.onPackagerStatusFetched(false);
-              }
-
-              @Override
-              public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                  FLog.e(
-                      ReactConstants.TAG,
-                      "Got non-success http code from packager when requesting status: "
-                          + response.code());
-                  callback.onPackagerStatusFetched(false);
-                  return;
-                }
-                ResponseBody body = response.body();
-                if (body == null) {
-                  FLog.e(
-                      ReactConstants.TAG,
-                      "Got null body response from packager when requesting status");
-                  callback.onPackagerStatusFetched(false);
-                  return;
-                }
-                String bodyString =
-                    body.string(); // cannot call body.string() twice, stored it into variable.
-                // https://github.com/square/okhttp/issues/1240#issuecomment-68142603
-                if (!PACKAGER_OK_STATUS.equals(bodyString)) {
-                  FLog.e(
-                      ReactConstants.TAG,
-                      "Got unexpected response from packager when requesting status: "
-                          + bodyString);
-                  callback.onPackagerStatusFetched(false);
-                  return;
-                }
-                callback.onPackagerStatusFetched(true);
-              }
-            });
-  }
-
-  private static String createPackagerStatusURL(String host) {
-    return String.format(Locale.US, "http://%s/status", host);
+    String host = mSettings.getPackagerConnectionSettings().getDebugServerHost();
+    if (host == null) {
+      FLog.w(ReactConstants.TAG, "No packager host configured.");
+      callback.onPackagerStatusFetched(false);
+    } else {
+      mPackagerStatusCheck.run(host, callback);
+    }
   }
 
   private String createLaunchJSDevtoolsCommandUrl() {

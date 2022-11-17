@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,22 +8,20 @@
  * @format
  */
 
-'use strict';
-
-import LogBoxInspectorCodeFrame from './LogBoxInspectorCodeFrame';
-import * as React from 'react';
-import ScrollView from '../../Components/ScrollView/ScrollView';
-import StyleSheet from '../../StyleSheet/StyleSheet';
-import View from '../../Components/View/View';
-import * as LogBoxData from '../Data/LogBoxData';
 import Keyboard from '../../Components/Keyboard/Keyboard';
+import ScrollView from '../../Components/ScrollView/ScrollView';
+import View from '../../Components/View/View';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import * as LogBoxData from '../Data/LogBoxData';
+import LogBoxLog, {type LogLevel} from '../Data/LogBoxLog';
+import LogBoxInspectorCodeFrame from './LogBoxInspectorCodeFrame';
 import LogBoxInspectorFooter from './LogBoxInspectorFooter';
+import LogBoxInspectorHeader from './LogBoxInspectorHeader';
 import LogBoxInspectorMessageHeader from './LogBoxInspectorMessageHeader';
 import LogBoxInspectorReactFrames from './LogBoxInspectorReactFrames';
 import LogBoxInspectorStackFrames from './LogBoxInspectorStackFrames';
-import LogBoxInspectorHeader from './LogBoxInspectorHeader';
 import * as LogBoxStyle from './LogBoxStyle';
-import LogBoxLog, {type LogLevel} from '../Data/LogBoxLog';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   onDismiss: () => void,
@@ -94,7 +92,7 @@ const headerTitleMap = {
   component: 'Render Error',
 };
 
-function LogBoxInspectorBody(props) {
+function LogBoxInspectorBody(props: {log: LogBoxLog, onRetry: () => void}) {
   const [collapsed, setCollapsed] = React.useState(true);
 
   React.useEffect(() => {

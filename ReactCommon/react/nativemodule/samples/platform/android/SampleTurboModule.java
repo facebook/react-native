@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -106,6 +106,16 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec {
     WritableNativeMap map = new WritableNativeMap();
     map.merge(arg);
     log("getObject", arg, map);
+    return map;
+  }
+
+  @DoNotStrip
+  @Override
+  @SuppressWarnings("unused")
+  public WritableMap getUnsafeObject(ReadableMap arg) {
+    WritableNativeMap map = new WritableNativeMap();
+    map.merge(arg);
+    log("getUnsafeObject", arg, map);
     return map;
   }
 

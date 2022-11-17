@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,18 +8,17 @@
  * @flow strict-local
  */
 
-'use strict';
-
-const DevSettings = require('./DevSettings');
-const invariant = require('invariant');
-const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
-const Platform = require('./Platform');
-const prettyFormat = require('pretty-format');
+import type {ExtendedError} from '../Core/ExtendedError';
 
 import getDevServer from '../Core/Devtools/getDevServer';
+import LogBox from '../LogBox/LogBox';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
-import * as LogBoxData from '../LogBox/Data/LogBoxData';
-import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
+
+const DevSettings = require('./DevSettings');
+const Platform = require('./Platform');
+const invariant = require('invariant');
+const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
+const prettyFormat = require('pretty-format');
 
 const pendingEntryPoints = [];
 let hmrClient = null;
@@ -50,6 +49,7 @@ export type HMRClientNativeInterface = {|
     host: string,
     port: number | string,
     isEnabled: boolean,
+    scheme?: string,
   ): void,
 |};
 
@@ -120,6 +120,7 @@ const HMRClient: HMRClientNativeInterface = {
         JSON.stringify({
           type: 'log',
           level,
+          mode: global.RN$Bridgeless === true ? 'NOBRIDGE' : 'BRIDGE',
           data: data.map(item =>
             typeof item === 'string'
               ? item
@@ -147,6 +148,7 @@ const HMRClient: HMRClientNativeInterface = {
     host: string,
     port: number | string,
     isEnabled: boolean,
+    scheme?: string = 'http',
   ) {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required parameter `bundleEntry`');
@@ -156,8 +158,12 @@ const HMRClient: HMRClientNativeInterface = {
     // Moving to top gives errors due to NativeModules not being initialized
     const LoadingView = require('./LoadingView');
 
-    const wsHost = port !== null && port !== '' ? `${host}:${port}` : host;
-    const client = new MetroHMRClient(`ws://${wsHost}/hot`);
+    const serverHost = port !== null && port !== '' ? `${host}:${port}` : host;
+
+    const serverScheme = scheme;
+
+    const client = new MetroHMRClient(`${serverScheme}://${serverHost}/hot`);
+
     hmrClient = client;
 
     const {fullBundleUrl} = getDevServer();
@@ -166,9 +172,7 @@ const HMRClient: HMRClientNativeInterface = {
       // there are any important URL parameters we can't reconstruct from
       // `setup()`'s arguments.
       fullBundleUrl ??
-        // The ws://.../hot?bundleEntry= format is an alternative to specifying
-        // a regular HTTP bundle URL.
-        `ws://${wsHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
+        `${serverScheme}://${serverHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
     );
 
     client.on('connection-error', e => {
@@ -208,7 +212,7 @@ Error: ${e.message}`;
     client.on('update', ({isInitialUpdate}) => {
       if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
-        LogBoxData.clear();
+        LogBox.clearAllLogs();
       }
     });
 
@@ -237,9 +241,23 @@ Error: ${e.message}`;
       }
     });
 
-    client.on('close', data => {
+    client.on('close', closeEvent => {
       LoadingView.hide();
-      setHMRUnavailableReason('Disconnected from Metro.');
+
+      // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
+      // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
+      const isNormalOrUnsetCloseReason =
+        closeEvent.code === 1000 ||
+        closeEvent.code === 1005 ||
+        closeEvent.code == null;
+
+      if (isNormalOrUnsetCloseReason) {
+        setHMRUnavailableReason('Disconnected from Metro.');
+      } else {
+        setHMRUnavailableReason(
+          `Disconnected from Metro (${closeEvent.code}: "${closeEvent.reason}").`,
+        );
+      }
     });
 
     if (isEnabled) {
@@ -253,7 +271,7 @@ Error: ${e.message}`;
   },
 };
 
-function setHMRUnavailableReason(reason) {
+function setHMRUnavailableReason(reason: string) {
   invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
   if (hmrUnavailableReason !== null) {
     // Don't show more than one warning.
@@ -270,7 +288,7 @@ function setHMRUnavailableReason(reason) {
   }
 }
 
-function registerBundleEntryPoints(client) {
+function registerBundleEntryPoints(client: MetroHMRClient) {
   if (hmrUnavailableReason != null) {
     DevSettings.reload('Bundle Splitting – Metro disconnected');
     return;
@@ -287,9 +305,9 @@ function registerBundleEntryPoints(client) {
   }
 }
 
-function flushEarlyLogs(client) {
+function flushEarlyLogs(client: MetroHMRClient) {
   try {
-    pendingLogs.forEach(([level: LogLevel, data: Array<mixed>]) => {
+    pendingLogs.forEach(([level, data]) => {
       HMRClient.log(level, data);
     });
   } finally {
@@ -305,8 +323,8 @@ function dismissRedbox() {
   ) {
     NativeRedBox.dismiss();
   } else {
-    const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
-      .default;
+    const NativeExceptionsManager =
+      require('../Core/NativeExceptionsManager').default;
     NativeExceptionsManager &&
       NativeExceptionsManager.dismissRedbox &&
       NativeExceptionsManager.dismissRedbox();
@@ -325,6 +343,8 @@ function showCompileError() {
   const message = currentCompileErrorMessage;
   currentCompileErrorMessage = null;
 
+  /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+   * parameters */
   const error: ExtendedError = new Error(message);
   // Symbolicating compile errors is wasted effort
   // because the stack trace is meaningless:

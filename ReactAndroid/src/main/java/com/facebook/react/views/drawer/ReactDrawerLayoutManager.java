@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,7 +20,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -31,6 +31,7 @@ import com.facebook.react.views.drawer.events.DrawerClosedEvent;
 import com.facebook.react.views.drawer.events.DrawerOpenedEvent;
 import com.facebook.react.views.drawer.events.DrawerSlideEvent;
 import com.facebook.react.views.drawer.events.DrawerStateChangedEvent;
+import java.util.HashMap;
 import java.util.Map;
 
 /** View Manager for {@link ReactDrawerLayout} components. */
@@ -56,12 +57,13 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
 
   @Override
   protected void addEventEmitters(ThemedReactContext reactContext, ReactDrawerLayout view) {
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
-    if (uiManager == null) {
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.getId());
+    if (eventDispatcher == null) {
       return;
     }
 
-    view.addDrawerListener(new DrawerEventEmitter(view, uiManager.getEventDispatcher()));
+    view.addDrawerListener(new DrawerEventEmitter(view, eventDispatcher));
   }
 
   @Override
@@ -152,12 +154,15 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   }
 
   @Override
+  @ReactProp(name = "keyboardDismissMode")
   public void setKeyboardDismissMode(ReactDrawerLayout view, @Nullable String value) {}
 
   @Override
+  @ReactProp(name = "drawerBackgroundColor", customType = "Color")
   public void setDrawerBackgroundColor(ReactDrawerLayout view, @Nullable Integer value) {}
 
   @Override
+  @ReactProp(name = "statusBarBackgroundColor", customType = "Color")
   public void setStatusBarBackgroundColor(ReactDrawerLayout view, @Nullable Integer value) {}
 
   @Override
@@ -209,12 +214,18 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
 
   @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.of(
-        DrawerSlideEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerSlide"),
-        DrawerOpenedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerOpen"),
-        DrawerClosedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerClose"),
-        DrawerStateChangedEvent.EVENT_NAME,
-            MapBuilder.of("registrationName", "onDrawerStateChanged"));
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.of(
+            DrawerSlideEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerSlide"),
+            DrawerOpenedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerOpen"),
+            DrawerClosedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerClose"),
+            DrawerStateChangedEvent.EVENT_NAME,
+                MapBuilder.of("registrationName", "onDrawerStateChanged")));
+    return eventTypeConstants;
   }
 
   /**
@@ -252,22 +263,30 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
 
     @Override
     public void onDrawerSlide(@NonNull View view, float v) {
-      mEventDispatcher.dispatchEvent(new DrawerSlideEvent(mDrawerLayout.getId(), v));
+      mEventDispatcher.dispatchEvent(
+          new DrawerSlideEvent(
+              UIManagerHelper.getSurfaceId(mDrawerLayout), mDrawerLayout.getId(), v));
     }
 
     @Override
     public void onDrawerOpened(@NonNull View view) {
-      mEventDispatcher.dispatchEvent(new DrawerOpenedEvent(mDrawerLayout.getId()));
+      mEventDispatcher.dispatchEvent(
+          new DrawerOpenedEvent(
+              UIManagerHelper.getSurfaceId(mDrawerLayout), mDrawerLayout.getId()));
     }
 
     @Override
     public void onDrawerClosed(@NonNull View view) {
-      mEventDispatcher.dispatchEvent(new DrawerClosedEvent(mDrawerLayout.getId()));
+      mEventDispatcher.dispatchEvent(
+          new DrawerClosedEvent(
+              UIManagerHelper.getSurfaceId(mDrawerLayout), mDrawerLayout.getId()));
     }
 
     @Override
     public void onDrawerStateChanged(int i) {
-      mEventDispatcher.dispatchEvent(new DrawerStateChangedEvent(mDrawerLayout.getId(), i));
+      mEventDispatcher.dispatchEvent(
+          new DrawerStateChangedEvent(
+              UIManagerHelper.getSurfaceId(mDrawerLayout), mDrawerLayout.getId(), i));
     }
   }
 }

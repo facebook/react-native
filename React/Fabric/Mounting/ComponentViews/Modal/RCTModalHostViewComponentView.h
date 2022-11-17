@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,6 +25,8 @@
  * Subclasses may override this method.
  * Default implementation calls `[UIViewController dismissViewControllerAnimated:completion:]`.
  */
-- (void)dismissViewController:(UIViewController *)modalViewController animated:(BOOL)animated;
+- (void)dismissViewController:(UIViewController *)modalViewController
+                     animated:(BOOL)animated
+                   completion:(void (^)(void))completion;
 
 @end

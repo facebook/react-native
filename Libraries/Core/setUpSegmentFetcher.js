@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,14 +20,15 @@ export type GetSegmentFunction = typeof __getSegment;
 
 function __fetchSegment(
   segmentId: number,
-  options: {|
-    +otaBuildNumber: ?string,
-    +requestedModuleName?: ?string,
-  |},
+  options: $ReadOnly<{
+    otaBuildNumber: ?string,
+    requestedModuleName: string,
+    segmentHash: string,
+  }>,
   callback: (?Error) => void,
 ) {
-  const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
-    .default;
+  const SegmentFetcher =
+    require('./SegmentFetcher/NativeSegmentFetcher').default;
   SegmentFetcher.fetchSegment(
     segmentId,
     options,
@@ -53,14 +54,15 @@ global.__fetchSegment = __fetchSegment;
 
 function __getSegment(
   segmentId: number,
-  options: {|
-    +otaBuildNumber: ?string,
-    +requestedModuleName?: ?string,
-  |},
+  options: $ReadOnly<{
+    otaBuildNumber: ?string,
+    requestedModuleName: string,
+    segmentHash: string,
+  }>,
   callback: (?Error, ?string) => void,
 ) {
-  const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
-    .default;
+  const SegmentFetcher =
+    require('./SegmentFetcher/NativeSegmentFetcher').default;
 
   if (!SegmentFetcher.getSegment) {
     throw new Error('SegmentFetcher.getSegment must be defined');

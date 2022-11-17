@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -156,8 +156,8 @@ static void sendResponse(const std::string &str) {
 
 static std::string readScriptSource(const char *path) {
   std::ifstream stream(path);
-  return std::string{std::istreambuf_iterator<char>(stream),
-                     std::istreambuf_iterator<char>()};
+  return std::string{
+      std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
 }
 
 static std::string getUrl(const char *path) {
@@ -213,9 +213,11 @@ static void runDebuggerLoop(
 
 static void runScript(const std::string &scriptSource, const std::string &url) {
   std::shared_ptr<fbhermes::HermesRuntime> runtime(
-      fbhermes::makeHermesRuntime());
-  auto adapter = std::make_unique<fbhermes::inspector::SharedRuntimeAdapter>(
-      runtime, runtime->getDebugger());
+      fbhermes::makeHermesRuntime(::hermes::vm::RuntimeConfig::Builder()
+                                      .withEnableSampleProfiling(true)
+                                      .build()));
+  auto adapter =
+      std::make_unique<fbhermes::inspector::SharedRuntimeAdapter>(runtime);
   fbhermes::inspector::chrome::Connection conn(
       std::move(adapter), "hermes-chrome-debug-server");
   std::thread debuggerLoop(runDebuggerLoop, std::ref(conn), scriptSource);
@@ -228,9 +230,10 @@ static void runScript(const std::string &scriptSource, const std::string &url) {
 
 int main(int argc, char **argv) {
   const char *shortOpts = "l:h";
-  const option longOpts[] = {{"log", 1, nullptr, 'l'},
-                             {"help", 0, nullptr, 'h'},
-                             {nullptr, 0, nullptr, 0}};
+  const option longOpts[] = {
+      {"log", 1, nullptr, 'l'},
+      {"help", 0, nullptr, 'h'},
+      {nullptr, 0, nullptr, 0}};
 
   while (true) {
     int opt = getopt_long(argc, argv, shortOpts, longOpts, nullptr);

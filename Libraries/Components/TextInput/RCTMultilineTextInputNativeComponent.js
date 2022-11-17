@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,12 +8,15 @@
  * @format
  */
 
-'use strict';
-
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import requireNativeComponent from '../../ReactNative/requireNativeComponent';
-import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
+
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import RCTTextInputViewConfig from './RCTTextInputViewConfig';
 
 type NativeType = HostComponent<mixed>;
 
@@ -23,8 +26,20 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
-const SinglelineTextInputNativeComponent: HostComponent<mixed> = requireNativeComponent<mixed>(
-  'RCTMultilineTextInputView',
-);
+export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
+  uiViewClassName: 'RCTMultilineTextInputView',
+  ...RCTTextInputViewConfig,
+  validAttributes: {
+    ...RCTTextInputViewConfig.validAttributes,
+    dataDetectorTypes: true,
+  },
+};
 
-export default SinglelineTextInputNativeComponent;
+const MultilineTextInputNativeComponent: HostComponent<mixed> =
+  NativeComponentRegistry.get<mixed>(
+    'RCTMultilineTextInputView',
+    () => __INTERNAL_VIEW_CONFIG,
+  );
+
+// flowlint-next-line unclear-type:off
+export default ((MultilineTextInputNativeComponent: any): HostComponent<mixed>);

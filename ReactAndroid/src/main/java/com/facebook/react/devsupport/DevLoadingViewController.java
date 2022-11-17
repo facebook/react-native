@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,14 +22,13 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import java.net.MalformedURLException;
-import java.net.URL;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import java.util.Locale;
 
 /** Controller to display loading messages on top of the screen. All methods are thread safe. */
-public class DevLoadingViewController {
+public class DevLoadingViewController implements DevLoadingViewManager {
   private static boolean sEnabled = true;
-  private final ReactInstanceManagerDevHelper mReactInstanceManagerHelper;
+  private final ReactInstanceDevHelper mReactInstanceManagerHelper;
   private @Nullable TextView mDevLoadingView;
   private @Nullable PopupWindow mDevLoadingPopup;
 
@@ -37,10 +36,11 @@ public class DevLoadingViewController {
     sEnabled = enabled;
   }
 
-  public DevLoadingViewController(ReactInstanceManagerDevHelper reactInstanceManagerHelper) {
+  public DevLoadingViewController(ReactInstanceDevHelper reactInstanceManagerHelper) {
     mReactInstanceManagerHelper = reactInstanceManagerHelper;
   }
 
+  @Override
   public void showMessage(final String message) {
     if (!sEnabled) {
       return;
@@ -55,34 +55,7 @@ public class DevLoadingViewController {
         });
   }
 
-  public void showForUrl(String url) {
-    Context context = getContext();
-    if (context == null) {
-      return;
-    }
-
-    URL parsedURL;
-    try {
-      parsedURL = new URL(url);
-    } catch (MalformedURLException e) {
-      FLog.e(ReactConstants.TAG, "Bundle url format is invalid. \n\n" + e.toString());
-      return;
-    }
-
-    showMessage(
-        context.getString(
-            R.string.catalyst_loading_from_url, parsedURL.getHost() + ":" + parsedURL.getPort()));
-  }
-
-  public void showForRemoteJSEnabled() {
-    Context context = getContext();
-    if (context == null) {
-      return;
-    }
-
-    showMessage(context.getString(R.string.catalyst_debug_connecting));
-  }
-
+  @Override
   public void updateProgress(
       final @Nullable String status, final @Nullable Integer done, final @Nullable Integer total) {
     if (!sEnabled) {
@@ -107,6 +80,7 @@ public class DevLoadingViewController {
         });
   }
 
+  @Override
   public void hide() {
     if (!sEnabled) {
       return;

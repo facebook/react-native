@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.facebook.common.logging.FLog;
@@ -85,21 +86,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
-
-  /** Enables lazy discovery of a specific {@link ViewManager} by its name. */
-  public interface ViewManagerResolver {
-    /**
-     * {@class UIManagerModule} class uses this method to get a ViewManager by its name. This is the
-     * same name that comes from JS by {@code UIManager.ViewManagerName} call.
-     */
-    @Nullable
-    ViewManager getViewManager(String viewManagerName);
-
-    /**
-     * Provides a list of view manager names to register in JS as {@code UIManager.ViewManagerName}
-     */
-    List<String> getViewManagerNames();
-  }
+  public static final String TAG = UIManagerModule.class.getSimpleName();
 
   /** Resolves a name coming from native side to a name of the event that is exposed to JS. */
   public interface CustomEventNamesResolver {
@@ -126,36 +113,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private volatile int mViewManagerConstantsCacheSize;
 
   private int mBatchId = 0;
+  private int mNumRootViews = 0;
 
-  @SuppressWarnings("deprecated")
   public UIManagerModule(
       ReactApplicationContext reactContext,
       ViewManagerResolver viewManagerResolver,
-      int minTimeLeftInFrameForNonBatchedOperationMs) {
-    this(
-        reactContext,
-        viewManagerResolver,
-        new UIImplementationProvider(),
-        minTimeLeftInFrameForNonBatchedOperationMs);
-  }
-
-  @SuppressWarnings("deprecated")
-  public UIManagerModule(
-      ReactApplicationContext reactContext,
-      List<ViewManager> viewManagersList,
-      int minTimeLeftInFrameForNonBatchedOperationMs) {
-    this(
-        reactContext,
-        viewManagersList,
-        new UIImplementationProvider(),
-        minTimeLeftInFrameForNonBatchedOperationMs);
-  }
-
-  @Deprecated
-  public UIManagerModule(
-      ReactApplicationContext reactContext,
-      ViewManagerResolver viewManagerResolver,
-      UIImplementationProvider uiImplementationProvider,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
@@ -164,7 +126,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mCustomDirectEvents = UIManagerModuleConstants.getDirectEventTypeConstants();
     mViewManagerRegistry = new ViewManagerRegistry(viewManagerResolver);
     mUIImplementation =
-        uiImplementationProvider.createUIImplementation(
+        new UIImplementation(
             reactContext,
             mViewManagerRegistry,
             mEventDispatcher,
@@ -173,11 +135,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     reactContext.addLifecycleEventListener(this);
   }
 
-  @Deprecated
   public UIManagerModule(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagersList,
-      UIImplementationProvider uiImplementationProvider,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
@@ -186,7 +146,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
     mViewManagerRegistry = new ViewManagerRegistry(viewManagersList);
     mUIImplementation =
-        uiImplementationProvider.createUIImplementation(
+        new UIImplementation(
             reactContext,
             mViewManagerRegistry,
             mEventDispatcher,
@@ -207,7 +167,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public String getName() {
+  public @NonNull String getName() {
     return NAME;
   }
 
@@ -219,6 +179,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @Override
   public void initialize() {
     getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
+    getReactApplicationContext().registerComponentCallbacks(mViewManagerRegistry);
     mEventDispatcher.registerEventEmitter(
         DEFAULT, getReactApplicationContext().getJSModule(RCTEventEmitter.class));
   }
@@ -242,8 +203,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
     mEventDispatcher.onCatalystInstanceDestroyed();
+    mUIImplementation.onCatalystInstanceDestroyed();
 
-    getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+    reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
+    reactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
     YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
   }
@@ -291,11 +255,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Helper method to pre-compute the constants for a view manager. This method ensures that we
    * don't block for getting the constants for view managers during TTI
    *
-   * @deprecated this method will not be available in FabricUIManager class.
+   * @deprecated this method will be removed in the future
    * @param viewManagerNames {@link List<String>} names of ViewManagers
    */
   @Deprecated
-  public void preComputeConstantsForViewManager(List<String> viewManagerNames) {
+  @Override
+  public void preInitializeViewManagers(List<String> viewManagerNames) {
     Map<String, WritableMap> constantsMap = new ArrayMap<>();
     for (String viewManagerName : viewManagerNames) {
       WritableMap constants = computeConstantsForViewManager(viewManagerName);
@@ -406,21 +371,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @Override
   public void synchronouslyUpdateViewOnUIThread(int tag, ReadableMap props) {
-    int uiManagerType = ViewUtil.getUIManagerType(tag);
-    if (uiManagerType == FABRIC) {
-      UIManager fabricUIManager =
-          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
-      if (fabricUIManager != null) {
-        fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
-      }
-    } else {
-      mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
-    }
+    mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
   }
 
   /**
    * Registers a new root view. JS can use the returned tag with manageChildren to add/remove
    * children to this view.
+   *
+   * <p>Calling addRootView through UIManagerModule calls addRootView in the non-Fabric renderer,
+   * always. This is deprecated in favor of calling startSurface in Fabric, which must be done
+   * directly through the FabricUIManager.
    *
    * <p>Note that this must be called after getWidth()/getHeight() actually return something. See
    * CatalystApplicationFragment as an example.
@@ -433,11 +393,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+
+    // We pass in a surfaceId of -1 here - it is used only in Fabric.
     final ThemedReactContext themedRootContext =
         new ThemedReactContext(
-            reactApplicationContext, rootView.getContext(), ((ReactRoot) rootView).getSurfaceID());
+            reactApplicationContext,
+            rootView.getContext(),
+            ((ReactRoot) rootView).getSurfaceID(),
+            -1);
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
+    mNumRootViews++;
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
@@ -461,6 +427,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void removeRootView(int rootViewTag) {
     mUIImplementation.removeRootView(rootViewTag);
+    mNumRootViews--;
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
@@ -509,25 +476,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       FLog.d(ReactConstants.TAG, message);
       PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
     }
-    int uiManagerType = ViewUtil.getUIManagerType(tag);
-    if (uiManagerType == FABRIC) {
-      ReactApplicationContext reactApplicationContext = getReactApplicationContext();
-      if (reactApplicationContext.hasActiveCatalystInstance()) {
-        final UIManager fabricUIManager =
-            UIManagerHelper.getUIManager(reactApplicationContext, uiManagerType);
-        if (fabricUIManager != null) {
-          reactApplicationContext.runOnUiQueueThread(
-              new Runnable() {
-                @Override
-                public void run() {
-                  fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
-                }
-              });
-        }
-      }
-    } else {
-      mUIImplementation.updateView(tag, className, props);
-    }
+    mUIImplementation.updateView(tag, className, props);
   }
 
   /**
@@ -710,8 +659,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void dispatchViewManagerCommand(
       int reactTag, Dynamic commandId, @Nullable ReadableArray commandArgs) {
-    // TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
-    // the dispatchViewManagerCommand() method is supported by Fabric JS API.
+    // Fabric dispatchCommands should go through the JSI API - this will crash in Fabric.
     @Nullable
     UIManager uiManager =
         UIManagerHelper.getUIManager(
@@ -820,7 +768,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       listener.willDispatchViewUpdates(this);
     }
     try {
-      mUIImplementation.dispatchViewUpdates(batchId);
+      // If there are no RootViews registered, there will be no View updates to dispatch.
+      // This is a hack to prevent this from being called when Fabric is used everywhere.
+      // This should no longer be necessary in Bridgeless Mode.
+      if (mNumRootViews > 0) {
+        mUIImplementation.dispatchViewUpdates(batchId);
+      }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -946,7 +899,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /** Listener that drops the CSSNode pool on low memory when the app is backgrounded. */
-  private class MemoryTrimCallback implements ComponentCallbacks2 {
+  private static class MemoryTrimCallback implements ComponentCallbacks2 {
 
     @Override
     public void onTrimMemory(int level) {
@@ -962,6 +915,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     public void onLowMemory() {}
   }
 
+  @Override
   public View resolveView(int tag) {
     UiThreadUtil.assertOnUiThread();
     return mUIImplementation
@@ -971,9 +925,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event) {
+  public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap event) {
+    receiveEvent(-1, reactTag, eventName, event);
+  }
+
+  @Override
+  public void receiveEvent(
+      int surfaceId, int reactTag, String eventName, @Nullable WritableMap event) {
+    assert ViewUtil.getUIManagerType(reactTag) == DEFAULT;
     getReactApplicationContext()
         .getJSModule(RCTEventEmitter.class)
-        .receiveEvent(targetTag, eventName, event);
+        .receiveEvent(reactTag, eventName, event);
   }
 }

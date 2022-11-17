@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,7 +20,6 @@ import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -91,7 +90,8 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
   private final ArrayList<Event> mEventStaging = new ArrayList<>();
   private final CopyOnWriteArrayList<EventDispatcherListener> mListeners =
       new CopyOnWriteArrayList<>();
-  private final List<BatchEventDispatchedListener> mPostEventDispatchListeners = new ArrayList<>();
+  private final CopyOnWriteArrayList<BatchEventDispatchedListener> mPostEventDispatchListeners =
+      new CopyOnWriteArrayList<>();
   private final ScheduleDispatchFrameCallback mCurrentFrameCallback =
       new ScheduleDispatchFrameCallback();
   private final AtomicInteger mHasDispatchScheduledCount = new AtomicInteger();
@@ -263,6 +263,11 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
     mReactEventEmitter.register(uiManagerType, eventEmitter);
   }
 
+  public void registerEventEmitter(
+      @UIManagerType int uiManagerType, RCTModernEventEmitter eventEmitter) {
+    mReactEventEmitter.register(uiManagerType, eventEmitter);
+  }
+
   public void unregisterEventEmitter(@UIManagerType int uiManagerType) {
     mReactEventEmitter.unregister(uiManagerType);
   }
@@ -361,7 +366,8 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
               }
               Systrace.endAsyncFlow(
                   Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
-              event.dispatch(mReactEventEmitter);
+
+              event.dispatchModern(mReactEventEmitter);
               event.dispose();
             }
             clearEventsToDispatch();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,7 +29,7 @@ class ImageRequest final {
    * The default constructor
    */
   ImageRequest(
-      const ImageSource &imageSource,
+      ImageSource imageSource,
       std::shared_ptr<const ImageTelemetry> telemetry);
 
   /*
@@ -52,9 +52,7 @@ class ImageRequest final {
   /*
    * Returns the Image Source associated with the request.
    */
-  const ImageSource getImageSource() const {
-    return imageSource_;
-  }
+  const ImageSource &getImageSource() const;
 
   /*
    * Returns stored observer coordinator as a shared pointer.
@@ -96,11 +94,6 @@ class ImageRequest final {
    * Function we can call to cancel image request (see destructor).
    */
   std::function<void(void)> cancelRequest_;
-
-  /*
-   * Indicates that the object was moved and hence cannot be used anymore.
-   */
-  bool moved_{false};
 };
 
 } // namespace react

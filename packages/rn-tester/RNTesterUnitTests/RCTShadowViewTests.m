@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,6 @@
 #import <React/RCTRootShadowView.h>
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
-
 
 @interface RCTShadowViewTests : XCTestCase
 @property (nonatomic, strong) RCTRootShadowView *parentView;
@@ -87,16 +86,23 @@
 
   [self.parentView layoutWithAffectedShadowViews:[NSHashTable weakObjectsHashTable]];
 
-  XCTAssertTrue(CGRectEqualToRect([self.parentView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(0, 0, 440, 440)));
+  XCTAssertTrue(
+      CGRectEqualToRect([self.parentView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(0, 0, 440, 440)));
   XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets([self.parentView paddingAsInsets], UIEdgeInsetsMake(10, 10, 10, 10)));
 
-  XCTAssertTrue(CGRectEqualToRect([headerView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 10, 420, 100)));
-  XCTAssertTrue(CGRectEqualToRect([mainView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 120, 420, 200)));
-  XCTAssertTrue(CGRectEqualToRect([footerView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 330, 420, 100)));
+  XCTAssertTrue(
+      CGRectEqualToRect([headerView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 10, 420, 100)));
+  XCTAssertTrue(
+      CGRectEqualToRect([mainView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 120, 420, 200)));
+  XCTAssertTrue(
+      CGRectEqualToRect([footerView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 330, 420, 100)));
 
-  XCTAssertTrue(CGRectEqualToRect([leftView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 120, 100, 200)));
-  XCTAssertTrue(CGRectEqualToRect([centerView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(120, 120, 200, 200)));
-  XCTAssertTrue(CGRectEqualToRect([rightView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(330, 120, 100, 200)));
+  XCTAssertTrue(
+      CGRectEqualToRect([leftView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 120, 100, 200)));
+  XCTAssertTrue(
+      CGRectEqualToRect([centerView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(120, 120, 200, 200)));
+  XCTAssertTrue(
+      CGRectEqualToRect([rightView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(330, 120, 100, 200)));
 }
 
 - (void)testAncestorCheck
@@ -124,37 +130,40 @@
 
 - (void)testAssignsSuggestedWidthDimension
 {
-  [self _withShadowViewWithStyle:^(YGNodeRef node) {
-                                   YGNodeStyleSetPositionType(node, YGPositionTypeAbsolute);
-                                   YGNodeStyleSetPosition(node, YGEdgeLeft, 0);
-                                   YGNodeStyleSetPosition(node, YGEdgeTop, 0);
-                                   YGNodeStyleSetHeight(node, 10);
-                                 }
-            assertRelativeLayout:CGRectMake(0, 0, 3, 10)
-        withIntrinsicContentSize:CGSizeMake(3, UIViewNoIntrinsicMetric)];
+  [self
+      _withShadowViewWithStyle:^(YGNodeRef node) {
+        YGNodeStyleSetPositionType(node, YGPositionTypeAbsolute);
+        YGNodeStyleSetPosition(node, YGEdgeLeft, 0);
+        YGNodeStyleSetPosition(node, YGEdgeTop, 0);
+        YGNodeStyleSetHeight(node, 10);
+      }
+          assertRelativeLayout:CGRectMake(0, 0, 3, 10)
+      withIntrinsicContentSize:CGSizeMake(3, UIViewNoIntrinsicMetric)];
 }
 
 - (void)testAssignsSuggestedHeightDimension
 {
-  [self _withShadowViewWithStyle:^(YGNodeRef node) {
-                                   YGNodeStyleSetPositionType(node, YGPositionTypeAbsolute);
-                                   YGNodeStyleSetPosition(node, YGEdgeLeft, 0);
-                                   YGNodeStyleSetPosition(node, YGEdgeTop, 0);
-                                   YGNodeStyleSetWidth(node, 10);
-                                 }
-            assertRelativeLayout:CGRectMake(0, 0, 10, 4)
-        withIntrinsicContentSize:CGSizeMake(UIViewNoIntrinsicMetric, 4)];
+  [self
+      _withShadowViewWithStyle:^(YGNodeRef node) {
+        YGNodeStyleSetPositionType(node, YGPositionTypeAbsolute);
+        YGNodeStyleSetPosition(node, YGEdgeLeft, 0);
+        YGNodeStyleSetPosition(node, YGEdgeTop, 0);
+        YGNodeStyleSetWidth(node, 10);
+      }
+          assertRelativeLayout:CGRectMake(0, 0, 10, 4)
+      withIntrinsicContentSize:CGSizeMake(UIViewNoIntrinsicMetric, 4)];
 }
 
 - (void)testDoesNotOverrideDimensionStyleWithSuggestedDimensions
 {
-  [self _withShadowViewWithStyle:^(YGNodeRef node) {
-                                   YGNodeStyleSetPositionType(node, YGPositionTypeAbsolute);
-                                   YGNodeStyleSetPosition(node, YGEdgeLeft, 0);
-                                   YGNodeStyleSetPosition(node, YGEdgeTop, 0);
-                                   YGNodeStyleSetWidth(node, 10);
-                                   YGNodeStyleSetHeight(node, 10);
-                                 }
+  [self
+      _withShadowViewWithStyle:^(YGNodeRef node) {
+        YGNodeStyleSetPositionType(node, YGPositionTypeAbsolute);
+        YGNodeStyleSetPosition(node, YGEdgeLeft, 0);
+        YGNodeStyleSetPosition(node, YGEdgeTop, 0);
+        YGNodeStyleSetWidth(node, 10);
+        YGNodeStyleSetHeight(node, 10);
+      }
           assertRelativeLayout:CGRectMake(0, 0, 10, 10)
       withIntrinsicContentSize:CGSizeMake(3, 4)];
 }
@@ -163,14 +172,15 @@
 {
   float parentWidth = YGNodeStyleGetWidth(self.parentView.yogaNode).value;
   float parentHeight = YGNodeStyleGetHeight(self.parentView.yogaNode).value;
-  [self _withShadowViewWithStyle:^(YGNodeRef node) {
-                                   YGNodeStyleSetFlex(node, 1);
-                                 }
-            assertRelativeLayout:CGRectMake(0, 0, parentWidth, parentHeight)
-        withIntrinsicContentSize:CGSizeMake(3, 4)];
+  [self
+      _withShadowViewWithStyle:^(YGNodeRef node) {
+        YGNodeStyleSetFlex(node, 1);
+      }
+          assertRelativeLayout:CGRectMake(0, 0, parentWidth, parentHeight)
+      withIntrinsicContentSize:CGSizeMake(3, 4)];
 }
 
-- (void)_withShadowViewWithStyle:(void(^)(YGNodeRef node))configBlock
+- (void)_withShadowViewWithStyle:(void (^)(YGNodeRef node))configBlock
             assertRelativeLayout:(CGRect)expectedRect
         withIntrinsicContentSize:(CGSize)contentSize
 {
@@ -179,18 +189,18 @@
   view.intrinsicContentSize = contentSize;
   [self.parentView layoutWithAffectedShadowViews:[NSHashTable weakObjectsHashTable]];
   CGRect actualRect = [view measureLayoutRelativeToAncestor:self.parentView];
-  XCTAssertTrue(CGRectEqualToRect(expectedRect, actualRect),
-                @"Expected layout to be %@, got %@",
-                NSStringFromCGRect(expectedRect),
-                NSStringFromCGRect(actualRect));
+  XCTAssertTrue(
+      CGRectEqualToRect(expectedRect, actualRect),
+      @"Expected layout to be %@, got %@",
+      NSStringFromCGRect(expectedRect),
+      NSStringFromCGRect(actualRect));
 }
 
-- (RCTShadowView *)_shadowViewWithConfig:(void(^)(YGNodeRef node))configBlock
+- (RCTShadowView *)_shadowViewWithConfig:(void (^)(YGNodeRef node))configBlock
 {
   RCTShadowView *shadowView = [RCTShadowView new];
   configBlock(shadowView.yogaNode);
   return shadowView;
 }
-
 
 @end
