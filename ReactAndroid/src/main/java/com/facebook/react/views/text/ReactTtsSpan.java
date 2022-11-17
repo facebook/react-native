@@ -36,8 +36,6 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
   private static final String TYPE_MONEY_WARNING_MSG =
       "The accessibilityUnit format may not be compatible"
           + " with the format supported ISO 4217 (for example 'USD').";
-  private static final String TYPE_TIME_WARNING_MSG =
-      "Failed to retrieve hours and minutes. Make sure the format is HH:MM. ";
   private static final String TYPE_TELEPHONE_WARNING_MSG =
       "Failed to retrieve telephone number (for example '0112123432').";
   private static final String TYPE_MEASURE_WARNING_MSG =
