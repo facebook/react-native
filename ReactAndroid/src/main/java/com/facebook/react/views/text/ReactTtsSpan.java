@@ -12,7 +12,9 @@ import android.os.PersistableBundle;
 import android.text.style.TtsSpan;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import java.util.Arrays;
 import java.util.Currency;
+import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -59,8 +61,13 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       mType = typeConvertedToString;
       String roleClassName = AccessibilityRole.getValue(type);
       String warningMessage = "";
-      Set<String> supportedUnitTypes = Set.of(TYPE_TIME, TYPE_MONEY);
-      if (accessibilityUnit == null || !supportedUnitTypes.contains(roleClassName)) {
+      Set<String> supportedTypes = new HashSet<String>();
+      supportedTypes.addAll(
+          Arrays.asList(
+              new String[] {
+                TtsSpan.TYPE_TIME, TtsSpan.TYPE_MONEY,
+              }));
+      if (accessibilityUnit == null || !supportedTypes.contains(roleClassName)) {
         return;
       }
       try {

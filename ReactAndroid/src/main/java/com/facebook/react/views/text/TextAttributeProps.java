@@ -23,6 +23,8 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -614,21 +616,22 @@ public class TextAttributeProps {
       mIsAccessibilityLink = mAccessibilityRole.equals(AccessibilityRole.LINK);
       String roleClassName =
           AccessibilityRole.getValue(AccessibilityRole.fromValue(accessibilityRole));
-      Set<String> supportedTypes =
-          Set.of(
-              TtsSpan.TYPE_CARDINAL,
-              TtsSpan.TYPE_ORDINAL,
-              TtsSpan.TYPE_DECIMAL,
-              TtsSpan.TYPE_FRACTION,
-              TtsSpan.TYPE_MEASURE,
-              TtsSpan.TYPE_TIME,
-              TtsSpan.TYPE_DATE,
-              TtsSpan.TYPE_TELEPHONE,
-              TtsSpan.TYPE_ELECTRONIC,
-              TtsSpan.TYPE_MONEY,
-              TtsSpan.TYPE_DIGITS,
-              TtsSpan.TYPE_VERBATIM);
-
+      Set<String> supportedTypes = new HashSet<String>();
+      supportedTypes.addAll(
+          Arrays.asList(
+              new String[] {
+                TtsSpan.TYPE_ORDINAL,
+                TtsSpan.TYPE_DECIMAL,
+                TtsSpan.TYPE_FRACTION,
+                TtsSpan.TYPE_MEASURE,
+                TtsSpan.TYPE_TIME,
+                TtsSpan.TYPE_DATE,
+                TtsSpan.TYPE_TELEPHONE,
+                TtsSpan.TYPE_ELECTRONIC,
+                TtsSpan.TYPE_MONEY,
+                TtsSpan.TYPE_DIGITS,
+                TtsSpan.TYPE_VERBATIM,
+              }));
       mIsAccessibilityTtsSpan =
           supportedTypes.contains(roleClassName) && Build.VERSION.SDK_INT >= 21;
     }

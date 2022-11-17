@@ -25,7 +25,6 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -325,7 +324,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mColor;
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
-  protected @Nullable String mAccessibilityUnit = null;
   protected boolean mIsAccessibilityLink = false;
 
   protected int mNumberOfLines = UNSET;
@@ -501,8 +499,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
   public void setIsAccessibilityLink(@Nullable String accessibilityRole) {
     if (isVirtual()) {
-      String roleClassName =
-          AccessibilityRole.getValue(AccessibilityRole.fromValue(accessibilityRole));
       mIsAccessibilityLink = Objects.equals(accessibilityRole, "link");
       markUpdated();
     }
