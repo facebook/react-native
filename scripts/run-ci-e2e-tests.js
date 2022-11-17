@@ -282,6 +282,13 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
+
+    describe('Test: ESLint/Prettier linting and formatting');
+    if (exec('yarn lint').code) {
+      echo('linting errors were found');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
   }
   exitCode = 0;
 } finally {
