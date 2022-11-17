@@ -18,6 +18,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
+import android.text.style.TtsSpan;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
@@ -44,7 +45,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
-import com.facebook.react.views.text.ReactTtsSpan;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -182,29 +182,29 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case GRID:
           return "android.widget.GridView";
         case ORDINAL:
-          return ReactTtsSpan.TYPE_ORDINAL;
+          return TtsSpan.TYPE_ORDINAL;
         case DECIMAL:
-          return ReactTtsSpan.TYPE_DECIMAL;
+          return TtsSpan.TYPE_DECIMAL;
         case FRACTION:
-          return ReactTtsSpan.TYPE_FRACTION;
+          return TtsSpan.TYPE_FRACTION;
         case CARDINAL:
-          return ReactTtsSpan.TYPE_CARDINAL;
+          return TtsSpan.TYPE_CARDINAL;
         case MEASURE:
-          return ReactTtsSpan.TYPE_MEASURE;
+          return TtsSpan.TYPE_MEASURE;
         case TIME:
-          return ReactTtsSpan.TYPE_TIME;
+          return TtsSpan.TYPE_TIME;
         case DATE:
-          return ReactTtsSpan.TYPE_DATE;
+          return TtsSpan.TYPE_DATE;
         case TELEPHONE:
-          return ReactTtsSpan.TYPE_TELEPHONE;
+          return TtsSpan.TYPE_TELEPHONE;
         case ELECTRONIC:
-          return ReactTtsSpan.TYPE_ELECTRONIC;
+          return TtsSpan.TYPE_ELECTRONIC;
         case MONEY:
-          return ReactTtsSpan.TYPE_MONEY;
+          return TtsSpan.TYPE_MONEY;
         case DIGITS:
-          return ReactTtsSpan.TYPE_DIGITS;
+          return TtsSpan.TYPE_DIGITS;
         case VERBATIM:
-          return ReactTtsSpan.TYPE_VERBATIM;
+          return TtsSpan.TYPE_VERBATIM;
         case SCROLLVIEW:
           return "android.widget.ScrollView";
         case HORIZONTALSCROLLVIEW:
