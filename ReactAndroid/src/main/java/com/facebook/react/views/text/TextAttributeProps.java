@@ -23,8 +23,6 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;

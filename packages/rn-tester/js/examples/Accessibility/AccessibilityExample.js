@@ -90,6 +90,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     backgroundColor: '#000000c0',
   },
+  redBackground: {
+    backgroundColor: 'red',
+  },
   scrollView: {
     height: 50,
   },
@@ -99,93 +102,6 @@ class AccessibilityExample extends React.Component<{}> {
   render(): React.Node {
     return (
       <View>
-        <RNTesterBlock title="Text with TtsSpan">
-          <View>
-            <Text accessible={true}>
-              It spells like{' '}
-              <Text
-                accessibilityRole="verbatim"
-                accessible={true}
-                style={{backgroundColor: 'red'}}>
-                reactnative
-              </Text>
-            </Text>
-          </View>
-          <View>
-            <Text accessible={true}>
-              My number is{' '}
-              <Text
-                accessibilityRole="date"
-                accessible={true}
-                style={{backgroundColor: 'red'}}>
-                02/07/1987
-              </Text>
-            </Text>
-          </View>
-          <View>
-            <Text accessible={true}>
-              My number is{' '}
-              <Text
-                accessibilityRole="measure"
-                accessible={true}
-                style={{backgroundColor: 'red'}}>
-                10m
-              </Text>
-            </Text>
-          </View>
-          <View>
-            <Text accessible={true}>
-              My number is{' '}
-              <Text
-                accessibilityRole="fraction"
-                accessible={true}
-                style={{backgroundColor: 'red'}}>
-                1/2
-              </Text>
-            </Text>
-          </View>
-          <View>
-            <Text accessible={true}>
-              My number is{' '}
-              <Text
-                accessibilityRole="decimal"
-                accessible={true}
-                style={{backgroundColor: 'red'}}>
-                10.20
-              </Text>
-              .
-            </Text>
-          </View>
-          <View>
-            <Text accessible={true}>
-              My number is{' '}
-              <Text
-                accessibilityRole="money"
-                accessibilityUnit="1, USD"
-                accessible={true}
-                style={{backgroundColor: 'red'}}>
-                10
-              </Text>
-            </Text>
-          </View>
-          <View>
-            <Text accessible={true}>
-              My number is
-              <Text
-                accessibilityRole="time"
-                accessibilityUnit="10:30"
-                accessible={true}
-                style={{backgroundColor: 'red'}}>
-                17:00
-              </Text>
-            </Text>
-          </View>
-          <View>
-            <Text accessible={true} accessibilityRole="telephone">
-              My number is 0111234234234
-            </Text>
-          </View>
-        </RNTesterBlock>
         <RNTesterBlock title="TextView without label">
           <Text>
             Text's accessibilityLabel is the raw text itself unless it is set
@@ -359,6 +275,102 @@ class AccessibilityExample extends React.Component<{}> {
           </View>
         </RNTesterBlock>
       </View>
+    );
+  }
+}
+
+class TtsSpanExamples extends React.Component<{}> {
+  render(): React.Node {
+    return (
+      <>
+        <RNTesterBlock title="Text with child Text and accessibilityRole='verbatim'">
+          <Text accessible={true}>
+            Verbatim spells as
+            <Text
+              accessibilityRole="verbatim"
+              accessible={true}
+              style={styles.redBackground}>
+              react-native
+            </Text>
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text with child Text and accessibilityRole='date'">
+          <Text accessible={true}>
+            Dates are spelled as
+            <Text
+              accessibilityRole="date"
+              accessible={true}
+              style={styles.redBackground}>
+              02/07/1987
+            </Text>
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text with child Text and accessibilityRole='measure'">
+          <Text accessible={true}>
+            Unit of Measure like meters are spelled as
+            <Text
+              accessibilityRole="measure"
+              accessible={true}
+              style={styles.redBackground}>
+              10m
+            </Text>
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text with child Text and accessibilityRole='fraction'">
+          <Text accessible={true}>
+            Fraction is spelled as
+            <Text
+              accessibilityRole="fraction"
+              accessible={true}
+              style={styles.redBackground}>
+              1/2
+            </Text>
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text with child Text and accessibilityRole='decimal'">
+          <Text accessible={true}>
+            Decimal number is spelled as
+            <Text
+              accessibilityRole="decimal"
+              accessible={true}
+              style={styles.redBackground}>
+              10.20
+            </Text>
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text with child Text and accessibilityRole='money' and accessibilityUnit='1, USD'">
+          <Text accessible={true}>
+            Money is spelled with the currency
+            <Text
+              accessibilityRole="money"
+              accessibilityUnit="1, USD"
+              accessible={true}
+              style={styles.redBackground}>
+              1u
+            </Text>
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text with child Text and accessibilityRole='time' and accessibilityUnit='10:30'">
+          <Text accessible={true}>
+            The time is
+            <Text
+              accessibilityRole="time"
+              accessibilityUnit="10:30"
+              accessible={true}
+              style={styles.redBackground}>
+              10n30
+            </Text>
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text with child Text and accessibilityRole='telephone'">
+          <Text accessible={true}>
+            The telephone is
+            <Text accessibilityRole="telephone" style={styles.redBackground}>
+              0111234234234
+            </Text>
+          </Text>
+        </RNTesterBlock>
+      </>
     );
   }
 }
@@ -1579,6 +1591,12 @@ exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
+  {
+    title: 'TtsSpan Examples',
+    render(): React.Element<typeof TtsSpanExamples> {
+      return <TtsSpanExamples />;
+    },
+  },
   {
     title: 'Accessibility expanded',
     render(): React.Element<typeof AccessibilityExpandedExample> {
