@@ -907,8 +907,10 @@ export default class VirtualizedList extends StateSafePureComponent<
             this.props,
           );
           const lastMetrics = this.__getFrameMetricsApprox(last, this.props);
-          const spacerSize =
-            lastMetrics.offset + lastMetrics.length - firstMetrics.offset;
+          const spacerSize = Math.max(
+            lastMetrics.offset + lastMetrics.length - firstMetrics.offset,
+            0,
+          );
           cells.push(
             <View
               key={`$spacer-${section.first}`}
