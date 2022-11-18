@@ -76,6 +76,22 @@ public class TextAttributeProps {
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
   private static final int DEFAULT_HYPHENATION_FREQUENCY =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
+  private static final String[] SUPPORTED_TYPES_VALUES = {
+    TtsSpan.TYPE_ORDINAL,
+    TtsSpan.TYPE_DECIMAL,
+    TtsSpan.TYPE_FRACTION,
+    TtsSpan.TYPE_MEASURE,
+    TtsSpan.TYPE_TIME,
+    TtsSpan.TYPE_DATE,
+    TtsSpan.TYPE_TELEPHONE,
+    TtsSpan.TYPE_ELECTRONIC,
+    TtsSpan.TYPE_MONEY,
+    TtsSpan.TYPE_DIGITS,
+    TtsSpan.TYPE_VERBATIM,
+  };
+
+  private static final Set<String> SUPPORTED_TYPES_SET =
+      new HashSet<String>(Arrays.asList(SUPPORTED_TYPES_VALUES));
 
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
@@ -616,24 +632,9 @@ public class TextAttributeProps {
       mIsAccessibilityLink = mAccessibilityRole.equals(AccessibilityRole.LINK);
       String roleClassName =
           AccessibilityRole.getValue(AccessibilityRole.fromValue(accessibilityRole));
-      Set<String> supportedTypes = new HashSet<String>();
-      supportedTypes.addAll(
-          Arrays.asList(
-              new String[] {
-                TtsSpan.TYPE_ORDINAL,
-                TtsSpan.TYPE_DECIMAL,
-                TtsSpan.TYPE_FRACTION,
-                TtsSpan.TYPE_MEASURE,
-                TtsSpan.TYPE_TIME,
-                TtsSpan.TYPE_DATE,
-                TtsSpan.TYPE_TELEPHONE,
-                TtsSpan.TYPE_ELECTRONIC,
-                TtsSpan.TYPE_MONEY,
-                TtsSpan.TYPE_DIGITS,
-                TtsSpan.TYPE_VERBATIM,
-              }));
       mIsAccessibilityTtsSpan =
-          supportedTypes.contains(roleClassName) && Build.VERSION.SDK_INT >= 21;
+          TextAttributeProps.SUPPORTED_TYPES_SET.contains(roleClassName)
+              && Build.VERSION.SDK_INT >= 21;
     }
   }
 
