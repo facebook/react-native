@@ -8,15 +8,15 @@
  * @format
  */
 
+import type {PressEvent} from '../../Types/CoreEventTypes';
+
 import Animated from '../../Animated/Animated';
 import Easing from '../../Animated/Easing';
-import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
-
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   onPress?: ?(event: PressEvent) => void,

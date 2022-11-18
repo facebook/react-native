@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, assign, readonly) NSInteger nativeEventCount;
 @property (nonatomic, assign) BOOL autoFocus;
-@property (nonatomic, assign) BOOL blurOnSubmit;
+@property (nonatomic, copy) NSString *submitBehavior;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, assign) BOOL secureTextEntry;
@@ -56,8 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Sets selection intext input if both start and end are within range of the text input.
  **/
-- (void)setSelectionStart:(NSInteger)start
-             selectionEnd:(NSInteger)end;
+- (void)setSelectionStart:(NSInteger)start selectionEnd:(NSInteger)end;
 
 @end
 

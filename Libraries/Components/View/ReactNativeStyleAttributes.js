@@ -9,7 +9,10 @@
  */
 
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
+
+import processAspectRatio from '../../StyleSheet/processAspectRatio';
 import processColor from '../../StyleSheet/processColor';
+import processFontVariant from '../../StyleSheet/processFontVariant';
 import processTransform from '../../StyleSheet/processTransform';
 import sizesDiffer from '../../Utilities/differ/sizesDiffer';
 
@@ -22,13 +25,14 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   alignContent: true,
   alignItems: true,
   alignSelf: true,
-  aspectRatio: true,
+  aspectRatio: {process: processAspectRatio},
   borderBottomWidth: true,
   borderEndWidth: true,
   borderLeftWidth: true,
   borderRightWidth: true,
   borderStartWidth: true,
   borderTopWidth: true,
+  columnGap: true,
   borderWidth: true,
   bottom: true,
   direction: true,
@@ -40,13 +44,20 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   flexGrow: true,
   flexShrink: true,
   flexWrap: true,
+  gap: true,
   height: true,
   justifyContent: true,
   left: true,
   margin: true,
+  marginBlock: true,
+  marginBlockEnd: true,
+  marginBlockStart: true,
   marginBottom: true,
   marginEnd: true,
   marginHorizontal: true,
+  marginInline: true,
+  marginInlineEnd: true,
+  marginInlineStart: true,
   marginLeft: true,
   marginRight: true,
   marginStart: true,
@@ -58,9 +69,15 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   minWidth: true,
   overflow: true,
   padding: true,
+  paddingBlock: true,
+  paddingBlockEnd: true,
+  paddingBlockStart: true,
   paddingBottom: true,
   paddingEnd: true,
   paddingHorizontal: true,
+  paddingInline: true,
+  paddingInlineEnd: true,
+  paddingInlineStart: true,
   paddingLeft: true,
   paddingRight: true,
   paddingStart: true,
@@ -68,6 +85,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   paddingVertical: true,
   position: true,
   right: true,
+  rowGap: true,
   start: true,
   top: true,
   width: true,
@@ -85,14 +103,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Transform
    */
-  decomposedMatrix: true, // @deprecated
-  rotation: true, // @deprecated
-  scaleX: true, // @deprecated
-  scaleY: true, // @deprecated
   transform: {process: processTransform},
-  transformMatrix: true, // @deprecated
-  translateX: true, // @deprecated
-  translateY: true, // @deprecated
 
   /**
    * View
@@ -105,6 +116,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   borderBottomRightRadius: true,
   borderBottomStartRadius: true,
   borderColor: colorAttributes,
+  borderCurve: true,
   borderEndColor: colorAttributes,
   borderLeftColor: colorAttributes,
   borderRadius: true,
@@ -117,6 +129,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   borderTopRightRadius: true,
   borderTopStartRadius: true,
   opacity: true,
+  pointerEvents: true,
 
   /**
    * Text
@@ -125,7 +138,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   fontFamily: true,
   fontSize: true,
   fontStyle: true,
-  fontVariant: true,
+  fontVariant: {process: processFontVariant},
   fontWeight: true,
   includeFontPadding: true,
   letterSpacing: true,
@@ -139,6 +152,8 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   textShadowOffset: true,
   textShadowRadius: true,
   textTransform: true,
+  userSelect: true,
+  verticalAlign: true,
   writingDirection: true,
 
   /**
@@ -147,6 +162,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   overlayColor: colorAttributes,
   resizeMode: true,
   tintColor: colorAttributes,
+  objectFit: true,
 };
 
 module.exports = ReactNativeStyleAttributes;

@@ -82,6 +82,17 @@ function PermissionsExample() {
             }
             style={styles.option}
           />
+          <RNTOption
+            label={PermissionsAndroid.PERMISSIONS.POST_NOTIFICATION}
+            key={PermissionsAndroid.PERMISSIONS.POST_NOTIFICATION}
+            onPress={() =>
+              setPermission(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATION)
+            }
+            selected={
+              permission === PermissionsAndroid.PERMISSIONS.POST_NOTIFICATION
+            }
+            style={styles.option}
+          />
         </View>
       </View>
       <RNTesterButton onPress={checkPermission}>

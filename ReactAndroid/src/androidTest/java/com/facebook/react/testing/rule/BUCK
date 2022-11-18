@@ -11,7 +11,7 @@ rn_android_library(
     name = "rule",
     srcs = glob(["*.java"]),
     autoglob = False,
-    is_androidx = True,
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

@@ -6,8 +6,8 @@ rn_android_library(
     autoglob = False,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
+    language = "JAVA",
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",

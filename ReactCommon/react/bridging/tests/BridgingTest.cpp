@@ -215,6 +215,51 @@ TEST_F(BridgingTest, syncCallbackTest) {
   EXPECT_TRUE(fn.isFunction(rt)); // Ensure the function wasn't invalidated.
 }
 
+TEST_F(BridgingTest, syncCallbackImplicitBridgingTest) {
+  { // Value
+    auto fn = function("(a, b) => a + b");
+    auto cb = bridging::fromJs<SyncCallback<std::string(jsi::Value, int)>>(
+        rt, fn, invoker);
+    jsi::Value foo(jsi::String::createFromAscii(rt, "foo"));
+
+    EXPECT_EQ(cb(std::move(foo), 1), "foo1");
+    EXPECT_EQ(cb(jsi::String::createFromAscii(rt, "bar"), 2), "bar2");
+    EXPECT_TRUE(fn.isFunction(rt));
+  }
+  { // Object
+    auto fn = function("(a, b) => a.obj + b");
+    auto cb = bridging::fromJs<SyncCallback<std::string(jsi::Object, int)>>(
+        rt, fn, invoker);
+
+    jsi::Object foo(rt);
+    foo.setProperty(rt, "obj", "foo");
+
+    EXPECT_EQ(cb(std::move(foo), 1), "foo1");
+    EXPECT_TRUE(fn.isFunction(rt));
+  }
+  { // String
+    auto fn = function("(a, b) => a + b");
+    auto cb = bridging::fromJs<SyncCallback<std::string(jsi::String, int)>>(
+        rt, fn, invoker);
+    jsi::String foo(jsi::String::createFromAscii(rt, "foo"));
+
+    EXPECT_EQ(cb(std::move(foo), 1), "foo1");
+    EXPECT_EQ(cb(jsi::String::createFromAscii(rt, "bar"), 2), "bar2");
+    EXPECT_TRUE(fn.isFunction(rt));
+  }
+  { // Array
+    auto fn = function("(a, b) => a[0] + b");
+    auto cb = bridging::fromJs<SyncCallback<std::string(jsi::Array, int)>>(
+        rt, fn, invoker);
+
+    jsi::Array foo(rt, 1);
+    foo.setValueAtIndex(rt, 0, jsi::String::createFromAscii(rt, "foo"));
+
+    EXPECT_EQ(cb(std::move(foo), 1), "foo1");
+    EXPECT_TRUE(fn.isFunction(rt));
+  }
+}
+
 TEST_F(BridgingTest, asyncCallbackTest) {
   std::string output;
 
@@ -228,6 +273,68 @@ TEST_F(BridgingTest, asyncCallbackTest) {
   flushQueue(); // Run scheduled async work
 
   EXPECT_EQ("hello"s, output);
+}
+
+TEST_F(BridgingTest, asyncCallbackImplicitBridgingTest) {
+  std::string output;
+  auto func = std::function<void(std::string)>([&](auto str) { output = str; });
+  { // Value
+    auto cb = bridging::fromJs<AsyncCallback<decltype(func), jsi::Value, int>>(
+        rt, function("(func, a, b) => func(a + b)"), invoker);
+    jsi::Value foo(jsi::String::createFromAscii(rt, "foo"));
+
+    cb(func, std::move(foo), 1);
+    flushQueue();
+    EXPECT_EQ(output, "foo1");
+
+    cb(func, jsi::String::createFromAscii(rt, "bar"), 2);
+    flushQueue();
+    EXPECT_EQ(output, "bar2");
+
+    output.clear();
+  }
+  { // Object
+    auto cb = bridging::fromJs<AsyncCallback<decltype(func), jsi::Object, int>>(
+        rt, function("(func, a, b) => func(a.obj + b)"), invoker);
+
+    jsi::Object foo(rt);
+    foo.setProperty(rt, "obj", "foo");
+
+    cb(func, std::move(foo), 1);
+    flushQueue();
+    EXPECT_EQ(output, "foo1");
+
+    output.clear();
+  }
+  { // String
+    auto cb = bridging::fromJs<AsyncCallback<decltype(func), jsi::String, int>>(
+        rt, function("(func, a, b) => func(a + b)"), invoker);
+    jsi::String foo(jsi::String::createFromAscii(rt, "foo"));
+
+    cb(func, std::move(foo), 1);
+    flushQueue();
+    EXPECT_EQ(output, "foo1");
+
+    cb(func, jsi::String::createFromAscii(rt, "bar"), 2);
+    flushQueue();
+    EXPECT_EQ(output, "bar2");
+
+    output.clear();
+  }
+  { // Array
+    auto fn = function("(func, a, b) => func(a[0] + b)");
+    auto cb = bridging::fromJs<AsyncCallback<decltype(func), jsi::Array, int>>(
+        rt, fn, invoker);
+
+    jsi::Array foo(rt, 1);
+    foo.setValueAtIndex(rt, 0, jsi::String::createFromAscii(rt, "foo"));
+
+    cb(func, std::move(foo), 1);
+    flushQueue();
+    EXPECT_EQ(output, "foo1");
+
+    output.clear();
+  }
 }
 
 TEST_F(BridgingTest, promiseTest) {
@@ -324,6 +431,8 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsFromJs<std::string>));
   EXPECT_TRUE((bridging::supportsFromJs<std::string, jsi::String>));
   EXPECT_TRUE((bridging::supportsFromJs<std::string, jsi::String &>));
+  EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array>));
+  EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array &>));
   EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array>));
   EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array &>));
   EXPECT_TRUE(
@@ -346,6 +455,8 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_FALSE((bridging::supportsFromJs<double, jsi::Object &>));
   EXPECT_FALSE((bridging::supportsFromJs<std::string, jsi::Object>));
   EXPECT_FALSE((bridging::supportsFromJs<std::string, jsi::Object &>));
+  EXPECT_FALSE((bridging::supportsFromJs<std::set<int>, jsi::String>));
+  EXPECT_FALSE((bridging::supportsFromJs<std::set<int>, jsi::String &>));
   EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String>));
   EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String &>));
 
@@ -387,6 +498,8 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsToJs<double>));
   EXPECT_TRUE((bridging::supportsToJs<std::string>));
   EXPECT_TRUE((bridging::supportsToJs<std::string, jsi::String>));
+  EXPECT_TRUE((bridging::supportsToJs<std::set<int>>));
+  EXPECT_TRUE((bridging::supportsToJs<std::set<int>, jsi::Array>));
   EXPECT_TRUE((bridging::supportsToJs<std::vector<int>>));
   EXPECT_TRUE((bridging::supportsToJs<std::vector<int>, jsi::Array>));
   EXPECT_TRUE((bridging::supportsToJs<std::map<std::string, int>>));

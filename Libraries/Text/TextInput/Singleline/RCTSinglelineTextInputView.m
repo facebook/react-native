@@ -11,16 +11,15 @@
 
 #import <React/RCTUITextField.h>
 
-@implementation RCTSinglelineTextInputView
-{
+@implementation RCTSinglelineTextInputView {
   RCTUITextField *_backedTextInputView;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if (self = [super initWithBridge:bridge]) {
-    // `blurOnSubmit` defaults to `true` for <TextInput multiline={false}> by design.
-    self.blurOnSubmit = YES;
+    // `submitBehavior` defaults to `"blurAndSubmit"` for <TextInput multiline={false}> by design.
+    self.submitBehavior = @"blurAndSubmit";
 
     _backedTextInputView = [[RCTUITextField alloc] initWithFrame:self.bounds];
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;

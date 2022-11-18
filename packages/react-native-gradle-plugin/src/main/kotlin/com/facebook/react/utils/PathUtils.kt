@@ -10,7 +10,9 @@
 package com.facebook.react.utils
 
 import com.facebook.react.ReactExtension
+import com.facebook.react.model.ModelPackageJson
 import java.io.File
+import org.gradle.api.Project
 
 /**
  * Computes the entry file for React Native. The Algo follows this order:
@@ -26,20 +28,16 @@ internal fun detectedEntryFile(config: ReactExtension): File =
         entryFile = config.entryFile.orNull?.asFile, reactRoot = config.root.get().asFile)
 
 /**
- * Computes the CLI location for React Native. The Algo follows this order:
- * 1. The path provided by the `cliPath` config in the `reactApp` Gradle extension
- * 2. The output of `node -e "console.log(require('react-native/cli').bin);"` if not failing.
+ * Computes the CLI file for React Native. The Algo follows this order:
+ * 1. The path provided by the `cliFile` config in the `react {}` Gradle extension
+ * 2. The output of `node --print "require.resolve('react-native/cli');"` if not failing.
  * 3. The `node_modules/react-native/cli.js` file if exists
  * 4. Fails otherwise
  */
-internal fun detectedCliPath(
-    projectDir: File,
-    config: ReactExtension,
-): String =
-    detectCliPath(
-        projectDir = projectDir,
-        reactRoot = config.root.get().asFile,
-        preconfiguredCliPath = config.cliPath.orNull)
+internal fun detectedCliFile(config: ReactExtension): File =
+    detectCliFile(
+        reactNativeRoot = config.root.get().asFile,
+        preconfiguredCliFile = config.cliFile.asFile.orNull)
 
 /**
  * Computes the `hermesc` command location. The Algo follows this order:
@@ -62,24 +60,11 @@ private fun detectEntryFile(entryFile: File?, reactRoot: File): File =
       else -> File(reactRoot, "index.js")
     }
 
-private fun detectCliPath(
-    projectDir: File,
-    reactRoot: File,
-    preconfiguredCliPath: String?
-): String {
+private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): File {
   // 1. preconfigured path
-  if (preconfiguredCliPath != null) {
-    val preconfiguredCliJsAbsolute = File(preconfiguredCliPath)
-    if (preconfiguredCliJsAbsolute.exists()) {
-      return preconfiguredCliJsAbsolute.absolutePath
-    }
-    val preconfiguredCliJsRelativeToReactRoot = File(reactRoot, preconfiguredCliPath)
-    if (preconfiguredCliJsRelativeToReactRoot.exists()) {
-      return preconfiguredCliJsRelativeToReactRoot.absolutePath
-    }
-    val preconfiguredCliJsRelativeToProject = File(projectDir, preconfiguredCliPath)
-    if (preconfiguredCliJsRelativeToProject.exists()) {
-      return preconfiguredCliJsRelativeToProject.absolutePath
+  if (preconfiguredCliFile != null) {
+    if (preconfiguredCliFile.exists()) {
+      return preconfiguredCliFile
     }
   }
 
@@ -87,29 +72,34 @@ private fun detectCliPath(
   val nodeProcess =
       Runtime.getRuntime()
           .exec(
-              arrayOf("node", "-e", "console.log(require('react-native/cli').bin);"),
+              arrayOf("node", "--print", "require.resolve('react-native/cli');"),
               emptyArray(),
-              projectDir)
+              reactNativeRoot)
 
   val nodeProcessOutput = nodeProcess.inputStream.use { it.bufferedReader().readText().trim() }
 
   if (nodeProcessOutput.isNotEmpty()) {
     val nodeModuleCliJs = File(nodeProcessOutput)
     if (nodeModuleCliJs.exists()) {
-      return nodeModuleCliJs.absolutePath
+      return nodeModuleCliJs
     }
   }
 
   // 3. cli.js in the root folder
-  val rootCliJs = File(reactRoot, "node_modules/react-native/cli.js")
+  val rootCliJs = File(reactNativeRoot, "node_modules/react-native/cli.js")
   if (rootCliJs.exists()) {
-    return rootCliJs.absolutePath
+    return rootCliJs
   }
 
   error(
-      "Couldn't determine CLI location. " +
-          "Please set `project.react.cliPath` to the path of the react-native cli.js file. " +
-          "This file typically resides in `node_modules/react-native/cli.js`")
+      """
+      Couldn't determine CLI location!
+      
+      Please set `react { cliFile = file(...) }` inside your 
+      build.gradle to the path of the react-native cli.js file.
+      This file typically resides in `node_modules/react-native/cli.js`
+    """
+          .trimIndent())
 }
 
 /**
@@ -145,7 +135,8 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
 
   // 3. If the react-native contains a pre-built hermesc, use it.
   val prebuiltHermesPath =
-      HERMESC_IN_REACT_NATIVE_PATH.replace("%OS-BIN%", getHermesOSBin())
+      HERMESC_IN_REACT_NATIVE_DIR.plus(getHermesCBin())
+          .replace("%OS-BIN%", getHermesOSBin())
           // Execution on Windows fails with / as separator
           .replace('/', File.separatorChar)
 
@@ -162,7 +153,7 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
 
 /**
  * Gets the location where Hermesc should be. If nothing is specified, built hermesc is assumed to
- * be inside [HERMESC_BUILT_FROM_SOURCE_PATH]. Otherwise user can specify an override with
+ * be inside [HERMESC_BUILT_FROM_SOURCE_DIR]. Otherwise user can specify an override with
  * [pathOverride], which is assumed to be an absolute path where Hermes source code is
  * provided/built.
  *
@@ -170,10 +161,12 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
  */
 internal fun getBuiltHermescFile(projectRoot: File, pathOverride: String?) =
     if (!pathOverride.isNullOrBlank()) {
-      File(pathOverride, "build/bin/hermesc")
+      File(pathOverride, "build/bin/${getHermesCBin()}")
     } else {
-      File(projectRoot, HERMESC_BUILT_FROM_SOURCE_PATH)
+      File(projectRoot, HERMESC_BUILT_FROM_SOURCE_DIR.plus(getHermesCBin()))
     }
+
+internal fun getHermesCBin() = if (Os.isWindows()) "hermesc.exe" else "hermesc"
 
 internal fun getHermesOSBin(): String {
   if (Os.isWindows()) return "win64-bin"
@@ -190,7 +183,31 @@ internal fun projectPathToLibraryName(projectPath: String): String =
         .joinToString("") { token -> token.replaceFirstChar { it.uppercase() } }
         .plus("Spec")
 
-private const val HERMESC_IN_REACT_NATIVE_PATH =
-    "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc"
-private const val HERMESC_BUILT_FROM_SOURCE_PATH =
-    "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+/**
+ * Function to look for the relevant `package.json`. We first look in the parent folder of this
+ * Gradle module (generally the case for library projects) or we fallback to looking into the `root`
+ * folder of a React Native project (generally the case for app projects).
+ */
+internal fun findPackageJsonFile(project: Project, extension: ReactExtension): File? =
+    if (project.file("../package.json").exists()) {
+      project.file("../package.json")
+    } else {
+      extension.root.file("package.json").orNull?.asFile
+    }
+
+/**
+ * Function to look for the `package.json` and parse it. It returns a [ModelPackageJson] if found or
+ * null others.
+ *
+ * Please note that this function access the [ReactExtension] field properties and calls .get() on
+ * them, so calling this during apply() of the ReactPlugin is not recommended. It should be invoked
+ * inside lazy lambdas or at execution time.
+ */
+internal fun readPackageJsonFile(project: Project, extension: ReactExtension): ModelPackageJson? {
+  val packageJson = findPackageJsonFile(project, extension)
+  return packageJson?.let { JsonUtils.fromCodegenJson(it) }
+}
+
+private const val HERMESC_IN_REACT_NATIVE_DIR = "node_modules/react-native/sdks/hermesc/%OS-BIN%/"
+private const val HERMESC_BUILT_FROM_SOURCE_DIR =
+    "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/"

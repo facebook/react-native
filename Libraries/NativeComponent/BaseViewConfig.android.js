@@ -8,9 +8,10 @@
  * @flow strict-local
  */
 
-import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
-import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
+
+import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
+import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
 
 const bubblingEventTypes = {
   // Bubbling events from UIManagerModuleConstants.java
@@ -64,24 +65,24 @@ const bubblingEventTypes = {
       bubbled: 'onPointerDown',
     },
   },
-  topPointerEnter2: {
+  topPointerEnter: {
     phasedRegistrationNames: {
-      captured: 'onPointerEnter2Capture',
-      bubbled: 'onPointerEnter2',
+      captured: 'onPointerEnterCapture',
+      bubbled: 'onPointerEnter',
       skipBubbling: true,
     },
   },
-  topPointerLeave2: {
+  topPointerLeave: {
     phasedRegistrationNames: {
-      captured: 'onPointerLeave2Capture',
-      bubbled: 'onPointerLeave2',
+      captured: 'onPointerLeaveCapture',
+      bubbled: 'onPointerLeave',
       skipBubbling: true,
     },
   },
-  topPointerMove2: {
+  topPointerMove: {
     phasedRegistrationNames: {
-      captured: 'onPointerMove2Capture',
-      bubbled: 'onPointerMove2',
+      captured: 'onPointerMoveCapture',
+      bubbled: 'onPointerMove',
     },
   },
   topPointerUp: {
@@ -90,20 +91,23 @@ const bubblingEventTypes = {
       bubbled: 'onPointerUp',
     },
   },
+  topPointerOut: {
+    phasedRegistrationNames: {
+      captured: 'onPointerOutCapture',
+      bubbled: 'onPointerOut',
+    },
+  },
+  topPointerOver: {
+    phasedRegistrationNames: {
+      captured: 'onPointerOverCapture',
+      bubbled: 'onPointerOver',
+    },
+  },
 };
 
 const directEventTypes = {
   topAccessibilityAction: {
     registrationName: 'onAccessibilityAction',
-  },
-  topPointerEnter: {
-    registrationName: 'onPointerEnter',
-  },
-  topPointerLeave: {
-    registrationName: 'onPointerLeave',
-  },
-  topPointerMove: {
-    registrationName: 'onPointerMove',
   },
   onGestureHandlerEvent: DynamicallyInjectedByGestureHandler({
     registrationName: 'onGestureHandlerEvent',
@@ -169,6 +173,8 @@ const validAttributesForNonEventProps = {
   accessibilityLabel: true,
   accessibilityHint: true,
   accessibilityRole: true,
+  accessibilityCollection: true,
+  accessibilityCollectionItem: true,
   accessibilityState: true,
   accessibilityActions: true,
   accessibilityValue: true,
@@ -190,6 +196,9 @@ const validAttributesForNonEventProps = {
   maxHeight: true,
   flex: true,
   flexGrow: true,
+  rowGap: true,
+  columnGap: true,
+  gap: true,
   flexShrink: true,
   flexBasis: true,
   aspectRatio: true,
@@ -203,24 +212,36 @@ const validAttributesForNonEventProps = {
   display: true,
 
   margin: true,
-  marginVertical: true,
-  marginHorizontal: true,
-  marginStart: true,
-  marginEnd: true,
-  marginTop: true,
+  marginBlock: true,
+  marginBlockEnd: true,
+  marginBlockStart: true,
   marginBottom: true,
+  marginEnd: true,
+  marginHorizontal: true,
+  marginInline: true,
+  marginInlineEnd: true,
+  marginInlineStart: true,
   marginLeft: true,
   marginRight: true,
+  marginStart: true,
+  marginTop: true,
+  marginVertical: true,
 
   padding: true,
-  paddingVertical: true,
-  paddingHorizontal: true,
-  paddingStart: true,
-  paddingEnd: true,
-  paddingTop: true,
+  paddingBlock: true,
+  paddingBlockEnd: true,
+  paddingBlockStart: true,
   paddingBottom: true,
+  paddingEnd: true,
+  paddingHorizontal: true,
+  paddingInline: true,
+  paddingInlineEnd: true,
+  paddingInlineStart: true,
   paddingLeft: true,
   paddingRight: true,
+  paddingStart: true,
+  paddingTop: true,
+  paddingVertical: true,
 
   borderWidth: true,
   borderStartWidth: true,
@@ -269,8 +290,15 @@ const validAttributesForEventProps = {
 
   // Pointer events
   onPointerEnter: true,
+  onPointerEnterCapture: true,
   onPointerLeave: true,
+  onPointerLeaveCapture: true,
   onPointerMove: true,
+  onPointerMoveCapture: true,
+  onPointerOut: true,
+  onPointerOutCapture: true,
+  onPointerOver: true,
+  onPointerOverCapture: true,
 };
 
 /**

@@ -9,20 +9,20 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTDefines.h>
+#import <React/RCTImageCache.h>
+#import <React/RCTImageDataDecoder.h>
+#import <React/RCTImageLoaderLoggable.h>
+#import <React/RCTImageLoaderProtocol.h>
+#import <React/RCTImageURLLoader.h>
 #import <React/RCTResizeMode.h>
 #import <React/RCTURLRequestHandler.h>
-#import <React/RCTImageDataDecoder.h>
-#import <React/RCTImageURLLoader.h>
-#import <React/RCTImageCache.h>
-#import <React/RCTImageLoaderProtocol.h>
-#import <React/RCTImageLoaderLoggable.h>
 
 @interface RCTImageLoader : NSObject <RCTBridgeModule, RCTImageLoaderProtocol, RCTImageLoaderLoggableProtocol>
 - (instancetype)init;
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
-                              loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(RCTModuleRegistry *))getLoaders
-                             decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(RCTModuleRegistry *))getDecoders;
+                         loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(RCTModuleRegistry *))getLoaders
+                        decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(RCTModuleRegistry *))getDecoders;
 @end
 
 /**

@@ -8,12 +8,13 @@
  * @flow
  */
 
+import type {RootTag} from './RootTag';
+
 import View from '../Components/View/View';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import {RootTagContext, createRootTag} from './RootTag';
-import type {RootTag} from './RootTag';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|
@@ -25,10 +26,12 @@ type Props = $ReadOnly<{|
   showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
   internal_excludeLogBox?: ?boolean,
+  internal_excludeInspector?: ?boolean,
 |}>;
 
 type State = {|
   inspector: ?React.Node,
+  devtoolsOverlay: ?React.Node,
   mainKey: number,
   hasError: boolean,
 |};
@@ -36,6 +39,7 @@ type State = {|
 class AppContainer extends React.Component<Props, State> {
   state: State = {
     inspector: null,
+    devtoolsOverlay: null,
     mainKey: 1,
     hasError: false,
   };
@@ -46,7 +50,7 @@ class AppContainer extends React.Component<Props, State> {
 
   componentDidMount(): void {
     if (__DEV__) {
-      if (!global.__RCTProfileIsProfiling) {
+      if (!this.props.internal_excludeInspector) {
         this._subscription = RCTDeviceEventEmitter.addListener(
           'toggleElementInspector',
           () => {
@@ -65,6 +69,14 @@ class AppContainer extends React.Component<Props, State> {
             this.setState({inspector});
           },
         );
+        if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__ != null) {
+          const DevtoolsOverlay =
+            require('../Inspector/DevtoolsOverlay').default;
+          const devtoolsOverlay = (
+            <DevtoolsOverlay inspectedView={this._mainRef} />
+          );
+          this.setState({devtoolsOverlay});
+        }
       }
     }
   }
@@ -78,10 +90,7 @@ class AppContainer extends React.Component<Props, State> {
   render(): React.Node {
     let logBox = null;
     if (__DEV__) {
-      if (
-        !global.__RCTProfileIsProfiling &&
-        !this.props.internal_excludeLogBox
-      ) {
+      if (!this.props.internal_excludeLogBox) {
         const LogBoxNotificationContainer =
           require('../LogBox/LogBoxNotificationContainer').default;
         logBox = <LogBoxNotificationContainer />;
@@ -90,7 +99,7 @@ class AppContainer extends React.Component<Props, State> {
 
     let innerView: React.Node = (
       <View
-        collapsable={!this.state.inspector}
+        collapsable={!this.state.inspector && !this.state.devtoolsOverlay}
         key={this.state.mainKey}
         pointerEvents="box-none"
         style={styles.appContainer}
@@ -118,6 +127,7 @@ class AppContainer extends React.Component<Props, State> {
       <RootTagContext.Provider value={createRootTag(this.props.rootTag)}>
         <View style={styles.appContainer} pointerEvents="box-none">
           {!this.state.hasError && innerView}
+          {this.state.devtoolsOverlay}
           {this.state.inspector}
           {logBox}
         </View>

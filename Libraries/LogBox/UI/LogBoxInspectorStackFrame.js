@@ -8,21 +8,21 @@
  * @format
  */
 
-import * as React from 'react';
+import type {StackFrame} from '../../Core/NativeExceptionsManager';
+import type {PressEvent} from '../../Types/CoreEventTypes';
+
+import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import View from '../../Components/View/View';
 import Platform from '../../Utilities/Platform';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
+import * as React from 'react';
 
-import type {PressEvent} from '../../Types/CoreEventTypes';
-import type {StackFrame} from '../../Core/NativeExceptionsManager';
-
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   frame: StackFrame,
   onPress?: ?(event: PressEvent) => void,
-|}>;
+}>;
 
 function LogBoxInspectorStackFrame(props: Props): React.Node {
   const {frame, onPress} = props;

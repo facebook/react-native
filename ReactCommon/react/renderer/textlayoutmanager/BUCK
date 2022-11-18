@@ -36,6 +36,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/textlayoutmanager",
     ),
+    compiler_flags_pedantic = True,
     cxx_exported_headers = subdir_glob(
         [
             ("platform/cxx", "*.h"),
@@ -105,7 +106,6 @@ rn_xplat_cxx_library(
     ),
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
@@ -117,9 +117,6 @@ rn_xplat_cxx_library(
     deps = [
         "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
-        "//xplat/folly:molly",
         YOGA_CXX_TARGET,
         react_native_xplat_target("react/renderer/attributedstring:attributedstring"),
         react_native_xplat_target("react/renderer/core:core"),
@@ -151,7 +148,6 @@ fb_xplat_cxx_test(
     ),
     deps = [
         ":textlayoutmanager",
-        "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
     ],
 )

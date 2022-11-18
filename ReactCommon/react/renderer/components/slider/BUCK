@@ -33,8 +33,10 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/components/slider",
     ),
+    compiler_flags_pedantic = True,
     cxx_tests = [":tests"],
     fbandroid_deps = [
+        "//xplat/folly:dynamic",
         react_native_target("jni/react/jni:jni"),
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
     ],
@@ -69,7 +71,6 @@ rn_xplat_cxx_library(
     ),
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
@@ -78,8 +79,6 @@ rn_xplat_cxx_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:molly",
         YOGA_CXX_TARGET,
         react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/renderer/debug:debug"),
@@ -113,7 +112,6 @@ fb_xplat_cxx_test(
     ),
     deps = [
         ":slider",
-        "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
     ],
 )

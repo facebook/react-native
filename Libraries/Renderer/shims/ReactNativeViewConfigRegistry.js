@@ -1,12 +1,12 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @noformat
  * @flow strict-local
- * @generated SignedSource<<a5b40ebf1f5b17d6dc83479c1c597566>>
+ * @generated SignedSource<<bda490a01513d4526005c1e029d5ce93>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -18,19 +18,19 @@ import invariant from 'invariant';
 
 // Event configs
 const customBubblingEventTypes: {
-  [eventName: string]: $ReadOnly<{|
-    phasedRegistrationNames: $ReadOnly<{|
+  [eventName: string]: $ReadOnly<{
+    phasedRegistrationNames: $ReadOnly<{
       captured: string,
       bubbled: string,
       skipBubbling?: ?boolean,
-    |}>,
-  |}>,
+    }>,
+  }>,
   ...,
 } = {};
 const customDirectEventTypes: {
-  [eventName: string]: $ReadOnly<{|
+  [eventName: string]: $ReadOnly<{
     registrationName: string,
-  |}>,
+  }>,
   ...,
 } = {};
 

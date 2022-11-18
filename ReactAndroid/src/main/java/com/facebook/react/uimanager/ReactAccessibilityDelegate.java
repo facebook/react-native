@@ -67,6 +67,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     sActionIdMap.put("longpress", AccessibilityActionCompat.ACTION_LONG_CLICK.getId());
     sActionIdMap.put("increment", AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId());
     sActionIdMap.put("decrement", AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId());
+    sActionIdMap.put("expand", AccessibilityActionCompat.ACTION_EXPAND.getId());
+    sActionIdMap.put("collapse", AccessibilityActionCompat.ACTION_COLLAPSE.getId());
   }
 
   private final View mView;
@@ -96,6 +98,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   public enum AccessibilityRole {
     NONE,
     BUTTON,
+    DROPDOWNLIST,
     TOGGLEBUTTON,
     LINK,
     SEARCH,
@@ -122,12 +125,23 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     TABLIST,
     TIMER,
     LIST,
+    GRID,
+    PAGER,
+    SCROLLVIEW,
+    HORIZONTALSCROLLVIEW,
+    VIEWGROUP,
+    WEBVIEW,
+    DRAWERLAYOUT,
+    SLIDINGDRAWER,
+    ICONMENU,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
       switch (role) {
         case BUTTON:
           return "android.widget.Button";
+        case DROPDOWNLIST:
+          return "android.widget.Spinner";
         case TOGGLEBUTTON:
           return "android.widget.ToggleButton";
         case SEARCH:
@@ -135,7 +149,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case IMAGE:
           return "android.widget.ImageView";
         case IMAGEBUTTON:
-          return "android.widget.ImageButon";
+          return "android.widget.ImageButton";
         case KEYBOARDKEY:
           return "android.inputmethodservice.Keyboard$Key";
         case TEXT:
@@ -152,6 +166,24 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.Switch";
         case LIST:
           return "android.widget.AbsListView";
+        case GRID:
+          return "android.widget.GridView";
+        case SCROLLVIEW:
+          return "android.widget.ScrollView";
+        case HORIZONTALSCROLLVIEW:
+          return "android.widget.HorizontalScrollView";
+        case PAGER:
+          return "androidx.viewpager.widget.ViewPager";
+        case DRAWERLAYOUT:
+          return "androidx.drawerlayout.widget.DrawerLayout";
+        case SLIDINGDRAWER:
+          return "android.widget.SlidingDrawer";
+        case ICONMENU:
+          return "com.android.internal.view.menu.IconMenuView";
+        case VIEWGROUP:
+          return "android.view.ViewGroup";
+        case WEBVIEW:
+          return "android.webkit.WebView";
         case NONE:
         case LINK:
         case SUMMARY:
@@ -220,10 +252,23 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
+    if (host.getTag(R.id.accessibility_state_expanded) != null) {
+      final boolean accessibilityStateExpanded =
+          (boolean) host.getTag(R.id.accessibility_state_expanded);
+      info.addAction(
+          accessibilityStateExpanded
+              ? AccessibilityNodeInfoCompat.ACTION_COLLAPSE
+              : AccessibilityNodeInfoCompat.ACTION_EXPAND);
+    }
     final AccessibilityRole accessibilityRole =
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
+    final String accessibilityHint = (String) host.getTag(R.id.accessibility_hint);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
+    }
+
+    if (accessibilityHint != null) {
+      info.setTooltipText(accessibilityHint);
     }
 
     final Object accessibilityLabelledBy = host.getTag(R.id.labelled_by);
@@ -242,6 +287,22 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
     final ReadableArray accessibilityActions =
         (ReadableArray) host.getTag(R.id.accessibility_actions);
+
+    final ReadableMap accessibilityCollectionItem =
+        (ReadableMap) host.getTag(R.id.accessibility_collection_item);
+    if (accessibilityCollectionItem != null) {
+      int rowIndex = accessibilityCollectionItem.getInt("rowIndex");
+      int columnIndex = accessibilityCollectionItem.getInt("columnIndex");
+      int rowSpan = accessibilityCollectionItem.getInt("rowSpan");
+      int columnSpan = accessibilityCollectionItem.getInt("columnSpan");
+      boolean heading = accessibilityCollectionItem.getBoolean("heading");
+
+      AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemCompat =
+          AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
+              rowIndex, rowSpan, columnIndex, columnSpan, heading);
+      info.setCollectionItemInfo(collectionItemCompat);
+    }
+
     if (accessibilityActions != null) {
       for (int i = 0; i < accessibilityActions.size(); i++) {
         final ReadableMap action = accessibilityActions.getMap(i);
@@ -329,6 +390,12 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   public boolean performAccessibilityAction(View host, int action, Bundle args) {
+    if (action == AccessibilityNodeInfoCompat.ACTION_COLLAPSE) {
+      host.setTag(R.id.accessibility_state_expanded, false);
+    }
+    if (action == AccessibilityNodeInfoCompat.ACTION_EXPAND) {
+      host.setTag(R.id.accessibility_state_expanded, true);
+    }
     if (mAccessibilityActionsMap.containsKey(action)) {
       final WritableMap event = Arguments.createMap();
       event.putString("actionName", mAccessibilityActionsMap.get(action));
@@ -424,9 +491,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     } else if (role.equals(AccessibilityRole.SUMMARY)) {
       nodeInfo.setRoleDescription(context.getString(R.string.summary_description));
     } else if (role.equals(AccessibilityRole.HEADER)) {
-      final AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
-          AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(0, 1, 0, 1, true);
-      nodeInfo.setCollectionItemInfo(itemInfo);
+      nodeInfo.setHeading(true);
     } else if (role.equals(AccessibilityRole.ALERT)) {
       nodeInfo.setRoleDescription(context.getString(R.string.alert_description));
     } else if (role.equals(AccessibilityRole.COMBOBOX)) {
@@ -466,6 +531,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null
             || view.getTag(R.id.react_test_id) != null
+            || view.getTag(R.id.accessibility_collection_item) != null
             || view.getTag(R.id.accessibility_links) != null)) {
       ViewCompat.setAccessibilityDelegate(
           view,

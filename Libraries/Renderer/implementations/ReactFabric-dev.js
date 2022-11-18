@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactFabric-dev
  * @preventMunge
- * @generated SignedSource<<6ffe3bde635c4012978cdb5508993518>>
+ * @generated SignedSource<<343bc15819bccf8610b6ff32fcb59b21>>
  */
 
 'use strict';
@@ -7301,13 +7301,7 @@ function enqueueConcurrentRenderForLane(fiber, lane) {
 var unsafe_markUpdateLaneFromFiberToRoot = markUpdateLaneFromFiberToRoot;
 
 function markUpdateLaneFromFiberToRoot(sourceFiber, lane) {
-  // TODO: We will detect and infinite update loop and throw even if this fiber
-  // has already unmounted. This isn't really necessary but it happens to be the
-  // current behavior we've used for several release cycles. Consider not
-  // performing this check if the updated fiber already unmounted, since it's
-  // not possible for that to cause an infinite update loop.
-  throwIfInfiniteUpdateLoopDetected(); // Update the source fiber's lanes
-
+  // Update the source fiber's lanes
   sourceFiber.lanes = mergeLanes(sourceFiber.lanes, lane);
   var alternate = sourceFiber.alternate;
 
@@ -8630,7 +8624,7 @@ function mountClassInstance(workInProgress, ctor, newProps, renderLanes) {
   }
 
   if (typeof instance.componentDidMount === "function") {
-    var fiberFlags = Update | LayoutStatic;
+    var fiberFlags = Update;
 
     workInProgress.flags |= fiberFlags;
   }
@@ -8694,7 +8688,7 @@ function resumeMountClassInstance(workInProgress, ctor, newProps, renderLanes) {
     // If an update was already in progress, we should schedule an Update
     // effect even though we're bailing out, so that cWU/cDU are called.
     if (typeof instance.componentDidMount === "function") {
-      var fiberFlags = Update | LayoutStatic;
+      var fiberFlags = Update;
 
       workInProgress.flags |= fiberFlags;
     }
@@ -8742,7 +8736,7 @@ function resumeMountClassInstance(workInProgress, ctor, newProps, renderLanes) {
     }
 
     if (typeof instance.componentDidMount === "function") {
-      var _fiberFlags = Update | LayoutStatic;
+      var _fiberFlags = Update;
 
       workInProgress.flags |= _fiberFlags;
     }
@@ -8750,7 +8744,7 @@ function resumeMountClassInstance(workInProgress, ctor, newProps, renderLanes) {
     // If an update was already in progress, we should schedule an Update
     // effect even though we're bailing out, so that cWU/cDU are called.
     if (typeof instance.componentDidMount === "function") {
-      var _fiberFlags2 = Update | LayoutStatic;
+      var _fiberFlags2 = Update;
 
       workInProgress.flags |= _fiberFlags2;
     } // If shouldComponentUpdate returned false, we should still update the
@@ -11571,7 +11565,7 @@ function updateInsertionEffect(create, deps) {
 }
 
 function mountLayoutEffect(create, deps) {
-  var fiberFlags = Update | LayoutStatic;
+  var fiberFlags = Update;
 
   return mountEffectImpl(fiberFlags, Layout, create, deps);
 }
@@ -11625,7 +11619,7 @@ function mountImperativeHandle(ref, create, deps) {
 
   var effectDeps =
     deps !== null && deps !== undefined ? deps.concat([ref]) : null;
-  var fiberFlags = Update | LayoutStatic;
+  var fiberFlags = Update;
 
   return mountEffectImpl(
     fiberFlags,
@@ -14128,7 +14122,6 @@ function markRef(current, workInProgress) {
   ) {
     // Schedule a Ref effect
     workInProgress.flags |= Ref;
-    workInProgress.flags |= RefStatic;
   }
 }
 
@@ -16690,7 +16683,7 @@ function markUpdate(workInProgress) {
 }
 
 function markRef$1(workInProgress) {
-  workInProgress.flags |= Ref | RefStatic;
+  workInProgress.flags |= Ref;
 }
 
 function hadNoMutationsEffects(current, completedWork) {
@@ -17945,9 +17938,6 @@ function unwindWork(current, workInProgress, renderLanes) {
     case CacheComponent:
       return null;
 
-    case TracingMarkerComponent:
-      return null;
-
     default:
       return null;
   }
@@ -18013,10 +18003,6 @@ var didWarnAboutUndefinedSnapshotBeforeUpdate = null;
 {
   didWarnAboutUndefinedSnapshotBeforeUpdate = new Set();
 } // Used during the commit phase to track the state of the Offscreen component stack.
-// Allows us to avoid traversing the return path to find the nearest Offscreen ancestor.
-
-var offscreenSubtreeIsHidden = false;
-var offscreenSubtreeWasHidden = false;
 var PossiblyWeakSet = typeof WeakSet === "function" ? WeakSet : Set;
 var nextEffect = null; // Used for Profiling builds to track updaters.
 
@@ -18052,17 +18038,6 @@ var callComponentWillUnmountWithTimer = function(current, instance) {
   }
 }; // Capture errors so they don't interrupt mounting.
 
-function safelyCallCommitHookLayoutEffectListMount(
-  current,
-  nearestMountedAncestor
-) {
-  try {
-    commitHookEffectListMount(Layout, current);
-  } catch (error) {
-    captureCommitPhaseError(current, nearestMountedAncestor, error);
-  }
-} // Capture errors so they don't interrupt unmounting.
-
 function safelyCallComponentWillUnmount(
   current,
   nearestMountedAncestor,
@@ -18074,26 +18049,6 @@ function safelyCallComponentWillUnmount(
     captureCommitPhaseError(current, nearestMountedAncestor, error);
   }
 } // Capture errors so they don't interrupt mounting.
-
-function safelyCallComponentDidMount(
-  current,
-  nearestMountedAncestor,
-  instance
-) {
-  try {
-    instance.componentDidMount();
-  } catch (error) {
-    captureCommitPhaseError(current, nearestMountedAncestor, error);
-  }
-} // Capture errors so they don't interrupt mounting.
-
-function safelyAttachRef(current, nearestMountedAncestor) {
-  try {
-    commitAttachRef(current);
-  } catch (error) {
-    captureCommitPhaseError(current, nearestMountedAncestor, error);
-  }
-}
 
 function safelyDetachRef(current, nearestMountedAncestor) {
   var ref = current.ref;
@@ -18485,7 +18440,7 @@ function commitLayoutEffectOnFiber(
       case FunctionComponent:
       case ForwardRef:
       case SimpleMemoComponent: {
-        if (!offscreenSubtreeWasHidden) {
+        {
           // At this point layout effects have already been destroyed (during mutation phase).
           // This is done to prevent sibling component effects from interfering with each other,
           // e.g. a destroy function in one component should never override a ref set
@@ -18509,7 +18464,7 @@ function commitLayoutEffectOnFiber(
         var instance = finishedWork.stateNode;
 
         if (finishedWork.flags & Update) {
-          if (!offscreenSubtreeWasHidden) {
+          {
             if (current === null) {
               // We could update instance props and state here,
               // but instead we rely on them being set during last render.
@@ -18793,50 +18748,11 @@ function commitLayoutEffectOnFiber(
     }
   }
 
-  if (!offscreenSubtreeWasHidden) {
+  {
     {
       if (finishedWork.flags & Ref) {
         commitAttachRef(finishedWork);
       }
-    }
-  }
-}
-
-function reappearLayoutEffectsOnFiber(node) {
-  // Turn on layout effects in a tree that previously disappeared.
-  // TODO (Offscreen) Check: flags & LayoutStatic
-  switch (node.tag) {
-    case FunctionComponent:
-    case ForwardRef:
-    case SimpleMemoComponent: {
-      if (node.mode & ProfileMode) {
-        try {
-          startLayoutEffectTimer();
-          safelyCallCommitHookLayoutEffectListMount(node, node.return);
-        } finally {
-          recordLayoutEffectDuration(node);
-        }
-      } else {
-        safelyCallCommitHookLayoutEffectListMount(node, node.return);
-      }
-
-      break;
-    }
-
-    case ClassComponent: {
-      var instance = node.stateNode;
-
-      if (typeof instance.componentDidMount === "function") {
-        safelyCallComponentDidMount(node, node.return, instance);
-      }
-
-      safelyAttachRef(node, node.return);
-      break;
-    }
-
-    case HostComponent: {
-      safelyAttachRef(node, node.return);
-      break;
     }
   }
 }
@@ -19025,7 +18941,7 @@ function commitDeletionEffectsOnFiber(
 
   switch (deletedFiber.tag) {
     case HostComponent: {
-      if (!offscreenSubtreeWasHidden) {
+      {
         safelyDetachRef(deletedFiber, nearestMountedAncestor);
       } // Intentional fallthrough to next branch
     }
@@ -19067,7 +18983,7 @@ function commitDeletionEffectsOnFiber(
     case ForwardRef:
     case MemoComponent:
     case SimpleMemoComponent: {
-      if (!offscreenSubtreeWasHidden) {
+      {
         var updateQueue = deletedFiber.updateQueue;
 
         if (updateQueue !== null) {
@@ -19123,7 +19039,7 @@ function commitDeletionEffectsOnFiber(
     }
 
     case ClassComponent: {
-      if (!offscreenSubtreeWasHidden) {
+      {
         safelyDetachRef(deletedFiber, nearestMountedAncestor);
         var instance = deletedFiber.stateNode;
 
@@ -19154,26 +19070,7 @@ function commitDeletionEffectsOnFiber(
     }
 
     case OffscreenComponent: {
-      if (deletedFiber.mode & ConcurrentMode) {
-        // If this offscreen component is hidden, we already unmounted it. Before
-        // deleting the children, track that it's already unmounted so that we
-        // don't attempt to unmount the effects again.
-        // TODO: If the tree is hidden, in most cases we should be able to skip
-        // over the nested children entirely. An exception is we haven't yet found
-        // the topmost host node to delete, which we already track on the stack.
-        // But the other case is portals, which need to be detached no matter how
-        // deeply they are nested. We should use a subtree flag to track whether a
-        // subtree includes a nested portal.
-        var prevOffscreenSubtreeWasHidden = offscreenSubtreeWasHidden;
-        offscreenSubtreeWasHidden =
-          prevOffscreenSubtreeWasHidden || deletedFiber.memoizedState !== null;
-        recursivelyTraverseDeletionEffects(
-          finishedRoot,
-          nearestMountedAncestor,
-          deletedFiber
-        );
-        offscreenSubtreeWasHidden = prevOffscreenSubtreeWasHidden;
-      } else {
+      {
         recursivelyTraverseDeletionEffects(
           finishedRoot,
           nearestMountedAncestor,
@@ -19455,15 +19352,7 @@ function commitMutationEffectsOnFiber(finishedWork, root, lanes) {
     case OffscreenComponent: {
       var _wasHidden = current !== null && current.memoizedState !== null;
 
-      if (finishedWork.mode & ConcurrentMode) {
-        // Before committing the children, track on the stack whether this
-        // offscreen subtree was already hidden, so that we don't unmount the
-        // effects again.
-        var prevOffscreenSubtreeWasHidden = offscreenSubtreeWasHidden;
-        offscreenSubtreeWasHidden = prevOffscreenSubtreeWasHidden || _wasHidden;
-        recursivelyTraverseMutationEffects(root, finishedWork);
-        offscreenSubtreeWasHidden = prevOffscreenSubtreeWasHidden;
-      } else {
+      {
         recursivelyTraverseMutationEffects(root, finishedWork);
       }
 
@@ -19474,26 +19363,9 @@ function commitMutationEffectsOnFiber(finishedWork, root, lanes) {
         var _newState = finishedWork.memoizedState;
 
         var _isHidden = _newState !== null;
-
-        var offscreenBoundary = finishedWork; // Track the current state on the Offscreen instance so we can
         // read it during an event
 
         _offscreenInstance.isHidden = _isHidden;
-
-        if (_isHidden) {
-          if (!_wasHidden) {
-            if ((offscreenBoundary.mode & ConcurrentMode) !== NoMode) {
-              nextEffect = offscreenBoundary;
-              var offscreenChild = offscreenBoundary.child;
-
-              while (offscreenChild !== null) {
-                nextEffect = offscreenChild;
-                disappearLayoutEffects_begin(offscreenChild);
-                offscreenChild = offscreenChild.sibling;
-              }
-            }
-          }
-        }
       }
 
       return;
@@ -19563,54 +19435,6 @@ function commitLayoutEffects_begin(subtreeRoot, root, committedLanes) {
     var fiber = nextEffect;
     var firstChild = fiber.child;
 
-    if (fiber.tag === OffscreenComponent && isModernRoot) {
-      // Keep track of the current Offscreen stack's state.
-      var isHidden = fiber.memoizedState !== null;
-      var newOffscreenSubtreeIsHidden = isHidden || offscreenSubtreeIsHidden;
-
-      if (newOffscreenSubtreeIsHidden) {
-        // The Offscreen tree is hidden. Skip over its layout effects.
-        commitLayoutMountEffects_complete(subtreeRoot, root, committedLanes);
-        continue;
-      } else {
-        // TODO (Offscreen) Also check: subtreeFlags & LayoutMask
-        var current = fiber.alternate;
-        var wasHidden = current !== null && current.memoizedState !== null;
-        var newOffscreenSubtreeWasHidden =
-          wasHidden || offscreenSubtreeWasHidden;
-        var prevOffscreenSubtreeIsHidden = offscreenSubtreeIsHidden;
-        var prevOffscreenSubtreeWasHidden = offscreenSubtreeWasHidden; // Traverse the Offscreen subtree with the current Offscreen as the root.
-
-        offscreenSubtreeIsHidden = newOffscreenSubtreeIsHidden;
-        offscreenSubtreeWasHidden = newOffscreenSubtreeWasHidden;
-
-        if (offscreenSubtreeWasHidden && !prevOffscreenSubtreeWasHidden) {
-          // This is the root of a reappearing boundary. Turn its layout effects
-          // back on.
-          nextEffect = fiber;
-          reappearLayoutEffects_begin(fiber);
-        }
-
-        var child = firstChild;
-
-        while (child !== null) {
-          nextEffect = child;
-          commitLayoutEffects_begin(
-            child, // New root; bubble back up to here and stop.
-            root,
-            committedLanes
-          );
-          child = child.sibling;
-        } // Restore Offscreen state and resume in our-progress traversal.
-
-        nextEffect = fiber;
-        offscreenSubtreeIsHidden = prevOffscreenSubtreeIsHidden;
-        offscreenSubtreeWasHidden = prevOffscreenSubtreeWasHidden;
-        commitLayoutMountEffects_complete(subtreeRoot, root, committedLanes);
-        continue;
-      }
-    }
-
     if ((fiber.subtreeFlags & LayoutMask) !== NoFlags && firstChild !== null) {
       firstChild.return = fiber;
       nextEffect = firstChild;
@@ -19645,151 +19469,6 @@ function commitLayoutMountEffects_complete(subtreeRoot, root, committedLanes) {
     var sibling = fiber.sibling;
 
     if (sibling !== null) {
-      sibling.return = fiber.return;
-      nextEffect = sibling;
-      return;
-    }
-
-    nextEffect = fiber.return;
-  }
-}
-
-function disappearLayoutEffects_begin(subtreeRoot) {
-  while (nextEffect !== null) {
-    var fiber = nextEffect;
-    var firstChild = fiber.child; // TODO (Offscreen) Check: flags & (RefStatic | LayoutStatic)
-
-    switch (fiber.tag) {
-      case FunctionComponent:
-      case ForwardRef:
-      case MemoComponent:
-      case SimpleMemoComponent: {
-        if (fiber.mode & ProfileMode) {
-          try {
-            startLayoutEffectTimer();
-            commitHookEffectListUnmount(Layout, fiber, fiber.return);
-          } finally {
-            recordLayoutEffectDuration(fiber);
-          }
-        } else {
-          commitHookEffectListUnmount(Layout, fiber, fiber.return);
-        }
-
-        break;
-      }
-
-      case ClassComponent: {
-        // TODO (Offscreen) Check: flags & RefStatic
-        safelyDetachRef(fiber, fiber.return);
-        var instance = fiber.stateNode;
-
-        if (typeof instance.componentWillUnmount === "function") {
-          safelyCallComponentWillUnmount(fiber, fiber.return, instance);
-        }
-
-        break;
-      }
-
-      case HostComponent: {
-        safelyDetachRef(fiber, fiber.return);
-        break;
-      }
-
-      case OffscreenComponent: {
-        // Check if this is a
-        var isHidden = fiber.memoizedState !== null;
-
-        if (isHidden) {
-          // Nested Offscreen tree is already hidden. Don't disappear
-          // its effects.
-          disappearLayoutEffects_complete(subtreeRoot);
-          continue;
-        }
-
-        break;
-      }
-    } // TODO (Offscreen) Check: subtreeFlags & LayoutStatic
-
-    if (firstChild !== null) {
-      firstChild.return = fiber;
-      nextEffect = firstChild;
-    } else {
-      disappearLayoutEffects_complete(subtreeRoot);
-    }
-  }
-}
-
-function disappearLayoutEffects_complete(subtreeRoot) {
-  while (nextEffect !== null) {
-    var fiber = nextEffect;
-
-    if (fiber === subtreeRoot) {
-      nextEffect = null;
-      return;
-    }
-
-    var sibling = fiber.sibling;
-
-    if (sibling !== null) {
-      sibling.return = fiber.return;
-      nextEffect = sibling;
-      return;
-    }
-
-    nextEffect = fiber.return;
-  }
-}
-
-function reappearLayoutEffects_begin(subtreeRoot) {
-  while (nextEffect !== null) {
-    var fiber = nextEffect;
-    var firstChild = fiber.child;
-
-    if (fiber.tag === OffscreenComponent) {
-      var isHidden = fiber.memoizedState !== null;
-
-      if (isHidden) {
-        // Nested Offscreen tree is still hidden. Don't re-appear its effects.
-        reappearLayoutEffects_complete(subtreeRoot);
-        continue;
-      }
-    } // TODO (Offscreen) Check: subtreeFlags & LayoutStatic
-
-    if (firstChild !== null) {
-      // This node may have been reused from a previous render, so we can't
-      // assume its return pointer is correct.
-      firstChild.return = fiber;
-      nextEffect = firstChild;
-    } else {
-      reappearLayoutEffects_complete(subtreeRoot);
-    }
-  }
-}
-
-function reappearLayoutEffects_complete(subtreeRoot) {
-  while (nextEffect !== null) {
-    var fiber = nextEffect; // TODO (Offscreen) Check: flags & LayoutStatic
-
-    setCurrentFiber(fiber);
-
-    try {
-      reappearLayoutEffectsOnFiber(fiber);
-    } catch (error) {
-      captureCommitPhaseError(fiber, fiber.return, error);
-    }
-
-    resetCurrentFiber();
-
-    if (fiber === subtreeRoot) {
-      nextEffect = null;
-      return;
-    }
-
-    var sibling = fiber.sibling;
-
-    if (sibling !== null) {
-      // This node may have been reused from a previous render, so we can't
-      // assume its return pointer is correct.
       sibling.return = fiber.return;
       nextEffect = sibling;
       return;
@@ -20351,6 +20030,8 @@ function requestRetryLane(fiber) {
 }
 
 function scheduleUpdateOnFiber(root, fiber, lane, eventTime) {
+  checkForNestedUpdates();
+
   {
     if (isRunningInsertionEffect) {
       error("useInsertionEffect must not schedule updates.");
@@ -22174,7 +21855,7 @@ function jnd(timeElapsed) {
     : ceil(timeElapsed / 1960) * 1960;
 }
 
-function throwIfInfiniteUpdateLoopDetected() {
+function checkForNestedUpdates() {
   if (nestedUpdateCount > NESTED_UPDATE_LIMIT) {
     nestedUpdateCount = 0;
     rootWithNestedUpdates = null;
@@ -23679,7 +23360,7 @@ function createFiberRoot(
   return root;
 }
 
-var ReactVersion = "18.3.0-next-256aefbea-20220614";
+var ReactVersion = "18.2.0-next-9e3b772b8-20220608";
 
 function createPortal(
   children,

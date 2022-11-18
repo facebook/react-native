@@ -9,7 +9,7 @@
  */
 
 'use strict';
-import type {TypeDeclarationMap} from '../utils';
+import type {TypeDeclarationMap} from '../../utils';
 import type {CommandOptions} from './options';
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 
@@ -18,8 +18,11 @@ const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
 const {getCommandOptions, getOptions} = require('./options');
-const {getPropProperties, getProps} = require('./props');
+const {getProps} = require('./props');
+const {getProperties} = require('./componentsUtils.js');
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function findComponentConfig(ast) {
   const foundConfigs = [];
 
@@ -123,6 +126,8 @@ function findComponentConfig(ast) {
 }
 
 function getCommandProperties(
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   commandTypeName,
   types: TypeDeclarationMap,
   commandOptions: ?CommandOptions,
@@ -175,6 +180,8 @@ function getCommandProperties(
 }
 
 // $FlowFixMe[signature-verification-failure] there's no flowtype for AST
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const {
     componentName,
@@ -186,7 +193,7 @@ function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
 
   const types = getTypes(ast);
 
-  const propProperties = getPropProperties(propsTypeName, types);
+  const propProperties = getProperties(propsTypeName, types);
   const commandOptions = getCommandOptions(commandOptionsExpression);
 
   const commandProperties = getCommandProperties(

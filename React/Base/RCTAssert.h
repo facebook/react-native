@@ -159,18 +159,18 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
  */
 #if DEBUG
 
-#define RCTAssertThread(thread, format...)                                                                            \
+#define RCTAssertThread(thread, ...)                                                                                  \
   _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"") RCTAssert(       \
       [(id)thread isKindOfClass:[NSString class]]       ? [RCTCurrentThreadName() isEqualToString:(NSString *)thread] \
           : [(id)thread isKindOfClass:[NSThread class]] ? [NSThread currentThread] == (NSThread *)thread              \
                                                         : dispatch_get_current_queue() == (dispatch_queue_t)thread,   \
-      format);                                                                                                        \
+      __VA_ARGS__);                                                                                                   \
   _Pragma("clang diagnostic pop")
 
 #else
 
-#define RCTAssertThread(thread, format...) \
-  do {                                     \
+#define RCTAssertThread(thread, ...) \
+  do {                               \
   } while (0)
 
 #endif
@@ -178,24 +178,26 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
 // MARK: - New Architecture Validation
 
 typedef enum {
-  RCTNotAllowedValidationDisabled = 0,
-  RCTNotAllowedInAppWideFabric = 1,
-  RCTNotAllowedInBridgeless = 2,
+  RCTNotAllowedInBridgeless = 1,
+  RCTNotAllowedInFabricWithoutLegacy = 2,
+  RCTNotAllowedValidationDisabled = 3,
 } RCTNotAllowedValidation;
 
 /**
+ * // TODO: (T125626909) Only validate legacy architecture usages in Bridgeless mode, not Bridged Fabric mode
+ *
  * Ensure runtime assumptions holds for the new architecture by reporting when assumptions are violated.
  * Note: this is work in progress.
  *
- * When type is RCTNotAllowedInAppWideFabric, validate Fabric assumptions in Bridge or Bridgeless mode.
+ * When level is RCTNotAllowedInFabricWithoutLegacy, validate Fabric assumptions.
  * i.e. Report legacy pre-Fabric call sites that should not be used while Fabric is enabled on all surfaces.
  *
- * When type is RCTNotAllowedInBridgeless, validate Bridgeless assumptions, in Bridgeless mode only.
+ * When level is RCTNotAllowedInBridgeless, validate Fabric or Bridgeless assumptions.
  * i.e. Report Bridge call sites that should not be used while Bridgeless mode is enabled.
  *
  * Note: enabling this at runtime is not early enough to report issues within ObjC class +load execution.
  */
-__attribute__((used)) RCT_EXTERN void RCTNewArchitectureValidationSetEnabled(RCTNotAllowedValidation type);
+__attribute__((used)) RCT_EXTERN void RCTNewArchitectureSetMinValidationLevel(RCTNotAllowedValidation level);
 
 // When new architecture validation reporting is enabled, trigger an assertion and crash.
 __attribute__((used)) RCT_EXTERN void
@@ -208,3 +210,7 @@ RCTErrorNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSSt
 // When ready, switch to stricter variant above.
 __attribute__((used)) RCT_EXTERN void
 RCTLogNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra);
+// A placeholder for callsites that frequently fail validation.
+// When ready, switch to stricter variant above.
+__attribute__((used)) RCT_EXTERN void
+RCTNewArchitectureValidationPlaceholder(RCTNotAllowedValidation type, id context, NSString *extra);

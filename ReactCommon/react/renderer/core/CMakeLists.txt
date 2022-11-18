@@ -6,7 +6,14 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions -frtti -std=c++17 -Wall -DLOG_TAG=\"Fabric\")
+add_compile_options(
+        -fexceptions
+        -frtti
+        -std=c++17
+        -Wall
+        -Wpedantic
+        -Wno-gnu-zero-variadic-macro-arguments
+        -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_core_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_render_core SHARED ${react_render_core_SRC})
@@ -19,4 +26,5 @@ target_link_libraries(react_render_core
         react_debug
         react_render_debug
         react_render_graphics
+        react_render_mapbuffer
         react_utils)

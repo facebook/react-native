@@ -54,7 +54,7 @@ LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/SampleWithUppercaseName
 
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   librrc_view   libturbomodulejsijni   libyoga
+LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
@@ -93,6 +93,8 @@ target_link_libraries(
   react_render_core
   react_render_debug
   react_render_graphics
+  react_render_imagemanager
+  rrc_image
   rrc_view
   turbomodulejsijni
   yoga
@@ -165,7 +167,7 @@ LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/complex_objects
 
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   librrc_view   libturbomodulejsijni   libyoga
+LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
@@ -204,6 +206,8 @@ target_link_libraries(
   react_render_core
   react_render_debug
   react_render_graphics
+  react_render_imagemanager
+  rrc_image
   rrc_view
   turbomodulejsijni
   yoga
@@ -269,7 +273,7 @@ LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/cxx_only_native_modules
 
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   librrc_view   libturbomodulejsijni   libyoga
+LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
@@ -308,6 +312,8 @@ target_link_libraries(
   react_render_core
   react_render_debug
   react_render_graphics
+  react_render_imagemanager
+  rrc_image
   rrc_view
   turbomodulejsijni
   yoga
@@ -380,7 +386,7 @@ LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/empty_native_modules
 
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   librrc_view   libturbomodulejsijni   libyoga
+LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
@@ -419,6 +425,8 @@ target_link_libraries(
   react_render_core
   react_render_debug
   react_render_graphics
+  react_render_imagemanager
+  rrc_image
   rrc_view
   turbomodulejsijni
   yoga
@@ -491,7 +499,7 @@ LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/native_modules_with_type_aliases
 
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   librrc_view   libturbomodulejsijni   libyoga
+LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
@@ -530,6 +538,8 @@ target_link_libraries(
   react_render_core
   react_render_debug
   react_render_graphics
+  react_render_imagemanager
+  rrc_image
   rrc_view
   turbomodulejsijni
   yoga
@@ -610,7 +620,7 @@ LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/real_module_example
 
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   librrc_view   libturbomodulejsijni   libyoga
+LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
@@ -649,6 +659,8 @@ target_link_libraries(
   react_render_core
   react_render_debug
   react_render_graphics
+  react_render_imagemanager
+  rrc_image
   rrc_view
   turbomodulejsijni
   yoga
@@ -721,7 +733,7 @@ LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/simple_native_modules
 
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   librrc_view   libturbomodulejsijni   libyoga
+LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
@@ -760,6 +772,8 @@ target_link_libraries(
   react_render_core
   react_render_debug
   react_render_graphics
+  react_render_imagemanager
+  rrc_image
   rrc_view
   turbomodulejsijni
   yoga
@@ -840,7 +854,7 @@ LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/two_modules_different_files
 
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   librrc_view   libturbomodulejsijni   libyoga
+LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
@@ -879,6 +893,8 @@ target_link_libraries(
   react_render_core
   react_render_debug
   react_render_graphics
+  react_render_imagemanager
+  rrc_image
   rrc_view
   turbomodulejsijni
   yoga

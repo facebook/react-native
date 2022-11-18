@@ -9,20 +9,22 @@
 
 #include <react/renderer/core/RawPropsPrimitives.h>
 
+// We need to use clang pragmas inside of a macro below,
+// so we need to pull out the "if" statement here.
+#if __clang__
+#define CLANG_PRAGMA(s) _Pragma(s)
+#else
+#define CLANG_PRAGMA(s)
+#endif
+
 // Get hash at compile-time. sizeof(str) - 1 == strlen
-// Auto-formatting makes this more ugly than it has to be, but it works.
-// The pragma is to ignore warnings about variable shadowing of `len` and/or
-// `hash`, which are technically shadowing but it doesn't matter since they're
-// constexpr'd.
-#define CONSTEXPR_RAW_PROPS_KEY_HASH(s)                                           \
-  ({                                                                              \
-    _Pragma("clang diagnostic push") _Pragma(                                     \
-        "clang diagnostic ignored \"-Wshadow\"") constexpr RawPropsPropNameLength \
-        len = sizeof(s) - 1;                                                      \
-    constexpr RawPropsPropNameHash hash = folly::hash::fnv32_buf(s, len);         \
-    hash;                                                                         \
-    _Pragma("clang diagnostic pop")                                               \
-  })
+#define CONSTEXPR_RAW_PROPS_KEY_HASH(s)                   \
+  ([]() constexpr->RawPropsPropNameHash {                 \
+    CLANG_PRAGMA("clang diagnostic push")                 \
+    CLANG_PRAGMA("clang diagnostic ignored \"-Wshadow\"") \
+    return folly::hash::fnv32_buf(s, sizeof(s) - 1);      \
+    CLANG_PRAGMA("clang diagnostic pop")                  \
+  }())
 
 #define RAW_PROPS_KEY_HASH(s) folly::hash::fnv32_buf(s, std::strlen(s))
 
@@ -67,7 +69,9 @@
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                                \
       struct, bottomStart, prefix "BottomStart" suffix, rawValue)        \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                                \
-      struct, bottomEnd, prefix "BottomEnd" suffix, rawValue)
+      struct, bottomEnd, prefix "BottomEnd" suffix, rawValue)            \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                                \
+      struct, all, prefix "" suffix, rawValue)
 
 #define SET_CASCADED_RECTANGLE_EDGES(struct, prefix, suffix, rawValue) \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
@@ -88,3 +92,17 @@
       struct, vertical, prefix "Vertical" suffix, rawValue)            \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
       struct, all, prefix "" suffix, rawValue)
+
+// Rebuild a type that contains multiple fields from a single field value
+#define REBUILD_FIELD_SWITCH_CASE(                  \
+    defaults, rawValue, property, field, fieldName) \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {   \
+    if ((rawValue).hasValue()) {                    \
+      decltype((defaults).field) res;               \
+      fromRawValue(context, rawValue, res);         \
+      (property).field = res;                       \
+    } else {                                        \
+      (property).field = (defaults).field;          \
+    }                                               \
+    return;                                         \
+  }

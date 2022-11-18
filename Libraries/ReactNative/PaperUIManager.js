@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import type {RootTag} from '../Types/RootTagTypes';
 
 import NativeUIManager from './NativeUIManager';
 
@@ -19,7 +19,7 @@ const UIManagerProperties = require('./UIManagerProperties');
 
 const viewManagerConfigs: {[string]: any | null} = {};
 
-const triedLoadingConfig = new Set();
+const triedLoadingConfig = new Set<string>();
 
 let NativeUIManagerConstants = {};
 let isNativeUIManagerConstantsSet = false;
@@ -114,7 +114,7 @@ const UIManagerJS = {
 // $FlowFixMe[prop-missing]
 NativeUIManager.getViewManagerConfig = UIManagerJS.getViewManagerConfig;
 
-function lazifyViewManagerConfig(viewName) {
+function lazifyViewManagerConfig(viewName: string) {
   const viewConfig = getConstants()[viewName];
   viewManagerConfigs[viewName] = viewConfig;
   if (viewConfig.Manager) {

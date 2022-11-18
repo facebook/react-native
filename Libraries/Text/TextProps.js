@@ -11,19 +11,20 @@
 'use strict';
 
 import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+  AccessibilityRole,
+  AccessibilityState,
+  Role,
+} from '../Components/View/ViewAccessibility';
+import type {TextStyleProp} from '../StyleSheet/StyleSheet';
+import type {
   LayoutEvent,
   PointerEvent,
   PressEvent,
   TextLayoutEvent,
 } from '../Types/CoreEventTypes';
 import type {Node} from 'react';
-import type {TextStyleProp} from '../StyleSheet/StyleSheet';
-import type {
-  AccessibilityRole,
-  AccessibilityState,
-  AccessibilityActionInfo,
-  AccessibilityActionEvent,
-} from '../Components/View/ViewAccessibility';
 
 export type PressRetentionOffset = $ReadOnly<{|
   top: number,
@@ -57,6 +58,7 @@ export type TextProps = $ReadOnly<{|
   accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
+  'aria-label'?: ?string,
 
   /**
    * Whether font should be scaled down automatically.
@@ -77,6 +79,24 @@ export type TextProps = $ReadOnly<{|
    *
    */
   android_hyphenationFrequency?: ?('normal' | 'none' | 'full'),
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean | 'mixed',
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
+
+  /**
+   * Represents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   * This prop is listed for cross-platform reasons and has no real effect on Android or iOS.
+   */
+  'aria-labelledby'?: ?string,
+
   children?: ?Node,
 
   /**
@@ -86,6 +106,13 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text#ellipsizemode
    */
   ellipsizeMode?: ?('clip' | 'head' | 'middle' | 'tail'),
+
+  /**
+   * Used to locate this view from native code.
+   *
+   * See https://reactnative.dev/docs/text#nativeid
+   */
+  id?: string,
 
   /**
    * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
@@ -150,6 +177,11 @@ export type TextProps = $ReadOnly<{|
   pressRetentionOffset?: ?PressRetentionOffset,
 
   /**
+   * Indicates to accessibility services to treat UI component like a specific role.
+   */
+  role?: ?Role,
+
+  /**
    * Lets the user select text.
    *
    * See https://reactnative.dev/docs/text#selectable
@@ -197,6 +229,23 @@ export type TextProps = $ReadOnly<{|
   adjustsFontSizeToFit?: ?boolean,
 
   /**
+   * The Dynamic Text scale ramp to apply to this element on iOS.
+   */
+  dynamicTypeRamp?: ?(
+    | 'caption2'
+    | 'caption1'
+    | 'footnote'
+    | 'subheadline'
+    | 'callout'
+    | 'body'
+    | 'headline'
+    | 'title3'
+    | 'title2'
+    | 'title1'
+    | 'largeTitle'
+  ),
+
+  /**
    * Smallest possible scale a font can reach.
    *
    * See https://reactnative.dev/docs/text#minimumfontscale
@@ -209,4 +258,11 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text#supperhighlighting
    */
   suppressHighlighting?: ?boolean,
+
+  /**
+   * Set line break strategy on iOS.
+   *
+   * See https://reactnative.dev/docs/text.html#linebreakstrategyios
+   */
+  lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
 |}>;

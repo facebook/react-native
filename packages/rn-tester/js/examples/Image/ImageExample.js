@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+
 const React = require('react');
 
 const {
@@ -41,7 +43,7 @@ type BlobImageProps = $ReadOnly<{|
 |}>;
 
 class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
-  state = {
+  state: BlobImageState = {
     objectURL: null,
   };
 
@@ -54,7 +56,7 @@ class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
     })();
   }
 
-  render() {
+  render(): React.Node {
     return this.state.objectURL !== null ? (
       <Image source={{uri: this.state.objectURL}} style={styles.base} />
     ) : (
@@ -73,7 +75,7 @@ class BlobImageExample extends React.Component<
   BlobImageExampleProps,
   BlobImageExampleState,
 > {
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.horizontal}>
         {this.props.urls.map(url => (
@@ -100,7 +102,7 @@ class NetworkImageCallbackExample extends React.Component<
   NetworkImageCallbackExampleProps,
   NetworkImageCallbackExampleState,
 > {
-  state = {
+  state: NetworkImageCallbackExampleState = {
     events: [],
     startLoadPrefetched: false,
     mountTime: Date.now(),
@@ -121,13 +123,13 @@ class NetworkImageCallbackExample extends React.Component<
     this.setState({imageHash: Date.now()});
   };
 
-  render() {
+  render(): React.Node {
     const {mountTime} = this.state;
     return (
       <View>
         <Image
           source={this.props.source}
-          style={[styles.base, {overflow: 'visible'}]}
+          style={[styles.base, styles.visibleOverflow]}
           onLoadStart={() =>
             this._loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
           }
@@ -183,7 +185,7 @@ class NetworkImageCallbackExample extends React.Component<
         {this.state.startLoadPrefetched ? (
           <Image
             source={this.props.prefetchedSource}
-            style={[styles.base, {overflow: 'visible'}]}
+            style={[styles.base, styles.visibleOverflow]}
             onLoadStart={() =>
               this._loadEventFired(
                 `✔ (prefetched) onLoadStart (+${Date.now() - mountTime}ms)`,
@@ -211,7 +213,9 @@ class NetworkImageCallbackExample extends React.Component<
             }
           />
         ) : null}
-        <Text style={{marginTop: 20}}>{this.state.events.join('\n')}</Text>
+        <Text style={styles.networkImageText}>
+          {this.state.events.join('\n')}
+        </Text>
       </View>
     );
   }
@@ -231,20 +235,20 @@ class NetworkImageExample extends React.Component<
   NetworkImageExampleProps,
   NetworkImageExampleState,
 > {
-  state = {
+  state: NetworkImageExampleState = {
     error: null,
     loading: false,
     progress: [],
   };
 
-  render() {
+  render(): React.Node {
     return this.state.error != null ? (
       <Text>{this.state.error}</Text>
     ) : (
       <>
         <Image
           source={this.props.source}
-          style={[styles.base, {overflow: 'visible'}]}
+          style={[styles.base, styles.visibleOverflow]}
           onLoadStart={e => this.setState({loading: true})}
           onError={e =>
             this.setState({error: e.nativeEvent.error, loading: false})
@@ -281,7 +285,7 @@ class ImageSizeExample extends React.Component<
   ImageSizeExampleProps,
   ImageSizeExampleState,
 > {
-  state = {
+  state: ImageSizeExampleState = {
     width: 0,
     height: 0,
   };
@@ -292,18 +296,10 @@ class ImageSizeExample extends React.Component<
     });
   }
 
-  render() {
+  render(): React.Node {
     return (
-      <View style={{flexDirection: 'row'}}>
-        <Image
-          style={{
-            width: 60,
-            height: 60,
-            backgroundColor: 'transparent',
-            marginRight: 10,
-          }}
-          source={this.props.source}
-        />
+      <View style={styles.flexRow}>
+        <Image style={styles.imageSizeExample} source={this.props.source} />
         <Text>
           Actual dimensions:{'\n'}
           Width: {this.state.width}, Height: {this.state.height}
@@ -324,7 +320,7 @@ class MultipleSourcesExample extends React.Component<
   MultipleSourcesExampleProps,
   MultipleSourcesExampleState,
 > {
-  state = {
+  state: MultipleSourcesExampleState = {
     width: 30,
     height: 30,
   };
@@ -349,10 +345,10 @@ class MultipleSourcesExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={styles.spaceBetweenView}>
           <Text style={styles.touchableText} onPress={this.decreaseImageSize}>
             Decrease image size
           </Text>
@@ -365,7 +361,7 @@ class MultipleSourcesExample extends React.Component<
         </Text>
         <View style={{height: this.state.height, width: this.state.width}}>
           <Image
-            style={{flex: 1}}
+            style={styles.flex}
             source={[
               {
                 uri: 'https://www.facebook.com/favicon.ico',
@@ -395,7 +391,7 @@ class LoadingIndicatorSourceExample extends React.Component<
   LoadingIndicatorSourceExampleProps,
   LoadingIndicatorSourceExampleState,
 > {
-  state = {
+  state: LoadingIndicatorSourceExampleState = {
     imageHash: Date.now(),
   };
 
@@ -405,18 +401,18 @@ class LoadingIndicatorSourceExample extends React.Component<
     });
   };
 
-  loaderGif = {
+  loaderGif: {uri: string} = {
     uri: 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif',
   };
 
-  render() {
+  render(): React.Node {
     const loadingImage = {
       uri: `https://www.facebook.com/ads/pics/successstories.png?hash=${this.state.imageHash}`,
     };
 
     return (
       <View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={styles.spaceBetweenView}>
           <Text style={styles.touchableText} onPress={this.reloadImage}>
             Refresh Image
           </Text>
@@ -445,13 +441,13 @@ class OnLayoutExample extends React.Component<
   OnLayoutExampleProps,
   OnLayoutExampleState,
 > {
-  state = {
+  state: OnLayoutExampleState = {
     width: 30,
     height: 30,
     layoutHandlerMessage: 'No Message',
   };
 
-  onLayoutHandler = event => {
+  onLayoutHandler = (event: LayoutEvent) => {
     this.setState({
       width: this.state.width,
       height: this.state.height,
@@ -480,11 +476,11 @@ class OnLayoutExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text>Adjust the image size to trigger the OnLayout handler.</Text>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={styles.spaceBetweenView}>
           <Text style={styles.touchableText} onPress={this.decreaseImageSize}>
             Decrease image size
           </Text>
@@ -498,7 +494,7 @@ class OnLayoutExample extends React.Component<
         <View style={{height: this.state.height, width: this.state.width}}>
           <Image
             onLayout={this.onLayoutHandler}
-            style={{flex: 1}}
+            style={styles.flex}
             source={[
               {
                 uri: 'https://www.facebook.com/favicon.ico',
@@ -534,7 +530,7 @@ class OnPartialLoadExample extends React.Component<
   OnPartialLoadExampleProps,
   OnPartialLoadExampleState,
 > {
-  state = {
+  state: OnPartialLoadExampleState = {
     hasLoaded: false,
   };
 
@@ -544,7 +540,7 @@ class OnPartialLoadExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text>
@@ -574,6 +570,9 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     margin: 4,
+  },
+  visibleOverflow: {
+    overflow: 'visible',
   },
   leftMargin: {
     marginLeft: 10,
@@ -622,6 +621,144 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'blue',
   },
+  networkImageText: {
+    marginTop: 20,
+  },
+  flex: {
+    flex: 1,
+  },
+  imageWithBorderRadius: {
+    borderRadius: 5,
+  },
+  imageSizeExample: {
+    width: 60,
+    height: 60,
+    backgroundColor: 'transparent',
+    marginRight: 10,
+  },
+  flexRow: {
+    flexDirection: 'row',
+  },
+  spaceBetweenView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  customBorderColor: {
+    borderWidth: 5,
+    borderColor: '#f099f0',
+  },
+  borderTopLeftRadius: {
+    borderTopLeftRadius: 20,
+  },
+  opacity1: {
+    opacity: 1,
+  },
+  opacity2: {
+    opacity: 0.8,
+  },
+  opacity3: {
+    opacity: 0.6,
+  },
+  opacity4: {
+    opacity: 0.4,
+  },
+  opacity5: {
+    opacity: 0.2,
+  },
+  opacity6: {
+    opacity: 0,
+  },
+  transparentImageBackground: {
+    width: 60,
+    height: 60,
+    backgroundColor: 'transparent',
+  },
+  tintColor1: {
+    tintColor: '#ff2d55',
+  },
+  tintColor2: {
+    tintColor: '#5ac8fa',
+  },
+  tintColor3: {
+    tintColor: '#4cd964',
+  },
+  tintColor4: {
+    tintColor: '#8e8e93',
+  },
+  objectFitContain: {
+    objectFit: 'contain',
+  },
+  objectFitCover: {
+    objectFit: 'cover',
+  },
+  objectFitFill: {
+    objectFit: 'fill',
+  },
+  objectFitScaleDown: {
+    objectFit: 'scale-down',
+  },
+  imageInBundle: {
+    borderColor: 'yellow',
+    borderWidth: 4,
+  },
+  imageInAssetCatalog: {
+    marginLeft: 10,
+    borderColor: 'blue',
+    borderWidth: 4,
+  },
+  backgroundColor1: {
+    backgroundColor: 'rgba(0, 0, 100, 0.25)',
+  },
+  backgroundColor2: {
+    backgroundColor: 'red',
+  },
+  backgroundColor3: {
+    backgroundColor: 'red',
+    borderColor: 'green',
+    borderWidth: 3,
+    borderRadius: 25,
+  },
+  borderRadius1: {
+    borderRadius: 19,
+  },
+  borderRadius2: {
+    borderWidth: 4,
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 20,
+    borderColor: 'green',
+  },
+  borderRadius3: {
+    resizeMode: 'cover',
+    width: 90,
+    borderWidth: 4,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 40,
+    borderColor: 'red',
+  },
+  borderRadius4: {
+    resizeMode: 'stretch',
+    width: 90,
+    borderWidth: 4,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 40,
+    borderColor: 'red',
+    backgroundColor: 'yellow',
+  },
+  borderRadius5: {
+    resizeMode: 'contain',
+    width: 90,
+    borderWidth: 4,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 40,
+    borderColor: 'red',
+    backgroundColor: 'yellow',
+  },
 });
 
 exports.displayName = (undefined: ?string);
@@ -633,11 +770,37 @@ exports.description =
 
 exports.examples = [
   {
-    title: 'Plain Network Image',
+    title: 'Plain Network Image with `source` prop.',
     description: ('If the `source` prop `uri` property is prefixed with ' +
       '"http", then it will be downloaded from the network.': string),
     render: function (): React.Node {
       return <Image source={fullImage} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Plain Network Image with `src` prop.',
+    description: ('If the `src` prop is defined with ' +
+      '"http", then it will be downloaded from the network.': string),
+    render: function (): React.Node {
+      return <Image src={fullImage.uri} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Multiple Image Source using the `srcSet` prop.',
+    description:
+      ('A list of comma seperated uris along with scale are provided in `srcSet`.' +
+        'An appropriate value will be used based on the scale of the device.': string),
+    render: function (): React.Node {
+      return (
+        <Image
+          width={64}
+          height={64}
+          srcSet={
+            'https://www.facebook.com/ads/pics/successstories.png 4x, https://www.facebook.com/favicon.ico 2x'
+          }
+          style={styles.base}
+        />
+      );
     },
   },
   {
@@ -775,11 +938,7 @@ exports.examples = [
         <View style={styles.horizontal}>
           <Image
             source={smallImage}
-            style={[
-              styles.base,
-              styles.background,
-              {borderWidth: 5, borderColor: '#f099f0'},
-            ]}
+            style={[styles.base, styles.background, styles.customBorderColor]}
           />
         </View>
       );
@@ -790,72 +949,32 @@ exports.examples = [
     render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
-          <Image style={[styles.base, {borderRadius: 5}]} source={fullImage} />
-          <Image style={[styles.base, {borderRadius: 19}]} source={fullImage} />
           <Image
-            style={[styles.base, {borderTopLeftRadius: 20}]}
+            style={[styles.base, styles.imageWithBorderRadius]}
             source={fullImage}
           />
           <Image
-            style={[
-              styles.base,
-              {
-                borderWidth: 4,
-                borderTopLeftRadius: 10,
-                borderBottomRightRadius: 20,
-                borderColor: 'green',
-              },
-            ]}
+            style={[styles.base, styles.borderRadius1]}
             source={fullImage}
           />
           <Image
-            style={[
-              styles.base,
-              {
-                resizeMode: 'cover',
-                width: 90,
-                borderWidth: 4,
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 20,
-                borderBottomRightRadius: 30,
-                borderBottomLeftRadius: 40,
-                borderColor: 'red',
-              },
-            ]}
+            style={[styles.base, styles.borderTopLeftRadius]}
             source={fullImage}
           />
           <Image
-            style={[
-              styles.base,
-              {
-                resizeMode: 'stretch',
-                width: 90,
-                borderWidth: 4,
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 20,
-                borderBottomRightRadius: 30,
-                borderBottomLeftRadius: 40,
-                borderColor: 'red',
-                backgroundColor: 'yellow',
-              },
-            ]}
+            style={[styles.base, styles.borderRadius2]}
             source={fullImage}
           />
           <Image
-            style={[
-              styles.base,
-              {
-                resizeMode: 'contain',
-                width: 90,
-                borderWidth: 4,
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 20,
-                borderBottomRightRadius: 30,
-                borderBottomLeftRadius: 40,
-                borderColor: 'red',
-                backgroundColor: 'yellow',
-              },
-            ]}
+            style={[styles.base, styles.borderRadius3]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.borderRadius4]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.borderRadius5]}
             source={fullImage}
           />
         </View>
@@ -869,23 +988,15 @@ exports.examples = [
         <View style={styles.horizontal}>
           <Image source={smallImage} style={styles.base} />
           <Image
-            style={[styles.base, {backgroundColor: 'rgba(0, 0, 100, 0.25)'}]}
+            style={[styles.base, styles.backgroundColor1]}
             source={smallImage}
           />
           <Image
-            style={[styles.base, {backgroundColor: 'red'}]}
+            style={[styles.base, styles.backgroundColor2]}
             source={smallImage}
           />
           <Image
-            style={[
-              styles.base,
-              {
-                backgroundColor: 'red',
-                borderColor: 'green',
-                borderWidth: 3,
-                borderRadius: 25,
-              },
-            ]}
+            style={[styles.base, styles.backgroundColor3]}
             source={smallImage}
           />
         </View>
@@ -897,12 +1008,12 @@ exports.examples = [
     render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
-          <Image style={[styles.base, {opacity: 1}]} source={fullImage} />
-          <Image style={[styles.base, {opacity: 0.8}]} source={fullImage} />
-          <Image style={[styles.base, {opacity: 0.6}]} source={fullImage} />
-          <Image style={[styles.base, {opacity: 0.4}]} source={fullImage} />
-          <Image style={[styles.base, {opacity: 0.2}]} source={fullImage} />
-          <Image style={[styles.base, {opacity: 0}]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity1]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity2]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity3]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity4]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity5]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity6]} source={fullImage} />
         </View>
       );
     },
@@ -911,7 +1022,7 @@ exports.examples = [
     title: 'Nesting content inside <Image> component',
     render: function (): React.Node {
       return (
-        <View style={{width: 60, height: 60}}>
+        <View style={styles.base}>
           <Image
             style={{...StyleSheet.absoluteFillObject}}
             source={fullImage}
@@ -926,7 +1037,7 @@ exports.examples = [
     render: function (): React.Node {
       return (
         <ImageBackground
-          style={{width: 60, height: 60, backgroundColor: 'transparent'}}
+          style={styles.transparentImageBackground}
           source={fullImage}>
           <Text style={styles.nestedText}>React</Text>
         </ImageBackground>
@@ -935,7 +1046,7 @@ exports.examples = [
   },
   {
     title: 'Tint Color',
-    description: ('The `tintColor` style prop changes all the non-alpha ' +
+    description: ('The `tintColor` prop changes all the non-alpha ' +
       'pixels to the tint color.': string),
     render: function (): React.Node {
       return (
@@ -943,19 +1054,105 @@ exports.examples = [
           <View style={styles.horizontal}>
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
-              style={[styles.icon, {borderRadius: 5, tintColor: '#5ac8fa'}]}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
+              ]}
+              tintColor={'#5ac8fa'}
             />
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
-              style={[styles.icon, {borderRadius: 5, tintColor: '#4cd964'}]}
+              style={[styles.icon, styles.imageWithBorderRadius]}
+              tintColor={'#4cd964'}
             />
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
-              style={[styles.icon, {borderRadius: 5, tintColor: '#ff2d55'}]}
+              style={[styles.icon, styles.imageWithBorderRadius]}
+              tintColor={'#ff2d55'}
             />
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
-              style={[styles.icon, {borderRadius: 5, tintColor: '#8e8e93'}]}
+              style={[styles.icon, styles.imageWithBorderRadius]}
+              tintColor={'#8e8e93'}
+            />
+          </View>
+          <Text style={styles.sectionText}>
+            It also works using the `tintColor` style prop
+          </Text>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor2,
+              ]}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor3,
+              ]}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
+              ]}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor4,
+              ]}
+            />
+          </View>
+          <Text style={styles.sectionText}>
+            The `tintColor` prop has precedence over the `tintColor` style prop
+          </Text>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor2,
+              ]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor3,
+              ]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
+              ]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor4,
+              ]}
+              tintColor={'#5ac8fa'}
             />
           </View>
           <Text style={styles.sectionText}>
@@ -964,21 +1161,86 @@ exports.examples = [
           <View style={styles.horizontal}>
             <Image
               source={smallImage}
-              style={[styles.base, {borderRadius: 5, tintColor: '#5ac8fa'}]}
+              style={[
+                styles.base,
+                styles.imageWithBorderRadius,
+                styles.tintColor2,
+              ]}
             />
             <Image
               source={smallImage}
-              style={[styles.base, {borderRadius: 5, tintColor: '#4cd964'}]}
+              style={[
+                styles.base,
+                styles.imageWithBorderRadius,
+                styles.tintColor3,
+              ]}
             />
             <Image
               source={smallImage}
-              style={[styles.base, {borderRadius: 5, tintColor: '#ff2d55'}]}
+              style={[
+                styles.base,
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
+              ]}
             />
             <Image
               source={smallImage}
-              style={[styles.base, {borderRadius: 5, tintColor: '#8e8e93'}]}
+              style={[
+                styles.base,
+                styles.imageWithBorderRadius,
+                styles.tintColor4,
+              ]}
             />
           </View>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Object Fit',
+    description: ('The `objectFit` style prop controls how the image is ' +
+      'rendered within the frame.': string),
+    render: function (): React.Node {
+      return (
+        <View>
+          {[smallImage, fullImage].map((image, index) => {
+            return (
+              <View key={index}>
+                <View style={styles.horizontal}>
+                  <View>
+                    <Text style={styles.resizeModeText}>Contain</Text>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitContain]}
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <Text style={styles.resizeModeText}>Cover</Text>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitCover]}
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <Text style={styles.resizeModeText}>Fill</Text>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitFill]}
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <Text style={styles.resizeModeText}>Scale Down</Text>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitScaleDown]}
+                      source={image}
+                    />
+                  </View>
+                </View>
+              </View>
+            );
+          })}
         </View>
       );
     },
@@ -1105,7 +1367,7 @@ exports.examples = [
     description: 'Images shipped in a separate native bundle',
     render: function (): React.Node {
       return (
-        <View style={{flexDirection: 'row'}}>
+        <View style={styles.flexRow}>
           <Image
             source={{
               uri: 'ImageInBundle',
@@ -1113,7 +1375,7 @@ exports.examples = [
               width: 100,
               height: 100,
             }}
-            style={{borderColor: 'yellow', borderWidth: 4}}
+            style={styles.imageInBundle}
           />
           <Image
             source={{
@@ -1122,7 +1384,7 @@ exports.examples = [
               width: 100,
               height: 100,
             }}
-            style={{marginLeft: 10, borderColor: 'blue', borderWidth: 4}}
+            style={styles.imageInAssetCatalog}
           />
         </View>
       );
@@ -1161,6 +1423,20 @@ exports.examples = [
         <Image
           accessible
           accessibilityLabel="Picture of people standing around a table"
+          source={fullImage}
+          style={styles.base}
+        />
+      );
+    },
+  },
+  {
+    title: 'Accessibility Label via alt prop',
+    description:
+      'Using the alt prop markes an element as being accessibile, and passes the alt text to accessibilityLabel',
+    render: function (): React.Node {
+      return (
+        <Image
+          alt="Picture of people standing around a table"
           source={fullImage}
           style={styles.base}
         />

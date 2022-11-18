@@ -16,8 +16,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.06.28.00-v2'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
+folly_version = '2021.07.22.00'
 folly_dep_name = 'RCT-Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 react_native_path = ".."
@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.summary                = "Fabric for React Native."
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
-  s.author                 = "Facebook, Inc. and its affiliates"
+  s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => "12.4" }
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
@@ -78,6 +78,7 @@ Pod::Spec.new do |s|
 
   s.subspec "core" do |ss|
     ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-jsidynamic", version
     ss.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
     ss.source_files         = "react/renderer/core/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/core/tests"
@@ -252,6 +253,15 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
+  s.subspec "mapbuffer" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/mapbuffer/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/mapbuffer/tests"
+    ss.header_dir           = "react/renderer/mapbuffer"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+  end
+
   s.subspec "mounting" do |ss|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
@@ -293,6 +303,7 @@ Pod::Spec.new do |s|
 
   s.subspec "uimanager" do |ss|
     ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-jsidynamic", version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/uimanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/uimanager/tests"
@@ -315,7 +326,8 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/leakchecker/**/*.{cpp,h}"
     ss.exclude_files        = "react/renderer/leakchecker/tests"
     ss.header_dir           = "react/renderer/leakchecker"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"",
+                                "GCC_WARN_PEDANTIC" => "YES" }
   end
 
   s.subspec "runtimescheduler" do |ss|
@@ -324,13 +336,14 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/runtimescheduler/**/*.{cpp,h}"
     ss.exclude_files        = "react/renderer/runtimescheduler/tests"
     ss.header_dir           = "react/renderer/runtimescheduler"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+    ss.pod_target_xcconfig  = {"HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"",
+                               "GCC_WARN_PEDANTIC" => "YES" }
   end
 
   s.subspec "utils" do |ss|
     ss.source_files         = "react/utils/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/utils"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\""}
   end
 
 end

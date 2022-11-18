@@ -55,6 +55,83 @@ inline static UIFontWeight RCTUIFontWeightFromInteger(NSInteger fontWeight)
   return weights[(fontWeight + 50) / 100 - 1];
 }
 
+inline static UIFontTextStyle RCTUIFontTextStyleForDynamicTypeRamp(const DynamicTypeRamp &dynamicTypeRamp)
+{
+  switch (dynamicTypeRamp) {
+    case DynamicTypeRamp::Caption2:
+      return UIFontTextStyleCaption2;
+    case DynamicTypeRamp::Caption1:
+      return UIFontTextStyleCaption1;
+    case DynamicTypeRamp::Footnote:
+      return UIFontTextStyleFootnote;
+    case DynamicTypeRamp::Subheadline:
+      return UIFontTextStyleSubheadline;
+    case DynamicTypeRamp::Callout:
+      return UIFontTextStyleCallout;
+    case DynamicTypeRamp::Body:
+      return UIFontTextStyleBody;
+    case DynamicTypeRamp::Headline:
+      return UIFontTextStyleHeadline;
+    case DynamicTypeRamp::Title3:
+      return UIFontTextStyleTitle3;
+    case DynamicTypeRamp::Title2:
+      return UIFontTextStyleTitle2;
+    case DynamicTypeRamp::Title1:
+      return UIFontTextStyleTitle1;
+    case DynamicTypeRamp::LargeTitle:
+      return UIFontTextStyleLargeTitle;
+  }
+}
+
+inline static CGFloat RCTBaseSizeForDynamicTypeRamp(const DynamicTypeRamp &dynamicTypeRamp)
+{
+  // Values taken from
+  // https://developer.apple.com/design/human-interface-guidelines/foundations/typography/#specifications
+  switch (dynamicTypeRamp) {
+    case DynamicTypeRamp::Caption2:
+      return 11.0;
+    case DynamicTypeRamp::Caption1:
+      return 12.0;
+    case facebook::react::DynamicTypeRamp::Footnote:
+      return 13.0;
+    case facebook::react::DynamicTypeRamp::Subheadline:
+      return 15.0;
+    case facebook::react::DynamicTypeRamp::Callout:
+      return 16.0;
+    case facebook::react::DynamicTypeRamp::Body:
+      return 17.0;
+    case facebook::react::DynamicTypeRamp::Headline:
+      return 17.0;
+    case facebook::react::DynamicTypeRamp::Title3:
+      return 20.0;
+    case facebook::react::DynamicTypeRamp::Title2:
+      return 22.0;
+    case facebook::react::DynamicTypeRamp::Title1:
+      return 28.0;
+    case facebook::react::DynamicTypeRamp::LargeTitle:
+      return 34.0;
+  }
+}
+
+inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const TextAttributes &textAttributes)
+{
+  if (textAttributes.allowFontScaling.value_or(true)) {
+    if (textAttributes.dynamicTypeRamp.has_value()) {
+      DynamicTypeRamp dynamicTypeRamp = textAttributes.dynamicTypeRamp.value();
+      UIFontMetrics *fontMetrics =
+          [UIFontMetrics metricsForTextStyle:RCTUIFontTextStyleForDynamicTypeRamp(dynamicTypeRamp)];
+      // Using a specific font size reduces rounding errors from -scaledValueForValue:
+      CGFloat requestedSize =
+          isnan(textAttributes.fontSize) ? RCTBaseSizeForDynamicTypeRamp(dynamicTypeRamp) : textAttributes.fontSize;
+      return [fontMetrics scaledValueForValue:requestedSize] / requestedSize;
+    } else {
+      return textAttributes.fontSizeMultiplier;
+    }
+  } else {
+    return 1.0;
+  }
+}
+
 inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &textAttributes)
 {
   NSString *fontFamily = [NSString stringWithCString:textAttributes.fontFamily.c_str() encoding:NSUTF8StringEncoding];
@@ -71,16 +148,9 @@ inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &t
   fontProperties.weight = textAttributes.fontWeight.has_value()
       ? RCTUIFontWeightFromInteger((NSInteger)textAttributes.fontWeight.value())
       : NAN;
-  fontProperties.sizeMultiplier = textAttributes.fontSizeMultiplier;
+  fontProperties.sizeMultiplier = RCTEffectiveFontSizeMultiplierFromTextAttributes(textAttributes);
 
   return RCTFontWithFontProperties(fontProperties);
-}
-
-inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const TextAttributes &textAttributes)
-{
-  return textAttributes.allowFontScaling.value_or(true) && !isnan(textAttributes.fontSizeMultiplier)
-      ? textAttributes.fontSizeMultiplier
-      : 1.0;
 }
 
 inline static UIColor *RCTEffectiveForegroundColorFromTextAttributes(const TextAttributes &textAttributes)
@@ -153,6 +223,12 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   if (textAttributes.baseWritingDirection.has_value()) {
     paragraphStyle.baseWritingDirection =
         RCTNSWritingDirectionFromWritingDirection(textAttributes.baseWritingDirection.value());
+    isParagraphStyleUsed = YES;
+  }
+
+  if (textAttributes.lineBreakStrategy.has_value()) {
+    paragraphStyle.lineBreakStrategy =
+        RCTNSLineBreakStrategyFromLineBreakStrategy(textAttributes.lineBreakStrategy.value());
     isParagraphStyleUsed = YES;
   }
 
@@ -305,6 +381,50 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   return [attributes copy];
 }
 
+static void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
+{
+  __block CGFloat maximumLineHeight = 0;
+
+  [attributedText enumerateAttribute:NSParagraphStyleAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:^(NSParagraphStyle *paragraphStyle, __unused NSRange range, __unused BOOL *stop) {
+                            if (!paragraphStyle) {
+                              return;
+                            }
+
+                            maximumLineHeight = MAX(paragraphStyle.maximumLineHeight, maximumLineHeight);
+                          }];
+
+  if (maximumLineHeight == 0) {
+    // `lineHeight` was not specified, nothing to do.
+    return;
+  }
+
+  __block CGFloat maximumFontLineHeight = 0;
+
+  [attributedText enumerateAttribute:NSFontAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
+                            if (!font) {
+                              return;
+                            }
+
+                            maximumFontLineHeight = MAX(font.lineHeight, maximumFontLineHeight);
+                          }];
+
+  if (maximumLineHeight < maximumFontLineHeight) {
+    return;
+  }
+
+  CGFloat baseLineOffset = (maximumLineHeight - maximumFontLineHeight) / 2.0;
+
+  [attributedText addAttribute:NSBaselineOffsetAttributeName
+                         value:@(baseLineOffset)
+                         range:NSMakeRange(0, attributedText.length)];
+}
+
 NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedString &attributedString)
 {
   static UIImage *placeholderImage;
@@ -357,7 +477,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
 
     [nsAttributedString appendAttributedString:nsAttributedStringFragment];
   }
-
+  RCTApplyBaselineOffset(nsAttributedString);
   [nsAttributedString endEditing];
 
   return nsAttributedString;

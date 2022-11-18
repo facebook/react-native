@@ -34,6 +34,84 @@
 namespace facebook {
 namespace react {
 
+inline std::string toString(const DynamicTypeRamp &dynamicTypeRamp) {
+  switch (dynamicTypeRamp) {
+    case DynamicTypeRamp::Caption2:
+      return "caption2";
+    case DynamicTypeRamp::Caption1:
+      return "caption1";
+    case DynamicTypeRamp::Footnote:
+      return "footnote";
+    case DynamicTypeRamp::Subheadline:
+      return "subheadline";
+    case DynamicTypeRamp::Callout:
+      return "callout";
+    case DynamicTypeRamp::Body:
+      return "body";
+    case DynamicTypeRamp::Headline:
+      return "headline";
+    case DynamicTypeRamp::Title3:
+      return "title3";
+    case DynamicTypeRamp::Title2:
+      return "title2";
+    case DynamicTypeRamp::Title1:
+      return "title1";
+    case DynamicTypeRamp::LargeTitle:
+      return "largeTitle";
+  }
+
+  LOG(ERROR) << "Unsupported DynamicTypeRamp value";
+  react_native_assert(false);
+
+  // Sane default in case of parsing errors
+  return "body";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    DynamicTypeRamp &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "caption2") {
+      result = DynamicTypeRamp::Caption2;
+    } else if (string == "caption1") {
+      result = DynamicTypeRamp::Caption1;
+    } else if (string == "footnote") {
+      result = DynamicTypeRamp::Footnote;
+    } else if (string == "subheadline") {
+      result = DynamicTypeRamp::Subheadline;
+    } else if (string == "callout") {
+      result = DynamicTypeRamp::Callout;
+    } else if (string == "body") {
+      result = DynamicTypeRamp::Body;
+    } else if (string == "headline") {
+      result = DynamicTypeRamp::Headline;
+    } else if (string == "title3") {
+      result = DynamicTypeRamp::Title3;
+    } else if (string == "title2") {
+      result = DynamicTypeRamp::Title2;
+    } else if (string == "title1") {
+      result = DynamicTypeRamp::Title1;
+    } else if (string == "largeTitle") {
+      result = DynamicTypeRamp::LargeTitle;
+    } else {
+      // sane default
+      LOG(ERROR) << "Unsupported DynamicTypeRamp value: " << string;
+      react_native_assert(false);
+      result = DynamicTypeRamp::Body;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported DynamicTypeRamp type";
+  react_native_assert(false);
+
+  // Sane default in case of parsing errors
+  result = DynamicTypeRamp::Body;
+}
+
 inline std::string toString(const EllipsizeMode &ellipsisMode) {
   switch (ellipsisMode) {
     case EllipsizeMode::Clip:
@@ -418,6 +496,52 @@ inline std::string toString(const WritingDirection &writingDirection) {
   LOG(ERROR) << "Unsupported WritingDirection value";
   // sane default for prod
   return "auto";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    LineBreakStrategy &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = LineBreakStrategy::None;
+    } else if (string == "push-out") {
+      result = LineBreakStrategy::PushOut;
+    } else if (string == "hangul-word") {
+      result = LineBreakStrategy::HangulWordPriority;
+    } else if (string == "standard") {
+      result = LineBreakStrategy::Standard;
+    } else {
+      LOG(ERROR) << "Unsupported LineBreakStrategy value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = LineBreakStrategy::None;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported LineBreakStrategy type";
+  // sane default for prod
+  result = LineBreakStrategy::None;
+}
+
+inline std::string toString(const LineBreakStrategy &lineBreakStrategy) {
+  switch (lineBreakStrategy) {
+    case LineBreakStrategy::None:
+      return "none";
+    case LineBreakStrategy::PushOut:
+      return "push-out";
+    case LineBreakStrategy::HangulWordPriority:
+      return "hangul-word";
+    case LineBreakStrategy::Standard:
+      return "standard";
+  }
+
+  LOG(ERROR) << "Unsupported LineBreakStrategy value";
+  // sane default for prod
+  return "none";
 }
 
 inline void fromRawValue(
@@ -873,6 +997,10 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "baseWritingDirection", toString(*textAttributes.baseWritingDirection));
   }
+  if (textAttributes.lineBreakStrategy.has_value()) {
+    _textAttributes(
+        "lineBreakStrategyIOS", toString(*textAttributes.lineBreakStrategy));
+  }
   // Decoration
   if (textAttributes.textDecorationColor) {
     _textAttributes(
@@ -982,6 +1110,7 @@ constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_COLOR = 19;
 constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 20;
 constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
 constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 22;
+constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 23;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1083,6 +1212,11 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
     builder.putString(
         TA_KEY_BEST_WRITING_DIRECTION,
         toString(*textAttributes.baseWritingDirection));
+  }
+  if (textAttributes.lineBreakStrategy.has_value()) {
+    builder.putString(
+        TA_KEY_LINE_BREAK_STRATEGY,
+        toString(*textAttributes.lineBreakStrategy));
   }
   // Decoration
   if (textAttributes.textDecorationColor) {

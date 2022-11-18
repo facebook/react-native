@@ -8,6 +8,7 @@
 #import "RCTViewManager.h"
 
 #import "RCTAssert.h"
+#import "RCTBorderCurve.h"
 #import "RCTBorderStyle.h"
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
@@ -27,6 +28,7 @@ RCT_MULTI_ENUM_CONVERTER(
     (@{
       @"none" : @(UIAccessibilityTraitNone),
       @"button" : @(UIAccessibilityTraitButton),
+      @"dropdownlist" : @(UIAccessibilityTraitNone),
       @"togglebutton" : @(UIAccessibilityTraitButton),
       @"link" : @(UIAccessibilityTraitLink),
       @"header" : @(UIAccessibilityTraitHeader),
@@ -62,7 +64,17 @@ RCT_MULTI_ENUM_CONVERTER(
       @"tablist" : @(UIAccessibilityTraitNone),
       @"timer" : @(UIAccessibilityTraitNone),
       @"toolbar" : @(UIAccessibilityTraitNone),
+      @"grid" : @(UIAccessibilityTraitNone),
+      @"pager" : @(UIAccessibilityTraitNone),
+      @"scrollview" : @(UIAccessibilityTraitNone),
+      @"horizontalscrollview" : @(UIAccessibilityTraitNone),
+      @"viewgroup" : @(UIAccessibilityTraitNone),
+      @"webview" : @(UIAccessibilityTraitNone),
+      @"drawerlayout" : @(UIAccessibilityTraitNone),
+      @"slidingdrawer" : @(UIAccessibilityTraitNone),
+      @"iconmenu" : @(UIAccessibilityTraitNone),
       @"list" : @(UIAccessibilityTraitNone),
+      @"grid" : @(UIAccessibilityTraitNone),
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
@@ -264,6 +276,19 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
     view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(borderCurve, RCTBorderCurve, RCTView)
+{
+  if (@available(iOS 13.0, *)) {
+    switch ([RCTConvert RCTBorderCurve:json]) {
+      case RCTBorderCurveContinuous:
+        view.layer.cornerCurve = kCACornerCurveContinuous;
+        break;
+      case RCTBorderCurveCircular:
+        view.layer.cornerCurve = kCACornerCurveCircular;
+        break;
+    }
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderRadius:)]) {
@@ -412,6 +437,9 @@ RCT_EXPORT_SHADOW_PROPERTY(alignSelf, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(alignContent, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(position, YGPositionType)
 RCT_EXPORT_SHADOW_PROPERTY(aspectRatio, float)
+RCT_EXPORT_SHADOW_PROPERTY(rowGap, float)
+RCT_EXPORT_SHADOW_PROPERTY(columnGap, float)
+RCT_EXPORT_SHADOW_PROPERTY(gap, float)
 
 RCT_EXPORT_SHADOW_PROPERTY(overflow, YGOverflow)
 RCT_EXPORT_SHADOW_PROPERTY(display, YGDisplay)
@@ -448,10 +476,10 @@ RCT_CUSTOM_VIEW_PROPERTY(onTouchCancel, BOOL, RCTView) {}
 // Experimental/WIP Pointer Events (not yet ready for use)
 RCT_EXPORT_VIEW_PROPERTY(onPointerCancel, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerDown, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onPointerMove2, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerMove, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerUp, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onPointerEnter2, RCTCapturingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onPointerLeave2, RCTCapturingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerEnter, RCTCapturingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerLeave, RCTCapturingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerOver, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerOut, RCTBubblingEventBlock)
 

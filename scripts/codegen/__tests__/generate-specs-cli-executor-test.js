@@ -4,31 +4,29 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
  * @format
+ * @oncall react_native
  */
 
 'use strict';
 
 const sut = require('../generate-specs-cli-executor');
 const fixtures = require('../__test_fixtures__/fixtures');
-const path = require('path');
+const {normalize} = require('path');
 
 describe('generateSpec', () => {
   it('invokes RNCodegen with the right params', () => {
     const platform = 'ios';
     const libraryType = 'all';
     const schemaPath = './';
-    const componentsOutputDir = path.normalize(
+    const componentsOutputDir = normalize(
       'app/ios/build/generated/ios/react/renderer/components/library',
     );
-    const modulesOutputDir = path.normalize(
-      'app/ios/build/generated/ios/library',
-    );
-    const outputDirectory = path.normalize('app/ios/build/generated/ios');
+    const modulesOutputDir = normalize('app/ios/build/generated/ios/library');
+    const outputDirectory = normalize('app/ios/build/generated/ios');
     const libraryName = 'library';
     const packageName = 'com.library';
-    const generators = ['componentsIOS', 'modulesIOS'];
+    const generators = ['componentsIOS', 'modulesIOS', 'modulesCxx'];
 
     jest.mock('fs', () => ({
       readFileSync: (path, encoding) => {

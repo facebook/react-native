@@ -8,20 +8,26 @@
  * @flow
  */
 
-const AppContainer = require('./AppContainer');
-import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
-import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
-import type {DisplayModeType} from './DisplayMode';
-import getCachedComponentWithDebugName from './getCachedComponentWithDebugName';
-const React = require('react');
 
-const invariant = require('invariant');
+import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
+import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
+import AppContainer from './AppContainer';
+import DisplayMode, {type DisplayModeType} from './DisplayMode';
+import getCachedComponentWithDebugName from './getCachedComponentWithDebugName';
+import * as Renderer from './RendererProxy';
+import invariant from 'invariant';
+import * as React from 'react';
 
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
-require('../Utilities/BackHandler');
+import '../Utilities/BackHandler';
 
-function renderApplication<Props: Object>(
+type OffscreenType = React.AbstractComponent<{
+  mode: 'visible' | 'hidden',
+  children: React.Node,
+}>;
+
+export default function renderApplication<Props: Object>(
   RootComponent: React.ComponentType<Props>,
   initialProps: Props,
   rootTag: any,
@@ -33,6 +39,7 @@ function renderApplication<Props: Object>(
   debugName?: string,
   displayMode?: ?DisplayModeType,
   useConcurrentRoot?: boolean,
+  useOffscreen?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
@@ -63,23 +70,34 @@ function renderApplication<Props: Object>(
     );
   }
 
+  if (useOffscreen && displayMode != null) {
+    // $FlowFixMe[incompatible-type]
+    // $FlowFixMe[prop-missing]
+    const Offscreen: OffscreenType = React.unstable_Offscreen;
+
+    renderable = (
+      <Offscreen
+        mode={displayMode === DisplayMode.VISIBLE ? 'visible' : 'hidden'}>
+        {renderable}
+      </Offscreen>
+    );
+  }
+
   performanceLogger.startTimespan('renderApplication_React_render');
   performanceLogger.setExtra(
     'usedReactConcurrentRoot',
     useConcurrentRoot ? '1' : '0',
   );
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
-  if (fabric) {
-    require('../Renderer/shims/ReactFabric').render(
-      renderable,
-      rootTag,
-      null,
-      useConcurrentRoot,
-    );
-  } else {
-    require('../Renderer/shims/ReactNative').render(renderable, rootTag);
-  }
+  performanceLogger.setExtra(
+    'usedReactProfiler',
+    Renderer.isProfilingRenderer(),
+  );
+  Renderer.renderElement({
+    element: renderable,
+    rootTag,
+    useFabric: Boolean(fabric),
+    useConcurrentRoot: Boolean(useConcurrentRoot),
+  });
   performanceLogger.stopTimespan('renderApplication_React_render');
 }
-
-module.exports = renderApplication;

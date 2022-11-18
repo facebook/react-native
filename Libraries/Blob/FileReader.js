@@ -8,10 +8,11 @@
  * @format
  */
 
-const Blob = require('./Blob');
-const EventTarget = require('event-target-shim');
+import type Blob from './Blob';
 
 import NativeFileReaderModule from './NativeFileReaderModule';
+
+const EventTarget = require('event-target-shim');
 
 type ReadyState =
   | 0 // EMPTY
@@ -73,11 +74,11 @@ class FileReader extends (EventTarget(...READER_EVENTS): any) {
     }
   }
 
-  readAsArrayBuffer() {
+  readAsArrayBuffer(): any {
     throw new Error('FileReader.readAsArrayBuffer is not implemented');
   }
 
-  readAsDataURL(blob: ?Blob) {
+  readAsDataURL(blob: ?Blob): void {
     this._aborted = false;
 
     if (blob == null) {
@@ -104,7 +105,7 @@ class FileReader extends (EventTarget(...READER_EVENTS): any) {
     );
   }
 
-  readAsText(blob: ?Blob, encoding: string = 'UTF-8') {
+  readAsText(blob: ?Blob, encoding: string = 'UTF-8'): void {
     this._aborted = false;
 
     if (blob == null) {

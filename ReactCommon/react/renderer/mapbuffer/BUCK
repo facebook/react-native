@@ -1,6 +1,8 @@
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
+    "APPLE",
+    "CXX",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
@@ -29,15 +31,15 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/mapbuffer",
     ),
+    compiler_flags_pedantic = True,
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     macosx_tests_override = [],
-    platforms = ANDROID,
+    platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
@@ -47,8 +49,6 @@ rn_xplat_cxx_library(
     deps = [
         "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
         react_native_xplat_target("react/debug:debug"),
     ],
 )
@@ -64,9 +64,8 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = ANDROID,
+    platforms = (ANDROID, APPLE, CXX),
     deps = [
-        "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
         react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),

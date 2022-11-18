@@ -10,8 +10,9 @@
 
 'use strict';
 
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
-import {unstable_hasComponent} from 'react-native/Libraries/NativeComponent/NativeComponentRegistryUnstable';
+import type {RootTag} from '../Types/RootTagTypes';
+
+import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
 
 const errorMessageForMethod = (methodName: string): string =>
   "[ReactNative Architecture][JS] '" +
@@ -146,7 +147,7 @@ module.exports = {
       errorMessageForMethod('setLayoutAnimationEnabledExperimental'),
     );
   },
-  // Please use AccessibilityInfo.sendAccessibilityEvent_unstable instead.
+  // Please use AccessibilityInfo.sendAccessibilityEvent instead.
   // See SetAccessibilityFocusExample in AccessibilityExample.js for a migration example.
   sendAccessibilityEvent: (reactTag: ?number, eventType: number): void =>
     console.error(errorMessageForMethod('sendAccessibilityEvent')),

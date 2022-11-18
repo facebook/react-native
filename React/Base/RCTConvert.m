@@ -91,7 +91,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     }
 
     // Check if it has a scheme
-    if ([path rangeOfString:@":"].location != NSNotFound) {
+    if ([path rangeOfString:@"://"].location != NSNotFound) {
       NSMutableCharacterSet *urlAllowedCharacterSet = [NSMutableCharacterSet new];
       [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLUserAllowedCharacterSet]];
       [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLPasswordAllowedCharacterSet]];
@@ -346,6 +346,15 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 RCT_ENUM_CONVERTER(
+    RCTBorderCurve,
+    (@{
+      @"circular" : @(RCTBorderCurveCircular),
+      @"continuous" : @(RCTBorderCurveContinuous),
+    }),
+    RCTBorderCurveCircular,
+    integerValue)
+
+RCT_ENUM_CONVERTER(
     RCTTextDecorationLineType,
     (@{
       @"none" : @(RCTTextDecorationLineTypeNone),
@@ -365,6 +374,25 @@ RCT_ENUM_CONVERTER(
     }),
     NSWritingDirectionNatural,
     integerValue)
+
++ (NSLineBreakStrategy)NSLineBreakStrategy:(id)json RCT_DYNAMIC
+{
+  if (@available(iOS 14.0, *)) {
+    static NSDictionary *mapping;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      mapping = @{
+        @"none" : @(NSLineBreakStrategyNone),
+        @"standard" : @(NSLineBreakStrategyStandard),
+        @"hangul-word" : @(NSLineBreakStrategyHangulWordPriority),
+        @"push-out" : @(NSLineBreakStrategyPushOut)
+      };
+    });
+    return RCTConvertEnumValue("NSLineBreakStrategy", mapping, @(NSLineBreakStrategyNone), json).integerValue;
+  } else {
+    return NSLineBreakStrategyNone;
+  }
+}
 
 RCT_ENUM_CONVERTER(
     UITextAutocapitalizationType,

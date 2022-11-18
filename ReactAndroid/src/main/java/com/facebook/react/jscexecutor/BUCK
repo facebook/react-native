@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_dep", "react_native_target", "react_native_xplat_target", "rn_android_library", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "jscexecutor",
@@ -6,36 +6,14 @@ rn_android_library(
     autoglob = False,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        ":jni",
+        react_native_target("jni/react/jscexecutor:jni"),
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
-    ],
-)
-
-rn_xplat_cxx_library(
-    name = "jni",
-    srcs = glob(["*.cpp"]),
-    headers = glob(["*.h"]),
-    header_namespace = "",
-    compiler_flags_enable_exceptions = True,  # TODO: is this necessary?
-    compiler_flags_enable_rtti = True,  # TODO: is this necessary?
-    fbandroid_allow_jni_merging = True,
-    platforms = ANDROID,
-    soname = "libjscexecutor.$(ext)",
-    visibility = [
-        react_native_target("java/com/facebook/react/jscexecutor:jscexecutor"),
-    ],
-    deps = [
-        "//xplat/folly:molly",
-        FBJNI_TARGET,
-        react_native_target("jni/react/jni:jni"),
-        react_native_xplat_target("jsi:JSCRuntime"),
-        react_native_xplat_target("jsiexecutor:jsiexecutor"),
     ],
 )

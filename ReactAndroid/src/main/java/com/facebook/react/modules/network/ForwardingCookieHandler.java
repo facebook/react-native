@@ -138,25 +138,18 @@ public class ForwardingCookieHandler extends CookieHandler {
         // https://bugs.chromium.org/p/chromium/issues/detail?id=559720
         return null;
       } catch (Exception exception) {
-        String message = exception.getMessage();
-        // We cannot catch MissingWebViewPackageException as it is in a private / system API
-        // class. This validates the exception's message to ensure we are only handling this
-        // specific exception.
-        // The exception class doesn't always contain the correct name as it depends on the OEM
-        // and OS version. It is better to check the message for clues regarding the exception
-        // as that is somewhat consistent across OEMs.
-        // For instance, the Exception thrown on OxygenOS 11 is a RuntimeException but the message
-        // contains the required strings.
-        // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/webkit/WebViewFactory.java#348
-        if (exception.getClass().getCanonicalName().contains("MissingWebViewPackageException")
-            || (message != null
-                && (message.contains("WebView provider")
-                    || message.contains("No WebView installed")
-                    || message.contains("Cannot load WebView")))) {
-          return null;
-        } else {
-          throw exception;
-        }
+        // Ideally we would like to catch a `MissingWebViewPackageException` here.
+        // That API is private so we can't access it.
+        // Historically we used string matching on the error message to understand
+        // if the exception was a Missing Webview One.
+        // OEMs have been customizing that message making really hard to catch it.
+        // Therefore we result to returning null as a default instead of rethrowing
+        // the exception as it will result in a app crash at runtime.
+        // a) We will return null for all the other unhandled conditions when a webview provider is
+        // not found.
+        // b) We already have null checks in place for `getCookieManager()` calls.
+        // c) We have annotated the method as @Nullable to notify future devs about our return type.
+        return null;
       }
     }
 

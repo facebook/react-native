@@ -9,11 +9,11 @@
  */
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import InteractionManager from '../Interaction/InteractionManager';
 import Platform from '../Utilities/Platform';
-import NativeLinkingManager from './NativeLinkingManager';
 import NativeIntentAndroid from './NativeIntentAndroid';
+import NativeLinkingManager from './NativeLinkingManager';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 
@@ -95,9 +95,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
    */
   getInitialURL(): Promise<?string> {
     return Platform.OS === 'android'
-      ? InteractionManager.runAfterInteractions().then(() =>
-          nullthrows(NativeIntentAndroid).getInitialURL(),
-        )
+      ? nullthrows(NativeIntentAndroid).getInitialURL()
       : nullthrows(NativeLinkingManager).getInitialURL();
   }
 
@@ -123,7 +121,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
     }
   }
 
-  _validateURL(url: string) {
+  _validateURL(url: string): void {
     invariant(
       typeof url === 'string',
       'Invalid URL: should be a string. Was: ' + url,

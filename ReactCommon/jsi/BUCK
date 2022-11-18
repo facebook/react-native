@@ -19,6 +19,7 @@ rn_xplat_cxx_library(
         "-Wdelete-non-virtual-dtor",
         "-Wwrite-strings",
     ],
+    compiler_flags_pedantic = True,
     cxx_compiler_flags = [
         "-Wglobal-constructors",
         "-Wmissing-prototypes",
@@ -29,7 +30,6 @@ rn_xplat_cxx_library(
     ],
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     visibility = ["PUBLIC"],
 )
@@ -43,17 +43,16 @@ rn_xplat_cxx_library(
     exported_headers = [
         "jsi/JSIDynamic.h",
     ],
+    compiler_flags_pedantic = True,
     fbobjc_force_static = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     visibility = [
         "PUBLIC",
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        "//xplat/folly:molly",
         react_native_xplat_dep("jsi:jsi"),
     ],
 )
@@ -68,6 +67,7 @@ rn_xplat_cxx_library(
         "JSCRuntime.h",
     ],
     apple_sdks = (IOS, MACOSX),
+    compiler_flags_pedantic = True,
     fbobjc_compiler_flags = [
         "-Os",
     ],
@@ -76,7 +76,6 @@ rn_xplat_cxx_library(
     ],
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     platforms = APPLE,
     visibility = ["PUBLIC"],

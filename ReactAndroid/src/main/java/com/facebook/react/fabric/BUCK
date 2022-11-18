@@ -12,10 +12,8 @@ rn_android_library(
         "mounting/**/*.java",
     ]),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "KOTLIN",
     provided_deps = [
@@ -42,7 +40,6 @@ rn_android_library(
         react_native_target("java/com/facebook/debug/holder:holder"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/config:config"),
-        react_native_target("java/com/facebook/react/fabric/jni:jni"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/modules/i18nmanager:i18nmanager"),
@@ -52,5 +49,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/view:view"),
         react_native_target("java/com/facebook/react/views/text:text"),
         react_native_target("java/com/facebook/react/touch:touch"),
+        react_native_target("jni/react/fabric:jni"),
     ] + KOTLIN_STDLIB_DEPS,
 )

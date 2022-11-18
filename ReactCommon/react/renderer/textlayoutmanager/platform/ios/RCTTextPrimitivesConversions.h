@@ -10,68 +10,91 @@
 #include <react/renderer/textlayoutmanager/RCTFontProperties.h>
 #include <react/renderer/textlayoutmanager/RCTFontUtils.h>
 
-using namespace facebook::react;
-
-inline static NSTextAlignment RCTNSTextAlignmentFromTextAlignment(TextAlignment textAlignment)
+inline static NSTextAlignment RCTNSTextAlignmentFromTextAlignment(facebook::react::TextAlignment textAlignment)
 {
   switch (textAlignment) {
-    case TextAlignment::Natural:
+    case facebook::react::TextAlignment::Natural:
       return NSTextAlignmentNatural;
-    case TextAlignment::Left:
+    case facebook::react::TextAlignment::Left:
       return NSTextAlignmentLeft;
-    case TextAlignment::Right:
+    case facebook::react::TextAlignment::Right:
       return NSTextAlignmentRight;
-    case TextAlignment::Center:
+    case facebook::react::TextAlignment::Center:
       return NSTextAlignmentCenter;
-    case TextAlignment::Justified:
+    case facebook::react::TextAlignment::Justified:
       return NSTextAlignmentJustified;
   }
 }
 
-inline static NSWritingDirection RCTNSWritingDirectionFromWritingDirection(WritingDirection writingDirection)
+inline static NSWritingDirection RCTNSWritingDirectionFromWritingDirection(
+    facebook::react::WritingDirection writingDirection)
 {
   switch (writingDirection) {
-    case WritingDirection::Natural:
+    case facebook::react::WritingDirection::Natural:
       return NSWritingDirectionNatural;
-    case WritingDirection::LeftToRight:
+    case facebook::react::WritingDirection::LeftToRight:
       return NSWritingDirectionLeftToRight;
-    case WritingDirection::RightToLeft:
+    case facebook::react::WritingDirection::RightToLeft:
       return NSWritingDirectionRightToLeft;
   }
 }
 
-inline static RCTFontStyle RCTFontStyleFromFontStyle(FontStyle fontStyle)
+inline static NSLineBreakStrategy RCTNSLineBreakStrategyFromLineBreakStrategy(
+    facebook::react::LineBreakStrategy lineBreakStrategy)
+{
+  switch (lineBreakStrategy) {
+    case facebook::react::LineBreakStrategy::None:
+      return NSLineBreakStrategyNone;
+    case facebook::react::LineBreakStrategy::PushOut:
+      return NSLineBreakStrategyPushOut;
+    case facebook::react::LineBreakStrategy::HangulWordPriority:
+      if (@available(iOS 14.0, *)) {
+        return NSLineBreakStrategyHangulWordPriority;
+      } else {
+        return NSLineBreakStrategyNone;
+      }
+    case facebook::react::LineBreakStrategy::Standard:
+      if (@available(iOS 14.0, *)) {
+        return NSLineBreakStrategyStandard;
+      } else {
+        return NSLineBreakStrategyNone;
+      }
+  }
+}
+
+inline static RCTFontStyle RCTFontStyleFromFontStyle(facebook::react::FontStyle fontStyle)
 {
   switch (fontStyle) {
-    case FontStyle::Normal:
+    case facebook::react::FontStyle::Normal:
       return RCTFontStyleNormal;
-    case FontStyle::Italic:
+    case facebook::react::FontStyle::Italic:
       return RCTFontStyleItalic;
-    case FontStyle::Oblique:
+    case facebook::react::FontStyle::Oblique:
       return RCTFontStyleOblique;
   }
 }
 
-inline static RCTFontVariant RCTFontVariantFromFontVariant(FontVariant fontVariant)
+inline static RCTFontVariant RCTFontVariantFromFontVariant(facebook::react::FontVariant fontVariant)
 {
   return (RCTFontVariant)fontVariant;
 }
 
-inline static NSUnderlineStyle RCTNSUnderlineStyleFromTextDecorationStyle(TextDecorationStyle textDecorationStyle)
+inline static NSUnderlineStyle RCTNSUnderlineStyleFromTextDecorationStyle(
+    facebook::react::TextDecorationStyle textDecorationStyle)
 {
   switch (textDecorationStyle) {
-    case TextDecorationStyle::Solid:
+    case facebook::react::TextDecorationStyle::Solid:
       return NSUnderlineStyleSingle;
-    case TextDecorationStyle::Double:
+    case facebook::react::TextDecorationStyle::Double:
       return NSUnderlineStyleDouble;
-    case TextDecorationStyle::Dashed:
+    case facebook::react::TextDecorationStyle::Dashed:
       return NSUnderlinePatternDash | NSUnderlineStyleSingle;
-    case TextDecorationStyle::Dotted:
+    case facebook::react::TextDecorationStyle::Dotted:
       return NSUnderlinePatternDot | NSUnderlineStyleSingle;
   }
 }
 
-inline static UIColor *RCTUIColorFromSharedColor(const SharedColor &sharedColor)
+inline static UIColor *RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
 {
   if (!sharedColor) {
     return nil;

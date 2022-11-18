@@ -10,20 +10,15 @@
 NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
-/*
- * Preemptive View Allocation
- */
-static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
+NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
+NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
+NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWillStartExecutingNotification";
+NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 
-BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
-{
-  return RCTExperimentPreemptiveViewAllocationDisabled;
-}
-
-void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
-{
-  RCTExperimentPreemptiveViewAllocationDisabled = value;
-}
+NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
+NSString *const RCTDidSetupModuleNotification = @"RCTDidSetupModuleNotification";
+NSString *const RCTDidSetupModuleNotificationModuleNameKey = @"moduleName";
+NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
 
 /*
  * W3C Pointer Events
@@ -69,4 +64,20 @@ BOOL RCTGetMemoryPressureUnloadLevel()
 void RCTSetMemoryPressureUnloadLevel(int value)
 {
   RCTMemoryPressureUnloadLevel = value;
+}
+
+/*
+ * In Bridge mode, parse the JS stack for unhandled JS errors, to display in RedBox.
+ * When false (previous default behavior), a native stack is displayed in the RedBox.
+ */
+static BOOL RCTParseUnhandledJSErrorStackNatively = NO;
+
+BOOL RCTGetParseUnhandledJSErrorStackNatively()
+{
+  return RCTParseUnhandledJSErrorStackNatively;
+}
+
+void RCTSetParseUnhandledJSErrorStackNatively(BOOL value)
+{
+  RCTParseUnhandledJSErrorStackNatively = value;
 }

@@ -54,12 +54,12 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ProxyJavaScriptExecutor;
@@ -99,7 +99,6 @@ import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
@@ -182,7 +181,7 @@ public class ReactInstanceManager {
   // while true any spawned create thread should wait for proper clean up before initializing
   private volatile Boolean mHasStartedDestroying = false;
   private final MemoryPressureRouter mMemoryPressureRouter;
-  private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+  private final @Nullable JSExceptionHandler mJSExceptionHandler;
   private final @Nullable JSIModulePackage mJSIModulePackage;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
@@ -225,8 +224,7 @@ public class ReactInstanceManager {
       boolean requireActivity,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
-      @Nullable UIImplementationProvider mUIImplementationProvider,
-      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
+      JSExceptionHandler jSExceptionHandler,
       @Nullable RedBoxHandler redBoxHandler,
       boolean lazyViewManagersEnabled,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
@@ -268,7 +266,7 @@ public class ReactInstanceManager {
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
-    mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
+    mJSExceptionHandler = jSExceptionHandler;
     mTMMDelegateBuilder = tmmDelegateBuilder;
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
@@ -282,7 +280,6 @@ public class ReactInstanceManager {
                   ReactInstanceManager.this.invokeDefaultOnBackPressed();
                 }
               },
-              mUIImplementationProvider,
               lazyViewManagersEnabled,
               minTimeLeftInFrameForNonBatchedOperationMs));
       if (mUseDeveloperSupport) {
@@ -964,39 +961,43 @@ public class ReactInstanceManager {
 
   public Collection<String> getViewManagerNames() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerNames");
-    Collection<String> viewManagerNames = mViewManagerNames;
-    if (viewManagerNames != null) {
-      return viewManagerNames;
-    }
-    ReactApplicationContext context;
-    synchronized (mReactContextLock) {
-      context = (ReactApplicationContext) getCurrentReactContext();
-      if (context == null || !context.hasActiveReactInstance()) {
-        return Collections.emptyList();
+    try {
+      Collection<String> viewManagerNames = mViewManagerNames;
+      if (viewManagerNames != null) {
+        return viewManagerNames;
       }
-    }
-
-    synchronized (mPackages) {
-      if (mViewManagerNames == null) {
-        Set<String> uniqueNames = new HashSet<>();
-        for (ReactPackage reactPackage : mPackages) {
-          SystraceMessage.beginSection(
-                  TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
-              .arg("Package", reactPackage.getClass().getSimpleName())
-              .flush();
-          if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
-            Collection<String> names =
-                ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
-            if (names != null) {
-              uniqueNames.addAll(names);
-            }
-          }
-          SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+      ReactApplicationContext context;
+      synchronized (mReactContextLock) {
+        context = (ReactApplicationContext) getCurrentReactContext();
+        if (context == null || !context.hasActiveReactInstance()) {
+          FLog.w(ReactConstants.TAG, "Calling getViewManagerNames without active context");
+          return Collections.emptyList();
         }
-        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-        mViewManagerNames = uniqueNames;
       }
-      return mViewManagerNames;
+
+      synchronized (mPackages) {
+        if (mViewManagerNames == null) {
+          Set<String> uniqueNames = new HashSet<>();
+          for (ReactPackage reactPackage : mPackages) {
+            SystraceMessage.beginSection(
+                    TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
+                .arg("Package", reactPackage.getClass().getSimpleName())
+                .flush();
+            if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
+              Collection<String> names =
+                  ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
+              if (names != null) {
+                uniqueNames.addAll(names);
+              }
+            }
+            Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+          }
+          mViewManagerNames = uniqueNames;
+        }
+        return mViewManagerNames;
+      }
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
@@ -1260,7 +1261,6 @@ public class ReactInstanceManager {
                   : Arguments.fromBundle(initialProperties),
               reactRoot.getWidthMeasureSpec(),
               reactRoot.getHeightMeasureSpec());
-      reactRoot.setRootViewTag(rootTag);
       reactRoot.setShouldLogContentAppeared(true);
     } else {
       rootTag =
@@ -1331,11 +1331,9 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
     final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
 
-    NativeModuleCallExceptionHandler exceptionHandler =
-        mNativeModuleCallExceptionHandler != null
-            ? mNativeModuleCallExceptionHandler
-            : mDevSupportManager;
-    reactContext.setNativeModuleCallExceptionHandler(exceptionHandler);
+    JSExceptionHandler exceptionHandler =
+        mJSExceptionHandler != null ? mJSExceptionHandler : mDevSupportManager;
+    reactContext.setJSExceptionHandler(exceptionHandler);
 
     NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages, false);
 
@@ -1345,7 +1343,7 @@ public class ReactInstanceManager {
             .setJSExecutor(jsExecutor)
             .setRegistry(nativeModuleRegistry)
             .setJSBundleLoader(jsBundleLoader)
-            .setNativeModuleCallExceptionHandler(exceptionHandler);
+            .setJSExceptionHandler(exceptionHandler);
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp

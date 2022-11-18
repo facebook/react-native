@@ -29,11 +29,13 @@ class ToggleDefaultPaddingExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   constructor(props) {
     super(props);
     this.state = {hasPadding: false};
   }
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TextInput style={this.state.hasPadding ? {padding: 0} : null} />
@@ -47,6 +49,8 @@ class ToggleDefaultPaddingExample extends React.Component<
 }
 
 class AutogrowingTextInputExample extends React.Component<{...}> {
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   constructor(props) {
     super(props);
 
@@ -63,6 +67,8 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
     };
   }
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   UNSAFE_componentWillReceiveProps(props) {
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
@@ -73,7 +79,7 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
     });
   }
 
-  render() {
+  render(): React.Node {
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
     const {style, multiline, ...props} = this.props;
@@ -141,6 +147,13 @@ const styles = StyleSheet.create({
   },
   singleLineWithHeightTextInput: {
     height: 30,
+  },
+  default: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#0f0f0f',
+    flex: 1,
+    fontSize: 13,
+    padding: 4,
   },
 });
 
@@ -342,6 +355,35 @@ exports.examples = ([
     },
   },
   {
+    title: 'Editable and Read only',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            placeholder="editable text input using editable prop"
+            style={styles.default}
+            editable
+          />
+          <TextInput
+            placeholder="uneditable text input using editable prop"
+            style={styles.default}
+            editable={false}
+          />
+          <TextInput
+            placeholder="editable text input using readOnly prop"
+            style={styles.default}
+            readOnly={false}
+          />
+          <TextInput
+            placeholder="uneditable text input using readOnly prop"
+            style={styles.default}
+            readOnly
+          />
+        </View>
+      );
+    },
+  },
+  {
     title: 'Fixed number of lines',
     platform: 'android',
     render: function (): React.Node {
@@ -350,12 +392,22 @@ exports.examples = ([
           <TextInput
             numberOfLines={2}
             multiline={true}
-            placeholder="Two line input"
+            placeholder="Two line input using numberOfLines prop"
           />
           <TextInput
             numberOfLines={5}
             multiline={true}
-            placeholder="Five line input"
+            placeholder="Five line input using numberOfLines prop"
+          />
+          <TextInput
+            rows={2}
+            multiline={true}
+            placeholder="Two line input using rows prop"
+          />
+          <TextInput
+            rows={5}
+            multiline={true}
+            placeholder="Five line input using rows prop"
           />
         </View>
       );
@@ -381,6 +433,35 @@ exports.examples = ([
             </Text>
             generic generic generic
           </AutogrowingTextInputExample>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Text Auto Complete',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            autoComplete="country"
+            placeholder="country"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="postal-address-country"
+            placeholder="postal-address-country"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="one-time-code"
+            placeholder="one-time-code"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="sms-otp"
+            placeholder="sms-otp"
+            style={styles.default}
+          />
         </View>
       );
     },

@@ -10,10 +10,11 @@
 
 import type {ViewToken} from './ViewabilityHelper';
 
+import View from '../Components/View/View';
+import VirtualizedList from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
-import {View, VirtualizedList} from 'react-native';
 
 type Item = any;
 
@@ -140,6 +141,7 @@ class VirtualizedSectionList<
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
       const frame = this._listRef.__getFrameMetricsApprox(
         index - params.itemIndex,
+        this._listRef.props,
       );
       viewOffset += frame.length;
     }
@@ -171,7 +173,7 @@ class VirtualizedSectionList<
     const listHeaderOffset = this.props.ListHeaderComponent ? 1 : 0;
 
     const stickyHeaderIndices = this.props.stickySectionHeadersEnabled
-      ? []
+      ? ([]: Array<number>)
       : undefined;
 
     let itemCount = 0;
@@ -236,6 +238,7 @@ class VirtualizedSectionList<
     return null;
   }
 
+  // $FlowFixMe[missing-local-annot]
   _keyExtractor = (item: Item, index: number) => {
     const info = this._subExtractor(index);
     return (info && info.key) || String(index);
@@ -339,7 +342,7 @@ class VirtualizedSectionList<
   };
 
   _renderItem =
-    (listItemCount: number) =>
+    (listItemCount: number): $FlowFixMe =>
     // eslint-disable-next-line react/no-unstable-nested-components
     ({item, index}: {item: Item, index: number, ...}) => {
       const info = this._subExtractor(index);
@@ -392,29 +395,33 @@ class VirtualizedSectionList<
       }
     };
 
-  _updatePropsFor = (cellKey, value) => {
+  _updatePropsFor = (cellKey: string, value: any) => {
     const updateProps = this._updatePropsMap[cellKey];
     if (updateProps != null) {
       updateProps(value);
     }
   };
 
-  _updateHighlightFor = (cellKey, value) => {
+  _updateHighlightFor = (cellKey: string, value: boolean) => {
     const updateHighlight = this._updateHighlightMap[cellKey];
     if (updateHighlight != null) {
       updateHighlight(value);
     }
   };
 
-  _setUpdateHighlightFor = (cellKey, updateHighlightFn) => {
+  _setUpdateHighlightFor = (
+    cellKey: string,
+    updateHighlightFn: ?(boolean) => void,
+  ) => {
     if (updateHighlightFn != null) {
       this._updateHighlightMap[cellKey] = updateHighlightFn;
     } else {
+      // $FlowFixMe[prop-missing]
       delete this._updateHighlightFor[cellKey];
     }
   };
 
-  _setUpdatePropsFor = (cellKey, updatePropsFn) => {
+  _setUpdatePropsFor = (cellKey: string, updatePropsFn: ?(boolean) => void) => {
     if (updatePropsFn != null) {
       this._updatePropsMap[cellKey] = updatePropsFn;
     } else {
@@ -449,7 +456,7 @@ class VirtualizedSectionList<
   _updateHighlightMap: {[string]: (boolean) => void} = {};
   _updatePropsMap: {[string]: void | (boolean => void)} = {};
   _listRef: ?React.ElementRef<typeof VirtualizedList>;
-  _captureRef = ref => {
+  _captureRef = (ref: null | React$ElementRef<Class<VirtualizedList>>) => {
     this._listRef = ref;
   };
 }

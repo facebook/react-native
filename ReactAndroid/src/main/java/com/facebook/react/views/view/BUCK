@@ -7,10 +7,8 @@ rn_android_library(
         "*.kt",
     ]),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     language = "KOTLIN",
     provided_deps = [

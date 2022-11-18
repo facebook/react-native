@@ -27,12 +27,12 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/components/legacyviewmanagerinterop",
     ),
+    compiler_flags_pedantic = True,
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     platforms = APPLE,
     preprocessor_flags = [
@@ -41,8 +41,8 @@ rn_xplat_cxx_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
+        "//xplat/folly:dynamic",
+        "//xplat/folly:json",
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/components/view:view"),
         "//xplat/js/react-native-github:generated_components-rncore",

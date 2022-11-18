@@ -10,10 +10,10 @@
 
 'use strict';
 
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+
 const createReactNativeComponentClass = require('../Renderer/shims/createReactNativeComponentClass');
 const getNativeComponentAttributes = require('./getNativeComponentAttributes');
-
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 
 /**
  * Creates values that can be used like React components which represent native

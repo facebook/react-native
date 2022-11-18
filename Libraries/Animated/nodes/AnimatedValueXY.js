@@ -12,10 +12,9 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-const AnimatedValue = require('./AnimatedValue');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
-
-const invariant = require('invariant');
+import AnimatedValue from './AnimatedValue';
+import AnimatedWithChildren from './AnimatedWithChildren';
+import invariant from 'invariant';
 
 export type AnimatedValueXYConfig = $ReadOnly<{
   useNativeDriver: boolean,
@@ -34,7 +33,7 @@ let _uniqueId = 1;
  *
  * See https://reactnative.dev/docs/animatedvaluexy
  */
-class AnimatedValueXY extends AnimatedWithChildren {
+export default class AnimatedValueXY extends AnimatedWithChildren {
   x: AnimatedValue;
   y: AnimatedValue;
   _listeners: {
@@ -177,7 +176,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
    */
   addListener(callback: ValueXYListenerCallback): string {
     const id = String(_uniqueId++);
-    const jointCallback = ({value: number}) => {
+    const jointCallback = ({value: number}: any) => {
       callback(this.__getValue());
     };
     this._listeners[id] = {
@@ -249,5 +248,3 @@ class AnimatedValueXY extends AnimatedWithChildren {
     super.__makeNative(platformConfig);
   }
 }
-
-module.exports = AnimatedValueXY;

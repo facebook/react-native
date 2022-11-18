@@ -21,7 +21,12 @@ class AppStateSubscription extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: {
+    appState: ?string,
+    eventsDetected: Array<string>,
+    memoryWarnings: number,
+    previousAppStates: Array<?(any | string)>,
+  } = {
     appState: AppState.currentState,
     previousAppStates: [],
     memoryWarnings: 0,
@@ -76,7 +81,7 @@ class AppStateSubscription extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     if (this.props.showMemoryWarnings) {
       return (
         <View>

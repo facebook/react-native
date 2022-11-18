@@ -15,6 +15,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTConstants.h"
 #import "RCTShadowView+Layout.h"
 #import "RCTSurfaceDelegate.h"
 #import "RCTSurfaceRootShadowView.h"
@@ -64,7 +65,7 @@
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
 {
-  RCTErrorNewArchitectureValidation(RCTNotAllowedInAppWideFabric, @"RCTSurface", nil);
+  RCTErrorNewArchitectureValidation(RCTNotAllowedInFabricWithoutLegacy, @"RCTSurface", nil);
   RCTAssert(bridge.valid, @"Valid bridge is required to instantiate `RCTSurface`.");
 
   if (self = [super init]) {

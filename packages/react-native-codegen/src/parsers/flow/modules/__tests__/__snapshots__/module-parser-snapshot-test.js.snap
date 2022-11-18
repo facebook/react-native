@@ -77,6 +77,169 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
                 }
               ]
             }
+          },
+          {
+            'name': 'getEnums',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'quality',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'resolution',
+                  'optional': true,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'floppy',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'stringOptions',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getMap',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'b',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'GenericObjectTypeAnnotation'
+                    }
+                  }
+                ]
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'GenericObjectTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getAnotherMap',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'key',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'GenericObjectTypeAnnotation'
+                    }
+                  }
+                ]
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'key',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'GenericObjectTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'ObjectTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'chooseInt',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseFloat',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseObject',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'ObjectTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseString',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
           }
         ]
       },
@@ -116,7 +279,52 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
       'type': 'NativeModule',
       'aliases': {},
       'spec': {
-        'properties': []
+        'properties': [
+          {
+            'name': 'getEnums',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'quality',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'resolution',
+                  'optional': true,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'floppy',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'stringOptions',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          }
+        ]
       },
       'moduleNames': [
         'SampleTurboModuleIOS'
@@ -1405,6 +1613,69 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_O
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'GenericObjectTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleNames': [
+        'SampleTurboModule'
+      ]
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'ObjectTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'chooseInt',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseFloat',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseObject',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'ObjectTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseString',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'StringTypeAnnotation'
                   }
                 }
               ]

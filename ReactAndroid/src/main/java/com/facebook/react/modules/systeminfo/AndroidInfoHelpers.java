@@ -32,7 +32,8 @@ public class AndroidInfoHelpers {
   }
 
   private static boolean isRunningOnStockEmulator() {
-    return Build.FINGERPRINT.contains("generic");
+    return Build.FINGERPRINT.contains("generic")
+        || Build.FINGERPRINT.startsWith("google/sdk_gphone");
   }
 
   public static String getServerHost(Integer port) {

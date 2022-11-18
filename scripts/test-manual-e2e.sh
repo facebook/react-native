@@ -33,7 +33,6 @@ selected_vm=""
 PACKAGE_VERSION=""
 
 test_android(){
-    generate_maven_artifacts
     if [ "$1" == "1" ]; then
         test_android_hermes
     elif [ "$1" == "2" ]; then
@@ -43,7 +42,8 @@ test_android(){
 
 generate_maven_artifacts(){
     rm -rf android
-    ./gradlew :ReactAndroid:installArchives || error "Couldn't generate artifacts"
+    ./gradlew :ReactAndroid:installArchives || error "Couldn't generate React Native Maven artifacts"
+    ./gradlew :ReactAndroid:hermes-engine:installArchives || error "Couldn't generate Hermes Engine Maven artifacts"
 
     success "Generated artifacts for Maven"
 }
@@ -91,7 +91,7 @@ test_ios_jsc(){
     success "About to test iOS JSC... "
     success "Installing CocoaPods dependencies..."
     rm -rf packages/rn-tester/Pods
-    (cd packages/rn-tester && bundle exec pod install)
+    (cd packages/rn-tester && USE_HERMES=0 bundle exec pod install)
 
     info "Press any key to open the workspace in Xcode, then build and test manually."
     info ""
@@ -108,6 +108,10 @@ kill_packagers(){
 
 init_template_app(){
     kill_packagers
+
+    if [ "$selected_platform" == "1" ]; then
+        generate_maven_artifacts
+    fi
 
     PACKAGE_VERSION=$(cat package.json \
     | grep version \
@@ -137,7 +141,6 @@ init_template_app(){
 
     info "Double checking the versions in package.json are correct:"
     grep "\"react-native\": \".*react-native-$PACKAGE_VERSION-$TIMESTAMP.tgz\"" "/tmp/${project_name}/package.json" || error "Incorrect version number in /tmp/${project_name}/package.json"
-    grep -E "com.facebook.react:react-native:\\+" "${project_name}/android/app/build.gradle" || error "Dependency in /tmp/${project_name}/android/app/build.gradle must be com.facebook.react:react-native:+"
 
     success "New sample project generated at /tmp/${project_name}"
     popd >/dev/null || exit
@@ -215,7 +218,7 @@ handle_menu_input(){
     read -p "Would you like to test something else? (Y/N)" confirm
     if [ "$confirm" == "${confirm#[Yy]}" ]; then
         info "Next steps:"
-        info "https://github.com/facebook/react-native/wiki/Release-Process"
+        info "https://reactnative.dev/contributing/release-candidate-minor"
         popd >/dev/null || exit
         exit 1
     else
@@ -232,4 +235,3 @@ init(){
 }
 
 init
-

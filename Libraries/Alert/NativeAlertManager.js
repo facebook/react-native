@@ -9,6 +9,7 @@
  */
 
 import type {TurboModule} from '../TurboModule/RCTExport';
+
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export type Args = {|
@@ -19,6 +20,7 @@ export type Args = {|
   defaultValue?: string,
   cancelButtonKey?: string,
   destructiveButtonKey?: string,
+  preferredButtonKey?: string,
   keyboardType?: string,
   userInterfaceStyle?: string,
 |};

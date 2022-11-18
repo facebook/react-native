@@ -10,11 +10,11 @@
 
 'use strict';
 
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
-import type {ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PointProp} from '../../StyleSheet/PointPropType';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {ScrollEvent} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 export type ScrollViewNativeProps = $ReadOnly<{
   ...ViewProps,

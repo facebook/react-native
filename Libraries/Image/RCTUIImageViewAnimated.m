@@ -5,17 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIImageViewAnimated.h>
 #import <React/RCTDisplayWeakRefreshable.h>
+#import <React/RCTUIImageViewAnimated.h>
 
 #import <mach/mach.h>
 #import <objc/runtime.h>
 
-static NSUInteger RCTDeviceTotalMemory() {
+static NSUInteger RCTDeviceTotalMemory()
+{
   return (NSUInteger)[[NSProcessInfo processInfo] physicalMemory];
 }
 
-static NSUInteger RCTDeviceFreeMemory() {
+static NSUInteger RCTDeviceFreeMemory()
+{
   mach_port_t host_port = mach_host_self();
   mach_msg_type_number_t host_size = sizeof(vm_statistics_data_t) / sizeof(integer_t);
   vm_size_t page_size;
@@ -23,9 +25,11 @@ static NSUInteger RCTDeviceFreeMemory() {
   kern_return_t kern;
 
   kern = host_page_size(host_port, &page_size);
-  if (kern != KERN_SUCCESS) return 0;
+  if (kern != KERN_SUCCESS)
+    return 0;
   kern = host_statistics(host_port, HOST_VM_INFO, (host_info_t)&vm_stat, &host_size);
-  if (kern != KERN_SUCCESS) return 0;
+  if (kern != KERN_SUCCESS)
+    return 0;
   return (vm_stat.free_count - vm_stat.speculative_count) * page_size;
 }
 
@@ -55,8 +59,10 @@ static NSUInteger RCTDeviceFreeMemory() {
 {
   if (self = [super initWithFrame:frame]) {
     self.lock = dispatch_semaphore_create(1);
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveMemoryWarning:)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
   }
   return self;
 }
@@ -136,7 +142,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   return _fetchQueue;
 }
 
-- (NSMutableDictionary<NSNumber *,UIImage *> *)frameBuffer
+- (NSMutableDictionary<NSNumber *, UIImage *> *)frameBuffer
 {
   if (!_frameBuffer) {
     _frameBuffer = [NSMutableDictionary dictionary];
@@ -146,15 +152,16 @@ static NSUInteger RCTDeviceFreeMemory() {
 
 - (CADisplayLink *)displayLink
 {
-  // We only need a displayLink in the case of animated images, so short-circuit this code and don't create one for most of the use cases.
-  // Since this class is used for all RCTImageView's, this is especially important.
+  // We only need a displayLink in the case of animated images, so short-circuit this code and don't create one for most
+  // of the use cases. Since this class is used for all RCTImageView's, this is especially important.
   if (!_animatedImage) {
     return nil;
   }
 
   if (!_displayLink) {
     _displayLink = [RCTDisplayWeakRefreshable displayLinkWithWeakRefreshable:self];
-    NSString *runLoopMode = [NSProcessInfo processInfo].activeProcessorCount > 1 ? NSRunLoopCommonModes : NSDefaultRunLoopMode;
+    NSString *runLoopMode =
+        [NSProcessInfo processInfo].activeProcessorCount > 1 ? NSRunLoopCommonModes : NSDefaultRunLoopMode;
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:runLoopMode];
   }
   return _displayLink;
@@ -289,7 +296,8 @@ static NSUInteger RCTDeviceFreeMemory() {
 - (void)calculateMaxBufferCount
 {
   NSUInteger bytes = CGImageGetBytesPerRow(self.currentFrame.CGImage) * CGImageGetHeight(self.currentFrame.CGImage);
-  if (bytes == 0) bytes = 1024;
+  if (bytes == 0)
+    bytes = 1024;
 
   NSUInteger max = 0;
   if (self.maxBufferSize > 0) {
@@ -327,7 +335,7 @@ static NSUInteger RCTDeviceFreeMemory() {
     dispatch_semaphore_wait(self.lock, DISPATCH_TIME_FOREVER);
     NSArray *keys = self.frameBuffer.allKeys;
     // only keep the next frame for later rendering
-    for (NSNumber * key in keys) {
+    for (NSNumber *key in keys) {
       if (![key isEqualToNumber:currentFrameIndex]) {
         [self.frameBuffer removeObjectForKey:key];
       }

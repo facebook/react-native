@@ -5,7 +5,8 @@
 # LICENSE file in the root directory of this source tree.
 
 # shellcheck source=xplat/js/react-native-github/sdks/hermes-engine/utils/build-apple-framework.sh
-. ./utils/build-apple-framework.sh
+CURR_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+. "${CURR_SCRIPT_DIR}/build-apple-framework.sh"
 
 if [ ! -d destroot/Library/Frameworks/universal/hermes.xcframework ]; then
     ios_deployment_target=$(get_ios_deployment_target)

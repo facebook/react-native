@@ -9,6 +9,11 @@ class Dir
     @@exist_invocation_params = []
     @@mocked_existing_dirs = []
 
+    @@glob_invocation = []
+    @@mocked_existing_globs = {}
+
+    @@pwd = nil
+
     # Monkey patched exists? method.
     # It is used also by the test runner, so it can't start monkey patched
     # To use this, invoke the `is_testing` method before starting your test.
@@ -33,6 +38,31 @@ class Dir
         @@mocked_existing_dirs = dirs
     end
 
+    # Set what the `glob` function should return
+    def self.mocked_existing_globs(globs, path)
+        @@mocked_existing_globs[path] = globs
+    end
+
+    def self.glob_invocation
+        return @@glob_invocation
+    end
+
+    def self.glob(path)
+        @@glob_invocation.push(path)
+        return @@mocked_existing_globs[path]
+    end
+
+    def self.set_pwd(pwd)
+        @@pwd = pwd
+    end
+
+    def self.pwd
+        if @@pwd != nil
+            return @@pwd
+        end
+        return pwd
+    end
+
     # Turn on the mocking features of the File mock
     def self.enable_testing_mode!()
         @@is_testing = true
@@ -40,8 +70,11 @@ class Dir
 
     # Resets all the settings for the File mock
     def self.reset()
+        @@pwd = nil
         @@mocked_existing_dirs = []
         @@is_testing = false
         @@exist_invocation_params = []
+        @@glob_invocation = []
+        @@mocked_existing_globs = {}
     end
 end

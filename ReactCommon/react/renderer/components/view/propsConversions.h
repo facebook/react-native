@@ -266,6 +266,28 @@ static inline YGStyle convertRawProp(
       "",
       sourceValue.padding(),
       yogaStyle.padding());
+
+  yogaStyle.gap()[YGGutterRow] = convertRawProp(
+      context,
+      rawProps,
+      "rowGap",
+      sourceValue.gap()[YGGutterRow],
+      yogaStyle.gap()[YGGutterRow]);
+
+  yogaStyle.gap()[YGGutterColumn] = convertRawProp(
+      context,
+      rawProps,
+      "columnGap",
+      sourceValue.gap()[YGGutterColumn],
+      yogaStyle.gap()[YGGutterColumn]);
+
+  yogaStyle.gap()[YGGutterAll] = convertRawProp(
+      context,
+      rawProps,
+      "gap",
+      sourceValue.gap()[YGGutterAll],
+      yogaStyle.gap()[YGGutterAll]);
+
   yogaStyle.border() = convertRawProp(
       context,
       rawProps,
@@ -497,42 +519,24 @@ static inline ViewEvents convertRawProp(
       defaultValue[Offset::PointerLeave]);
 
   // Experimental W3C Pointer callbacks
-  result[Offset::PointerEnter2] = convertRawProp(
+  result[Offset::PointerEnterCapture] = convertRawProp(
       context,
       rawProps,
-      "onPointerEnter2",
-      sourceValue[Offset::PointerEnter2],
-      defaultValue[Offset::PointerEnter2]);
-  result[Offset::PointerEnter2Capture] = convertRawProp(
+      "onPointerEnterCapture",
+      sourceValue[Offset::PointerEnterCapture],
+      defaultValue[Offset::PointerEnterCapture]);
+  result[Offset::PointerMoveCapture] = convertRawProp(
       context,
       rawProps,
-      "onPointerEnter2Capture",
-      sourceValue[Offset::PointerEnter2Capture],
-      defaultValue[Offset::PointerEnter2Capture]);
-  result[Offset::PointerMove2] = convertRawProp(
+      "onPointerMoveCapture",
+      sourceValue[Offset::PointerMoveCapture],
+      defaultValue[Offset::PointerMoveCapture]);
+  result[Offset::PointerLeaveCapture] = convertRawProp(
       context,
       rawProps,
-      "onPointerMove2",
-      sourceValue[Offset::PointerMove2],
-      defaultValue[Offset::PointerMove2]);
-  result[Offset::PointerMove2Capture] = convertRawProp(
-      context,
-      rawProps,
-      "onPointerMove2Capture",
-      sourceValue[Offset::PointerMove2Capture],
-      defaultValue[Offset::PointerMove2Capture]);
-  result[Offset::PointerLeave2] = convertRawProp(
-      context,
-      rawProps,
-      "onPointerLeave2",
-      sourceValue[Offset::PointerLeave2],
-      defaultValue[Offset::PointerLeave2]);
-  result[Offset::PointerLeave2Capture] = convertRawProp(
-      context,
-      rawProps,
-      "onPointerLeave2Capture",
-      sourceValue[Offset::PointerLeave2Capture],
-      defaultValue[Offset::PointerLeave2Capture]);
+      "onPointerLeaveCapture",
+      sourceValue[Offset::PointerLeaveCapture],
+      defaultValue[Offset::PointerLeaveCapture]);
   result[Offset::PointerOver] = convertRawProp(
       context,
       rawProps,
@@ -675,8 +679,8 @@ static inline void fromRawValue(
         attrIterator->second.hasType<std::string>());
 
     result = NativeDrawable{
-        .kind = NativeDrawable::Kind::ThemeAttr,
-        .themeAttr = (std::string)attrIterator->second,
+        NativeDrawable::Kind::ThemeAttr,
+        (std::string)attrIterator->second,
     };
   } else if (type == "RippleAndroid") {
     auto color = map.find("color");
@@ -684,21 +688,19 @@ static inline void fromRawValue(
     auto rippleRadius = map.find("rippleRadius");
 
     result = NativeDrawable{
-        .kind = NativeDrawable::Kind::Ripple,
-        .ripple =
-            NativeDrawable::Ripple{
-                .color = color != map.end() && color->second.hasType<int32_t>()
-                    ? (int32_t)color->second
-                    : std::optional<int32_t>{},
-                .borderless = borderless != map.end() &&
-                        borderless->second.hasType<bool>()
-                    ? (bool)borderless->second
-                    : false,
-                .rippleRadius = rippleRadius != map.end() &&
-                        rippleRadius->second.hasType<Float>()
-                    ? (Float)rippleRadius->second
-                    : std::optional<Float>{},
-            },
+        NativeDrawable::Kind::Ripple,
+        std::string{},
+        NativeDrawable::Ripple{
+            color != map.end() && color->second.hasType<int32_t>()
+                ? (int32_t)color->second
+                : std::optional<int32_t>{},
+            borderless != map.end() && borderless->second.hasType<bool>()
+                ? (bool)borderless->second
+                : false,
+            rippleRadius != map.end() && rippleRadius->second.hasType<Float>()
+                ? (Float)rippleRadius->second
+                : std::optional<Float>{},
+        },
     };
   } else {
     LOG(ERROR) << "Unknown native drawable type: " << type;

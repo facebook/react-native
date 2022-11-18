@@ -8,7 +8,15 @@
  * @format
  */
 
-import type {ViewProps} from '../View/ViewPropTypes';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  ColorValue,
+  TextStyleProp,
+  ViewStyleProp,
+} from '../../StyleSheet/StyleSheet';
 import type {
   BubblingEventHandler,
   DirectEventHandler,
@@ -17,18 +25,11 @@ import type {
   Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
-import type {
-  HostComponent,
-  PartialViewConfig,
-} from '../../Renderer/shims/ReactNativeTypes';
-import type {
-  TextStyleProp,
-  ViewStyleProp,
-  ColorValue,
-} from '../../StyleSheet/StyleSheet';
-import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
+
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 
 export type KeyboardType =
   // Cross Platform
@@ -65,6 +66,8 @@ export type ReturnKeyType =
   | 'join'
   | 'route'
   | 'yahoo';
+
+export type SubmitBehavior = 'submit' | 'blurAndSubmit' | 'newline';
 
 export type NativeProps = $ReadOnly<{|
   // This allows us to inherit everything from ViewProps except for style (see below)
@@ -520,8 +523,33 @@ export type NativeProps = $ReadOnly<{|
    * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
    * to `true` means that pressing return will blur the field and trigger the
    * `onSubmitEditing` event instead of inserting a newline into the field.
+   *
+   * @deprecated
+   * Note that `submitBehavior` now takes the place of `blurOnSubmit` and will
+   * override any behavior defined by `blurOnSubmit`.
+   * @see submitBehavior
    */
   blurOnSubmit?: ?boolean,
+
+  /**
+   * When the return key is pressed,
+   *
+   * For single line inputs:
+   *
+   * - `'newline`' defaults to `'blurAndSubmit'`
+   * - `undefined` defaults to `'blurAndSubmit'`
+   *
+   * For multiline inputs:
+   *
+   * - `'newline'` adds a newline
+   * - `undefined` defaults to `'newline'`
+   *
+   * For both single line and multiline inputs:
+   *
+   * - `'submit'` will only send a submit event and not blur the input
+   * - `'blurAndSubmit`' will both blur the input and send a submit event
+   */
+  submitBehavior?: ?SubmitBehavior,
 
   /**
    * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
@@ -657,7 +685,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
       process: require('../../StyleSheet/processColor'),
     },
     textDecorationLine: true,
-    blurOnSubmit: true,
+    submitBehavior: true,
     textAlignVertical: true,
     fontStyle: true,
     textShadowOffset: true,

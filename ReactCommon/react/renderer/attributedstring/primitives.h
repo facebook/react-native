@@ -46,6 +46,20 @@ enum class FontVariant : int {
   ProportionalNums = 1 << 5
 };
 
+enum class DynamicTypeRamp {
+  Caption2,
+  Caption1,
+  Footnote,
+  Subheadline,
+  Callout,
+  Body,
+  Headline,
+  Title3,
+  Title2,
+  Title1,
+  LargeTitle
+};
+
 enum class EllipsizeMode {
   Clip, // Do not add ellipsize, simply clip.
   Head, // Truncate at head of line: "...wxyz".
@@ -72,6 +86,15 @@ enum class WritingDirection {
            // P3.
   LeftToRight, // Left to right writing direction.
   RightToLeft // Right to left writing direction.
+};
+
+enum class LineBreakStrategy {
+  None, // Don't use any line break strategies
+  PushOut, // Use the push out line break strategy.
+  HangulWordPriority, // When specified, it prohibits breaking between Hangul
+                      // characters.
+  Standard // Use the same configuration of line break strategies that the
+           // system uses for standard UI labels.
 };
 
 enum class TextDecorationLineType {
@@ -177,6 +200,13 @@ struct hash<facebook::react::TextDecorationStyle> {
 template <>
 struct hash<facebook::react::FontWeight> {
   size_t operator()(const facebook::react::FontWeight &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::DynamicTypeRamp> {
+  size_t operator()(const facebook::react::DynamicTypeRamp &v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };

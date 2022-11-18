@@ -8,11 +8,7 @@
  * @format
  */
 
-import type {ResolvedAssetSource} from './AssetSourceResolver';
-import type {ImageProps} from './ImageProps';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
-import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
-import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
 import type {
   HostComponent,
   PartialViewConfig,
@@ -22,6 +18,11 @@ import type {
   DangerouslyImpreciseStyle,
   ImageStyleProp,
 } from '../StyleSheet/StyleSheet';
+import type {ResolvedAssetSource} from './AssetSourceResolver';
+import type {ImageProps} from './ImageProps';
+
+import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
+import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
 import Platform from '../Utilities/Platform';
 
 type Props = $ReadOnly<{
@@ -35,7 +36,9 @@ type Props = $ReadOnly<{
 
   // Android native props
   shouldNotifyLoadEvents?: boolean,
-  src?: ?ResolvedAssetSource | $ReadOnlyArray<{uri: string, ...}>,
+  src?:
+    | ?ResolvedAssetSource
+    | ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
   headers?: ?{[string]: string},
   defaultSrc?: ?string,
   loadingIndicatorSrc?: ?string,

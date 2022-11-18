@@ -13,12 +13,14 @@ load(
     "IOS",
     "IS_OSS_BUILD",
     "MACOSX",
+    "WINDOWS",
     "YOGA_CXX_TARGET",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
     "get_preprocessor_flags_for_build_mode",
     "react_native_dep",
+    "react_native_desktop_root_target",
     "react_native_root_target",
     "react_native_target",
     "react_native_xplat_shared_library_target",
@@ -164,6 +166,7 @@ def rn_codegen_modules(
         ],
         autoglob = False,
         labels = library_labels + ["codegen_rule"],
+        language = "JAVA",
         visibility = ["PUBLIC"],
         deps = [
             react_native_dep("third-party/java/jsr-305:jsr-305"),
@@ -262,6 +265,8 @@ def rn_codegen_components(
     generate_event_emitter_h_name = "generate_event_emitter_h-{}".format(name)
     generate_props_cpp_name = "generate_props_cpp-{}".format(name)
     generate_props_h_name = "generated_props_h-{}".format(name)
+    generate_state_cpp_name = "generate_state_cpp-{}".format(name)
+    generate_state_h_name = "generated_state_h-{}".format(name)
     generate_tests_cpp_name = "generate_tests_cpp-{}".format(name)
     generate_shadow_node_cpp_name = "generated_shadow_node_cpp-{}".format(name)
     generate_shadow_node_h_name = "generated_shadow_node_h-{}".format(name)
@@ -314,6 +319,13 @@ def rn_codegen_components(
     )
 
     fb_native.genrule(
+        name = generate_state_cpp_name,
+        cmd = "cp $(location :{})/States.cpp $OUT".format(generate_fixtures_rule_name),
+        out = "States.cpp",
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.genrule(
         name = generate_tests_cpp_name,
         cmd = "cp $(location :{})/Tests.cpp $OUT".format(generate_fixtures_rule_name),
         out = "Tests.cpp",
@@ -324,6 +336,13 @@ def rn_codegen_components(
         name = generate_props_h_name,
         cmd = "cp $(location :{})/Props.h $OUT".format(generate_fixtures_rule_name),
         out = "Props.h",
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.genrule(
+        name = generate_state_h_name,
+        cmd = "cp $(location :{})/States.h $OUT".format(generate_fixtures_rule_name),
+        out = "States.h",
         labels = ["codegen_rule"],
     )
 
@@ -387,12 +406,14 @@ def rn_codegen_components(
                 srcs = [
                     ":{}".format(generate_event_emitter_cpp_name),
                     ":{}".format(generate_props_cpp_name),
+                    ":{}".format(generate_state_cpp_name),
                     ":{}".format(generate_shadow_node_cpp_name),
                 ],
                 headers = [
                     ":{}".format(generate_component_descriptor_h_name),
                     ":{}".format(generate_event_emitter_h_name),
                     ":{}".format(generate_props_h_name),
+                    ":{}".format(generate_state_h_name),
                     ":{}".format(generate_shadow_node_h_name),
                 ],
                 header_namespace = "react/renderer/components/{}".format(name),
@@ -402,6 +423,7 @@ def rn_codegen_components(
                     "Props.h": ":{}".format(generate_props_h_name),
                     "RCTComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
                     "ShadowNodes.h": ":{}".format(generate_shadow_node_h_name),
+                    "States.h": ":{}".format(generate_state_h_name),
                 },
                 fbobjc_compiler_flags = get_apple_compiler_flags(),
                 fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
@@ -420,12 +442,6 @@ def rn_codegen_components(
                 tests = [":generated_tests-{}".format(name)],
                 visibility = ["PUBLIC"],
                 deps = [
-                    "//third-party/glog:glog",
-                    "//xplat/fbsystrace:fbsystrace",
-                    "//xplat/folly:headers_only_do_not_use",
-                    "//xplat/folly:memory",
-                    "//xplat/folly:molly",
-                    YOGA_CXX_TARGET,
                     react_native_xplat_target("react/renderer/debug:debug"),
                     react_native_xplat_target("react/renderer/core:core"),
                     react_native_xplat_target("react/renderer/graphics:graphics"),
@@ -465,13 +481,14 @@ def rn_codegen_components(
     # Android handling
     ##################
     if is_running_buck_project():
-        rn_android_library(name = "generated_components_java-{}".format(name), autoglob = False)
+        rn_android_library(name = "generated_components_java-{}".format(name), autoglob = False, language = "JAVA")
     else:
         rn_android_library(
             name = "generated_components_java-{}".format(name),
             srcs = [
                 ":{}".format(zip_generated_java_files),
             ],
+            language = "JAVA",
             autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
@@ -487,6 +504,7 @@ def rn_codegen_components(
             srcs = [
                 ":{}".format(zip_generated_cxx_files),
             ],
+            language = "JAVA",
             autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
@@ -518,6 +536,7 @@ def rn_codegen_cxx_modules(
     fb_native.genrule(
         name = generate_module_h_name,
         cmd = "cp $(location :{})/{}JSI.h $OUT".format(generate_fixtures_rule_name, name),
+        cmd_exe = "copy $(location :{})\\{}JSI.h $OUT".format(generate_fixtures_rule_name, name),
         out = "{}JSI.h".format(name),
         labels = ["codegen_rule"],
     )
@@ -525,6 +544,7 @@ def rn_codegen_cxx_modules(
     fb_native.genrule(
         name = generate_module_cpp_name,
         cmd = "cp $(location :{})/{}JSI-generated.cpp $OUT".format(generate_fixtures_rule_name, name),
+        cmd_exe = "copy $(location :{})\\{}JSI-generated.cpp $OUT".format(generate_fixtures_rule_name, name),
         out = "{}JSI-generated.cpp".format(name),
         labels = ["codegen_rule"],
     )
@@ -547,14 +567,23 @@ def rn_codegen_cxx_modules(
             fbobjc_compiler_flags = get_apple_compiler_flags(),
             fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
             labels = library_labels + ["codegen_rule"],
-            platforms = (ANDROID, APPLE),
+            platforms = (ANDROID, APPLE, CXX, WINDOWS),
             preprocessor_flags = [
                 "-DLOG_TAG=\"ReactNative\"",
                 "-DWITH_FBSYSTRACE=1",
             ],
             visibility = ["PUBLIC"],
-            exported_deps = [
+            fbandroid_exported_deps = [
                 react_native_xplat_target("react/nativemodule/core:core"),
+            ],
+            ios_exported_deps = [
+                react_native_xplat_target("react/nativemodule/core:core"),
+            ],
+            macosx_exported_deps = [
+                react_native_desktop_root_target(":bridging"),
+            ],
+            windows_exported_deps = [
+                react_native_desktop_root_target(":bridging"),
             ],
         )
 

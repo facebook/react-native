@@ -10,7 +10,7 @@
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import * as React from 'react';
-import {Animated, View, StyleSheet} from 'react-native';
+import {Animated, View, StyleSheet, Text} from 'react-native';
 import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
@@ -37,12 +37,23 @@ function AnimatedView({useNativeDriver}: {useNativeDriver: boolean}) {
     }),
   );
 
-  const animatedTextStyle = {
+  const animatedFirstSpanTextStyle = {
     color: new Animated.Color('blue'),
   };
   animations.push(
-    Animated.timing(animatedTextStyle.color, {
+    Animated.timing(animatedFirstSpanTextStyle.color, {
       toValue: new Animated.Color('red'),
+      duration: 1000,
+      useNativeDriver,
+    }),
+  );
+
+  const animatedSecondSpanTextStyle = {
+    color: new Animated.Color('orange'),
+  };
+  animations.push(
+    Animated.timing(animatedSecondSpanTextStyle.color, {
+      toValue: new Animated.Color('purple'),
       duration: 1000,
       useNativeDriver,
     }),
@@ -71,9 +82,13 @@ function AnimatedView({useNativeDriver}: {useNativeDriver: boolean}) {
         Press to animate
       </RNTesterButton>
       <Animated.View style={[styles.animatedView, animatedViewStyle]} />
-      <Animated.Text style={[styles.animatedText, animatedTextStyle]}>
-        Hello World
-      </Animated.Text>
+      <Text style={styles.animatedText}>
+        <Text>The </Text>
+        <Animated.Text style={animatedFirstSpanTextStyle}>quick</Animated.Text>
+        <Text> brown </Text>
+        <Animated.Text style={animatedSecondSpanTextStyle}>fox</Animated.Text>
+        <Text> jumps over the lazy dog</Text>
+      </Text>
       <Animated.Image
         style={[styles.animatedImage, animatedImageStyle]}
         source={require('../../assets/bunny.png')}

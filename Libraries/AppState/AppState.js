@@ -8,11 +8,11 @@
  * @format
  */
 
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import logError from '../Utilities/logError';
-import NativeAppState from './NativeAppState';
 import Platform from '../Utilities/Platform';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import NativeAppState from './NativeAppState';
 
 export type AppStateValues = 'inactive' | 'background' | 'active';
 
@@ -76,17 +76,13 @@ class AppState {
         // It's possible that the state will have changed here & listeners need to be notified
         if (!eventUpdated && this.currentState !== appStateData.app_state) {
           this.currentState = appStateData.app_state;
+          // $FlowFixMe[incompatible-call]
           emitter.emit('appStateDidChange', appStateData);
         }
       }, logError);
     }
   }
 
-  // TODO: now that AppState is a subclass of NativeEventEmitter, we could
-  // deprecate `addEventListener` and `removeEventListener` and just use
-  // addListener` and `listener.remove()` directly. That will be a breaking
-  // change though, as both the method and event names are different
-  // (addListener events are currently required to be globally unique).
   /**
    * Add a handler to AppState changes by listening to the `change` event type
    * and providing the handler.

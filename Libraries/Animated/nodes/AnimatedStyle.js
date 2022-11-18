@@ -12,45 +12,65 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-const flattenStyle = require('../../StyleSheet/flattenStyle');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-const AnimatedNode = require('./AnimatedNode');
-const AnimatedTransform = require('./AnimatedTransform');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
+import flattenStyle from '../../StyleSheet/flattenStyle';
+import Platform from '../../Utilities/Platform';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedNode from './AnimatedNode';
+import AnimatedTransform from './AnimatedTransform';
+import AnimatedWithChildren from './AnimatedWithChildren';
 
-class AnimatedStyle extends AnimatedWithChildren {
+function createAnimatedStyle(inputStyle: any): Object {
+  const style = flattenStyle(inputStyle);
+  const animatedStyles: any = {};
+  for (const key in style) {
+    const value = style[key];
+    if (key === 'transform') {
+      animatedStyles[key] = new AnimatedTransform(value);
+    } else if (value instanceof AnimatedNode) {
+      animatedStyles[key] = value;
+    } else if (value && !Array.isArray(value) && typeof value === 'object') {
+      animatedStyles[key] = createAnimatedStyle(value);
+    }
+  }
+  return animatedStyles;
+}
+
+function createStyleWithAnimatedTransform(inputStyle: any): Object {
+  let style = flattenStyle(inputStyle) || ({}: {[string]: any});
+
+  if (style.transform) {
+    style = {
+      ...style,
+      transform: new AnimatedTransform(style.transform),
+    };
+  }
+  return style;
+}
+
+export default class AnimatedStyle extends AnimatedWithChildren {
+  _inputStyle: any;
   _style: Object;
 
   constructor(style: any) {
     super();
-    style = flattenStyle(style) || ({}: {[string]: any});
-    if (style.transform) {
-      style = {
-        ...style,
-        transform: new AnimatedTransform(style.transform),
-      };
+    if (Platform.OS === 'web') {
+      this._inputStyle = style;
+      this._style = createAnimatedStyle(style);
+    } else {
+      this._style = createStyleWithAnimatedTransform(style);
     }
-    this._style = style;
   }
 
   // Recursively get values for nested styles (like iOS's shadowOffset)
-  _walkStyleAndGetValues(style: any, initialStyle: ?Object) {
+  _walkStyleAndGetValues(style: any): {[string]: any | {...}} {
     const updatedStyle: {[string]: any | {...}} = {};
     for (const key in style) {
       const value = style[key];
       if (value instanceof AnimatedNode) {
-        // During initial render we want to use the initial value of both natively and non-natively
-        // driven nodes. On subsequent renders, we cannot use the value of natively driven nodes
-        // as they may not be up to date, so we use the initial value to ensure that values of
-        // native animated nodes do not impact rerenders.
-        if (!initialStyle || !value.__isNative) {
-          updatedStyle[key] = value.__getValue();
-        } else if (initialStyle.hasOwnProperty(key)) {
-          updatedStyle[key] = initialStyle[key];
-        }
+        updatedStyle[key] = value.__getValue();
       } else if (value && !Array.isArray(value) && typeof value === 'object') {
         // Support animating nested values (for example: shadowOffset.height)
-        updatedStyle[key] = this._walkStyleAndGetValues(value, initialStyle);
+        updatedStyle[key] = this._walkStyleAndGetValues(value);
       } else {
         updatedStyle[key] = value;
       }
@@ -58,12 +78,16 @@ class AnimatedStyle extends AnimatedWithChildren {
     return updatedStyle;
   }
 
-  __getValue(initialStyle: ?Object): Object {
-    return this._walkStyleAndGetValues(this._style, initialStyle);
+  __getValue(): Object | Array<Object> {
+    if (Platform.OS === 'web') {
+      return [this._inputStyle, this._walkStyleAndGetValues(this._style)];
+    }
+
+    return this._walkStyleAndGetValues(this._style);
   }
 
   // Recursively get animated values for nested styles (like iOS's shadowOffset)
-  _walkStyleAndGetAnimatedValues(style: any) {
+  _walkStyleAndGetAnimatedValues(style: any): {[string]: any | {...}} {
     const updatedStyle: {[string]: any | {...}} = {};
     for (const key in style) {
       const value = style[key];
@@ -128,5 +152,3 @@ class AnimatedStyle extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedStyle;

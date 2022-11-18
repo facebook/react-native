@@ -7,7 +7,6 @@
 
 #import "RCTAnimatedNode.h"
 
-
 @interface RCTTrackingAnimatedNode : RCTAnimatedNode
 
 @end

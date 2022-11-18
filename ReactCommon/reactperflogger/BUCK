@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "CXX", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(
     name = "reactperflogger",
@@ -11,11 +11,11 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-Wno-global-constructors",
     ],
+    compiler_flags_pedantic = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
-    platforms = (ANDROID, APPLE),
+    platforms = (ANDROID, APPLE, CXX),
     preferred_linkage = "static",
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",

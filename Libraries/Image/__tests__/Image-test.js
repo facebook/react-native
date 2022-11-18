@@ -4,16 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
- * @emails oncall+react_native
  * @flow strict-local
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
-const React = require('react');
-const Image = require('../Image');
 const render = require('../../../jest/renderer');
+const Image = require('../Image');
+const React = require('react');
 
 describe('<Image />', () => {
   it('should render as <Image> when mocked', () => {

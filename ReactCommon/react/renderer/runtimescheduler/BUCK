@@ -31,12 +31,12 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/runtimescheduler",
     ),
+    compiler_flags_pedantic = True,
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
@@ -47,6 +47,7 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
+        "//xplat/folly:dynamic",
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("butter:butter"),

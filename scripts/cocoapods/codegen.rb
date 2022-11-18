@@ -65,3 +65,42 @@ def checkAndGenerateEmptyThirdPartyProvider!(react_native_path, new_arch_enabled
         File.delete(temp_schema_list_path) if File.exist?(temp_schema_list_path)
     end
 end
+
+def run_codegen!(
+  app_path,
+  config_file_dir,
+  new_arch_enabled: false,
+  disable_codegen: false,
+  react_native_path: "../node_modules/react-native",
+  fabric_enabled: false,
+  hermes_enabled: true,
+  codegen_output_dir: 'build/generated/ios',
+  config_key: 'codegenConfig',
+  package_json_file: '~/app/package.json',
+  folly_version: '2021.07.22.00',
+  codegen_utils: CodegenUtils.new()
+  )
+
+  if new_arch_enabled
+    codegen_utils.use_react_native_codegen_discovery!(
+      disable_codegen,
+      app_path,
+      :react_native_path => react_native_path,
+      :fabric_enabled => fabric_enabled,
+      :hermes_enabled => hermes_enabled,
+      :config_file_dir => config_file_dir,
+      :codegen_output_dir => codegen_output_dir,
+      :config_key => config_key,
+      :folly_version => folly_version
+    )
+  else
+    # Generate a podspec file for generated files.
+    # This gets generated in use_react_native_codegen_discovery when codegen discovery is enabled.
+    react_codegen_spec = codegen_utils.get_react_codegen_spec(
+      package_json_file,
+      :fabric_enabled => fabric_enabled,
+      :hermes_enabled => hermes_enabled
+    )
+    codegen_utils.generate_react_codegen_podspec!(react_codegen_spec, codegen_output_dir)
+  end
+end

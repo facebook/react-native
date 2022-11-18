@@ -12,7 +12,6 @@ import com.facebook.react.tests.OsRule
 import com.facebook.react.tests.WithOs
 import com.facebook.react.tests.createTestTask
 import java.io.File
-import org.gradle.api.tasks.*
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -29,15 +28,58 @@ class GenerateCodegenSchemaTaskTest {
     val jsRootDir =
         tempFolder.newFolder("js").apply {
           File(this, "file.js").createNewFile()
+          File(this, "file.ts").createNewFile()
           File(this, "ignore.txt").createNewFile()
         }
 
     val task = createTestTask<GenerateCodegenSchemaTask> { it.jsRootDir.set(jsRootDir) }
 
     assertEquals(jsRootDir, task.jsInputFiles.dir)
-    assertEquals(setOf("**/*.js"), task.jsInputFiles.includes)
+    assertEquals(setOf("**/*.js", "**/*.ts"), task.jsInputFiles.includes)
+    assertEquals(2, task.jsInputFiles.files.size)
+    assertEquals(
+        setOf(File(jsRootDir, "file.js"), File(jsRootDir, "file.ts")), task.jsInputFiles.files)
+  }
+
+  @Test
+  fun generateCodegenSchema_inputFilesInExcludedPath_areExcluded() {
+    fun File.createFileAndPath() {
+      parentFile.mkdirs()
+      createNewFile()
+    }
+
+    val jsRootDir =
+        tempFolder.newFolder("js").apply {
+          File(this, "afolder/includedfile.js").createFileAndPath()
+          // Those files should be excluded due to their filepath
+          File(this, "afolder/generated/source/codegen/anotherfolder/excludedfile.js")
+              .createFileAndPath()
+          File(this, "afolder/build/generated/assets/react/anotherfolder/excludedfile.js")
+              .createFileAndPath()
+          File(this, "afolder/build/generated/res/react/anotherfolder/excludedfile.js")
+              .createFileAndPath()
+          File(this, "afolder/build/generated/sourcemaps/react/anotherfolder/excludedfile.js")
+              .createFileAndPath()
+          File(this, "afolder/build/intermediates/sourcemaps/react/anotherfolder/excludedfile.js")
+              .createFileAndPath()
+        }
+
+    val task = createTestTask<GenerateCodegenSchemaTask> { it.jsRootDir.set(jsRootDir) }
+
+    assertEquals(jsRootDir, task.jsInputFiles.dir)
+    assertEquals(
+        setOf(
+            "**/generated/source/codegen/**/*",
+            "**/build/ASSETS/**/*",
+            "**/build/RES/**/*",
+            "**/build/generated/assets/react/**/*",
+            "**/build/generated/res/react/**/*",
+            "**/build/generated/sourcemaps/react/**/*",
+            "**/build/intermediates/sourcemaps/react/**/*",
+        ),
+        task.jsInputFiles.excludes)
     assertEquals(1, task.jsInputFiles.files.size)
-    assertEquals(setOf(File(jsRootDir, "file.js")), task.jsInputFiles.files)
+    assertEquals(setOf(File(jsRootDir, "afolder/includedfile.js")), task.jsInputFiles.files)
   }
 
   @Test
@@ -87,7 +129,7 @@ class GenerateCodegenSchemaTaskTest {
   }
 
   @Test
-  @WithOs(OS.UNIX)
+  @WithOs(OS.LINUX)
   fun setupCommandLine_willSetupCorrectly() {
     val codegenDir = tempFolder.newFolder("codegen")
     val jsRootDir = tempFolder.newFolder("js")
@@ -107,6 +149,8 @@ class GenerateCodegenSchemaTaskTest {
         listOf(
             "--verbose",
             File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").toString(),
+            "--platform",
+            "android",
             File(outputDir, "schema.json").toString(),
             jsRootDir.toString(),
         ),

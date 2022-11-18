@@ -8,6 +8,7 @@
 #import "RCTViewComponentView.h"
 
 #import <CoreGraphics/CoreGraphics.h>
+#import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 
 #import <React/RCTAssert.h>
@@ -29,8 +30,6 @@ using namespace facebook::react;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
 
-@synthesize removeClippedSubviews = _removeClippedSubviews;
-
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -42,7 +41,7 @@ using namespace facebook::react;
   return self;
 }
 
-- (facebook::react::SharedProps)props
+- (facebook::react::Props::Shared)props
 {
   return _props;
 }
@@ -516,6 +515,18 @@ static void RCTReleaseRCTBorderColors(RCTBorderColors borderColors)
   CGColorRelease(borderColors.right);
 }
 
+static CALayerCornerCurve CornerCurveFromBorderCurve(BorderCurve borderCurve)
+{
+  // The constants are available only starting from iOS 13
+  // CALayerCornerCurve is a typealias on NSString *
+  switch (borderCurve) {
+    case BorderCurve::Continuous:
+      return @"continuous"; // kCACornerCurveContinuous;
+    case BorderCurve::Circular:
+      return @"circular"; // kCACornerCurveCircular;
+  }
+}
+
 static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 {
   switch (borderStyle) {
@@ -580,6 +591,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.borderColor = borderColor;
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
+    if (@available(iOS 13.0, *)) {
+      layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
+    }
     layer.backgroundColor = _backgroundColor.CGColor;
   } else {
     if (!_borderLayer) {

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
  * @format
+ * @oncall react_native
  */
 
 'use strict';
@@ -13,13 +13,20 @@
 const underTest = require('../generate-artifacts-executor');
 const fixtures = require('../__test_fixtures__/fixtures');
 const path = require('path');
+const fs = require('fs');
+const child_process = require('child_process');
 
 const codegenConfigKey = 'codegenConfig';
 const reactNativeDependencyName = 'react-native';
 const rootPath = path.join(__dirname, '../../..');
 
 describe('generateCode', () => {
-  it('executeNodes with the right arguents', () => {
+  afterEach(() => {
+    jest.resetModules();
+    jest.resetAllMocks();
+  });
+
+  it('executeNodes with the right arguments', () => {
     // Define variables and expected values
     const iosOutputDir = 'app/ios/build/generated/ios';
     const library = {config: {name: 'library', type: 'all'}};
@@ -32,46 +39,32 @@ describe('generateCode', () => {
     const tmpOutDir = path.join(tmpDir, 'out');
 
     // mock used functions
-    let mkdirSyncInvocationCount = 0;
-    jest.mock('fs', () => ({
-      mkdirSync: (location, config) => {
-        if (mkdirSyncInvocationCount === 0) {
-          expect(location).toEqual(tmpOutDir);
-        }
-        if (mkdirSyncInvocationCount === 1) {
-          expect(location).toEqual(iosOutputDir);
-        }
-
-        mkdirSyncInvocationCount += 1;
-      },
-    }));
-
-    let execSyncInvocationCount = 0;
-    jest.mock('child_process', () => ({
-      execSync: command => {
-        if (execSyncInvocationCount === 0) {
-          const expectedCommand = `${node} ${path.join(
-            rnRoot,
-            'generate-specs-cli.js',
-          )} \
-        --platform ios \
-        --schemaPath ${pathToSchema} \
-        --outputDir ${tmpOutDir} \
-        --libraryName ${library.config.name} \
-        --libraryType ${libraryType}`;
-          expect(command).toEqual(expectedCommand);
-        }
-
-        if (execSyncInvocationCount === 1) {
-          expect(command).toEqual(`cp -R ${tmpOutDir}/* ${iosOutputDir}`);
-        }
-
-        execSyncInvocationCount += 1;
-      },
-    }));
+    jest.spyOn(fs, 'mkdirSync').mockImplementation();
+    jest.spyOn(child_process, 'execSync').mockImplementation();
 
     underTest._generateCode(iosOutputDir, library, tmpDir, node, pathToSchema);
-    expect(mkdirSyncInvocationCount).toBe(2);
+
+    const expectedCommand = `${node} ${path.join(
+      rnRoot,
+      'generate-specs-cli.js',
+    )}         --platform ios         --schemaPath ${pathToSchema}         --outputDir ${tmpOutDir}         --libraryName ${
+      library.config.name
+    }         --libraryType ${libraryType}`;
+
+    expect(child_process.execSync).toHaveBeenCalledTimes(2);
+    expect(child_process.execSync).toHaveBeenNthCalledWith(1, expectedCommand);
+    expect(child_process.execSync).toHaveBeenNthCalledWith(
+      2,
+      `cp -R ${tmpOutDir}/* ${iosOutputDir}`,
+    );
+
+    expect(fs.mkdirSync).toHaveBeenCalledTimes(2);
+    expect(fs.mkdirSync).toHaveBeenNthCalledWith(1, tmpOutDir, {
+      recursive: true,
+    });
+    expect(fs.mkdirSync).toHaveBeenNthCalledWith(2, iosOutputDir, {
+      recursive: true,
+    });
   });
 });
 
@@ -199,6 +192,83 @@ describe('extractLibrariesFromJSON', () => {
       },
       libraryPath: myDependencyPath,
     });
+  });
+});
+
+describe('findCodegenEnabledLibraries', () => {
+  const mock = require('mock-fs');
+  const {
+    _findCodegenEnabledLibraries: findCodegenEnabledLibraries,
+  } = require('../generate-artifacts-executor');
+
+  afterEach(() => {
+    mock.restore();
+  });
+
+  it('returns libraries defined in react-native.config.js', () => {
+    const projectDir = path.join(__dirname, '../../../../test-project');
+    const baseCodegenConfigFileDir = path.join(__dirname, '../../..');
+    const baseCodegenConfigFilePath = path.join(
+      baseCodegenConfigFileDir,
+      'package.json',
+    );
+
+    mock({
+      [baseCodegenConfigFilePath]: `
+      {
+        "codegenConfig": {}
+      }
+      `,
+      [projectDir]: {
+        app: {
+          'package.json': `{
+            "name": "my-app"
+          }`,
+          'react-native.config.js': '',
+        },
+        'library-foo': {
+          'package.json': `{
+            "name": "react-native-foo",
+            "codegenConfig": {
+              "name": "RNFooSpec",
+              "type": "modules",
+              "jsSrcsDir": "src"
+            }
+          }`,
+        },
+      },
+    });
+
+    jest.mock(path.join(projectDir, 'app', 'react-native.config.js'), () => ({
+      dependencies: {
+        'react-native-foo': {
+          root: path.join(projectDir, 'library-foo'),
+        },
+        'react-native-bar': {
+          root: path.join(projectDir, 'library-bar'),
+        },
+      },
+    }));
+
+    const libraries = findCodegenEnabledLibraries(
+      `${projectDir}/app`,
+      baseCodegenConfigFileDir,
+      `package.json`,
+      'codegenConfig',
+    );
+
+    expect(libraries).toEqual([
+      {
+        library: 'react-native',
+        config: {},
+        libraryPath: baseCodegenConfigFileDir,
+      },
+      {
+        library: 'react-native-foo',
+        config: {name: 'RNFooSpec', type: 'modules', jsSrcsDir: 'src'},
+        libraryPath: path.join(projectDir, 'library-foo'),
+      },
+    ]);
   });
 });
 

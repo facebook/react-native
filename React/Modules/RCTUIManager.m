@@ -1657,7 +1657,7 @@ static UIView *_jsResponder;
 + (UIView *)JSResponder
 {
   RCTErrorNewArchitectureValidation(
-      RCTNotAllowedInAppWideFabric, @"RCTUIManager", @"Please migrate this legacy surface to Fabric.");
+      RCTNotAllowedInFabricWithoutLegacy, @"RCTUIManager", @"Please migrate this legacy surface to Fabric.");
   return _jsResponder;
 }
 

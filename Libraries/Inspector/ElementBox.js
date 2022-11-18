@@ -10,14 +10,13 @@
 
 'use strict';
 
-const BorderBox = require('./BorderBox');
-const Dimensions = require('../Utilities/Dimensions');
-const React = require('react');
-const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
-
 const flattenStyle = require('../StyleSheet/flattenStyle');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Dimensions = require('../Utilities/Dimensions');
+const BorderBox = require('./BorderBox');
 const resolveBoxStyle = require('./resolveBoxStyle');
+const React = require('react');
 
 class ElementBox extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
@@ -26,7 +25,7 @@ class ElementBox extends React.Component<$FlowFixMeProps> {
     let padding = resolveBoxStyle('padding', style);
 
     const frameStyle = {...this.props.frame};
-    const contentStyle = {
+    const contentStyle: {width: number, height: number} = {
       width: this.props.frame.width,
       height: this.props.frame.height,
     };
@@ -124,12 +123,14 @@ function resolveSizeInPlace(
 ) {
   if (style[direction] !== null && typeof style[direction] === 'string') {
     if (style[direction].indexOf('%') !== -1) {
+      // $FlowFixMe[prop-missing]
       style[direction] =
         (parseFloat(style[direction]) / 100.0) *
         Dimensions.get('window')[dimension];
     }
     if (style[direction] === 'auto') {
       // Ignore auto sizing in frame drawing due to complexity of correctly rendering this
+      // $FlowFixMe[prop-missing]
       style[direction] = 0;
     }
   }

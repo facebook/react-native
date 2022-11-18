@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.DynamicFromObject;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.yoga.YogaConstants;
@@ -47,6 +48,12 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
         break;
       case ViewProps.ACCESSIBILITY_STATE:
         mViewManager.setViewState(view, (ReadableMap) value);
+        break;
+      case ViewProps.ACCESSIBILITY_COLLECTION:
+        mViewManager.setAccessibilityCollection(view, (ReadableMap) value);
+        break;
+      case ViewProps.ACCESSIBILITY_COLLECTION_ITEM:
+        mViewManager.setAccessibilityCollectionItem(view, (ReadableMap) value);
         break;
       case ViewProps.BACKGROUND_COLOR:
         mViewManager.setBackgroundColor(
@@ -86,7 +93,8 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
         mViewManager.setNativeId(view, (String) value);
         break;
       case ViewProps.ACCESSIBILITY_LABELLED_BY:
-        mViewManager.setAccessibilityLabelledBy(view, (Dynamic) value);
+        Dynamic dynamicFromObject = new DynamicFromObject(value);
+        mViewManager.setAccessibilityLabelledBy(view, dynamicFromObject);
         break;
       case ViewProps.OPACITY:
         mViewManager.setOpacity(view, value == null ? 1.0f : ((Double) value).floatValue());

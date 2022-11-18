@@ -20,7 +20,6 @@ const {AppRegistry, ScrollView, StyleSheet, Text, TouchableOpacity, View} =
 const TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
-  require('./AsyncStorageTest'),
   require('./LayoutEventsTest'),
   require('./AppEventsTest'),
   require('./SimpleSnapshotTest'),
@@ -46,11 +45,11 @@ require('./LoggingTestModule');
 type Test = any;
 
 class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: {test: ?Test} = {
     test: (null: ?Test),
   };
 
-  render() {
+  render(): React.Node {
     if (this.state.test) {
       return (
         <ScrollView>

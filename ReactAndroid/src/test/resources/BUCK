@@ -10,7 +10,6 @@ fb_native.java_library(
     srcs = [],
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     resources = [
         "robolectric.properties",

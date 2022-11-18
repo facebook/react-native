@@ -9,7 +9,6 @@
  */
 
 const Systrace = require('../Performance/Systrace');
-
 const infoLog = require('./infoLog');
 
 export type Timespan = {
@@ -137,31 +136,31 @@ class PerformanceLogger implements IPerformanceLogger {
     this._closed = true;
   }
 
-  currentTimestamp() {
+  currentTimestamp(): number {
     return getCurrentTimestamp();
   }
 
-  getExtras() {
+  getExtras(): {[key: string]: ?ExtraValue} {
     return this._extras;
   }
 
-  getPoints() {
+  getPoints(): {[key: string]: ?number} {
     return this._points;
   }
 
-  getPointExtras() {
+  getPointExtras(): {[key: string]: ?Extras} {
     return this._pointExtras;
   }
 
-  getTimespans() {
+  getTimespans(): {[key: string]: ?Timespan} {
     return this._timespans;
   }
 
-  hasTimespan(key: string) {
+  hasTimespan(key: string): boolean {
     return !!this._timespans[key];
   }
 
-  isClosed() {
+  isClosed(): boolean {
     return this._closed;
   }
 

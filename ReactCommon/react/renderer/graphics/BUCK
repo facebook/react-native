@@ -36,6 +36,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/graphics",
     ),
+    compiler_flags_pedantic = True,
     cxx_exported_headers = subdir_glob(
         [
             ("platform/cxx/react/renderer/graphics", "**/*.h"),
@@ -55,31 +56,27 @@ rn_xplat_cxx_library(
     fbandroid_exported_headers = subdir_glob(
         [
             ("platform/android/react/renderer/graphics", "**/*.h"),
-            ("platform/cxx/react/renderer/graphics", "**/*.h"),
         ],
-        exclude = ["platform/cxx/react/renderer/graphics/PlatformColorParser.h"],
         prefix = "react/renderer/graphics",
     ),
     fbandroid_srcs = glob(
         [
-            "platform/cxx/react/renderer/graphics/**/*.cpp",
             "platform/android/react/renderer/graphics/**/*.cpp",
         ],
-        exclude = ["platform/cxx/react/renderer/graphics/PlatformColorParser.h"],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_exported_headers = subdir_glob(
+        [
+            ("platform/ios", "*.h"),
+        ],
+        prefix = "react/renderer/graphics",
+    ),
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     ios_deps = [
         "//xplat/js/react-native-github:RCTCxxBridge",
         "//xplat/js/react-native-github:RCTImage",
     ],
-    ios_exported_headers = subdir_glob(
-        [
-            ("platform/ios", "*.h"),
-        ],
-        prefix = "react/renderer/graphics",
-    ),
     ios_frameworks = [
         "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
@@ -93,7 +90,6 @@ rn_xplat_cxx_library(
     ),
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
@@ -108,9 +104,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("butter:butter"),
         "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
-        "//xplat/folly:molly",
+        "//xplat/folly:hash",
     ],
 )
 
@@ -128,7 +122,6 @@ fb_xplat_cxx_test(
     platforms = (ANDROID, APPLE, CXX),
     deps = [
         ":graphics",
-        "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
     ],
 )

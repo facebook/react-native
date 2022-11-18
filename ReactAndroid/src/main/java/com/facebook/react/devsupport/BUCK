@@ -4,11 +4,10 @@ rn_android_library(
     name = "devsupport",
     srcs = glob(["*.java"]),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
+    language = "JAVA",
     manifest = "AndroidManifest.xml",
     provided_deps = [
         react_native_dep("third-party/android/androidx:core"),
@@ -51,11 +50,10 @@ rn_android_library(
     name = "interfaces",
     srcs = glob(["interfaces/*.java"]),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

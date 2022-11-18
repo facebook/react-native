@@ -10,12 +10,11 @@
 
 #include "LayoutMetrics.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(LayoutMetrics const &object) {
+std::string getDebugName(LayoutMetrics const & /*object*/) {
   return "LayoutMetrics";
 }
 
@@ -61,5 +60,4 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -31,8 +31,17 @@
  *     * or otherwise `{major}.{minor}-stable`
  */
 
-const {exec, echo, exit, test, env} = require('shelljs');
-const {parseVersion, isTaggedLatest} = require('./version-utils');
+const {exec, echo, exit} = require('shelljs');
+const {parseVersion} = require('./version-utils');
+const {
+  exitIfNotOnGit,
+  getCurrentCommit,
+  isTaggedLatest,
+} = require('./scm-utils');
+const {
+  generateAndroidArtifacts,
+  publishAndroidArtifactsToMaven,
+} = require('./release-utils');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -40,6 +49,9 @@ const yargs = require('yargs');
 
 const buildTag = process.env.CIRCLE_TAG;
 const otp = process.env.NPM_CONFIG_OTP;
+const tmpPublishingFolder = fs.mkdtempSync(
+  path.join(os.tmpdir(), 'rn-publish-'),
+);
 
 const argv = yargs
   .option('n', {
@@ -52,75 +64,22 @@ const argv = yargs
     type: 'boolean',
     default: false,
   })
-  .option('h', {
-    alias: 'include-hermes',
+  .option('r', {
+    alias: 'release', // useless but needed for CI
     type: 'boolean',
     default: false,
-  }).argv;
+  })
+  .strict().argv;
 const nightlyBuild = argv.nightly;
 const dryRunBuild = argv.dryRun;
-const includeHermes = argv.includeHermes;
 const isCommitly = nightlyBuild || dryRunBuild;
 
-if (includeHermes) {
-  const HERMES_INSTALL_LOCATION = 'sdks';
-  const HERMES_SOURCE_DEST_PATH = `${HERMES_INSTALL_LOCATION}/hermes`;
-
-  let hermesReleaseTag;
-  let hermesReleaseURI;
-  if (isCommitly) {
-    // use latest commit / tarball
-    hermesReleaseURI = 'https://github.com/facebook/hermes/tarball/main';
-  } else {
-    // use one configured in disk
-    fs.readFile(
-      `${HERMES_INSTALL_LOCATION}/.hermesversion`,
-      {
-        encoding: 'utf8',
-        flag: 'r',
-      },
-      function (err, data) {
-        if (err) {
-          echo('Failed to read current Hermes release tag.');
-          // TODO: We'll need to make sure every release going forward has one of these.
-          exit(1);
-        } else {
-          hermesReleaseTag = data.trim();
-          hermesReleaseURI = `https://github.com/facebook/hermes/archive/refs/tags/${hermesReleaseTag}.tar.gz`;
-        }
-      },
-    );
-  }
-
-  const tmpDownloadDir = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'hermes-tarball'),
-  );
-  const tmpExtractDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hermes'));
-
-  const hermesInstallScript = `
-    mkdir -p ${HERMES_SOURCE_DEST_PATH} && \
-    wget ${hermesReleaseURI} -O ${tmpDownloadDir}/hermes.tar.gz && \
-    tar -xzf ${tmpDownloadDir}/hermes.tar.gz -C ${tmpExtractDir} && \
-    HERMES_SOURCE_EXTRACT_PATH=$(ls -d ${tmpExtractDir}/*) && \
-    mv $HERMES_SOURCE_EXTRACT_PATH ${HERMES_SOURCE_DEST_PATH}
-  `;
-
-  if (fs.existsSync(`${HERMES_SOURCE_DEST_PATH}`)) {
-    if (exec(`rm -rf ./${HERMES_SOURCE_DEST_PATH}`).code) {
-      echo('Failed to clean up previous Hermes installation.');
-      exit(1);
-    }
-  }
-  if (exec(hermesInstallScript).code) {
-    echo('Failed to include Hermes in release.');
-    exit(1);
-  }
+if (!argv.help) {
+  echo(`The temp publishing folder is ${tmpPublishingFolder}`);
 }
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
-const currentCommit = exec('git rev-parse HEAD', {
-  silent: true,
-}).stdout.trim();
+const currentCommit = getCurrentCommit();
 const shortCommit = currentCommit.slice(0, 9);
 
 const rawVersion =
@@ -170,46 +129,11 @@ if (isCommitly) {
   }
 }
 
-// -------- Generating Android Artifacts
-if (exec('./gradlew :ReactAndroid:installArchives').code) {
-  echo('Could not generate artifacts');
-  exit(1);
-}
+generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
 
-// -------- Generating the Hermes Engine Artifacts
-env.REACT_NATIVE_HERMES_SKIP_PREFAB = true;
-if (exec('./gradlew :ReactAndroid:hermes-engine:installArchives').code) {
-  echo('Could not generate artifacts');
-  exit(1);
-}
-
-// undo uncommenting javadoc setting
-exec('git checkout ReactAndroid/gradle.properties');
-
-echo('Generated artifacts for Maven');
-
-let artifacts = [
-  '.module',
-  '.pom',
-  '-debug.aar',
-  '-release.aar',
-  '-debug-sources.jar',
-  '-release-sources.jar',
-].map(suffix => {
-  return `react-native-${releaseVersion}${suffix}`;
-});
-
-artifacts.forEach(name => {
-  if (
-    !test(
-      '-e',
-      `./android/com/facebook/react/react-native/${releaseVersion}/${name}`,
-    )
-  ) {
-    echo(`Failing as expected file: ${name} was not correctly generated.`);
-    exit(1);
-  }
-});
+// Write version number to the build folder
+const releaseVersionFile = path.join('build', '.version');
+fs.writeFileSync(releaseVersionFile, releaseVersion);
 
 if (dryRunBuild) {
   echo('Skipping `npm publish` because --dry-run is set.');
@@ -217,7 +141,14 @@ if (dryRunBuild) {
 }
 
 // Running to see if this commit has been git tagged as `latest`
-const isLatest = isTaggedLatest(currentCommit);
+const isLatest = exitIfNotOnGit(
+  () => isTaggedLatest(currentCommit),
+  'Not in git. We do not want to publish anything',
+);
+
+// We first publish on Maven Central all the necessary artifacts.
+// NPM publishing is done just after.
+publishAndroidArtifactsToMaven(releaseVersion, nightlyBuild);
 
 const releaseBranch = `${major}.${minor}-stable`;
 

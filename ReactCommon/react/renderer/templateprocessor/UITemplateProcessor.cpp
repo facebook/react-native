@@ -18,24 +18,23 @@
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 bool constexpr DEBUG_FLY = false;
 
 struct RBCContext {
   const Tag rootTag;
-  const std::vector<SharedShadowNode> &nodes;
+  const std::vector<ShadowNode::Shared> &nodes;
   const std::vector<folly::dynamic> &registers;
   const ComponentDescriptorRegistry &componentDescriptorRegistry;
   const NativeModuleRegistry &nativeModuleRegistry;
 };
 
 // TODO: use RBCContext instead of all the separate arguments.
-SharedShadowNode UITemplateProcessor::runCommand(
+ShadowNode::Shared UITemplateProcessor::runCommand(
     const folly::dynamic &command,
     SurfaceId surfaceId,
-    std::vector<SharedShadowNode> &nodes,
+    std::vector<ShadowNode::Shared> &nodes,
     std::vector<folly::dynamic> &registers,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
@@ -100,7 +99,7 @@ SharedShadowNode UITemplateProcessor::runCommand(
   return nullptr;
 }
 
-SharedShadowNode UITemplateProcessor::buildShadowTree(
+ShadowNode::Shared UITemplateProcessor::buildShadowTree(
     const std::string &jsonStr,
     SurfaceId surfaceId,
     const folly::dynamic &params,
@@ -122,7 +121,7 @@ SharedShadowNode UITemplateProcessor::buildShadowTree(
   }
   auto parsed = folly::parseJson(content);
   auto commands = parsed["commands"];
-  std::vector<SharedShadowNode> nodes(commands.size() * 2);
+  std::vector<ShadowNode::Shared> nodes(commands.size() * 2);
   std::vector<folly::dynamic> registers(32);
   for (const auto &command : commands) {
     try {
@@ -148,8 +147,7 @@ SharedShadowNode UITemplateProcessor::buildShadowTree(
   LOG(ERROR) << "react ui template missing returnRoot command :(";
   throw std::runtime_error(
       "Missing returnRoot command in template content:\n" + content);
-  return SharedShadowNode{};
+  return ShadowNode::Shared{};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

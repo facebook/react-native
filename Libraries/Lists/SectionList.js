@@ -10,16 +10,16 @@
 
 'use strict';
 
-import Platform from '../Utilities/Platform';
-import * as React from 'react';
-import VirtualizedSectionList from './VirtualizedSectionList';
-
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {
-  SectionBase as _SectionBase,
   Props as VirtualizedSectionListProps,
   ScrollToLocationParamsType,
+  SectionBase as _SectionBase,
 } from './VirtualizedSectionList';
+
+import Platform from '../Utilities/Platform';
+import VirtualizedSectionList from './VirtualizedSectionList';
+import * as React from 'react';
 
 type Item = any;
 
@@ -255,6 +255,8 @@ export default class SectionList<
   }
 
   _wrapperListRef: ?React.ElementRef<typeof VirtualizedSectionList>;
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _captureRef = ref => {
     this._wrapperListRef = ref;
   };

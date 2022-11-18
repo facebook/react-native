@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
@@ -49,7 +49,7 @@ describe('elementsThatOverlapOffsets', function () {
       };
     }
     expect(
-      elementsThatOverlapOffsets(offsets, 100, getFrameMetrics, 1),
+      elementsThatOverlapOffsets(offsets, fakeProps(100), getFrameMetrics, 1),
     ).toEqual([0, 2, 3, 4]);
   });
   it('handles variable length', function () {
@@ -62,7 +62,12 @@ describe('elementsThatOverlapOffsets', function () {
       {offset: 950, length: 150},
     ];
     expect(
-      elementsThatOverlapOffsets(offsets, frames.length, ii => frames[ii], 1),
+      elementsThatOverlapOffsets(
+        offsets,
+        fakeProps(frames.length),
+        ii => frames[ii],
+        1,
+      ),
     ).toEqual([1, 1, 3]);
   });
   it('handles frame boundaries', function () {
@@ -74,7 +79,7 @@ describe('elementsThatOverlapOffsets', function () {
       };
     }
     expect(
-      elementsThatOverlapOffsets(offsets, 100, getFrameMetrics, 1),
+      elementsThatOverlapOffsets(offsets, fakeProps(100), getFrameMetrics, 1),
     ).toEqual([0, 0, 1, 2]);
   });
   it('handles out of bounds', function () {
@@ -85,7 +90,19 @@ describe('elementsThatOverlapOffsets', function () {
       {offset: 250, length: 100},
     ];
     expect(
-      elementsThatOverlapOffsets(offsets, frames.length, ii => frames[ii], 1),
+      elementsThatOverlapOffsets(
+        offsets,
+        fakeProps(frames.length),
+        ii => frames[ii],
+        1,
+      ),
     ).toEqual([undefined, 1]);
   });
 });
+
+function fakeProps(length) {
+  return {
+    data: new Array(length).fill({}),
+    getItemCount: () => length,
+  };
+}

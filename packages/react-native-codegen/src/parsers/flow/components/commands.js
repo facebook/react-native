@@ -14,7 +14,7 @@ import type {
   NamedShape,
   CommandTypeAnnotation,
 } from '../../../CodegenSchema.js';
-import type {TypeDeclarationMap} from '../utils.js';
+import type {TypeDeclarationMap} from '../../utils';
 
 const {getValueFromTypes} = require('../utils.js');
 
@@ -90,6 +90,7 @@ function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
 
     return {
       name: paramName,
+      optional: false,
       typeAnnotation: returnType,
     };
   });

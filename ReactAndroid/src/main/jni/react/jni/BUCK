@@ -42,7 +42,6 @@ rn_xplat_cxx_library(
     fbandroid_allow_jni_merging = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     platforms = ANDROID,
     preprocessor_flags = [
@@ -58,10 +57,11 @@ rn_xplat_cxx_library(
         "//xplat/third-party/linker_lib:android",
         "//xplat/third-party/linker_lib:atomic",
         "//third-party/glog:glog",
-        "//xplat/folly:molly",
+        "//xplat/folly:dynamic",
+        "//xplat/folly:json",
         "//fbandroid/xplat/fbgloginit:fbgloginit",
         "//xplat/fbsystrace:fbsystrace",
-        react_native_target("java/com/facebook/react/turbomodule/core/jni:callinvokerholder"),
+        react_native_target("jni/react/turbomodule:callinvokerholder"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
         react_native_xplat_target("cxxreact:module"),

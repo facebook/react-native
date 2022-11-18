@@ -4,19 +4,19 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
- * @format
  * @flow
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
-const LogBox = require('../LogBox');
 const LogBoxData = require('../Data/LogBoxData');
+const LogBox = require('../LogBox');
 
 declare var console: any;
 
-function mockFilterResult(returnValues) {
+function mockFilterResult(returnValues: $FlowFixMe) {
   (LogBoxData.checkWarningFilter: any).mockReturnValue({
     finalFormat: 'Warning: ...',
     forceDialogImmediately: false,

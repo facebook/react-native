@@ -11,9 +11,9 @@ import androidx.annotation.Nullable;
 
 /**
  * Utility class to make assertions that should not hard-crash the app but instead be handled by the
- * Catalyst app {@link NativeModuleCallExceptionHandler}. See the javadoc on that class for more
- * information about our opinion on when these assertions should be used as opposed to assertions
- * that might throw AssertionError Throwables that will cause the app to hard crash.
+ * Catalyst app {@link JSExceptionHandler}. See the javadoc on that class for more information about
+ * our opinion on when these assertions should be used as opposed to assertions that might throw
+ * AssertionError Throwables that will cause the app to hard crash.
  */
 public class SoftAssertions {
 

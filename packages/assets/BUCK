@@ -1,16 +1,10 @@
-load("@fbsource//tools/build_defs:js_glob.bzl", "js_glob")
 load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 load("@fbsource//xplat/js:JS_DEFS.bzl", "rn_library")
 
 rn_library(
     name = "assets",
-    srcs = js_glob([
-        "**/*",
-        "package.json",
-    ]),
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.core",
     ],
     skip_processors = True,
     visibility = ["PUBLIC"],

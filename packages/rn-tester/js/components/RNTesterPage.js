@@ -27,7 +27,7 @@ class RNTesterPage extends React.Component<Props> {
       automaticallyAdjustContentInsets?: boolean,
       keyboardShouldPersistTaps?: string,
       keyboardDismissMode?: string,
-    } = {...null};
+    } = {};
     if (this.props.noScroll) {
       ContentWrapper = ((View: any): React.ComponentType<any>);
     } else {

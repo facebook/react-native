@@ -13,8 +13,6 @@
 #include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 
-using namespace facebook::yoga;
-
 struct YGLayout {
   std::array<float, 4> position = {};
   std::array<float, 2> dimensions = {{YGUndefined, YGUndefined}};

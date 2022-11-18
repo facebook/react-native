@@ -7,6 +7,24 @@
 
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.internal.jvm.Jvm
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
+import org.gradle.internal.logging.text.StyledTextOutput.Style
+
+def out = services.get(StyledTextOutputFactory).create("ouput")
+out.style(Style.Info)
+    .text('##############################')
+    .text('\n\n')
+    .text('Using react.gradle in your project is deprecated! You should move to "apply plugin: com.facebook.react"')
+    .text('\n')
+    .text('react.gradle is going to be removed in a future React Native project and your project will not build anymore.')
+    .text('\n')
+    .text('You can use the template as a reference:')
+    .text('\n')
+    .text('https://github.com/facebook/react-native/blob/main/template/android/app/build.gradle')
+    .text('\n\n')
+    .text('##############################')
+    .println('')
 
 def config = project.hasProperty("react") ? project.react : [:];
 
@@ -53,7 +71,7 @@ def detectCliPath(config, reactRoot) {
     }
 
     // 2. node module path
-    def cliJsFromNode = new File(["node", "--print", "require.resolve('react-native/cli').bin"].execute(null, rootDir).text.trim())
+    def cliJsFromNode = new File(["node", "--print", "require.resolve('react-native/cli')"].execute(null, rootDir).text.trim())
     if (cliJsFromNode.exists()) {
         return cliJsFromNode.getAbsolutePath()
     }
@@ -102,20 +120,22 @@ def getHermesCommand = {
         }
     }
 
+    def hermescBin = Os.isFamily(Os.FAMILY_WINDOWS) ? 'hermesc.exe' : 'hermesc'
+
     // 2. If the project is building hermes-engine from source, use hermesc from there
     // Also note that user can override the hermes source location with
     // the `REACT_NATIVE_OVERRIDE_HERMES_DIR` env variable.
     def hermesOverrideDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR")
     def builtHermesc = hermesOverrideDir ?
-        new File(hermesOverrideDir, "build/bin/hermesc") :
-        new File(reactRoot, "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
+        new File(hermesOverrideDir, "build/bin/$hermescBin") :
+        new File(reactRoot, "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/$hermescBin")
 
     if (builtHermesc.exists()) {
         return builtHermesc.getAbsolutePath()
     }
 
     // 3. If the react-native contains a pre-built hermesc, use it.
-    def prebuiltHermesPath = "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc"
+    def prebuiltHermesPath = "node_modules/react-native/sdks/hermesc/%OS-BIN%/$hermescBin"
         .replaceAll("%OS-BIN%", getHermesOSBin())
         .replace('/' as char, File.separatorChar);
     def prebuiltHermes = new File(reactRoot, prebuiltHermesPath)
@@ -385,7 +405,7 @@ afterEvaluate {
                     into ("merged_assets/${variant.name}/out")
 
                     // Workaround for Android Gradle Plugin 7.1 asset directory
-                    into("$buildDir/intermediates/assets/${variant.name}/merge${targetName}Assets")
+                    into("$buildDir/intermediates/assets/${variant.name}")
                 }
             }
 

@@ -12,17 +12,34 @@
 // TextInputs. All calls relating to the keyboard should be funneled
 // through here.
 
-const React = require('react');
-const Platform = require('../../Utilities/Platform');
-const {findNodeHandle} = require('../../Renderer/shims/ReactNative');
+import type {
+  HostComponent,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+  MeasureOnSuccessCallback,
+} from '../../Renderer/shims/ReactNativeTypes';
+
 import {Commands as AndroidTextInputCommands} from '../../Components/TextInput/AndroidTextInputNativeComponent';
 import {Commands as iOSTextInputCommands} from '../../Components/TextInput/RCTSingelineTextInputNativeComponent';
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+const {findNodeHandle} = require('../../ReactNative/RendererProxy');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
 type ComponentRef = React.ElementRef<HostComponent<mixed>>;
 
 let currentlyFocusedInputRef: ?ComponentRef = null;
-const inputs = new Set();
+const inputs = new Set<{
+  blur(): void,
+  focus(): void,
+  measure(callback: MeasureOnSuccessCallback): void,
+  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
+  measureLayout(
+    relativeToNativeNode: number | React.ElementRef<HostComponent<mixed>>,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+    onFail?: () => void,
+  ): void,
+  setNativeProps(nativeProps: {...}): void,
+}>();
 
 function currentlyFocusedInput(): ?ComponentRef {
   return currentlyFocusedInputRef;

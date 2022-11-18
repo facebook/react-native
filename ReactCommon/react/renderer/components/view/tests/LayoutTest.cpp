@@ -14,8 +14,7 @@
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/testUtils.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // Note: the (x, y) origin is always relative to the parent node. You may use
 // P482342650 to re-create this test case in playground.
@@ -359,5 +358,4 @@ TEST_F(LayoutTest, overflowInsetTransformScaleTest) {
   EXPECT_EQ(layoutMetricsABC.overflowInset.bottom, 0);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

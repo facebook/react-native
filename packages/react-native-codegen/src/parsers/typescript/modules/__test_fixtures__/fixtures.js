@@ -84,7 +84,7 @@ export interface Spec extends TurboModule {
       major: number;
       minor: number;
       patch?: number;
-      prerelease: number | null | void;
+      prerelease: number | null | undefined;
     };
     forceTouchAvailable: boolean;
     osVersion: string;
@@ -295,7 +295,7 @@ import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly voidFunc: (arg: string | null | void) => void;
+  readonly voidFunc: (arg: string | null | undefined) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -315,8 +315,29 @@ import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly getArray: (arg: Array<string>) => Array<string>;
-  readonly getArray: (arg: ReadonlyArray<string>) => ReadonlyArray<string>;
+  readonly getArray: (arg: Array<string>) => (Array<(string)>);
+  readonly getArray: (arg: ReadonlyArray<string>) => (ReadonlyArray<(string)>);
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
+const NATIVE_MODULE_WITH_BASIC_ARRAY2 = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  readonly getArray: (arg: string[]) => ((string)[]);
+  readonly getArray: (arg: readonly string[]) => (readonly (string)[]);
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -377,6 +398,28 @@ export interface Spec extends TurboModule {
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 `;
 
+const NATIVE_MODULE_WITH_ARRAY2_WITH_UNION_AND_TOUPLE = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  getArray(
+    arg: [string, string][],
+  ): (string | number | boolean)[];
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
 const NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -399,6 +442,28 @@ export interface Spec extends TurboModule {
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 `;
 
+const NATIVE_MODULE_WITH_ARRAY2_WITH_ALIAS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export type SomeString = string;
+
+export interface Spec extends TurboModule {
+  readonly getArray: (arg: SomeString[]) => string[];
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
 const NATIVE_MODULE_WITH_COMPLEX_ARRAY = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -416,6 +481,28 @@ export interface Spec extends TurboModule {
   readonly getArray: (
     arg: Array<Array<Array<Array<Array<string>>>>>,
   ) => Array<Array<Array<string>>>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
+const NATIVE_MODULE_WITH_COMPLEX_ARRAY2 = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  readonly getArray: (
+    arg: string[][][][][],
+  ) => string[][][];
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -468,6 +555,32 @@ export interface Spec extends TurboModule {
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 `;
 
+const NATIVE_MODULE_WITH_UNION = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export type ChooseInt = 1 | 2 | 3;
+export type ChooseFloat = 1.44 | 2.88 | 5.76;
+export type ChooseObject = {} | {low: string};
+export type ChooseString = 'One' | 'Two' | 'Three';
+
+export interface Spec extends TurboModule {
+  readonly getUnion: (chooseInt: ChooseInt, chooseFloat: ChooseFloat, chooseObject: ChooseObject, chooseString: ChooseString) => ChooseObject;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 const ANDROID_ONLY_NATIVE_MODULE = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -501,7 +614,30 @@ const IOS_ONLY_NATIVE_MODULE = `
 import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
-export interface Spec extends TurboModule {}
+export enum Quality {
+  SD,
+  HD,
+}
+
+export enum Resolution {
+  Low = 720,
+  High = 1080,
+}
+
+export enum Floppy {
+  LowDensity = 0.72,
+  HighDensity = 1.44,
+}
+
+export enum StringOptions {
+  One = 'one',
+  Two = 'two',
+  Three = 'three',
+}
+
+export interface Spec extends TurboModule {
+  readonly getEnums: (quality: Quality, resolution?: Resolution, floppy: Floppy, stringOptions: StringOptions) => string;
+}
 
 export default TurboModuleRegistry.getEnforcing<Spec>(
   'SampleTurboModuleIOS',
@@ -521,9 +657,39 @@ const CXX_ONLY_NATIVE_MODULE = `
 import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
+export enum Quality {
+  SD,
+  HD,
+}
+
+export enum Resolution {
+  Low = 720,
+  High = 1080,
+}
+
+export enum Floppy {
+  LowDensity = 0.72,
+  HighDensity = 1.44,
+}
+
+export enum StringOptions {
+  One = 'one',
+  Two = 'two',
+  Three = 'three',
+}
+
+export type ChooseInt = 1 | 2 | 3;
+export type ChooseFloat = 1.44 | 2.88 | 5.76;
+export type ChooseObject = {} | {low: string};
+export type ChooseString = 'One' | 'Two' | 'Three';
+
 export interface Spec extends TurboModule {
   readonly getCallback: () => () => void;
   readonly getMixed: (arg: unknown) => unknown;
+  readonly getEnums: (quality: Quality, resolution?: Resolution, floppy: Floppy, stringOptions: StringOptions) => string;
+  readonly getMap: (arg: {[a: string]: number | null;}) => {[b: string]: number | null;};
+  readonly getAnotherMap: (arg: {[key: string]: string}) => {[key: string]: string};
+  readonly getUnion: (chooseInt: ChooseInt, chooseFloat: ChooseFloat, chooseObject: ChooseObject, chooseString: ChooseString) => ChooseObject;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(
@@ -534,6 +700,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>(
 module.exports = {
   NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY,
   NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE,
+  NATIVE_MODULE_WITH_ARRAY2_WITH_UNION_AND_TOUPLE,
   NATIVE_MODULE_WITH_FLOAT_AND_INT32,
   NATIVE_MODULE_WITH_ALIASES,
   NATIVE_MODULE_WITH_NESTED_ALIASES,
@@ -545,10 +712,14 @@ module.exports = {
   NATIVE_MODULE_WITH_ROOT_TAG,
   NATIVE_MODULE_WITH_NULLABLE_PARAM,
   NATIVE_MODULE_WITH_BASIC_ARRAY,
+  NATIVE_MODULE_WITH_BASIC_ARRAY2,
   NATIVE_MODULE_WITH_COMPLEX_ARRAY,
+  NATIVE_MODULE_WITH_COMPLEX_ARRAY2,
   NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS,
+  NATIVE_MODULE_WITH_ARRAY2_WITH_ALIAS,
   NATIVE_MODULE_WITH_BASIC_PARAM_TYPES,
   NATIVE_MODULE_WITH_CALLBACK,
+  NATIVE_MODULE_WITH_UNION,
   EMPTY_NATIVE_MODULE,
   ANDROID_ONLY_NATIVE_MODULE,
   IOS_ONLY_NATIVE_MODULE,

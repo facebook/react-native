@@ -34,12 +34,12 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-lm",
     ],
+    compiler_flags_pedantic = True,
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
@@ -52,10 +52,6 @@ rn_xplat_cxx_library(
     deps = [
         "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
-        "//xplat/folly:molly",
-        "//xplat/jsi:JSIDynamic",
         "//xplat/jsi:jsi",
         react_native_xplat_target("react/config:config"),
         react_native_xplat_target("react/debug:debug"),
@@ -84,7 +80,6 @@ fb_xplat_cxx_test(
     platforms = (ANDROID, APPLE, CXX),
     deps = [
         ":animations",
-        "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
         react_native_xplat_target("react/config:config"),
         react_native_xplat_target("react/renderer/components/image:image"),

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTAnimationType.h>
+#import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
@@ -64,6 +65,7 @@ typedef NSURL RCTFileURL;
 + (NSTextAlignment)NSTextAlignment:(id)json;
 + (NSUnderlineStyle)NSUnderlineStyle:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
++ (NSLineBreakStrategy)NSLineBreakStrategy:(id)json;
 + (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
 + (UITextFieldViewMode)UITextFieldViewMode:(id)json;
 + (UIKeyboardType)UIKeyboardType:(id)json;
@@ -130,6 +132,7 @@ typedef BOOL css_backface_visibility_t;
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
 + (RCTBorderStyle)RCTBorderStyle:(id)json;
++ (RCTBorderCurve)RCTBorderCurve:(id)json;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
 
 @end

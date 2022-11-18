@@ -8,34 +8,10 @@
  * @format
  */
 
-import type VirtualizedList from './VirtualizedList.js';
+import typeof VirtualizedList from './VirtualizedList';
+
 import * as React from 'react';
-import {useMemo, useContext} from 'react';
-
-type Frame = $ReadOnly<{
-  offset: number,
-  length: number,
-  index: number,
-  inLayout: boolean,
-}>;
-
-export type ChildListState = $ReadOnly<{
-  first: number,
-  last: number,
-  frames: {[key: number]: Frame},
-}>;
-
-// Data propagated through nested lists (regardless of orientation) that is
-// useful for producing diagnostics for usage errors involving nesting (e.g
-// missing/duplicate keys).
-export type ListDebugInfo = $ReadOnly<{
-  cellKey: string,
-  listKey: string,
-  parent: ?ListDebugInfo,
-  // We include all ancestors regardless of orientation, so this is not always
-  // identical to the child's orientation.
-  horizontal: boolean,
-}>;
+import {useContext, useMemo} from 'react';
 
 type Context = $ReadOnly<{
   cellKey: ?string,
@@ -50,19 +26,14 @@ type Context = $ReadOnly<{
     zoomScale: number,
   },
   horizontal: ?boolean,
-  getOutermostParentListRef: () => VirtualizedList,
-  getNestedChildState: string => ?ChildListState,
+  getOutermostParentListRef: () => React.ElementRef<VirtualizedList>,
   registerAsNestedChild: ({
     cellKey: string,
-    key: string,
-    ref: VirtualizedList,
-    parentDebugInfo: ListDebugInfo,
-  }) => ?ChildListState,
-  unregisterAsNestedChild: ({
-    key: string,
-    state: ChildListState,
+    ref: React.ElementRef<VirtualizedList>,
   }) => void,
-  debugInfo: ListDebugInfo,
+  unregisterAsNestedChild: ({
+    ref: React.ElementRef<VirtualizedList>,
+  }) => void,
 }>;
 
 export const VirtualizedListContext: React.Context<?Context> =
@@ -103,27 +74,15 @@ export function VirtualizedListContextProvider({
       getScrollMetrics: value.getScrollMetrics,
       horizontal: value.horizontal,
       getOutermostParentListRef: value.getOutermostParentListRef,
-      getNestedChildState: value.getNestedChildState,
       registerAsNestedChild: value.registerAsNestedChild,
       unregisterAsNestedChild: value.unregisterAsNestedChild,
-      debugInfo: {
-        cellKey: value.debugInfo.cellKey,
-        horizontal: value.debugInfo.horizontal,
-        listKey: value.debugInfo.listKey,
-        parent: value.debugInfo.parent,
-      },
     }),
     [
       value.getScrollMetrics,
       value.horizontal,
       value.getOutermostParentListRef,
-      value.getNestedChildState,
       value.registerAsNestedChild,
       value.unregisterAsNestedChild,
-      value.debugInfo.cellKey,
-      value.debugInfo.horizontal,
-      value.debugInfo.listKey,
-      value.debugInfo.parent,
     ],
   );
   return (

@@ -8,15 +8,17 @@
  * @format
  */
 
-import UTFSequence from '../../UTFSequence';
-import stringifySafe from '../../Utilities/stringifySafe';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {LogBoxLogData} from './LogBoxLog';
+
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
+import UTFSequence from '../../UTFSequence';
+import stringifySafe from '../../Utilities/stringifySafe';
 
 const BABEL_TRANSFORM_ERROR_FORMAT =
   /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
 const BABEL_CODE_FRAME_ERROR_FORMAT =
+  // eslint-disable-next-line no-control-regex
   /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
 const METRO_ERROR_FORMAT =
   /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
@@ -315,7 +317,7 @@ export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
   message: Message,
 |} {
   const message = args[0];
-  let argsWithoutComponentStack = [];
+  let argsWithoutComponentStack: Array<mixed> = [];
   let componentStack: ComponentStack = [];
 
   // Extract component stack from warnings like "Some warning%s".

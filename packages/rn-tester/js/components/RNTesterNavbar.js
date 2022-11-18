@@ -19,11 +19,11 @@ const BookmarkTab = ({
   handleNavBarPress,
   isBookmarkActive,
   theme,
-}: $TEMPORARY$object<{
+}: {
   handleNavBarPress: (data: {screen: string}) => void,
   isBookmarkActive: boolean,
   theme: RNTesterTheme,
-}>) => (
+}) => (
   <View style={styles.centerBox}>
     <View
       style={[
@@ -51,6 +51,8 @@ const BookmarkTab = ({
   </View>
 );
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const NavbarButton = ({
   testID,
   theme,

@@ -8,9 +8,11 @@
  * @format
  */
 
-import type {AbstractComponent, Node} from 'react';
+import type {AbstractComponent} from 'react';
 
-type NoopComponent = AbstractComponent<{children: Node}>;
+import * as React from 'react';
+
+type NoopComponent = AbstractComponent<{children: React.Node}>;
 
 const cache: Map<
   string, // displayName
@@ -23,9 +25,8 @@ export default function getCachedComponentWithDisplayName(
   let ComponentWithDisplayName = cache.get(displayName);
 
   if (!ComponentWithDisplayName) {
-    ComponentWithDisplayName = ({
-      children,
-    }: $TEMPORARY$object<{children: Node}>) => children;
+    ComponentWithDisplayName = ({children}: {children: React.Node}) => children;
+    // $FlowFixMe[prop-missing]
     ComponentWithDisplayName.displayName = displayName;
     cache.set(displayName, ComponentWithDisplayName);
   }

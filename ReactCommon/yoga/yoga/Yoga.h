@@ -232,6 +232,12 @@ WIN_EXPORT YGValue YGNodeStyleGetPadding(YGNodeConstRef node, YGEdge edge);
 WIN_EXPORT void YGNodeStyleSetBorder(YGNodeRef node, YGEdge edge, float border);
 WIN_EXPORT float YGNodeStyleGetBorder(YGNodeConstRef node, YGEdge edge);
 
+WIN_EXPORT void YGNodeStyleSetGap(
+    YGNodeRef node,
+    YGGutter gutter,
+    float gapLength);
+WIN_EXPORT float YGNodeStyleGetGap(YGNodeConstRef node, YGGutter gutter);
+
 WIN_EXPORT void YGNodeStyleSetWidth(YGNodeRef node, float width);
 WIN_EXPORT void YGNodeStyleSetWidthPercent(YGNodeRef node, float width);
 WIN_EXPORT void YGNodeStyleSetWidthAuto(YGNodeRef node);
@@ -318,6 +324,7 @@ void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
 // resulted in implicit behaviour similar to align-self: stretch; Because this
 // was such a long-standing bug we must allow legacy users to switch back to
 // this behaviour.
+WIN_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(YGConfigRef config);
 WIN_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
     YGConfigRef config,
     bool useLegacyStretchBehaviour);

@@ -9,6 +9,11 @@
  */
 
 'use strict';
+import type {
+  PropTypeAnnotation,
+  EventTypeShape,
+  ComponentShape,
+} from '../../CodegenSchema';
 
 const j = require('jscodeshift');
 
@@ -46,7 +51,7 @@ ${componentConfig}
 // this multiple times.
 const UIMANAGER_IMPORT = 'const {UIManager} = require("react-native")';
 
-function getReactDiffProcessValue(typeAnnotation) {
+function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
   switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
     case 'StringTypeAnnotation':
@@ -65,6 +70,8 @@ function getReactDiffProcessValue(typeAnnotation) {
         case 'ImageSourcePrimitive':
           return j.template
             .expression`{ process: require('react-native/Libraries/Image/resolveAssetSource') }`;
+        case 'ImageRequestPrimitive':
+          throw new Error('ImageRequest should not be used in props');
         case 'PointPrimitive':
           return j.template
             .expression`{ diff: require('react-native/Libraries/Utilities/differ/pointsDiffer') }`;
@@ -151,7 +158,7 @@ if (UIManager.hasViewManagerConfig('${componentName}')) {
 `.trim();
 
 // Replicates the behavior of RCTNormalizeInputEventName in RCTEventDispatcher.m
-function normalizeInputEventName(name) {
+function normalizeInputEventName(name: string) {
   if (name.startsWith('on')) {
     return name.replace(/^on/, 'top');
   } else if (!name.startsWith('top')) {
@@ -162,7 +169,10 @@ function normalizeInputEventName(name) {
 }
 
 // Replicates the behavior of viewConfig in RCTComponentData.m
-function getValidAttributesForEvents(events, imports) {
+function getValidAttributesForEvents(
+  events: $ReadOnlyArray<EventTypeShape>,
+  imports: Set<string>,
+) {
   imports.add(
     "const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');",
   );
@@ -178,7 +188,10 @@ function getValidAttributesForEvents(events, imports) {
   ]);
 }
 
-function generateBubblingEventInfo(event, nameOveride) {
+function generateBubblingEventInfo(
+  event: EventTypeShape,
+  nameOveride: void | string,
+) {
   return j.property(
     'init',
     j.identifier(nameOveride || normalizeInputEventName(event.name)),
@@ -199,7 +212,10 @@ function generateBubblingEventInfo(event, nameOveride) {
   );
 }
 
-function generateDirectEventInfo(event, nameOveride) {
+function generateDirectEventInfo(
+  event: EventTypeShape,
+  nameOveride: void | string,
+) {
   return j.property(
     'init',
     j.identifier(nameOveride || normalizeInputEventName(event.name)),
@@ -216,8 +232,8 @@ function generateDirectEventInfo(event, nameOveride) {
 function buildViewConfig(
   schema: SchemaType,
   componentName: string,
-  component,
-  imports,
+  component: ComponentShape,
+  imports: Set<string>,
 ) {
   const componentProps = component.props;
   const componentEvents = component.events;
@@ -326,8 +342,8 @@ function buildViewConfig(
 function buildCommands(
   schema: SchemaType,
   componentName: string,
-  component,
-  imports,
+  component: ComponentShape,
+  imports: Set<string>,
 ) {
   const commands = component.commands;
 
@@ -336,7 +352,7 @@ function buildCommands(
   }
 
   imports.add(
-    'const {dispatchCommand} = require("react-native/Libraries/Renderer/shims/ReactNative");',
+    'const {dispatchCommand} = require("react-native/Libraries/ReactNative/RendererProxy");',
   );
 
   const properties = commands.map(command => {

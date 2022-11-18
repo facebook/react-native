@@ -1,12 +1,9 @@
 require_relative '../../scripts/react_native_pods'
-require_relative '../../scripts/cocoapods/new_architecture'
 
 source 'https://cdn.cocoapods.org/'
-platform :ios, '12.4'
+platform :ios, min_ios_version_supported
 
-# Temporary solution to suppress duplicated GUID error.
-# Can be removed once we move to generate files outside pod install.
-install! 'cocoapods', :deterministic_uuids => false
+prepare_react_native_project!
 
 USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
 IN_CI = ENV['CI'] == 'true'
@@ -18,18 +15,21 @@ if USE_FRAMEWORKS
   use_frameworks!
 end
 
-def pods(options = {}, use_flipper: false)
+def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
-  hermes_enabled = ENV['USE_HERMES'] == '1'
-  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
+
+  # Hermes is now enabled by default.
+  # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
+  hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
+  puts "Configuring #{target_name} with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     # Custom fabric component is only supported when using codegen discovery.
     pod 'MyNativeView', :path => "NativeComponentExample"
   end
-  
+
   use_react_native!(
     path: @prefix_path,
     fabric_enabled: fabric_enabled,
@@ -48,24 +48,26 @@ def pods(options = {}, use_flipper: false)
 
   # RNTester native modules and components
   pod 'ScreenshotManager', :path => "NativeModuleExample"
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+    pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
+  end
 end
 
 target 'RNTester' do
-  pods({}, :use_flipper => !IN_CI && !USE_FRAMEWORKS)
+  pods('RNTester')
 end
 
 target 'RNTesterUnitTests' do
-  pods()
+  pods('RNTesterUnitTests')
   pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 target 'RNTesterIntegrationTests' do
-  pods()
+  pods('RNTesterIntegrationTests')
   pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 post_install do |installer|
-  react_native_post_install(installer, @prefix_path)
+  react_native_post_install(installer, @prefix_path, :mac_catalyst_enabled => false)
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
-  set_clang_cxx_language_standard_if_needed(installer)
 end

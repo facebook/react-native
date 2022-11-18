@@ -9,6 +9,7 @@
  */
 
 import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+
 import {ConditionallyIgnoredEventHandlers} from '../../NativeComponent/ViewConfigIgnore';
 
 type PartialViewConfigWithoutName = $Rest<
@@ -128,7 +129,7 @@ const RCTTextInputViewConfig = {
     keyboardType: true,
     selection: true,
     returnKeyType: true,
-    blurOnSubmit: true,
+    submitBehavior: true,
     mostRecentEventCount: true,
     scrollEnabled: true,
     selectionColor: {process: require('../../StyleSheet/processColor')},
@@ -148,6 +149,7 @@ const RCTTextInputViewConfig = {
     clearTextOnFocus: true,
     showSoftInputOnFocus: true,
     autoFocus: true,
+    lineBreakStrategyIOS: true,
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,
       onSelectionChange: true,

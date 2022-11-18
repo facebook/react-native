@@ -148,11 +148,11 @@ import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly getSth: (a: number | null | void) => void;
+  readonly getSth: (a: number | null | undefined) => void;
 }
 
 export interface Spec2 extends TurboModule {
-  readonly getSth: (a: number | null | void) => void;
+  readonly getSth: (a: number | null | undefined) => void;
 }
 `;
 

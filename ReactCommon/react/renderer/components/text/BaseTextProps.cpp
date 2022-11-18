@@ -8,30 +8,12 @@
 #include "BaseTextProps.h"
 
 #include <react/renderer/attributedstring/conversions.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/graphics/conversions.h>
 
-#define GET_FIELD_VALUE(field, fieldName, defaultValue, rawValue) \
-  (rawValue.hasValue() ? ({                                       \
-    decltype(defaultValue) res;                                   \
-    fromRawValue(context, rawValue, res);                         \
-    res;                                                          \
-  })                                                              \
-                       : defaultValue)
-
-#define REBUILD_FIELD_SWITCH_CASE(                                   \
-    defaults, rawValue, property, field, fieldName)                  \
-  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                    \
-    property.field =                                                 \
-        GET_FIELD_VALUE(field, fieldName, defaults.field, rawValue); \
-    return;                                                          \
-  }
-
-namespace facebook {
-namespace react {
-
-bool BaseTextProps::enablePropIteratorSetter = false;
+namespace facebook::react {
 
 static TextAttributes convertRawProp(
     PropsParserContext const &context,
@@ -91,6 +73,12 @@ static TextAttributes convertRawProp(
       "allowFontScaling",
       sourceTextAttributes.allowFontScaling,
       defaultTextAttributes.allowFontScaling);
+  textAttributes.dynamicTypeRamp = convertRawProp(
+      context,
+      rawProps,
+      "dynamicTypeRamp",
+      sourceTextAttributes.dynamicTypeRamp,
+      defaultTextAttributes.dynamicTypeRamp);
   textAttributes.letterSpacing = convertRawProp(
       context,
       rawProps,
@@ -123,6 +111,12 @@ static TextAttributes convertRawProp(
       "baseWritingDirection",
       sourceTextAttributes.baseWritingDirection,
       defaultTextAttributes.baseWritingDirection);
+  textAttributes.lineBreakStrategy = convertRawProp(
+      context,
+      rawProps,
+      "lineBreakStrategyIOS",
+      sourceTextAttributes.lineBreakStrategy,
+      defaultTextAttributes.lineBreakStrategy);
 
   // Decoration
   textAttributes.textDecorationColor = convertRawProp(
@@ -211,7 +205,7 @@ BaseTextProps::BaseTextProps(
     const BaseTextProps &sourceProps,
     const RawProps &rawProps)
     : textAttributes(
-          BaseTextProps::enablePropIteratorSetter
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.textAttributes
               : convertRawProp(
                     context,
@@ -222,7 +216,7 @@ BaseTextProps::BaseTextProps(
 void BaseTextProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
-    const char *propName,
+    const char * /*propName*/,
     RawValue const &value) {
   static auto defaults = TextAttributes{};
 
@@ -261,6 +255,12 @@ void BaseTextProps::setProp(
         textAttributes,
         baseWritingDirection,
         "baseWritingDirection");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        lineBreakStrategy,
+        "lineBreakStrategyIOS");
     REBUILD_FIELD_SWITCH_CASE(
         defaults,
         value,
@@ -308,5 +308,4 @@ SharedDebugStringConvertibleList BaseTextProps::getDebugProps() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

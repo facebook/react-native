@@ -34,8 +34,9 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/utils",
     ),
+    compiler_flags_pedantic = True,
     fbandroid_deps = [
-        react_native_target("java/com/facebook/react/common/mapbuffer/jni:jni"),
+        react_native_target("jni/react/mapbuffer:jni"),
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
@@ -44,7 +45,6 @@ rn_xplat_cxx_library(
     force_static = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
@@ -55,11 +55,7 @@ rn_xplat_cxx_library(
     tests = [],
     visibility = ["PUBLIC"],
     deps = [
-        "//third-party/glog:glog",
-        "//xplat/folly:container_evicting_cache_map",
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
-        "//xplat/folly:molly",
+        "//xplat/folly/container:evicting_cache_map",
         "//xplat/jsi:jsi",
         react_native_xplat_target("butter:butter"),
         react_native_xplat_target("react/debug:debug"),

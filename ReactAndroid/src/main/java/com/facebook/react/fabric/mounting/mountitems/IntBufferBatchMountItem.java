@@ -16,6 +16,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.fabric.CppViewMutationsWrapper;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
@@ -49,6 +50,8 @@ public class IntBufferBatchMountItem implements MountItem {
   static final int INSTRUCTION_UPDATE_EVENT_EMITTER = 256;
   static final int INSTRUCTION_UPDATE_PADDING = 512;
   static final int INSTRUCTION_UPDATE_OVERFLOW_INSET = 1024;
+  static final int INSTRUCTION_REMOVE_DELETE_TREE = 2048;
+  static final int INSTRUCTION_RUN_CPP_VIEWS = 4096;
 
   private final int mSurfaceId;
   private final int mCommitNumber;
@@ -96,6 +99,10 @@ public class IntBufferBatchMountItem implements MountItem {
     return obj != null ? (EventEmitterWrapper) obj : null;
   }
 
+  private static CppViewMutationsWrapper castToCppViewMutationWrapper(Object obj) {
+    return obj != null ? (CppViewMutationsWrapper) obj : null;
+  }
+
   @Override
   public void execute(@NonNull MountingManager mountingManager) {
     SurfaceMountingManager surfaceMountingManager = mountingManager.getSurfaceManager(mSurfaceId);
@@ -139,19 +146,24 @@ public class IntBufferBatchMountItem implements MountItem {
           surfaceMountingManager.addViewAt(parentTag, tag, mIntBuffer[i++]);
         } else if (type == INSTRUCTION_REMOVE) {
           surfaceMountingManager.removeViewAt(mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
+        } else if (type == INSTRUCTION_REMOVE_DELETE_TREE) {
+          surfaceMountingManager.removeDeleteTreeAt(
+              mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
         } else if (type == INSTRUCTION_UPDATE_PROPS) {
           surfaceMountingManager.updateProps(mIntBuffer[i++], mObjBuffer[j++]);
         } else if (type == INSTRUCTION_UPDATE_STATE) {
           surfaceMountingManager.updateState(mIntBuffer[i++], castToState(mObjBuffer[j++]));
         } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
           int reactTag = mIntBuffer[i++];
+          int parentTag = mIntBuffer[i++];
           int x = mIntBuffer[i++];
           int y = mIntBuffer[i++];
           int width = mIntBuffer[i++];
           int height = mIntBuffer[i++];
           int displayType = mIntBuffer[i++];
 
-          surfaceMountingManager.updateLayout(reactTag, x, y, width, height, displayType);
+          surfaceMountingManager.updateLayout(
+              reactTag, parentTag, x, y, width, height, displayType);
 
         } else if (type == INSTRUCTION_UPDATE_PADDING) {
           surfaceMountingManager.updatePadding(
@@ -172,14 +184,14 @@ public class IntBufferBatchMountItem implements MountItem {
         } else if (type == INSTRUCTION_UPDATE_EVENT_EMITTER) {
           surfaceMountingManager.updateEventEmitter(
               mIntBuffer[i++], castToEventEmitter(mObjBuffer[j++]));
+        } else if (type == INSTRUCTION_RUN_CPP_VIEWS) {
+          castToCppViewMutationWrapper(mObjBuffer[j++]).runCppViewMutations();
         } else {
           throw new IllegalArgumentException(
               "Invalid type argument to IntBufferBatchMountItem: " + type + " at index: " + i);
         }
       }
     }
-
-    surfaceMountingManager.didUpdateViews();
 
     endMarkers();
   }
@@ -221,6 +233,11 @@ public class IntBufferBatchMountItem implements MountItem {
             s.append(
                 String.format(
                     "REMOVE [%d]->[%d] @%d\n", mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]));
+          } else if (type == INSTRUCTION_REMOVE_DELETE_TREE) {
+            s.append(
+                String.format(
+                    "REMOVE+DELETE TREE [%d]->[%d] @%d\n",
+                    mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]));
           } else if (type == INSTRUCTION_UPDATE_PROPS) {
             Object props = mObjBuffer[j++];
             String propsString =
@@ -236,10 +253,13 @@ public class IntBufferBatchMountItem implements MountItem {
                     : "<hidden>";
             s.append(String.format("UPDATE STATE [%d]: %s\n", mIntBuffer[i++], stateString));
           } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
+            int reactTag = mIntBuffer[i++];
+            int parentTag = mIntBuffer[i++];
             s.append(
                 String.format(
-                    "UPDATE LAYOUT [%d]: x:%d y:%d w:%d h:%d displayType:%d\n",
-                    mIntBuffer[i++],
+                    "UPDATE LAYOUT [%d]->[%d]: x:%d y:%d w:%d h:%d displayType:%d\n",
+                    parentTag,
+                    reactTag,
                     mIntBuffer[i++],
                     mIntBuffer[i++],
                     mIntBuffer[i++],
@@ -266,6 +286,9 @@ public class IntBufferBatchMountItem implements MountItem {
           } else if (type == INSTRUCTION_UPDATE_EVENT_EMITTER) {
             j += 1;
             s.append(String.format("UPDATE EVENTEMITTER [%d]\n", mIntBuffer[i++]));
+          } else if (type == INSTRUCTION_RUN_CPP_VIEWS) {
+            j += 1;
+            s.append(String.format("RUN CPP_VIEWS [%d]\n", mIntBuffer[i++]));
           } else {
             FLog.e(TAG, "String so far: " + s.toString());
             throw new IllegalArgumentException(

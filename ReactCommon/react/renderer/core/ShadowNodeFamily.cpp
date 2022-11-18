@@ -14,8 +14,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using AncestorList = ShadowNode::AncestorList;
 
@@ -63,7 +62,7 @@ AncestorList ShadowNodeFamily::getAncestors(
   auto ancestorFamily = ancestorShadowNode.family_.get();
 
   auto family = this;
-  while (family && family != ancestorFamily) {
+  while ((family != nullptr) && family != ancestorFamily) {
     families.push_back(family);
     family = family->parent_.lock().get();
   }
@@ -142,5 +141,4 @@ void ShadowNodeFamily::dispatchRawState(
   eventDispatcher->dispatchStateUpdate(std::move(stateUpdate), priority);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

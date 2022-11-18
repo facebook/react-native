@@ -4,8 +4,14 @@ on:
   issues:
     types: labeled
 
+permissions:
+  contents: read
+
 jobs:
   respondToIssueBasedOnLabel:
+    permissions:
+      contents: read  # for hramos/respond-to-issue-based-on-label to fetch config file
+      issues: write  # for hramos/respond-to-issue-based-on-label to update issues
     name: Respond to Issue Based on Label
     runs-on: ubuntu-latest
     steps:

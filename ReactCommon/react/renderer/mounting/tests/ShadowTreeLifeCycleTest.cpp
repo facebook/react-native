@@ -24,8 +24,7 @@
 // #include <algorithm>
 // #include <random>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static void testShadowNodeTreeLifeCycle(
     uint_fast32_t seed,
@@ -77,8 +76,8 @@ static void testShadowNodeTreeLifeCycle(
     auto currentRootNode = std::static_pointer_cast<RootShadowNode const>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
             ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<SharedShadowNodeList>(
-                SharedShadowNodeList{singleRootChildNode})}));
+            std::make_shared<ShadowNode::ListOfShared>(
+                ShadowNode::ListOfShared{singleRootChildNode})}));
 
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
@@ -227,8 +226,8 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
     auto currentRootNode = std::static_pointer_cast<RootShadowNode const>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
             ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<SharedShadowNodeList>(
-                SharedShadowNodeList{singleRootChildNode})}));
+            std::make_shared<ShadowNode::ListOfShared>(
+                ShadowNode::ListOfShared{singleRootChildNode})}));
 
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
@@ -328,8 +327,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
   SUCCEED();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 using namespace facebook::react;
 

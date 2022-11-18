@@ -10,19 +10,20 @@
 
 ('use strict');
 
-import * as React from 'react';
-import LogBoxLog from './LogBoxLog';
-import {parseLogBoxException} from './parseLogBoxLog';
+import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
 import type {
-  Message,
   Category,
   ComponentStack,
   ExtendedExceptionData,
+  Message,
 } from './parseLogBoxLog';
+
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
-import type {ExtendedError} from '../../Core/ExtendedError';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
+import LogBoxLog from './LogBoxLog';
+import {parseLogBoxException} from './parseLogBoxLog';
+import * as React from 'react';
 export type LogBoxLogs = Set<LogBoxLog>;
 export type LogData = $ReadOnly<{|
   level: LogLevel,
@@ -67,7 +68,7 @@ const observers: Set<{observer: Observer, ...}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 let appInfo: ?() => AppInfo = null;
 let logs: LogBoxLogs = new Set();
-let updateTimeout = null;
+let updateTimeout: $FlowFixMe | null = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 
@@ -133,7 +134,7 @@ function handleUpdate(): void {
   }
 }
 
-function appendNewLog(newLog) {
+function appendNewLog(newLog: LogBoxLog) {
   // Don't want store these logs because they trigger a
   // state update when we add them to the store.
   if (isMessageIgnored(newLog.message.content)) {
@@ -401,7 +402,7 @@ export function withSubscription(
   WrappedComponent: SubscribedComponent,
 ): React.AbstractComponent<{||}> {
   class LogBoxStateSubscription extends React.Component<Props, State> {
-    static getDerivedStateFromError() {
+    static getDerivedStateFromError(): {hasError: boolean} {
       return {hasError: true};
     }
 
@@ -413,7 +414,7 @@ export function withSubscription(
 
     _subscription: ?Subscription;
 
-    state = {
+    state: State = {
       logs: new Set(),
       isDisabled: false,
       hasError: false,

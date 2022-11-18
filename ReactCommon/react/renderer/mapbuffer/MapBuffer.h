@@ -126,6 +126,8 @@ class MapBuffer {
   // TODO T83483191: review this declaration
   MapBuffer getMapBuffer(MapBuffer::Key key) const;
 
+  std::vector<MapBuffer> getMapBufferList(MapBuffer::Key key) const;
+
   size_t size() const;
 
   uint8_t const *data() const;

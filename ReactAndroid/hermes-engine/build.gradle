@@ -11,6 +11,7 @@ plugins {
     id("de.undercouch.download")
     id("com.android.library")
     id("maven-publish")
+    id("signing")
 }
 
 group = "com.facebook.react"
@@ -56,10 +57,6 @@ def skipPrefabPublishing = System.getenv("REACT_NATIVE_HERMES_SKIP_PREFAB") != n
 // We inject the JSI directory used inside the Hermes build with the -DJSI_DIR config.
 def jsiDir = new File(reactNativeRootDir, "ReactCommon/jsi")
 
-// The .aar is placed inside the ./android folder at the top level.
-// There it will be placed alongside the React Android .aar
-def AAR_OUTPUT_URL = "file://${rootDir}/android"
-
 task downloadHermes(type: Download) {
     src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
     onlyIfNewer(true)
@@ -86,7 +83,7 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 
 task configureBuildForHermes(type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath))
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), Os.isFamily(Os.FAMILY_WINDOWS) ? "-GNMake Makefiles" : "", "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath))
 }
 
 task buildHermes(dependsOn: configureBuildForHermes, type: Exec) {
@@ -198,8 +195,8 @@ android {
     }
 
     dependencies {
-        implementation("com.facebook.fbjni:fbjni:0.2.2")
-        implementation("com.facebook.soloader:soloader:0.10.3")
+        implementation("com.facebook.fbjni:fbjni:0.3.0")
+        implementation("com.facebook.soloader:soloader:0.10.4")
         implementation("com.facebook.yoga:proguard-annotations:1.19.0")
         implementation("androidx.annotation:annotation:1.3.0")
     }
@@ -234,27 +231,20 @@ afterEvaluate {
     }
     preBuild.dependsOn(buildHermes)
     preBuild.dependsOn(prepareHeadersForPrefab)
-    // Needed as some of the native sources needs to be downloaded
-    // before configureCMakeRelease/configureCMakeMinSizeRel could be executed.
-    reactNativeArchitectures().each { architecture ->
-        tasks.findByName("configureCMakeMinSizeRel[${architecture}]")?.configure { dependsOn(preBuild) }
-        tasks.findByName("configureCMakeRelease[${architecture}]")?.configure { dependsOn(preBuild) }
-    }
-    configureCMakeRelease.dependsOn(preBuild)
-    configureCMakeMinSizeRel.dependsOn(preBuild)
+    prepareHeadersForPrefab.dependsOn(buildHermes)
+}
 
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.default
-                artifactId = "hermes-engine"
-            }
-        }
-        repositories {
-            maven {
-                name = "npm"
-                url = AAR_OUTPUT_URL
-            }
+/* Publishing Configuration */
+apply from: "../publish.gradle"
+
+// We need to override the artifact ID as this project is called `hermes-engine` but
+// the maven coordinates are on `hermes-android`.
+// Please note that the original coordinates, `hermes-engine`, have been voided
+// as they caused https://github.com/facebook/react-native/issues/35210
+publishing {
+    publications {
+        getByName("release") {
+            artifactId 'hermes-android'
         }
     }
 }

@@ -4,11 +4,10 @@ rn_android_library(
     name = "blob",
     srcs = glob(["**/*.java"]),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
+    language = "JAVA",
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),
@@ -30,7 +29,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
-        react_native_target("java/com/facebook/react/modules/blob/jni:jni"),
+        react_native_target("jni/react/reactnativeblob:jni"),
         react_native_target("java/com/facebook/react/modules/network:network"),
         react_native_target("java/com/facebook/react/modules/websocket:websocket"),
     ],

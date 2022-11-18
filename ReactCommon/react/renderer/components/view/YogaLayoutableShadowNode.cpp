@@ -20,12 +20,11 @@
 #include <limits>
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static int FabricDefaultYogaLog(
-    const YGConfigRef,
-    const YGNodeRef,
+    const YGConfigRef /*unused*/,
+    const YGNodeRef /*unused*/,
     YGLogLevel level,
     const char *format,
     va_list args) {
@@ -250,7 +249,7 @@ void YogaLayoutableShadowNode::appendChild(
   // (e.g. RCTRawText). This used to throw an error, but we are ignoring it
   // because we want core library components to be fault-tolerant and degrade
   // gracefully. A soft error will be emitted from JavaScript.
-  if (traitCast<YogaLayoutableShadowNode const *>(childNode.get())) {
+  if (traitCast<YogaLayoutableShadowNode const *>(childNode.get()) != nullptr) {
     // Appending the Yoga node.
     appendYogaChild(*childNode);
 
@@ -317,13 +316,62 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   ensureUnsealed();
 
   auto props = static_cast<YogaStylableProps const &>(*props_);
+  auto styleResult = applyAliasedProps(props.yogaStyle, props);
 
   // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was changed.
-  if (!yogaNode_.isDirty() && (props.yogaStyle != yogaNode_.getStyle())) {
+  if (!yogaNode_.isDirty() && (styleResult != yogaNode_.getStyle())) {
     yogaNode_.setDirty(true);
   }
 
-  yogaNode_.setStyle(props.yogaStyle);
+  yogaNode_.setStyle(styleResult);
+}
+
+/*static*/ YGStyle YogaLayoutableShadowNode::applyAliasedProps(
+    const YGStyle &baseStyle,
+    const YogaStylableProps &props) {
+  YGStyle result{baseStyle};
+
+  // Aliases with precedence
+  if (!props.marginInline.isUndefined()) {
+    result.margin()[YGEdgeHorizontal] = props.marginInline;
+  }
+  if (!props.marginInlineStart.isUndefined()) {
+    result.margin()[YGEdgeStart] = props.marginInlineStart;
+  }
+  if (!props.marginInlineEnd.isUndefined()) {
+    result.margin()[YGEdgeEnd] = props.marginInlineEnd;
+  }
+  if (!props.marginBlock.isUndefined()) {
+    result.margin()[YGEdgeVertical] = props.marginBlock;
+  }
+  if (!props.paddingInline.isUndefined()) {
+    result.padding()[YGEdgeHorizontal] = props.paddingInline;
+  }
+  if (!props.paddingInlineStart.isUndefined()) {
+    result.padding()[YGEdgeStart] = props.paddingInlineStart;
+  }
+  if (!props.paddingInlineEnd.isUndefined()) {
+    result.padding()[YGEdgeEnd] = props.paddingInlineEnd;
+  }
+  if (!props.paddingBlock.isUndefined()) {
+    result.padding()[YGEdgeVertical] = props.paddingBlock;
+  }
+
+  // Aliases without precedence
+  if (CompactValue(result.margin()[YGEdgeTop]).isUndefined()) {
+    result.margin()[YGEdgeTop] = props.marginBlockStart;
+  }
+  if (CompactValue(result.margin()[YGEdgeBottom]).isUndefined()) {
+    result.margin()[YGEdgeBottom] = props.marginBlockEnd;
+  }
+  if (CompactValue(result.padding()[YGEdgeTop]).isUndefined()) {
+    result.padding()[YGEdgeTop] = props.paddingBlockStart;
+  }
+  if (CompactValue(result.padding()[YGEdgeBottom]).isUndefined()) {
+    result.padding()[YGEdgeBottom] = props.paddingBlockEnd;
+  }
+
+  return result;
 }
 
 void YogaLayoutableShadowNode::setSize(Size size) const {
@@ -507,7 +555,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       // `newLayoutMetrics.frame` with `childNode.getLayoutMetrics().frame` to
       // detect if layout has not changed is not advised, please refer to
       // D22999891 for details.
-      if (layoutContext.affectedNodes) {
+      if (layoutContext.affectedNodes != nullptr) {
         layoutContext.affectedNodes->push_back(&childNode);
       }
 
@@ -646,7 +694,8 @@ void YogaLayoutableShadowNode::swapLeftAndRightInTree(
   for (auto &child : shadowNode.getChildren()) {
     auto const yogaLayoutableChild =
         traitCast<YogaLayoutableShadowNode const *>(child.get());
-    if (yogaLayoutableChild && !yogaLayoutableChild->doesOwn(shadowNode)) {
+    if ((yogaLayoutableChild != nullptr) &&
+        !yogaLayoutableChild->doesOwn(shadowNode)) {
       swapLeftAndRightInTree(*yogaLayoutableChild);
     }
   }
@@ -822,5 +871,4 @@ void YogaLayoutableShadowNode::ensureYogaChildrenAlighment() const {
 #endif
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

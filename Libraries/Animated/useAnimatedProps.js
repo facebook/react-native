@@ -10,10 +10,10 @@
 
 'use strict';
 
-import AnimatedProps from './nodes/AnimatedProps';
-import {AnimatedEvent} from './AnimatedEvent';
 import useRefEffect from '../Utilities/useRefEffect';
+import {AnimatedEvent} from './AnimatedEvent';
 import NativeAnimatedHelper from './NativeAnimatedHelper';
+import AnimatedProps from './nodes/AnimatedProps';
 import {
   useCallback,
   useEffect,
@@ -21,7 +21,6 @@ import {
   useMemo,
   useReducer,
   useRef,
-  useState,
 } from 'react';
 
 type ReducedProps<TProps> = {
@@ -31,13 +30,12 @@ type ReducedProps<TProps> = {
 };
 type CallbackRef<T> = T => mixed;
 
-let animatedComponentNextId = 1;
-
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
-  const [, scheduleUpdate] = useReducer(count => count + 1, 0);
+  const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
   const onUpdateRef = useRef<?() => void>(null);
+  const cachedRef = useRef<TInstance | null>(null);
 
   // TODO: Only invalidate `node` if animated props or `style` change. In the
   // previous implementation, we permitted `style` to override props with the
@@ -63,10 +61,11 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   // But there is no way to transparently compose three separate callback refs,
   // so we just combine them all into one for now.
   const refEffect = useCallback(
-    instance => {
+    (instance: TInstance) => {
       // NOTE: This may be called more often than necessary (e.g. when `props`
       // changes), but `setNativeView` already optimizes for that.
       node.setNativeView(instance);
+      cachedRef.current = instance;
 
       // NOTE: This callback is only used by the JavaScript animation driver.
       onUpdateRef.current = () => {
@@ -116,6 +115,16 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 
+  useEffect(() => {
+    // Call `setNativeView` any time `node` changes to make sure
+    // `AnimatedProps._animatedView` is up to date.
+    // This would not be necessary in an ideal world.
+    // In React, anytime identity of function passed to `ref` changes,
+    // the old function is called with null and the new function is called with value.
+    // ScrollView does not behave like this and this workaround is necessary.
+    node.setNativeView(cachedRef.current);
+  }, [node]);
+
   return [reduceAnimatedProps<TProps>(node), callbackRef];
 }
 
@@ -141,16 +150,11 @@ function useAnimatedPropsLifecycle(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
 
-  const [animatedComponentId] = useState(
-    () => `${animatedComponentNextId++}:animatedComponent`,
-  );
-
-  useLayoutEffect(() => {
-    NativeAnimatedHelper.API.setWaitingForIdentifier(animatedComponentId);
-  });
-
   useEffect(() => {
-    NativeAnimatedHelper.API.unsetWaitingForIdentifier(animatedComponentId);
+    // It is ok for multiple components to call `flushQueue` because it noops
+    // if the queue is empty. When multiple animated components are mounted at
+    // the same time. Only first component flushes the queue and the others will noop.
+    NativeAnimatedHelper.API.flushQueue();
   });
 
   useLayoutEffect(() => {

@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
+import Text from '../../../Text/Text';
+import View from '../../View/View';
+import TouchableNativeFeedback from '../TouchableNativeFeedback';
 import * as React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-import Text from '../../../Text/Text';
-import TouchableNativeFeedback from '../TouchableNativeFeedback';
-import View from '../../View/View';
 
 const render = require('../../../../jest/renderer');
 

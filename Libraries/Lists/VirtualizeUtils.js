@@ -10,7 +10,7 @@
 
 'use strict';
 
-import invariant from 'invariant';
+import type {FrameMetricProps} from './VirtualizedListProps';
 
 /**
  * Used to find the indices of the frames that overlap the given offsets. Useful for finding the
@@ -19,14 +19,18 @@ import invariant from 'invariant';
  */
 export function elementsThatOverlapOffsets(
   offsets: Array<number>,
-  itemCount: number,
-  getFrameMetrics: (index: number) => {
+  props: FrameMetricProps,
+  getFrameMetrics: (
+    index: number,
+    props: FrameMetricProps,
+  ) => {
     length: number,
     offset: number,
     ...
   },
   zoomScale: number = 1,
 ): Array<number> {
+  const itemCount = props.getItemCount(props.data);
   const result = [];
   for (let offsetIndex = 0; offsetIndex < offsets.length; offsetIndex++) {
     const currentOffset = offsets[offsetIndex];
@@ -36,7 +40,7 @@ export function elementsThatOverlapOffsets(
     while (left <= right) {
       // eslint-disable-next-line no-bitwise
       const mid = left + ((right - left) >>> 1);
-      const frame = getFrameMetrics(mid);
+      const frame = getFrameMetrics(mid, props);
       const scaledOffsetStart = frame.offset * zoomScale;
       const scaledOffsetEnd = (frame.offset + frame.length) * zoomScale;
 
@@ -95,16 +99,17 @@ export function newRangeCount(
  * biased in the direction of scroll.
  */
 export function computeWindowedRenderLimits(
-  data: any,
-  getItemCount: (data: any) => number,
+  props: FrameMetricProps,
   maxToRenderPerBatch: number,
   windowSize: number,
   prev: {
     first: number,
     last: number,
-    ...
   },
-  getFrameMetricsApprox: (index: number) => {
+  getFrameMetricsApprox: (
+    index: number,
+    props: FrameMetricProps,
+  ) => {
     length: number,
     offset: number,
     ...
@@ -120,11 +125,10 @@ export function computeWindowedRenderLimits(
 ): {
   first: number,
   last: number,
-  ...
 } {
-  const itemCount = getItemCount(data);
+  const itemCount = props.getItemCount(props.data);
   if (itemCount === 0) {
-    return prev;
+    return {first: 0, last: -1};
   }
   const {offset, velocity, visibleLength, zoomScale = 1} = scrollMetrics;
 
@@ -148,7 +152,7 @@ export function computeWindowedRenderLimits(
   const overscanEnd = Math.max(0, visibleEnd + leadFactor * overscanLength);
 
   const lastItemOffset =
-    getFrameMetricsApprox(itemCount - 1).offset * zoomScale;
+    getFrameMetricsApprox(itemCount - 1, props).offset * zoomScale;
   if (lastItemOffset < overscanBegin) {
     // Entire list is before our overscan window
     return {
@@ -160,7 +164,7 @@ export function computeWindowedRenderLimits(
   // Find the indices that correspond to the items at the render boundaries we're targeting.
   let [overscanFirst, first, last, overscanLast] = elementsThatOverlapOffsets(
     [overscanBegin, visibleBegin, visibleEnd, overscanEnd],
-    itemCount,
+    props,
     getFrameMetricsApprox,
     zoomScale,
   );

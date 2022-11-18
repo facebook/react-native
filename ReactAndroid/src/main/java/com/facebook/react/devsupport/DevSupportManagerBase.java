@@ -31,7 +31,7 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
-import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
+import com.facebook.react.bridge.DefaultJSExceptionHandler;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
@@ -94,7 +94,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private final @Nullable String mJSAppBundleName;
   private final File mJSBundleDownloadedFile;
   private final File mJSSplitBundlesDir;
-  private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
+  private final DefaultJSExceptionHandler mDefaultJSExceptionHandler;
   private final DevLoadingViewController mDevLoadingViewController;
 
   private @Nullable SurfaceDelegate mRedBoxSurfaceDelegate;
@@ -201,7 +201,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     final String splitBundlesDir = subclassTag.toLowerCase(Locale.ROOT) + "_dev_js_split_bundles";
     mJSSplitBundlesDir = mApplicationContext.getDir(splitBundlesDir, Context.MODE_PRIVATE);
 
-    mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
+    mDefaultJSExceptionHandler = new DefaultJSExceptionHandler();
 
     setDevSupportEnabled(enableOnCreate);
 
@@ -217,7 +217,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     if (mIsDevSupportEnabled) {
       logJSException(e);
     } else {
-      mDefaultNativeModuleCallExceptionHandler.handleException(e);
+      mDefaultJSExceptionHandler.handleException(e);
     }
   }
 
@@ -703,7 +703,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         URL sourceUrl = new URL(getSourceUrl());
         String path = sourceUrl.getPath().substring(1); // strip initial slash in path
         String host = sourceUrl.getHost();
-        int port = sourceUrl.getPort();
+        int port = sourceUrl.getPort() != -1 ? sourceUrl.getPort() : sourceUrl.getDefaultPort();
         mCurrentContext
             .getJSModule(HMRClient.class)
             .setup("android", path, host, port, mDevSettings.isHotModuleReplacementEnabled());
@@ -752,13 +752,34 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
   @UiThread
   private void showDevLoadingViewForUrl(String bundleUrl) {
-    mDevLoadingViewController.showForUrl(bundleUrl);
+    if (mApplicationContext == null) {
+      return;
+    }
+
+    URL parsedURL;
+
+    try {
+      parsedURL = new URL(bundleUrl);
+    } catch (MalformedURLException e) {
+      FLog.e(ReactConstants.TAG, "Bundle url format is invalid. \n\n" + e.toString());
+      return;
+    }
+
+    int port = parsedURL.getPort() != -1 ? parsedURL.getPort() : parsedURL.getDefaultPort();
+    mDevLoadingViewController.showMessage(
+        mApplicationContext.getString(
+            R.string.catalyst_loading_from_url, parsedURL.getHost() + ":" + port));
     mDevLoadingViewVisible = true;
   }
 
   @UiThread
   protected void showDevLoadingViewForRemoteJSEnabled() {
-    mDevLoadingViewController.showForRemoteJSEnabled();
+    if (mApplicationContext == null) {
+      return;
+    }
+
+    mDevLoadingViewController.showMessage(
+        mApplicationContext.getString(R.string.catalyst_debug_connecting));
     mDevLoadingViewVisible = true;
   }
 

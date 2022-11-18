@@ -17,17 +17,18 @@ const {
   Text,
   TouchableWithoutFeedback,
   View,
+  Platform,
 } = require('react-native');
 
 class ViewBorderStyleExample extends React.Component<
   $ReadOnly<{||}>,
   {|showBorder: boolean|},
 > {
-  state = {
+  state: {showBorder: boolean} = {
     showBorder: true,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
         <View>
@@ -86,11 +87,11 @@ class OffscreenAlphaCompositing extends React.Component<
     active: boolean,
   |},
 > {
-  state = {
+  state: {active: boolean} = {
     active: false,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
         <View>
@@ -168,11 +169,11 @@ class ZIndexExample extends React.Component<
     flipped: boolean,
   |},
 > {
-  state = {
+  state: {flipped: boolean} = {
     flipped: false,
   };
 
-  render() {
+  render(): React.Node {
     const indices = this.state.flipped ? [-1, 0, 1, 2] : [2, 1, 0, -1];
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
@@ -238,11 +239,11 @@ class DisplayNoneStyle extends React.Component<
     index: number,
   |},
 > {
-  state = {
+  state: {index: number} = {
     index: 0,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
         <View>
@@ -298,6 +299,40 @@ class DisplayNoneStyle extends React.Component<
     this.setState({index: this.state.index + 1});
   };
 }
+
+class FlexGapExample extends React.Component<$ReadOnly<{||}>> {
+  render(): React.Node {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          borderWidth: 1,
+          rowGap: 20,
+          columnGap: 30,
+        }}>
+        <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+        <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+        <View
+          style={{
+            backgroundColor: 'pink',
+            height: 30,
+            flexBasis: 30,
+          }}
+        />
+        <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+        <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+        <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+        <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+        <View style={{backgroundColor: 'pink', height: 30, width: 30}} />
+        <View style={{backgroundColor: 'pink', height: 30, width: 30}} />
+        <View style={{backgroundColor: 'pink', height: 30, width: 30}} />
+        <View style={{backgroundColor: 'pink', height: 30, width: 30}} />
+      </View>
+    );
+  }
+}
+
 exports.title = 'View';
 exports.documentationURL = 'https://reactnative.dev/docs/view';
 exports.category = 'Basic';
@@ -360,12 +395,29 @@ exports.examples = [
     title: 'Border Radius',
     render(): React.Node {
       return (
-        <View style={{borderWidth: 0.5, borderRadius: 5, padding: 5}}>
-          <Text style={{fontSize: 11}}>
-            Too much use of `borderRadius` (especially large radii) on anything
-            which is scrolling may result in dropped frames. Use sparingly.
-          </Text>
-        </View>
+        <>
+          <View style={{borderWidth: 0.5, borderRadius: 5, padding: 5}}>
+            <Text style={{fontSize: 11}}>
+              Too much use of `borderRadius` (especially large radii) on
+              anything which is scrolling may result in dropped frames. Use
+              sparingly.
+            </Text>
+          </View>
+          {Platform.OS === 'ios' && (
+            <View
+              style={{
+                borderRadius: 20,
+                padding: 8,
+                marginTop: 12,
+                backgroundColor: '#527FE4',
+                borderCurve: 'continuous',
+              }}>
+              <Text style={{fontSize: 16, color: 'white'}}>
+                View with continuous border curve
+              </Text>
+            </View>
+          )}
+        </>
       );
     },
   },
@@ -580,6 +632,24 @@ exports.examples = [
           </View>
         </>
       );
+    },
+  },
+  {
+    title: 'View with aria-label="label"',
+    render(): React.Node {
+      return (
+        <View
+          aria-label="Blue background View with Text"
+          style={{backgroundColor: '#527FE4', padding: 5}}>
+          <Text style={{fontSize: 11}}>Blue background</Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'FlexGap',
+    render(): React.Node {
+      return <FlexGapExample />;
     },
   },
 ];

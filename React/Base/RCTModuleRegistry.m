@@ -6,7 +6,9 @@
  */
 
 #import "RCTBridge.h"
-#import "RCTBridgeModule.h"
+#import "RCTTurboModuleRegistry.h"
+
+@class RCTBridgeModule;
 
 @implementation RCTModuleRegistry {
   __weak id<RCTTurboModuleRegistry> _turboModuleRegistry;

@@ -4,11 +4,10 @@ rn_android_library(
     name = "surface",
     srcs = glob(["*.java"]),
     autoglob = False,
-    is_androidx = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
-        "supermodule:xplat/default/public.react_native.infra",
     ],
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

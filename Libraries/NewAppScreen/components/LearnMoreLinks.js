@@ -8,16 +8,15 @@
  * @format
  */
 
-import Colors from './Colors';
 import type {Node} from 'react';
-import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useColorScheme,
-  View,
-} from 'react-native';
+
+import TouchableOpacity from '../../Components/Touchable/TouchableOpacity';
+import View from '../../Components/View/View';
+import openURLInBrowser from '../../Core/Devtools/openURLInBrowser';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import useColorScheme from '../../Utilities/useColorScheme';
+import Colors from './Colors';
 import React, {Fragment} from 'react';
 
 const links = [

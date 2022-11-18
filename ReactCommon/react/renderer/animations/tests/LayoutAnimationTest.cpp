@@ -11,6 +11,7 @@
 #include <gtest/gtest.h>
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/renderer/animations/LayoutAnimationDriver.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
@@ -29,12 +30,9 @@
 // #include <algorithm>
 // #include <random>
 
-#include "LayoutAnimationDriver.h"
-
 MockClock::time_point MockClock::time_ = {};
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static void testShadowNodeTreeLifeCycleLayoutAnimations(
     uint_fast32_t seed,
@@ -65,7 +63,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
   // Create a RuntimeExecutor
   RuntimeExecutor runtimeExecutor =
-      [](std::function<void(jsi::Runtime &)> const &) {};
+      [](std::function<void(jsi::Runtime &)> const & /*unused*/) {};
 
   // Create component descriptor registry for animation driver
   auto providerRegistry =
@@ -121,8 +119,8 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
     auto currentRootNode = std::static_pointer_cast<RootShadowNode const>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
             ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<SharedShadowNodeList>(
-                SharedShadowNodeList{singleRootChildNode})}));
+            std::make_shared<ShadowNode::ListOfShared>(
+                ShadowNode::ListOfShared{singleRootChildNode})}));
 
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
@@ -159,7 +157,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
       // If tree randomization produced no changes in the form of mutations,
       // don't bother trying to animate because this violates a bunch of our
       // assumptions in this test
-      if (originalMutations.size() == 0) {
+      if (originalMutations.empty()) {
         continue;
       }
 
@@ -310,8 +308,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
   SUCCEED();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 using namespace facebook::react;
 

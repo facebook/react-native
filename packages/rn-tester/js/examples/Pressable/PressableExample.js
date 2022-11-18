@@ -10,17 +10,22 @@
 
 import * as React from 'react';
 import {
+  Alert,
   Animated,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
-  Platform,
   View,
 } from 'react-native';
 import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
 
 const {useEffect, useRef, useState} = React;
+
+function onPressablePress(pressableName: string) {
+  Alert.alert(`Your application has been ${pressableName}!`);
+}
 
 const forceTouchAvailable =
   (Platform.OS === 'ios' && Platform.constants.forceTouchAvailable) || false;
@@ -81,10 +86,24 @@ function TextOnPressBox() {
   );
 }
 
+function PressableAriaLabel() {
+  return (
+    <View style={[styles.row, styles.centered]}>
+      <Pressable
+        style={styles.wrapper}
+        testID="pressable_aria_label"
+        aria-label="pressable with aria label"
+        accessibilityRole="button"
+        onPress={() => onPressablePress('pressed')}>
+        <Text style={styles.button}>Press Me</Text>
+      </Pressable>
+    </View>
+  );
+}
 function PressableFeedbackEvents() {
-  const [eventLog, setEventLog] = useState([]);
+  const [eventLog, setEventLog] = useState<Array<string>>([]);
 
-  function appendEvent(eventName) {
+  function appendEvent(eventName: string) {
     const limit = 6;
     setEventLog(current => {
       return [eventName].concat(current.slice(0, limit - 1));
@@ -118,9 +137,9 @@ function PressableFeedbackEvents() {
 }
 
 function PressableDelayEvents() {
-  const [eventLog, setEventLog] = useState([]);
+  const [eventLog, setEventLog] = useState<Array<string>>([]);
 
-  function appendEvent(eventName) {
+  function appendEvent(eventName: string) {
     const limit = 6;
     const newEventLog = eventLog.slice(0, limit - 1);
     newEventLog.unshift(eventName);
@@ -207,7 +226,7 @@ function PressableHitSlop() {
 
 function PressableNativeMethods() {
   const [status, setStatus] = useState<?boolean>(null);
-  const ref = useRef(null);
+  const ref = useRef<$FlowFixMe>(null);
 
   useEffect(() => {
     setStatus(ref.current != null && typeof ref.current.measure === 'function');
@@ -522,6 +541,14 @@ const examples = [
         'any interaction with component': string),
     render: function (): React.Node {
       return <PressableDisabled />;
+    },
+  },
+  {
+    title: 'Pressable with aria-label="label"',
+    description: ('Note: This prop changes the text that a screen ' +
+      'reader announces (there are no visual differences).': string),
+    render: function (): React.Node {
+      return <PressableAriaLabel />;
     },
   },
 ];

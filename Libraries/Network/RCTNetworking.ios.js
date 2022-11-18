@@ -11,10 +11,10 @@
 'use strict';
 
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import convertRequestBody, {type RequestBody} from './convertRequestBody';
 import NativeNetworkingIOS from './NativeNetworkingIOS';
 import {type NativeResponseType} from './XMLHttpRequest';
-import convertRequestBody, {type RequestBody} from './convertRequestBody';
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 
 type RCTNetworkingEventDefinitions = $ReadOnly<{
   didSendNetworkData: [
@@ -68,6 +68,7 @@ const RCTNetworking = {
     listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
     context?: mixed,
   ): EventSubscription {
+    // $FlowFixMe[incompatible-call]
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
   },
 

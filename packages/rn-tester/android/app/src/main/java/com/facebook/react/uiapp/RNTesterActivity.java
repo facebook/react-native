@@ -11,24 +11,23 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactRootView;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+import com.facebook.react.defaults.DefaultReactActivityDelegate;
 
 public class RNTesterActivity extends ReactActivity {
-  public static class RNTesterActivityDelegate extends ReactActivityDelegate {
+  public static class RNTesterActivityDelegate extends DefaultReactActivityDelegate {
     private static final String PARAM_ROUTE = "route";
     private Bundle mInitialProps = null;
     private final @Nullable ReactActivity mActivity;
 
     public RNTesterActivityDelegate(ReactActivity activity, String mainComponentName) {
-      super(activity, mainComponentName);
+      super(
+          activity,
+          mainComponentName,
+          DefaultNewArchitectureEntryPoint.getFabricEnabled(), // fabricEnabled
+          DefaultNewArchitectureEntryPoint.getConcurrentReactEnabled() // concurrentRootEnabled
+          );
       this.mActivity = activity;
-    }
-
-    @Override
-    protected ReactRootView createRootView() {
-      ReactRootView reactRootView = new ReactRootView(getContext());
-      reactRootView.setIsFabric(BuildConfig.ENABLE_FABRIC);
-      return reactRootView;
     }
 
     @Override
@@ -50,11 +49,6 @@ public class RNTesterActivity extends ReactActivity {
     @Override
     protected Bundle getLaunchOptions() {
       return mInitialProps;
-    }
-
-    @Override
-    protected boolean isConcurrentRootEnabled() {
-      return true;
     }
   }
 

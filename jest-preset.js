@@ -24,5 +24,5 @@ module.exports = {
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/)',
   ],
   setupFiles: [require.resolve('./jest/setup.js')],
-  testEnvironment: 'node',
+  testEnvironment: require.resolve('./jest/react-native-env.js'),
 };
