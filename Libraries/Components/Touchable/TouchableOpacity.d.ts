@@ -8,8 +8,9 @@
  */
 
 import type * as React from 'react';
-import {Constructor, TimerMixin} from 'Utilities';
-import {NativeMethods} from '../../Renderer/shims/ReactNativeTypes';
+import {Constructor} from '../../../types/private/Utilities';
+import {TimerMixin} from '../../../types/private/TimerMixin';
+import {NativeMethods} from '../../../types/public/ReactNativeTypes';
 import {TVParallaxProperties} from '../View/ViewPropTypes';
 import {TouchableMixin} from './Touchable';
 import {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';

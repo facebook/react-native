@@ -16,6 +16,7 @@ import type {
   NativeModuleTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
   NativeModulePropertyShape,
+  NativeModuleAliasMap,
 } from '../../CodegenSchema';
 
 import type {AliasResolver} from './Utils';
@@ -28,8 +29,13 @@ type FilesOutput = Map<string, string>;
 const ModuleClassDeclarationTemplate = ({
   hasteModuleName,
   moduleProperties,
-}: $ReadOnly<{hasteModuleName: string, moduleProperties: string[]}>) => {
-  return `class JSI_EXPORT ${hasteModuleName}CxxSpecJSI : public TurboModule {
+  structs,
+}: $ReadOnly<{
+  hasteModuleName: string,
+  moduleProperties: string[],
+  structs: string,
+}>) => {
+  return `${structs}class JSI_EXPORT ${hasteModuleName}CxxSpecJSI : public TurboModule {
 protected:
   ${hasteModuleName}CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -107,12 +113,14 @@ ${modules.join('\n\n')}
 
 function translatePrimitiveJSTypeToCpp(
   nullableTypeAnnotation: Nullable<NativeModuleTypeAnnotation>,
+  optional: boolean,
   createErrorMessage: (typeName: string) => string,
   resolveAlias: AliasResolver,
 ) {
   const [typeAnnotation, nullable] = unwrapNullable<NativeModuleTypeAnnotation>(
     nullableTypeAnnotation,
   );
+  const isRequired = !optional && !nullable;
 
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -120,7 +128,7 @@ function translatePrimitiveJSTypeToCpp(
   }
 
   function wrap(type: string) {
-    return nullable ? `std::optional<${type}>` : type;
+    return isRequired ? type : `std::optional<${type}>`;
   }
 
   switch (realTypeAnnotation.type) {
@@ -184,6 +192,76 @@ function translatePrimitiveJSTypeToCpp(
   }
 }
 
+function createStructs(
+  moduleName: string,
+  aliasMap: NativeModuleAliasMap,
+  resolveAlias: AliasResolver,
+): string {
+  return Object.keys(aliasMap)
+    .map(alias => {
+      const value = aliasMap[alias];
+      if (value.properties.length === 0) {
+        return '';
+      }
+      const structName = `${moduleName}Base${alias}`;
+      const templateParameterWithTypename = value.properties
+        .map((v, i) => 'typename P' + i)
+        .join(', ');
+      const templateParameter = value.properties
+        .map((v, i) => 'P' + i)
+        .join(', ');
+      return `#pragma mark - ${structName}
+
+template <${templateParameterWithTypename}>
+struct ${structName} {
+${value.properties.map((v, i) => '  P' + i + ' ' + v.name).join(';\n')};
+  bool operator==(const ${structName} &other) const {
+    return ${value.properties
+      .map(v => `${v.name} == other.${v.name}`)
+      .join(' && ')};
+  }
+};
+
+template <${templateParameterWithTypename}>
+struct ${structName}Bridging {
+  static ${structName}<${templateParameter}> fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    ${structName}<${templateParameter}> result{
+${value.properties
+  .map(
+    (v, i) =>
+      `      bridging::fromJs<P${i}>(rt, value.getProperty(rt, "${v.name}"), jsInvoker)`,
+  )
+  .join(',\n')}};
+    return result;
+  }
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const ${structName}<${templateParameter}> &value) {
+    auto result = facebook::jsi::Object(rt);
+${value.properties
+  .map((v, i) => {
+    if (v.optional) {
+      return `    if (value.${v.name}) {
+      result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value()));
+    }`;
+    } else {
+      return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}));`;
+    }
+  })
+  .join('\n')}
+    return result;
+  }
+};
+
+`;
+    })
+    .join('\n');
+}
+
 function translatePropertyToCpp(
   prop: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
@@ -199,6 +277,7 @@ function translatePropertyToCpp(
   const paramTypes = propTypeAnnotation.params.map(param => {
     const translatedParam = translatePrimitiveJSTypeToCpp(
       param.typeAnnotation,
+      param.optional,
       typeName =>
         `Unsupported type for param "${param.name}" in ${prop.name}. Found: ${typeName}`,
       resolveAlias,
@@ -208,6 +287,7 @@ function translatePropertyToCpp(
 
   const returnType = translatePrimitiveJSTypeToCpp(
     propTypeAnnotation.returnTypeAnnotation,
+    false,
     typeName => `Unsupported return type for ${prop.name}. Found: ${typeName}`,
     resolveAlias,
   );
@@ -247,6 +327,7 @@ module.exports = {
         moduleNames: [moduleName],
       } = nativeModules[hasteModuleName];
       const resolveAlias = createAliasResolver(aliases);
+      const structs = createStructs(moduleName, aliases, resolveAlias);
 
       return [
         ModuleClassDeclarationTemplate({
@@ -254,6 +335,7 @@ module.exports = {
           moduleProperties: properties.map(prop =>
             translatePropertyToCpp(prop, resolveAlias, true),
           ),
+          structs,
         }),
         ModuleSpecClassDeclarationTemplate({
           hasteModuleName,

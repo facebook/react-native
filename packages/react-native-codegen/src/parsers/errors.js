@@ -10,8 +10,9 @@
 
 'use strict';
 
-const invariant = require('invariant');
+import type {UnionTypeAnnotationMemberType} from '../CodegenSchema';
 
+import type {Parser} from './parser';
 export type ParserType = 'Flow' | 'TypeScript';
 
 class ParserError extends Error {
@@ -110,65 +111,57 @@ class UnsupportedTypeAnnotationParserError extends ParserError {
 }
 
 class UnsupportedGenericParserError extends ParserError {
-  +genericName: string;
+  // +genericName: string;
   constructor(
     nativeModuleName: string,
     genericTypeAnnotation: $FlowFixMe,
-    language: ParserType,
+    parser: Parser,
   ) {
-    const genericName =
-      language === 'TypeScript'
-        ? genericTypeAnnotation.typeName.name
-        : genericTypeAnnotation.id.name;
+    const genericName = parser.nameForGenericTypeAnnotation(
+      genericTypeAnnotation,
+    );
     super(
       nativeModuleName,
       genericTypeAnnotation,
       `Unrecognized generic type '${genericName}' in NativeModule spec.`,
     );
 
-    this.genericName = genericName;
+    // this.genericName = genericName;
   }
 }
 
-class IncorrectlyParameterizedGenericParserError extends ParserError {
-  +genericName: string;
-  +numTypeParameters: number;
-
-  // $FlowFixMe[missing-local-annot]
+class MissingTypeParameterGenericParserError extends ParserError {
   constructor(
     nativeModuleName: string,
     genericTypeAnnotation: $FlowFixMe,
-    language: ParserType,
+    parser: Parser,
   ) {
-    const genericName =
-      language === 'TypeScript'
-        ? genericTypeAnnotation.typeName.name
-        : genericTypeAnnotation.id.name;
-    if (genericTypeAnnotation.typeParameters == null) {
-      super(
-        nativeModuleName,
-        genericTypeAnnotation,
-        `Generic '${genericName}' must have type parameters.`,
-      );
-      return;
-    }
+    const genericName = parser.nameForGenericTypeAnnotation(
+      genericTypeAnnotation,
+    );
 
-    if (
-      genericTypeAnnotation.typeParameters.type ===
-        'TypeParameterInstantiation' &&
-      genericTypeAnnotation.typeParameters.params.length !== 1
-    ) {
-      super(
-        nativeModuleName,
-        genericTypeAnnotation.typeParameters,
-        `Generic '${genericName}' must have exactly one type parameter.`,
-      );
-      return;
-    }
+    super(
+      nativeModuleName,
+      genericTypeAnnotation,
+      `Generic '${genericName}' must have type parameters.`,
+    );
+  }
+}
 
-    invariant(
-      false,
-      "Couldn't create IncorrectlyParameterizedGenericParserError",
+class MoreThanOneTypeParameterGenericParserError extends ParserError {
+  constructor(
+    nativeModuleName: string,
+    genericTypeAnnotation: $FlowFixMe,
+    parser: Parser,
+  ) {
+    const genericName = parser.nameForGenericTypeAnnotation(
+      genericTypeAnnotation,
+    );
+
+    super(
+      nativeModuleName,
+      genericTypeAnnotation,
+      `Generic '${genericName}' must have exactly one type parameter.`,
     );
   }
 }
@@ -257,7 +250,6 @@ class UnsupportedFunctionParamTypeAnnotationParserError extends ParserError {
     flowParamTypeAnnotation: $FlowFixMe,
     paramName: string,
     invalidParamType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -309,7 +301,7 @@ class UnsupportedUnionTypeAnnotationParserError extends ParserError {
   constructor(
     nativeModuleName: string,
     arrayElementTypeAST: $FlowFixMe,
-    types: string[],
+    types: UnionTypeAnnotationMemberType[],
     language: ParserType,
   ) {
     super(
@@ -422,7 +414,8 @@ class IncorrectModuleRegistryCallArgumentTypeParserError extends ParserError {
 
 module.exports = {
   ParserError,
-  IncorrectlyParameterizedGenericParserError,
+  MissingTypeParameterGenericParserError,
+  MoreThanOneTypeParameterGenericParserError,
   MisnamedModuleInterfaceParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleInterfaceParserError,

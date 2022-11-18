@@ -91,7 +91,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     }
 
     // Check if it has a scheme
-    if ([path rangeOfString:@":"].location != NSNotFound) {
+    if ([path rangeOfString:@"://"].location != NSNotFound) {
       NSMutableCharacterSet *urlAllowedCharacterSet = [NSMutableCharacterSet new];
       [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLUserAllowedCharacterSet]];
       [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLPasswordAllowedCharacterSet]];

@@ -177,8 +177,8 @@ class DependencyUtilsTest {
     configureDependencies(project, "1.2.3")
 
     val forcedModules = project.configurations.first().resolutionStrategy.forcedModules
-    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:react-native:1.2.3" })
-    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:hermes-engine:1.2.3" })
+    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
+    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:hermes-android:1.2.3" })
   }
 
   @Test
@@ -196,6 +196,23 @@ class DependencyUtilsTest {
     val versionString = readVersionString(propertiesFile)
 
     assertEquals("1000.0.0", versionString)
+  }
+
+  @Test
+  fun readVersionString_withNightlyVersionString_returnsSnapshotVersion() {
+    val propertiesFile =
+        tempFolder.newFile("gradle.properties").apply {
+          writeText(
+              """
+        VERSION_NAME=0.0.0-20221101-2019-cfe811ab1
+        ANOTHER_PROPERTY=true
+      """
+                  .trimIndent())
+        }
+
+    val versionString = readVersionString(propertiesFile)
+
+    assertEquals("0.0.0-20221101-2019-cfe811ab1-SNAPSHOT", versionString)
   }
 
   @Test

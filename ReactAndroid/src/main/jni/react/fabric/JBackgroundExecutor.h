@@ -13,9 +13,7 @@
 namespace facebook {
 namespace react {
 
-using namespace facebook::jni;
-
-class JBackgroundExecutor : public JavaClass<JBackgroundExecutor> {
+class JBackgroundExecutor : public jni::JavaClass<JBackgroundExecutor> {
  public:
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/bridge/BackgroundExecutor;";

@@ -241,9 +241,23 @@ Error: ${e.message}`;
       }
     });
 
-    client.on('close', data => {
+    client.on('close', closeEvent => {
       LoadingView.hide();
-      setHMRUnavailableReason('Disconnected from Metro.');
+
+      // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
+      // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
+      const isNormalOrUnsetCloseReason =
+        closeEvent.code === 1000 ||
+        closeEvent.code === 1005 ||
+        closeEvent.code == null;
+
+      if (isNormalOrUnsetCloseReason) {
+        setHMRUnavailableReason('Disconnected from Metro.');
+      } else {
+        setHMRUnavailableReason(
+          `Disconnected from Metro (${closeEvent.code}: "${closeEvent.reason}").`,
+        );
+      }
     });
 
     if (isEnabled) {

@@ -25,7 +25,6 @@ import * as React from 'react';
 import {
   AccessibilityInfo,
   ActionSheetIOS,
-  AsyncStorage,
   Alert,
   AppState,
   AppStateStatus,
@@ -72,7 +71,6 @@ import {
   PlatformColor,
   Pressable,
   ProgressBarAndroid,
-  ProgressViewIOS,
   PushNotificationIOS,
   RefreshControl,
   RegisteredStyle,

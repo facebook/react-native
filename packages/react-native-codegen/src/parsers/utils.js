@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -185,11 +185,82 @@ function buildSchemaFromConfigType(
   }
 }
 
+function getConfigType(
+  // TODO(T71778680): Flow-type this node.
+  ast: $FlowFixMe,
+  Visitor: ({isComponent: boolean, isModule: boolean}) => {
+    [type: string]: (node: $FlowFixMe) => void,
+  },
+): 'module' | 'component' | 'none' {
+  let infoMap = {
+    isComponent: false,
+    isModule: false,
+  };
+
+  visit(ast, Visitor(infoMap));
+
+  const {isModule, isComponent} = infoMap;
+  if (isModule && isComponent) {
+    throw new Error(
+      'Found type extending "TurboModule" and exported "codegenNativeComponent" declaration in one file. Split them into separated files.',
+    );
+  }
+
+  if (isModule) {
+    return 'module';
+  } else if (isComponent) {
+    return 'component';
+  } else {
+    return 'none';
+  }
+}
+
+// TODO(T71778680): Flow-type ASTNodes.
+function isModuleRegistryCall(node: $FlowFixMe): boolean {
+  if (node.type !== 'CallExpression') {
+    return false;
+  }
+
+  const callExpression = node;
+
+  if (callExpression.callee.type !== 'MemberExpression') {
+    return false;
+  }
+
+  const memberExpression = callExpression.callee;
+  if (
+    !(
+      memberExpression.object.type === 'Identifier' &&
+      memberExpression.object.name === 'TurboModuleRegistry'
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    !(
+      memberExpression.property.type === 'Identifier' &&
+      (memberExpression.property.name === 'get' ||
+        memberExpression.property.name === 'getEnforcing')
+    )
+  ) {
+    return false;
+  }
+
+  if (memberExpression.computed) {
+    return false;
+  }
+
+  return true;
+}
+
 module.exports = {
+  getConfigType,
   extractNativeModuleName,
   createParserErrorCapturer,
   verifyPlatforms,
   parseFile,
   visit,
   buildSchemaFromConfigType,
+  isModuleRegistryCall,
 };

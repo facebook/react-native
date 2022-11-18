@@ -90,6 +90,7 @@ function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
 
     return {
       name: paramName,
+      optional: false,
       typeAnnotation: returnType,
     };
   });

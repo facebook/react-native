@@ -1,7 +1,5 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
 
-oncall("react_native")
-
 rn_android_library(
     name = "react",
     srcs = glob(["*.java"]),
@@ -43,6 +41,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/appearance:appearance"),
         react_native_target("java/com/facebook/react/modules/bundleloader:bundleloader"),
         react_native_target("java/com/facebook/react/modules/debug:debug"),
+        react_native_target("java/com/facebook/react/modules/devtoolssettings:devtoolssettings"),
         react_native_target("java/com/facebook/react/modules/fabric:fabric"),
         react_native_target("java/com/facebook/react/modules/debug:interfaces"),
         react_native_target("java/com/facebook/react/modules/deviceinfo:deviceinfo"),

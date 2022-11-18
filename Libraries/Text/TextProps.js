@@ -15,6 +15,7 @@ import type {
   AccessibilityActionInfo,
   AccessibilityRole,
   AccessibilityState,
+  Role,
 } from '../Components/View/ViewAccessibility';
 import type {TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {
@@ -85,15 +86,14 @@ export type TextProps = $ReadOnly<{|
    * see https://reactnative.dev/docs/accessibility#accessibilitystate
    */
   'aria-busy'?: ?boolean,
-  'aria-checked'?: ?boolean,
+  'aria-checked'?: ?boolean | 'mixed',
   'aria-disabled'?: ?boolean,
   'aria-expanded'?: ?boolean,
   'aria-selected'?: ?boolean,
 
   /**
-   * Reperesents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
-   *
-   * @platform android
+   * Represents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   * This prop is listed for cross-platform reasons and has no real effect on Android or iOS.
    */
   'aria-labelledby'?: ?string,
 
@@ -177,6 +177,11 @@ export type TextProps = $ReadOnly<{|
   pressRetentionOffset?: ?PressRetentionOffset,
 
   /**
+   * Indicates to accessibility services to treat UI component like a specific role.
+   */
+  role?: ?Role,
+
+  /**
    * Lets the user select text.
    *
    * See https://reactnative.dev/docs/text#selectable
@@ -222,6 +227,23 @@ export type TextProps = $ReadOnly<{|
    * iOS Only
    */
   adjustsFontSizeToFit?: ?boolean,
+
+  /**
+   * The Dynamic Text scale ramp to apply to this element on iOS.
+   */
+  dynamicTypeRamp?: ?(
+    | 'caption2'
+    | 'caption1'
+    | 'footnote'
+    | 'subheadline'
+    | 'callout'
+    | 'body'
+    | 'headline'
+    | 'title3'
+    | 'title2'
+    | 'title1'
+    | 'largeTitle'
+  ),
 
   /**
    * Smallest possible scale a font can reach.

@@ -82,6 +82,9 @@ package-lock.json
 /coverage
 /third-party
 
+# Test Reports
+/reports
+
 # Root dir shouldn't have Xcode project
 /*.xcodeproj
 
@@ -122,6 +125,7 @@ package-lock.json
 /sdks/download
 /sdks/hermes
 /sdks/hermesc
+/sdks/hermes-engine/build_host_hermesc
 
 # Visual studio
 .vscode

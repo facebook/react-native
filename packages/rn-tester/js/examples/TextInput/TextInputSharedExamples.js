@@ -10,8 +10,6 @@
 
 'use strict';
 
-import type {HostComponent} from 'react-native';
-
 const React = require('react');
 
 const {

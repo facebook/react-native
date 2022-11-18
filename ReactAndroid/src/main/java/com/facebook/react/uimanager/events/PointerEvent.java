@@ -66,6 +66,7 @@ public class PointerEvent extends Event<PointerEvent> {
   private short mCoalescingKey = UNSET_COALESCING_KEY;
   private @Nullable List<WritableMap> mPointersEventData;
   private PointerEventState mEventState;
+  private @Nullable Event.EventAnimationDriverMatchSpec mEventAnimationDriverMatchSpec;
 
   private void init(
       String eventName,
@@ -112,6 +113,31 @@ public class PointerEvent extends Event<PointerEvent> {
       rctEventEmitter.receiveEvent(this.getViewTag(), mEventName, eventData);
     }
     return;
+  }
+
+  @Override
+  public Event.EventAnimationDriverMatchSpec getEventAnimationDriverMatchSpec() {
+    if (mEventAnimationDriverMatchSpec == null) {
+      mEventAnimationDriverMatchSpec =
+          new EventAnimationDriverMatchSpec() {
+            @Override
+            public boolean match(int viewTag, String eventName) {
+              if (!PointerEventHelper.isBubblingEvent(eventName)) {
+                return false;
+              }
+
+              List<TouchTargetHelper.ViewTarget> viewTargets =
+                  mEventState.getHitPathForActivePointer();
+              for (TouchTargetHelper.ViewTarget viewTarget : viewTargets) {
+                if (viewTarget.getViewId() == viewTag && eventName.equals(mEventName)) {
+                  return true;
+                }
+              }
+              return false;
+            }
+          };
+    }
+    return mEventAnimationDriverMatchSpec;
   }
 
   @Override
@@ -328,6 +354,10 @@ public class PointerEvent extends Event<PointerEvent> {
 
     public final Map<Integer, float[]> getEventCoordinatesByPointerId() {
       return mEventCoordinatesByPointerId;
+    }
+
+    public final List<TouchTargetHelper.ViewTarget> getHitPathForActivePointer() {
+      return mHitPathByPointerId.get(mActivePointerId);
     }
   }
 }

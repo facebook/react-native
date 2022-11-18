@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+import type {StackFrame} from '../../../Core/NativeExceptionsManager';
+
 import LogBoxInspectorStackFrames, {
   getCollapseMessage,
 } from '../LogBoxInspectorStackFrames';
@@ -33,7 +35,7 @@ const createLogWithFrames = (collapsedOptions: Array<?boolean>) => {
 };
 
 const createCollapsedFrames = (collapsedOptions: Array<?boolean>) => {
-  return collapsedOptions.map(option => ({
+  return collapsedOptions.map((option): StackFrame => ({
     column: 1,
     file: 'dependency.js',
     lineNumber: 1,

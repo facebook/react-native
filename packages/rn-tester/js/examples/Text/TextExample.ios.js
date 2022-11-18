@@ -1283,4 +1283,49 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Dynamic Type (iOS only)',
+    render: function (): React.Node {
+      const boldStyle = {fontWeight: 'bold'};
+      const boxStyle = {
+        borderWidth: 1,
+        padding: 8,
+        margin: 8,
+      };
+      return (
+        <View style={{marginTop: 10, marginBottom: 10}}>
+          <Text>
+            Adjust text size in Accessibility settings and watch how the font
+            sizes change relative to each other.
+          </Text>
+          <View style={boxStyle}>
+            <Text style={boldStyle}>With `dynamicTypeRamp`:</Text>
+            <Text style={{fontSize: 34}} dynamicTypeRamp="largeTitle">
+              Large Title
+            </Text>
+            <Text style={{fontSize: 28}} dynamicTypeRamp="title1">
+              Title
+            </Text>
+            <Text style={{fontSize: 22}} dynamicTypeRamp="title2">
+              Title 2
+            </Text>
+            <Text style={{fontSize: 20}} dynamicTypeRamp="title3">
+              Title 3
+            </Text>
+            <Text style={{fontSize: 17}} dynamicTypeRamp="body">
+              Body
+            </Text>
+          </View>
+          <View style={boxStyle}>
+            <Text style={boldStyle}>Without `dynamicTypeRamp`:</Text>
+            <Text style={{fontSize: 34}}>Large Title</Text>
+            <Text style={{fontSize: 28}}>Title</Text>
+            <Text style={{fontSize: 22}}>Title 2</Text>
+            <Text style={{fontSize: 20}}>Title 3</Text>
+            <Text style={{fontSize: 17}}>Body</Text>
+          </View>
+        </View>
+      );
+    },
+  },
 ];

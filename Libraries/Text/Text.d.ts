@@ -8,9 +8,9 @@
  */
 
 import type * as React from 'react';
-import {Constructor} from 'Utilities';
+import {Constructor} from '../../types/private/Utilities';
 import {AccessibilityProps} from '../Components/View/ViewAccessibility';
-import {NativeMethods} from '../Renderer/shims/ReactNativeTypes';
+import {NativeMethods} from '../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../StyleSheet/StyleSheet';
 import {TextStyle} from '../StyleSheet/StyleSheetTypes';
 import {
@@ -25,6 +25,23 @@ export interface TextPropsIOS {
    * Specifies whether font should be scaled down automatically to fit given style constraints.
    */
   adjustsFontSizeToFit?: boolean | undefined;
+
+  /**
+   * The Dynamic Text scale ramp to apply to this element on iOS.
+   */
+  dynamicTypeRamp?:
+    | 'caption2'
+    | 'caption1'
+    | 'footnote'
+    | 'subheadline'
+    | 'callout'
+    | 'body'
+    | 'headline'
+    | 'title3'
+    | 'title2'
+    | 'title1'
+    | 'largeTitle'
+    | undefined;
 
   /**
    * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).

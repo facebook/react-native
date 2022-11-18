@@ -4,35 +4,43 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
- * @flow strict-local
  */
 
 'use strict';
 
 import type {
-  Nullable,
-  NativeModuleAliasMap,
-  NativeModuleBaseTypeAnnotation,
-  NativeModuleFunctionTypeAnnotation,
-  NativeModuleTypeAliasTypeAnnotation,
-  NativeModuleNumberTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   Int32TypeAnnotation,
+  NativeModuleAliasMap,
+  NativeModuleBaseTypeAnnotation,
+  NativeModuleFloatTypeAnnotation,
+  NativeModuleFunctionTypeAnnotation,
   NativeModuleGenericObjectTypeAnnotation,
-  ReservedTypeAnnotation,
-  ObjectTypeAnnotation,
+  NativeModuleMixedTypeAnnotation,
+  NativeModuleNumberTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
+  NativeModuleTypeAliasTypeAnnotation,
+  Nullable,
+  ObjectTypeAnnotation,
+  ReservedTypeAnnotation,
   StringTypeAnnotation,
   VoidTypeAnnotation,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
-import type {TypeAliasResolutionStatus} from './utils';
+import type {Parser} from './parser';
+import type {
+  ParserErrorCapturer,
+  TypeAliasResolutionStatus,
+  TypeDeclarationMap,
+} from './utils';
 
 const {
-  wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  wrapNullable,
+  translateFunctionTypeAnnotation,
 } = require('./parsers-commons');
 
 function emitBoolean(nullable: boolean): Nullable<BooleanTypeAnnotation> {
@@ -79,11 +87,38 @@ function emitStringish(nullable: boolean): Nullable<StringTypeAnnotation> {
     type: 'StringTypeAnnotation',
   });
 }
+
 function emitFunction(
   nullable: boolean,
-  translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation,
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  translateTypeAnnotation: $FlowFixMe,
+  language: ParserType,
 ): Nullable<NativeModuleFunctionTypeAnnotation> {
+  const translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation =
+    translateFunctionTypeAnnotation(
+      hasteModuleName,
+      typeAnnotation,
+      types,
+      aliasMap,
+      tryParse,
+      cxxOnly,
+      translateTypeAnnotation,
+      language,
+    );
   return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
+}
+
+function emitMixedTypeAnnotation(
+  nullable: boolean,
+): Nullable<NativeModuleMixedTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'MixedTypeAnnotation',
+  });
 }
 
 function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
@@ -149,13 +184,13 @@ function typeAliasResolution(
 function emitPromise(
   hasteModuleName: string,
   typeAnnotation: $FlowFixMe,
-  language: ParserType,
+  parser: Parser,
   nullable: boolean,
 ): Nullable<NativeModulePromiseTypeAnnotation> {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter(
     hasteModuleName,
     typeAnnotation,
-    language,
+    parser,
   );
 
   return wrapNullable(nullable, {
@@ -171,9 +206,18 @@ function emitObject(
   });
 }
 
+function emitFloat(
+  nullable: boolean,
+): Nullable<NativeModuleFloatTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'FloatTypeAnnotation',
+  });
+}
+
 module.exports = {
   emitBoolean,
   emitDouble,
+  emitFloat,
   emitFunction,
   emitInt32,
   emitNumber,
@@ -183,5 +227,6 @@ module.exports = {
   emitVoid,
   emitString,
   emitStringish,
+  emitMixedTypeAnnotation,
   typeAliasResolution,
 };

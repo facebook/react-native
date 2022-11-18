@@ -5,8 +5,6 @@ load(
     "react_module_plugin_providers",
 )
 
-oncall("react_native")
-
 rn_apple_library(
     name = "CoreModulesApple",
     srcs = glob(
@@ -81,9 +79,6 @@ rn_apple_library(
             name = "AlertManager",
             native_class_func = "RCTAlertManagerCls",
         ) + react_module_plugin_providers(
-            name = "AsyncLocalStorage",
-            native_class_func = "RCTAsyncLocalStorageCls",
-        ) + react_module_plugin_providers(
             name = "Timing",
             native_class_func = "RCTTimingCls",
         ) + react_module_plugin_providers(
@@ -139,6 +134,7 @@ rn_apple_library(
         "//xplat/js/react-native-github:FBReactNativeSpecApple",
         "//xplat/js/react-native-github:RCTLinkingApple",
         "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:RCTSettingsApple",
         "//xplat/js/react-native-github:ReactInternalApple",
     ],
 )

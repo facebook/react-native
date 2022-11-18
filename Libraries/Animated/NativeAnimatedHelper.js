@@ -142,7 +142,11 @@ const API = {
     }
   },
   flushQueue: function (): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
+    // TODO: (T136971132)
+    invariant(
+      NativeAnimatedModule || process.env.NODE_ENV === 'test',
+      'Native animated module is not available',
+    );
     flushQueueTimeout = null;
 
     // Early returns before calling any APIs
@@ -165,16 +169,18 @@ const API = {
       // use RCTDeviceEventEmitter. This reduces overhead of sending lots of
       // JSI functions across to native code; but also, TM infrastructure currently
       // does not support packing a function into native arrays.
-      NativeAnimatedModule.queueAndExecuteBatchedOperations?.(singleOpQueue);
+      NativeAnimatedModule?.queueAndExecuteBatchedOperations?.(singleOpQueue);
       singleOpQueue.length = 0;
     } else {
-      Platform.OS === 'android' && NativeAnimatedModule.startOperationBatch?.();
+      Platform.OS === 'android' &&
+        NativeAnimatedModule?.startOperationBatch?.();
+
       for (let q = 0, l = queue.length; q < l; q++) {
         queue[q]();
       }
       queue.length = 0;
       Platform.OS === 'android' &&
-        NativeAnimatedModule.finishOperationBatch?.();
+        NativeAnimatedModule?.finishOperationBatch?.();
     }
   },
   queueOperation: <Args: $ReadOnlyArray<mixed>, Fn: (...Args) => void>(
@@ -527,15 +533,17 @@ function shouldUseNativeDriver(
   }
 
   if (config.useNativeDriver === true && !NativeAnimatedModule) {
-    if (!_warnedMissingNativeAnimated) {
-      console.warn(
-        'Animated: `useNativeDriver` is not supported because the native ' +
-          'animated module is missing. Falling back to JS-based animation. To ' +
-          'resolve this, add `RCTAnimation` module to this app, or remove ' +
-          '`useNativeDriver`. ' +
-          'Make sure to run `bundle exec pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md',
-      );
-      _warnedMissingNativeAnimated = true;
+    if (process.env.NODE_ENV !== 'test') {
+      if (!_warnedMissingNativeAnimated) {
+        console.warn(
+          'Animated: `useNativeDriver` is not supported because the native ' +
+            'animated module is missing. Falling back to JS-based animation. To ' +
+            'resolve this, add `RCTAnimation` module to this app, or remove ' +
+            '`useNativeDriver`. ' +
+            'Make sure to run `bundle exec pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md',
+        );
+        _warnedMissingNativeAnimated = true;
+      }
     }
     return false;
   }

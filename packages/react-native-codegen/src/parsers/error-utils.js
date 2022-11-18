@@ -4,13 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
 'use strict';
 
+import type {NativeModuleTypeAnnotation} from '../CodegenSchema';
 import type {ParserType} from './errors';
+import type {Parser} from './parser';
 
 const {
   MisnamedModuleInterfaceParserError,
@@ -24,6 +26,7 @@ const {
   UntypedModuleRegistryCallParserError,
   UnsupportedModulePropertyParserError,
   MoreThanOneModuleInterfaceParserError,
+  UnsupportedFunctionParamTypeAnnotationParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -109,7 +112,7 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
   typeArguments: $FlowFixMe,
   methodName: string,
   moduleName: string,
-  language: ParserType,
+  parser: Parser,
 ) {
   function throwError() {
     throw new IncorrectModuleRegistryCallTypeParameterParserError(
@@ -117,28 +120,12 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
       typeArguments,
       methodName,
       moduleName,
-      language,
+      parser.language(),
     );
   }
 
-  if (language === 'Flow') {
-    if (
-      typeArguments.type !== 'TypeParameterInstantiation' ||
-      typeArguments.params.length !== 1 ||
-      typeArguments.params[0].type !== 'GenericTypeAnnotation' ||
-      typeArguments.params[0].id.name !== 'Spec'
-    ) {
-      throwError();
-    }
-  } else if (language === 'TypeScript') {
-    if (
-      typeArguments.type !== 'TSTypeParameterInstantiation' ||
-      typeArguments.params.length !== 1 ||
-      typeArguments.params[0].type !== 'TSTypeReference' ||
-      typeArguments.params[0].typeName.name !== 'Spec'
-    ) {
-      throwError();
-    }
+  if (parser.checkIfInvalidModule(typeArguments)) {
+    throwError();
   }
 }
 
@@ -249,6 +236,20 @@ function throwIfMoreThanOneModuleInterfaceParserError(
   }
 }
 
+function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+  nativeModuleName: string,
+  languageParamTypeAnnotation: $FlowFixMe,
+  paramName: string,
+  paramTypeAnnotationType: NativeModuleTypeAnnotation['type'],
+) {
+  throw new UnsupportedFunctionParamTypeAnnotationParserError(
+    nativeModuleName,
+    languageParamTypeAnnotation,
+    paramName,
+    paramTypeAnnotationType,
+  );
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -261,4 +262,5 @@ module.exports = {
   throwIfUntypedModule,
   throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
 };

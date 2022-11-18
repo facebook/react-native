@@ -158,13 +158,13 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     const {width = props.width, height = props.height, uri} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
     sources = [source];
-
     if (uri === '') {
       console.warn('source.uri should not be an empty string');
     }
   }
 
   const {height, width, ...restProps} = props;
+
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {
     ...restProps,
@@ -324,6 +324,12 @@ Image.queryCache = queryCache;
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
+
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {

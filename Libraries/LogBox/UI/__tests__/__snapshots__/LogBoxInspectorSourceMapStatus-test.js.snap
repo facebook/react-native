@@ -27,7 +27,7 @@ exports[`LogBoxInspectorSourceMapStatus should render for failed 1`] = `
     }
   }
 >
-  <ForwardRef(AnimatedComponentWrapper)
+  <ForwardRef
     source={
       Object {
         "testUri": "../Libraries/LogBox/UI/LogBoxImages/alert-triangle.png",
@@ -94,7 +94,7 @@ exports[`LogBoxInspectorSourceMapStatus should render for pending 1`] = `
     }
   }
 >
-  <ForwardRef(AnimatedComponentWrapper)
+  <ForwardRef
     source={
       Object {
         "testUri": "../Libraries/LogBox/UI/LogBoxImages/loader.png",

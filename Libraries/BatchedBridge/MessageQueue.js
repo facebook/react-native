@@ -252,7 +252,7 @@ class MessageQueue {
       // folly-convertible.  As a special case, if a prop value is a
       // function it is permitted here, and special-cased in the
       // conversion.
-      const isValidArgument = (val: mixed) => {
+      const isValidArgument = (val: mixed): boolean => {
         switch (typeof val) {
           case 'undefined':
           case 'boolean':
@@ -381,6 +381,7 @@ class MessageQueue {
     return (
       // $FlowFixMe[cannot-resolve-name]
       typeof DebuggerInternal !== 'undefined' &&
+      // $FlowFixMe[cannot-resolve-name]
       DebuggerInternal.shouldPauseOnThrow === true
     );
   }

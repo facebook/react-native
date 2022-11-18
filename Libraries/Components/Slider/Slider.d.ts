@@ -8,9 +8,9 @@
  */
 
 import type * as React from 'react';
-import {Constructor} from 'Utilities';
+import {Constructor} from '../../../types/private/Utilities';
 import {ImageURISource} from '../../Image/ImageSource';
-import {NativeMethods} from '../../Renderer/shims/ReactNativeTypes';
+import {NativeMethods} from '../../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
 import {ViewProps} from '../View/ViewPropTypes';
