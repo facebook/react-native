@@ -1592,9 +1592,25 @@ export default class VirtualizedList extends StateSafePureComponent<
     // starving the renderer from actually laying out the objects and computing _averageCellLength.
     // If this is triggered in an `componentDidUpdate` followed by a hiPri cellToRenderUpdate
     // We shouldn't do another hipri cellToRenderUpdate
+
+    // We should trigger only high pirority updates on area with cells already measured or if measure new cells
+    // is keeping it up with scroll toward unmeasured area. Otherwise scrolling too fast toward unmeasured area
+    // while new items are being measured may skip cells to be measured and cause scroll issues on scroll back to skipped area.
+    // 'visibleLength / 2' represents a balanced ‘bar check’ to be sure that all items
+    // are gonna be measured and mounted as fast as possible when user scrolls quickly towards unmeasured area.
+    const isScrollOffsetMeasured =
+      this._totalCellLength > offset + Math.floor(visibleLength / 2);
+
+    // Allows High Priority updates as usual if the VirtualizedList doesn't have
+    // enough rendered items to fill both the visible area and the initialNumToRender items
+    const shouldCheckOffset =
+      first > initialNumToRenderOrDefault(this.props.initialNumToRender) &&
+      this._totalCellLength > visibleLength
+        ? isScrollOffsetMeasured
+        : Boolean(this._averageCellLength);
     if (
       hiPri &&
-      (this._averageCellLength || this.props.getItemLayout) &&
+      (shouldCheckOffset || this.props.getItemLayout) &&
       !this._hiPriInProgress
     ) {
       this._hiPriInProgress = true;
