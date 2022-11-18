@@ -41,6 +41,12 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       "Failed to retrieve telephone number (for example '0112123432').";
   private static final String TYPE_MEASURE_WARNING_MSG =
       "Failed to retrieve unit type (for ex. meter, second, milli).";
+  private static final String[] SUPPORTED_UNIT_VALUES = {
+    TYPE_MEASURE, TYPE_TELEPHONE, TYPE_MONEY,
+  };
+
+  private static final Set<String> SUPPORTED_UNIT_SET =
+      new HashSet<String>(Arrays.asList(SUPPORTED_UNIT_VALUES));
 
   public ReactTtsSpan(String type, PersistableBundle args) {
     super(type, args);
@@ -64,10 +70,7 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       String roleClassName = AccessibilityRole.getValue(type);
       String warningMessage = "";
       Set<String> supportedTypes = new HashSet<String>();
-      supportedTypes.addAll(
-          Arrays.asList(
-              new String[] {TtsSpan.TYPE_MONEY, TtsSpan.TYPE_TELEPHONE, TtsSpan.TYPE_MEASURE}));
-      if (accessibilityUnit == null || !supportedTypes.contains(roleClassName)) {
+      if (accessibilityUnit == null || !ReactTtsSpan.SUPPORTED_UNIT_SET.contains(roleClassName)) {
         return;
       }
       try {
