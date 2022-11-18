@@ -35,9 +35,23 @@ internal object DependencyUtils {
   fun configureDependencies(project: Project, versionString: String) {
     if (versionString.isBlank()) return
     project.configurations.all { configuration ->
+      // Here we set a dependencySubstitution for both react-native and hermes-engine as those
+      // coordinates are voided due to https://github.com/facebook/react-native/issues/35210
+      // This allows users to import libraries that are still using
+      // implementation("com.facebook.react:react-native:+") and resolve the right dependency.
+      configuration.resolutionStrategy.dependencySubstitution {
+        it.substitute(it.module("com.facebook.react:react-native"))
+            .using(it.module("com.facebook.react:react-android:${versionString}"))
+            .because(
+                "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.")
+        it.substitute(it.module("com.facebook.react:hermes-engine"))
+            .using(it.module("com.facebook.react:hermes-android:${versionString}"))
+            .because(
+                "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.")
+      }
       configuration.resolutionStrategy.force(
-          "com.facebook.react:react-native:${versionString}",
-          "com.facebook.react:hermes-engine:${versionString}",
+          "com.facebook.react:react-android:${versionString}",
+          "com.facebook.react:hermes-android:${versionString}",
       )
     }
   }

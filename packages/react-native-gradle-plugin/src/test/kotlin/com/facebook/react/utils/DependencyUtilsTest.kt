@@ -177,8 +177,8 @@ class DependencyUtilsTest {
     configureDependencies(project, "1.2.3")
 
     val forcedModules = project.configurations.first().resolutionStrategy.forcedModules
-    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:react-native:1.2.3" })
-    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:hermes-engine:1.2.3" })
+    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
+    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:hermes-android:1.2.3" })
   }
 
   @Test
