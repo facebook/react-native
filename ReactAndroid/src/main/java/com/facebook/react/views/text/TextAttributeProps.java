@@ -57,7 +57,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 22;
-  public static final short TA_KEY_ACCESSIBILITY_UNIT = 47;
+  public static final short TA_KEY_ACCESSIBILITY_UNIT = 24;
 
   public static final int UNSET = -1;
 
