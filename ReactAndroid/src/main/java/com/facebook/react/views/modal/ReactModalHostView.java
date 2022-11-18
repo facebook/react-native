@@ -120,7 +120,9 @@ public class ReactModalHostView extends ViewGroup
 
   @Override
   public int getChildCount() {
-    return mHostView.getChildCount();
+    // This method may be called by the parent constructor
+    // before mHostView is initialized.
+    return mHostView == null ? 0 : mHostView.getChildCount();
   }
 
   @Override
