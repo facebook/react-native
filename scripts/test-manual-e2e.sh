@@ -141,7 +141,6 @@ init_template_app(){
 
     info "Double checking the versions in package.json are correct:"
     grep "\"react-native\": \".*react-native-$PACKAGE_VERSION-$TIMESTAMP.tgz\"" "/tmp/${project_name}/package.json" || error "Incorrect version number in /tmp/${project_name}/package.json"
-    grep -E "com.facebook.react:react-native:\\+" "${project_name}/android/app/build.gradle" || error "Dependency in /tmp/${project_name}/android/app/build.gradle must be com.facebook.react:react-native:+"
 
     success "New sample project generated at /tmp/${project_name}"
     popd >/dev/null || exit
