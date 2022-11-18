@@ -95,11 +95,16 @@ function ModalPresentation() {
   React.useEffect(() => {
     let timer;
     if (ref != null && modalOpened === true) {
-      timer = setTimeout(() => {
-        if (ref.current != null) {
-          AccessibilityInfo.sendAccessibilityEvent(ref.current, 'focus');
-        }
-      }, 1000);
+      if (Platform.OS === 'ios') {
+        AccessibilityInfo.sendAccessibilityEvent(ref.current, 'focus');
+      } else {
+        // see https://github.com/facebook/react-native/issues/30097#issuecomment-1285927266
+        timer = setTimeout(() => {
+          if (ref.current != null) {
+            AccessibilityInfo.sendAccessibilityEvent(ref.current, 'focus');
+          }
+        }, 1000);
+      }
     }
 
     return () => {
