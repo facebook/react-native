@@ -96,6 +96,7 @@ function ModalPresentation() {
     let timer;
     if (ref != null && modalOpened === true) {
       if (Platform.OS === 'ios') {
+        // $FlowFixMe
         AccessibilityInfo.sendAccessibilityEvent(ref.current, 'focus');
       } else {
         // see https://github.com/facebook/react-native/issues/30097#issuecomment-1285927266
