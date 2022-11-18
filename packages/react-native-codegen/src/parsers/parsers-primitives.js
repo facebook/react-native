@@ -199,22 +199,31 @@ function emitPromise(
   );
 
   const elementType = typeAnnotation.typeParameters.params[0];
-  if (elementType.type === 'ExistsTypeAnnotation') {
+  if (
+    elementType.type === 'ExistsTypeAnnotation' ||
+    elementType.type === 'EmptyTypeAnnotation'
+  ) {
     return wrapNullable(nullable, {
       type: 'PromiseTypeAnnotation',
     });
   } else {
-    return wrapNullable(nullable, {
-      type: 'PromiseTypeAnnotation',
-      elementType: translateTypeAnnotation(
-        hasteModuleName,
-        typeAnnotation.typeParameters.params[0],
-        types,
-        aliasMap,
-        tryParse,
-        cxxOnly,
-      ),
-    });
+    try {
+      return wrapNullable(nullable, {
+        type: 'PromiseTypeAnnotation',
+        elementType: translateTypeAnnotation(
+          hasteModuleName,
+          typeAnnotation.typeParameters.params[0],
+          types,
+          aliasMap,
+          tryParse,
+          cxxOnly,
+        ),
+      });
+    } catch {
+      return wrapNullable(nullable, {
+        type: 'PromiseTypeAnnotation',
+      });
+    }
   }
 }
 

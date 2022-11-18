@@ -682,6 +682,33 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleCxx');
 
 `;
 
+const PROMISE_WITH_COMMONLY_USED_TYPES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  returnStringArray(): Promise<Array<string>>;
+  returnObjectArray(): Promise<Array<Object>>;
+  returnNullableNumber(): Promise<number | null>;
+  returnEmpty(): Promise<empty>;
+  returnIndex(): Promise<{ [string]: 'authorized' | 'denied' | 'undetermined' | true | false }>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
 module.exports = {
   NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY,
   NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE,
@@ -705,4 +732,5 @@ module.exports = {
   ANDROID_ONLY_NATIVE_MODULE,
   IOS_ONLY_NATIVE_MODULE,
   CXX_ONLY_NATIVE_MODULE,
+  PROMISE_WITH_COMMONLY_USED_TYPES,
 };

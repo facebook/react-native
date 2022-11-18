@@ -1750,3 +1750,100 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_O
   }
 }"
 `;
+
+exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_TYPES 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'returnStringArray',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'ArrayTypeAnnotation',
+                  'elementType': {
+                    'type': 'StringTypeAnnotation'
+                  }
+                }
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnObjectArray',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'ArrayTypeAnnotation',
+                  'elementType': {
+                    'type': 'GenericObjectTypeAnnotation'
+                  }
+                }
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnNullableNumber',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnEmpty',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnIndex',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'ObjectTypeAnnotation',
+                  'properties': [
+                    {
+                      'name': 'key',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'GenericObjectTypeAnnotation'
+                      }
+                    }
+                  ]
+                }
+              },
+              'params': []
+            }
+          }
+        ]
+      },
+      'moduleNames': [
+        'SampleTurboModule'
+      ]
+    }
+  }
+}"
+`;
