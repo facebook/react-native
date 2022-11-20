@@ -90,6 +90,7 @@ try {
   cd(REACT_NATIVE_APP_DIR);
 
   mv('_bundle', '.bundle');
+  mv('_ruby-version', '.ruby-version');
   mv('_eslintrc.js', '.eslintrc.js');
   mv('_prettierrc.js', '.prettierrc.js');
   mv('_watchmanconfig', '.watchmanconfig');
