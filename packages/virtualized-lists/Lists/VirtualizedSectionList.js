@@ -10,7 +10,7 @@
 
 import type {ViewToken} from './ViewabilityHelper';
 
-import View from '../Components/View/View';
+import View from 'react-native/Libraries/Components/View/View';
 import VirtualizedList from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';

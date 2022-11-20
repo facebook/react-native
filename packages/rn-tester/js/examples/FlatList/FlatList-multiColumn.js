@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {RenderItemProps} from '@react-native/virtualized-lists/Lists/VirtualizedListProps';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');

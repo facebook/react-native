@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {RenderItemProps} from '@react-native/virtualized-lists/Lists/VirtualizedListProps';
 
 import * as React from 'react';
 import {

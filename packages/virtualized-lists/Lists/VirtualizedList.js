@@ -8,9 +8,12 @@
  * @format
  */
 
-import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
-import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
-import type {LayoutEvent, ScrollEvent} from '../Types/CoreEventTypes';
+import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {
+  LayoutEvent,
+  ScrollEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   FrameMetricProps,
@@ -21,15 +24,15 @@ import type {
   Separators,
 } from './VirtualizedListProps';
 
-import RefreshControl from '../Components/RefreshControl/RefreshControl';
-import ScrollView from '../Components/ScrollView/ScrollView';
-import View from '../Components/View/View';
-import Batchinator from '../Interaction/Batchinator';
-import {findNodeHandle} from '../ReactNative/RendererProxy';
-import flattenStyle from '../StyleSheet/flattenStyle';
-import StyleSheet from '../StyleSheet/StyleSheet';
-import clamp from '../Utilities/clamp';
-import infoLog from '../Utilities/infoLog';
+import RefreshControl from 'react-native/Libraries/Components/RefreshControl/RefreshControl';
+import ScrollView from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import View from 'react-native/Libraries/Components/View/View';
+import Batchinator from 'react-native/Libraries/Interaction/Batchinator';
+import {findNodeHandle} from 'react-native/Libraries/ReactNative/RendererProxy';
+import flattenStyle from 'react-native/Libraries/StyleSheet/flattenStyle';
+import StyleSheet from 'react-native/Libraries/StyleSheet/StyleSheet';
+import clamp from 'react-native/Libraries/Utilities/clamp';
+import infoLog from 'react-native/Libraries/Utilities/infoLog';
 import {CellRenderMask} from './CellRenderMask';
 import ChildListCollection from './ChildListCollection';
 import FillRateHelper from './FillRateHelper';

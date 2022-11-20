@@ -13,12 +13,15 @@ import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfigCallbackPair,
   ViewToken,
-} from './ViewabilityHelper';
-import type {RenderItemProps, RenderItemType} from './VirtualizedList';
+} from '@react-native/virtualized-lists/Lists/ViewabilityHelper';
+import type {
+  RenderItemProps,
+  RenderItemType,
+} from '@react-native/virtualized-lists/Lists/VirtualizedList';
 
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
-import VirtualizedList from './VirtualizedList';
-import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
+import {VirtualizedList} from '@react-native/virtualized-lists';
+import {keyExtractor as defaultKeyExtractor} from '@react-native/virtualized-lists/Lists/VirtualizeUtils';
 import memoizeOne from 'memoize-one';
 
 const View = require('../Components/View/View');

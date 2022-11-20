@@ -25,7 +25,8 @@
   },
   "peerDependencies": {
     "react": "18.2.0",
-    "react-native": "*"
+    "react-native": "*",
+    "@react-native/virtualized-lists":"*"
   },
   "devDependencies": {
     "connect": "^3.6.5",

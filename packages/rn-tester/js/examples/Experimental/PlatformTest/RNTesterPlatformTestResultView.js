@@ -8,7 +8,7 @@
  * @flow
  */
 
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {RenderItemProps} from '@react-native/virtualized-lists/Lists/VirtualizedListProps';
 import type {
   ViewStyleProp,
   TextStyle,

@@ -15,10 +15,10 @@ import type {
   Props as VirtualizedSectionListProps,
   ScrollToLocationParamsType,
   SectionBase as _SectionBase,
-} from './VirtualizedSectionList';
+} from '@react-native/virtualized-lists/Lists/VirtualizedSectionList';
 
 import Platform from '../Utilities/Platform';
-import VirtualizedSectionList from './VirtualizedSectionList';
+import {VirtualizedSectionList} from '@react-native/virtualized-lists';
 import * as React from 'react';
 
 type Item = any;

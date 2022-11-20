@@ -8,15 +8,15 @@
  */
 
 import type * as React from 'react';
-import type {LayoutChangeEvent} from '../../types';
-import {StyleProp} from '../StyleSheet/StyleSheet';
-import {ViewStyle} from '../StyleSheet/StyleSheetTypes';
 import type {
+  StyleProp,
+  ViewStyle,
+  ScrollViewProps,
+  LayoutChangeEvent,
+  View,
   ScrollResponderMixin,
   ScrollView,
-  ScrollViewProps,
-} from '../Components/ScrollView/ScrollView';
-import type {View} from '../Components/View/View';
+} from 'react-native';
 
 export interface ViewToken {
   item: any;
