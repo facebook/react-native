@@ -13,7 +13,6 @@
 import type {
   NamedShape,
   NativeModuleAliasMap,
-  NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModuleTypeAnnotation,
   NativeModulePropertyShape,

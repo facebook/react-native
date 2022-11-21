@@ -251,13 +251,6 @@ function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
   );
 }
 
-const UnsupportedArrayElementTypeAnnotationTypeToInvalidArrayElementTypeAnnotationTypeMap =
-  {
-    FunctionTypeAnnotation: 'FunctionTypeAnnotation',
-    VoidTypeAnnotation: 'void',
-    PromiseTypeAnnotation: 'Promise',
-  };
-
 function throwIfArrayElementTypeAnnotationIsUnsupported(
   hasteModuleName: string,
   flowElementType: $FlowFixMe,
@@ -265,21 +258,18 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
   type: string,
   language: ParserType,
 ) {
-  if (
-    type === 'VoidTypeAnnotation' ||
-    type === 'PromiseTypeAnnotation' ||
-    type === 'FunctionTypeAnnotation'
-  ) {
-    const invalidPropertyValueType =
-      UnsupportedArrayElementTypeAnnotationTypeToInvalidArrayElementTypeAnnotationTypeMap[
-        type
-      ];
+  const TypeMap = { 
+    FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+    VoidTypeAnnotation: 'void',
+    PromiseTypeAnnotation: 'Promise'
+  }
 
+  if(type in TypeMap) {
     throw new UnsupportedArrayElementTypeAnnotationParserError(
       hasteModuleName,
       flowElementType,
       flowArrayType,
-      invalidPropertyValueType,
+      TypeMap[type],
       language,
     );
   }
