@@ -16,7 +16,7 @@ import java.util.WeakHashMap;
 
 /** Class providing children management API for view managers of classes extending ViewGroup. */
 public abstract class ViewGroupManager<T extends ViewGroup>
-    extends BaseViewManager<T, LayoutShadowNode> implements IViewManagerWithChildren {
+    extends BaseViewManager<T, LayoutShadowNode> implements IViewGroupManager<T> {
 
   private static WeakHashMap<View, Integer> mZIndexHash = new WeakHashMap<>();
 
@@ -33,6 +33,7 @@ public abstract class ViewGroupManager<T extends ViewGroup>
   @Override
   public void updateExtraData(T root, Object extraData) {}
 
+  @Override
   public void addView(T parent, View child, int index) {
     parent.addView(child, index);
   }
@@ -60,14 +61,17 @@ public abstract class ViewGroupManager<T extends ViewGroup>
     return mZIndexHash.get(view);
   }
 
+  @Override
   public int getChildCount(T parent) {
     return parent.getChildCount();
   }
 
+  @Override
   public View getChildAt(T parent, int index) {
     return parent.getChildAt(index);
   }
 
+  @Override
   public void removeViewAt(T parent, int index) {
     UiThreadUtil.assertOnUiThread();
 
