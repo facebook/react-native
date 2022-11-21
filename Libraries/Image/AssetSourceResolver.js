@@ -18,16 +18,16 @@ export type ResolvedAssetSource = {|
   +scale: number,
 |};
 
-import type {PackagerAsset} from '@react-native/assets/registry';
+import type {PackagerAsset} from '../../packages/assets/registry';
 
-const PixelRatio = require('../Utilities/PixelRatio');
-const Platform = require('../Utilities/Platform');
-const {pickScale} = require('./AssetUtils');
 const {
   getAndroidResourceFolderName,
   getAndroidResourceIdentifier,
   getBasePath,
-} = require('@react-native/assets/path-support');
+} = require('../../packages/assets/path-support');
+const PixelRatio = require('../Utilities/PixelRatio');
+const Platform = require('../Utilities/Platform');
+const {pickScale} = require('./AssetUtils');
 const invariant = require('invariant');
 
 /**

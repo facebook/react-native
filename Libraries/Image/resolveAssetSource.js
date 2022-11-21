@@ -14,9 +14,9 @@
 
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 
+const AssetRegistry = require('../../packages/assets/registry');
 const AssetSourceResolver = require('./AssetSourceResolver');
 const {pickScale} = require('./AssetUtils');
-const AssetRegistry = require('@react-native/assets/registry');
 
 let _customSourceTransformer, _serverURL, _scriptURL;
 
