@@ -21,6 +21,7 @@ const request = require('request');
 const {getBranchName, exitIfNotOnGit} = require('./scm-utils');
 
 const {parseVersion, isReleaseBranch} = require('./version-utils');
+const {failIfTagExists} = require('./release-utils');
 
 let argv = yargs
   .option('r', {
@@ -75,6 +76,7 @@ async function main() {
   );
   const token = argv.token;
   const releaseVersion = argv.toVersion;
+  failIfTagExists(releaseVersion);
 
   const {pushed} = await inquirer.prompt({
     type: 'confirm',
