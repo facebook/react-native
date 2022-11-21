@@ -8,7 +8,7 @@ set -x
 
 source="${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${PLATFORM_NAME}/hermes.framework"
 
-if [[ ! -f "$source" ]]; then
+if [[ -f "$source" ]]; then
     cp -R "$source" "${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes/hermes.framework"
     cp -R "$source" "${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 fi
