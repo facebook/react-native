@@ -109,14 +109,4 @@ public abstract class ViewGroupManager<T extends ViewGroup>
   public boolean needsCustomLayoutForChildren() {
     return false;
   }
-
-  /**
-   * Returns whether or not this View type should promote its grandchildren as Views. This is an
-   * optimization for Scrollable containers when using Nodes, where instead of having one ViewGroup
-   * containing a large number of draw commands (and thus being more expensive in the case of an
-   * invalidate or re-draw), we split them up into several draw commands.
-   */
-  public boolean shouldPromoteGrandchildren() {
-    return false;
-  }
 }
