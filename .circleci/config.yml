@@ -1363,7 +1363,14 @@ jobs:
       - run:
           name: "Set new react-native version and commit changes"
           command: |
-            node ./scripts/prepare-package-for-release.js -v << parameters.version >> -l << parameters.latest >> --dry-run << parameters.dryrun >>
+            VERSION=<< parameters.version >>
+
+            if [[ -z "$VERSION" ]]; then
+              VERSION=$(grep '"version"' package.json | cut -d '"' -f 4 | head -1)
+              echo "Using the version from the package.json: $VERSION"
+            fi
+
+            node ./scripts/prepare-package-for-release.js -v "$VERSION" -l << parameters.latest >> --dry-run << parameters.dryrun >>
 
   build_npm_package:
     parameters:
@@ -1643,7 +1650,7 @@ workflows:
     jobs:
       - prepare_package_for_release:
           name: prepare_package_for_release
-          version: 'v1000.0.1'
+          version: ''
           latest : false
           dryrun: true
       - prepare_hermes_workspace:
