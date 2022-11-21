@@ -26,7 +26,13 @@ isInMain = version.include?('1000.0.0')
 isNightly = version.start_with?('0.0.0-')
 
 if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
-  Pod::UI.puts '[Hermes] Using pre-built Hermes binaries from local path.' if Object.const_defined?("Pod::UI")
+  if !File.exist?(ENV['HERMES_ENGINE_TARBALL_PATH'])
+    abort "[Hermes] HERMES_ENGINE_TARBALL_PATH is set, but points to a non-existing file: \"#{ENV['HERMES_ENGINE_TARBALL_PATH']}\"\nIf you don't want to use tarball, run `unset HERMES_ENGINE_TARBALL_PATH`"
+  end
+end
+
+if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
+  Pod::UI.puts "[Hermes] Using pre-built Hermes binaries from local path: #{ENV['HERMES_ENGINE_TARBALL_PATH']}".yellow if Object.const_defined?("Pod::UI")
   source[:http] = "file://#{ENV['HERMES_ENGINE_TARBALL_PATH']}"
 elsif isInMain
   Pod::UI.puts '[Hermes] Installing hermes-engine may take slightly longer, building Hermes compiler from source...'.yellow if Object.const_defined?("Pod::UI")
