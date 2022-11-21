@@ -12,8 +12,8 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('@react-native/polyfills/Object.es8');
-jest.requireActual('@react-native/polyfills/error-guard');
+jest.requireActual('../packages/polyfills/Object.es8');
+jest.requireActual('../packages/polyfills/error-guard');
 
 global.__DEV__ = true;
 
