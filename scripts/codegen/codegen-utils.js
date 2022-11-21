@@ -12,7 +12,7 @@
 /**
  * Wrapper required to abstract away from the actual codegen.
  * This is needed because, when running tests in Sandcastle, not everything is setup as usually.
- * For example, the `react-native-codegen` lib is not present.
+ * For example, the `@react-native/codegen` lib is not present.
  *
  * Thanks to this wrapper, we are able to mock the getter for the codegen in a way that allow us to return
  * a custom object which mimics the Codegen interface.
@@ -24,7 +24,7 @@ function getCodegen() {
   try {
     RNCodegen = require('../../packages/react-native-codegen/lib/generators/RNCodegen.js');
   } catch (e) {
-    RNCodegen = require('react-native-codegen/lib/generators/RNCodegen.js');
+    RNCodegen = require('@react-native/codegen/lib/generators/RNCodegen.js');
   }
   if (!RNCodegen) {
     throw 'RNCodegen not found.';

@@ -14,7 +14,7 @@ GENERATED_SCHEMA_FILE="$GENERATED_SRCS_DIR/schema.json"
 cd "$RCT_SCRIPT_RN_DIR"
 
 CODEGEN_REPO_PATH="$RCT_SCRIPT_RN_DIR/packages/react-native-codegen"
-CODEGEN_NPM_PATH="$RCT_SCRIPT_RN_DIR/../react-native-codegen"
+CODEGEN_NPM_PATH="$RCT_SCRIPT_RN_DIR/../@react-native/codegen"
 CODEGEN_CLI_PATH=""
 
 error () {
