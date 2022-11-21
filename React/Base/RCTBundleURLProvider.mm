@@ -74,7 +74,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                                                          (unsigned long)kRCTBundleURLProviderDefaultPort]];
 }
 
-#if RCT_DEV_MENU
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
 + (BOOL)isPackagerRunning:(NSString *)hostPort
 {
   return [RCTBundleURLProvider isPackagerRunning:hostPort scheme:nil];
@@ -82,6 +82,10 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
 
 + (BOOL)isPackagerRunning:(NSString *)hostPort scheme:(NSString *)scheme
 {
+  if (!kRCTAllowPackagerAccess) {
+    return NO;
+  }
+
   NSURL *url = [serverRootWithHostPort(hostPort, scheme) URLByAppendingPathComponent:@"status"];
 
   NSURLSession *session = [NSURLSession sharedSession];
