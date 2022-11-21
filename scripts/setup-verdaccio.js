@@ -9,22 +9,37 @@
 
 'use strict';
 
-const {exec} = require('shelljs');
-const spawn = require('child_process').spawn;
+const {execSync, spawn} = require('child_process');
 
-function setupVerdaccio() {
+function setupVerdaccio(pathToRoot, pathToConfig) {
+  if (!pathToRoot) {
+    throw new Error(
+      'Path to React Native repo root is not specified. You should provide it as a first argument',
+    );
+  }
+
+  if (!pathToConfig) {
+    throw new Error(
+      'Path to Verdaccio config is not specified. You should provide it as a second argument',
+    );
+  }
+
   const verdaccioProcess = spawn('npx', [
-    'verdaccio@5.15.3',
+    'verdaccio@5.16.3',
     '--config',
-    '.circleci/verdaccio.yml',
+    pathToConfig,
   ]);
+
   const VERDACCIO_PID = verdaccioProcess.pid;
-  exec('npx wait-on@6.0.1 http://localhost:4873');
-  exec('npm set registry http://localhost:4873');
-  exec('echo "//localhost:4873/:_authToken=secretToken" > .npmrc');
+
+  execSync('npx wait-on@6.0.1 http://localhost:4873');
+
+  execSync('npm set registry http://localhost:4873');
+  execSync('echo "//localhost:4873/:_authToken=secretToken" > .npmrc', {
+    cwd: pathToRoot,
+  });
+
   return VERDACCIO_PID;
 }
 
-module.exports = {
-  setupVerdaccio: setupVerdaccio,
-};
+module.exports = setupVerdaccio;
