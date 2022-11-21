@@ -139,9 +139,28 @@ function generateiOSArtifacts(
   return tarballOutputPath;
 }
 
+function failIfTagExists(version) {
+  if (checkIfTagExists(version)) {
+    echo(`Tag v${version} already exists.`);
+    echo('You may want to rollback the last commit');
+    echo('git reset --hard HEAD~1');
+    exit(1);
+  }
+}
+
+function checkIfTagExists(version) {
+  const {code, stdout} = exec('git tag -l', {silent: true});
+  if (code !== 0) {
+    throw new Error('Failed to retrieve the list of tags');
+  }
+  const tags = new Set(stdout.split('\n'));
+  return tags.has(`v${version}`);
+}
+
 module.exports = {
   generateAndroidArtifacts,
   generateiOSArtifacts,
   publishAndroidArtifactsToMaven,
   saveFilesToRestore,
+  failIfTagExists,
 };
