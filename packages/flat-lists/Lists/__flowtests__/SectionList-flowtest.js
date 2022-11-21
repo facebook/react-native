@@ -10,8 +10,8 @@
 
 'use strict';
 
-import SectionList from '../SectionList';
 import * as React from 'react';
+import SectionList from '../SectionList';
 
 function renderMyListItem(info: {
   item: {title: string, ...},

@@ -7,8 +7,5 @@
  * @format
  */
 
-export {
-  FlatList,
-  FlatListProps,
-  FlatListComponent,
-} from '@react-native/flat-lists';
+export * from './Lists/FlatList';
+export * from './Lists/SectionList';

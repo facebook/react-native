@@ -158,7 +158,7 @@ module.exports = {
     return require('./Libraries/Components/ScrollView/ScrollView');
   },
   get SectionList(): SectionList {
-    return require('./Libraries/Lists/SectionList').default;
+    return require('./Libraries/Lists/SectionList');
   },
   get StatusBar(): StatusBar {
     return require('./Libraries/Components/StatusBar/StatusBar');

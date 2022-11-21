@@ -94,7 +94,7 @@ describe('FlatList', () => {
   });
   it('getNativeScrollRef for case where it returns a native view', () => {
     jest.resetModules();
-    jest.unmock('../../Components/ScrollView/ScrollView');
+    jest.unmock('react-native/Libraries/Components/ScrollView/ScrollView');
 
     const listRef = React.createRef(null);
 
@@ -127,7 +127,7 @@ describe('FlatList', () => {
 
   it('getNativeScrollRef for case where it returns a native scroll view', () => {
     jest.resetModules();
-    jest.unmock('../../Components/ScrollView/ScrollView');
+    jest.unmock('react-native/Libraries/Components/ScrollView/ScrollView');
 
     function ListItemComponent({item}) {
       return <item value={item.key} />;

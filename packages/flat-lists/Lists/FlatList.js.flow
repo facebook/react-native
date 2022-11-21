@@ -9,11 +9,11 @@
  */
 
 const React = require('react');
-const View = require('../Components/View/View');
+const View = require('react-native/Libraries/Components/View/View');
 
-import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
-import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
-import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import typeof ScrollViewNativeComponent from 'react-native/Libraries/Components/ScrollView/ScrollViewNativeComponent';
+import {type ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   RenderItemType,
   RenderItemProps,

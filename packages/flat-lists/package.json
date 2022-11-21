@@ -1,0 +1,27 @@
+{
+    "name": "@react-native/flat-lists",
+    "version": "0.72.2",
+    "description": "Flat lists for React Native.",
+    "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/flat-lists",
+    "repository": {
+      "type": "git",
+      "url": "git@github.com:facebook/react-native.git",
+      "directory": "packages/flat-lists"
+    },
+    "scripts": {
+      "test": "jest"
+    },
+    "license": "MIT",
+    "dependencies": {
+      "@react-native/virtualized-lists": "^0.72.2",
+      "invariant": "^2.2.4",
+      "memoize-one": "^5.0.0"
+    },
+    "devDependencies": {
+      "react-test-renderer": "18.2.0"
+    },
+    "peerDependencies": {
+      "react-native": "*",
+      "react-test-renderer": "18.2.0"
+    }
+  }
