@@ -86,8 +86,6 @@ Pod::Spec.new do |spec|
 
   elsif source[:git] then
 
-    ENV['HERMES_BUILD_FROM_SOURCE'] = "1"
-
     spec.subspec 'Hermes' do |ss|
       ss.source_files = ''
       ss.public_header_files = 'API/hermes/*.h'
@@ -114,6 +112,7 @@ Pod::Spec.new do |spec|
       # Keep hermesc_path synchronized with .gitignore entry.
       ENV['REACT_NATIVE_PATH'] = react_native_path
       hermesc_path = "${REACT_NATIVE_PATH}/sdks/hermes-engine/build_host_hermesc"
+      # NOTE: Prepare command is not run  if the pod is not downloaded.
       spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}"
     end
 
