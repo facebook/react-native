@@ -21,6 +21,7 @@ const yargs = require('yargs');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const {getBranchName} = require('./scm-utils');
 
 const {
   launchAndroidEmulator,
@@ -155,6 +156,12 @@ if (argv.target === 'RNTester') {
   // we need to add the unique timestamp to avoid npm/yarn to use some local caches
   const baseVersion = require('../package.json').version;
 
+  const branchName = getBranchName();
+  const buildType =
+    branchName.endsWith('-stable') && baseVersion !== '1000.0.0'
+      ? 'release'
+      : 'dry-run';
+
   const dateIdentifier = new Date()
     .toISOString()
     .slice(0, -8)
@@ -164,7 +171,9 @@ if (argv.target === 'RNTester') {
   const releaseVersion = `${baseVersion}-${dateIdentifier}`;
 
   // this is needed to generate the Android artifacts correctly
-  exec(`node scripts/set-rn-version.js --to-version ${releaseVersion}`).code;
+  exec(
+    `node scripts/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
+  ).code;
 
   // Generate native files for Android
   generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
