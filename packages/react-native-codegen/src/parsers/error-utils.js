@@ -258,13 +258,13 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
   type: string,
   language: ParserType,
 ) {
-  const TypeMap = { 
+  const TypeMap = {
     FunctionTypeAnnotation: 'FunctionTypeAnnotation',
     VoidTypeAnnotation: 'void',
-    PromiseTypeAnnotation: 'Promise'
-  }
+    PromiseTypeAnnotation: 'Promise',
+  };
 
-  if(type in TypeMap) {
+  if (type in TypeMap) {
     throw new UnsupportedArrayElementTypeAnnotationParserError(
       hasteModuleName,
       flowElementType,
