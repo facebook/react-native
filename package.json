@@ -178,6 +178,7 @@
     "metro-babel-register": "0.73.3",
     "metro-memory-fs": "0.73.3",
     "mkdirp": "^0.5.1",
+    "mock-fs": "^5.1.4",
     "prettier": "^2.4.1",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
