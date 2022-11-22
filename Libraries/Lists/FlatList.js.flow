@@ -16,14 +16,12 @@ import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {RenderItemType} from './VirtualizedList';
 import type {
-  ViewToken,
-  ViewabilityConfigCallbackPair,
-} from '@react-native/virtualized-lists/Lists/ViewabilityHelper';
-import type {
   RenderItemType,
   RenderItemProps,
-} from '@react-native/virtualized-lists/Lists/VirtualizedList';
-import typeof VirtualizedList from '@react-native/virtualized-lists/Lists/VirtualizedList';
+  ViewToken,
+  ViewabilityConfigCallbackPair,
+  VirtualizedList,
+} from '@react-native/virtualized-lists';
 
 type RequiredProps<ItemT> = {|
   /**

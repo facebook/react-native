@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RenderItemProps} from '@react-native/virtualized-lists/Lists/VirtualizedListProps';
+import type {RenderItemProps} from '@react-native/virtualized-lists';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import * as React from 'react';

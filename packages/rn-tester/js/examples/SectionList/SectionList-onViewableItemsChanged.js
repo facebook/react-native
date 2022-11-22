@@ -8,7 +8,7 @@
  * @flow
  */
 
-import type {ViewToken} from '@react-native/virtualized-lists/Lists/ViewabilityHelper';
+import type {ViewToken} from '@react-native/virtualized-lists';
 
 import SectionListBaseExample from './SectionListBaseExample';
 import * as React from 'react';

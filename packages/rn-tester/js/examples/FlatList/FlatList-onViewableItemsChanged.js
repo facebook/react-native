@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ViewToken} from '@react-native/virtualized-lists/Lists/ViewabilityHelper';
+import type {ViewToken} from '@react-native/virtualized-lists';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import BaseFlatListExample from './BaseFlatListExample';

@@ -10,14 +10,49 @@
 
 'use strict';
 
+import {keyExtractor} from './Lists/VirtualizeUtils';
+
 import typeof VirtualizedList from './Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Lists/VirtualizedSectionList';
+import {typeof VirtualizedListContextResetter} from './Lists/VirtualizedListContext';
+
+import type {
+  ViewToken,
+  ViewabilityConfigCallbackPair,
+} from './Lists/ViewabilityHelper';
+import type {
+  RenderItemProps,
+  RenderItemType,
+  Separators,
+} from './Lists/VirtualizedListProps';
+import type {
+  Props as VirtualizedSectionListProps,
+  ScrollToLocationParamsType,
+  SectionBase,
+} from '@react-native/virtualized-lists/Lists/VirtualizedSectionList';
+
+export type {
+  RenderItemProps,
+  RenderItemType,
+  ScrollToLocationParamsType,
+  SectionBase,
+  Separators,
+  VirtualizedSectionListProps,
+  ViewabilityConfigCallbackPair,
+  ViewToken,
+};
 
 module.exports = {
+  keyExtractor,
+
   get VirtualizedList(): VirtualizedList {
     return require('./Lists/VirtualizedList').default;
   },
   get VirtualizedSectionList(): VirtualizedSectionList {
     return require('./Lists/VirtualizedSectionList');
+  },
+  get VirtualizedListContextResetter(): VirtualizedListContextResetter {
+    const VirtualizedListContext = require('./Lists/VirtualizedListContext');
+    return VirtualizedListContext.VirtualizedListContextResetter;
   },
 };
