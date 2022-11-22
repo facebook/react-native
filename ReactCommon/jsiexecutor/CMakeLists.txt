@@ -6,7 +6,11 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions -frtti -O3)
+add_compile_options(
+        -fexceptions
+        -frtti
+        -std=c++17
+        -O3)
 
 add_library(jsireact
         STATIC
