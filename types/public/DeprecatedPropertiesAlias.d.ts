@@ -37,6 +37,7 @@ import {
   ImagePropsAndroid,
   ImageBackgroundProps,
   FlatListProps,
+  VirtualizedListProps,
   SectionListProps,
   ModalProps,
   TouchableWithoutFeedbackProps,
@@ -143,6 +144,9 @@ export type ImageBackgroundProperties = ImageBackgroundProps;
 
 /** @deprecated Use FlatListProps */
 export type FlatListProperties<ItemT> = FlatListProps<ItemT>;
+
+/** @deprecated Use VirtualizedListProps */
+export type VirtualizedListProperties<ItemT> = VirtualizedListProps<ItemT>;
 
 /** @deprecated Use SectionListProps */
 export type SectionListProperties<ItemT> = SectionListProps<ItemT>;
