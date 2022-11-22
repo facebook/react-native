@@ -698,12 +698,15 @@ const PROMISE_WITH_COMMONLY_USED_TYPES = `
 import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
+export type Season = 'Spring' | 'Summer' | 'Autumn' | 'Winter';
+
 export interface Spec extends TurboModule {
   returnStringArray(): Promise<Array<string>>;
   returnObjectArray(): Promise<Array<Object>>;
   returnNullableNumber(): Promise<number | null>;
   returnEmpty(): Promise<empty>;
   returnIndex(): Promise<{ [string]: 'authorized' | 'denied' | 'undetermined' | true | false }>;
+  returnEnum() : Promise<Season>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');

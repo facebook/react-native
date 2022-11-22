@@ -1837,6 +1837,21 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
               },
               'params': []
             }
+          },
+          {
+            'name': 'returnEnum',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'UnionTypeAnnotation',
+                  'memberType': 'StringTypeAnnotation'
+                }
+              },
+              'params': []
+            }
           }
         ]
       },
