@@ -127,7 +127,7 @@
     "pretty-format": "^26.5.2",
     "promise": "^8.3.0",
     "react-devtools-core": "^4.26.1",
-    "react-native-gradle-plugin": "^0.71.8",
+    "react-native-gradle-plugin": "^0.71.9",
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "^16.15.0",
     "regenerator-runtime": "^0.13.2",
@@ -136,7 +136,7 @@
     "use-sync-external-store": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.2.2",
-    "react-native-codegen": "^0.71.2"
+    "react-native-codegen": "^0.71.3"
   },
   "devDependencies": {
     "flow-bin": "^0.191.0",
