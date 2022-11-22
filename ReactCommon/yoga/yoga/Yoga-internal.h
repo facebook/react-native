@@ -110,6 +110,8 @@ private:
 
 public:
   Values() = default;
+  Values(const Values& other) = default;
+
   explicit Values(const YGValue& defaultValue) noexcept {
     values_.fill(defaultValue);
   }

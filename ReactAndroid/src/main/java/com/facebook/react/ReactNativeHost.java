@@ -18,6 +18,7 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import java.util.List;
 
@@ -71,6 +72,7 @@ public abstract class ReactNativeHost {
             .setJSMainModulePath(getJSMainModuleName())
             .setUseDeveloperSupport(getUseDeveloperSupport())
             .setDevSupportManagerFactory(getDevSupportManagerFactory())
+            .setDevLoadingViewManager(getDevLoadingViewManager())
             .setRequireActivity(getShouldRequireActivity())
             .setSurfaceDelegateFactory(getSurfaceDelegateFactory())
             .setLazyViewManagersEnabled(getLazyViewManagersEnabled())
@@ -147,6 +149,13 @@ public abstract class ReactNativeHost {
         return null;
       }
     };
+  }
+
+  /**
+   * Get the {@link DevLoadingViewManager}. Override this to use a custom dev loading view manager
+   */
+  protected @Nullable DevLoadingViewManager getDevLoadingViewManager() {
+    return null;
   }
 
   /**

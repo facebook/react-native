@@ -63,3 +63,15 @@ end
 def remove_hermesc_build_dir(react_native_path)
     %x(rm -rf #{react_native_path}/sdks/hermes-engine/build_host_hermesc)
 end
+
+def is_building_hermes_from_source(react_native_version)
+    is_nightly = react_native_version.start_with?('0.0.0-')
+    has_tarball = ENV['HERMES_ENGINE_TARBALL_PATH'] != nil
+
+    # this is the same logic in the hermes-engine.podspec
+    if has_tarball || is_nightly
+        return false
+    end
+
+    return true
+end
