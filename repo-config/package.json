@@ -47,7 +47,7 @@
     "mkdirp": "^0.5.1",
     "prettier": "^2.4.1",
     "react": "18.2.0",
-    "react-native-codegen": "^0.71.2",
+    "react-native-codegen": "^0.71.3",
     "react-test-renderer": "18.2.0",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
