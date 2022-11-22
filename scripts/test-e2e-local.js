@@ -198,7 +198,7 @@ if (argv.target === 'RNTester') {
 
   // for this scenario, we only need to create the debug build
   // (env variable PRODUCTION defines that podspec side)
-  const buildType = 'Debug';
+  const buildTypeiOSArtifacts = 'Debug';
 
   // the android ones get set into /private/tmp/maven-local
   const localMavenPath = '/private/tmp/maven-local';
@@ -207,7 +207,7 @@ if (argv.target === 'RNTester') {
   const tarballOutputPath = generateiOSArtifacts(
     jsiFolder,
     hermesCoreSourceFolder,
-    buildType,
+    buildTypeiOSArtifacts,
     releaseVersion,
     localMavenPath,
   );
