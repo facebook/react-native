@@ -85,7 +85,6 @@ function generateiOSArtifacts(
   jsiFolder,
   hermesCoreSourceFolder,
   buildType,
-  releaseVersion,
   targetFolder,
 ) {
   pushd(`${hermesCoreSourceFolder}`);
