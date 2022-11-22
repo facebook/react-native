@@ -13,7 +13,6 @@
 import type {
   NamedShape,
   NativeModuleAliasMap,
-  NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModuleTypeAnnotation,
   NativeModulePropertyShape,
@@ -55,7 +54,6 @@ const {
 } = require('../../parsers-primitives');
 
 const {
-  UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors.js');
@@ -63,6 +61,7 @@ const {
 const {
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
+  throwIfArrayElementTypeAnnotationIsUnsupported,
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfMoreThanOneModuleRegistryCalls,
@@ -110,44 +109,19 @@ function translateArrayTypeAnnotation(
       ),
     );
 
-    if (elementType.type === 'VoidTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        flowElementType,
-        flowArrayType,
-        'void',
-        language,
-      );
-    }
+    throwIfArrayElementTypeAnnotationIsUnsupported(
+      hasteModuleName,
+      flowElementType,
+      flowArrayType,
+      elementType.type,
+      language,
+    );
 
-    if (elementType.type === 'PromiseTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        flowElementType,
-        flowArrayType,
-        'Promise',
-        language,
-      );
-    }
-
-    if (elementType.type === 'FunctionTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        flowElementType,
-        flowArrayType,
-        'FunctionTypeAnnotation',
-        language,
-      );
-    }
-
-    const finalTypeAnnotation: NativeModuleArrayTypeAnnotation<
-      Nullable<NativeModuleBaseTypeAnnotation>,
-    > = {
+    return wrapNullable(nullable, {
       type: 'ArrayTypeAnnotation',
+      // $FlowFixMe[incompatible-call]
       elementType: wrapNullable(isElementTypeNullable, elementType),
-    };
-
-    return wrapNullable(nullable, finalTypeAnnotation);
+    });
   } catch (ex) {
     return wrapNullable(nullable, {
       type: 'ArrayTypeAnnotation',

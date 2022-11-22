@@ -13,7 +13,6 @@
 import type {
   NamedShape,
   NativeModuleAliasMap,
-  NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleTypeAnnotation,
@@ -70,6 +69,7 @@ const {
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfArrayElementTypeAnnotationIsUnsupported,
 } = require('../../error-utils');
 
 const {TypeScriptParser} = require('../parser');
@@ -111,56 +111,19 @@ function translateArrayTypeAnnotation(
       ),
     );
 
-    if (elementType.type === 'VoidTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        'void',
-        language,
-      );
-    }
+    throwIfArrayElementTypeAnnotationIsUnsupported(
+      hasteModuleName,
+      tsElementType,
+      tsArrayType,
+      elementType.type,
+      language,
+    );
 
-    if (elementType.type === 'PromiseTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        'Promise',
-        language,
-      );
-    }
-
-    if (elementType.type === 'FunctionTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        'FunctionTypeAnnotation',
-        language,
-      );
-    }
-
-    // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
-    // Right now they are partially treated as UnionTypeAnnotation
-    if (elementType.type === 'UnionTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        'UnionTypeAnnotation',
-        language,
-      );
-    }
-
-    const finalTypeAnnotation: NativeModuleArrayTypeAnnotation<
-      Nullable<NativeModuleBaseTypeAnnotation>,
-    > = {
+    return wrapNullable(nullable, {
       type: 'ArrayTypeAnnotation',
+      // $FlowFixMe[incompatible-call]
       elementType: wrapNullable(isElementTypeNullable, elementType),
-    };
-
-    return wrapNullable(nullable, finalTypeAnnotation);
+    });
   } catch (ex) {
     return wrapNullable(nullable, {
       type: 'ArrayTypeAnnotation',
