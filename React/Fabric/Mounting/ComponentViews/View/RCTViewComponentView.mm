@@ -292,24 +292,33 @@ using namespace facebook::react;
 
   // `accessibilityLabel`
   if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
+    self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
+  }
+  
+  if (!newViewProps.accessibilityLabel.empty() && oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel && newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None) {
     if ([self.nativeId isEqualToString:@"1"]) {
       if (@available(iOS 11.0, *)) {
         NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-        // Step 3 - add parameter accessibilityLiveRegion. Copy/Paste android settings.
-        //        - retrieve parameter
-        //        - trigger check if parameter is polite or assertive
-        NSLog(@"TESTING newViewProps.accessibilityLiveRegions is %d", newViewProps.accessibilityLiveRegion);
         attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
-        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString:@"announcement"
+        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel)
                                                                                     attributes:attrsDictionary];
         UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
       }
-      // Step 4 - instead of triggering the announcement, mark an instance variable to trigger announcement
-      //        - trigger only 1 time announcement once all props are set
     }
-    self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
   }
-
+  
+  if (!newViewProps.accessibilityHint.empty() && oldViewProps.accessibilityHint != newViewProps.accessibilityHint && newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None) {
+    if ([self.nativeId isEqualToString:@"1"]) {
+      if (@available(iOS 11.0, *)) {
+        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(YES);
+        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint)
+                                                                                    attributes:attrsDictionary];
+        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+      }
+    }
+  }
+  
   // `accessibilityLanguage`
   if (oldViewProps.accessibilityLanguage != newViewProps.accessibilityLanguage) {
     self.accessibilityElement.accessibilityLanguage =
