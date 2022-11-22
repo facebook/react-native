@@ -208,7 +208,6 @@ if (argv.target === 'RNTester') {
     jsiFolder,
     hermesCoreSourceFolder,
     buildTypeiOSArtifacts,
-    releaseVersion,
     localMavenPath,
   );
 
