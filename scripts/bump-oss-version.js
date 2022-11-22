@@ -76,7 +76,7 @@ async function main() {
   );
   const token = argv.token;
   const releaseVersion = argv.toVersion;
-  failIfTagExists(releaseVersion);
+  failIfTagExists(releaseVersion, 'release');
 
   const {pushed} = await inquirer.prompt({
     type: 'confirm',
