@@ -50,7 +50,13 @@ const releaseVersion = argv.toVersion;
 const isLatest = argv.latest;
 const isDryRun = argv.dryRun;
 
-failIfTagExists(releaseVersion);
+const buildType = isDryRun
+  ? 'dry-run'
+  : isReleaseBranch(branch)
+  ? 'release'
+  : 'nightly';
+
+failIfTagExists(releaseVersion, buildType);
 
 if (branch && !isReleaseBranch(branch) && !isDryRun) {
   console.error(`This needs to be on a release branch. On branch: ${branch}`);
@@ -59,12 +65,6 @@ if (branch && !isReleaseBranch(branch) && !isDryRun) {
   console.error('This needs to be on a release branch.');
   exit(1);
 }
-
-const buildType = isDryRun
-  ? 'dry-run'
-  : isReleaseBranch(branch)
-  ? 'release'
-  : 'nightly';
 
 const {version} = parseVersion(releaseVersion, buildType);
 if (version == null) {

@@ -115,7 +115,13 @@ function generateiOSArtifacts(
   return tarballOutputPath;
 }
 
-function failIfTagExists(version) {
+function failIfTagExists(version, buildType) {
+  // When dry-run in stable branch, the tag already exists.
+  // We are bypassing the tag-existence check when in a dry-run to have the CI pass
+  if (buildType === 'dry-run') {
+    return;
+  }
+
   if (checkIfTagExists(version)) {
     echo(`Tag v${version} already exists.`);
     echo('You may want to rollback the last commit');
