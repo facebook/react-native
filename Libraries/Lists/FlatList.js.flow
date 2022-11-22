@@ -20,8 +20,8 @@ import type {
   RenderItemProps,
   ViewToken,
   ViewabilityConfigCallbackPair,
-  VirtualizedList,
 } from '@react-native/virtualized-lists';
+import typeof VirtualizedList from '@react-native/virtualized-lists/Lists/VirtualizedList';
 
 type RequiredProps<ItemT> = {|
   /**

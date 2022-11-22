@@ -16,8 +16,7 @@ import type {
 import type FillRateHelper from './FillRateHelper';
 import type {RenderItemType} from './VirtualizedListProps';
 
-import View from 'react-native/Libraries/Components/View/View';
-import StyleSheet from 'react-native/Libraries/StyleSheet/StyleSheet';
+import {View, StyleSheet} from 'react-native';
 import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
 import invariant from 'invariant';
 import * as React from 'react';

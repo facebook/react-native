@@ -24,15 +24,16 @@ import type {
   Separators,
 } from './VirtualizedListProps';
 
-import RefreshControl from 'react-native/Libraries/Components/RefreshControl/RefreshControl';
-import ScrollView from 'react-native/Libraries/Components/ScrollView/ScrollView';
-import View from 'react-native/Libraries/Components/View/View';
+import {
+  RefreshControl,
+  ScrollView,
+  View,
+  StyleSheet,
+  findNodeHandle,
+} from 'react-native';
 import Batchinator from 'react-native/Libraries/Interaction/Batchinator';
-import {findNodeHandle} from 'react-native/Libraries/ReactNative/RendererProxy';
-import flattenStyle from 'react-native/Libraries/StyleSheet/flattenStyle';
-import StyleSheet from 'react-native/Libraries/StyleSheet/StyleSheet';
 import clamp from 'react-native/Libraries/Utilities/clamp';
-import infoLog from 'react-native/Libraries/Utilities/infoLog';
+import infoLog from '../Utilities/infoLog';
 import {CellRenderMask} from './CellRenderMask';
 import ChildListCollection from './ChildListCollection';
 import FillRateHelper from './FillRateHelper';
@@ -810,7 +811,7 @@ export default class VirtualizedList extends StateSafePureComponent<
   render(): React.Node {
     if (__DEV__) {
       // $FlowFixMe[underconstrained-implicit-instantiation]
-      const flatStyles = flattenStyle(this.props.contentContainerStyle);
+      const flatStyles = StyleSheet.flatten(this.props.contentContainerStyle);
       if (flatStyles != null && flatStyles.flexWrap === 'wrap') {
         console.warn(
           '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
