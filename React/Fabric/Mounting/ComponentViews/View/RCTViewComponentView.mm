@@ -292,6 +292,21 @@ using namespace facebook::react;
 
   // `accessibilityLabel`
   if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
+    if ([self.nativeId isEqualToString:@"1"]) {
+      if (@available(iOS 11.0, *)) {
+        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+        // Step 3 - add parameter accessibilityLiveRegion. Copy/Paste android settings.
+        //        - retrieve parameter
+        //        - trigger check if parameter is polite or assertive
+        NSLog(@"TESTING newViewProps.accessibilityLiveRegions is %d", newViewProps.accessibilityLiveRegion);
+        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
+        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString:@"announcement"
+                                                                                    attributes:attrsDictionary];
+        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+      }
+      // Step 4 - instead of triggering the announcement, mark an instance variable to trigger announcement
+      //        - trigger only 1 time announcement once all props are set
+    }
     self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
   }
 
@@ -698,7 +713,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   if (label) {
     return label;
   }
-
   return RCTRecursiveAccessibilityLabel(self);
 }
 

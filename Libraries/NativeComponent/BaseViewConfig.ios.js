@@ -169,6 +169,7 @@ const validAttributesForNonEventProps = {
   accessible: true,
   accessibilityActions: true,
   accessibilityLabel: true,
+  accessibilityLiveRegion: true,
   accessibilityHint: true,
   accessibilityLanguage: true,
   accessibilityValue: true,
