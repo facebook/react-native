@@ -60,7 +60,7 @@ esac
 REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # The project should be located next to where react-native is installed
 # in node_modules.
-PROJECT_ROOT=${PROJECT_ROOT:-"$REACT_NATIVE_DIR/../.."}
+PROJECT_ROOT=${PROJECT_ROOT:-"$REACT_NATIVE_DIR/../../$CUSTOM_DIR"}
 
 cd "$PROJECT_ROOT" || exit
 
