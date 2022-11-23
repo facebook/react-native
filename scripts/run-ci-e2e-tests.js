@@ -36,6 +36,9 @@ const REACT_NATIVE_TEMP_DIR = exec(
 ).stdout.trim();
 const REACT_NATIVE_APP_DIR = `${REACT_NATIVE_TEMP_DIR}/template`;
 const numberOfRetries = argv.retries || 1;
+
+const VERDACCIO_CONFIG_PATH = path.join(ROOT, '.circleci/verdaccio.yml');
+
 let SERVER_PID;
 let APPIUM_PID;
 let VERDACCIO_PID;
@@ -75,7 +78,7 @@ try {
   const REACT_NATIVE_PACKAGE = path.join(ROOT, 'react-native-*.tgz');
 
   describe('Set up Verdaccio');
-  VERDACCIO_PID = setupVerdaccio();
+  VERDACCIO_PID = setupVerdaccio(ROOT, VERDACCIO_CONFIG_PATH);
 
   describe('Publish packages');
   forEachPackage(

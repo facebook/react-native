@@ -936,9 +936,7 @@ jobs:
       - run:
           name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
           command: |
-            cd /tmp/$PROJECT_NAME
-            yarn install
-            cd ios
+            cd /tmp/$PROJECT_NAME/ios
 
             bundle install
 
