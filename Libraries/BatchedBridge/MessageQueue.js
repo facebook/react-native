@@ -207,7 +207,7 @@ class MessageQueue {
           });
           warnOnce(
             'excessive-number-of-pending-callbacks',
-            `Please report: Excessive number of pending callbacks: ${
+            `Excessive number of pending callbacks: ${
               this._successCallbacks.size
             }. Some pending callbacks that might have leaked by never being called from native code: ${stringifySafe(
               info,
