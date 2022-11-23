@@ -29,7 +29,7 @@ import type {
   Props as VirtualizedSectionListProps,
   ScrollToLocationParamsType,
   SectionBase,
-} from '@react-native/virtualized-lists/Lists/VirtualizedSectionList';
+} from './Lists/VirtualizedSectionList';
 
 export type {
   RenderItemProps,
