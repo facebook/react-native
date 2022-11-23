@@ -31,7 +31,10 @@ const {reactNativeRootPath, templatePath} = argv;
 const VERDACCIO_CONFIG_PATH = `${reactNativeRootPath}/scripts/template/verdaccio.yml`;
 const VERDACCIO_STORAGE_PATH = `${templatePath}/node_modules`;
 
-const PACKAGES_TO_PUBLISH_PATHS = [];
+const PACKAGES_TO_PUBLISH_PATHS = [
+  'packages/eslint-plugin-react-native-community',
+  'packages/eslint-config-react-native-community',
+];
 
 function install() {
   const VERDACCIO_PID = setupVerdaccio(

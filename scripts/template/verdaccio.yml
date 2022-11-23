@@ -15,6 +15,12 @@ uplinks:
       maxSockets: 40
       maxFreeSockets: 10
 packages:
+  '@react-native/eslint-config':
+    access: $all
+    publish: $all
+  '@react-native/eslint-plugin':
+    access: $all
+    publish: $all
   '@*/*':
     access: $all
     publish: $authenticated
