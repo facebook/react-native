@@ -8,7 +8,7 @@
  * @format
  */
 
-import typeof ScrollView from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import {typeof ScrollView} from 'react-native';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
