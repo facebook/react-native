@@ -37,10 +37,8 @@ import typeof TouchableNativeFeedback from './Libraries/Components/Touchable/Tou
 import typeof TouchableOpacity from './Libraries/Components/Touchable/TouchableOpacity';
 import typeof TouchableWithoutFeedback from './Libraries/Components/Touchable/TouchableWithoutFeedback';
 import typeof View from './Libraries/Components/View/View';
-import {
-  typeof VirtualizedList,
-  typeof VirtualizedSectionList,
-} from '@react-native/virtualized-lists';
+import typeof VirtualizedList from './Libraries/Lists/VirtualizedList';
+import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionList';
 
 // APIs
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
@@ -193,11 +191,10 @@ module.exports = {
     return require('./Libraries/Components/View/View');
   },
   get VirtualizedList(): VirtualizedList {
-    return require('@react-native/virtualized-lists/Lists/VirtualizedList')
-      .default;
+    return require('./Libraries/Lists/VirtualizedList');
   },
   get VirtualizedSectionList(): VirtualizedSectionList {
-    return require('@react-native/virtualized-lists/Lists/VirtualizedSectionList');
+    return require('./Libraries/Lists/VirtualizedSectionList');
   },
 
   // APIs

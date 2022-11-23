@@ -10,6 +10,10 @@
 
 'use strict';
 
-export type * from '@react-native/virtualized-lists/Lists/VirtualizedList';
+import {typeof VirtualizedList as VirtualizedListType} from '@react-native/virtualized-lists';
 
-module.exports = require('@react-native/virtualized-lists/Lists/VirtualizedList');
+const VirtualizedList: VirtualizedListType =
+  require('@react-native/virtualized-lists').VirtualizedList;
+
+export type * from '@react-native/virtualized-lists/Lists/VirtualizedList';
+module.exports = VirtualizedList;

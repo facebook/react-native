@@ -31,8 +31,8 @@ import {
   StyleSheet,
   findNodeHandle,
 } from 'react-native';
-import Batchinator from 'react-native/Libraries/Interaction/Batchinator';
-import clamp from 'react-native/Libraries/Utilities/clamp';
+import Batchinator from '../Interaction/Batchinator';
+import clamp from '../Utilities/clamp';
 import infoLog from '../Utilities/infoLog';
 import {CellRenderMask} from './CellRenderMask';
 import ChildListCollection from './ChildListCollection';
