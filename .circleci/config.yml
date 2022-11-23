@@ -40,7 +40,7 @@ references:
   dependency_versions:
     xcode_version: &xcode_version "14.0.1"
     nodelts_image: &nodelts_image "cimg/node:18.12.1"
-    nodeprevlts_image: &nodeprevlts_image "cimg/node:14.19"
+    nodeprevlts_image: &nodeprevlts_image "cimg/node:16.18.1"
 
   # -------------------------
   #        Cache Key Anchors
