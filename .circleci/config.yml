@@ -780,9 +780,7 @@ jobs:
             REPO_ROOT=$(pwd)
             node ./scripts/set-rn-template-version.js "file:$REPO_ROOT/build/$(cat build/react-native-package-version)"
             node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose --skip-install
-            cd /tmp/$PROJECT_NAME
-            yarn
-
+            node ./scripts/template/install-dependencies.js --reactNativeRootPath $REPO_ROOT --templatePath "/tmp/$PROJECT_NAME"
       - run:
           name: Build the template application for << parameters.flavor >> with Architecture set to << parameters.architecture >>, and using the << parameters.jsengine>> JS engine.
           command: |
@@ -863,12 +861,11 @@ jobs:
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
             node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose --skip-install
+            node ./scripts/template/install-dependencies.js --reactNativeRootPath $REPO_ROOT --templatePath "/tmp/$PROJECT_NAME"
       - run:
           name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
           command: |
-            cd /tmp/$PROJECT_NAME
-            yarn install
-            cd ios
+            cd /tmp/$PROJECT_NAME/ios
 
             bundle install
 

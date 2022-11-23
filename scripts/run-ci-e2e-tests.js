@@ -23,7 +23,7 @@ const {cd, cp, echo, exec, exit, mv} = require('shelljs');
 const spawn = require('child_process').spawn;
 const argv = require('yargs').argv;
 const path = require('path');
-const {setupVerdaccio} = require('./setup-verdaccio');
+const setupVerdaccio = require('./setup-verdaccio');
 
 const SCRIPTS = __dirname;
 const ROOT = path.normalize(path.join(__dirname, '..'));
@@ -34,6 +34,9 @@ const REACT_NATIVE_TEMP_DIR = exec(
 ).stdout.trim();
 const REACT_NATIVE_APP_DIR = `${REACT_NATIVE_TEMP_DIR}/template`;
 const numberOfRetries = argv.retries || 1;
+
+const VERDACCIO_CONFIG_PATH = path.join(ROOT, '.circleci/verdaccio.yml');
+
 let SERVER_PID;
 let APPIUM_PID;
 let VERDACCIO_PID;
@@ -73,7 +76,7 @@ try {
   const REACT_NATIVE_PACKAGE = path.join(ROOT, 'react-native-*.tgz');
 
   describe('Set up Verdaccio');
-  VERDACCIO_PID = setupVerdaccio();
+  VERDACCIO_PID = setupVerdaccio(ROOT, VERDACCIO_CONFIG_PATH);
 
   describe('Publish packages');
   const packages = JSON.parse(
