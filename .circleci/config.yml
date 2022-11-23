@@ -562,7 +562,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@18/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - run:
