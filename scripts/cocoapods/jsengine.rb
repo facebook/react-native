@@ -60,14 +60,19 @@ def remove_copy_hermes_framework_script_phase(installer, react_native_path)
     project.save()
 end
 
-def is_building_hermes_from_source(react_native_version)
-    is_nightly = react_native_version.start_with?('0.0.0-')
-    has_tarball = ENV['HERMES_ENGINE_TARBALL_PATH'] != nil
-
-    # this is the same logic in the hermes-engine.podspec
-    if has_tarball || is_nightly
+# TODO: Use this same function in the `hermes-engine.podspec` somehow
+def is_building_hermes_from_source(react_native_version, react_native_path)
+    if ENV['HERMES_ENGINE_TARBALL_PATH'] != nil
         return false
     end
 
-    return true
+    isInMain = react_native_version.include?('1000.0.0')
+
+    hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
+    isInCI = ENV['CI'] === 'true'
+
+    isReleaseBranch = File.exist?(hermestag_file) && isInCI
+
+
+    return isInMain || isReleaseBranch
 end
