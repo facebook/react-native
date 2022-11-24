@@ -17,6 +17,7 @@ rn_android_library(
         react_native_target("java/com/facebook/hermes/instrumentation:instrumentation"),
         react_native_target("java/com/facebook/hermes/instrumentation:hermes_samplingprofiler"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_target("java/com/facebook/react/common:common"),
         react_native_target("jni/react/hermes/reactexecutor:jni"),
         ":runtimeconfig",
     ],

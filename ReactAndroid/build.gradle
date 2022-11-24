@@ -404,6 +404,7 @@ android {
 
                 targets "reactnativejni",
                     "jscexecutor",
+                    "hermes-executor",
                     "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
@@ -431,24 +432,6 @@ android {
         }
         ndk {
             abiFilters(*reactNativeArchitectures())
-        }
-    }
-
-    buildTypes {
-        debug {
-            externalNativeBuild {
-                cmake {
-                    targets "hermes-executor-debug"
-                }
-            }
-        }
-
-        release {
-            externalNativeBuild {
-                cmake {
-                    targets "hermes-executor-release"
-                }
-            }
         }
     }
 
