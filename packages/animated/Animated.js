@@ -17,7 +17,7 @@ import typeof AnimatedSectionList from './components/AnimatedSectionList';
 import typeof AnimatedText from './components/AnimatedText';
 import typeof AnimatedView from './components/AnimatedView';
 
-import Platform from '../Utilities/Platform';
+import {Platform} from 'react-native';
 import AnimatedImplementation from './AnimatedImplementation';
 import AnimatedMock from './AnimatedMock';
 

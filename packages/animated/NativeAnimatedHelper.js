@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import type {EventConfig} from './AnimatedEvent';
 import type {AnimationConfig, EndCallback} from './animations/Animation';
 import type {
@@ -18,10 +18,10 @@ import type {
 } from './NativeAnimatedModule';
 import type {InterpolationConfigType} from './nodes/AnimatedInterpolation';
 
-import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
-import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
-import Platform from '../Utilities/Platform';
+import NativeEventEmitter from 'react-native/Libraries/EventEmitter/NativeEventEmitter';
+import RCTDeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
+import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
+import {Platform} from 'react-native';
 import NativeAnimatedNonTurboModule from './NativeAnimatedModule';
 import NativeAnimatedTurboModule from './NativeAnimatedTurboModule';
 import invariant from 'invariant';

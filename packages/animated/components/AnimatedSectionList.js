@@ -11,7 +11,7 @@
 import type {SectionBase} from '../../Lists/SectionList';
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-import SectionList from '../../Lists/SectionList';
+import {SectionList} from 'react-native';
 import createAnimatedComponent from '../createAnimatedComponent';
 import * as React from 'react';
 

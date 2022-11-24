@@ -10,12 +10,11 @@
 
 import type {PressEvent} from '../../Types/CoreEventTypes';
 
-import Animated from '../../Animated/Animated';
-import Easing from '../../Animated/Easing';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
+import {Animated, Easing} from '@react-native/animated';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|

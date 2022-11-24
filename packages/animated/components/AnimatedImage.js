@@ -10,7 +10,7 @@
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-import Image from '../../Image/Image';
+import {Image} from 'react-native';
 import createAnimatedComponent from '../createAnimatedComponent';
 import * as React from 'react';
 

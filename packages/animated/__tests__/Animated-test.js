@@ -10,19 +10,10 @@
 
 import * as React from 'react';
 
-const {PlatformColor} = require('../../StyleSheet/PlatformColorValueTypes');
+const {PlatformColor} = require('react-native');
 let Animated = require('../Animated').default;
 const AnimatedProps = require('../nodes/AnimatedProps').default;
 const TestRenderer = require('react-test-renderer');
-
-jest.mock('../../BatchedBridge/NativeModules', () => ({
-  NativeAnimatedModule: {},
-  PlatformConstants: {
-    getConstants() {
-      return {};
-    },
-  },
-}));
 
 describe('Animated tests', () => {
   beforeEach(() => {
@@ -698,13 +689,13 @@ describe('Animated tests', () => {
     let InteractionManager;
 
     beforeEach(() => {
-      jest.mock('../../Interaction/InteractionManager');
+      jest.mock('react-native/Libraries/Interaction/InteractionManager');
       Animated = require('../Animated').default;
-      InteractionManager = require('../../Interaction/InteractionManager');
+      InteractionManager = require('react-native/Libraries/Interaction/InteractionManager');
     });
 
     afterEach(() => {
-      jest.unmock('../../Interaction/InteractionManager');
+      jest.unmock('react-native/Libraries/Interaction/InteractionManager');
     });
 
     it('registers an interaction by default', () => {

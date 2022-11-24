@@ -10,7 +10,6 @@
 
 'use strict';
 
-import type AnimatedNode from '../Animated/nodes/AnimatedNode';
 import type {NativeColorValue} from './PlatformColorValueTypes';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
@@ -20,6 +19,7 @@ import type {
   ____ViewStyle_InternalOverrides,
 } from './private/_StyleSheetTypesOverrides';
 import type {____TransformStyle_Internal} from './private/_TransformStyle';
+import type {AnimatedNode} from '@react-native/animated';
 
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;

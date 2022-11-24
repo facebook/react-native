@@ -23,7 +23,6 @@ import type {KeyboardEvent, KeyboardMetrics} from '../Keyboard/Keyboard';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
-import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import UIManager from '../../ReactNative/UIManager';
@@ -44,6 +43,7 @@ import Commands from './ScrollViewCommands';
 import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
 import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 import ScrollViewStickyHeader from './ScrollViewStickyHeader';
+import {AnimatedImplementation} from '@react-native/animated';
 import invariant from 'invariant';
 import memoize from 'memoize-one';
 import nullthrows from 'nullthrows';

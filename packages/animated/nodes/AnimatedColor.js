@@ -10,13 +10,13 @@
 
 'use strict';
 
-import type {NativeColorValue} from '../../StyleSheet/PlatformColorValueTypes';
-import type {ProcessedColorValue} from '../../StyleSheet/processColor';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {NativeColorValue} from 'react-native/Libraries/StyleSheet/PlatformColorValueTypes';
+import type {ProcessedColorValue} from 'react-native/Libraries/StyleSheet/processColor';
+import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import normalizeColor from '../../StyleSheet/normalizeColor';
-import {processColorObject} from '../../StyleSheet/PlatformColorValueTypes';
+import normalizeColor from 'react-native/Libraries/StyleSheet/normalizeColor';
+import {processColorObject} from 'react-native/Libraries/StyleSheet/PlatformColorValueTypes';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedValue, {flushValue} from './AnimatedValue';
 import AnimatedWithChildren from './AnimatedWithChildren';

@@ -11,14 +11,13 @@
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 
-import Animated from '../../Animated/Animated';
-import Easing from '../../Animated/Easing';
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
+import {Animated, Easing} from '@react-native/animated';
 import * as React from 'react';
 
 type TVProps = $ReadOnly<{|

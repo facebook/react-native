@@ -12,7 +12,7 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import {findNodeHandle} from '../../ReactNative/RendererProxy';
+import {findNodeHandle} from 'react-native';
 import {AnimatedEvent} from '../AnimatedEvent';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';

@@ -8,9 +8,9 @@
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 type EndResult = {finished: boolean, ...};
 type EndCallback = (result: EndResult) => void;

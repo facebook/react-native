@@ -8,7 +8,7 @@
  * @format
  */
 
-import type AnimatedNode from '../../Animated/nodes/AnimatedNode';
+import type {AnimatedNode} from '@react-native/animated';
 
 export type ____TransformStyle_Internal = $ReadOnly<{|
   /**

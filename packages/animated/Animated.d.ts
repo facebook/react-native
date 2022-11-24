@@ -8,14 +8,17 @@
  */
 
 import type * as React from 'react';
-import {ScrollView} from '../Components/ScrollView/ScrollView';
-import {View} from '../Components/View/View';
-import {Image} from '../Image/Image';
-import {FlatListProps} from '../Lists/FlatList';
-import {DefaultSectionT, SectionListProps} from '../Lists/SectionList';
-import {ColorValue} from '../StyleSheet/StyleSheet';
-import {Text} from '../Text/Text';
-import {NativeSyntheticEvent} from '../Types/CoreEventTypes';
+import {
+  Image,
+  Text,
+  ScrollView,
+  ColorValue,
+  View,
+  FlatListProps,
+  DefaultSectionT,
+  SectionListProps,
+  NativeSyntheticEvent,
+} from 'react-native';
 
 export namespace Animated {
   type AnimatedValue = Value;

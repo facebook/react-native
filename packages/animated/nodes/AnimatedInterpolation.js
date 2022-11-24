@@ -15,8 +15,8 @@
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from './AnimatedNode';
 
-import normalizeColor from '../../StyleSheet/normalizeColor';
-import processColor from '../../StyleSheet/processColor';
+import normalizeColor from 'react-native/Libraries/StyleSheet/normalizeColor';
+import processColor from 'react-native/Libraries/StyleSheet/processColor';
 import Easing from '../Easing';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedWithChildren from './AnimatedWithChildren';

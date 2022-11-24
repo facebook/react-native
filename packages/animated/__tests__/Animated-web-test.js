@@ -8,11 +8,11 @@
  * @oncall react_native
  */
 
-const StyleSheet = require('../../StyleSheet/StyleSheet');
+const {StyleSheet} = require('react-native');
 let Animated = require('../Animated').default;
 let AnimatedProps = require('../nodes/AnimatedProps').default;
 
-jest.mock('../../Utilities/Platform', () => {
+jest.mock('react-native/Libraries/Utilities/Platform', () => {
   return {OS: 'web'};
 });
 

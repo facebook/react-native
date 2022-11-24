@@ -8,16 +8,12 @@
  * @format
  */
 
-import type {____ViewStyle_Internal} from '../../StyleSheet/StyleSheetTypes';
+import type {____ViewStyle_Internal} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-import RefreshControl from '../../Components/RefreshControl/RefreshControl';
-import ScrollView from '../../Components/ScrollView/ScrollView';
-import flattenStyle from '../../StyleSheet/flattenStyle';
-import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
-import StyleSheet from '../../StyleSheet/StyleSheet';
-import Platform from '../../Utilities/Platform';
-import useMergeRefs from '../../Utilities/useMergeRefs';
+import splitLayoutProps from 'react-native/Libraries/StyleSheet/splitLayoutProps';
+import {Platform, RefreshControl, ScrollView, StyleSheet} from 'react-native';
+import useMergeRefs from '../Utilities/useMergeRefs';
 import createAnimatedComponent from '../createAnimatedComponent';
 import useAnimatedProps from '../useAnimatedProps';
 import * as React from 'react';
@@ -76,7 +72,9 @@ const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
     const {intermediatePropsForRefreshControl, intermediatePropsForScrollView} =
       useMemo(() => {
         // $FlowFixMe[underconstrained-implicit-instantiation]
-        const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
+        const {outer, inner} = splitLayoutProps(
+          StyleSheet.flatten(props.style),
+        );
         return {
           intermediatePropsForRefreshControl: {style: outer},
           intermediatePropsForScrollView: {...props, style: inner},

@@ -10,7 +10,7 @@
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-import View from '../../Components/View/View';
+import {View} from 'react-native';
 import createAnimatedComponent from '../createAnimatedComponent';
 import * as React from 'react';
 

@@ -12,8 +12,7 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import flattenStyle from '../../StyleSheet/flattenStyle';
-import Platform from '../../Utilities/Platform';
+import {Platform, StyleSheet} from 'react-native';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 import AnimatedTransform from './AnimatedTransform';
@@ -21,7 +20,7 @@ import AnimatedWithChildren from './AnimatedWithChildren';
 
 function createAnimatedStyle(inputStyle: any): Object {
   // $FlowFixMe[underconstrained-implicit-instantiation]
-  const style = flattenStyle(inputStyle);
+  const style = StyleSheet.flatten(inputStyle);
   const animatedStyles: any = {};
   for (const key in style) {
     const value = style[key];
@@ -38,7 +37,7 @@ function createAnimatedStyle(inputStyle: any): Object {
 
 function createStyleWithAnimatedTransform(inputStyle: any): Object {
   // $FlowFixMe[underconstrained-implicit-instantiation]
-  let style = flattenStyle(inputStyle) || ({}: {[string]: any});
+  let style = StyleSheet.flatten(inputStyle) || ({}: {[string]: any});
 
   if (style.transform) {
     style = {

@@ -14,9 +14,9 @@ import type {
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
-} from '../../Renderer/shims/ReactNativeTypes.js';
+} from '../../../../Libraries/Renderer/shims/ReactNativeTypes.js';
 
-import View from '../../Components/View/View';
+import View from '../../../../Libraries/Components/View/View';
 import useRefEffect from '../useRefEffect';
 import * as React from 'react';
 import {act, create} from 'react-test-renderer';

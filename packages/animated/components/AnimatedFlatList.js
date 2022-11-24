@@ -10,7 +10,7 @@
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-import FlatList from '../../Lists/FlatList';
+import {FlatList} from 'react-native';
 import createAnimatedComponent from '../createAnimatedComponent';
 import * as React from 'react';
 

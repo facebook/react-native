@@ -1,0 +1,16 @@
+{
+  "name": "@react-native/animated",
+  "version": "0.72.0",
+  "description": "Fluid animations for React Native.",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/animated"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-native": "*",
+    "react-test-renderer": "18.2.0"
+  }
+}

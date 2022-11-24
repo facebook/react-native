@@ -45,8 +45,8 @@ import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionL
 // APIs
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
 import typeof Alert from './Libraries/Alert/Alert';
-import typeof Animated from './Libraries/Animated/Animated';
-import typeof * as AnimatedModule from './Libraries/Animated/Animated';
+import typeof Animated from '@react-native/animated/Animated';
+import typeof * as AnimatedModule from '@react-native/animated/Animated';
 import typeof Appearance from './Libraries/Utilities/Appearance';
 import typeof AppRegistry from './Libraries/ReactNative/AppRegistry';
 import typeof AppState from './Libraries/AppState/AppState';
@@ -55,7 +55,7 @@ import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
-import typeof Easing from './Libraries/Animated/Easing';
+import typeof Easing from '@react-native/animated/Easing';
 import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
 import typeof I18nManager from './Libraries/ReactNative/I18nManager';
 import typeof InteractionManager from './Libraries/Interaction/InteractionManager';
@@ -77,7 +77,7 @@ import typeof * as Systrace from './Libraries/Performance/Systrace';
 import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
 import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
 import typeof UIManager from './Libraries/ReactNative/UIManager';
-import typeof useAnimatedValue from './Libraries/Animated/useAnimatedValue';
+import typeof useAnimatedValue from '@react-native/animated/useAnimatedValue';
 import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof UTFSequence from './Libraries/UTFSequence';
@@ -228,7 +228,7 @@ module.exports = {
   // you can references types such as Animated.Numeric
   get Animated(): {...$Diff<AnimatedModule, {default: any}>, ...Animated} {
     // $FlowExpectedError[prop-missing]: we only return the default export, all other exports are types
-    return require('./Libraries/Animated/Animated').default;
+    return require('@react-native/animated').Animated;
   },
   get Appearance(): Appearance {
     return require('./Libraries/Utilities/Appearance');
@@ -261,7 +261,7 @@ module.exports = {
     return require('./Libraries/Utilities/Dimensions');
   },
   get Easing(): Easing {
-    return require('./Libraries/Animated/Easing').default;
+    return require('@react-native/animated').Easing;
   },
   get findNodeHandle(): $PropertyType<ReactNative, 'findNodeHandle'> {
     return require('./Libraries/ReactNative/RendererProxy').findNodeHandle;
@@ -342,7 +342,7 @@ module.exports = {
       .unstable_batchedUpdates;
   },
   get useAnimatedValue(): useAnimatedValue {
-    return require('./Libraries/Animated/useAnimatedValue').default;
+    return require('@react-native/animated').useAnimatedValue;
   },
   get useColorScheme(): useColorScheme {
     return require('./Libraries/Utilities/useColorScheme').default;
