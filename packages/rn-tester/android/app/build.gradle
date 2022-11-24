@@ -189,5 +189,5 @@ android {
 afterEvaluate {
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
-    createBundleHermesReleaseJsAndAssets.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
+//    createBundleHermesReleaseJsAndAssets.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
 }
