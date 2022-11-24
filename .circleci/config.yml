@@ -716,10 +716,6 @@ jobs:
           name: Build & Test React Native using Gradle
           command: ./gradlew buildAll
 
-      - run:
-          name: Build RN Tester for Release using Gradle
-          command: ./gradlew packages:rn-tester:android:app:assembleRelease
-
       - report_bundle_size:
           platform: android
 
