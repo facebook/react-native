@@ -295,12 +295,12 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
   }
   
-  if (!newViewProps.accessibilityLabel.empty() && oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel && newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None) {
+  if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel && newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None) {
     if ([self.nativeId isEqualToString:@"1"]) {
       if (@available(iOS 11.0, *)) {
         NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
         attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
-        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel)
+        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityElement.accessibilityLabel
                                                                                     attributes:attrsDictionary];
         UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
       }

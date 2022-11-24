@@ -1444,45 +1444,24 @@ function AccessibilityExpandedExample(): React.Node {
   return (
     <>
       <RNTesterBlock title="Collapse/Expanded state change (Paper)">
-        <Text>
-          The following component announces expanded/collapsed state correctly
-        </Text>
         <Button
-          onPress={() => setExpanded(!expand)}
-          accessibilityState={{expanded: expand}}
-          accessibilityActions={expand ? [collapseAction] : [expandAction]}
-          onAccessibilityAction={event => {
-            switch (event.nativeEvent.actionName) {
-              case 'expand':
-                setExpanded(true);
-                break;
-              case 'collapse':
-                setExpanded(false);
-                break;
-            }
+          onPress={() => {
+            setExpanded(!expand);
           }}
           title="click me to change state"
+          nativeID={'Button'}
         />
-      </RNTesterBlock>
-
-      <RNTesterBlock title="Screenreader announces the visible text">
-        <Text>Announcing expanded/collapse and the visible text.</Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setExpanded(!expand)}
-          accessibilityState={{expanded: expand}}>
-          <Text>Click me to change state</Text>
-        </TouchableOpacity>
-      </RNTesterBlock>
-
-      <RNTesterBlock title="expanded/collapsed only managed through the accessibility menu">
-        <TouchableWithoutFeedback
-          accessibilityState={{expanded: true}}
-          accessible={true}>
-          <View>
-            <Text>Clicking me does not change state</Text>
-          </View>
-        </TouchableWithoutFeedback>
+        <View
+          accessibilityLiveRegion="polite"
+          accessibilityRole="button"
+          accessible={true}
+          focusable={true}
+          nativeID={'View'}
+          style={{backgroundColor: 'red', height: 200, width: 400}}>
+          <Text accessibilityLiveRegion="polite" nativeID={'Text'}>
+            {expand ? null : 'my text'}
+          </Text>
+        </View>
       </RNTesterBlock>
     </>
   );
