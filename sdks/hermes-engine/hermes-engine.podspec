@@ -133,10 +133,6 @@ Pod::Spec.new do |spec|
         export CMAKE_BINARY=${CMAKE_BINARY:-#{%x(command -v cmake | tr -d '\n')}}
         . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
         EOS
-      },
-      {
-        :name => 'Copy Hermes Framework',
-        :script => ". ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/copy-hermes-xcode.sh"
       }
     ]
   end
