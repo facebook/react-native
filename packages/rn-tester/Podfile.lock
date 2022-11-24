@@ -954,7 +954,7 @@ SPEC CHECKSUMS:
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: d18f5a58d912c767ed56b58821bddd685d766712
+  hermes-engine: e49758848596771dbb97c8f1b65e9d1ac353af69
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
@@ -965,14 +965,14 @@ SPEC CHECKSUMS:
   React-Codegen: 4f1e911c128928e425e11698ad7859dfd0f92e20
   React-Core: 719bec4b41c93b1affb1e2c3a43956ec482ecb9f
   React-CoreModules: feaa45c54c58e1420981f6dd544c8b3d01200caa
-  React-cxxreact: c5f93e7a35f3545489d8e1f89beb9d2d56acfde5
+  React-cxxreact: 97903bdac0fb53409663fd312e2183ae1dd730e5
   React-Fabric: 8a854fd89c932ab073f67036bb45d1787d0d31a4
   React-graphics: cb8a85648695c60f33a00d732b985f734d1470d8
-  React-hermes: 299c7f56d32e8953480fd8e7fba2a7968a534b3f
+  React-hermes: af82687697f03ebb78aadd09dbc027df55fd87f8
   React-jsi: d40e13b7f545f9af2af780f153f5321018b5e2f8
   React-jsidynamic: 8aa406dfc1eff081f3443e55a28b51d11616a3bf
-  React-jsiexecutor: 04a945f040cc085d79655359ec29e5f501fb6e01
-  React-jsinspector: a56861590ddfcb5cb544877ade3e007a32ff9616
+  React-jsiexecutor: c402e7aeef68fab08a5f82adfea1f6874bf1b89b
+  React-jsinspector: 9b56a373a6797114e1d89a7dffa98ee98af67a8f
   React-logger: 07c9b44040a6f948b8e2033207b23cb623f0b9b4
   React-perflogger: b4b9fb2ddd856b78003708ab3cf66ce03e6bc7c4
   React-RCTActionSheet: 1b1501ef80928be10702cd0ce09120358094cd82

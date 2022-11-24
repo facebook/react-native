@@ -104,16 +104,10 @@ Pod::Spec.new do |spec|
       ss.header_dir = 'hermes/Public'
     end
 
-    hermesc_path = ""
+    hermesc_path = "${PODS_ROOT}/hermes-engine/build_host_hermesc"
 
     if ENV.has_key?('HERMES_OVERRIDE_HERMESC_PATH') && File.exist?(ENV['HERMES_OVERRIDE_HERMESC_PATH']) then
       hermesc_path = ENV['HERMES_OVERRIDE_HERMESC_PATH']
-    else
-      # Keep hermesc_path synchronized with .gitignore entry.
-      ENV['REACT_NATIVE_PATH'] = react_native_path
-      hermesc_path = "${REACT_NATIVE_PATH}/sdks/hermes-engine/build_host_hermesc"
-      # NOTE: Prepare command is not run  if the pod is not downloaded.
-      spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}"
     end
 
     spec.user_target_xcconfig = {
@@ -125,12 +119,22 @@ Pod::Spec.new do |spec|
       'HERMES_CLI_PATH' => "#{hermesc_path}/bin/hermesc"
     }
 
+    CMAKE_BINARY = %x(command -v cmake | tr -d '\n')
+    # NOTE: Script phases are sorted alphabetically inside Xcode project
     spec.script_phases = [
       {
-        :name => 'Build Hermes',
+        :name => '[RN] [1] Build Hermesc',
         :script => <<-EOS
         . ${PODS_ROOT}/../.xcode.env
-        export CMAKE_BINARY=${CMAKE_BINARY:-#{%x(command -v cmake | tr -d '\n')}}
+        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
+        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}
+        EOS
+      },
+      {
+        :name => '[RN] [2] Build Hermes',
+        :script => <<-EOS
+        . ${PODS_ROOT}/../.xcode.env
+        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
         . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
         EOS
       }

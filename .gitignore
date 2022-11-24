@@ -125,7 +125,6 @@ package-lock.json
 /sdks/download
 /sdks/hermes
 /sdks/hermesc
-/sdks/hermes-engine/build_host_hermesc
 
 # Visual studio
 .vscode
