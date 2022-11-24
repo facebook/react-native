@@ -181,6 +181,18 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 // and "hermes-inspector". Here we expose only the headers that we know are needed.
                 new Pair("../ReactCommon/hermes/inspector/", "hermes/inspector/")
             ),
+            new PrefabPreprocessingEntry(
+                "react_render_uimanager",
+                new Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
+            ),
+            new PrefabPreprocessingEntry(
+                "react_render_scheduler",
+                new Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
+            ),
+            new PrefabPreprocessingEntry(
+                "react_render_mounting",
+                new Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -434,6 +446,9 @@ android {
                     "folly_runtime",
                     "react_nativemodule_core",
                     "react_render_imagemanager",
+                    "react_render_uimanager",
+                    "react_render_scheduler",
+                    "react_render_mounting",
                     "hermes-executor"
             }
         }
@@ -538,6 +553,15 @@ android {
         }
         react_render_imagemanager {
             headers(new File(prefabHeadersDir, "react_render_imagemanager").absolutePath)
+        }
+        react_render_uimanager {
+            headers(new File(prefabHeadersDir, "react_render_uimanager").absolutePath)
+        }
+        react_render_scheduler {
+            headers(new File(prefabHeadersDir, "react_render_scheduler").absolutePath)
+        }
+        react_render_mounting {
+            headers(new File(prefabHeadersDir, "react_render_mounting").absolutePath)
         }
         "hermes-executor" {
             headers(new File(prefabHeadersDir, "hermes-executor").absolutePath)
