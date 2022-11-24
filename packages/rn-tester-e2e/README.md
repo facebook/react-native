@@ -27,7 +27,7 @@ If not please make a build in Xcode and check again
 Then copy RNTester.app and change the name on the rn-tester to:
 
 ```bash
-/react-native/packages/rn-tester/e2e/apps
+/react-native/packages/rn-tester-e2e/apps
 ```
 
 # Building for iOS
@@ -36,7 +36,7 @@ Then copy RNTester.app and change the name on the rn-tester to:
 
 ## Usage
 
-In /react-native/packages/rn-tester/e2e
+In /react-native/packages/rn-tester-e2e
 
 ```bash
 npm install
@@ -44,7 +44,7 @@ npm install
 
 Go to
 ```bash
-/react-native/packages/rn-tester/e2e/e2e-config.js
+/react-native/packages/rn-tester-e2e/e2e-config.js
 ```
 Prepare capabilities for your simulators
 
