@@ -101,35 +101,43 @@ const View: React.AbstractComponent<
     let style = flattenStyle(otherProps.style);
 
     const newPointerEvents = style?.pointerEvents || pointerEvents;
+    const defaultProps = {
+      ...otherProps,
+      accessibilityLabel: ariaLabel ?? accessibilityLabel,
+      focusable: tabIndex !== undefined ? !tabIndex : focusable,
+      accessibilityState: _accessibilityState,
+      accessibilityRole: role
+        ? getAccessibilityRoleFromRole(role)
+        : accessibilityRole,
+      accessibilityElementsHidden: ariaHidden ?? accessibilityElementsHidden,
+      accessibilityLabelledBy: _accessibilityLabelledBy,
+      accessibilityValue: _accessibilityValue,
+      importantForAccessibility:
+        ariaHidden === true ? 'no-hide-descendants' : importantForAccessibility,
+      nativeID: id ?? nativeID,
+      style,
+      pointerEvents: newPointerEvents,
+      ref: forwardedRef,
+    };
+
+    // add accessibilityLiveRegion to focusable children on iOS
+    // move this to separate PR if can not be done clean
+    // requires additional Platform check for iOS
+    if (accessibilityLiveRegion != null && accessibilityLabel == null) {
+      return (
+        <TextAncestor.Provider value={false}>
+          <ViewNativeComponent {...defaultProps}>
+            {React.cloneElement(otherProps.children, {
+              accessibilityLiveRegion,
+            })}
+          </ViewNativeComponent>
+        </TextAncestor.Provider>
+      );
+    }
 
     return (
       <TextAncestor.Provider value={false}>
-        <ViewNativeComponent
-          {...otherProps}
-          accessibilityLiveRegion={
-            ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
-          }
-          accessibilityLabel={ariaLabel ?? accessibilityLabel}
-          focusable={tabIndex !== undefined ? !tabIndex : focusable}
-          accessibilityState={_accessibilityState}
-          accessibilityRole={
-            role ? getAccessibilityRoleFromRole(role) : accessibilityRole
-          }
-          accessibilityElementsHidden={
-            ariaHidden ?? accessibilityElementsHidden
-          }
-          accessibilityLabelledBy={_accessibilityLabelledBy}
-          accessibilityValue={_accessibilityValue}
-          importantForAccessibility={
-            ariaHidden === true
-              ? 'no-hide-descendants'
-              : importantForAccessibility
-          }
-          nativeID={id ?? nativeID}
-          style={style}
-          pointerEvents={newPointerEvents}
-          ref={forwardedRef}
-        />
+        <ViewNativeComponent {...defaultProps} />
       </TextAncestor.Provider>
     );
   },
