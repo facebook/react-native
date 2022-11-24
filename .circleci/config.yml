@@ -710,16 +710,6 @@ jobs:
       - checkout
       - setup_artifacts
       - run_yarn
-
-      # Starting emulator in advance as it takes some time to boot.
-      - run:
-          name: Create Android Virtual Device
-          command: source scripts/android-setup.sh && createAVD
-      - run:
-          name: Launch Android Virtual Device in Background
-          command: source scripts/android-setup.sh && launchAVD
-          background: true
-
       - download_gradle_dependencies
 
       - run:
@@ -729,11 +719,6 @@ jobs:
       - run:
           name: Build RN Tester for Release using Gradle
           command: ./gradlew packages:rn-tester:android:app:assembleRelease
-
-      # Wait for AVD to finish booting before running tests
-      - run:
-          name: Wait for Android Virtual Device
-          command: source scripts/android-setup.sh && waitForAVD
 
       - report_bundle_size:
           platform: android
