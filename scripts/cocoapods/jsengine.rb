@@ -65,12 +65,17 @@ def remove_hermesc_build_dir(react_native_path)
 end
 
 def is_building_hermes_from_source(react_native_version, react_native_path)
+    if ENV['HERMES_ENGINE_TARBALL_PATH'] != nil
+        return false
+    end
+
     isInMain = react_native_version.include?('1000.0.0')
 
     hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
     isInCI = ENV['CI'] === 'true'
 
-    isReleaseBranch = File.exists?(hermestag_file) && isInCI
+    isReleaseBranch = File.exist?(hermestag_file) && isInCI
+
 
     return isInMain || isReleaseBranch
 end
