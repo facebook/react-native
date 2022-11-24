@@ -33,7 +33,7 @@ group = "com.facebook.react"
 
 dependencies {
   implementation(gradleApi())
-  implementation("com.android.tools.build:gradle:7.3.1")
+  implementation("com.android.tools.build:gradle:7.4.0-beta05")
   implementation("com.google.code.gson:gson:2.8.9")
   implementation("com.google.guava:guava:31.0.1-jre")
   implementation("com.squareup:javapoet:1.13.0")
@@ -50,8 +50,8 @@ dependencies {
 }
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_1_8
-  targetCompatibility = JavaVersion.VERSION_1_8
+  sourceCompatibility = JavaVersion.VERSION_11
+  targetCompatibility = JavaVersion.VERSION_11
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

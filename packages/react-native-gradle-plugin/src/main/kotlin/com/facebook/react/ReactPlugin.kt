@@ -47,8 +47,10 @@ class ReactPlugin : Plugin<Project> {
       configureBuildConfigFields(project)
       configureDevPorts(project)
 
-      project.extensions.getByType(AndroidComponentsExtension::class.java).onVariants { variant ->
-        project.configureReactTasks(variant = variant, config = extension)
+      project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
+        onVariants(selector().all()) { variant ->
+          project.configureReactTasks(variant = variant, config = extension)
+        }
       }
       configureCodegen(project, extension, isLibrary = false)
     }
