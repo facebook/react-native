@@ -17,7 +17,8 @@ target_link_libraries(hermes-executor-common
         jsireact
         hermes-engine::libhermes
         jsi
-        debug hermes-inspector
+        debug
+        hermes-inspector
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)

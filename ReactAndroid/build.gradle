@@ -174,6 +174,13 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "rrc_image",
                 new Pair("../ReactCommon/react/renderer/components/image/", "react/renderer/components/image/")
             ),
+            // This prefab target is used by Expo & Reanimated to load a new instance of Hermes
+            new PrefabPreprocessingEntry(
+                "hermes-executor",
+                // "hermes-executor" is statically linking agaisnt "hermes-executor-common"
+                // and "hermes-inspector". Here we expose only the headers that we know are needed.
+                new Pair("../ReactCommon/hermes/inspector/", "hermes/inspector/")
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -404,7 +411,6 @@ android {
 
                 targets "reactnativejni",
                     "jscexecutor",
-                    "hermes-executor",
                     "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
@@ -427,7 +433,8 @@ android {
                     "yoga",
                     "folly_runtime",
                     "react_nativemodule_core",
-                    "react_render_imagemanager"
+                    "react_render_imagemanager",
+                    "hermes-executor"
             }
         }
         ndk {
@@ -531,6 +538,9 @@ android {
         }
         react_render_imagemanager {
             headers(new File(prefabHeadersDir, "react_render_imagemanager").absolutePath)
+        }
+        "hermes-executor" {
+            headers(new File(prefabHeadersDir, "hermes-executor").absolutePath)
         }
     }
 
