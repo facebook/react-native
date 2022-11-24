@@ -17,6 +17,7 @@ target_compile_options(
         PRIVATE
         -DHERMES_ENABLE_DEBUGGER=1
         -DHERMES_INSPECTOR_FOLLY_KLUDGE=1
+        -std=c++17
         -fexceptions
 )
 
