@@ -197,6 +197,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "react_render_mounting",
                 new Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
             ),
+            new PrefabPreprocessingEntry(
+                "reactnativejni",
+                new Pair("src/main/jni/react/jni", "react/jni/"),
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -425,12 +429,12 @@ android {
                     "-DANDROID_TOOLCHAIN=clang",
                     "-DANDROID_PLATFORM=android-21"
 
-                targets "reactnativejni",
-                    "jscexecutor",
+                targets "jscexecutor",
                     "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
                     // prefab targets
+                    "reactnativejni",
                     "react_render_debug",
                     "turbomodulejsijni",
                     "runtimeexecutor",
@@ -566,6 +570,9 @@ android {
         }
         react_render_mounting {
             headers(new File(prefabHeadersDir, "react_render_mounting").absolutePath)
+        }
+        reactnativejni {
+            headers(new File(prefabHeadersDir, "reactnativejni").absolutePath)
         }
         "hermes-executor" {
             headers(new File(prefabHeadersDir, "hermes-executor").absolutePath)
