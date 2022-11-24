@@ -723,6 +723,10 @@ jobs:
       - report_bundle_size:
           platform: android
 
+      - store_artifacts:
+          path: ~/react-native/packages/rn-tester/android/app/build/outputs/apk/
+          destination: rntester-apk
+
       # Optionally, run disabled tests
       - when:
           condition: << parameters.run_disabled_tests >>
@@ -781,6 +785,10 @@ jobs:
               export ORG_GRADLE_PROJECT_hermesEnabled=false
             fi
             ./gradlew assemble<< parameters.flavor >> -PREACT_NATIVE_MAVEN_LOCAL_REPO=/root/react-native/maven-local
+
+      - store_artifacts:
+          path: /tmp/$PROJECT_NAME/android/app/build/outputs/apk/
+          destination: template-apk
 
   # -------------------------
   #    JOBS: Test iOS Template
