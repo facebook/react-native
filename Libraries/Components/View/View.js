@@ -123,6 +123,11 @@ const View: React.AbstractComponent<
     // add accessibilityLiveRegion to focusable children on iOS
     // move this to separate PR if can not be done clean
     // requires additional Platform check for iOS
+    // should also check if children is focusable and add only
+    // liveRegion to first children
+    // a simple loop that retrieves the first focusable children
+    // for now just search for first Text component which is focusable as that is the
+    // iOS exception not covered
     if (accessibilityLiveRegion != null && accessibilityLabel == null) {
       return (
         <TextAncestor.Provider value={false}>
