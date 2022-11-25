@@ -85,7 +85,6 @@ function generateiOSArtifacts(
   jsiFolder,
   hermesCoreSourceFolder,
   buildType,
-  releaseVersion,
   targetFolder,
 ) {
   pushd(`${hermesCoreSourceFolder}`);
@@ -109,7 +108,6 @@ function generateiOSArtifacts(
   const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
     hermesCoreSourceFolder,
     buildType,
-    releaseVersion,
     targetFolder,
     true, // this is excludeDebugSymbols, we keep it as the default
   );
