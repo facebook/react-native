@@ -64,7 +64,7 @@ interface ReactViewManagerWrapper {
     }
 
     override fun receiveCommand(root: View, commandId: Int, args: ReadableArray?) {
-      viewManager.receiveCommand(root, commandId, args)
+      @Suppress("DEPRECATION") viewManager.receiveCommand(root, commandId, args)
     }
 
     override fun setPadding(view: View, left: Int, top: Int, right: Int, bottom: Int) {
