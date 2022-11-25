@@ -128,6 +128,7 @@
     "metro-runtime": "0.73.3",
     "metro-source-map": "0.73.3",
     "mkdirp": "^0.5.1",
+    "mock-fs": "^5.1.4",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.3.0",
