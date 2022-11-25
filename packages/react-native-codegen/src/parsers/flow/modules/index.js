@@ -226,7 +226,6 @@ function translateTypeAnnotation(
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
-        language,
         parser,
       );
     }
@@ -391,7 +390,6 @@ function buildModuleSchema(
           aliasMap,
           tryParse,
           cxxOnly,
-          language,
           resolveTypeAnnotation,
           translateTypeAnnotation,
           parser,

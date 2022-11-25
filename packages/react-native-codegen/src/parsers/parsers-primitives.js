@@ -31,7 +31,6 @@ import type {
   StringTypeAnnotation,
   VoidTypeAnnotation,
 } from '../CodegenSchema';
-import type {ParserType} from './errors';
 import type {Parser} from './parser';
 import type {
   ParserErrorCapturer,
@@ -105,7 +104,6 @@ function emitFunction(
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   translateTypeAnnotation: $FlowFixMe,
-  language: ParserType,
   parser: Parser,
 ): Nullable<NativeModuleFunctionTypeAnnotation> {
   const translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation =
@@ -117,7 +115,6 @@ function emitFunction(
       tryParse,
       cxxOnly,
       translateTypeAnnotation,
-      language,
       parser,
     );
   return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
@@ -288,7 +285,6 @@ function translateArrayTypeAnnotation(
   arrayType: 'Array' | 'ReadonlyArray',
   elementType: $FlowFixMe,
   nullable: boolean,
-  language: ParserType,
   translateTypeAnnotation: $FlowFixMe,
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
@@ -323,7 +319,7 @@ function translateArrayTypeAnnotation(
       elementType,
       arrayType,
       _elementType.type,
-      language,
+      parser.language(),
     );
 
     return wrapNullable(nullable, {

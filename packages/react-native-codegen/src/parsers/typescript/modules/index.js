@@ -99,7 +99,6 @@ function translateTypeAnnotation(
         'Array',
         typeAnnotation.elementType,
         nullable,
-        language,
         translateTypeAnnotation,
         parser,
       );
@@ -117,7 +116,6 @@ function translateTypeAnnotation(
           'ReadonlyArray',
           typeAnnotation.typeAnnotation.elementType,
           nullable,
-          language,
           translateTypeAnnotation,
           parser,
         );
@@ -241,7 +239,6 @@ function translateTypeAnnotation(
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
-        language,
         parser,
       );
     }
@@ -404,7 +401,6 @@ function buildModuleSchema(
           aliasMap,
           tryParse,
           cxxOnly,
-          language,
           resolveTypeAnnotation,
           translateTypeAnnotation,
           parser,
