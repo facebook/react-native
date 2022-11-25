@@ -17,7 +17,7 @@ import type {
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
 
-const {buildSchema} = require('./utils');
+const {buildSchema} = require('./buildSchema');
 
 const fs = require('fs');
 

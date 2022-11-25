@@ -13,7 +13,7 @@
 import type {SchemaType} from '../../CodegenSchema.js';
 
 const fs = require('fs');
-const {buildSchema} = require('./utils');
+const {buildSchema} = require('./buildSchema');
 const {FlowParser} = require('./parser');
 
 const parser = new FlowParser();
