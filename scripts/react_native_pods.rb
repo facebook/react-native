@@ -205,7 +205,7 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
   package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
   version = package['version']
 
-  if ReactNativePodsUtils.has_pod(installer, 'hermes-engine') && is_building_hermes_from_source(version)
+  if ReactNativePodsUtils.has_pod(installer, 'hermes-engine') && is_building_hermes_from_source(version, react_native_path)
     add_copy_hermes_framework_script_phase(installer, react_native_path)
   else
     remove_copy_hermes_framework_script_phase(installer, react_native_path)
