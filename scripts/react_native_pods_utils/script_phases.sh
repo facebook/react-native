@@ -31,9 +31,9 @@ find_node () {
 }
 
 find_codegen () {
-    CODEGEN_CLI_PATH=$("$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native-codegen/package.json'))")
+    CODEGEN_CLI_PATH=$("$NODE_BINARY" --print "require('path').dirname(require.resolve('@react-native/codegen/package.json'))")
     if ! [ -d "$CODEGEN_CLI_PATH" ]; then
-        error "error: Could not determine react-native-codegen location, using node module resolution. Try running 'yarn install' or 'npm install' in your project root."
+        error "error: Could not determine @react-native/codegen location, using node module resolution. Try running 'yarn install' or 'npm install' in your project root."
     fi
 }
 
