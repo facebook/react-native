@@ -362,8 +362,8 @@ function emitArrayType(
     typeAnnotation.type,
     typeAnnotation.typeParameters.params[0],
     nullable,
-    parser.language(),
     translateTypeAnnotation,
+    parser,
   );
 }
 

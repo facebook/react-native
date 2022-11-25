@@ -20,6 +20,7 @@ import type {
   Nullable,
 } from '../../../CodegenSchema';
 
+import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
@@ -83,6 +84,7 @@ function translateTypeAnnotation(
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
+  parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeAliasResolutionStatus} =
     resolveTypeAnnotation(typeScriptTypeAnnotation, types);
@@ -99,6 +101,7 @@ function translateTypeAnnotation(
         nullable,
         language,
         translateTypeAnnotation,
+        parser,
       );
     }
     case 'TSTypeOperator': {
@@ -116,6 +119,7 @@ function translateTypeAnnotation(
           nullable,
           language,
           translateTypeAnnotation,
+          parser,
         );
       } else {
         throw new UnsupportedGenericParserError(
