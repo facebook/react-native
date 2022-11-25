@@ -62,13 +62,13 @@ function install() {
 
   process.stdout.write('Starting to publish all the packages...\n');
   Object.entries(packages).forEach(([packageName, packageEntity]) => {
+    const packageRelativePath = packageEntity.location;
+    const packageAbsolutePath = `${reactNativeRootPath}/${packageRelativePath}`;
+
     const packageManifest = readPackageJSON(packageAbsolutePath);
     if (packageManifest.private) {
       return;
     }
-
-    const packageRelativePath = packageEntity.location;
-    const packageAbsolutePath = `${reactNativeRootPath}/${packageRelativePath}`;
 
     execSync('npm publish --registry http://localhost:4873 --access public', {
       cwd: `${reactNativeRootPath}/${packageEntity.location}`,
