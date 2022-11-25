@@ -106,6 +106,7 @@ function emitFunction(
   cxxOnly: boolean,
   translateTypeAnnotation: $FlowFixMe,
   language: ParserType,
+  parser: Parser,
 ): Nullable<NativeModuleFunctionTypeAnnotation> {
   const translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation =
     translateFunctionTypeAnnotation(
@@ -117,6 +118,7 @@ function emitFunction(
       cxxOnly,
       translateTypeAnnotation,
       language,
+      parser,
     );
   return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
 }
@@ -225,6 +227,7 @@ function emitPromise(
           aliasMap,
           tryParse,
           cxxOnly,
+          parser,
         ),
       });
     } catch {
@@ -287,6 +290,7 @@ function translateArrayTypeAnnotation(
   nullable: boolean,
   language: ParserType,
   translateTypeAnnotation: $FlowFixMe,
+  parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   try {
     /**
@@ -310,6 +314,7 @@ function translateArrayTypeAnnotation(
          */
         nullGuard,
         cxxOnly,
+        parser,
       ),
     );
 

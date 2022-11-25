@@ -181,6 +181,7 @@ function parseObjectProperty(
         aliasMap,
         tryParse,
         cxxOnly,
+        parser,
       ),
     );
 
@@ -292,6 +293,7 @@ function translateFunctionTypeAnnotation(
   cxxOnly: boolean,
   translateTypeAnnotation: $FlowFixMe,
   language: ParserType,
+  parser: Parser,
 ): NativeModuleFunctionTypeAnnotation {
   type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
   const params: Array<Param> = [];
@@ -317,6 +319,7 @@ function translateFunctionTypeAnnotation(
             aliasMap,
             tryParse,
             cxxOnly,
+            parser,
           ),
         );
 
@@ -356,6 +359,7 @@ function translateFunctionTypeAnnotation(
         aliasMap,
         tryParse,
         cxxOnly,
+        parser,
       ),
     );
 
@@ -393,6 +397,7 @@ function buildPropertySchema(
   language: ParserType,
   resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
+  parser: Parser,
 ): NativeModulePropertyShape {
   let nullable: boolean = false;
   let {key, value} = property;
@@ -429,6 +434,7 @@ function buildPropertySchema(
         cxxOnly,
         translateTypeAnnotation,
         language,
+        parser,
       ),
     ),
   };

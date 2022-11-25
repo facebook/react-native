@@ -19,6 +19,8 @@ import type {
   NativeModuleSchema,
   Nullable,
 } from '../../../CodegenSchema';
+
+import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
@@ -82,6 +84,7 @@ function translateTypeAnnotation(
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
+  parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeAliasResolutionStatus} =
     resolveTypeAnnotation(flowTypeAnnotation, types);
@@ -133,6 +136,7 @@ function translateTypeAnnotation(
               aliasMap,
               tryParse,
               cxxOnly,
+              parser,
             ),
           );
 
@@ -223,6 +227,7 @@ function translateTypeAnnotation(
         cxxOnly,
         translateTypeAnnotation,
         language,
+        parser,
       );
     }
     case 'UnionTypeAnnotation': {
@@ -389,6 +394,7 @@ function buildModuleSchema(
           language,
           resolveTypeAnnotation,
           translateTypeAnnotation,
+          parser,
         ),
       }));
     })

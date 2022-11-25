@@ -238,6 +238,7 @@ function translateTypeAnnotation(
         cxxOnly,
         translateTypeAnnotation,
         language,
+        parser,
       );
     }
     case 'TSUnionType': {
@@ -402,6 +403,7 @@ function buildModuleSchema(
           language,
           resolveTypeAnnotation,
           translateTypeAnnotation,
+          parser,
         ),
       }));
     })
