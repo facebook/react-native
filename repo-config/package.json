@@ -54,8 +54,5 @@
     "typescript": "4.1.3",
     "ws": "^6.2.2",
     "yargs": "^17.5.1"
-  },
-  "devDependencies": {
-    "mock-fs": "^5.1.4"
   }
 }

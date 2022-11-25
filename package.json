@@ -145,6 +145,7 @@
   "devDependencies": {
     "flow-bin": "^0.193.0",
     "hermes-eslint": "0.8.0",
+    "mock-fs": "^5.1.4",
     "react": "18.2.0",
     "react-test-renderer": "^18.2.0"
   },
