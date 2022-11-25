@@ -305,40 +305,6 @@ using namespace facebook::react;
   if (oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
     self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
   }
-  
-  BOOL accessibilityLiveRegionEnabled = newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
-  if (accessibilityLiveRegionEnabled) {
-    if (@available(iOS 11.0, *)) {
-      NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
-      if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
-        if (newViewProps.accessibilityState.selected && accessibilityLiveRegionEnabled) {
-          [accessibilityLiveRegionAnnouncement insertString:@"selected " atIndex:0];
-          
-        }
-        if (newViewProps.accessibilityState.disabled && accessibilityLiveRegionEnabled) {
-          [accessibilityLiveRegionAnnouncement insertString:@"disabled " atIndex:0];
-        }
-      }
-      
-      if (!newViewProps.accessibilityLabel.empty()  && oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel && accessibilityLiveRegionEnabled) {
-        [accessibilityLiveRegionAnnouncement appendString:RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel)];
-        [accessibilityLiveRegionAnnouncement appendString:@" "];
-      }
-      
-      if (!newViewProps.accessibilityHint.empty() && oldViewProps.accessibilityHint != newViewProps.accessibilityHint && accessibilityLiveRegionEnabled) {
-        [accessibilityLiveRegionAnnouncement appendString:RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint)];
-        [accessibilityLiveRegionAnnouncement appendString:@" "];
-      }
-      
-      if ([accessibilityLiveRegionAnnouncement length] != 0) {
-        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
-        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: accessibilityLiveRegionAnnouncement
-                                                                                    attributes:attrsDictionary];
-        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
-      }
-    }
-  }
 
   // `accessibilityViewIsModal`
   if (oldViewProps.accessibilityViewIsModal != newViewProps.accessibilityViewIsModal) {
@@ -395,31 +361,43 @@ using namespace facebook::react;
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
   }
   
-  /*
-  if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel && newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None) {
-    if ([self.nativeId isEqualToString:@"1"]) {
-      if (@available(iOS 11.0, *)) {
+  BOOL accessibilityLiveRegionEnabled = newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
+  if (accessibilityLiveRegionEnabled) {
+    if (@available(iOS 11.0, *)) {
+      NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
+      if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
+        if (newViewProps.accessibilityState.selected) {
+          [accessibilityLiveRegionAnnouncement insertString:@"selected " atIndex:0];
+          
+        }
+        if (newViewProps.accessibilityState.disabled) {
+          [accessibilityLiveRegionAnnouncement insertString:@"disabled " atIndex:0];
+        }
+        
+        if (self.accessibilityValue) {
+          [accessibilityLiveRegionAnnouncement insertString:self.accessibilityValue atIndex:0];
+        }
+      }
+      
+      if (!newViewProps.accessibilityLabel.empty() && oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
+        [accessibilityLiveRegionAnnouncement appendString:self.accessibilityLabel];
+        [accessibilityLiveRegionAnnouncement appendString:@" "];
+      }
+      
+      if (!newViewProps.accessibilityHint.empty() && oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
+        [accessibilityLiveRegionAnnouncement appendString:self.accessibilityHint];
+        [accessibilityLiveRegionAnnouncement appendString:@" "];
+      }
+      
+      if ([accessibilityLiveRegionAnnouncement length] != 0) {
         NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
         attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
-        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityElement.accessibilityLabel
+        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: accessibilityLiveRegionAnnouncement
                                                                                     attributes:attrsDictionary];
         UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
       }
     }
   }
-
-  if (!newViewProps.accessibilityHint.empty() && oldViewProps.accessibilityHint != newViewProps.accessibilityHint && newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None) {
-    if ([self.nativeId isEqualToString:@"1"]) {
-      if (@available(iOS 11.0, *)) {
-        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(YES);
-        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint)
-                                                                                    attributes:attrsDictionary];
-        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
-      }
-    }
-  }
-  */
   
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 
