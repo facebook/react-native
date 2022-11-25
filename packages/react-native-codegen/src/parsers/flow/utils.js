@@ -10,7 +10,69 @@
 
 'use strict';
 
+import type {SchemaType} from '../../CodegenSchema';
+import type {Parser} from '../parser';
 import type {TypeAliasResolutionStatus, TypeDeclarationMap} from '../utils';
+const {buildComponentSchema} = require('./components');
+const {wrapComponentSchema} = require('./components/schema');
+const {buildModuleSchema} = require('./modules');
+
+// $FlowFixMe[untyped-import] there's no flowtype flow-parser
+const flowParser = require('flow-parser');
+const {
+  getConfigType,
+  buildSchemaFromConfigType,
+  isModuleRegistryCall,
+} = require('../utils');
+
+function Visitor(infoMap: {isComponent: boolean, isModule: boolean}) {
+  return {
+    CallExpression(node: $FlowFixMe) {
+      if (
+        node.callee.type === 'Identifier' &&
+        node.callee.name === 'codegenNativeComponent'
+      ) {
+        infoMap.isComponent = true;
+      }
+
+      if (isModuleRegistryCall(node)) {
+        infoMap.isModule = true;
+      }
+    },
+    InterfaceExtends(node: $FlowFixMe) {
+      if (node.id.name === 'TurboModule') {
+        infoMap.isModule = true;
+      }
+    },
+  };
+}
+
+function buildSchema(
+  contents: string,
+  filename: ?string,
+  parser: Parser,
+): SchemaType {
+  // Early return for non-Spec JavaScript files
+  if (
+    !contents.includes('codegenNativeComponent') &&
+    !contents.includes('TurboModule')
+  ) {
+    return {modules: {}};
+  }
+
+  const ast = flowParser.parse(contents, {enums: true});
+  const configType = getConfigType(ast, Visitor);
+
+  return buildSchemaFromConfigType(
+    configType,
+    filename,
+    ast,
+    wrapComponentSchema,
+    buildComponentSchema,
+    buildModuleSchema,
+    parser,
+  );
+}
 
 /**
  * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
@@ -117,6 +179,7 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
 }
 
 module.exports = {
+  buildSchema,
   getValueFromTypes,
   resolveTypeAnnotation,
   getTypes,
