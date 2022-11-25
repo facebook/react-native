@@ -295,30 +295,6 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
   }
   
-  if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel && newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None) {
-    if ([self.nativeId isEqualToString:@"1"]) {
-      if (@available(iOS 11.0, *)) {
-        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
-        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityElement.accessibilityLabel
-                                                                                    attributes:attrsDictionary];
-        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
-      }
-    }
-  }
-  
-  if (!newViewProps.accessibilityHint.empty() && oldViewProps.accessibilityHint != newViewProps.accessibilityHint && newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None) {
-    if ([self.nativeId isEqualToString:@"1"]) {
-      if (@available(iOS 11.0, *)) {
-        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(YES);
-        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint)
-                                                                                    attributes:attrsDictionary];
-        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
-      }
-    }
-  }
-  
   // `accessibilityLanguage`
   if (oldViewProps.accessibilityLanguage != newViewProps.accessibilityLanguage) {
     self.accessibilityElement.accessibilityLanguage =
@@ -328,6 +304,40 @@ using namespace facebook::react;
   // `accessibilityHint`
   if (oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
     self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
+  }
+  
+  BOOL accessibilityLiveRegionEnabled = newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
+  if (accessibilityLiveRegionEnabled) {
+    if (@available(iOS 11.0, *)) {
+      NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
+      if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
+        if (newViewProps.accessibilityState.selected && accessibilityLiveRegionEnabled) {
+          [accessibilityLiveRegionAnnouncement insertString:@"selected " atIndex:0];
+          
+        }
+        if (newViewProps.accessibilityState.disabled && accessibilityLiveRegionEnabled) {
+          [accessibilityLiveRegionAnnouncement insertString:@"disabled " atIndex:0];
+        }
+      }
+      
+      if (!newViewProps.accessibilityLabel.empty()  && oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel && accessibilityLiveRegionEnabled) {
+        [accessibilityLiveRegionAnnouncement appendString:RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel)];
+        [accessibilityLiveRegionAnnouncement appendString:@" "];
+      }
+      
+      if (!newViewProps.accessibilityHint.empty() && oldViewProps.accessibilityHint != newViewProps.accessibilityHint && accessibilityLiveRegionEnabled) {
+        [accessibilityLiveRegionAnnouncement appendString:RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint)];
+        [accessibilityLiveRegionAnnouncement appendString:@" "];
+      }
+      
+      if ([accessibilityLiveRegionAnnouncement length] != 0) {
+        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
+        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: accessibilityLiveRegionAnnouncement
+                                                                                    attributes:attrsDictionary];
+        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+      }
+    }
   }
 
   // `accessibilityViewIsModal`
@@ -384,7 +394,33 @@ using namespace facebook::react;
   if (oldViewProps.testId != newViewProps.testId) {
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
   }
+  
+  /*
+  if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel && newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None) {
+    if ([self.nativeId isEqualToString:@"1"]) {
+      if (@available(iOS 11.0, *)) {
+        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
+        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityElement.accessibilityLabel
+                                                                                    attributes:attrsDictionary];
+        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+      }
+    }
+  }
 
+  if (!newViewProps.accessibilityHint.empty() && oldViewProps.accessibilityHint != newViewProps.accessibilityHint && newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None) {
+    if ([self.nativeId isEqualToString:@"1"]) {
+      if (@available(iOS 11.0, *)) {
+        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(YES);
+        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint)
+                                                                                    attributes:attrsDictionary];
+        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+      }
+    }
+  }
+  */
+  
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 
   _props = std::static_pointer_cast<ViewProps const>(props);

@@ -101,20 +101,18 @@ using namespace facebook::react;
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
-  // STEP 1 - log the value
-  // NSLog(@"TESTING _state", _state.fragments_[0].string);
-  auto &data = _state->getData();
-  NSString *string = RCTNSStringFromStringNilIfEmpty(data.attributedString.getString());
-  auto const &viewProps = *std::static_pointer_cast<ViewProps const>(_props);
+  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
   auto const &accessibilityProps = *std::static_pointer_cast<AccessibilityProps const>(_props);
-  if (accessibilityProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite) {
-    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, string);
+  if (accessibilityProps.accessibilityLiveRegion == AccessibilityLiveRegion::None) {
+    // NSLog(@"TESTING None");
   }
-  // STEP 3 - check that the value changed
-  // if ([string isEqualToString:@"my text"]) {
-  //   NSLog(@"TESTING it is my text");
-  // }
-  // STEP 4 - call the announcement
+  if (_state && paragraphProps.accessible && accessibilityProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite) {
+    auto &data = _state->getData();
+    if (![_accessibilityProvider isUpToDate:data.attributedString]) {
+      NSString *string = RCTNSStringFromStringNilIfEmpty(data.attributedString.getString());
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, string);
+    }
+  }
   [self setNeedsDisplay];
 }
 
