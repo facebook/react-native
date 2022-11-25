@@ -128,7 +128,6 @@
     "metro-runtime": "0.73.3",
     "metro-source-map": "0.73.3",
     "mkdirp": "^0.5.1",
-    "mock-fs": "^5.1.4",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.3.0",
@@ -146,6 +145,7 @@
   "devDependencies": {
     "flow-bin": "^0.193.0",
     "hermes-eslint": "0.8.0",
+    "mock-fs": "^5.1.4",
     "react": "18.2.0",
     "react-test-renderer": "^18.2.0"
   },
