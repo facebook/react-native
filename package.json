@@ -115,7 +115,7 @@
     "@react-native/assets": "1.0.0",
     "@react-native/gradle-plugin": "^0.72.1",
     "@react-native/normalize-color": "2.1.0",
-    "@react-native/polyfills": "2.0.0",
+    "@react-native/js-polyfills": "^0.72.0",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
