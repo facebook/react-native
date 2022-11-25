@@ -171,14 +171,19 @@ describe('version-utils', () => {
       expect(prerelease).toBeUndefined();
     });
 
-    it('should reject nightly with no prerelease', () => {
+    it('should parse nightly with no prerelease', () => {
       // this should fail
-      function testInvalidFunction() {
-        parseVersion('0.0.0', 'nightly');
-      }
-      expect(testInvalidFunction).toThrowErrorMatchingInlineSnapshot(
-        `"Version 0.0.0 is not valid for nightlies"`,
+
+      const {version, major, minor, patch, prerelease} = parseVersion(
+        '0.0.0',
+        'nightly',
       );
+
+      expect(version).toBe('0.0.0');
+      expect(major).toBe('0');
+      expect(minor).toBe('0');
+      expect(patch).toBe('0');
+      expect(prerelease).toBeUndefined();
     });
 
     it('should reject nightly with prerelease but wrong version numbers', () => {
@@ -308,13 +313,17 @@ describe('version-utils', () => {
       );
     });
 
-    it('should reject dryrun for nightlies with invalid prerelease', () => {
-      function testInvalidFunction() {
-        parseVersion('0.0.0', 'dry-run');
-      }
-      expect(testInvalidFunction).toThrowErrorMatchingInlineSnapshot(
-        `"Version 0.0.0 is not valid for dry-runs"`,
+    it('should parse dryrun for nightlies with no prerelease', () => {
+      const {version, major, minor, patch, prerelease} = parseVersion(
+        '0.0.0',
+        'dry-run',
       );
+
+      expect(version).toBe('0.0.0');
+      expect(major).toBe('0');
+      expect(minor).toBe('0');
+      expect(patch).toBe('0');
+      expect(prerelease).toBeUndefined();
     });
   });
 

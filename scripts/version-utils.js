@@ -18,7 +18,7 @@ const VERSION_REGEX = /^v?((\d+)\.(\d+)\.(\d+)(?:-(.+))?)$/;
  * Some examples of valid versions are:
  * - stable: 0.68.1
  * - stable prerelease: 0.70.0-rc.0
- * - nightly: 0.0.0-20221116-2018-0bc4547fc
+ * - nightly: 0.0.0-20221116-2018-0bc4547fc | 0.0.0
  * - dryrun: 1000.0.0
  *
  * Parameters:
@@ -95,11 +95,9 @@ function validateRelease(version) {
 }
 
 function validateDryRun(version) {
-  const isNightly = isNightlyBuild(version) && version.prerelease != null;
-
   if (
     !isMain(version) &&
-    !isNightly &&
+    !isNightlyBuild(version) &&
     !isStableRelease(version) &&
     !isStablePrerelease(version)
   ) {
@@ -109,9 +107,7 @@ function validateDryRun(version) {
 
 function validateNightly(version) {
   // a valid nightly is a prerelease
-  const isPrerelease = version.prerelease != null;
-  const isValidNightly = isNightlyBuild(version) && isPrerelease;
-  if (!isValidNightly) {
+  if (!isNightlyBuild(version)) {
     throw new Error(`Version ${version.version} is not valid for nightlies`);
   }
 }
