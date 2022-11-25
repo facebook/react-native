@@ -69,10 +69,7 @@ const {
   throwIfMoreThanOneModuleInterfaceParserError,
 } = require('../../error-utils');
 
-const {FlowParser} = require('../parser');
-
 const language = 'Flow';
-const parser = new FlowParser();
 
 function translateTypeAnnotation(
   hasteModuleName: string,
@@ -271,6 +268,7 @@ function buildModuleSchema(
    */
   ast: $FlowFixMe,
   tryParse: ParserErrorCapturer,
+  parser: Parser,
 ): NativeModuleSchema {
   const types = getTypes(ast);
   const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(

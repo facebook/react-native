@@ -12,6 +12,8 @@
 
 import type {ComponentSchemaBuilderConfig} from './flow/components/schema';
 import type {NativeModuleSchema, SchemaType} from '../CodegenSchema';
+import type {Parser} from './parser';
+
 const {ParserError} = require('./errors');
 const {wrapModuleSchema} = require('./parsers-commons');
 
@@ -133,7 +135,9 @@ function buildSchemaFromConfigType(
     hasteModuleName: string,
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
+    parser: Parser,
   ) => NativeModuleSchema,
+  parser: Parser,
 ): SchemaType {
   switch (configType) {
     case 'component': {
@@ -148,7 +152,7 @@ function buildSchemaFromConfigType(
       const [parsingErrors, tryParse] = createParserErrorCapturer();
 
       const schema = tryParse(() =>
-        buildModuleSchema(nativeModuleName, ast, tryParse),
+        buildModuleSchema(nativeModuleName, ast, tryParse, parser),
       );
 
       if (parsingErrors.length > 0) {

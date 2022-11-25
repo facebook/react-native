@@ -23,6 +23,9 @@ const {
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
+const {FlowParser} = require('./parser');
+
+const parser = new FlowParser();
 
 function Visitor(infoMap: {isComponent: boolean, isModule: boolean}) {
   return {
@@ -65,6 +68,7 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
     wrapComponentSchema,
     buildComponentSchema,
     buildModuleSchema,
+    parser,
   );
 }
 

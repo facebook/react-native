@@ -69,10 +69,7 @@ const {
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
 } = require('../../error-utils');
 
-const {TypeScriptParser} = require('../parser');
-
 const language = 'TypeScript';
-const parser = new TypeScriptParser();
 
 function translateTypeAnnotation(
   hasteModuleName: string,
@@ -277,6 +274,7 @@ function buildModuleSchema(
    */
   ast: $FlowFixMe,
   tryParse: ParserErrorCapturer,
+  parser: Parser,
 ): NativeModuleSchema {
   const types = getTypes(ast);
   const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(
