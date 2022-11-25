@@ -5,18 +5,161 @@ on:
     types: labeled
 
 permissions:
-  contents: read
+  contents: write
+  issues: write
 
 jobs:
-  respondToIssueBasedOnLabel:
-    permissions:
-      contents: read  # for hramos/respond-to-issue-based-on-label to fetch config file
-      issues: write  # for hramos/respond-to-issue-based-on-label to update issues
-    name: Respond to Issue Based on Label
+  type-invalid:
     runs-on: ubuntu-latest
+    if: "${{ contains(github.event.label.name, 'Type: Invalid') }}"
     steps:
-      - uses: actions/checkout@v3
-      - name: Respond to Issue Based on Label
-        uses: hramos/respond-to-issue-based-on-label@v2
+      - uses: actions/github-script@v6
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "closed",
+            })
+  type-question:
+    runs-on: ubuntu-latest
+    if: "${{ contains(github.event.label.name, 'Type: Question') }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `We are using GitHub issues exclusively to track bugs in React Native. GitHub may not be the ideal place to ask a question, but you can try asking over on [Stack Overflow](http://stackoverflow.com/questions/tagged/react-native), or on [Reactiflux](https://www.reactiflux.com/).`,
+            })
+            await github.rest.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "closed",
+            })
+  type-docs:
+    runs-on: ubuntu-latest
+    if: "${{ contains(github.event.label.name, 'Type: Docs') }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Please report documentation issues in the [react-native-website](https://github.com/facebook/react-native-website/issues) repository.`,
+            })
+            await github.rest.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "closed",
+            })
+  resolution-for-stack-overflow:
+    runs-on: ubuntu-latest
+    if: "${{ contains(github.event.label.name, 'Resolution: For Stack Overflow') }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `We are using GitHub issues exclusively to track bugs in the core React Native library. Please try asking over on [Stack Overflow](http://stackoverflow.com/questions/tagged/react-native) as it is better suited for this type of question.`,
+            })
+            await github.rest.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "closed",
+            })
+  needs-issue-template:
+    runs-on: ubuntu-latest
+    if: "${{ contains(github.event.label.name, 'Needs: Issue Template') }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `| :warning: | Missing Required Fields |
+              | --- | --- |
+              | :information_source: | It looks like your issue may be missing some necessary information. GitHub provides an example template whenever a [new issue is created](https://github.com/facebook/react-native/issues/new?template=bug_report.md). Could you go back and make sure to fill out the template? You may edit this issue, or close it and open a new one. |`,
+            })
+            await github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['Needs: Author Feedback']
+            })
+  needs-environment-info:
+    runs-on: ubuntu-latest
+    if: "${{ contains(github.event.label.name, 'Needs: Environment Info') }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `| :warning: | Missing Environment Information |
+              | --- | --- |
+              | :information_source: | Your issue may be missing information about your development environment. You can obtain the missing information by running <code>react-native info</code> in a console. |`,
+            })
+            await github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['Needs: Author Feedback']
+            })
+  needs-verify-on-latest-version:
+    runs-on: ubuntu-latest
+    if: "${{ contains(github.event.label.name, 'Needs: Verify on Latest Version') }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `| :warning: | Using Old Version |
+              | --- | --- |
+              | :information_source: | It looks like you are using an older version of React Native. Please [upgrade](https://reactnative.dev/docs/upgrading) to the latest version, and verify if the issue persists. If it does not, please let us know so we can close out this issue. This helps us ensure we are looking at issues that still exist in the current release. |`,
+            })
+            await github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['Needs: Author Feedback']
+            })
+  needs-repro:
+    runs-on: ubuntu-latest
+    if: "${{ contains(github.event.label.name, 'Needs: Repro') }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `| :warning: | Missing Reproducible Example |
+              | --- | --- |
+              | :information_source: | It looks like your issue is missing a reproducible example. Please provide a [Snack](https://snack.expo.dev) or a repository that demonstrates the issue you are reporting in a [minimal, complete, and reproducible](https://stackoverflow.com/help/minimal-reproducible-example) manner. |`,
+            })
+            await github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['Needs: Author Feedback']
+            })
