@@ -11,6 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../../CodegenSchema.js';
+import type {Parser} from '../parser';
 
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
@@ -49,7 +50,11 @@ function Visitor(infoMap: {isComponent: boolean, isModule: boolean}) {
   };
 }
 
-function buildSchema(contents: string, filename: ?string): SchemaType {
+function buildSchema(
+  contents: string,
+  filename: ?string,
+  parser: Parser,
+): SchemaType {
   // Early return for non-Spec JavaScript files
   if (
     !contents.includes('codegenNativeComponent') &&
@@ -75,11 +80,11 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
 function parseModuleFixture(filename: string): SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
-  return buildSchema(contents, 'path/NativeSampleTurboModule.js');
+  return buildSchema(contents, 'path/NativeSampleTurboModule.js', parser);
 }
 
 function parseString(contents: string, filename: ?string): SchemaType {
-  return buildSchema(contents, filename);
+  return buildSchema(contents, filename, parser);
 }
 
 module.exports = {

@@ -87,7 +87,7 @@ class FlowParser implements Parser {
   parseFile(filename: string): SchemaType {
     const contents = fs.readFileSync(filename, 'utf8');
 
-    return buildSchema(contents, filename);
+    return buildSchema(contents, filename, this);
   }
 }
 
