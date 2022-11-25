@@ -11,9 +11,9 @@ require_relative './utils.rb'
 # @parameter fabric_enabled: whether Fabirc is enabled
 def setup_jsc!(react_native_path: "../node_modules/react-native", fabric_enabled: false)
     pod 'React-jsi', :path => "#{react_native_path}/ReactCommon/jsi"
-    pod 'React-jsc', :path => "#{react_native_path}/ReactCommon/jsi"
+    pod 'React-jsc', :path => "#{react_native_path}/ReactCommon/jsc"
     if fabric_enabled
-        pod 'React-jsc/Fabric', :path => "#{react_native_path}/ReactCommon/jsi"
+        pod 'React-jsc/Fabric', :path => "#{react_native_path}/ReactCommon/jsc"
     end
 end
 
