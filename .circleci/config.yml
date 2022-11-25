@@ -39,8 +39,8 @@ references:
   # -------------------------
   dependency_versions:
     xcode_version: &xcode_version "14.0.1"
-    nodelts_image: &nodelts_image "cimg/node:16.14"
-    nodeprevlts_image: &nodeprevlts_image "cimg/node:14.19"
+    nodelts_image: &nodelts_image "cimg/node:18.12.1"
+    nodeprevlts_image: &nodeprevlts_image "cimg/node:16.18.1"
 
   # -------------------------
   #        Cache Key Anchors
@@ -568,7 +568,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@18/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - run:
