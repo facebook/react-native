@@ -29,13 +29,13 @@ function requireModuleParser() {
     // If using this externally, we leverage @react-native/codegen as published form
     if (!PACKAGE_USAGE) {
       const config = {
-        only: [/@react-native\/codegen\/src\//],
+        only: [/react-native-codegen\/src\//],
         plugins: [require('@babel/plugin-transform-flow-strip-types').default],
       };
 
       withBabelRegister(config, () => {
         RNModuleParser = require('@react-native/codegen/src/parsers/flow/modules');
-        RNParserUtils = require('@react-native/codegen/src/parsers/flow/utils');
+        RNParserUtils = require('@react-native/codegen/src/parsers/utils');
       });
     } else {
       const config = {
