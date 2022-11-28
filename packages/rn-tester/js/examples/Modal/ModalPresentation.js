@@ -70,14 +70,12 @@ function ModalPresentation() {
     React.useState('fullScreen');
   const [supportedOrientationKey, setSupportedOrientationKey] =
     React.useState('Portrait');
-  const [modalOpened, setModalOpened] = React.useState(null);
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
   let ref = React.useRef<?React.ElementRef<typeof Text>>(null);
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;
   const onDismiss = () => {
     setVisible(false);
-    setModalOpened(false);
     if (action === 'onDismiss') {
       alert('onDismiss');
     }
