@@ -26,7 +26,13 @@ isInMain = version.include?('1000.0.0')
 isNightly = version.start_with?('0.0.0-')
 
 if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
-  Pod::UI.puts '[Hermes] Using pre-built Hermes binaries from local path.' if Object.const_defined?("Pod::UI")
+  if !File.exist?(ENV['HERMES_ENGINE_TARBALL_PATH'])
+    abort "[Hermes] HERMES_ENGINE_TARBALL_PATH is set, but points to a non-existing file: \"#{ENV['HERMES_ENGINE_TARBALL_PATH']}\"\nIf you don't want to use tarball, run `unset HERMES_ENGINE_TARBALL_PATH`"
+  end
+end
+
+if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
+  Pod::UI.puts "[Hermes] Using pre-built Hermes binaries from local path: #{ENV['HERMES_ENGINE_TARBALL_PATH']}".yellow if Object.const_defined?("Pod::UI")
   source[:http] = "file://#{ENV['HERMES_ENGINE_TARBALL_PATH']}"
 elsif isInMain
   Pod::UI.puts '[Hermes] Installing hermes-engine may take slightly longer, building Hermes compiler from source...'.yellow if Object.const_defined?("Pod::UI")
@@ -80,8 +86,6 @@ Pod::Spec.new do |spec|
 
   elsif source[:git] then
 
-    ENV['HERMES_BUILD_FROM_SOURCE'] = "1"
-
     spec.subspec 'Hermes' do |ss|
       ss.source_files = ''
       ss.public_header_files = 'API/hermes/*.h'
@@ -100,15 +104,10 @@ Pod::Spec.new do |spec|
       ss.header_dir = 'hermes/Public'
     end
 
-    hermesc_path = ""
+    hermesc_path = "${PODS_ROOT}/hermes-engine/build_host_hermesc"
 
     if ENV.has_key?('HERMES_OVERRIDE_HERMESC_PATH') && File.exist?(ENV['HERMES_OVERRIDE_HERMESC_PATH']) then
       hermesc_path = ENV['HERMES_OVERRIDE_HERMESC_PATH']
-    else
-      # Keep hermesc_path synchronized with .gitignore entry.
-      ENV['REACT_NATIVE_PATH'] = react_native_path
-      hermesc_path = "${REACT_NATIVE_PATH}/sdks/hermes-engine/build_host_hermesc"
-      spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}"
     end
 
     spec.user_target_xcconfig = {
@@ -120,18 +119,24 @@ Pod::Spec.new do |spec|
       'HERMES_CLI_PATH' => "#{hermesc_path}/bin/hermesc"
     }
 
+    CMAKE_BINARY = %x(command -v cmake | tr -d '\n')
+    # NOTE: Script phases are sorted alphabetically inside Xcode project
     spec.script_phases = [
       {
-        :name => 'Build Hermes',
+        :name => '[RN] [1] Build Hermesc',
         :script => <<-EOS
         . ${PODS_ROOT}/../.xcode.env
-        export CMAKE_BINARY=${CMAKE_BINARY:-#{%x(command -v cmake | tr -d '\n')}}
-        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
+        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
+        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}
         EOS
       },
       {
-        :name => 'Copy Hermes Framework',
-        :script => ". ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/copy-hermes-xcode.sh"
+        :name => '[RN] [2] Build Hermes',
+        :script => <<-EOS
+        . ${PODS_ROOT}/../.xcode.env
+        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
+        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
+        EOS
       }
     ]
   end

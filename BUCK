@@ -406,12 +406,6 @@ rn_apple_xplat_cxx_library(
         "-Wno-global-constructors",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    exported_linker_flags = [
-        "-weak_framework",
-        "UserNotifications",
-        "-weak_framework",
-        "WebKit",
-    ],
     exported_preprocessor_flags = rn_extra_build_flags(),
     fbobjc_enable_exceptions = True,
     frameworks = [
@@ -426,6 +420,7 @@ rn_apple_xplat_cxx_library(
         "$SDKROOT/System/Library/Frameworks/SystemConfiguration.framework",
         "$SDKROOT/System/Library/Frameworks/UIKit.framework",
         "$SDKROOT/System/Library/Frameworks/UserNotifications.framework",
+        "$SDKROOT/System/Library/Frameworks/WebKit.framework",
     ],
     labels = [
         "depslint_never_add",

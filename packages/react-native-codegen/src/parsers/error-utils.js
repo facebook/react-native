@@ -27,6 +27,7 @@ const {
   UnsupportedModulePropertyParserError,
   MoreThanOneModuleInterfaceParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
+  UnsupportedArrayElementTypeAnnotationParserError,
 } = require('./errors.js');
 
 function throwIfModuleInterfaceIsMisnamed(
@@ -250,6 +251,33 @@ function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
   );
 }
 
+function throwIfArrayElementTypeAnnotationIsUnsupported(
+  hasteModuleName: string,
+  flowElementType: $FlowFixMe,
+  flowArrayType: 'Array' | '$ReadOnlyArray' | 'ReadonlyArray',
+  type: string,
+  language: ParserType,
+) {
+  const TypeMap = {
+    FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+    VoidTypeAnnotation: 'void',
+    PromiseTypeAnnotation: 'Promise',
+    // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
+    // Right now they are partially treated as UnionTypeAnnotation
+    UnionTypeAnnotation: 'UnionTypeAnnotation',
+  };
+
+  if (type in TypeMap) {
+    throw new UnsupportedArrayElementTypeAnnotationParserError(
+      hasteModuleName,
+      flowElementType,
+      flowArrayType,
+      TypeMap[type],
+      language,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -263,4 +291,5 @@ module.exports = {
   throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+  throwIfArrayElementTypeAnnotationIsUnsupported,
 };

@@ -47,8 +47,10 @@ class ReactPlugin : Plugin<Project> {
       configureBuildConfigFields(project)
       configureDevPorts(project)
 
-      project.extensions.getByType(AndroidComponentsExtension::class.java).onVariants { variant ->
-        project.configureReactTasks(variant = variant, config = extension)
+      project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
+        onVariants(selector().all()) { variant ->
+          project.configureReactTasks(variant = variant, config = extension)
+        }
       }
       configureCodegen(project, extension, isLibrary = false)
     }
@@ -96,7 +98,8 @@ class ReactPlugin : Plugin<Project> {
           // Please note that appNeedsCodegen is triggering a read of the package.json at
           // configuration time as we need to feed the onlyIf condition of this task.
           // Therefore, the appNeedsCodegen needs to be invoked inside this lambda.
-          it.onlyIf { isLibrary || project.needsCodegenFromPackageJson(extension) }
+          val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(extension)
+          it.onlyIf { isLibrary || needsCodegenFromPackageJson }
         }
 
     // We create the task to produce schema from JS files.
@@ -120,7 +123,8 @@ class ReactPlugin : Plugin<Project> {
               } else {
                 it.jsRootDir.set(extension.jsRootDir)
               }
-              it.onlyIf { isLibrary || project.needsCodegenFromPackageJson(parsedPackageJson) }
+              val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(extension)
+              it.onlyIf { isLibrary || needsCodegenFromPackageJson }
             }
 
     // We create the task to generate Java code from schema.
@@ -139,7 +143,8 @@ class ReactPlugin : Plugin<Project> {
               // Please note that appNeedsCodegen is triggering a read of the package.json at
               // configuration time as we need to feed the onlyIf condition of this task.
               // Therefore, the appNeedsCodegen needs to be invoked inside this lambda.
-              it.onlyIf { isLibrary || project.needsCodegenFromPackageJson(extension) }
+              val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(extension)
+              it.onlyIf { isLibrary || needsCodegenFromPackageJson }
             }
 
     // We update the android configuration to include the generated sources.

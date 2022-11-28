@@ -28,6 +28,7 @@ import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.jscexecutor.JSCExecutor;
@@ -67,6 +68,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
+  private @Nullable DevLoadingViewManager mDevLoadingViewManager;
   private JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm = null;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
@@ -216,6 +218,13 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  /** Sets the Dev Loading View Manager. */
+  public ReactInstanceManagerBuilder setDevLoadingViewManager(
+      @Nullable DevLoadingViewManager devLoadingViewManager) {
+    mDevLoadingViewManager = devLoadingViewManager;
+    return this;
+  }
+
   /**
    * Sets the initial lifecycle state of the host. For example, if the host is already resumed at
    * creation time, we wouldn't expect an onResume call until we get an onPause call.
@@ -337,7 +346,8 @@ public class ReactInstanceManagerBuilder {
         mJSIModulesPackage,
         mCustomPackagerCommandHandlers,
         mTMMDelegateBuilder,
-        mSurfaceDelegateFactory);
+        mSurfaceDelegateFactory,
+        mDevLoadingViewManager);
   }
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(

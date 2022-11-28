@@ -13,8 +13,6 @@ GENERATED_SCHEMA_FILE="$GENERATED_SRCS_DIR/schema.json"
 
 cd "$RCT_SCRIPT_RN_DIR"
 
-CODEGEN_REPO_PATH="$RCT_SCRIPT_RN_DIR/packages/react-native-codegen"
-CODEGEN_NPM_PATH="$RCT_SCRIPT_RN_DIR/../react-native-codegen"
 CODEGEN_CLI_PATH=""
 
 error () {
@@ -23,21 +21,19 @@ error () {
     exit 1
 }
 
-# Determine path to react-native-codegen
-if [ -d "$CODEGEN_REPO_PATH" ]; then
-    CODEGEN_CLI_PATH=$(cd "$CODEGEN_REPO_PATH" && pwd)
-elif [ -d "$CODEGEN_NPM_PATH" ]; then
-    CODEGEN_CLI_PATH=$(cd "$CODEGEN_NPM_PATH" && pwd)
-else
-    error "error: Could not determine react-native-codegen location in $CODEGEN_REPO_PATH or $CODEGEN_NPM_PATH. Try running 'yarn install' or 'npm install' in your project root."
-fi
-
 find_node () {
     NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
     if [ -z "$NODE_BINARY" ]; then
         error "[Error] Could not find node. It looks like that the .xcode.env or .xcode.env.local " \
 "files are misconfigured. Please check that they are exporting a valid NODE_BINARY " \
 "variable, pointing to a node executable."
+    fi
+}
+
+find_codegen () {
+    CODEGEN_CLI_PATH=$("$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native-codegen/package.json'))")
+    if ! [ -d "$CODEGEN_CLI_PATH" ]; then
+        error "error: Could not determine react-native-codegen location, using node module resolution. Try running 'yarn install' or 'npm install' in your project root."
     fi
 }
 
@@ -108,7 +104,7 @@ moveOutputs () {
     mkdir -p "$RCT_SCRIPT_OUTPUT_DIR"
 
     # Copy all output to output_dir
-    cp -R "$TEMP_OUTPUT_DIR/" "$RCT_SCRIPT_OUTPUT_DIR" || exit 1
+    cp -R "$TEMP_OUTPUT_DIR/." "$RCT_SCRIPT_OUTPUT_DIR" || exit 1
     echo "$LIBRARY_NAME output has been written to $RCT_SCRIPT_OUTPUT_DIR:" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
     ls -1 "$RCT_SCRIPT_OUTPUT_DIR" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
 }
@@ -116,6 +112,7 @@ moveOutputs () {
 withCodgenDiscovery () {
     setup_dirs
     find_node
+    find_codegen
     generateArtifacts
     moveOutputs
 }
@@ -123,6 +120,7 @@ withCodgenDiscovery () {
 noCodegenDiscovery () {
     setup_dirs
     find_node
+    find_codegen
     generateCodegenSchemaFromJavaScript
     generateCodegenArtifactsFromSchema
     moveOutputs
