@@ -26,6 +26,9 @@ export default class AnimatedAddition extends AnimatedWithChildren {
     super();
     this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
     this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
+    this.callBack = this._updateValue.bind(this)
+    this._b.addListener(this.callBack);
+    this._a.addListener(this.callBack);
   }
 
   __makeNative(platformConfig: ?PlatformConfig) {
@@ -60,5 +63,20 @@ export default class AnimatedAddition extends AnimatedWithChildren {
       type: 'addition',
       input: [this._a.__getNativeTag(), this._b.__getNativeTag()],
     };
+  }
+
+  _updateValue(value: number, flush: boolean): void { 
+    if (value === undefined) {
+      throw new Error('AnimatedValue: Attempting to set value to undefined');
+    }
+
+    const newX = this._a.__getValue().x+this._b.__getValue().x
+    const newY = this._a.__getValue().y+this._b.__getValue().y
+
+    const updatedValue = {
+      "x": newX , "y": newY
+    }
+    
+    super.__callListeners(updatedValue);
   }
 }
