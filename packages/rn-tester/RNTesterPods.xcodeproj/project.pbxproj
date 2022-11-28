@@ -415,7 +415,7 @@
 				5CF0FD27207FC6EC00C13D65 /* Start Metro */,
 				2FCDFB64B37634EC8EC3139B /* [CP] Embed Pods Frameworks */,
 				A8DE6393E2BB72D8FBBF6C27 /* [CP] Copy Pods Resources */,
-				9C4DBC25C644151BD596140F /* [RN] Copy Hermes Framework */,
+				992FB5A50F2847F7EB2C285C /* [RN] Copy Hermes Framework */,
 			);
 			buildRules = (
 			);
@@ -700,24 +700,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		9A596313B3964A4DEB794409 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9C4DBC25C644151BD596140F /* [RN] Copy Hermes Framework */ = {
+		992FB5A50F2847F7EB2C285C /* [RN] Copy Hermes Framework */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -734,6 +717,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = ". ../../sdks/hermes-engine/utils/copy-hermes-xcode.sh";
+		};
+		9A596313B3964A4DEB794409 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		A8DE6393E2BB72D8FBBF6C27 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
