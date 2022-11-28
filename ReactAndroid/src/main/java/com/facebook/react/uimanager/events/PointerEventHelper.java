@@ -11,9 +11,7 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
-import com.facebook.react.common.ReactConstants;
 
 /** Class responsible for generating catalyst touch events based on android {@link MotionEvent}. */
 public class PointerEventHelper {
@@ -51,31 +49,6 @@ public class PointerEventHelper {
   public static final String POINTER_UP = "topPointerUp";
   public static final String POINTER_OVER = "topPointerOver";
   public static final String POINTER_OUT = "topPointerOut";
-
-  /** We don't dispatch capture events from native; that's currently handled by JS. */
-  public static @Nullable String getDispatchableEventName(EVENT event) {
-    switch (event) {
-      case LEAVE:
-        return PointerEventHelper.POINTER_LEAVE;
-      case DOWN:
-        return PointerEventHelper.POINTER_DOWN;
-      case MOVE:
-        return PointerEventHelper.POINTER_MOVE;
-      case ENTER:
-        return PointerEventHelper.POINTER_ENTER;
-      case CANCEL:
-        return PointerEventHelper.POINTER_CANCEL;
-      case UP:
-        return PointerEventHelper.POINTER_UP;
-      case OVER:
-        return PointerEventHelper.POINTER_OVER;
-      case OUT:
-        return PointerEventHelper.POINTER_OUT;
-      default:
-        FLog.e(ReactConstants.TAG, "No dispatchable event name for type: " + event);
-        return null;
-    }
-  }
 
   // https://w3c.github.io/pointerevents/#the-buttons-property
   public static int getButtons(String eventName, String pointerType, int buttonState) {
