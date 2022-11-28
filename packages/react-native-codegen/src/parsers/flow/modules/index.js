@@ -296,10 +296,10 @@ function translateTypeAnnotation(
       );
     }
     case 'StringLiteralTypeAnnotation': {
-      // 'a' is a special case for 'a' | 'b' because the type name is different
+      // 'a' is a special case for 'a' | 'b' but the type name is different
       return wrapNullable(nullable, {
         type: 'UnionTypeAnnotation',
-        memberType: 'StringTypeAnnotation'
+        memberType: 'StringTypeAnnotation',
       });
     }
     case 'MixedTypeAnnotation': {
