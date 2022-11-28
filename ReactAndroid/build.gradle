@@ -641,7 +641,7 @@ react {
     reactNativeDir = file("$projectDir/..")
     // We search for the codegen in either one of the `node_modules` folder or in the
     // root packages folder (that's for when we build from source without calling `yarn install`).
-    codegenDir = file(findNodeModulePath(projectDir, "react-native-codegen") ?: "../packages/react-native-codegen/")
+    codegenDir = file(findNodeModulePath(projectDir, "@react-native/codegen") ?: "../packages/react-native-codegen/")
 }
 
 apply plugin: "org.jetbrains.kotlin.android"

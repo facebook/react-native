@@ -19,9 +19,6 @@ packages:
   '@react-native/*':
     access: $all
     publish: $all
-  'react-native-codegen':
-    access: $all
-    publish: $all
   '@*/*':
     access: $all
     publish: $authenticated
