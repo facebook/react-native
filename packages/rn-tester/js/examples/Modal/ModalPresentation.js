@@ -87,13 +87,7 @@ function ModalPresentation() {
     if (action === 'onShow') {
       alert('onShow');
     }
-    if (ref != null) {
-      setModalOpened(true);
-    }
-  };
-
-  React.useEffect(() => {
-    if (ref != null && modalOpened === true) {
+    if (ref != null && visible === true) {
       if (Platform.OS === 'ios') {
         // $FlowFixMe
         AccessibilityInfo.sendAccessibilityEvent(ref.current, 'focus');
@@ -102,7 +96,7 @@ function ModalPresentation() {
         AccessibilityInfo.sendAccessibilityEvent(ref.current, 'viewHoverEnter');
       }
     }
-  }, [modalOpened]);
+  };
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
