@@ -22,6 +22,7 @@ public class PointerEventHelper {
   public static final String POINTER_TYPE_PEN = "pen";
   public static final String POINTER_TYPE_MOUSE = "mouse";
   public static final String POINTER_TYPE_UNKNOWN = "";
+  private static final int X_FLAG_SUPPORTS_HOVER = 0x01000000;
 
   public static enum EVENT {
     CANCEL,
@@ -184,8 +185,17 @@ public class PointerEventHelper {
   }
 
   public static boolean supportsHover(MotionEvent motionEvent) {
+    // A flag has been set on the MotionEvent to indicate it supports hover
+    // See D36958947 on justifications for this.
+    // TODO(luwe): Leverage previous events to determine if MotionEvent
+    //  is from an input device that supports hover
+    boolean supportsHoverFlag = (motionEvent.getFlags() & X_FLAG_SUPPORTS_HOVER) != 0;
+    if (supportsHoverFlag) {
+      return true;
+    }
+
     int source = motionEvent.getSource();
-    return source == InputDevice.SOURCE_MOUSE || source == InputDevice.SOURCE_CLASS_POINTER;
+    return source == InputDevice.SOURCE_MOUSE;
   }
 
   public static boolean isExitEvent(String eventName) {
