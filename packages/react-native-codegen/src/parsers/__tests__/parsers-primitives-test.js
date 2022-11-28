@@ -11,6 +11,8 @@
 
 'use-strict';
 
+import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema';
+
 const {
   emitBoolean,
   emitDouble,
@@ -26,9 +28,15 @@ const {
   emitMixedTypeAnnotation,
   typeAliasResolution,
 } = require('../parsers-primitives.js');
-import {MockedParser} from '../parserMock';
+const {MockedParser} = require('../parserMock');
+const {emitUnionTypeAnnotation} = require('../parsers-primitives');
+const {UnsupportedUnionTypeAnnotationParserError} = require('../errors');
+const {FlowParser} = require('../flow/parser');
+const {TypeScriptParser} = require('../typescript/parser');
 
 const parser = new MockedParser();
+const flowParser = new FlowParser();
+const typeScriptParser = new TypeScriptParser();
 
 describe('emitBoolean', () => {
   describe('when nullable is true', () => {
@@ -494,6 +502,433 @@ describe('emitMixedTypeAnnotation', () => {
       };
 
       expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitUnionTypeAnnotation', () => {
+  const hasteModuleName = 'SampleTurboModule';
+
+  describe('when language is flow', () => {
+    describe('when members type is numeric', () => {
+      const typeAnnotation = {
+        type: 'UnionTypeAnnotation',
+        types: [
+          {type: 'NumberLiteralTypeAnnotation'},
+          {type: 'NumberLiteralTypeAnnotation'},
+        ],
+      };
+      describe('when nullable is true', () => {
+        it('returns nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            true,
+            hasteModuleName,
+            typeAnnotation,
+            flowParser,
+          );
+
+          const expected = {
+            type: 'NullableTypeAnnotation',
+            typeAnnotation: {
+              type: 'UnionTypeAnnotation',
+              memberType: 'NumberTypeAnnotation',
+            },
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+
+      describe('when nullable is false', () => {
+        it('returns non nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            false,
+            hasteModuleName,
+            typeAnnotation,
+            flowParser,
+          );
+
+          const expected = {
+            type: 'UnionTypeAnnotation',
+            memberType: 'NumberTypeAnnotation',
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+    });
+
+    describe('when members type is string', () => {
+      const typeAnnotation = {
+        type: 'UnionTypeAnnotation',
+        types: [
+          {type: 'StringLiteralTypeAnnotation'},
+          {type: 'StringLiteralTypeAnnotation'},
+        ],
+      };
+      describe('when nullable is true', () => {
+        it('returns nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            true,
+            hasteModuleName,
+            typeAnnotation,
+            flowParser,
+          );
+
+          const expected = {
+            type: 'NullableTypeAnnotation',
+            typeAnnotation: {
+              type: 'UnionTypeAnnotation',
+              memberType: 'StringTypeAnnotation',
+            },
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+
+      describe('when nullable is false', () => {
+        it('returns non nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            false,
+            hasteModuleName,
+            typeAnnotation,
+            flowParser,
+          );
+
+          const expected = {
+            type: 'UnionTypeAnnotation',
+            memberType: 'StringTypeAnnotation',
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+    });
+
+    describe('when members type is object', () => {
+      const typeAnnotation = {
+        type: 'UnionTypeAnnotation',
+        types: [{type: 'ObjectTypeAnnotation'}, {type: 'ObjectTypeAnnotation'}],
+      };
+      describe('when nullable is true', () => {
+        it('returns nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            true,
+            hasteModuleName,
+            typeAnnotation,
+            flowParser,
+          );
+
+          const expected = {
+            type: 'NullableTypeAnnotation',
+            typeAnnotation: {
+              type: 'UnionTypeAnnotation',
+              memberType: 'ObjectTypeAnnotation',
+            },
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+
+      describe('when nullable is false', () => {
+        it('returns non nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            false,
+            hasteModuleName,
+            typeAnnotation,
+            flowParser,
+          );
+
+          const expected = {
+            type: 'UnionTypeAnnotation',
+            memberType: 'ObjectTypeAnnotation',
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+    });
+
+    describe('when members type is mixed', () => {
+      const typeAnnotation = {
+        type: 'UnionTypeAnnotation',
+        types: [
+          {type: 'NumberLiteralTypeAnnotation'},
+          {type: 'StringLiteralTypeAnnotation'},
+          {type: 'ObjectTypeAnnotation'},
+        ],
+      };
+      const unionTypes: UnionTypeAnnotationMemberType[] = [
+        'NumberTypeAnnotation',
+        'StringTypeAnnotation',
+        'ObjectTypeAnnotation',
+      ];
+      describe('when nullable is true', () => {
+        it('throws an excpetion', () => {
+          const expected = new UnsupportedUnionTypeAnnotationParserError(
+            hasteModuleName,
+            typeAnnotation,
+            unionTypes,
+            flowParser.language(),
+          );
+
+          expect(() => {
+            emitUnionTypeAnnotation(
+              true,
+              hasteModuleName,
+              typeAnnotation,
+              flowParser,
+            );
+          }).toThrow(expected);
+        });
+      });
+
+      describe('when nullable is false', () => {
+        it('throws an excpetion', () => {
+          const expected = new UnsupportedUnionTypeAnnotationParserError(
+            hasteModuleName,
+            typeAnnotation,
+            unionTypes,
+            flowParser.language(),
+          );
+
+          expect(() => {
+            emitUnionTypeAnnotation(
+              false,
+              hasteModuleName,
+              typeAnnotation,
+              flowParser,
+            );
+          }).toThrow(expected);
+        });
+      });
+    });
+  });
+
+  describe('when language is typescript', () => {
+    describe('when members type is numeric', () => {
+      const typeAnnotation = {
+        type: 'TSUnionType',
+        types: [
+          {
+            type: 'TSLiteralType',
+            literal: {type: 'NumericLiteral'},
+          },
+          {
+            type: 'TSLiteralType',
+            literal: {type: 'NumericLiteral'},
+          },
+        ],
+      };
+      describe('when nullable is true', () => {
+        it('returns nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            true,
+            hasteModuleName,
+            typeAnnotation,
+            typeScriptParser,
+          );
+
+          const expected = {
+            type: 'NullableTypeAnnotation',
+            typeAnnotation: {
+              type: 'UnionTypeAnnotation',
+              memberType: 'NumberTypeAnnotation',
+            },
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+
+      describe('when nullable is false', () => {
+        it('returns non nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            false,
+            hasteModuleName,
+            typeAnnotation,
+            typeScriptParser,
+          );
+
+          const expected = {
+            type: 'UnionTypeAnnotation',
+            memberType: 'NumberTypeAnnotation',
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+    });
+
+    describe('when members type is string', () => {
+      const typeAnnotation = {
+        type: 'TSUnionType',
+        types: [
+          {
+            type: 'TSLiteralType',
+            literal: {type: 'StringLiteral'},
+          },
+          {
+            type: 'TSLiteralType',
+            literal: {type: 'StringLiteral'},
+          },
+        ],
+      };
+      describe('when nullable is true', () => {
+        it('returns nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            true,
+            hasteModuleName,
+            typeAnnotation,
+            typeScriptParser,
+          );
+
+          const expected = {
+            type: 'NullableTypeAnnotation',
+            typeAnnotation: {
+              type: 'UnionTypeAnnotation',
+              memberType: 'StringTypeAnnotation',
+            },
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+
+      describe('when nullable is false', () => {
+        it('returns non nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            false,
+            hasteModuleName,
+            typeAnnotation,
+            typeScriptParser,
+          );
+
+          const expected = {
+            type: 'UnionTypeAnnotation',
+            memberType: 'StringTypeAnnotation',
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+    });
+
+    describe('when members type is object', () => {
+      const typeAnnotation = {
+        type: 'TSUnionType',
+        types: [
+          {
+            type: 'TSLiteralType',
+          },
+          {
+            type: 'TSLiteralType',
+          },
+        ],
+      };
+      describe('when nullable is true', () => {
+        it('returns nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            true,
+            hasteModuleName,
+            typeAnnotation,
+            typeScriptParser,
+          );
+
+          const expected = {
+            type: 'NullableTypeAnnotation',
+            typeAnnotation: {
+              type: 'UnionTypeAnnotation',
+              memberType: 'ObjectTypeAnnotation',
+            },
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+
+      describe('when nullable is false', () => {
+        it('returns non nullable type annotation', () => {
+          const result = emitUnionTypeAnnotation(
+            false,
+            hasteModuleName,
+            typeAnnotation,
+            typeScriptParser,
+          );
+
+          const expected = {
+            type: 'UnionTypeAnnotation',
+            memberType: 'ObjectTypeAnnotation',
+          };
+
+          expect(result).toEqual(expected);
+        });
+      });
+    });
+
+    describe('when members type is mixed', () => {
+      const typeAnnotation = {
+        type: 'TSUnionType',
+        types: [
+          {
+            type: 'TSLiteralType',
+            literal: {type: 'NumericLiteral'},
+          },
+          {
+            type: 'TSLiteralType',
+            literal: {type: 'StringLiteral'},
+          },
+          {
+            type: 'TSLiteralType',
+          },
+        ],
+      };
+      const unionTypes = [
+        'NumberTypeAnnotation',
+        'StringTypeAnnotation',
+        'ObjectTypeAnnotation',
+      ];
+      describe('when nullable is true', () => {
+        it('throws an excpetion', () => {
+          const expected = new UnsupportedUnionTypeAnnotationParserError(
+            hasteModuleName,
+            typeAnnotation,
+            unionTypes,
+            typeScriptParser.language(),
+          );
+
+          expect(() => {
+            emitUnionTypeAnnotation(
+              true,
+              hasteModuleName,
+              typeAnnotation,
+              typeScriptParser,
+            );
+          }).toThrow(expected);
+        });
+      });
+
+      describe('when nullable is false', () => {
+        it('throws an excpetion', () => {
+          const expected = new UnsupportedUnionTypeAnnotationParserError(
+            hasteModuleName,
+            typeAnnotation,
+            unionTypes,
+            typeScriptParser.language(),
+          );
+
+          expect(() => {
+            emitUnionTypeAnnotation(
+              false,
+              hasteModuleName,
+              typeAnnotation,
+              typeScriptParser,
+            );
+          }).toThrow(expected);
+        });
+      });
     });
   });
 });

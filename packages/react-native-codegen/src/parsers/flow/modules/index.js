@@ -28,7 +28,6 @@ const {
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   parseObjectProperty,
-  emitUnionTypeAnnotation,
   translateDefault,
   buildPropertySchema,
 } = require('../../parsers-commons');
@@ -46,6 +45,7 @@ const {
   emitString,
   emitStringish,
   emitMixedTypeAnnotation,
+  emitUnionTypeAnnotation,
   typeAliasResolution,
   translateArrayTypeAnnotation,
 } = require('../../parsers-primitives');
