@@ -85,11 +85,12 @@ function ModalPresentation() {
     if (action === 'onShow') {
       alert('onShow');
     }
-    if (ref != null && visible === true) {
+    if (ref != null && ref.current != null && visible === true) {
       if (Platform.OS === 'ios') {
         // $FlowFixMe
         AccessibilityInfo.sendAccessibilityEvent(ref.current, 'focus');
       } else {
+        // see https://github.com/facebook/react-native/issues/30097#issuecomment-1285927266
         // $FlowFixMe
         AccessibilityInfo.sendAccessibilityEvent(ref.current, 'viewHoverEnter');
       }
