@@ -44,8 +44,8 @@ const {
   emitVoid,
   emitString,
   emitStringish,
-  emitMixedTypeAnnotation,
-  emitUnionTypeAnnotation,
+  emitMixed,
+  emitUnion,
   typeAliasResolution,
   translateArrayTypeAnnotation,
 } = require('../../parsers-primitives');
@@ -232,12 +232,7 @@ function translateTypeAnnotation(
       );
     }
     case 'UnionTypeAnnotation': {
-      return emitUnionTypeAnnotation(
-        nullable,
-        hasteModuleName,
-        typeAnnotation,
-        parser,
-      );
+      return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
     }
     case 'StringLiteralTypeAnnotation': {
       // 'a' is a special case for 'a' | 'b' but the type name is different
@@ -248,7 +243,7 @@ function translateTypeAnnotation(
     }
     case 'MixedTypeAnnotation': {
       if (cxxOnly) {
-        return emitMixedTypeAnnotation(nullable);
+        return emitMixed(nullable);
       }
       // Fallthrough
     }

@@ -45,8 +45,8 @@ const {
   emitVoid,
   emitString,
   emitStringish,
-  emitMixedTypeAnnotation,
-  emitUnionTypeAnnotation,
+  emitMixed,
+  emitUnion,
   typeAliasResolution,
   translateArrayTypeAnnotation,
 } = require('../../parsers-primitives');
@@ -248,16 +248,11 @@ function translateTypeAnnotation(
       );
     }
     case 'TSUnionType': {
-      return emitUnionTypeAnnotation(
-        nullable,
-        hasteModuleName,
-        typeAnnotation,
-        parser,
-      );
+      return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
     }
     case 'TSUnknownKeyword': {
       if (cxxOnly) {
-        return emitMixedTypeAnnotation(nullable);
+        return emitMixed(nullable);
       }
       // Fallthrough
     }

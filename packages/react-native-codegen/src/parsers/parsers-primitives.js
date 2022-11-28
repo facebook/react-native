@@ -121,7 +121,7 @@ function emitFunction(
   return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
 }
 
-function emitMixedTypeAnnotation(
+function emitMixed(
   nullable: boolean,
 ): Nullable<NativeModuleMixedTypeAnnotation> {
   return wrapNullable(nullable, {
@@ -251,7 +251,7 @@ function emitFloat(
   });
 }
 
-function emitUnionTypeAnnotation(
+function emitUnion(
   nullable: boolean,
   hasteModuleName: string,
   typeAnnotation: $FlowFixMe,
@@ -346,8 +346,8 @@ module.exports = {
   emitVoid,
   emitString,
   emitStringish,
-  emitMixedTypeAnnotation,
-  emitUnionTypeAnnotation,
+  emitMixed,
+  emitUnion,
   typeAliasResolution,
   translateArrayTypeAnnotation,
 };

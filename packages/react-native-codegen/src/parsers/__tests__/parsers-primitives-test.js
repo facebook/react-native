@@ -25,11 +25,11 @@ const {
   emitVoid,
   emitString,
   emitStringish,
-  emitMixedTypeAnnotation,
+  emitMixed,
   typeAliasResolution,
 } = require('../parsers-primitives.js');
 const {MockedParser} = require('../parserMock');
-const {emitUnionTypeAnnotation} = require('../parsers-primitives');
+const {emitUnion} = require('../parsers-primitives');
 const {UnsupportedUnionTypeAnnotationParserError} = require('../errors');
 const {FlowParser} = require('../flow/parser');
 const {TypeScriptParser} = require('../typescript/parser');
@@ -480,10 +480,10 @@ describe('emitObject', () => {
   });
 });
 
-describe('emitMixedTypeAnnotation', () => {
+describe('emitMixed', () => {
   describe('when nullable is true', () => {
     it('returns nullable type annotation', () => {
-      const result = emitMixedTypeAnnotation(true);
+      const result = emitMixed(true);
       const expected = {
         type: 'NullableTypeAnnotation',
         typeAnnotation: {
@@ -496,7 +496,7 @@ describe('emitMixedTypeAnnotation', () => {
   });
   describe('when nullable is false', () => {
     it('returns non nullable type annotation', () => {
-      const result = emitMixedTypeAnnotation(false);
+      const result = emitMixed(false);
       const expected = {
         type: 'MixedTypeAnnotation',
       };
@@ -506,7 +506,7 @@ describe('emitMixedTypeAnnotation', () => {
   });
 });
 
-describe('emitUnionTypeAnnotation', () => {
+describe('emitUnion', () => {
   const hasteModuleName = 'SampleTurboModule';
 
   describe('when language is flow', () => {
@@ -520,7 +520,7 @@ describe('emitUnionTypeAnnotation', () => {
       };
       describe('when nullable is true', () => {
         it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             true,
             hasteModuleName,
             typeAnnotation,
@@ -541,7 +541,7 @@ describe('emitUnionTypeAnnotation', () => {
 
       describe('when nullable is false', () => {
         it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             false,
             hasteModuleName,
             typeAnnotation,
@@ -568,7 +568,7 @@ describe('emitUnionTypeAnnotation', () => {
       };
       describe('when nullable is true', () => {
         it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             true,
             hasteModuleName,
             typeAnnotation,
@@ -589,7 +589,7 @@ describe('emitUnionTypeAnnotation', () => {
 
       describe('when nullable is false', () => {
         it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             false,
             hasteModuleName,
             typeAnnotation,
@@ -613,7 +613,7 @@ describe('emitUnionTypeAnnotation', () => {
       };
       describe('when nullable is true', () => {
         it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             true,
             hasteModuleName,
             typeAnnotation,
@@ -634,7 +634,7 @@ describe('emitUnionTypeAnnotation', () => {
 
       describe('when nullable is false', () => {
         it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             false,
             hasteModuleName,
             typeAnnotation,
@@ -675,12 +675,7 @@ describe('emitUnionTypeAnnotation', () => {
           );
 
           expect(() => {
-            emitUnionTypeAnnotation(
-              true,
-              hasteModuleName,
-              typeAnnotation,
-              flowParser,
-            );
+            emitUnion(true, hasteModuleName, typeAnnotation, flowParser);
           }).toThrow(expected);
         });
       });
@@ -695,12 +690,7 @@ describe('emitUnionTypeAnnotation', () => {
           );
 
           expect(() => {
-            emitUnionTypeAnnotation(
-              false,
-              hasteModuleName,
-              typeAnnotation,
-              flowParser,
-            );
+            emitUnion(false, hasteModuleName, typeAnnotation, flowParser);
           }).toThrow(expected);
         });
       });
@@ -724,7 +714,7 @@ describe('emitUnionTypeAnnotation', () => {
       };
       describe('when nullable is true', () => {
         it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             true,
             hasteModuleName,
             typeAnnotation,
@@ -745,7 +735,7 @@ describe('emitUnionTypeAnnotation', () => {
 
       describe('when nullable is false', () => {
         it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             false,
             hasteModuleName,
             typeAnnotation,
@@ -778,7 +768,7 @@ describe('emitUnionTypeAnnotation', () => {
       };
       describe('when nullable is true', () => {
         it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             true,
             hasteModuleName,
             typeAnnotation,
@@ -799,7 +789,7 @@ describe('emitUnionTypeAnnotation', () => {
 
       describe('when nullable is false', () => {
         it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             false,
             hasteModuleName,
             typeAnnotation,
@@ -830,7 +820,7 @@ describe('emitUnionTypeAnnotation', () => {
       };
       describe('when nullable is true', () => {
         it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             true,
             hasteModuleName,
             typeAnnotation,
@@ -851,7 +841,7 @@ describe('emitUnionTypeAnnotation', () => {
 
       describe('when nullable is false', () => {
         it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
+          const result = emitUnion(
             false,
             hasteModuleName,
             typeAnnotation,
@@ -900,12 +890,7 @@ describe('emitUnionTypeAnnotation', () => {
           );
 
           expect(() => {
-            emitUnionTypeAnnotation(
-              true,
-              hasteModuleName,
-              typeAnnotation,
-              typeScriptParser,
-            );
+            emitUnion(true, hasteModuleName, typeAnnotation, typeScriptParser);
           }).toThrow(expected);
         });
       });
@@ -920,12 +905,7 @@ describe('emitUnionTypeAnnotation', () => {
           );
 
           expect(() => {
-            emitUnionTypeAnnotation(
-              false,
-              hasteModuleName,
-              typeAnnotation,
-              typeScriptParser,
-            );
+            emitUnion(false, hasteModuleName, typeAnnotation, typeScriptParser);
           }).toThrow(expected);
         });
       });
