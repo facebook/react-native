@@ -72,7 +72,7 @@ function ModalPresentation() {
     React.useState('Portrait');
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
-  let ref = React.useRef<?React.ElementRef<typeof Text>>(null);
+  let ref = React.useRef<?React.ElementRef<typeof TitleComponent>>(null);
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;
   const onDismiss = () => {
     setVisible(false);
@@ -88,7 +88,6 @@ function ModalPresentation() {
     if (ref != null && ref.current != null && visible === true) {
       // see https://github.com/facebook/react-native/issues/30097#issuecomment-1285927266
       const focusEvent = Platform.OS === 'ios' ? 'focus' : 'viewHoverEnter';
-      // $FlowFixMe
       AccessibilityInfo.sendAccessibilityEvent(ref.current, focusEvent);
     }
   };
