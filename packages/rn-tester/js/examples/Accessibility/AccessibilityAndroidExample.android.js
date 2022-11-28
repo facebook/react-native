@@ -63,6 +63,7 @@ class AccessibilityAndroidExample extends React.Component<
   };
 
   render(): React.Node {
+    const {count} = this.state;
     return (
       <RNTesterPage title={'Accessibility Android APIs'}>
         <RNTesterBlock title="LiveRegion">
@@ -72,7 +73,14 @@ class AccessibilityAndroidExample extends React.Component<
             </View>
           </TouchableWithoutFeedback>
           <View accessibilityLiveRegion="polite">
-            <Text>Clicked {this.state.count} times</Text>
+            <Text style={{backgroundColor: count % 2 === 0 ? 'red' : 'blue'}}>
+              Announced times with accessibilityLiveRegion polite
+            </Text>
+          </View>
+          <View accessibilityLiveRegion="polite">
+            <Text style={{backgroundColor: count % 2 === 0 ? 'red' : 'blue'}}>
+              Second announcement times with accessibilityLiveRegion polite
+            </Text>
           </View>
         </RNTesterBlock>
 

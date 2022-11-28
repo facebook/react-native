@@ -53,7 +53,8 @@ using namespace facebook::react;
   if (superDescription.length > 0 && [superDescription characterAtIndex:superDescription.length - 1] == '>') {
     superDescription = [superDescription substringToIndex:superDescription.length - 1];
   }
-
+  
+  NSLog(@"TESTING description %@", [NSString stringWithFormat:@"%@; attributedText = %@>", superDescription, self.attributedText]);
   return [NSString stringWithFormat:@"%@; attributedText = %@>", superDescription, self.attributedText];
 }
 
@@ -63,20 +64,6 @@ using namespace facebook::react;
     return nil;
   }
   
-  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
-  auto const &accessibilityProps = *std::static_pointer_cast<AccessibilityProps const>(_props);
-  
-  BOOL accessibilityLiveRegionEnabled = accessibilityProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
-  NSString *newTextValue = RCTNSStringFromStringNilIfEmpty(_state->getData().attributedString.getString());
-  if (paragraphProps.accessible && accessibilityLiveRegionEnabled && newTextValue) {
-    if (@available(iOS 11.0, *)) {
-      NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-      attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(accessibilityProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
-      NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: newTextValue
-                                                                                  attributes:attrsDictionary];
-      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
-    }
-  }
   NSLog(@"TESTING newTextValue %@", RCTNSAttributedStringFromAttributedString(_state->getData().attributedString).string);
   return RCTNSAttributedStringFromAttributedString(_state->getData().attributedString);
 }

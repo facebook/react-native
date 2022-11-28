@@ -1446,20 +1446,23 @@ function AccessibilityExpandedExample(): React.Node {
       <RNTesterBlock title="Collapse/Expanded state change (Paper)">
         <Button
           onPress={() => {
-            setExpanded(!expand);
+            setExpanded(expand => !expand);
           }}
           title="click me to change state"
           nativeID={'Button'}
         />
         <View
           accessibilityLiveRegion="polite"
+          accessibilityHint={expand ? null : 'my hint'}
+          accessibilityState={{selected: !expand}}
           accessibilityRole="button"
           accessible={true}
           focusable={true}
-          nativeID={'View'}
           style={{backgroundColor: 'red', height: 200, width: 400}}>
-          <Text accessibilityLiveRegion="polite" nativeID={'Text'}>
-            {expand ? null : 'my text'}
+          <Text
+            accessibilityLiveRegion="polite"
+            accessibilityLabel="this is text label">
+            {expand ? null : 'my child text'}
           </Text>
         </View>
       </RNTesterBlock>
