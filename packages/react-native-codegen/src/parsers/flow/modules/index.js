@@ -295,6 +295,13 @@ function translateTypeAnnotation(
         parser,
       );
     }
+    case 'StringLiteralTypeAnnotation': {
+      // 'a' is a special case for 'a' | 'b' because the type name is different
+      return wrapNullable(nullable, {
+        type: 'UnionTypeAnnotation',
+        memberType: 'StringTypeAnnotation'
+      });
+    }
     case 'MixedTypeAnnotation': {
       if (cxxOnly) {
         return emitMixedTypeAnnotation(nullable);

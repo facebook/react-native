@@ -1756,7 +1756,45 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliases': {
+        'CustomObject': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'field1',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'GenericObjectTypeAnnotation'
+                }
+              }
+            },
+            {
+              'name': 'field2',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            },
+            {
+              'name': 'field3',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'type',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'StringTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
       'spec': {
         'properties': [
           {
@@ -1848,6 +1886,21 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
                 'elementType': {
                   'type': 'UnionTypeAnnotation',
                   'memberType': 'StringTypeAnnotation'
+                }
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnObject',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'TypeAliasTypeAnnotation',
+                  'name': 'CustomObject'
                 }
               },
               'params': []
