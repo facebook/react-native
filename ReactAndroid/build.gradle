@@ -178,12 +178,18 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "rrc_image",
                 new Pair("../ReactCommon/react/renderer/components/image/", "react/renderer/components/image/")
             ),
-            // This prefab target is used by Expo & Reanimated to load a new instance of Hermes
+            // These prefab targets are used by Expo & Reanimated
             new PrefabPreprocessingEntry(
                 "hermes-executor",
-                // "hermes-executor" is statically linking agaisnt "hermes-executor-common"
+                // "hermes-executor" is statically linking against "hermes-executor-common"
                 // and "hermes-inspector". Here we expose only the headers that we know are needed.
                 new Pair("../ReactCommon/hermes/inspector/", "hermes/inspector/")
+            ),
+            new PrefabPreprocessingEntry(
+                "jscexecutor",
+                // "jscexecutor" is statically linking against "jscruntime"
+                // Here we expose only the headers that we know are needed.
+                new Pair("../ReactCommon/jsc/", "jsc/")
             ),
             new PrefabPreprocessingEntry(
                 "react_render_uimanager",

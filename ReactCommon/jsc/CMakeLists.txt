@@ -17,13 +17,18 @@ add_compile_options(
         -Wno-unused-lambda-capture
         -DLOG_TAG=\"ReactNative\")
 
-add_library(jscruntime STATIC
+add_library(jscruntime
+        STATIC
         JSCRuntime.h
         JSCRuntime.cpp)
 
 target_include_directories(jscruntime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(jscruntime folly_runtime jsc glog)
+target_link_libraries(jscruntime
+        folly_runtime
+        jsc
+        jsi
+        glog)
 
 # TODO: Remove this flag when ready.
 # Android has this enabled by default, but the flag is still needed for iOS.
