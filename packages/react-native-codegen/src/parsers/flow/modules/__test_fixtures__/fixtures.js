@@ -700,6 +700,13 @@ import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export type Season = 'Spring' | 'Summer' | 'Autumn' | 'Winter';
 
+export type CustomObject = {|
+  field1: Array<Object>,
+  field2: boolean,
+  field3: string,
+  type: 'A_String_Literal',
+|};
+
 export interface Spec extends TurboModule {
   returnStringArray(): Promise<Array<string>>;
   returnObjectArray(): Promise<Array<Object>>;
@@ -707,6 +714,7 @@ export interface Spec extends TurboModule {
   returnEmpty(): Promise<empty>;
   returnIndex(): Promise<{ [string]: 'authorized' | 'denied' | 'undetermined' | true | false }>;
   returnEnum() : Promise<Season>;
+  returnObject() : Promise<CustomObject>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
