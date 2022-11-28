@@ -93,26 +93,15 @@ function ModalPresentation() {
   };
 
   React.useEffect(() => {
-    let timer;
     if (ref != null && modalOpened === true) {
       if (Platform.OS === 'ios') {
         // $FlowFixMe
         AccessibilityInfo.sendAccessibilityEvent(ref.current, 'focus');
       } else {
-        // see https://github.com/facebook/react-native/issues/30097#issuecomment-1285927266
-        timer = setTimeout(() => {
-          if (ref.current != null) {
-            AccessibilityInfo.sendAccessibilityEvent(ref.current, 'focus');
-          }
-        }, 1000);
+        // $FlowFixMe
+        AccessibilityInfo.sendAccessibilityEvent(ref.current, 'viewHoverEnter');
       }
     }
-
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
   }, [modalOpened]);
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -142,7 +131,7 @@ function ModalPresentation() {
         onOrientationChange={onOrientationChange}
         onDismiss={onDismiss}
         onShow={onShow}>
-        {TitleComponent != null && <TitleComponent ref={ref} />}
+        <TitleComponent ref={ref} />
         <View style={[styles.modalContainer, modalBackgroundStyle]}>
           <View
             style={[

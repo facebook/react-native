@@ -34,7 +34,7 @@ type AccessibilityEventDefinitions = {
   screenReaderChanged: [boolean],
 };
 
-type AccessibilityEventTypes = 'click' | 'focus';
+type AccessibilityEventTypes = 'click' | 'focus' | 'viewHoverEnter';
 /**
  * Sometimes it's useful to know whether or not the device has a screen reader
  * that is currently active. The `AccessibilityInfo` API is designed for this
