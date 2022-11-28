@@ -27,8 +27,10 @@ export default class AnimatedAddition extends AnimatedWithChildren {
     this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
     this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
     this.callBack = this._updateValue.bind(this)
-    this._b.addListener(this.callBack);
-    this._a.addListener(this.callBack);
+    if(this._b.addListener && this._a.addListener){
+      this._b.addListener(this.callBack);
+      this._a.addListener(this.callBack);
+    }
   }
 
   __makeNative(platformConfig: ?PlatformConfig) {
