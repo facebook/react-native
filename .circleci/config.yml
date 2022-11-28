@@ -817,6 +817,11 @@ jobs:
         description: Whether Flipper is enabled. Must be one of "WithFlipper", "WithoutFlipper".
         type: enum
         enum: ["WithFlipper", "WithoutFlipper"]
+      use_frameworks:
+        default: "StaticLibraries"
+        description: Which kind of option we want to use for `use_frameworks!`
+        type: enum
+        enum: ["StaticLibraries", "StaticFrameworks"] #TODO: Add "DynamicFrameworks"
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -828,6 +833,24 @@ jobs:
             and:
               - equal: [ << parameters.flavor >>, "Release"]
               - equal: [ << parameters.flipper >>, "WithFlipper" ]
+          steps:
+            - run:
+                command: circleci-agent step halt # this interrupts the job successfully.
+      # use_frameworks! does not works with Flipper enabled
+      - when:
+          condition:
+            and:
+              - equal: [ << parameters.use_frameworks >>, "StaticFrameworks"]
+              - equal: [ << parameters.flipper >>, "WithFlipper" ]
+          steps:
+            - run:
+                command: circleci-agent step halt # this interrupts the job successfully.
+      # use_frameworks! does not works with the New Architecture enabled
+      - when:
+          condition:
+            and:
+              - equal: [ << parameters.use_frameworks >>, "StaticFrameworks"]
+              - equal: [ << parameters.architecture >>, "NewArch" ]
           steps:
             - run:
                 command: circleci-agent step halt # this interrupts the job successfully.
@@ -876,6 +899,10 @@ jobs:
 
             if [[ << parameters.flipper >> == "WithoutFlipper" ]]; then
               export NO_FLIPPER=1
+            fi
+
+            if [[ << parameters.use_frameworks >> == "StaticFrameworks" ]]; then
+              export USE_FRAMEWORKS=static
             fi
 
             bundle exec pod install
@@ -1565,6 +1592,7 @@ workflows:
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
               flipper: ["WithFlipper", "WithoutFlipper"]
+              use_frameworks: [ "StaticLibraries", "StaticFrameworks" ] #TODO: make it works with DynamicFrameworks
       - test_ios_rntester:
           requires:
             - build_hermes_macos
