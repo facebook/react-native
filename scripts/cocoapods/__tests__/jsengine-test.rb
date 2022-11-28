@@ -44,7 +44,7 @@ class JSEngineTests < Test::Unit::TestCase
         # Assert
         assert_equal($podInvocationCount, 2)
         assert_equal($podInvocation["React-jsi"][:path], "../../ReactCommon/jsi")
-        assert_equal($podInvocation["React-jsc"][:path], "../../ReactCommon/jsi")
+        assert_equal($podInvocation["React-jsc"][:path], "../../ReactCommon/jsc")
     end
 
     def test_setupJsc_installsPods_installsFabricSubspecWhenFabricEnabled
@@ -57,8 +57,8 @@ class JSEngineTests < Test::Unit::TestCase
         # Assert
         assert_equal($podInvocationCount, 3)
         assert_equal($podInvocation["React-jsi"][:path], "../../ReactCommon/jsi")
-        assert_equal($podInvocation["React-jsc"][:path], "../../ReactCommon/jsi")
-        assert_equal($podInvocation["React-jsc/Fabric"][:path], "../../ReactCommon/jsi")
+        assert_equal($podInvocation["React-jsc"][:path], "../../ReactCommon/jsc")
+        assert_equal($podInvocation["React-jsc/Fabric"][:path], "../../ReactCommon/jsc")
     end
 
     # ================== #
