@@ -45,7 +45,6 @@ Pod::Spec.new do |s|
                              }.merge!(build_type == :debug ? { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" } : {})
   s.header_dir             = "reacthermes"
   s.dependency "React-cxxreact", version
-  s.dependency "React-jsidynamic", version
   s.dependency "React-jsiexecutor", version
   s.dependency "React-jsinspector", version
   s.dependency "React-perflogger", version
