@@ -86,14 +86,10 @@ function ModalPresentation() {
       alert('onShow');
     }
     if (ref != null && ref.current != null && visible === true) {
-      if (Platform.OS === 'ios') {
-        // $FlowFixMe
-        AccessibilityInfo.sendAccessibilityEvent(ref.current, 'focus');
-      } else {
-        // see https://github.com/facebook/react-native/issues/30097#issuecomment-1285927266
-        // $FlowFixMe
-        AccessibilityInfo.sendAccessibilityEvent(ref.current, 'viewHoverEnter');
-      }
+      // see https://github.com/facebook/react-native/issues/30097#issuecomment-1285927266
+      const focusEvent = Platform.OS === 'ios' ? 'focus' : 'viewHoverEnter';
+      // $FlowFixMe
+      AccessibilityInfo.sendAccessibilityEvent(ref.current, focusEvent);
     }
   };
 
