@@ -28,12 +28,8 @@ Pod::Spec.new do |s|
   s.source_files           = "JSCRuntime.{cpp,h}"
   s.exclude_files          = "**/test/*"
   s.framework              = "JavaScriptCore"
-  s.dependency "React-jsi", version
-  s.default_subspec        = "Default"
 
-  s.subspec "Default" do
-    # no-op
-  end
+  s.dependency "React-jsi", version
 
   s.subspec "Fabric" do |ss|
     ss.pod_target_xcconfig  = { "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" }

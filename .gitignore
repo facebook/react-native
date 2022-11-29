@@ -64,7 +64,8 @@ buck-out
 .gradle
 local.properties
 *.iml
-/android/
+/android/*
+!/android/README.md
 
 # Node
 node_modules
@@ -113,7 +114,7 @@ package-lock.json
 !/packages/rn-tester/Pods/__offline_mirrors_hermes__
 !/packages/rn-tester/Pods/__offline_mirrors_jsc__
 
-# react-native-codegen
+# @react-native/codegen
 /React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
 /packages/react-native-codegen/tmp/

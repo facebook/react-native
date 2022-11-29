@@ -72,7 +72,6 @@ class FabricMountingManager final {
   std::recursive_mutex allocatedViewsMutex_;
   std::shared_ptr<const CppComponentRegistry> cppComponentRegistry_;
 
-  bool const disableRevisionCheckForPreallocation_{false};
   bool const useOverflowInset_{false};
 
   jni::local_ref<jobject> getProps(

@@ -185,7 +185,17 @@ function translateTypeAnnotation(
           return emitRootTag(nullable);
         }
         case 'Promise': {
-          return emitPromise(hasteModuleName, typeAnnotation, parser, nullable);
+          return emitPromise(
+            hasteModuleName,
+            typeAnnotation,
+            parser,
+            nullable,
+            types,
+            aliasMap,
+            tryParse,
+            cxxOnly,
+            translateTypeAnnotation,
+          );
         }
         case 'Array':
         case 'ReadonlyArray': {
@@ -316,7 +326,7 @@ function translateTypeAnnotation(
 function isModuleInterface(node: $FlowFixMe) {
   return (
     node.type === 'TSInterfaceDeclaration' &&
-    node.extends.length === 1 &&
+    node.extends?.length === 1 &&
     node.extends[0].type === 'TSExpressionWithTypeArguments' &&
     node.extends[0].expression.name === 'TurboModule'
   );

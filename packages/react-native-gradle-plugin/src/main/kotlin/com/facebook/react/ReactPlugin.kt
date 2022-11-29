@@ -14,6 +14,7 @@ import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFields
 import com.facebook.react.utils.AgpConfiguratorUtils.configureDevPorts
+import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
 import com.facebook.react.utils.DependencyUtils.readVersionString
@@ -46,6 +47,7 @@ class ReactPlugin : Plugin<Project> {
       configureReactNativeNdk(project, extension)
       configureBuildConfigFields(project)
       configureDevPorts(project)
+      configureBackwardCompatibilityReactMap(project)
 
       project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
         onVariants(selector().all()) { variant ->
@@ -134,7 +136,6 @@ class ReactPlugin : Plugin<Project> {
               it.dependsOn(generateCodegenSchemaTask)
               it.reactNativeDir.set(extension.reactNativeDir)
               it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
-              it.codegenDir.set(extension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)
               it.packageJsonFile.set(findPackageJsonFile(project, extension))
               it.codegenJavaPackageName.set(extension.codegenJavaPackageName)
