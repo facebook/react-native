@@ -1774,7 +1774,18 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
             }
           },
           {
-            'name': 'returnIndex',
+            'name': 'returnUnsupportedIndex',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnSupportedIndex',
             'optional': false,
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',

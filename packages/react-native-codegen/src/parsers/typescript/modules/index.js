@@ -185,14 +185,17 @@ function translateTypeAnnotation(
     }
     case 'TSTypeLiteral': {
       // if there is TSIndexSignature, then it is a dictionary
-      if (
-        typeAnnotation.members &&
-        typeAnnotation.members.filter(
+      if (typeAnnotation.members) {
+        const indexSignatures = typeAnnotation.members.filter(
           member => member.type === 'TSIndexSignature',
-        ).length > 0
-      ) {
+        );
+        if(indexSignatures.length > 0) {
+        // check the property type to prevent developers from using unsupported types
+        const propertyType = indexSignatures[0].typeAnnotation;
+        translateTypeAnnotation(hasteModuleName,propertyType,types,aliasMap,tryParse,cxxOnly);
         // no need to do further checking
         return emitObject(nullable);
+        }
       }
 
       const objectTypeAnnotation = {
