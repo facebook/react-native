@@ -437,9 +437,6 @@ void Binding::installFabricUIManager(
       "CalculateTransformedFramesEnabled",
       getFeatureFlagValue("calculateTransformedFramesEnabled"));
 
-  disablePreallocateViews_ = reactNativeConfig_->getBool(
-      "react_fabric:disabled_view_preallocation_android");
-
   // Props setter pattern feature
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
@@ -509,10 +506,6 @@ void Binding::schedulerDidFinishTransaction(
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const SurfaceId surfaceId,
     const ShadowNode &shadowNode) {
-  if (disablePreallocateViews_) {
-    return;
-  }
-
   if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
     return;
   }
