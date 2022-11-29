@@ -24,9 +24,9 @@ class NdkConfiguratorUtilsTest {
     assertFalse("**/libjscexecutor.so" in includes)
 
     assertTrue("**/libhermes.so" in includes)
-    assertTrue("**/libhermes-executor.so" in includes)
+    assertTrue("**/libhermes_executor.so" in includes)
     assertFalse("**/libhermes.so" in excludes)
-    assertFalse("**/libhermes-executor.so" in excludes)
+    assertFalse("**/libhermes_executor.so" in excludes)
   }
 
   @Test
@@ -34,9 +34,9 @@ class NdkConfiguratorUtilsTest {
     val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled = false)
 
     assertTrue("**/libhermes.so" in excludes)
-    assertTrue("**/libhermes-executor.so" in excludes)
+    assertTrue("**/libhermes_executor.so" in excludes)
     assertFalse("**/libhermes.so" in includes)
-    assertFalse("**/libhermes-executor.so" in includes)
+    assertFalse("**/libhermes_executor.so" in includes)
 
     assertTrue("**/libjsc.so" in includes)
     assertTrue("**/libjscexecutor.so" in includes)

@@ -180,9 +180,9 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             // These prefab targets are used by Expo & Reanimated
             new PrefabPreprocessingEntry(
-                "hermes-executor",
-                // "hermes-executor" is statically linking against "hermes-executor-common"
-                // and "hermes-inspector". Here we expose only the headers that we know are needed.
+                "hermes_executor",
+                // "hermes_executor" is statically linking against "hermes_executor_common"
+                // and "hermes_inspector". Here we expose only the headers that we know are needed.
                 new Pair("../ReactCommon/hermes/inspector/", "hermes/inspector/")
             ),
             new PrefabPreprocessingEntry(
@@ -463,7 +463,7 @@ android {
                     "react_render_uimanager",
                     "react_render_scheduler",
                     "react_render_mounting",
-                    "hermes-executor"
+                    "hermes_executor"
             }
         }
         ndk {
@@ -580,8 +580,8 @@ android {
         reactnativejni {
             headers(new File(prefabHeadersDir, "reactnativejni").absolutePath)
         }
-        "hermes-executor" {
-            headers(new File(prefabHeadersDir, "hermes-executor").absolutePath)
+        hermes_executor {
+            headers(new File(prefabHeadersDir, "hermes_executor").absolutePath)
         }
     }
 
