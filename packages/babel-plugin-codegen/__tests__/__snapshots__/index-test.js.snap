@@ -2,14 +2,14 @@
 
 exports[`Babel plugin inline view configs can inline config for FullNativeComponent.js 1`] = `
 "// @flow
+
 const codegenNativeCommands = require('codegenNativeCommands');
-
 const codegenNativeComponent = require('codegenNativeComponent');
-
 import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
 import type { NativeComponentType } from 'codegenNativeComponent';
 import type { ViewProps } from 'ViewPropTypes';
-type ModuleProps = $ReadOnly<{| ...ViewProps,
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
   // Props
   boolean_default_true_optional_both?: WithDefault<boolean, true>,
   // Events
@@ -21,17 +21,13 @@ interface NativeCommands {
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void,
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
-
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
-
 const {
   ConditionallyIgnoredEventHandlers
 } = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
-
 const {
   dispatchCommand
 } = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
-
 let nativeComponentName = 'RCTModule';
 export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'RCTModule',
@@ -61,24 +57,22 @@ export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
   },
-
   scrollTo(ref, y, animated) {
     dispatchCommand(ref, \\"scrollTo\\", [y, animated]);
   }
-
 };"
 `;
 
 exports[`Babel plugin inline view configs can inline config for FullTypedNativeComponent.js 1`] = `
 "// @flow
+
 const codegenNativeCommands = require('codegenNativeCommands');
-
 const codegenNativeComponent = require('codegenNativeComponent');
-
 import type { NativeComponentType } from 'codegenNativeComponent';
 import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
 import type { ViewProps } from 'ViewPropTypes';
-type ModuleProps = $ReadOnly<{| ...ViewProps,
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
   // Props
   boolean_default_true_optional_both?: WithDefault<boolean, true>,
   // Events
@@ -90,17 +84,13 @@ interface NativeCommands {
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void,
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
-
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
-
 const {
   ConditionallyIgnoredEventHandlers
 } = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
-
 const {
   dispatchCommand
 } = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
-
 let nativeComponentName = 'RCTModule';
 export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'RCTModule',
@@ -130,17 +120,14 @@ export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
   },
-
   scrollTo(ref, y, animated) {
     dispatchCommand(ref, \\"scrollTo\\", [y, animated]);
   }
-
 };"
 `;
 
 exports[`Babel plugin inline view configs can inline config for NotANativeComponent.js 1`] = `
 "const requireNativeComponent = require('requireNativeComponent');
-
 export default 'Not a view config';"
 `;
 

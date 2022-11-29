@@ -11,7 +11,7 @@
   "dependencies": {
     "@babel/core": "^7.14.0",
     "@babel/eslint-parser": "^7.18.2",
-    "@babel/generator": "^7.14.0",
+    "@babel/generator": "^7.20.0",
     "@babel/plugin-transform-regenerator": "^7.0.0",
     "@definitelytyped/dtslint": "^0.0.127",
     "@react-native/codegen": "^0.72.0",
