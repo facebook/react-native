@@ -189,12 +189,19 @@ function translateTypeAnnotation(
         const indexSignatures = typeAnnotation.members.filter(
           member => member.type === 'TSIndexSignature',
         );
-        if(indexSignatures.length > 0) {
-        // check the property type to prevent developers from using unsupported types
-        const propertyType = indexSignatures[0].typeAnnotation;
-        translateTypeAnnotation(hasteModuleName,propertyType,types,aliasMap,tryParse,cxxOnly);
-        // no need to do further checking
-        return emitObject(nullable);
+        if (indexSignatures.length > 0) {
+          // check the property type to prevent developers from using unsupported types
+          const propertyType = indexSignatures[0].typeAnnotation;
+          translateTypeAnnotation(
+            hasteModuleName,
+            propertyType,
+            types,
+            aliasMap,
+            tryParse,
+            cxxOnly,
+          );
+          // no need to do further checking
+          return emitObject(nullable);
         }
       }
 

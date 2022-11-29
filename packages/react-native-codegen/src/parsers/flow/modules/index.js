@@ -171,12 +171,19 @@ function translateTypeAnnotation(
         const indexers = typeAnnotation.indexers.filter(
           member => member.type === 'ObjectTypeIndexer',
         );
-        if(indexers.length > 0) {
+        if (indexers.length > 0) {
           // check the property type to prevent developers from using unsupported types
-        const propertyType = indexers[0].value;
-        translateTypeAnnotation(hasteModuleName,propertyType,types,aliasMap,tryParse,cxxOnly);
-        // no need to do further checking
-        return emitObject(nullable);
+          const propertyType = indexers[0].value;
+          translateTypeAnnotation(
+            hasteModuleName,
+            propertyType,
+            types,
+            aliasMap,
+            tryParse,
+            cxxOnly,
+          );
+          // no need to do further checking
+          return emitObject(nullable);
         }
       }
 
