@@ -1,5 +1,5 @@
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import { givenUserOnMainPage } from '../common_steps/commonSteps.steps';
+import { givenUserOnMainPage } from '../common_steps/givenUserOnMainPage.steps';
 import * as steps from '../steps/buttonComponentScreen.steps';
 
 Object.entries(steps).forEach(([name, exported]) => window[name] = exported);
