@@ -39,8 +39,8 @@ references:
   # -------------------------
   dependency_versions:
     xcode_version: &xcode_version "14.0.1"
-    nodelts_image: &nodelts_image "cimg/node:16.14"
-    nodeprevlts_image: &nodeprevlts_image "cimg/node:14.19"
+    nodelts_image: &nodelts_image "cimg/node:18.12.1"
+    nodeprevlts_image: &nodeprevlts_image "cimg/node:16.18.1"
 
   # -------------------------
   #        Cache Key Anchors
@@ -55,8 +55,8 @@ references:
     hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v3-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
-    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v3-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v2-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v3-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version"}}
+    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v2-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version"}}
     pods_cache_key: &pods_cache_key v8-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
@@ -272,6 +272,12 @@ commands:
         type: string
         default: *hermes_tarball_artifacts_dir
     steps:
+      - run:
+          name: Get React Native version
+          command: |
+            VERSION=$( grep '"version"' package.json | cut -d '"' -f 4 | head -1)
+            # Save the react native version we are building in a file so we can use that file as part of the cache key.
+            echo "$VERSION" > /tmp/react-native-version
       - when:
           condition:
             equal: [ << parameters.flavor >>, "Debug"]
@@ -562,7 +568,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@18/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - run:
@@ -710,33 +716,18 @@ jobs:
       - checkout
       - setup_artifacts
       - run_yarn
-
-      # Starting emulator in advance as it takes some time to boot.
-      - run:
-          name: Create Android Virtual Device
-          command: source scripts/android-setup.sh && createAVD
-      - run:
-          name: Launch Android Virtual Device in Background
-          command: source scripts/android-setup.sh && launchAVD
-          background: true
-
       - download_gradle_dependencies
 
       - run:
           name: Build & Test React Native using Gradle
           command: ./gradlew buildAll
 
-      - run:
-          name: Build RN Tester for Release using Gradle
-          command: ./gradlew packages:rn-tester:android:app:assembleRelease
-
-      # Wait for AVD to finish booting before running tests
-      - run:
-          name: Wait for Android Virtual Device
-          command: source scripts/android-setup.sh && waitForAVD
-
       - report_bundle_size:
           platform: android
+
+      - store_artifacts:
+          path: ~/react-native/packages/rn-tester/android/app/build/outputs/apk/
+          destination: rntester-apk
 
       # Optionally, run disabled tests
       - when:
@@ -779,10 +770,7 @@ jobs:
           command: |
             REPO_ROOT=$(pwd)
             node ./scripts/set-rn-template-version.js "file:$REPO_ROOT/build/$(cat build/react-native-package-version)"
-            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose --skip-install
-            cd /tmp/$PROJECT_NAME
-            yarn
-
+            node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath $REPO_ROOT --directory "/tmp/$PROJECT_NAME"
       - run:
           name: Build the template application for << parameters.flavor >> with Architecture set to << parameters.architecture >>, and using the << parameters.jsengine>> JS engine.
           command: |
@@ -798,6 +786,10 @@ jobs:
               export ORG_GRADLE_PROJECT_hermesEnabled=false
             fi
             ./gradlew assemble<< parameters.flavor >> -PREACT_NATIVE_MAVEN_LOCAL_REPO=/root/react-native/maven-local
+
+      - store_artifacts:
+          path: /tmp/$PROJECT_NAME/android/app/build/outputs/apk/
+          destination: template-apk
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -862,13 +854,11 @@ jobs:
             PACKAGE=$(cat build/react-native-package-version)
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
-            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose --skip-install
+            node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath $REPO_ROOT --directory "/tmp/$PROJECT_NAME"
       - run:
           name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
           command: |
-            cd /tmp/$PROJECT_NAME
-            yarn install
-            cd ios
+            cd /tmp/$PROJECT_NAME/ios
 
             bundle install
 
@@ -1210,9 +1200,6 @@ jobs:
                       command: |
                         cd ./sdks/hermes || exit 1
                         BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
-            - with_hermesc_span:
-                flavor: << parameters.flavor >>
-                steps:
                   - run:
                       name: Build the Hermes iOS frameworks
                       command: |
@@ -1363,7 +1350,14 @@ jobs:
       - run:
           name: "Set new react-native version and commit changes"
           command: |
-            node ./scripts/prepare-package-for-release.js -v << parameters.version >> -l << parameters.latest >> --dry-run << parameters.dryrun >>
+            VERSION=<< parameters.version >>
+
+            if [[ -z "$VERSION" ]]; then
+              VERSION=$(grep '"version"' package.json | cut -d '"' -f 4 | head -1)
+              echo "Using the version from the package.json: $VERSION"
+            fi
+
+            node ./scripts/prepare-package-for-release.js -v "$VERSION" -l << parameters.latest >> --dry-run << parameters.dryrun >>
 
   build_npm_package:
     parameters:
@@ -1643,7 +1637,7 @@ workflows:
     jobs:
       - prepare_package_for_release:
           name: prepare_package_for_release
-          version: 'v1000.0.1'
+          version: ''
           latest : false
           dryrun: true
       - prepare_hermes_workspace:

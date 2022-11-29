@@ -6,7 +6,9 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions)
+add_compile_options(
+        -fexceptions
+        -std=c++17)
 
 file(GLOB jsinspector_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(jsinspector SHARED ${jsinspector_SRC})

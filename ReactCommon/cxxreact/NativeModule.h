@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include <folly/Optional.h>
 #include <folly/dynamic.h>
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -25,7 +25,7 @@ struct MethodDescriptor {
       : name(std::move(n)), type(std::move(t)) {}
 };
 
-using MethodCallResult = folly::Optional<folly::dynamic>;
+using MethodCallResult = std::optional<folly::dynamic>;
 
 class NativeModule {
  public:

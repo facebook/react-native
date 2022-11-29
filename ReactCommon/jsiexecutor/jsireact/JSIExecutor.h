@@ -15,6 +15,7 @@
 #include <jsi/jsi.h>
 #include <functional>
 #include <mutex>
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -127,9 +128,9 @@ class JSIExecutor : public JSExecutor {
   JSIScopedTimeoutInvoker scopedTimeoutInvoker_;
   RuntimeInstaller runtimeInstaller_;
 
-  folly::Optional<jsi::Function> callFunctionReturnFlushedQueue_;
-  folly::Optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
-  folly::Optional<jsi::Function> flushedQueue_;
+  std::optional<jsi::Function> callFunctionReturnFlushedQueue_;
+  std::optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
+  std::optional<jsi::Function> flushedQueue_;
 };
 
 using Logger =

@@ -20,7 +20,6 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/core/propsConversions.h>
-#include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/conversions.h>
 #include <cmath>
 

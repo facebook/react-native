@@ -35,7 +35,6 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
   const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
   const onUpdateRef = useRef<?() => void>(null);
-  const cachedRef = useRef<TInstance | null>(null);
 
   // TODO: Only invalidate `node` if animated props or `style` change. In the
   // previous implementation, we permitted `style` to override props with the
@@ -65,7 +64,6 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
       // NOTE: This may be called more often than necessary (e.g. when `props`
       // changes), but `setNativeView` already optimizes for that.
       node.setNativeView(instance);
-      cachedRef.current = instance;
 
       // NOTE: This callback is only used by the JavaScript animation driver.
       onUpdateRef.current = () => {
@@ -114,16 +112,6 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
     [props, node],
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
-
-  useEffect(() => {
-    // Call `setNativeView` any time `node` changes to make sure
-    // `AnimatedProps._animatedView` is up to date.
-    // This would not be necessary in an ideal world.
-    // In React, anytime identity of function passed to `ref` changes,
-    // the old function is called with null and the new function is called with value.
-    // ScrollView does not behave like this and this workaround is necessary.
-    node.setNativeView(cachedRef.current);
-  }, [node]);
 
   return [reduceAnimatedProps<TProps>(node), callbackRef];
 }

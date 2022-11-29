@@ -11,9 +11,7 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
-import com.facebook.react.common.ReactConstants;
 
 /** Class responsible for generating catalyst touch events based on android {@link MotionEvent}. */
 public class PointerEventHelper {
@@ -22,6 +20,7 @@ public class PointerEventHelper {
   public static final String POINTER_TYPE_PEN = "pen";
   public static final String POINTER_TYPE_MOUSE = "mouse";
   public static final String POINTER_TYPE_UNKNOWN = "";
+  private static final int X_FLAG_SUPPORTS_HOVER = 0x01000000;
 
   public static enum EVENT {
     CANCEL,
@@ -50,31 +49,6 @@ public class PointerEventHelper {
   public static final String POINTER_UP = "topPointerUp";
   public static final String POINTER_OVER = "topPointerOver";
   public static final String POINTER_OUT = "topPointerOut";
-
-  /** We don't dispatch capture events from native; that's currently handled by JS. */
-  public static @Nullable String getDispatchableEventName(EVENT event) {
-    switch (event) {
-      case LEAVE:
-        return PointerEventHelper.POINTER_LEAVE;
-      case DOWN:
-        return PointerEventHelper.POINTER_DOWN;
-      case MOVE:
-        return PointerEventHelper.POINTER_MOVE;
-      case ENTER:
-        return PointerEventHelper.POINTER_ENTER;
-      case CANCEL:
-        return PointerEventHelper.POINTER_CANCEL;
-      case UP:
-        return PointerEventHelper.POINTER_UP;
-      case OVER:
-        return PointerEventHelper.POINTER_OVER;
-      case OUT:
-        return PointerEventHelper.POINTER_OUT;
-      default:
-        FLog.e(ReactConstants.TAG, "No dispatchable event name for type: " + event);
-        return null;
-    }
-  }
 
   // https://w3c.github.io/pointerevents/#the-buttons-property
   public static int getButtons(String eventName, String pointerType, int buttonState) {
@@ -141,7 +115,7 @@ public class PointerEventHelper {
 
   public static boolean isListening(@Nullable View view, EVENT event) {
     if (view == null) {
-      return false;
+      return true;
     }
 
     switch (event) {
@@ -184,8 +158,17 @@ public class PointerEventHelper {
   }
 
   public static boolean supportsHover(MotionEvent motionEvent) {
+    // A flag has been set on the MotionEvent to indicate it supports hover
+    // See D36958947 on justifications for this.
+    // TODO(luwe): Leverage previous events to determine if MotionEvent
+    //  is from an input device that supports hover
+    boolean supportsHoverFlag = (motionEvent.getFlags() & X_FLAG_SUPPORTS_HOVER) != 0;
+    if (supportsHoverFlag) {
+      return true;
+    }
+
     int source = motionEvent.getSource();
-    return source == InputDevice.SOURCE_MOUSE || source == InputDevice.SOURCE_CLASS_POINTER;
+    return source == InputDevice.SOURCE_MOUSE;
   }
 
   public static boolean isExitEvent(String eventName) {
