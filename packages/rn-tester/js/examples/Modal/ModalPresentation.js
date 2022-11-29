@@ -4,22 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
 /* eslint-disable no-alert */
 
 import * as React from 'react';
-import {
-  AccessibilityInfo,
-  Modal,
-  Platform,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-} from 'react-native';
+import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import RNTOption from '../../components/RNTOption';
 const RNTesterButton = require('../../components/RNTesterButton');
@@ -43,23 +35,6 @@ const presentationStyles = [
 const iOSActions = ['None', 'On Dismiss', 'On Show'];
 const noniOSActions = ['None', 'On Show'];
 
-const TitleComponent = React.forwardRef((props, forwardedRef) => {
-  return (
-    <Text
-      ref={forwardedRef}
-      style={{
-        width: '100%',
-        position: 'absolute',
-        top: 500,
-        textAlign: 'center',
-        backgroundColor: 'red',
-        zIndex: 20,
-      }}>
-      My custom title
-    </Text>
-  );
-});
-
 function ModalPresentation() {
   const [animationType, setAnimationType] = React.useState('none');
   const [transparent, setTransparent] = React.useState(false);
@@ -72,7 +47,6 @@ function ModalPresentation() {
     React.useState('Portrait');
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
-  let ref = React.useRef<?React.ElementRef<typeof TitleComponent>>(null);
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;
   const onDismiss = () => {
     setVisible(false);
@@ -85,13 +59,7 @@ function ModalPresentation() {
     if (action === 'onShow') {
       alert('onShow');
     }
-    if (ref != null && ref.current != null && visible === true) {
-      // see https://github.com/facebook/react-native/issues/30097#issuecomment-1285927266
-      const focusEvent = Platform.OS === 'ios' ? 'focus' : 'viewHoverEnter';
-      AccessibilityInfo.sendAccessibilityEvent(ref.current, focusEvent);
-    }
   };
-
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
   const onOrientationChange = event =>
@@ -119,7 +87,6 @@ function ModalPresentation() {
         onOrientationChange={onOrientationChange}
         onDismiss={onDismiss}
         onShow={onShow}>
-        <TitleComponent ref={ref} />
         <View style={[styles.modalContainer, modalBackgroundStyle]}>
           <View
             style={[
