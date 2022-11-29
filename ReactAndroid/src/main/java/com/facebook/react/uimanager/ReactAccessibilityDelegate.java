@@ -41,6 +41,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
@@ -403,7 +404,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       if (reactContext.hasActiveReactInstance()) {
         final int reactTag = host.getId();
         final int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
-        UIManager uiManager = UIManagerHelper.getUIManager(reactContext, reactTag);
+        UIManager uiManager =
+            UIManagerHelper.getUIManager(reactContext, ViewUtil.getUIManagerType(reactTag));
         if (uiManager != null) {
           uiManager
               .<EventDispatcher>getEventDispatcher()
