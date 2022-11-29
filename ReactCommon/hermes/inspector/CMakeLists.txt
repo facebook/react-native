@@ -8,12 +8,12 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 file(GLOB hermesinspector_SRC CONFIGURE_DEPENDS *.cpp detail/*.cpp chrome/*.cpp)
 
-add_library(hermes-inspector
+add_library(hermes_inspector
         STATIC
         ${hermesinspector_SRC})
 
 target_compile_options(
-        hermes-inspector
+        hermes_inspector
         PRIVATE
         -DHERMES_ENABLE_DEBUGGER=1
         -DHERMES_INSPECTOR_FOLLY_KLUDGE=1
@@ -21,8 +21,8 @@ target_compile_options(
         -fexceptions
 )
 
-target_include_directories(hermes-inspector PUBLIC ${REACT_COMMON_DIR})
-target_link_libraries(hermes-inspector
+target_include_directories(hermes_inspector PUBLIC ${REACT_COMMON_DIR})
+target_link_libraries(hermes_inspector
         jsinspector
         fb
         fbjni
