@@ -108,17 +108,6 @@ void RCTEnableTurboModuleEagerInit(BOOL enabled)
   turboModuleEagerInitEnabled = enabled;
 }
 
-static BOOL turboModuleSharedMutexInitEnabled = NO;
-BOOL RCTTurboModuleSharedMutexInitEnabled(void)
-{
-  return turboModuleSharedMutexInitEnabled;
-}
-
-void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
-{
-  turboModuleSharedMutexInitEnabled = enabled;
-}
-
 // Turn off TurboModule delegate locking
 static BOOL turboModuleManagerDelegateLockingDisabled = YES;
 BOOL RCTTurboModuleManagerDelegateLockingDisabled(void)

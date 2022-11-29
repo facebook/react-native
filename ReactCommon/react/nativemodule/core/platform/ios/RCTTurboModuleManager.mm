@@ -11,7 +11,6 @@
 #import <cassert>
 #import <condition_variable>
 #import <mutex>
-#import <shared_mutex>
 
 #import <objc/runtime.h>
 
@@ -173,7 +172,6 @@ static Class getFallbackClassFromName(const char *name)
   std::mutex _turboModuleManagerDelegateMutex;
 
   // Enforce synchronous access to _invalidating and _turboModuleHolders
-  std::shared_timed_mutex _turboModuleHoldersSharedMutex;
   std::mutex _turboModuleHoldersMutex;
   std::atomic<bool> _invalidating;
 }
@@ -317,23 +315,6 @@ static Class getFallbackClassFromName(const char *name)
 
 - (TurboModuleHolder *)_getOrCreateTurboModuleHolder:(const char *)moduleName
 {
-  if (RCTTurboModuleSharedMutexInitEnabled()) {
-    {
-      std::shared_lock<std::shared_timed_mutex> guard(_turboModuleHoldersSharedMutex);
-      if (_invalidating) {
-        return nullptr;
-      }
-
-      auto it = _turboModuleHolders.find(moduleName);
-      if (it != _turboModuleHolders.end()) {
-        return &it->second;
-      }
-    }
-
-    std::unique_lock<std::shared_timed_mutex> guard(_turboModuleHoldersSharedMutex);
-    return &_turboModuleHolders[moduleName];
-  }
-
   std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
   if (_invalidating) {
     return nullptr;
@@ -785,11 +766,6 @@ static Class getFallbackClassFromName(const char *name)
 
 - (BOOL)moduleIsInitialized:(const char *)moduleName
 {
-  if (RCTTurboModuleSharedMutexInitEnabled()) {
-    std::shared_lock<std::shared_timed_mutex> guard(_turboModuleHoldersSharedMutex);
-    return _turboModuleHolders.find(moduleName) != _turboModuleHolders.end();
-  }
-
   std::unique_lock<std::mutex> guard(_turboModuleHoldersMutex);
   return _turboModuleHolders.find(moduleName) != _turboModuleHolders.end();
 }
@@ -843,13 +819,8 @@ static Class getFallbackClassFromName(const char *name)
 - (void)_enterInvalidatingState
 {
   // This should halt all insertions into _turboModuleHolders
-  if (RCTTurboModuleSharedMutexInitEnabled()) {
-    std::unique_lock<std::shared_timed_mutex> guard(_turboModuleHoldersSharedMutex);
-    _invalidating = true;
-  } else {
-    std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
-    _invalidating = true;
-  }
+  std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
+  _invalidating = true;
 }
 
 - (void)_invalidateModules
