@@ -10,6 +10,7 @@ package com.facebook.react.utils
 import com.facebook.react.tests.createProject
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
+import com.facebook.react.utils.DependencyUtils.mavenRepoFromURI
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromUrl
 import com.facebook.react.utils.DependencyUtils.readVersionString
 import java.net.URI
@@ -27,9 +28,9 @@ class DependencyUtilsTest {
   @Test
   fun configureRepositories_withProjectPropertySet_configuresMavenLocalCorrectly() {
     val localMaven = tempFolder.newFolder("m2")
-    val localMavenURI = URI.create("file://$localMaven/")
+    val localMavenURI = localMaven.toURI()
     val project = createProject()
-    project.extensions.extraProperties.set("REACT_NATIVE_MAVEN_LOCAL_REPO", localMaven)
+    project.extensions.extraProperties.set("REACT_NATIVE_MAVEN_LOCAL_REPO", localMaven.absolutePath)
 
     configureRepositories(project, tempFolder.root)
 
@@ -110,10 +111,10 @@ class DependencyUtilsTest {
   @Test
   fun configureRepositories_withProjectPropertySet_hasHigherPriorityThanMavenCentral() {
     val localMaven = tempFolder.newFolder("m2")
-    val localMavenURI = URI.create("file://$localMaven/")
+    val localMavenURI = localMaven.toURI()
     val mavenCentralURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()
-    project.extensions.extraProperties.set("REACT_NATIVE_MAVEN_LOCAL_REPO", localMaven)
+    project.extensions.extraProperties.set("REACT_NATIVE_MAVEN_LOCAL_REPO", localMaven.absolutePath)
 
     configureRepositories(project, tempFolder.root)
 
@@ -296,5 +297,14 @@ class DependencyUtilsTest {
     val mavenRepo = process.mavenRepoFromUrl("https://hello.world")
 
     assertEquals(URI.create("https://hello.world"), mavenRepo.url)
+  }
+
+  @Test
+  fun mavenRepoFromURI_worksCorrectly() {
+    val process = createProject()
+    val repoFolder = tempFolder.newFolder("maven-repo")
+    val mavenRepo = process.mavenRepoFromURI(repoFolder.toURI())
+
+    assertEquals(repoFolder.toURI(), mavenRepo.url)
   }
 }
