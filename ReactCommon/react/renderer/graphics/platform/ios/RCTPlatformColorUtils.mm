@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 #import <React/RCTUtils.h>
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #include <string>
 

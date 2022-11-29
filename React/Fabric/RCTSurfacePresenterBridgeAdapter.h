@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <ReactCommon/RuntimeExecutor.h>
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 #import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN

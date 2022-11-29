@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 #import <react/renderer/components/view/TouchEventEmitter.h>
 
 @protocol RCTTouchableComponentViewProtocol <NSObject>

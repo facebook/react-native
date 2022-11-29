@@ -6,7 +6,7 @@
  */
 
 #import <React/RCTDefines.h>
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 @protocol RCTLocalizationProtocol <NSObject>
 

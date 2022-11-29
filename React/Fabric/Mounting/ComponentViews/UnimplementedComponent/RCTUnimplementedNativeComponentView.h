@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import "React/RCTUITextView.h"
 
 #import <React/RCTViewComponentView.h>
 
