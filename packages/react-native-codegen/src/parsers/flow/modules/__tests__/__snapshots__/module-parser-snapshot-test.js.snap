@@ -1506,7 +1506,20 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliases': {
+        'SomeObj': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
       'spec': {
         'properties': [
           {
@@ -1515,7 +1528,10 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'PromiseTypeAnnotation'
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'StringTypeAnnotation'
+                }
               },
               'params': []
             }
@@ -1526,7 +1542,10 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'PromiseTypeAnnotation'
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'StringTypeAnnotation'
+                }
               },
               'params': []
             }
@@ -1537,7 +1556,11 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'PromiseTypeAnnotation'
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'TypeAliasTypeAnnotation',
+                  'name': 'SomeObj'
+                }
               },
               'params': []
             }
@@ -1716,6 +1739,171 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_O
                   }
                 }
               ]
+            }
+          }
+        ]
+      },
+      'moduleNames': [
+        'SampleTurboModule'
+      ]
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_TYPES 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {
+        'CustomObject': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'field1',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'GenericObjectTypeAnnotation'
+                }
+              }
+            },
+            {
+              'name': 'field2',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            },
+            {
+              'name': 'field3',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'type',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'StringTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
+      'spec': {
+        'properties': [
+          {
+            'name': 'returnStringArray',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'ArrayTypeAnnotation',
+                  'elementType': {
+                    'type': 'StringTypeAnnotation'
+                  }
+                }
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnObjectArray',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'ArrayTypeAnnotation',
+                  'elementType': {
+                    'type': 'GenericObjectTypeAnnotation'
+                  }
+                }
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnNullableNumber',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnEmpty',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnIndex',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'ObjectTypeAnnotation',
+                  'properties': [
+                    {
+                      'name': 'key',
+                      'optional': false,
+                      'typeAnnotation': {
+                        'type': 'GenericObjectTypeAnnotation'
+                      }
+                    }
+                  ]
+                }
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnEnum',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'UnionTypeAnnotation',
+                  'memberType': 'StringTypeAnnotation'
+                }
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnObject',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'TypeAliasTypeAnnotation',
+                  'name': 'CustomObject'
+                }
+              },
+              'params': []
             }
           }
         ]

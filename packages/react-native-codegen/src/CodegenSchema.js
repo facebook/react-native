@@ -299,6 +299,7 @@ export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{
 
 export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   type: 'PromiseTypeAnnotation',
+  elementType?: Nullable<NativeModuleBaseTypeAnnotation>,
 }>;
 
 export type UnionTypeAnnotationMemberType =

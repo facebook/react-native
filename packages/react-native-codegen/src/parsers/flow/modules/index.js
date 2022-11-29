@@ -150,7 +150,17 @@ function translateTypeAnnotation(
           return emitRootTag(nullable);
         }
         case 'Promise': {
-          return emitPromise(hasteModuleName, typeAnnotation, parser, nullable);
+          return emitPromise(
+            hasteModuleName,
+            typeAnnotation,
+            parser,
+            nullable,
+            types,
+            aliasMap,
+            tryParse,
+            cxxOnly,
+            translateTypeAnnotation,
+          );
         }
         case 'Array':
         case '$ReadOnlyArray': {
@@ -284,6 +294,13 @@ function translateTypeAnnotation(
         typeAnnotation,
         parser,
       );
+    }
+    case 'StringLiteralTypeAnnotation': {
+      // 'a' is a special case for 'a' | 'b' but the type name is different
+      return wrapNullable(nullable, {
+        type: 'UnionTypeAnnotation',
+        memberType: 'StringTypeAnnotation',
+      });
     }
     case 'MixedTypeAnnotation': {
       if (cxxOnly) {

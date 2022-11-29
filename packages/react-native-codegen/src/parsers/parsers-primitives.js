@@ -186,6 +186,11 @@ function emitPromise(
   typeAnnotation: $FlowFixMe,
   parser: Parser,
   nullable: boolean,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  translateTypeAnnotation: $FlowFixMe,
 ): Nullable<NativeModulePromiseTypeAnnotation> {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter(
     hasteModuleName,
@@ -193,9 +198,33 @@ function emitPromise(
     parser,
   );
 
-  return wrapNullable(nullable, {
-    type: 'PromiseTypeAnnotation',
-  });
+  const elementType = typeAnnotation.typeParameters.params[0];
+  if (
+    elementType.type === 'ExistsTypeAnnotation' ||
+    elementType.type === 'EmptyTypeAnnotation'
+  ) {
+    return wrapNullable(nullable, {
+      type: 'PromiseTypeAnnotation',
+    });
+  } else {
+    try {
+      return wrapNullable(nullable, {
+        type: 'PromiseTypeAnnotation',
+        elementType: translateTypeAnnotation(
+          hasteModuleName,
+          typeAnnotation.typeParameters.params[0],
+          types,
+          aliasMap,
+          tryParse,
+          cxxOnly,
+        ),
+      });
+    } catch {
+      return wrapNullable(nullable, {
+        type: 'PromiseTypeAnnotation',
+      });
+    }
+  }
 }
 
 function emitObject(
