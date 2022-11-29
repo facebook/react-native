@@ -1781,16 +1781,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
               'returnTypeAnnotation': {
                 'type': 'PromiseTypeAnnotation',
                 'elementType': {
-                  'type': 'ObjectTypeAnnotation',
-                  'properties': [
-                    {
-                      'name': 'key',
-                      'optional': false,
-                      'typeAnnotation': {
-                        'type': 'GenericObjectTypeAnnotation'
-                      }
-                    }
-                  ]
+                  'type': 'GenericObjectTypeAnnotation'
                 }
               },
               'params': []
