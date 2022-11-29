@@ -26,7 +26,7 @@ export default class AnimatedAddition extends AnimatedWithChildren {
     super();
     this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
     this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
-    this.callBack = this._updateValue.bind(this)
+    this.callBack = this._updateValue.bind(this);
     if(this._b.addListener && this._a.addListener){
       this._b.addListener(this.callBack);
       this._a.addListener(this.callBack);
@@ -67,18 +67,18 @@ export default class AnimatedAddition extends AnimatedWithChildren {
     };
   }
 
-  _updateValue(value: number, flush: boolean): void { 
+  _updateValue(value: number, flush: boolean): void {
     if (value === undefined) {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
     }
 
-    const newX = this._a.__getValue().x+this._b.__getValue().x
-    const newY = this._a.__getValue().y+this._b.__getValue().y
+    const newX = this._a.__getValue().x + this._b.__getValue().x;
+    const newY = this._a.__getValue().y + this._b.__getValue().y;
 
     const updatedValue = {
-      "x": newX , "y": newY
-    }
-    
+      x: newX , 
+      y: newY,
+    };
     super.__callListeners(updatedValue);
   }
 }
