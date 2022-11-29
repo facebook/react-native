@@ -173,6 +173,7 @@ function translateTypeAnnotation(
         );
         if (indexers.length > 0) {
           // check the property type to prevent developers from using unsupported types
+          // the return value from `translateTypeAnnotation` is unused
           const propertyType = indexers[0].value;
           translateTypeAnnotation(
             hasteModuleName,
@@ -259,8 +260,9 @@ function translateTypeAnnotation(
     case 'MixedTypeAnnotation': {
       if (cxxOnly) {
         return emitMixed(nullable);
+      } else {
+        return emitObject(nullable);
       }
-      // Fallthrough
     }
     default: {
       throw new UnsupportedTypeAnnotationParserError(
