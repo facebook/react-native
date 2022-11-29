@@ -115,7 +115,7 @@ public class PointerEventHelper {
 
   public static boolean isListening(@Nullable View view, EVENT event) {
     if (view == null) {
-      return false;
+      return true;
     }
 
     switch (event) {
