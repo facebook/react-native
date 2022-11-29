@@ -23,14 +23,14 @@ internal object DependencyUtils {
     project.rootProject.allprojects { eachProject ->
       with(eachProject) {
         if (hasProperty("REACT_NATIVE_MAVEN_LOCAL_REPO")) {
-          mavenRepoFromUrl("file://${property("REACT_NATIVE_MAVEN_LOCAL_REPO")}")
+          val mavenLocalRepoPath = property("REACT_NATIVE_MAVEN_LOCAL_REPO") as String
+          mavenRepoFromURI(File(mavenLocalRepoPath).toURI())
         }
         // We add the snapshot for users on nightlies.
         mavenRepoFromUrl("https://oss.sonatype.org/content/repositories/snapshots/")
         repositories.mavenCentral()
         // Android JSC is installed from npm
-        mavenRepoFromUrl(
-            "file://${reactNativeDir}${File.separator}..${File.separator}jsc-android${File.separator}dist")
+        mavenRepoFromURI(File(reactNativeDir, "../jsc-android/dist").toURI())
         repositories.google()
         mavenRepoFromUrl("https://www.jitpack.io")
       }
@@ -83,4 +83,7 @@ internal object DependencyUtils {
 
   fun Project.mavenRepoFromUrl(url: String): MavenArtifactRepository =
       project.repositories.maven { it.url = URI.create(url) }
+
+  fun Project.mavenRepoFromURI(uri: URI): MavenArtifactRepository =
+      project.repositories.maven { it.url = uri }
 }
