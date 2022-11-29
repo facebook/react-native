@@ -15,5 +15,9 @@ import {typeof VirtualizedList as VirtualizedListType} from '@react-native/virtu
 const VirtualizedList: VirtualizedListType =
   require('@react-native/virtualized-lists').VirtualizedList;
 
-export type * from '@react-native/virtualized-lists/Lists/VirtualizedList';
+export type {
+  RenderItemProps,
+  RenderItemType,
+  Separators,
+} from '@react-native/virtualized-lists';
 module.exports = VirtualizedList;

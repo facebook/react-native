@@ -15,6 +15,7 @@ import {keyExtractor} from './Lists/VirtualizeUtils';
 import typeof VirtualizedList from './Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Lists/VirtualizedSectionList';
 import {typeof VirtualizedListContextResetter} from './Lists/VirtualizedListContext';
+import typeof ViewabilityHelper from './Lists/ViewabilityHelper';
 
 import type {
   ViewToken,
@@ -54,5 +55,8 @@ module.exports = {
   get VirtualizedListContextResetter(): VirtualizedListContextResetter {
     const VirtualizedListContext = require('./Lists/VirtualizedListContext');
     return VirtualizedListContext.VirtualizedListContextResetter;
+  },
+  get ViewabilityHelper(): ViewabilityHelper {
+    return require('./Lists/ViewabilityHelper');
   },
 };

@@ -15,5 +15,4 @@ import {typeof VirtualizedSectionList as VirtualizedSectionListType} from '@reac
 const VirtualizedSectionList: VirtualizedSectionListType =
   require('@react-native/virtualized-lists').VirtualizedSectionList;
 
-export type * from '@react-native/virtualized-lists/Lists/VirtualizedSectionList';
 module.exports = VirtualizedSectionList;

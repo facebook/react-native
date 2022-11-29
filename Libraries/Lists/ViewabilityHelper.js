@@ -10,6 +10,14 @@
 
 'use strict';
 
-export type * from '@react-native/virtualized-lists/Lists/ViewabilityHelper';
+export type {
+  ViewToken,
+  ViewabilityConfigCallbackPair,
+} from '@react-native/virtualized-lists';
 
-module.exports = require('@react-native/virtualized-lists/Lists/ViewabilityHelper');
+import {typeof ViewabilityHelper as ViewabilityHelperType} from '@react-native/virtualized-lists';
+
+const ViewabilityHelper: ViewabilityHelperType =
+  require('@react-native/virtualized-lists').ViewabilityHelper;
+
+module.exports = ViewabilityHelper;
