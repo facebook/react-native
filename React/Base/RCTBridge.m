@@ -119,17 +119,6 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   turboModuleSharedMutexInitEnabled = enabled;
 }
 
-static RCTTurboModuleCleanupMode turboModuleCleanupMode = kRCTGlobalScope;
-RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void)
-{
-  return turboModuleCleanupMode;
-}
-
-void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode)
-{
-  turboModuleCleanupMode = mode;
-}
-
 // Turn off TurboModule delegate locking
 static BOOL turboModuleManagerDelegateLockingDisabled = YES;
 BOOL RCTTurboModuleManagerDelegateLockingDisabled(void)

@@ -152,7 +152,7 @@ void TurboModuleManager::installJSIBindings() {
     TurboModuleBindingMode bindingMode = static_cast<TurboModuleBindingMode>(
         getFeatureFlagValue("turboModuleBindingMode"));
     TurboModuleBinding::install(
-        runtime, std::move(turboModuleProvider), bindingMode, nullptr);
+        runtime, std::move(turboModuleProvider), bindingMode);
   });
 }
 

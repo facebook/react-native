@@ -24,17 +24,13 @@ namespace react {
 
 TurboModuleBinding::TurboModuleBinding(
     const TurboModuleProviderFunctionType &&moduleProvider,
-    TurboModuleBindingMode bindingMode,
-    std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection)
-    : moduleProvider_(std::move(moduleProvider)),
-      longLivedObjectCollection_(std::move(longLivedObjectCollection)),
-      bindingMode_(bindingMode) {}
+    TurboModuleBindingMode bindingMode)
+    : moduleProvider_(std::move(moduleProvider)), bindingMode_(bindingMode) {}
 
 void TurboModuleBinding::install(
     jsi::Runtime &runtime,
     const TurboModuleProviderFunctionType &&moduleProvider,
-    TurboModuleBindingMode bindingMode,
-    std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection) {
+    TurboModuleBindingMode bindingMode) {
   runtime.global().setProperty(
       runtime,
       "__turboModuleProxy",
@@ -42,10 +38,8 @@ void TurboModuleBinding::install(
           runtime,
           jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
           1,
-          [binding = TurboModuleBinding(
-               std::move(moduleProvider),
-               bindingMode,
-               std::move(longLivedObjectCollection))](
+          [binding =
+               TurboModuleBinding(std::move(moduleProvider), bindingMode)](
               jsi::Runtime &rt,
               const jsi::Value &thisVal,
               const jsi::Value *args,
@@ -55,11 +49,7 @@ void TurboModuleBinding::install(
 }
 
 TurboModuleBinding::~TurboModuleBinding() {
-  if (longLivedObjectCollection_) {
-    longLivedObjectCollection_->clear();
-  } else {
-    LongLivedObjectCollection::get().clear();
-  }
+  LongLivedObjectCollection::get().clear();
 }
 
 jsi::Value TurboModuleBinding::getModule(
