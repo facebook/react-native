@@ -144,6 +144,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                     new Pair("../ReactCommon/butter/", "butter/"),
                     new Pair("../ReactCommon/callinvoker/", ""),
                     new Pair("../ReactCommon/react/bridging/", "react/bridging/"),
@@ -152,6 +153,8 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("../ReactCommon/react/nativemodule/core/platform/android/", ""),
                     new Pair("../ReactCommon/react/renderer/componentregistry/", "react/renderer/componentregistry/"),
                     new Pair("../ReactCommon/react/renderer/components/root/", "react/renderer/components/root/"),
+                    new Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/"),
+                    new Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/"),
                     new Pair("../ReactCommon/react/renderer/leakchecker/", "react/renderer/leakchecker/"),
                     new Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/"),
                     new Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
@@ -159,6 +162,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
                     new Pair("../ReactCommon/react/renderer/telemetry/", "react/renderer/telemetry/"),
                     new Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
+                    new Pair("../ReactCommon/react/debug/", "react/debug/"),
                     new Pair("../ReactCommon/react/utils/", "react/utils/"),
                     new Pair("src/main/jni/react/jni", "react/jni/"),
                 ]
@@ -173,6 +177,35 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "rrc_image",
                 new Pair("../ReactCommon/react/renderer/components/image/", "react/renderer/components/image/")
+            ),
+            // These prefab targets are used by Expo & Reanimated
+            new PrefabPreprocessingEntry(
+                "hermes_executor",
+                // "hermes_executor" is statically linking against "hermes_executor_common"
+                // and "hermes_inspector". Here we expose only the headers that we know are needed.
+                new Pair("../ReactCommon/hermes/inspector/", "hermes/inspector/")
+            ),
+            new PrefabPreprocessingEntry(
+                "jscexecutor",
+                // "jscexecutor" is statically linking against "jscruntime"
+                // Here we expose only the headers that we know are needed.
+                new Pair("../ReactCommon/jsc/", "jsc/")
+            ),
+            new PrefabPreprocessingEntry(
+                "react_render_uimanager",
+                new Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
+            ),
+            new PrefabPreprocessingEntry(
+                "react_render_scheduler",
+                new Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
+            ),
+            new PrefabPreprocessingEntry(
+                "react_render_mounting",
+                new Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
+            ),
+            new PrefabPreprocessingEntry(
+                "reactnativejni",
+                new Pair("src/main/jni/react/jni", "react/jni/"),
             ),
         ]
     )
@@ -402,12 +435,12 @@ android {
                     "-DANDROID_TOOLCHAIN=clang",
                     "-DANDROID_PLATFORM=android-21"
 
-                targets "reactnativejni",
-                    "jscexecutor",
+                targets "jscexecutor",
                     "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
                     // prefab targets
+                    "reactnativejni",
                     "react_render_debug",
                     "turbomodulejsijni",
                     "runtimeexecutor",
@@ -426,29 +459,15 @@ android {
                     "yoga",
                     "folly_runtime",
                     "react_nativemodule_core",
-                    "react_render_imagemanager"
+                    "react_render_imagemanager",
+                    "react_render_uimanager",
+                    "react_render_scheduler",
+                    "react_render_mounting",
+                    "hermes_executor"
             }
         }
         ndk {
             abiFilters(*reactNativeArchitectures())
-        }
-    }
-
-    buildTypes {
-        debug {
-            externalNativeBuild {
-                cmake {
-                    targets "hermes-executor-debug"
-                }
-            }
-        }
-
-        release {
-            externalNativeBuild {
-                cmake {
-                    targets "hermes-executor-release"
-                }
-            }
         }
     }
 
@@ -548,6 +567,21 @@ android {
         }
         react_render_imagemanager {
             headers(new File(prefabHeadersDir, "react_render_imagemanager").absolutePath)
+        }
+        react_render_uimanager {
+            headers(new File(prefabHeadersDir, "react_render_uimanager").absolutePath)
+        }
+        react_render_scheduler {
+            headers(new File(prefabHeadersDir, "react_render_scheduler").absolutePath)
+        }
+        react_render_mounting {
+            headers(new File(prefabHeadersDir, "react_render_mounting").absolutePath)
+        }
+        reactnativejni {
+            headers(new File(prefabHeadersDir, "reactnativejni").absolutePath)
+        }
+        hermes_executor {
+            headers(new File(prefabHeadersDir, "hermes_executor").absolutePath)
         }
     }
 

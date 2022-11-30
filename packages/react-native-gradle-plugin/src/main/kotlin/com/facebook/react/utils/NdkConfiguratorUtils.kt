@@ -112,36 +112,25 @@ internal object NdkConfiguratorUtils {
       config: ReactExtension,
       variant: Variant,
       hermesEnabled: Boolean,
-      debuggableVariant: Boolean
   ) {
     if (config.enableSoCleanup.get()) {
-      val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled, debuggableVariant)
+      val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled)
       variant.packaging.jniLibs.excludes.addAll(excludes)
       variant.packaging.jniLibs.pickFirsts.addAll(includes)
     }
   }
 
-  fun getPackagingOptionsForVariant(
-      hermesEnabled: Boolean,
-      debuggableVariant: Boolean
-  ): Pair<List<String>, List<String>> {
+  fun getPackagingOptionsForVariant(hermesEnabled: Boolean): Pair<List<String>, List<String>> {
     val excludes = mutableListOf<String>()
     val includes = mutableListOf<String>()
     if (hermesEnabled) {
       excludes.add("**/libjsc.so")
       excludes.add("**/libjscexecutor.so")
       includes.add("**/libhermes.so")
-      if (debuggableVariant) {
-        excludes.add("**/libhermes-executor-release.so")
-        includes.add("**/libhermes-executor-debug.so")
-      } else {
-        excludes.add("**/libhermes-executor-debug.so")
-        includes.add("**/libhermes-executor-release.so")
-      }
+      includes.add("**/libhermes_executor.so")
     } else {
       excludes.add("**/libhermes.so")
-      excludes.add("**/libhermes-executor-debug.so")
-      excludes.add("**/libhermes-executor-release.so")
+      excludes.add("**/libhermes_executor.so")
       includes.add("**/libjsc.so")
       includes.add("**/libjscexecutor.so")
     }

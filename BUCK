@@ -115,7 +115,7 @@ rn_xplat_cxx_library2(
         react_native_root_target("React/CoreModules:CoreModules"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
-        react_native_xplat_target("jsi:JSCRuntime"),
+        react_native_xplat_target("jsc:JSCRuntime"),
         react_native_xplat_target("jsiexecutor:jsiexecutor"),
         react_native_xplat_target("reactperflogger:reactperflogger"),
     ],

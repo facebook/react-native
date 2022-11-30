@@ -412,6 +412,7 @@
 				5CF0FD27207FC6EC00C13D65 /* Start Metro */,
 				2FCDFB64B37634EC8EC3139B /* [CP] Embed Pods Frameworks */,
 				A8DE6393E2BB72D8FBBF6C27 /* [CP] Copy Pods Resources */,
+				992FB5A50F2847F7EB2C285C /* [RN] Copy Hermes Framework */,
 			);
 			buildRules = (
 			);
@@ -695,6 +696,24 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		992FB5A50F2847F7EB2C285C /* [RN] Copy Hermes Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[RN] Copy Hermes Framework";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = ". ../../sdks/hermes-engine/utils/copy-hermes-xcode.sh";
 		};
 		9A596313B3964A4DEB794409 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

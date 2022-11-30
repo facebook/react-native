@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 ##################
-###    jsi     ###
+### jscruntime ###
 ##################
 
 cmake_minimum_required(VERSION 3.13)
@@ -17,11 +17,19 @@ add_compile_options(
         -Wno-unused-lambda-capture
         -DLOG_TAG=\"ReactNative\")
 
-file(GLOB jsi_SRC CONFIGURE_DEPENDS jsi/*.cpp)
-add_library(jsi SHARED ${jsi_SRC})
+add_library(jscruntime
+        STATIC
+        JSCRuntime.h
+        JSCRuntime.cpp)
 
-target_include_directories(jsi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(jscruntime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(jsi
+target_link_libraries(jscruntime
         folly_runtime
+        jsc
+        jsi
         glog)
+
+# TODO: Remove this flag when ready.
+# Android has this enabled by default, but the flag is still needed for iOS.
+target_compile_options(jscruntime PRIVATE -DRN_FABRIC_ENABLED)
