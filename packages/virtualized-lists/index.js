@@ -47,7 +47,7 @@ module.exports = {
   keyExtractor,
 
   get VirtualizedList(): VirtualizedList {
-    return require('./Lists/VirtualizedList').default;
+    return require('./Lists/VirtualizedList');
   },
   get VirtualizedSectionList(): VirtualizedSectionList {
     return require('./Lists/VirtualizedSectionList');

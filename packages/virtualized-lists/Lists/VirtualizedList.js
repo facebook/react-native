@@ -161,10 +161,7 @@ function findLastWhere<T>(
  * - As an effort to remove defaultProps, use helper functions when referencing certain props
  *
  */
-export default class VirtualizedList extends StateSafePureComponent<
-  Props,
-  State,
-> {
+class VirtualizedList extends StateSafePureComponent<Props, State> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
 
   // scrollToEnd may be janky without getItemLayout prop
@@ -1954,3 +1951,5 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
 });
+
+module.exports = VirtualizedList;
