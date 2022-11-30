@@ -406,7 +406,7 @@ describe('VirtualizedList', () => {
     performAllBatches();
     expect(onStartReached).not.toHaveBeenCalled();
 
-    // Scroll to end and make sure onStartReached is called.
+    // Scroll to start and make sure onStartReached is called.
     instance._onScroll({
       timeStamp: 1000,
       nativeEvent: {
