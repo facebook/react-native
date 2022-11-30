@@ -103,7 +103,6 @@ using namespace facebook::react;
   auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
   auto const &accessibilityProps = *std::static_pointer_cast<AccessibilityProps const>(_props);
 
-  /*
   BOOL accessibilityLiveRegionEnabled = accessibilityProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
   if (_state && paragraphProps.accessible && accessibilityLiveRegionEnabled) {
     if (@available(iOS 11.0, *)) {
@@ -117,7 +116,6 @@ using namespace facebook::react;
       }
     }
   }
-   */
  
   [self setNeedsDisplay];
 }
