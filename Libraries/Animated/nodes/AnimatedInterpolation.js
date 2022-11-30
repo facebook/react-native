@@ -16,6 +16,7 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from './AnimatedNode';
 
 import normalizeColor from '../../StyleSheet/normalizeColor';
+import processColor from '../../StyleSheet/processColor';
 import Easing from '../Easing';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedWithChildren from './AnimatedWithChildren';
@@ -377,19 +378,31 @@ export default class AnimatedInterpolation<
     super.__detach();
   }
 
-  __transformDataType(range: $ReadOnlyArray<OutputT>): Array<any> {
-    return range.map(NativeAnimatedHelper.transformDataType);
-  }
-
   __getNativeConfig(): any {
     if (__DEV__) {
       NativeAnimatedHelper.validateInterpolation(this._config);
     }
 
+    // Only the `outputRange` can contain strings so we don't need to transform `inputRange` here
+    let outputRange = this._config.outputRange;
+    let outputType = null;
+    if (typeof outputRange[0] === 'string') {
+      // $FlowIgnoreMe[incompatible-cast]
+      outputRange = ((outputRange: $ReadOnlyArray<string>).map(value => {
+        const processedColor = processColor(value);
+        if (typeof processedColor === 'number') {
+          outputType = 'color';
+          return processedColor;
+        } else {
+          return NativeAnimatedHelper.transformDataType(value);
+        }
+      }): any);
+    }
+
     return {
       inputRange: this._config.inputRange,
-      // Only the `outputRange` can contain strings so we don't need to transform `inputRange` here
-      outputRange: this.__transformDataType(this._config.outputRange),
+      outputRange,
+      outputType,
       extrapolateLeft:
         this._config.extrapolateLeft || this._config.extrapolate || 'extend',
       extrapolateRight:
