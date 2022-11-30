@@ -18,8 +18,7 @@ import NativePerformanceObserver from './NativePerformanceObserver';
 
 export type HighResTimeStamp = number;
 // TODO: Extend once new types (such as event) are supported.
-// TODO: Get rid of the "undefined" once there is at least one type supported.
-export type PerformanceEntryType = 'undefined';
+export type PerformanceEntryType = 'undefined' | 'mark';
 
 export class PerformanceEntry {
   name: string;
@@ -53,7 +52,7 @@ export class PerformanceEntry {
 function rawToPerformanceEntryType(
   type: RawPerformanceEntryType,
 ): PerformanceEntryType {
-  return 'undefined';
+  return 'mark';
 }
 
 function rawToPerformanceEntry(entry: RawPerformanceEntry): PerformanceEntry {
@@ -166,7 +165,7 @@ export default class PerformanceObserver {
     } else {
       this._entryTypes = new Set([options.type]);
     }
-    this._entryTypes.forEach(type => {
+    for (const type of this._entryTypes) {
       if (!_observedEntryTypeRefCount.has(type)) {
         NativePerformanceObserver.startReporting(type);
       }
@@ -174,7 +173,7 @@ export default class PerformanceObserver {
         type,
         (_observedEntryTypeRefCount.get(type) ?? 0) + 1,
       );
-    });
+    }
     _observers.add(this);
   }
 
@@ -183,7 +182,7 @@ export default class PerformanceObserver {
       warnNoNativePerformanceObserver();
       return;
     }
-    this._entryTypes.forEach(type => {
+    for (const type of this._entryTypes) {
       const entryTypeRefCount = _observedEntryTypeRefCount.get(type) ?? 0;
       if (entryTypeRefCount === 1) {
         _observedEntryTypeRefCount.delete(type);
@@ -191,7 +190,7 @@ export default class PerformanceObserver {
       } else if (entryTypeRefCount !== 0) {
         _observedEntryTypeRefCount.set(type, entryTypeRefCount - 1);
       }
-    });
+    }
     _observers.delete(this);
     if (_observers.size === 0) {
       NativePerformanceObserver.setOnPerformanceEntryCallback(undefined);
@@ -201,7 +200,7 @@ export default class PerformanceObserver {
 
   static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
     // TODO: add types once they are fully supported
-    Object.freeze([]);
+    Object.freeze(['mark']);
 }
 
 // This is a callback that gets scheduled and periodically called from the native side
@@ -211,7 +210,7 @@ function onPerformanceEntry() {
   }
   const rawEntries = NativePerformanceObserver.getPendingEntries();
   const entries = rawEntries.map(rawToPerformanceEntry);
-  _observers.forEach(observer => {
+  for (const observer of _observers) {
     const entriesForObserver: PerformanceEntryList = entries.filter(entry =>
       observer._entryTypes.has(entry.entryType),
     );
@@ -219,5 +218,5 @@ function onPerformanceEntry() {
       new PerformanceObserverEntryList(entriesForObserver),
       observer,
     );
-  });
+  }
 }

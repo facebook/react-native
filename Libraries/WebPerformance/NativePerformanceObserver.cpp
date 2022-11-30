@@ -39,4 +39,13 @@ void NativePerformanceObserver::setOnPerformanceEntryCallback(
             << (callback ? "non-empty" : "empty");
 }
 
+void NativePerformanceObserver::logEntryForDebug(
+    jsi::Runtime &rt,
+    RawPerformanceEntry entry) {
+  LOG(INFO) << "NativePerformanceObserver::logEntry: "
+            << "name=" << entry.name << " type=" << entry.entryType
+            << " startTime=" << entry.startTime
+            << " duration=" << entry.duration;
+}
+
 } // namespace facebook::react
