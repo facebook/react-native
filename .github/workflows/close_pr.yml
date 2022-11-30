@@ -1,6 +1,10 @@
 name: Label closed PR as merged and leave a comment
 on:
   push
+  
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   comment-and-label:
