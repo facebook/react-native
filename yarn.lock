@@ -6198,10 +6198,10 @@ react-native-codegen@^0.71.3:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-gradle-plugin@^0.71.9:
-  version "0.71.9"
-  resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.9.tgz#c269938fddc4ca8418d3927a35b3344e9308773e"
-  integrity sha512-hv/xt/aRzzlA7asGCIebvVBwjsxPMaXXGrKsk9W19CInUpShTFSBvBitViNfpw/hOQ7OHa6SxWpG2OZf5yZ21w==
+react-native-gradle-plugin@^0.71.10:
+  version "0.71.10"
+  resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.10.tgz#3dc5148b85cd80b771fcb4c8fc417628b1eb27ba"
+  integrity sha512-0oWZ9UxJ1eJljxV+k31bz12OzN0oqnpbIW8utg7aNLD4nxUHWw5zydD3Okxx4Gizmf3E8ptAx90hP15X8UqdTA==
 
 react-refresh@^0.4.0:
   version "0.4.0"
