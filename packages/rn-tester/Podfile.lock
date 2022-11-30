@@ -1,81 +1,23 @@
 PODS:
   - boost (1.76.0)
-  - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.6)
-  - FBLazyVector (0.71.0-rc.1)
-  - FBReactNativeSpec (0.71.0-rc.1):
+  - FBLazyVector (0.71.0-rc.2)
+  - FBReactNativeSpec (0.71.0-rc.2):
     - RCT-Folly (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-Core (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - Flipper (0.125.0):
-    - Flipper-Folly (~> 2.6)
-    - Flipper-RSocket (~> 1.4)
-  - Flipper-Boost-iOSX (1.76.0.1.11)
-  - Flipper-DoubleConversion (3.2.0.1)
-  - Flipper-Fmt (7.1.7)
-  - Flipper-Folly (2.6.10):
-    - Flipper-Boost-iOSX
-    - Flipper-DoubleConversion
-    - Flipper-Fmt (= 7.1.7)
-    - Flipper-Glog
-    - libevent (~> 2.1.12)
-    - OpenSSL-Universal (= 1.1.1100)
-  - Flipper-Glog (0.5.0.5)
-  - Flipper-PeerTalk (0.0.4)
-  - Flipper-RSocket (1.4.3):
-    - Flipper-Folly (~> 2.6)
-  - FlipperKit (0.125.0):
-    - FlipperKit/Core (= 0.125.0)
-  - FlipperKit/Core (0.125.0):
-    - Flipper (~> 0.125.0)
-    - FlipperKit/CppBridge
-    - FlipperKit/FBCxxFollyDynamicConvert
-    - FlipperKit/FBDefines
-    - FlipperKit/FKPortForwarding
-    - SocketRocket (~> 0.6.0)
-  - FlipperKit/CppBridge (0.125.0):
-    - Flipper (~> 0.125.0)
-  - FlipperKit/FBCxxFollyDynamicConvert (0.125.0):
-    - Flipper-Folly (~> 2.6)
-  - FlipperKit/FBDefines (0.125.0)
-  - FlipperKit/FKPortForwarding (0.125.0):
-    - CocoaAsyncSocket (~> 7.6)
-    - Flipper-PeerTalk (~> 0.0.4)
-  - FlipperKit/FlipperKitHighlightOverlay (0.125.0)
-  - FlipperKit/FlipperKitLayoutHelpers (0.125.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutTextSearchable
-  - FlipperKit/FlipperKitLayoutIOSDescriptors (0.125.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutHelpers
-    - YogaKit (~> 1.18)
-  - FlipperKit/FlipperKitLayoutPlugin (0.125.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutHelpers
-    - FlipperKit/FlipperKitLayoutIOSDescriptors
-    - FlipperKit/FlipperKitLayoutTextSearchable
-    - YogaKit (~> 1.18)
-  - FlipperKit/FlipperKitLayoutTextSearchable (0.125.0)
-  - FlipperKit/FlipperKitNetworkPlugin (0.125.0):
-    - FlipperKit/Core
-  - FlipperKit/FlipperKitReactPlugin (0.125.0):
-    - FlipperKit/Core
-  - FlipperKit/FlipperKitUserDefaultsPlugin (0.125.0):
-    - FlipperKit/Core
-  - FlipperKit/SKIOSNetworkPlugin (0.125.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitNetworkPlugin
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-Core (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - hermes-engine (0.71.0-rc.1):
-    - hermes-engine/Pre-built (= 0.71.0-rc.1)
-  - hermes-engine/Pre-built (0.71.0-rc.1)
+  - hermes-engine (0.71.0-rc.2):
+    - hermes-engine/Hermes (= 0.71.0-rc.2)
+    - hermes-engine/JSI (= 0.71.0-rc.2)
+    - hermes-engine/Public (= 0.71.0-rc.2)
+  - hermes-engine/Hermes (0.71.0-rc.2)
+  - hermes-engine/JSI (0.71.0-rc.2)
+  - hermes-engine/Public (0.71.0-rc.2)
   - libevent (2.1.12)
   - MyNativeView (0.0.1):
     - RCT-Folly (= 2021.07.22.00)
@@ -95,7 +37,6 @@ PODS:
     - React-RCTFabric
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-  - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -118,26 +59,26 @@ PODS:
     - fmt (~> 6.2.1)
     - glog
     - libevent
-  - RCTRequired (0.71.0-rc.1)
-  - RCTTypeSafety (0.71.0-rc.1):
-    - FBLazyVector (= 0.71.0-rc.1)
-    - RCTRequired (= 0.71.0-rc.1)
-    - React-Core (= 0.71.0-rc.1)
-  - React (0.71.0-rc.1):
-    - React-Core (= 0.71.0-rc.1)
-    - React-Core/DevSupport (= 0.71.0-rc.1)
-    - React-Core/RCTWebSocket (= 0.71.0-rc.1)
-    - React-RCTActionSheet (= 0.71.0-rc.1)
-    - React-RCTAnimation (= 0.71.0-rc.1)
-    - React-RCTBlob (= 0.71.0-rc.1)
-    - React-RCTImage (= 0.71.0-rc.1)
-    - React-RCTLinking (= 0.71.0-rc.1)
-    - React-RCTNetwork (= 0.71.0-rc.1)
-    - React-RCTSettings (= 0.71.0-rc.1)
-    - React-RCTText (= 0.71.0-rc.1)
-    - React-RCTVibration (= 0.71.0-rc.1)
-  - React-callinvoker (0.71.0-rc.1)
-  - React-Codegen (0.71.0-rc.1):
+  - RCTRequired (0.71.0-rc.2)
+  - RCTTypeSafety (0.71.0-rc.2):
+    - FBLazyVector (= 0.71.0-rc.2)
+    - RCTRequired (= 0.71.0-rc.2)
+    - React-Core (= 0.71.0-rc.2)
+  - React (0.71.0-rc.2):
+    - React-Core (= 0.71.0-rc.2)
+    - React-Core/DevSupport (= 0.71.0-rc.2)
+    - React-Core/RCTWebSocket (= 0.71.0-rc.2)
+    - React-RCTActionSheet (= 0.71.0-rc.2)
+    - React-RCTAnimation (= 0.71.0-rc.2)
+    - React-RCTBlob (= 0.71.0-rc.2)
+    - React-RCTImage (= 0.71.0-rc.2)
+    - React-RCTLinking (= 0.71.0-rc.2)
+    - React-RCTNetwork (= 0.71.0-rc.2)
+    - React-RCTSettings (= 0.71.0-rc.2)
+    - React-RCTText (= 0.71.0-rc.2)
+    - React-RCTVibration (= 0.71.0-rc.2)
+  - React-callinvoker (0.71.0-rc.2)
+  - React-Codegen (0.71.0-rc.2):
     - FBReactNativeSpec
     - hermes-engine
     - RCT-Folly
@@ -150,524 +91,518 @@ PODS:
     - React-rncore
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-  - React-Core (0.71.0-rc.1):
+  - React-Core (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
-    - React-Core/Default (= 0.71.0-rc.1)
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-Core/Default (= 0.71.0-rc.2)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-Core/CoreModulesHeaders (0.71.0-rc.1):
-    - glog
-    - RCT-Folly (= 2021.07.22.00)
-    - React-Core/Default
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
-    - Yoga
-  - React-Core/Default (0.71.0-rc.1):
-    - glog
-    - RCT-Folly (= 2021.07.22.00)
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
-    - Yoga
-  - React-Core/DevSupport (0.71.0-rc.1):
-    - glog
-    - RCT-Folly (= 2021.07.22.00)
-    - React-Core/Default (= 0.71.0-rc.1)
-    - React-Core/RCTWebSocket (= 0.71.0-rc.1)
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-jsinspector (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
-    - Yoga
-  - React-Core/RCTActionSheetHeaders (0.71.0-rc.1):
+  - React-Core/CoreModulesHeaders (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-Core/Default
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-Core/RCTAnimationHeaders (0.71.0-rc.1):
+  - React-Core/Default (0.71.0-rc.2):
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
+    - Yoga
+  - React-Core/DevSupport (0.71.0-rc.2):
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core/Default (= 0.71.0-rc.2)
+    - React-Core/RCTWebSocket (= 0.71.0-rc.2)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-jsinspector (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
+    - Yoga
+  - React-Core/RCTActionSheetHeaders (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-Core/Default
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-Core/RCTBlobHeaders (0.71.0-rc.1):
+  - React-Core/RCTAnimationHeaders (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-Core/Default
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-Core/RCTImageHeaders (0.71.0-rc.1):
+  - React-Core/RCTBlobHeaders (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-Core/Default
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-Core/RCTLinkingHeaders (0.71.0-rc.1):
+  - React-Core/RCTImageHeaders (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-Core/Default
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-Core/RCTNetworkHeaders (0.71.0-rc.1):
+  - React-Core/RCTLinkingHeaders (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-Core/Default
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-Core/RCTPushNotificationHeaders (0.71.0-rc.1):
+  - React-Core/RCTNetworkHeaders (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-Core/Default
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-Core/RCTSettingsHeaders (0.71.0-rc.1):
+  - React-Core/RCTPushNotificationHeaders (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-Core/Default
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-Core/RCTTextHeaders (0.71.0-rc.1):
+  - React-Core/RCTSettingsHeaders (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-Core/Default
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-Core/RCTVibrationHeaders (0.71.0-rc.1):
+  - React-Core/RCTTextHeaders (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-Core/Default
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-Core/RCTWebSocket (0.71.0-rc.1):
+  - React-Core/RCTVibrationHeaders (0.71.0-rc.2):
     - glog
     - RCT-Folly (= 2021.07.22.00)
-    - React-Core/Default (= 0.71.0-rc.1)
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
+    - React-Core/Default
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
     - Yoga
-  - React-CoreModules (0.71.0-rc.1):
+  - React-Core/RCTWebSocket (0.71.0-rc.2):
+    - glog
     - RCT-Folly (= 2021.07.22.00)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-Codegen (= 0.71.0-rc.1)
-    - React-Core/CoreModulesHeaders (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-RCTImage (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-cxxreact (0.71.0-rc.1):
+    - React-Core/Default (= 0.71.0-rc.2)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
+    - Yoga
+  - React-CoreModules (0.71.0-rc.2):
+    - RCT-Folly (= 2021.07.22.00)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-Codegen (= 0.71.0-rc.2)
+    - React-Core/CoreModulesHeaders (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-RCTImage (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-cxxreact (0.71.0-rc.2):
     - boost (= 1.76.0)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
-    - React-callinvoker (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsinspector (= 0.71.0-rc.1)
-    - React-logger (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
-    - React-runtimeexecutor (= 0.71.0-rc.1)
-  - React-Fabric (0.71.0-rc.1):
+    - React-callinvoker (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsinspector (= 0.71.0-rc.2)
+    - React-logger (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
+    - React-runtimeexecutor (= 0.71.0-rc.2)
+  - React-Fabric (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-Fabric/animations (= 0.71.0-rc.1)
-    - React-Fabric/attributedstring (= 0.71.0-rc.1)
-    - React-Fabric/butter (= 0.71.0-rc.1)
-    - React-Fabric/componentregistry (= 0.71.0-rc.1)
-    - React-Fabric/componentregistrynative (= 0.71.0-rc.1)
-    - React-Fabric/components (= 0.71.0-rc.1)
-    - React-Fabric/config (= 0.71.0-rc.1)
-    - React-Fabric/core (= 0.71.0-rc.1)
-    - React-Fabric/debug_core (= 0.71.0-rc.1)
-    - React-Fabric/debug_renderer (= 0.71.0-rc.1)
-    - React-Fabric/imagemanager (= 0.71.0-rc.1)
-    - React-Fabric/leakchecker (= 0.71.0-rc.1)
-    - React-Fabric/mapbuffer (= 0.71.0-rc.1)
-    - React-Fabric/mounting (= 0.71.0-rc.1)
-    - React-Fabric/runtimescheduler (= 0.71.0-rc.1)
-    - React-Fabric/scheduler (= 0.71.0-rc.1)
-    - React-Fabric/telemetry (= 0.71.0-rc.1)
-    - React-Fabric/templateprocessor (= 0.71.0-rc.1)
-    - React-Fabric/textlayoutmanager (= 0.71.0-rc.1)
-    - React-Fabric/uimanager (= 0.71.0-rc.1)
-    - React-Fabric/utils (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/animations (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-Fabric/animations (= 0.71.0-rc.2)
+    - React-Fabric/attributedstring (= 0.71.0-rc.2)
+    - React-Fabric/butter (= 0.71.0-rc.2)
+    - React-Fabric/componentregistry (= 0.71.0-rc.2)
+    - React-Fabric/componentregistrynative (= 0.71.0-rc.2)
+    - React-Fabric/components (= 0.71.0-rc.2)
+    - React-Fabric/config (= 0.71.0-rc.2)
+    - React-Fabric/core (= 0.71.0-rc.2)
+    - React-Fabric/debug_core (= 0.71.0-rc.2)
+    - React-Fabric/debug_renderer (= 0.71.0-rc.2)
+    - React-Fabric/imagemanager (= 0.71.0-rc.2)
+    - React-Fabric/leakchecker (= 0.71.0-rc.2)
+    - React-Fabric/mapbuffer (= 0.71.0-rc.2)
+    - React-Fabric/mounting (= 0.71.0-rc.2)
+    - React-Fabric/runtimescheduler (= 0.71.0-rc.2)
+    - React-Fabric/scheduler (= 0.71.0-rc.2)
+    - React-Fabric/telemetry (= 0.71.0-rc.2)
+    - React-Fabric/templateprocessor (= 0.71.0-rc.2)
+    - React-Fabric/textlayoutmanager (= 0.71.0-rc.2)
+    - React-Fabric/uimanager (= 0.71.0-rc.2)
+    - React-Fabric/utils (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/animations (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/attributedstring (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/attributedstring (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/butter (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/butter (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/componentregistry (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/componentregistry (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/componentregistrynative (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/componentregistrynative (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-Fabric/components/activityindicator (= 0.71.0-rc.1)
-    - React-Fabric/components/image (= 0.71.0-rc.1)
-    - React-Fabric/components/inputaccessory (= 0.71.0-rc.1)
-    - React-Fabric/components/legacyviewmanagerinterop (= 0.71.0-rc.1)
-    - React-Fabric/components/modal (= 0.71.0-rc.1)
-    - React-Fabric/components/root (= 0.71.0-rc.1)
-    - React-Fabric/components/safeareaview (= 0.71.0-rc.1)
-    - React-Fabric/components/scrollview (= 0.71.0-rc.1)
-    - React-Fabric/components/slider (= 0.71.0-rc.1)
-    - React-Fabric/components/text (= 0.71.0-rc.1)
-    - React-Fabric/components/textinput (= 0.71.0-rc.1)
-    - React-Fabric/components/unimplementedview (= 0.71.0-rc.1)
-    - React-Fabric/components/view (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/activityindicator (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-Fabric/components/activityindicator (= 0.71.0-rc.2)
+    - React-Fabric/components/image (= 0.71.0-rc.2)
+    - React-Fabric/components/inputaccessory (= 0.71.0-rc.2)
+    - React-Fabric/components/legacyviewmanagerinterop (= 0.71.0-rc.2)
+    - React-Fabric/components/modal (= 0.71.0-rc.2)
+    - React-Fabric/components/root (= 0.71.0-rc.2)
+    - React-Fabric/components/safeareaview (= 0.71.0-rc.2)
+    - React-Fabric/components/scrollview (= 0.71.0-rc.2)
+    - React-Fabric/components/slider (= 0.71.0-rc.2)
+    - React-Fabric/components/text (= 0.71.0-rc.2)
+    - React-Fabric/components/textinput (= 0.71.0-rc.2)
+    - React-Fabric/components/unimplementedview (= 0.71.0-rc.2)
+    - React-Fabric/components/view (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/activityindicator (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/image (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/image (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/inputaccessory (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/inputaccessory (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/legacyviewmanagerinterop (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/legacyviewmanagerinterop (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/modal (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/modal (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/root (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/root (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/safeareaview (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/safeareaview (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/scrollview (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/scrollview (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/slider (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/slider (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/text (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/text (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/textinput (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/textinput (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/unimplementedview (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/unimplementedview (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/components/view (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/components/view (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
     - Yoga
-  - React-Fabric/config (0.71.0-rc.1):
+  - React-Fabric/config (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/core (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/core (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsidynamic (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/debug_core (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/debug_core (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/debug_renderer (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/debug_renderer (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/imagemanager (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/imagemanager (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-RCTImage (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/leakchecker (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-RCTImage (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/leakchecker (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/mapbuffer (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/mapbuffer (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/mounting (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/mounting (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/runtimescheduler (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/runtimescheduler (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/scheduler (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/scheduler (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/telemetry (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/telemetry (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/templateprocessor (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/templateprocessor (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/textlayoutmanager (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/textlayoutmanager (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
     - React-Fabric/uimanager
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/uimanager (0.71.0-rc.1):
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/uimanager (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsidynamic (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-Fabric/utils (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-Fabric/utils (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 0.71.0-rc.1)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-graphics (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-graphics (0.71.0-rc.1):
+    - RCTRequired (= 0.71.0-rc.2)
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-graphics (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-graphics (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - React-Core/Default (= 0.71.0-rc.1)
-  - React-hermes (0.71.0-rc.1):
+    - React-Core/Default (= 0.71.0-rc.2)
+  - React-hermes (0.71.0-rc.2):
     - DoubleConversion
     - glog
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - RCT-Folly/Futures (= 2021.07.22.00)
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsidynamic (= 0.71.0-rc.1)
-    - React-jsiexecutor (= 0.71.0-rc.1)
-    - React-jsinspector (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
-  - React-jsi (0.71.0-rc.1):
-    - hermes-engine
-  - React-jsidynamic (0.71.0-rc.1):
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsiexecutor (= 0.71.0-rc.2)
+    - React-jsinspector (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
+  - React-jsi (0.71.0-rc.2):
     - boost (= 1.76.0)
     - DoubleConversion
     - glog
+    - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
-    - React-jsi (= 0.71.0-rc.1)
-  - React-jsiexecutor (0.71.0-rc.1):
+  - React-jsiexecutor (0.71.0-rc.2):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsidynamic (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
-  - React-jsinspector (0.71.0-rc.1)
-  - React-logger (0.71.0-rc.1):
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
+  - React-jsinspector (0.71.0-rc.2)
+  - React-logger (0.71.0-rc.2):
     - glog
-  - React-perflogger (0.71.0-rc.1)
-  - React-RCTActionSheet (0.71.0-rc.1):
-    - React-Core/RCTActionSheetHeaders (= 0.71.0-rc.1)
-  - React-RCTAnimation (0.71.0-rc.1):
+  - React-perflogger (0.71.0-rc.2)
+  - React-RCTActionSheet (0.71.0-rc.2):
+    - React-Core/RCTActionSheetHeaders (= 0.71.0-rc.2)
+  - React-RCTAnimation (0.71.0-rc.2):
     - RCT-Folly (= 2021.07.22.00)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-Codegen (= 0.71.0-rc.1)
-    - React-Core/RCTAnimationHeaders (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-RCTAppDelegate (0.71.0-rc.1):
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-Codegen (= 0.71.0-rc.2)
+    - React-Core/RCTAnimationHeaders (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-RCTAppDelegate (0.71.0-rc.2):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -675,101 +610,100 @@ PODS:
     - React-graphics
     - React-RCTFabric
     - ReactCommon/turbomodule/core
-  - React-RCTBlob (0.71.0-rc.1):
+  - React-RCTBlob (0.71.0-rc.2):
     - RCT-Folly (= 2021.07.22.00)
-    - React-Codegen (= 0.71.0-rc.1)
-    - React-Core/RCTBlobHeaders (= 0.71.0-rc.1)
-    - React-Core/RCTWebSocket (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-RCTNetwork (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-RCTFabric (0.71.0-rc.1):
+    - React-Codegen (= 0.71.0-rc.2)
+    - React-Core/RCTBlobHeaders (= 0.71.0-rc.2)
+    - React-Core/RCTWebSocket (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-RCTNetwork (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-RCTFabric (0.71.0-rc.2):
     - RCT-Folly/Fabric (= 2021.07.22.00)
-    - React-Core (= 0.71.0-rc.1)
-    - React-Fabric (= 0.71.0-rc.1)
-    - React-RCTImage (= 0.71.0-rc.1)
-  - React-RCTImage (0.71.0-rc.1):
+    - React-Core (= 0.71.0-rc.2)
+    - React-Fabric (= 0.71.0-rc.2)
+    - React-RCTImage (= 0.71.0-rc.2)
+  - React-RCTImage (0.71.0-rc.2):
     - RCT-Folly (= 2021.07.22.00)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-Codegen (= 0.71.0-rc.1)
-    - React-Core/RCTImageHeaders (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-RCTNetwork (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-RCTLinking (0.71.0-rc.1):
-    - React-Codegen (= 0.71.0-rc.1)
-    - React-Core/RCTLinkingHeaders (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-RCTNetwork (0.71.0-rc.1):
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-Codegen (= 0.71.0-rc.2)
+    - React-Core/RCTImageHeaders (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-RCTNetwork (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-RCTLinking (0.71.0-rc.2):
+    - React-Codegen (= 0.71.0-rc.2)
+    - React-Core/RCTLinkingHeaders (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-RCTNetwork (0.71.0-rc.2):
     - RCT-Folly (= 2021.07.22.00)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-Codegen (= 0.71.0-rc.1)
-    - React-Core/RCTNetworkHeaders (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-RCTPushNotification (0.71.0-rc.1):
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-Codegen (= 0.71.0-rc.1)
-    - React-Core/RCTPushNotificationHeaders (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-RCTSettings (0.71.0-rc.1):
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-Codegen (= 0.71.0-rc.2)
+    - React-Core/RCTNetworkHeaders (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-RCTPushNotification (0.71.0-rc.2):
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-Codegen (= 0.71.0-rc.2)
+    - React-Core/RCTPushNotificationHeaders (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-RCTSettings (0.71.0-rc.2):
     - RCT-Folly (= 2021.07.22.00)
-    - RCTTypeSafety (= 0.71.0-rc.1)
-    - React-Codegen (= 0.71.0-rc.1)
-    - React-Core/RCTSettingsHeaders (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-RCTTest (0.71.0-rc.1):
+    - RCTTypeSafety (= 0.71.0-rc.2)
+    - React-Codegen (= 0.71.0-rc.2)
+    - React-Core/RCTSettingsHeaders (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-RCTTest (0.71.0-rc.2):
     - RCT-Folly (= 2021.07.22.00)
-    - React-Core (= 0.71.0-rc.1)
-    - React-CoreModules (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-RCTText (0.71.0-rc.1):
-    - React-Core/RCTTextHeaders (= 0.71.0-rc.1)
-  - React-RCTVibration (0.71.0-rc.1):
+    - React-Core (= 0.71.0-rc.2)
+    - React-CoreModules (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-RCTText (0.71.0-rc.2):
+    - React-Core/RCTTextHeaders (= 0.71.0-rc.2)
+  - React-RCTVibration (0.71.0-rc.2):
     - RCT-Folly (= 2021.07.22.00)
-    - React-Codegen (= 0.71.0-rc.1)
-    - React-Core/RCTVibrationHeaders (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
-  - React-rncore (0.71.0-rc.1)
-  - React-runtimeexecutor (0.71.0-rc.1):
-    - React-jsi (= 0.71.0-rc.1)
-  - ReactCommon/turbomodule/bridging (0.71.0-rc.1):
+    - React-Codegen (= 0.71.0-rc.2)
+    - React-Core/RCTVibrationHeaders (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
+  - React-rncore (0.71.0-rc.2)
+  - React-runtimeexecutor (0.71.0-rc.2):
+    - React-jsi (= 0.71.0-rc.2)
+  - ReactCommon/turbomodule/bridging (0.71.0-rc.2):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
-    - React-callinvoker (= 0.71.0-rc.1)
-    - React-Core (= 0.71.0-rc.1)
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-logger (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
-  - ReactCommon/turbomodule/core (0.71.0-rc.1):
+    - React-callinvoker (= 0.71.0-rc.2)
+    - React-Core (= 0.71.0-rc.2)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-logger (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
+  - ReactCommon/turbomodule/core (0.71.0-rc.2):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
-    - React-callinvoker (= 0.71.0-rc.1)
-    - React-Core (= 0.71.0-rc.1)
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-jsidynamic (= 0.71.0-rc.1)
-    - React-logger (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
-  - ReactCommon/turbomodule/samples (0.71.0-rc.1):
+    - React-callinvoker (= 0.71.0-rc.2)
+    - React-Core (= 0.71.0-rc.2)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-logger (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
+  - ReactCommon/turbomodule/samples (0.71.0-rc.2):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
-    - React-callinvoker (= 0.71.0-rc.1)
-    - React-Core (= 0.71.0-rc.1)
-    - React-cxxreact (= 0.71.0-rc.1)
-    - React-jsi (= 0.71.0-rc.1)
-    - React-logger (= 0.71.0-rc.1)
-    - React-perflogger (= 0.71.0-rc.1)
-    - ReactCommon/turbomodule/core (= 0.71.0-rc.1)
+    - React-callinvoker (= 0.71.0-rc.2)
+    - React-Core (= 0.71.0-rc.2)
+    - React-cxxreact (= 0.71.0-rc.2)
+    - React-jsi (= 0.71.0-rc.2)
+    - React-logger (= 0.71.0-rc.2)
+    - React-perflogger (= 0.71.0-rc.2)
+    - ReactCommon/turbomodule/core (= 0.71.0-rc.2)
   - ScreenshotManager (0.0.1):
     - RCT-Folly (= 2021.07.22.00)
     - RCTRequired
@@ -779,43 +713,18 @@ PODS:
     - React-RCTFabric
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-  - SocketRocket (0.6.0)
   - Yoga (1.14.0)
-  - YogaKit (1.18.1):
-    - Yoga (~> 1.14)
 
 DEPENDENCIES:
   - boost (from `../../third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../../third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../../Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../../React/FBReactNativeSpec`)
-  - Flipper (= 0.125.0)
-  - Flipper-Boost-iOSX (= 1.76.0.1.11)
-  - Flipper-DoubleConversion (= 3.2.0.1)
-  - Flipper-Fmt (= 7.1.7)
-  - Flipper-Folly (= 2.6.10)
-  - Flipper-Glog (= 0.5.0.5)
-  - Flipper-PeerTalk (= 0.0.4)
-  - Flipper-RSocket (= 1.4.3)
-  - FlipperKit (= 0.125.0)
-  - FlipperKit/Core (= 0.125.0)
-  - FlipperKit/CppBridge (= 0.125.0)
-  - FlipperKit/FBCxxFollyDynamicConvert (= 0.125.0)
-  - FlipperKit/FBDefines (= 0.125.0)
-  - FlipperKit/FKPortForwarding (= 0.125.0)
-  - FlipperKit/FlipperKitHighlightOverlay (= 0.125.0)
-  - FlipperKit/FlipperKitLayoutPlugin (= 0.125.0)
-  - FlipperKit/FlipperKitLayoutTextSearchable (= 0.125.0)
-  - FlipperKit/FlipperKitNetworkPlugin (= 0.125.0)
-  - FlipperKit/FlipperKitReactPlugin (= 0.125.0)
-  - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.125.0)
-  - FlipperKit/SKIOSNetworkPlugin (= 0.125.0)
   - glog (from `../../third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../../sdks/hermes/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
   - MyNativeView (from `NativeComponentExample`)
   - NativeCxxModuleExample (from `NativeCxxModuleExample`)
-  - OpenSSL-Universal (= 1.1.1100)
   - RCT-Folly (from `../../third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../../third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../../Libraries/RCTRequired`)
@@ -824,7 +733,6 @@ DEPENDENCIES:
   - React-callinvoker (from `../../ReactCommon/callinvoker`)
   - React-Codegen (from `build/generated/ios`)
   - React-Core (from `../../`)
-  - React-Core/DevSupport (from `../../`)
   - React-Core/RCTWebSocket (from `../../`)
   - React-CoreModules (from `../../React/CoreModules`)
   - React-cxxreact (from `../../ReactCommon/cxxreact`)
@@ -832,7 +740,6 @@ DEPENDENCIES:
   - React-graphics (from `../../ReactCommon/react/renderer/graphics`)
   - React-hermes (from `../../ReactCommon/hermes`)
   - React-jsi (from `../../ReactCommon/jsi`)
-  - React-jsidynamic (from `../../ReactCommon/jsi`)
   - React-jsiexecutor (from `../../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../ReactCommon/jsinspector`)
   - React-logger (from `../../ReactCommon/logger`)
@@ -859,21 +766,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - CocoaAsyncSocket
-    - Flipper
-    - Flipper-Boost-iOSX
-    - Flipper-DoubleConversion
-    - Flipper-Fmt
-    - Flipper-Folly
-    - Flipper-Glog
-    - Flipper-PeerTalk
-    - Flipper-RSocket
-    - FlipperKit
     - fmt
     - libevent
-    - OpenSSL-Universal
-    - SocketRocket
-    - YogaKit
 
 EXTERNAL SOURCES:
   boost:
@@ -917,8 +811,6 @@ EXTERNAL SOURCES:
   React-hermes:
     :path: "../../ReactCommon/hermes"
   React-jsi:
-    :path: "../../ReactCommon/jsi"
-  React-jsidynamic:
     :path: "../../ReactCommon/jsi"
   React-jsiexecutor:
     :path: "../../ReactCommon/jsiexecutor"
@@ -967,64 +859,50 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
-  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  FBLazyVector: 2fc7b5c394f0c14e5533e7549d8cdaab9f9893c7
-  FBReactNativeSpec: 2ae538f892c804b9871c9d7b8320cdd496844546
-  Flipper: 26fc4b7382499f1281eb8cb921e5c3ad6de91fe0
-  Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
-  Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
-  Flipper-Fmt: 60cbdd92fc254826e61d669a5d87ef7015396a9b
-  Flipper-Folly: 584845625005ff068a6ebf41f857f468decd26b3
-  Flipper-Glog: 70c50ce58ddaf67dc35180db05f191692570f446
-  Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
-  Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
-  FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
+  FBLazyVector: 4d7466fd7e3c0886dda9e4e257a1280344df546b
+  FBReactNativeSpec: 14554af403aa540f122c2ac68c2ec2ee61948be7
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: 4bef72652371c5f71211c2453d95ccbaf2a7312b
+  hermes-engine: adb326aee32e5f8e8a98b8f30735c80d9b625119
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   MyNativeView: f6008cff7263168410ad24bdbcfd2a042c1ebe98
   NativeCxxModuleExample: 33479d8a17be05ea1e87283082ae455854447e43
-  OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
-  RCTRequired: db4004fc08be4f102ce1c1c73b50dc99ab6c9350
-  RCTTypeSafety: abdfc4881148f6ccc090c8fcbc252e1362b2ed30
-  React: e3a246ddc930d2127bc129c9e9f556bb9fce364f
-  React-callinvoker: dfe65a6afae6f9ffee7618fa91413b91356ff34e
-  React-Codegen: 5e32f67a31d4e8de0da12946122e5fa49b6fc7df
-  React-Core: e10349904a0d22555759d869abee221f219f4a71
-  React-CoreModules: bf21c1c213f459f23e1ca685471d7d22044cf930
-  React-cxxreact: e3ddcf50b0a4b8c6e12ccf0df69b7339680fd46a
-  React-Fabric: da5157d996593df6a24a0f8b4f0983f84093d910
-  React-graphics: 78cc7664c2f53373c202fbf31042a09dd20f2d82
-  React-hermes: a10d3db68ce939854c49cec170471ec9f3888390
-  React-jsi: b9762b467291d923902fc6504982c38c769137c9
-  React-jsidynamic: 7fe7db5f0025299c07f6676898c3c699dc3596ad
-  React-jsiexecutor: a11de28f25c86e79ac687f39941e77f8a5666845
-  React-jsinspector: da5db185115ab26347c223c2bb579f8908023b58
-  React-logger: 4e876506a822e8604185070977317ffca67895d9
-  React-perflogger: 81b05381519234c9ba87aaa82a3125747335ffb2
-  React-RCTActionSheet: 3d61cef05c44b15926083c3505d310d3f545680d
-  React-RCTAnimation: db2f23efd329b59a9b7849b90fca6a791c5ef9d0
-  React-RCTAppDelegate: ddf6c745b41e2f8fa5780e677689f120a042f365
-  React-RCTBlob: e993a7bb2de29769fe9dd0e974774b955b816380
-  React-RCTFabric: ec697e5098535c119f6cede1ae0d376473a339bd
-  React-RCTImage: 637a9365bfbc4bb491cf809dfac502abfa1b9986
-  React-RCTLinking: 97a444cca407623a74bf65e274e2bb373d8f982d
-  React-RCTNetwork: 3ad09efa7661022cdce4984b8f1628062f7100f1
-  React-RCTPushNotification: 69b19d93406dc729aecb839db532cf99215202e9
-  React-RCTSettings: 22fd4b36d38ffe5a9e610c4723eec28a8773ad61
-  React-RCTTest: a71f68392074ddf10f0a1bb9a3098605f91ec8ef
-  React-RCTText: 7c23955a60497ec8b621149fdadb82f48f22d991
-  React-RCTVibration: 2a79f18332464c4e3b7f2beb310cdbf635020439
-  React-rncore: 47cc99517f2f73ba5496d25489d2f06a5275f1c3
-  React-runtimeexecutor: f67e7bddd7dd489b859eccdd638273dd2e0dad6a
-  ReactCommon: 3139c20749644d92efc7546c043a40df101a9b1f
+  RCTRequired: 6a5266f052d88710f1a03487c4e0584c0a1dd5fa
+  RCTTypeSafety: 9728fc39a7fdb3ae89e05cf93a72273e949b89a3
+  React: 41f781ceac4d692b5f968e9e988703e66b8859e4
+  React-callinvoker: 2b04a4dfaa790a406c2bd8773597715b31366b0f
+  React-Codegen: 0715081447f9a3bf90bdcb72a51cf124f1a6646c
+  React-Core: 5aead80ab318fcf79820ebd0b6e23e74c9c6bfbb
+  React-CoreModules: ec2b43d87cf00fcfc0267a680b682baa76e7e3f6
+  React-cxxreact: dd2d99409eb2f29e3f1137674a1619fc48c35921
+  React-Fabric: 20583d44f6c636605869767e592098d5fa1e81db
+  React-graphics: 75d0fe57d962709028905b9ec0d673f6c5ca97a1
+  React-hermes: d92ee76d78cff6f829c546225b1913478b66d438
+  React-jsi: fa4e35ab22e519c429945e0be24987871f79260d
+  React-jsiexecutor: 52ebd6c36b29eede199f01fc704de0d40120f2cb
+  React-jsinspector: d097ca923c7e97e3a7ecb1f2bbbc398b8c3d4788
+  React-logger: 2c5dc8d28a1980a6562cdc352807470f9619b688
+  React-perflogger: dbc1775bf8b937dab3bc296566c05cfe1cdbd1dd
+  React-RCTActionSheet: 43f073c630d92d89e15332fd4b14affc1ab5355d
+  React-RCTAnimation: 806bc5050d7f30ff5fdc16b5f1fbaa893abc8568
+  React-RCTAppDelegate: d6f9fb4af4af8cf444373ebdef9b2813a41fff0f
+  React-RCTBlob: 1b957db14b3c80b93142ffe7347b0c1af5902532
+  React-RCTFabric: 06a86779b8aff2bfc596896cab948844a772fa69
+  React-RCTImage: f3d70d634fcbfdc0de1e290b06d0c29e84acb7af
+  React-RCTLinking: f4b1ce965d6f538f372ce1f12133b0608d915164
+  React-RCTNetwork: bf532ebcacd9638ece4af823ee2a07afb8e2f04b
+  React-RCTPushNotification: 3d3c98a32c0c7a99ac79d4f518462f7058233eda
+  React-RCTSettings: fef0d05c2c8e1abbbd90d1079bc5c5cfcd98d7ba
+  React-RCTTest: 7992a8937c57a79767314644d34c6aad52c8cc72
+  React-RCTText: b161efef6f468bb35e6c8867cf87d5962abfcb2b
+  React-RCTVibration: 44422f3f18fb1641f274d837dbd487abbc0fe48a
+  React-rncore: e9df86ae52e524b3fb0460942c63037b5fe178eb
+  React-runtimeexecutor: 3f712141850e2862fe082483e4e64bb2eaedb30d
+  ReactCommon: 4f924162ce597222e25a22e6895bed916a68212f
   ScreenshotManager: 49b430fbb6b5db5bed6087a9d070511ce3b0488e
-  SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
-  Yoga: 9e42e73e451dfc49f02acfd4b2b22ee04d8e9b6e
-  YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
+  Yoga: 0324cb09314332b1f6dc1f59d7671621391122e3
 
 PODFILE CHECKSUM: 5d1fc1e8809808c4384337ae55c5be2de48ffe4c
 
