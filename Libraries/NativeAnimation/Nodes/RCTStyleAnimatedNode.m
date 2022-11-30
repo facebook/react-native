@@ -38,12 +38,7 @@
     if (node) {
       if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
         RCTValueAnimatedNode *valueAnimatedNode = (RCTValueAnimatedNode *)node;
-        id animatedObject = valueAnimatedNode.animatedObject;
-        if (animatedObject) {
-          _propsDictionary[property] = animatedObject;
-        } else {
-          _propsDictionary[property] = @(valueAnimatedNode.value);
-        }
+        _propsDictionary[property] = @(valueAnimatedNode.value);
       } else if ([node isKindOfClass:[RCTTransformAnimatedNode class]]) {
         RCTTransformAnimatedNode *transformAnimatedNode = (RCTTransformAnimatedNode *)node;
         [_propsDictionary addEntriesFromDictionary:transformAnimatedNode.propsDictionary];
