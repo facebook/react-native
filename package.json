@@ -112,7 +112,7 @@
     "@react-native-community/cli": "10.0.0-alpha.5",
     "@react-native-community/cli-platform-android": "10.0.0-alpha.4",
     "@react-native-community/cli-platform-ios": "10.0.0-alpha.3",
-    "@react-native/assets": "1.0.0",
+    "@react-native/assets-registry": "^0.72.0",
     "@react-native/gradle-plugin": "^0.72.1",
     "@react-native/normalize-color": "2.1.0",
     "@react-native/polyfills": "2.0.0",
