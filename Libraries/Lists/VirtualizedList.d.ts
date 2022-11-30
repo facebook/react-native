@@ -233,8 +233,8 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
   maxToRenderPerBatch?: number | undefined;
 
   /**
-   * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
-   * content.
+   * Called once when the scroll position gets within within `onEndReachedThreshold`
+   * from the logical end of the list.
    */
   onEndReached?: ((info: {distanceFromEnd: number}) => void) | null | undefined;
 
@@ -268,8 +268,8 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
     | undefined;
 
   /**
-   * Called once when the scroll position gets within `onStartReachedThreshold` of the rendered
-   * content.
+   * Called once when the scroll position gets within within `onStartReachedThreshold`
+   * from the logical start of the list.
    */
   onStartReached?:
     | ((info: {distanceFromStart: number}) => void)
