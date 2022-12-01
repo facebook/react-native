@@ -1477,7 +1477,6 @@ function AccessibilityLiveRegion(): React.Node {
 
 function AccessibilityExpandedExample(): React.Node {
   const [expand, setExpanded] = React.useState(false);
-  const [pressed, setPressed] = React.useState(false);
   const expandAction = {name: 'expand'};
   const collapseAction = {name: 'collapse'};
   return (
