@@ -22,6 +22,14 @@ export interface AccessibilityProps
   accessible?: boolean | undefined;
 
   /**
+   * Indicates to accessibility services whether the user should be notified when this view changes.
+   * Works for Android API >= 19 only.
+   * See http://developer.android.com/reference/android/view/View.html#attr_android:accessibilityLiveRegion for references.
+   * @platform android
+   */
+  accessibilityLiveRegion?: 'none' | 'polite' | 'assertive' | undefined;
+
+  /**
    * Provides an array of custom actions available for accessibility.
    */
   accessibilityActions?: ReadonlyArray<AccessibilityActionInfo> | undefined;
@@ -226,14 +234,6 @@ export type AccessibilityRole =
   | 'toolbar';
 
 export interface AccessibilityPropsAndroid {
-  /**
-   * Indicates to accessibility services whether the user should be notified when this view changes.
-   * Works for Android API >= 19 only.
-   * See http://developer.android.com/reference/android/view/View.html#attr_android:accessibilityLiveRegion for references.
-   * @platform android
-   */
-  accessibilityLiveRegion?: 'none' | 'polite' | 'assertive' | undefined;
-
   /**
    * Controls how view is important for accessibility which is if it fires accessibility events
    * and if it is reported to accessibility services that query the screen.

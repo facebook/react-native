@@ -52,6 +52,7 @@ export type TextProps = $ReadOnly<{|
    */
   accessible?: ?boolean,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityHint?: ?Stringish,
   accessibilityLanguage?: ?Stringish,
