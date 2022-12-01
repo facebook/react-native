@@ -409,7 +409,7 @@ using namespace facebook::react;
 
 #pragma mark - RCTBackedTextInputDelegate (UIScrollViewDelegate)
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView // TODO(macOS GH#774)
 {
   if (_eventEmitter) {
     std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onScroll([self _textInputMetrics]);

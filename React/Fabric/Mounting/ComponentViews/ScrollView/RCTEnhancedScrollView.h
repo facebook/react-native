@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
  * `UIScrollView` subclass which has some improvements and tweaks
  * which are not directly related to React Native.
  */
-@interface RCTEnhancedScrollView : UIScrollView
+@interface RCTEnhancedScrollView : RCTUIScrollView // TODO(macOS GH#774)
 
 /*
  * Returns a delegate splitter that can be used to create as many `UIScrollView` delegates as needed.

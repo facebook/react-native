@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * Returns an actual UIScrollView that this component uses under the hood.
  */
-@property (nonatomic, strong, readonly) UIScrollView *scrollView;
+@property (nonatomic, strong, readonly) RCTUIScrollView *scrollView; // TODO(macOS GH#774)
 
 /*
  * Returns the subview of the scroll view that the component uses to mount all subcomponents into. That's useful to

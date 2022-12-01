@@ -130,9 +130,9 @@
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+- (void)scrollViewWillEndDragging:(RCTUIScrollView *)scrollView
                      withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint *)targetContentOffset
+              targetContentOffset:(inout CGPoint *)targetContentOffset // TODO(macOS GH#774)
 {
   if (self.snapToOffsets && self.snapToOffsets.count > 0) {
     // An alternative to enablePaging and snapToInterval which allows setting custom
@@ -259,7 +259,7 @@
 
 #pragma mark -
 
-- (BOOL)isHorizontal:(UIScrollView *)scrollView
+- (BOOL)isHorizontal:(RCTUIScrollView *)scrollView // TODO(macOS GH#774)
 {
   return scrollView.contentSize.width > self.frame.size.width;
 }

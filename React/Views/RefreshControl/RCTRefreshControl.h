@@ -14,6 +14,6 @@
 
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) RCTDirectEventBlock onRefresh;
-@property (nonatomic, weak) UIScrollView *scrollView;
+@property (nonatomic, weak) RCTUIScrollView *scrollView; // TODO(macOS GH#774)
 
 @end
