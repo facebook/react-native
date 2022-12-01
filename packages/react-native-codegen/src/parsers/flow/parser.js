@@ -10,10 +10,34 @@
 
 'use strict';
 
+import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema.js';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
 
+const {
+  UnsupportedObjectPropertyTypeAnnotationParserError,
+} = require('../errors');
+
 class FlowParser implements Parser {
+  typeParameterInstantiation: string = 'TypeParameterInstantiation';
+
+  getKeyName(propertyOrIndex: $FlowFixMe, hasteModuleName: string): string {
+    switch (propertyOrIndex.type) {
+      case 'ObjectTypeProperty':
+        return propertyOrIndex.key.name;
+      case 'ObjectTypeIndexer':
+        // flow index name is optional
+        return propertyOrIndex.id?.name ?? 'key';
+      default:
+        throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+          hasteModuleName,
+          propertyOrIndex,
+          propertyOrIndex.type,
+          this.language(),
+        );
+    }
+  }
+
   getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
     return maybeEnumDeclaration.body.type
       .replace('EnumNumberBody', 'NumberTypeAnnotation')
@@ -30,6 +54,27 @@ class FlowParser implements Parser {
 
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation.id.name;
+  }
+
+  checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {
+    return (
+      typeArguments.type !== 'TypeParameterInstantiation' ||
+      typeArguments.params.length !== 1 ||
+      typeArguments.params[0].type !== 'GenericTypeAnnotation' ||
+      typeArguments.params[0].id.name !== 'Spec'
+    );
+  }
+
+  remapUnionTypeAnnotationMemberNames(
+    membersTypes: $FlowFixMe[],
+  ): UnionTypeAnnotationMemberType[] {
+    const remapLiteral = (item: $FlowFixMe) => {
+      return item.type
+        .replace('NumberLiteralTypeAnnotation', 'NumberTypeAnnotation')
+        .replace('StringLiteralTypeAnnotation', 'StringTypeAnnotation');
+    };
+
+    return [...new Set(membersTypes.map(remapLiteral))];
   }
 }
 

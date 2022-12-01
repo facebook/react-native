@@ -11,7 +11,6 @@
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import InteractionManager from '../Interaction/InteractionManager';
 import Platform from '../Utilities/Platform';
 import NativeIntentAndroid from './NativeIntentAndroid';
 import NativeLinkingManager from './NativeLinkingManager';
@@ -96,9 +95,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
    */
   getInitialURL(): Promise<?string> {
     return Platform.OS === 'android'
-      ? InteractionManager.runAfterInteractions().then(() =>
-          nullthrows(NativeIntentAndroid).getInitialURL(),
-        )
+      ? nullthrows(NativeIntentAndroid).getInitialURL()
       : nullthrows(NativeLinkingManager).getInitialURL();
   }
 

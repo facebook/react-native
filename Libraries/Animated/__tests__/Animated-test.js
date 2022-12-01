@@ -9,10 +9,10 @@
  */
 
 import * as React from 'react';
-import TestRenderer from 'react-test-renderer';
 
 let Animated = require('../Animated').default;
 let AnimatedProps = require('../nodes/AnimatedProps').default;
+let TestRenderer = require('react-test-renderer');
 
 jest.mock('../../BatchedBridge/NativeModules', () => ({
   NativeAnimatedModule: {},
@@ -175,11 +175,13 @@ describe('Animated tests', () => {
 
       expect(testRenderer.toJSON().props.style.opacity).toEqual(0);
 
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 0,
-        useNativeDriver: false,
-      }).start();
+      TestRenderer.act(() => {
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 0,
+          useNativeDriver: false,
+        }).start();
+      });
 
       expect(testRenderer.toJSON().props.style.opacity).toEqual(1);
     });

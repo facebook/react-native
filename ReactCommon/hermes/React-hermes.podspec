@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   s.summary                = "Hermes engine for React Native"
   s.homepage               = "https://reactnative.dev/"
   s.license                = package['license']
-  s.author                 = "Facebook, Inc. and its affiliates"
+  s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :osx => "10.14", :ios => "12.4" }
   s.source                 = source
   s.source_files           = "executor/*.{cpp,h}",
@@ -40,7 +40,8 @@ Pod::Spec.new do |s|
   s.public_header_files    = "executor/HermesExecutorFactory.h"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = {
-                               "HEADER_SEARCH_PATHS" => "\"${PODS_ROOT}/hermes-engine/destroot/include\" \"$(PODS_TARGET_SRCROOT)/..\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/libevent/include\""
+                               "HEADER_SEARCH_PATHS" => "\"${PODS_ROOT}/hermes-engine/destroot/include\" \"$(PODS_TARGET_SRCROOT)/..\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/libevent/include\"",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
                              }.merge!(build_type == :debug ? { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" } : {})
   s.header_dir             = "reacthermes"
   s.dependency "React-cxxreact", version

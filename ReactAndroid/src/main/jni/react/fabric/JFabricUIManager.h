@@ -8,13 +8,12 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include "Binding.h"
 
-using namespace facebook::jni;
+#include "Binding.h"
 
 namespace facebook::react {
 
-class JFabricUIManager : public JavaClass<JFabricUIManager> {
+class JFabricUIManager : public jni::JavaClass<JFabricUIManager> {
  public:
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/fabric/FabricUIManager;";

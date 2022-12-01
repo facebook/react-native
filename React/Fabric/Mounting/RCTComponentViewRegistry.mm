@@ -17,6 +17,7 @@
 
 #import <butter/map.h>
 
+using namespace facebook;
 using namespace facebook::react;
 
 const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;

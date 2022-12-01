@@ -6,6 +6,8 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+add_compile_options(-std=c++17)
+
 file(GLOB_RECURSE hermes_executor_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(
         hermes-executor-common
@@ -17,7 +19,8 @@ target_link_libraries(hermes-executor-common
         jsireact
         hermes-engine::libhermes
         jsi
-        debug hermes-inspector
+        debug
+        hermes-inspector
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)

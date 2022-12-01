@@ -27,6 +27,23 @@ export interface TextPropsIOS {
   adjustsFontSizeToFit?: boolean | undefined;
 
   /**
+   * The Dynamic Text scale ramp to apply to this element on iOS.
+   */
+  dynamicTypeRamp?:
+    | 'caption2'
+    | 'caption1'
+    | 'footnote'
+    | 'subheadline'
+    | 'callout'
+    | 'body'
+    | 'headline'
+    | 'title3'
+    | 'title2'
+    | 'title1'
+    | 'largeTitle'
+    | undefined;
+
+  /**
    * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
    */
   minimumFontScale?: number | undefined;

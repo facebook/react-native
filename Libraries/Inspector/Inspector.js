@@ -142,12 +142,11 @@ class Inspector extends React.Component<
       // Sync the touched view with React DevTools.
       // Note: This is Paper only. To support Fabric,
       // DevTools needs to be updated to not rely on view tags.
-      if (this.state.devtoolsAgent) {
+      const agent = this.state.devtoolsAgent;
+      if (agent) {
+        agent.selectNode(findNodeHandle(touchedViewTag));
         if (closestInstance != null) {
-          // Fabric
-          this.state.devtoolsAgent.selectNode(closestInstance);
-        } else if (touchedViewTag != null) {
-          this.state.devtoolsAgent.selectNode(findNodeHandle(touchedViewTag));
+          agent.selectNode(closestInstance);
         }
       }
 

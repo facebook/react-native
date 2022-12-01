@@ -18,6 +18,13 @@ const DUMMY_INSTANCE_KEY = 0;
 // {string: {key1: value1, key2: value2}}
 export type AnnotationsMap = $Shape<{
   string: ?{[string]: string, ...},
+  int: ?{[string]: number, ...},
+  double: ?{[string]: number, ...},
+  bool: ?{[string]: boolean, ...},
+  string_array: ?{[string]: $ReadOnlyArray<string>, ...},
+  int_array: ?{[string]: $ReadOnlyArray<number>, ...},
+  double_array: ?{[string]: $ReadOnlyArray<number>, ...},
+  bool_array: ?{[string]: $ReadOnlyArray<boolean>, ...},
 }>;
 
 const QuickPerformanceLogger = {
@@ -60,7 +67,16 @@ const QuickPerformanceLogger = {
     if (global.nativeQPLMarkerAnnotateWithMap) {
       global.nativeQPLMarkerAnnotateWithMap(markerId, annotations, instanceKey);
     } else if (global.nativeQPLMarkerAnnotate) {
-      for (const type of ['string']) {
+      for (const type of [
+        'string',
+        'int',
+        'double',
+        'bool',
+        'string_array',
+        'int_array',
+        'double_array',
+        'bool_array',
+      ]) {
         const keyValsOfType = annotations[type];
         if (keyValsOfType != null) {
           for (const annotationKey of Object.keys(keyValsOfType)) {

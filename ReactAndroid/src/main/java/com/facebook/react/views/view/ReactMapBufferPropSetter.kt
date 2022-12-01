@@ -255,11 +255,9 @@ object ReactMapBufferPropSetter {
     for (entry in mapBuffer) {
       val map = JavaOnlyMap()
       val action = entry.mapBufferValue
-      if (action != null) {
-        map.putString("name", action.getString(ACCESSIBILITY_ACTION_NAME))
-        if (action.contains(ACCESSIBILITY_ACTION_LABEL)) {
-          map.putString("label", action.getString(ACCESSIBILITY_ACTION_LABEL))
-        }
+      map.putString("name", action.getString(ACCESSIBILITY_ACTION_NAME))
+      if (action.contains(ACCESSIBILITY_ACTION_LABEL)) {
+        map.putString("label", action.getString(ACCESSIBILITY_ACTION_LABEL))
       }
       actions.add(map)
     }

@@ -543,7 +543,7 @@ export type ViewProps = $ReadOnly<{|
   'aria-hidden'?: ?boolean,
 
   /**
-   * It reperesents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   * It represents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
    *
    * @platform android
    */

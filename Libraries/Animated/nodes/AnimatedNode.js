@@ -30,9 +30,7 @@ export default class AnimatedNode {
   __nativeAnimatedValueListener: ?any;
   __attach(): void {}
   __detach(): void {
-    if (ReactNativeFeatureFlags.removeListenersOnDetach()) {
-      this.removeAllListeners();
-    }
+    this.removeAllListeners();
     if (this.__isNative && this.__nativeTag != null) {
       NativeAnimatedHelper.API.dropAnimatedNode(this.__nativeTag);
       this.__nativeTag = undefined;

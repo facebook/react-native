@@ -20,48 +20,6 @@ import {View} from '../Components/View/View';
 
 export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
   /**
-   * Rendered in between each item, but not at the top or bottom
-   */
-  ItemSeparatorComponent?: React.ComponentType<any> | null | undefined;
-
-  /**
-   * Rendered when the list is empty.
-   */
-  ListEmptyComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Rendered at the very end of the list.
-   */
-  ListFooterComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Styling for internal View for ListFooterComponent
-   */
-  ListFooterComponentStyle?: StyleProp<ViewStyle> | undefined;
-
-  /**
-   * Rendered at the very beginning of the list.
-   */
-  ListHeaderComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Styling for internal View for ListHeaderComponent
-   */
-  ListHeaderComponentStyle?: StyleProp<ViewStyle> | undefined;
-
-  /**
    * Optional custom style for multi-item rows generated when numColumns > 1
    */
   columnWrapperStyle?: StyleProp<ViewStyle> | undefined;
@@ -187,7 +145,7 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
    * _renderItem = ({item}) => (
    *   <TouchableOpacity onPress={() => this._onPress(item)}>
    *     <Text>{item.title}</Text>
-   *   <TouchableOpacity/>
+   *   </TouchableOpacity>
    * );
    * ...
    * <FlatList data={[{title: 'Title Text', key: 'item1'}]} renderItem={this._renderItem} />

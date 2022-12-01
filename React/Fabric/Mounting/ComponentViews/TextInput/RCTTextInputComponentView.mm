@@ -8,7 +8,6 @@
 #import "RCTTextInputComponentView.h"
 
 #import <react/renderer/components/iostextinput/TextInputComponentDescriptor.h>
-#import <react/renderer/graphics/Geometry.h>
 #import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 

@@ -36,7 +36,6 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"PerfMonitor", RCTPerfMonitorCls},
     {"DevMenu", RCTDevMenuCls},
     {"DevSettings", RCTDevSettingsCls},
-    {"BlobModule", RCTBlobManagerCls},
     {"RedBox", RCTRedBoxCls},
     {"LogBox", RCTLogBoxCls},
     {"WebSocketExecutor", RCTWebSocketExecutorCls},
@@ -44,6 +43,7 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"DevLoadingView", RCTDevLoadingViewCls},
     {"DevSplitBundleLoader", RCTDevSplitBundleLoaderCls},
     {"EventDispatcher", RCTEventDispatcherCls},
+    {"BlobModule", RCTBlobManagerCls},
   };
 
   auto p = sCoreModuleClassMap->find(name);

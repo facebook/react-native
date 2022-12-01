@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.license         = "MIT"
   s.platforms       = { :ios => "12.4" }
   s.compiler_flags  = '-Wno-nullability-completeness'
-  s.author          = "Facebook, Inc. and its affiliates"
+  s.author          = "Meta Platforms, Inc. and its affiliates"
   s.source          = { :git => "https://github.com/facebook/react-native.git", :tag => "#{s.version}" }
 
   s.source_files    = "**/*.{h,m,mm,swift}"

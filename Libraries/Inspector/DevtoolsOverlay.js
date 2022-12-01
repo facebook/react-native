@@ -125,11 +125,11 @@ export default function DevtoolsOverlay({
       getInspectorDataForViewAtPoint(inspectedView, x, y, viewData => {
         const {touchedViewTag, closestInstance, frame} = viewData;
         if (closestInstance != null || touchedViewTag != null) {
+          // We call `selectNode` for both non-fabric(viewTag) and fabric(instance),
+          // this makes sure it works for both architectures.
+          agent.selectNode(findNodeHandle(touchedViewTag));
           if (closestInstance != null) {
-            // Fabric
             agent.selectNode(closestInstance);
-          } else {
-            agent.selectNode(findNodeHandle(touchedViewTag));
           }
           setInspected({
             frame,
@@ -179,17 +179,19 @@ export default function DevtoolsOverlay({
 
   let highlight = inspected ? <ElementBox frame={inspected.frame} /> : null;
   if (isInspecting) {
-    const events = ReactNativeFeatureFlags.shouldEmitW3CPointerEvents
-      ? {
-          onPointerMove,
-          onPointerDown: onPointerMove,
-          onPointerUp: stopInspecting,
-        }
-      : {
-          onStartShouldSetResponder: shouldSetResponser,
-          onResponderMove: onResponderMove,
-          onResponderRelease: stopInspecting,
-        };
+    const events =
+      // Pointer events only work on fabric
+      ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()
+        ? {
+            onPointerMove,
+            onPointerDown: onPointerMove,
+            onPointerUp: stopInspecting,
+          }
+        : {
+            onStartShouldSetResponder: shouldSetResponser,
+            onResponderMove: onResponderMove,
+            onResponderRelease: stopInspecting,
+          };
     return (
       <View
         nativeID="devToolsInspectorOverlay"

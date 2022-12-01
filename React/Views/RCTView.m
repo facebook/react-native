@@ -7,6 +7,7 @@
 
 #import "RCTView.h"
 
+#import <QuartzCore/QuartzCore.h>
 #import <React/RCTMockDef.h>
 
 #import "RCTAutoInsetsProtocol.h"

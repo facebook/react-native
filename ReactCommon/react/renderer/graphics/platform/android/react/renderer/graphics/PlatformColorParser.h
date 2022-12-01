@@ -8,7 +8,6 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/ColorComponents.h>
