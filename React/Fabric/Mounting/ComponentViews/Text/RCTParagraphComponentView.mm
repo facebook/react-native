@@ -8,7 +8,6 @@
 #import "RCTParagraphComponentView.h"
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
-#import <React/RCTUtils.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #import <react/renderer/components/text/ParagraphProps.h>

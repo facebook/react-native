@@ -11,7 +11,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 
-#import <React/RCTUtils.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTConversions.h>
@@ -741,6 +740,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   if (label) {
     return label;
   }
+
   return RCTRecursiveAccessibilityLabel(self);
 }
 

@@ -11,17 +11,14 @@
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {TextProps} from './TextProps';
 
-import AccessibilityInfo from '../Components/AccessibilityInfo/AccessibilityInfo';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
-import {absoluteFillObject} from '../StyleSheet/StyleSheet';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
 import {getAccessibilityRoleFromRole} from '../Utilities/AcessibilityMapping';
 import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
-import c from 'metro/src/integration_tests/basic_bundle/require-context/subdir/c';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
 
