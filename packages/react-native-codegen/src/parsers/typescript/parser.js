@@ -56,20 +56,17 @@ class TypeScriptParser implements Parser {
   }
 
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-    if (language === 'TypeScript' &&
-      propertyValueType !== 'TSFunctionType' &&
-      propertyValueType !== 'TSMethodSignature')
-   {
-      throw new UnsupportedModulePropertyParserError(
-        nativeModuleName,
-        propertyValue,
-        propertyName,
-        propertyValueType,
-        language,
-      );
+    if language === 'TypeScript' && propertyValueType !== 'TSFunctionType' && propertyValueType !== 'TSMethodSignature' {
+        throw new UnsupportedModulePropertyParserError(
+          nativeModuleName,
+          propertyValue,
+          propertyName,
+          propertyValueType,
+          language,
+        )
     } else {
       return typeAnnotation.typeName.name
-    }
+    };
   }
 
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {
