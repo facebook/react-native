@@ -223,7 +223,7 @@ task createNativeDepsDirectories {
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
-    onlyIfNewer(true)
+    onlyIfModified(true)
     overwrite(false)
     dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
 }
@@ -237,7 +237,7 @@ final def prepareBoost = tasks.register("prepareBoost", PrepareBoostTask) {
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz")
-    onlyIfNewer(true)
+    onlyIfModified(true)
     overwrite(false)
     dest(new File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz"))
 }
@@ -253,7 +253,7 @@ task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleC
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz")
-    onlyIfNewer(true)
+    onlyIfModified(true)
     overwrite(false)
     dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
 }
@@ -269,7 +269,7 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
 
 task downloadFmt(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/fmtlib/fmt/archive/${FMT_VERSION}.tar.gz")
-    onlyIfNewer(true)
+    onlyIfModified(true)
     overwrite(false)
     dest(new File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz"))
 }
@@ -285,7 +285,7 @@ task prepareFmt(dependsOn: dependenciesPath ? [] : [downloadFmt], type: Copy) {
 
 task downloadLibevent(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable/libevent-${LIBEVENT_VERSION}-stable.tar.gz")
-    onlyIfNewer(true)
+    onlyIfModified(true)
     overwrite(false)
     dest(new File(downloadsDir, "libevent-${LIBEVENT_VERSION}.tar.gz"))
 }
@@ -300,7 +300,7 @@ final def prepareLibevent = tasks.register("prepareLibevent", PrepareLibeventTas
 
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
-    onlyIfNewer(true)
+    onlyIfModified(true)
     overwrite(false)
     dest(new File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
 }
