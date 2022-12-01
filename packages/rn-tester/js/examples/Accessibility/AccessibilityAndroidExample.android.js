@@ -65,17 +65,6 @@ class AccessibilityAndroidExample extends React.Component<
   render(): React.Node {
     return (
       <RNTesterPage title={'Accessibility Android APIs'}>
-        <RNTesterBlock title="LiveRegion">
-          <TouchableWithoutFeedback onPress={this._addOne}>
-            <View style={styles.embedded}>
-              <Text>Click me</Text>
-            </View>
-          </TouchableWithoutFeedback>
-          <View accessibilityLiveRegion="polite">
-            <Text>Clicked {this.state.count} times</Text>
-          </View>
-        </RNTesterBlock>
-
         <RNTesterBlock title="Overlapping views and importantForAccessibility property">
           <View style={styles.container}>
             <TouchableWithoutFeedback

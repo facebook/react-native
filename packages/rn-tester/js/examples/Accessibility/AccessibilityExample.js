@@ -93,6 +93,10 @@ const styles = StyleSheet.create({
   scrollView: {
     height: 50,
   },
+  embedded: {
+    backgroundColor: 'yellow',
+    padding: 10,
+  },
 });
 
 class AccessibilityExample extends React.Component<{}> {
@@ -1436,33 +1440,22 @@ function DisplayOptionStatusExample({
   );
 }
 
-function AccessibilityExpandedExample(): React.Node {
+function AccessibilityLiveRegion(): React.Node {
   const [expand, setExpanded] = React.useState(false);
   const [pressed, setPressed] = React.useState(false);
+  const [count, setCount] = React.useState(0);
   const expandAction = {name: 'expand'};
   const collapseAction = {name: 'collapse'};
   return (
     <>
-      <RNTesterBlock title="Collapse/Expanded state change (Paper)">
-        <Button
-          onPress={() => {
-            setExpanded(!expand);
-          }}
-          title="click me to change state"
-          nativeID={'Button'}
-        />
-        <View
-          accessibilityLiveRegion="polite"
-          accessibilityRole="button"
-          accessible={true}
-          focusable={true}
-          nativeID={'View'}
-          accessibilityHint={expand ? null : 'my hint'}
-          accessibilityState={expand ? {} : {disabled: true}}
-          style={{backgroundColor: 'red', height: 200, width: 400}}>
-          <Text accessibilityLiveRegion="polite" nativeID={'Text'}>
-            {expand ? null : 'my text'}
-          </Text>
+      <RNTesterBlock title="LiveRegion">
+        <TouchableWithoutFeedback onPress={() => setCount(count => count + 1)}>
+          <View style={styles.embedded}>
+            <Text>Click me</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <View>
+          <Text accessibilityLiveRegion="polite">Clicked {count} times</Text>
         </View>
       </RNTesterBlock>
     </>
@@ -1474,9 +1467,98 @@ exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
   {
-    title: 'Accessibility expanded',
-    render(): React.Element<typeof AccessibilityExpandedExample> {
-      return <AccessibilityExpandedExample />;
+    title: 'Accessibility Live Region',
+    render(): React.Element<typeof AccessibilityLiveRegion> {
+      return <AccessibilityLiveRegion />;
+    },
+  },
+  {
+    title: 'New accessibility roles and states',
+    render(): React.Element<typeof AccessibilityRoleAndStateExample> {
+      return <AccessibilityRoleAndStateExample />;
+    },
+  },
+  {
+    title: 'Accessibility action examples',
+    render(): React.Element<typeof AccessibilityActionsExample> {
+      return <AccessibilityActionsExample />;
+    },
+  },
+  {
+    title: 'Slider Accessibility Examples',
+    render(): React.Element<typeof SliderAccessibilityExample> {
+      return <SliderAccessibilityExample />;
+    },
+  },
+  {
+    title: 'Fake Slider Example',
+    render(): React.Element<typeof FakeSliderExample> {
+      return <FakeSliderExample />;
+    },
+  },
+  {
+    title: 'Fake SliderExample For AccessibilityValue',
+    render(): React.Element<typeof FakeSliderExampleForAccessibilityValue> {
+      return <FakeSliderExampleForAccessibilityValue />;
+    },
+  },
+  {
+    title: 'Check if the display options are enabled',
+    render(): React.Element<typeof DisplayOptionsStatusExample> {
+      return <DisplayOptionsStatusExample />;
+    },
+  },
+  {
+    title: 'Check if the screen reader announces',
+    render(): React.Element<typeof AnnounceForAccessibility> {
+      return <AnnounceForAccessibility />;
+    },
+  },
+  {
+    title: 'Check if accessibility is focused',
+    render(): React.Element<typeof SetAccessibilityFocusExample> {
+      return <SetAccessibilityFocusExample />;
+    },
+  },
+  {
+    title: 'Check if these properties are enabled',
+    render(): React.Element<typeof EnabledExamples> {
+      return <EnabledExamples />;
+    },
+  },
+  {
+    title: 'Testing importantForAccessibility',
+    render(): React.Element<typeof ImportantForAccessibilityExamples> {
+      return <ImportantForAccessibilityExamples />;
+    },
+  },
+  {
+    title:
+      'Check if accessibilityState disabled is announced when the screenreader focus moves on the image',
+    render(): React.Element<typeof Image> {
+      return (
+        <Image
+          accessible={true}
+          accessibilityLabel="plain local image"
+          accessibilityState={{disabled: true}}
+          source={require('../../assets/like.png')}
+          style={styles.disabledImage}
+        />
+      );
+    },
+  },
+  {
+    title: 'TextInput with aria-labelledby attribute"',
+    render(): React.Element<typeof View> {
+      return (
+        <View>
+          <Text nativeID="testAriaLabelledBy">Phone Number</Text>
+          <TextInput
+            aria-labelledby={'testAriaLabelledBy'}
+            style={styles.default}
+          />
+        </View>
+      );
     },
   },
 ];
