@@ -7,17 +7,19 @@
 
 #pragma once
 
+#include <ReactCommon/SchedulerPriority.h>
 #include <jsi/jsi.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
-#include <react/renderer/runtimescheduler/SchedulerPriority.h>
 
 #include <optional>
+#include <variant>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RuntimeScheduler;
 class TaskPriorityComparer;
+
+using RawCallback = std::function<void(jsi::Runtime &)>;
 
 struct Task final {
   Task(
@@ -25,12 +27,17 @@ struct Task final {
       jsi::Function callback,
       std::chrono::steady_clock::time_point expirationTime);
 
+  Task(
+      SchedulerPriority priority,
+      RawCallback callback,
+      std::chrono::steady_clock::time_point expirationTime);
+
  private:
   friend RuntimeScheduler;
   friend TaskPriorityComparer;
 
   SchedulerPriority priority;
-  std::optional<jsi::Function> callback;
+  std::optional<std::variant<jsi::Function, RawCallback>> callback;
   RuntimeSchedulerClock::time_point expirationTime;
 
   jsi::Value execute(jsi::Runtime &runtime, bool didUserCallbackTimeout);
@@ -45,5 +52,4 @@ class TaskPriorityComparer {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
