@@ -31,7 +31,6 @@ const {
 
 const {
   generateAndroidArtifacts,
-  saveFilesToRestore,
   generateiOSArtifacts,
 } = require('./release-utils');
 
@@ -146,12 +145,6 @@ if (argv.target === 'RNTester') {
   // create the local npm package to feed the CLI
 
   // base setup required (specular to publish-npm.js)
-  const tmpPublishingFolder = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'rn-publish-'),
-  );
-  console.info(`The temp publishing folder is ${tmpPublishingFolder}`);
-
-  saveFilesToRestore(tmpPublishingFolder);
 
   // we need to add the unique timestamp to avoid npm/yarn to use some local caches
   const baseVersion = require('../package.json').version;
@@ -176,7 +169,7 @@ if (argv.target === 'RNTester') {
   ).code;
 
   // Generate native files for Android
-  generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
+  generateAndroidArtifacts(releaseVersion);
 
   // Setting up generating native iOS (will be done later)
   const repoRoot = pwd();
@@ -249,9 +242,6 @@ if (argv.target === 'RNTester') {
     exec('yarn android');
   }
   popd();
-
-  // just cleaning up the temp folder, the rest is done by the test clean script
-  exec(`rm -rf ${tmpPublishingFolder}`);
 }
 
 exit(0);
