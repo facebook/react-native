@@ -1452,14 +1452,16 @@ function AccessibilityExpandedExample(): React.Node {
           nativeID={'Button'}
         />
         <View
-          accessibilityLiveRegion="assertive"
-          accessibilityHint={expand ? null : 'my hint'}
+          accessibilityLiveRegion="polite"
           accessibilityRole="button"
           accessible={true}
           focusable={true}
+          nativeID={'View'}
+          accessibilityHint={expand ? null : 'my hint'}
+          accessibilityState={expand ? {} : {disabled: true}}
           style={{backgroundColor: 'red', height: 200, width: 400}}>
-          <Text accessibilityLiveRegion="assertive">
-            {expand ? null : 'my child text'}
+          <Text accessibilityLiveRegion="polite" nativeID={'Text'}>
+            {expand ? null : 'my text'}
           </Text>
         </View>
       </RNTesterBlock>

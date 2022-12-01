@@ -8,6 +8,7 @@
 #import "RCTParagraphComponentView.h"
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
+#import <React/RCTUtils.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #import <react/renderer/components/text/ParagraphProps.h>
@@ -112,7 +113,10 @@ using namespace facebook::react;
         attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(accessibilityProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
         NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLabel
                                                                                     attributes:attrsDictionary];
-        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+        dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.5);
+        dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+          UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+        });
       }
     }
   }

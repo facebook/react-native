@@ -11,6 +11,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 
+#import <React/RCTUtils.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTConversions.h>
@@ -388,13 +389,17 @@ using namespace facebook::react;
         [accessibilityLiveRegionAnnouncement appendString:self.accessibilityHint];
         [accessibilityLiveRegionAnnouncement appendString:@" "];
       }
-      
+        
       if ([accessibilityLiveRegionAnnouncement length] != 0) {
         NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
         attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
         NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: accessibilityLiveRegionAnnouncement
                                                                                     attributes:attrsDictionary];
-        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+        
+        dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.5);
+        dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+          UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+        });
       }
     }
   }
