@@ -231,21 +231,6 @@ const Text: React.AbstractComponent<
   const _hasOnPressOrOnLongPress =
     props.onPress != null || props.onLongPress != null;
 
-  if (Platform.OS === 'ios') {
-    React.useEffect(() => {
-      if (
-        restProps.accessibilityLiveRegion != null &&
-        restProps.accessibilityLiveRegion != 'none' &&
-        typeof restProps.children === 'string'
-      ) {
-        const queue = restProps.accessibilityLiveRegion === 'polite';
-        AccessibilityInfo.announceForAccessibilityWithOptions(
-          restProps.children,
-          {queue},
-        );
-      }
-    }, [restProps.children]);
-  }
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
