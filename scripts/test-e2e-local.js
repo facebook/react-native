@@ -19,8 +19,6 @@
 const {exec, exit, pushd, popd, pwd, cd, cp} = require('shelljs');
 const yargs = require('yargs');
 const fs = require('fs');
-const path = require('path');
-const os = require('os');
 const {getBranchName} = require('./scm-utils');
 
 const {
