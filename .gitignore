@@ -86,6 +86,9 @@ package-lock.json
 # Test Reports
 /reports
 
+# Stack Dumps generated when programs crash (Ex. bash.exe.stackdump on Win)
+*.stackdump
+
 # Root dir shouldn't have Xcode project
 /*.xcodeproj
 
