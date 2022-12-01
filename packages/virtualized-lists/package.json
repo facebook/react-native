@@ -9,7 +9,6 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "react": "18.2.0",
     "react-native": "*",
     "react-test-renderer": "18.2.0"
   }
