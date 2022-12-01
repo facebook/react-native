@@ -14,7 +14,6 @@
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
-#include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/Transform.h>
 
 #include <optional>

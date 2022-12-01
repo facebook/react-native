@@ -23,6 +23,7 @@ const {
   throwIfModuleTypeIsUnsupported,
   throwIfUntypedModule,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+  throwIfArrayElementTypeAnnotationIsUnsupported,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -595,7 +596,7 @@ describe('throwIfModuleTypeIsUnsupported', () => {
 describe('throwIfMoreThanOneModuleInterfaceParserError', () => {
   it("don't throw error if module specs length is <= 1", () => {
     const nativeModuleName = 'moduleName';
-    const moduleSpecs = [];
+    const moduleSpecs: $ReadOnlyArray<$FlowFixMe> = [];
     const parserType = 'Flow';
 
     expect(() => {
@@ -635,5 +636,61 @@ describe('throwIfUnsupportedFunctionParamTypeAnnotationParserError', () => {
         paramTypeAnnotationType,
       );
     }).toThrow(UnsupportedFunctionParamTypeAnnotationParserError);
+  });
+});
+
+describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
+  const {
+    UnsupportedArrayElementTypeAnnotationParserError,
+  } = require('../errors.js');
+  const moduleName = 'moduleName';
+  const language = 'Flow';
+
+  it('throws the error if it is the type is void type annotation', () => {
+    expect(() => {
+      throwIfArrayElementTypeAnnotationIsUnsupported(
+        moduleName,
+        undefined,
+        'Array',
+        'VoidTypeAnnotation',
+        language,
+      );
+    }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
+  });
+
+  it('throws the error if it is the type is promise type annotation', () => {
+    expect(() => {
+      throwIfArrayElementTypeAnnotationIsUnsupported(
+        moduleName,
+        undefined,
+        'Array',
+        'PromiseTypeAnnotation',
+        language,
+      );
+    }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
+  });
+
+  it('throws the error if it is the type is function type annotation', () => {
+    expect(() => {
+      throwIfArrayElementTypeAnnotationIsUnsupported(
+        moduleName,
+        undefined,
+        'Array',
+        'FunctionTypeAnnotation',
+        language,
+      );
+    }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
+  });
+
+  it('does not throw the error if the type is NativeModuleTypeAnnotation', () => {
+    expect(() => {
+      throwIfArrayElementTypeAnnotationIsUnsupported(
+        moduleName,
+        undefined,
+        'Array',
+        'StringTypeAnnotation',
+        language,
+      );
+    }).not.toThrow(UnsupportedArrayElementTypeAnnotationParserError);
   });
 });

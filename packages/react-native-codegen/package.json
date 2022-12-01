@@ -1,5 +1,5 @@
 {
-  "name": "react-native-codegen",
+  "name": "@react-native/codegen",
   "version": "0.72.0",
   "description": "⚛️ Code generation tools for React Native",
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen",
@@ -18,13 +18,13 @@
     "lib"
   ],
   "dependencies": {
-    "@babel/parser": "^7.14.0",
+    "@babel/parser": "^7.20.0",
     "flow-parser": "^0.185.0",
-    "jscodeshift": "^0.13.1",
+    "jscodeshift": "^0.14.0",
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.0",
+    "@babel/core": "^7.20.0",
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",

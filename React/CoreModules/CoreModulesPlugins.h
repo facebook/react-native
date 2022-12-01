@@ -53,6 +53,7 @@ Class RCTWebSocketModuleCls(void) __attribute__((used));
 Class RCTDevLoadingViewCls(void) __attribute__((used));
 Class RCTDevSplitBundleLoaderCls(void) __attribute__((used));
 Class RCTEventDispatcherCls(void) __attribute__((used));
+Class RCTBlobManagerCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

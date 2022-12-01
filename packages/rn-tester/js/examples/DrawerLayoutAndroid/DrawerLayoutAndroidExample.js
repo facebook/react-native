@@ -10,18 +10,19 @@
 
 'use strict';
 
-import React, {useRef, useState} from 'react';
 import type {Node} from 'react';
+
+import React, {useRef, useState} from 'react';
 import {
   Button,
   DrawerLayoutAndroid,
-  Text,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 
 const Drawer = () => {
-  const drawer = useRef(null);
+  const drawer = useRef<null | React$ElementRef<any>>(null);
   const [drawerPosition, setDrawerPosition] = useState('left');
   const changeDrawerPosition = () => {
     if (drawerPosition === 'left') {

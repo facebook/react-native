@@ -18,7 +18,7 @@ export function SectionList_onEndReached(): React.Node {
       setOutput('onEndReached'),
     onEndReachedThreshold: 0,
   };
-  const ref = React.useRef(null);
+  const ref = React.useRef<any>(null);
 
   const onTest = () => {
     const scrollResponder = ref?.current?.getScrollResponder();

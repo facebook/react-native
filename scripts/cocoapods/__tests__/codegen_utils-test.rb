@@ -458,16 +458,16 @@ class CodegenUtilsTests < Test::Unit::TestCase
             ].join(' ')
           },
           'dependencies': {
-            "FBReactNativeSpec":  ["99.98.97"],
-            "React-jsiexecutor":  ["99.98.97"],
-            "RCT-Folly": ["2021.07.22.00"],
-            "RCTRequired": ["99.98.97"],
-            "RCTTypeSafety": ["99.98.97"],
-            "React-Core": ["99.98.97"],
-            "React-jsi": ["99.98.97"],
-            "hermes-engine": ["99.98.97"],
-            "ReactCommon/turbomodule/bridging": ["99.98.97"],
-            "ReactCommon/turbomodule/core": ["99.98.97"]
+            "FBReactNativeSpec":  [],
+            "React-jsiexecutor":  [],
+            "RCT-Folly": [],
+            "RCTRequired": [],
+            "RCTTypeSafety": [],
+            "React-Core": [],
+            "React-jsi": [],
+            "hermes-engine": [],
+            "ReactCommon/turbomodule/bridging": [],
+            "ReactCommon/turbomodule/core": []
           }
         }
     end
@@ -476,8 +476,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs = get_podspec_no_fabric_no_script()
 
         specs[:dependencies].merge!({
-            'React-graphics': ["99.98.97"],
-            'React-rncore':  ["99.98.97"],
+            'React-graphics': [],
+            'React-rncore':  [],
         })
 
         specs[:'script_phases'] = script_phases

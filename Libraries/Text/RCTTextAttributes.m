@@ -59,6 +59,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _fontStyle = textAttributes->_fontStyle ?: _fontStyle;
   _fontVariant = textAttributes->_fontVariant ?: _fontVariant;
   _allowFontScaling = textAttributes->_allowFontScaling || _allowFontScaling; // *
+  _dynamicTypeRamp = textAttributes->_dynamicTypeRamp != RCTDynamicTypeRampUndefined ? textAttributes->_dynamicTypeRamp
+                                                                                     : _dynamicTypeRamp;
   _letterSpacing = !isnan(textAttributes->_letterSpacing) ? textAttributes->_letterSpacing : _letterSpacing;
 
   // Paragraph Styles
@@ -230,6 +232,12 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
   if (fontScalingEnabled) {
     CGFloat fontSizeMultiplier = !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
+    if (_dynamicTypeRamp != RCTDynamicTypeRampUndefined) {
+      UIFontMetrics *fontMetrics = RCTUIFontMetricsForDynamicTypeRamp(_dynamicTypeRamp);
+      // Using a specific font size reduces rounding errors from -scaledValueForValue:
+      CGFloat requestedSize = isnan(_fontSize) ? RCTBaseSizeForDynamicTypeRamp(_dynamicTypeRamp) : _fontSize;
+      fontSizeMultiplier = [fontMetrics scaledValueForValue:requestedSize] / requestedSize;
+    }
     CGFloat maxFontSizeMultiplier = !isnan(_maxFontSizeMultiplier) ? _maxFontSizeMultiplier : 0.0;
     return maxFontSizeMultiplier >= 1.0 ? fminf(maxFontSizeMultiplier, fontSizeMultiplier) : fontSizeMultiplier;
   } else {
@@ -324,7 +332,7 @@ static NSString *capitalizeText(NSString *text)
       RCTTextAttributesCompareFloats(_fontSizeMultiplier) && RCTTextAttributesCompareFloats(_maxFontSizeMultiplier) &&
       RCTTextAttributesCompareStrings(_fontWeight) && RCTTextAttributesCompareObjects(_fontStyle) &&
       RCTTextAttributesCompareObjects(_fontVariant) && RCTTextAttributesCompareOthers(_allowFontScaling) &&
-      RCTTextAttributesCompareFloats(_letterSpacing) &&
+      RCTTextAttributesCompareOthers(_dynamicTypeRamp) && RCTTextAttributesCompareFloats(_letterSpacing) &&
       // Paragraph Styles
       RCTTextAttributesCompareFloats(_lineHeight) && RCTTextAttributesCompareFloats(_alignment) &&
       RCTTextAttributesCompareOthers(_baseWritingDirection) && RCTTextAttributesCompareOthers(_lineBreakStrategy) &&

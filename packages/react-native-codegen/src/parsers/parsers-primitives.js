@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -12,24 +12,23 @@
 
 import type {
   Nullable,
-  NativeModuleAliasMap,
-  NativeModuleBaseTypeAnnotation,
-  NativeModuleFunctionTypeAnnotation,
-  NativeModuleTypeAliasTypeAnnotation,
-  NativeModuleNumberTypeAnnotation,
-  NativeModuleMixedTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   Int32TypeAnnotation,
+  NativeModuleAliasMap,
+  NativeModuleBaseTypeAnnotation,
+  NativeModuleTypeAnnotation,
+  NativeModuleFloatTypeAnnotation,
+  NativeModuleFunctionTypeAnnotation,
   NativeModuleGenericObjectTypeAnnotation,
-  ReservedTypeAnnotation,
-  ObjectTypeAnnotation,
+  NativeModuleMixedTypeAnnotation,
+  NativeModuleNumberTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
+  NativeModuleTypeAliasTypeAnnotation,
+  ObjectTypeAnnotation,
+  ReservedTypeAnnotation,
   StringTypeAnnotation,
   VoidTypeAnnotation,
-  NativeModuleFloatTypeAnnotation,
-  NativeModuleParamTypeAnnotation,
-  NamedShape,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {Parser} from './parser';
@@ -39,17 +38,15 @@ import type {
   TypeDeclarationMap,
 } from './utils';
 
-const {UnnamedFunctionParamParserError} = require('./errors');
-
 const {
-  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
-  throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
+  throwIfArrayElementTypeAnnotationIsUnsupported,
 } = require('./error-utils');
-
+const {nullGuard} = require('./parsers-utils');
 const {
-  unwrapNullable,
-  wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  wrapNullable,
+  unwrapNullable,
+  translateFunctionTypeAnnotation,
 } = require('./parsers-commons');
 
 function emitBoolean(nullable: boolean): Nullable<BooleanTypeAnnotation> {
@@ -195,6 +192,11 @@ function emitPromise(
   typeAnnotation: $FlowFixMe,
   parser: Parser,
   nullable: boolean,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  translateTypeAnnotation: $FlowFixMe,
 ): Nullable<NativeModulePromiseTypeAnnotation> {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter(
     hasteModuleName,
@@ -202,9 +204,33 @@ function emitPromise(
     parser,
   );
 
-  return wrapNullable(nullable, {
-    type: 'PromiseTypeAnnotation',
-  });
+  const elementType = typeAnnotation.typeParameters.params[0];
+  if (
+    elementType.type === 'ExistsTypeAnnotation' ||
+    elementType.type === 'EmptyTypeAnnotation'
+  ) {
+    return wrapNullable(nullable, {
+      type: 'PromiseTypeAnnotation',
+    });
+  } else {
+    try {
+      return wrapNullable(nullable, {
+        type: 'PromiseTypeAnnotation',
+        elementType: translateTypeAnnotation(
+          hasteModuleName,
+          typeAnnotation.typeParameters.params[0],
+          types,
+          aliasMap,
+          tryParse,
+          cxxOnly,
+        ),
+      });
+    } catch {
+      return wrapNullable(nullable, {
+        type: 'PromiseTypeAnnotation',
+      });
+    }
+  }
 }
 
 function emitObject(
@@ -223,135 +249,60 @@ function emitFloat(
   });
 }
 
-function getTypeAnnotationParameters(
-  typeAnnotation: $FlowFixMe,
-  language: ParserType,
-): $ReadOnlyArray<$FlowFixMe> {
-  return language === 'Flow'
-    ? typeAnnotation.params
-    : typeAnnotation.parameters;
-}
-
-function getFunctionNameFromParameter(
-  param: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
-  language: ParserType,
-) {
-  return language === 'Flow' ? param.name : param.typeAnnotation;
-}
-
-function getParameterName(param: $FlowFixMe, language: ParserType): string {
-  return language === 'Flow' ? param.name.name : param.name;
-}
-
-function getParameterTypeAnnotation(param: $FlowFixMe, language: ParserType) {
-  return language === 'Flow'
-    ? param.typeAnnotation
-    : param.typeAnnotation.typeAnnotation;
-}
-
-function getTypeAnnotationReturnType(
-  typeAnnotation: $FlowFixMe,
-  language: ParserType,
-) {
-  return language === 'Flow'
-    ? typeAnnotation.returnType
-    : typeAnnotation.typeAnnotation.typeAnnotation;
-}
-
-function translateFunctionTypeAnnotation(
+function translateArrayTypeAnnotation(
   hasteModuleName: string,
-  // TODO(T108222691): Use flow-types for @babel/parser
-  // TODO(T71778680): This is a FunctionTypeAnnotation. Type this.
-  typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
-  tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
-  translateTypeAnnotation: $FlowFixMe,
+  arrayType: 'Array' | 'ReadonlyArray',
+  elementType: $FlowFixMe,
+  nullable: boolean,
   language: ParserType,
-): NativeModuleFunctionTypeAnnotation {
-  type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
-  const params: Array<Param> = [];
+  translateTypeAnnotation: $FlowFixMe,
+): Nullable<NativeModuleTypeAnnotation> {
+  try {
+    /**
+     * TODO(T72031674): Migrate all our NativeModule specs to not use
+     * invalid Array ElementTypes. Then, make the elementType a required
+     * parameter.
+     */
+    const [_elementType, isElementTypeNullable] = unwrapNullable(
+      translateTypeAnnotation(
+        hasteModuleName,
+        elementType,
+        types,
+        aliasMap,
+        /**
+         * TODO(T72031674): Ensure that all ParsingErrors that are thrown
+         * while parsing the array element don't get captured and collected.
+         * Why? If we detect any parsing error while parsing the element,
+         * we should default it to null down the line, here. This is
+         * the correct behaviour until we migrate all our NativeModule specs
+         * to be parseable.
+         */
+        nullGuard,
+        cxxOnly,
+      ),
+    );
 
-  for (const param of getTypeAnnotationParameters(typeAnnotation, language)) {
-    const parsedParam = tryParse(() => {
-      if (getFunctionNameFromParameter(param, language) == null) {
-        throw new UnnamedFunctionParamParserError(
-          param,
-          hasteModuleName,
-          language,
-        );
-      }
-
-      const paramName = getParameterName(param, language);
-
-      const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
-        unwrapNullable(
-          translateTypeAnnotation(
-            hasteModuleName,
-            getParameterTypeAnnotation(param, language),
-            types,
-            aliasMap,
-            tryParse,
-            cxxOnly,
-          ),
-        );
-
-      if (
-        paramTypeAnnotation.type === 'VoidTypeAnnotation' ||
-        paramTypeAnnotation.type === 'PromiseTypeAnnotation'
-      ) {
-        return throwIfUnsupportedFunctionParamTypeAnnotationParserError(
-          hasteModuleName,
-          param.typeAnnotation,
-          paramName,
-          paramTypeAnnotation.type,
-        );
-      }
-
-      return {
-        name: paramName,
-        optional: Boolean(param.optional),
-        typeAnnotation: wrapNullable(
-          isParamTypeAnnotationNullable,
-          paramTypeAnnotation,
-        ),
-      };
-    });
-
-    if (parsedParam != null) {
-      params.push(parsedParam);
-    }
-  }
-
-  const [returnTypeAnnotation, isReturnTypeAnnotationNullable] = unwrapNullable(
-    translateTypeAnnotation(
+    throwIfArrayElementTypeAnnotationIsUnsupported(
       hasteModuleName,
-      getTypeAnnotationReturnType(typeAnnotation, language),
-      types,
-      aliasMap,
-      tryParse,
-      cxxOnly,
-    ),
-  );
+      elementType,
+      arrayType,
+      _elementType.type,
+      language,
+    );
 
-  throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
-    hasteModuleName,
-    typeAnnotation,
-    'FunctionTypeAnnotation',
-    language,
-    cxxOnly,
-    returnTypeAnnotation.type,
-  );
-
-  return {
-    type: 'FunctionTypeAnnotation',
-    returnTypeAnnotation: wrapNullable(
-      isReturnTypeAnnotationNullable,
-      returnTypeAnnotation,
-    ),
-    params,
-  };
+    return wrapNullable(nullable, {
+      type: 'ArrayTypeAnnotation',
+      // $FlowFixMe[incompatible-call]
+      elementType: wrapNullable(isElementTypeNullable, _elementType),
+    });
+  } catch (ex) {
+    return wrapNullable(nullable, {
+      type: 'ArrayTypeAnnotation',
+    });
+  }
 }
 
 module.exports = {
@@ -369,5 +320,5 @@ module.exports = {
   emitStringish,
   emitMixedTypeAnnotation,
   typeAliasResolution,
-  translateFunctionTypeAnnotation,
+  translateArrayTypeAnnotation,
 };

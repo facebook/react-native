@@ -41,7 +41,7 @@ test('parses optional primitive prop', () => {
   expect(prop.optional).toBe(true);
   expect(prop.description).toBe('Average sample interval in bytes.');
 
-  expect(prop.getFullCppType()).toBe('folly::Optional<double>');
+  expect(prop.getFullCppType()).toBe('std::optional<double>');
   expect(prop.getCppIdentifier()).toBe('samplingInterval');
   expect(prop.getInitializer()).toBe('');
 });
@@ -61,7 +61,7 @@ test('parses optional ref prop', () => {
   expect(prop.$ref).toBe('Runtime.ExceptionDetails');
   expect(prop.description).toBe('Exception details if any.');
 
-  expect(prop.getFullCppType()).toBe('folly::Optional<runtime::ExceptionDetails>');
+  expect(prop.getFullCppType()).toBe('std::optional<runtime::ExceptionDetails>');
   expect(prop.getCppIdentifier()).toBe('exceptionDetails');
   expect(prop.getInitializer()).toBe('');
 });
@@ -105,7 +105,7 @@ test('parses optional array items prop', () => {
   expect(prop.items).toEqual({ 'type': 'string' });
   expect(prop.description).toBe('Hit breakpoints IDs');
 
-  expect(prop.getFullCppType()).toBe('folly::Optional<std::vector<std::string>>');
+  expect(prop.getFullCppType()).toBe('std::optional<std::vector<std::string>>');
   expect(prop.getCppIdentifier()).toBe('hitBreakpoints');
   expect(prop.getInitializer()).toBe('');
 });

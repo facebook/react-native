@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema.js';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
 
@@ -65,6 +66,20 @@ class TypeScriptParser implements Parser {
       typeArguments.params[0].type !== 'TSTypeReference' ||
       typeArguments.params[0].typeName.name !== 'Spec'
     );
+  }
+
+  remapUnionTypeAnnotationMemberNames(
+    membersTypes: $FlowFixMe[],
+  ): UnionTypeAnnotationMemberType[] {
+    const remapLiteral = (item: $FlowFixMe) => {
+      return item.literal
+        ? item.literal.type
+            .replace('NumericLiteral', 'NumberTypeAnnotation')
+            .replace('StringLiteral', 'StringTypeAnnotation')
+        : 'ObjectTypeAnnotation';
+    };
+
+    return [...new Set(membersTypes.map(remapLiteral))];
   }
 }
 module.exports = {

@@ -134,7 +134,7 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
   //    platform to JS, so we need the ShadowTree to have knowledge
   //    of the current position.
   const animatedValueListener = useCallback(
-    ({value}) => {
+    ({value}: $FlowFixMe) => {
       const _debounceTimeout: number = Platform.OS === 'android' ? 15 : 64;
       // When the AnimatedInterpolation is recreated, it always initializes
       // to a value of zero and emits a value change of 0 to its listeners.
@@ -256,13 +256,13 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
     setMeasured(true);
 
     props.onLayout(event);
-    const child = React.Children.only(props.children);
+    const child = React.Children.only<$FlowFixMe>(props.children);
     if (child.props.onLayout) {
       child.props.onLayout(event);
     }
   };
 
-  const child = React.Children.only(props.children);
+  const child = React.Children.only<$FlowFixMe>(props.children);
 
   // TODO T68319535: remove this if NativeAnimated is rewritten for Fabric
   const passthroughAnimatedPropExplicitValues =

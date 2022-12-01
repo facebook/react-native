@@ -8,8 +8,6 @@
 #include "AccessibilityPropsMapBuffer.h"
 #include "AccessibilityProps.h"
 
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
-
 namespace facebook {
 namespace react {
 

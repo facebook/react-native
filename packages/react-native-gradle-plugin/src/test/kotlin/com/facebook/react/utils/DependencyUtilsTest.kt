@@ -10,10 +10,12 @@ package com.facebook.react.utils
 import com.facebook.react.tests.createProject
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
+import com.facebook.react.utils.DependencyUtils.mavenRepoFromURI
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromUrl
 import com.facebook.react.utils.DependencyUtils.readVersionString
 import java.net.URI
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
+import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -26,9 +28,9 @@ class DependencyUtilsTest {
   @Test
   fun configureRepositories_withProjectPropertySet_configuresMavenLocalCorrectly() {
     val localMaven = tempFolder.newFolder("m2")
-    val localMavenURI = URI.create("file://$localMaven/")
+    val localMavenURI = localMaven.toURI()
     val project = createProject()
-    project.extensions.extraProperties.set("REACT_NATIVE_MAVEN_LOCAL_REPO", localMaven)
+    project.extensions.extraProperties.set("REACT_NATIVE_MAVEN_LOCAL_REPO", localMaven.absolutePath)
 
     configureRepositories(project, tempFolder.root)
 
@@ -44,21 +46,6 @@ class DependencyUtilsTest {
     val project = createProject()
 
     configureRepositories(project, tempFolder.root)
-
-    assertNotNull(
-        project.repositories.firstOrNull {
-          it is MavenArtifactRepository && it.url == repositoryURI
-        })
-  }
-
-  @Test
-  fun configureRepositories_containsReactNativeNpmLocalMavenRepo() {
-    val projectFolder = tempFolder.newFolder()
-    val reactNativeDir = tempFolder.newFolder("react-native")
-    val repositoryURI = URI.create("file://${reactNativeDir}/android")
-    val project = createProject(projectFolder)
-
-    configureRepositories(project, reactNativeDir)
 
     assertNotNull(
         project.repositories.firstOrNull {
@@ -124,10 +111,10 @@ class DependencyUtilsTest {
   @Test
   fun configureRepositories_withProjectPropertySet_hasHigherPriorityThanMavenCentral() {
     val localMaven = tempFolder.newFolder("m2")
-    val localMavenURI = URI.create("file://$localMaven/")
+    val localMavenURI = localMaven.toURI()
     val mavenCentralURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()
-    project.extensions.extraProperties.set("REACT_NATIVE_MAVEN_LOCAL_REPO", localMaven)
+    project.extensions.extraProperties.set("REACT_NATIVE_MAVEN_LOCAL_REPO", localMaven.absolutePath)
 
     configureRepositories(project, tempFolder.root)
 
@@ -162,6 +149,46 @@ class DependencyUtilsTest {
   }
 
   @Test
+  fun configureRepositories_appliesToAllProjects() {
+    val repositoryURI = URI.create("https://repo.maven.apache.org/maven2/")
+    val rootProject = ProjectBuilder.builder().build()
+    val appProject = ProjectBuilder.builder().withName("app").withParent(rootProject).build()
+    val libProject = ProjectBuilder.builder().withName("lib").withParent(rootProject).build()
+
+    configureRepositories(appProject, tempFolder.root)
+
+    assertNotNull(
+        appProject.repositories.firstOrNull {
+          it is MavenArtifactRepository && it.url == repositoryURI
+        })
+    assertNotNull(
+        libProject.repositories.firstOrNull {
+          it is MavenArtifactRepository && it.url == repositoryURI
+        })
+  }
+
+  @Test
+  fun configureRepositories_withPreviousExclusionRulesOnMavenCentral_appliesCorrectly() {
+    val repositoryURI = URI.create("https://repo.maven.apache.org/maven2/")
+    val rootProject = ProjectBuilder.builder().build()
+    val appProject = ProjectBuilder.builder().withName("app").withParent(rootProject).build()
+    val libProject = ProjectBuilder.builder().withName("lib").withParent(rootProject).build()
+
+    // Let's emulate a library which set an `excludeGroup` on `com.facebook.react` for Central.
+    libProject.repositories.mavenCentral { repo ->
+      repo.content { content -> content.excludeGroup("com.facebook.react") }
+    }
+
+    configureRepositories(appProject, tempFolder.root)
+
+    // We need to make sure we have Maven Central defined twice, one by the library,
+    // and another is the override by RNGP.
+    assertEquals(
+        2,
+        libProject.repositories.count { it is MavenArtifactRepository && it.url == repositoryURI })
+  }
+
+  @Test
   fun configureDependencies_withEmptyVersion_doesNothing() {
     val project = createProject()
 
@@ -177,8 +204,26 @@ class DependencyUtilsTest {
     configureDependencies(project, "1.2.3")
 
     val forcedModules = project.configurations.first().resolutionStrategy.forcedModules
-    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:react-native:1.2.3" })
-    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:hermes-engine:1.2.3" })
+    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
+    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:hermes-android:1.2.3" })
+  }
+
+  @Test
+  fun configureDependencies_withVersionString_appliesOnAllProjects() {
+    val rootProject = ProjectBuilder.builder().build()
+    val appProject = ProjectBuilder.builder().withName("app").withParent(rootProject).build()
+    val libProject = ProjectBuilder.builder().withName("lib").withParent(rootProject).build()
+    appProject.plugins.apply("com.android.application")
+    libProject.plugins.apply("com.android.library")
+
+    configureDependencies(appProject, "1.2.3")
+
+    val appForcedModules = appProject.configurations.first().resolutionStrategy.forcedModules
+    val libForcedModules = libProject.configurations.first().resolutionStrategy.forcedModules
+    assertTrue(appForcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
+    assertTrue(appForcedModules.any { it.toString() == "com.facebook.react:hermes-android:1.2.3" })
+    assertTrue(libForcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
+    assertTrue(libForcedModules.any { it.toString() == "com.facebook.react:hermes-android:1.2.3" })
   }
 
   @Test
@@ -252,5 +297,14 @@ class DependencyUtilsTest {
     val mavenRepo = process.mavenRepoFromUrl("https://hello.world")
 
     assertEquals(URI.create("https://hello.world"), mavenRepo.url)
+  }
+
+  @Test
+  fun mavenRepoFromURI_worksCorrectly() {
+    val process = createProject()
+    val repoFolder = tempFolder.newFolder("maven-repo")
+    val mavenRepo = process.mavenRepoFromURI(repoFolder.toURI())
+
+    assertEquals(repoFolder.toURI(), mavenRepo.url)
   }
 }

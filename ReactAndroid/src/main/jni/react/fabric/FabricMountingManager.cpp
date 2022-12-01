@@ -43,8 +43,6 @@ FabricMountingManager::FabricMountingManager(
     global_ref<jobject> &javaUIManager)
     : javaUIManager_(javaUIManager),
       cppComponentRegistry_(cppComponentRegistry),
-      disableRevisionCheckForPreallocation_(config->getBool(
-          "react_fabric:disable_revision_check_for_preallocation")),
       useOverflowInset_(getFeatureFlagValue("useOverflowInset")) {
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
 }

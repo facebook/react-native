@@ -21,6 +21,7 @@
 const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
 const {isReleaseBranch, parseVersion} = require('./version-utils');
+const {failIfTagExists} = require('./release-utils');
 
 const argv = yargs
   .option('r', {
@@ -49,6 +50,14 @@ const releaseVersion = argv.toVersion;
 const isLatest = argv.latest;
 const isDryRun = argv.dryRun;
 
+const buildType = isDryRun
+  ? 'dry-run'
+  : isReleaseBranch(branch)
+  ? 'release'
+  : 'nightly';
+
+failIfTagExists(releaseVersion, buildType);
+
 if (branch && !isReleaseBranch(branch) && !isDryRun) {
   console.error(`This needs to be on a release branch. On branch: ${branch}`);
   exit(1);
@@ -57,13 +66,17 @@ if (branch && !isReleaseBranch(branch) && !isDryRun) {
   exit(1);
 }
 
-const {version} = parseVersion(releaseVersion);
+const {version} = parseVersion(releaseVersion, buildType);
 if (version == null) {
   console.error(`Invalid version provided: ${releaseVersion}`);
   exit(1);
 }
 
-if (exec(`node scripts/set-rn-version.js --to-version ${version}`).code) {
+if (
+  exec(
+    `node scripts/set-rn-version.js --to-version ${version} --build-type ${buildType}`,
+  ).code
+) {
   echo(`Failed to set React Native version to ${version}`);
   exit(1);
 }

@@ -65,18 +65,18 @@ rn_xplat_cxx_library(
         ],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_exported_headers = subdir_glob(
+        [
+            ("platform/ios", "*.h"),
+        ],
+        prefix = "react/renderer/graphics",
+    ),
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     ios_deps = [
         "//xplat/js/react-native-github:RCTCxxBridge",
         "//xplat/js/react-native-github:RCTImage",
     ],
-    ios_exported_headers = subdir_glob(
-        [
-            ("platform/ios", "*.h"),
-        ],
-        prefix = "react/renderer/graphics",
-    ),
     ios_frameworks = [
         "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",

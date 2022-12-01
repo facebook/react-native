@@ -149,7 +149,6 @@ class Binding : public jni::HybridClass<Binding>,
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
   std::shared_ptr<const facebook::react::CppComponentRegistry>
       sharedCppComponentRegistry_{nullptr};
-  bool disablePreallocateViews_{false};
   bool enableFabricLogs_{false};
 };
 

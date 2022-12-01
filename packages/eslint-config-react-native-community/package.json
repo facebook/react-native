@@ -1,6 +1,6 @@
 {
-  "name": "@react-native-community/eslint-config",
-  "version": "3.2.0",
+  "name": "@react-native/eslint-config",
+  "version": "0.72.0",
   "description": "ESLint config for React Native",
   "main": "index.js",
   "license": "MIT",
@@ -11,9 +11,9 @@
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native-community#readme",
   "dependencies": {
-    "@babel/core": "^7.14.0",
-    "@babel/eslint-parser": "^7.18.2",
-    "@react-native-community/eslint-plugin": "^1.1.0",
+    "@babel/core": "^7.20.0",
+    "@babel/eslint-parser": "^7.19.0",
+    "@react-native/eslint-plugin": "^0.72.0",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
     "eslint-config-prettier": "^8.5.0",

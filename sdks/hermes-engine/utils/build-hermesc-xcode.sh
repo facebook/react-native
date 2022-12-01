@@ -8,9 +8,16 @@ set -x
 
 hermesc_dir_path="$1"
 
-CMAKE_BINARY=${CMAKE_BINARY:-cmake}
+# This script is supposed to be executed from Xcode "run script" phase.
+# Xcode sets up its build environment based on the build target.
+# Here we override relevant envvars to make sure that we build hermesc for macosx,
+# even if Xcode build target is iphone, iponesimulator, etc.
+MACOSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion)
+export MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET
+SDKROOT=$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+export SDKROOT=$SDKROOT
 
-if ! "$CMAKE_BINARY" -S . -B "$hermesc_dir_path"
+if ! "$CMAKE_BINARY" -S "${PODS_ROOT}/hermes-engine" -B "$hermesc_dir_path"
 then
     echo "Failed to configure Hermesc cmake project."
     exit 1

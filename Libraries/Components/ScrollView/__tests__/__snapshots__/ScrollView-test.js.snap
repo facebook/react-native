@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<ScrollView /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
+exports[`ScrollView renders its children: should deep render when mocked (please verify output manually) 1`] = `
 <RCTScrollView>
   <View>
     <View>
@@ -12,7 +12,7 @@ exports[`<ScrollView /> should render as expected: should deep render when mocke
 </RCTScrollView>
 `;
 
-exports[`<ScrollView /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
+exports[`ScrollView renders its children: should deep render when not mocked (please verify output manually) 1`] = `
 <RCTScrollView
   alwaysBounceVertical={true}
   onContentSizeChange={null}
@@ -65,7 +65,7 @@ exports[`<ScrollView /> should render as expected: should deep render when not m
 </RCTScrollView>
 `;
 
-exports[`<ScrollView /> should render as expected: should shallow render as <ScrollView /> when mocked 1`] = `
+exports[`ScrollView renders its children: should shallow render as <ScrollView /> when mocked 1`] = `
 <ScrollView>
   <View>
     <Text>
@@ -75,7 +75,7 @@ exports[`<ScrollView /> should render as expected: should shallow render as <Scr
 </ScrollView>
 `;
 
-exports[`<ScrollView /> should render as expected: should shallow render as <ScrollView /> when not mocked 1`] = `
+exports[`ScrollView renders its children: should shallow render as <ScrollView /> when not mocked 1`] = `
 <ScrollView>
   <View>
     <Text>

@@ -30,19 +30,19 @@ function generateAndroidArtifacts(releaseVersion, tmpPublishingFolder) {
     '-debug-sources.jar',
     '-release-sources.jar',
   ].map(suffix => {
-    return `react-native-${releaseVersion}${suffix}`;
+    return `react-android-${releaseVersion}${suffix}`;
   });
 
   artifacts.forEach(name => {
     if (
       !test(
         '-e',
-        `/tmp/maven-local/com/facebook/react/react-native/${releaseVersion}/${name}`,
+        `/tmp/maven-local/com/facebook/react/react-android/${releaseVersion}/${name}`,
       )
     ) {
       echo(
         `Failing as expected file: \n\
-      /tmp/maven-local/com/facebook/react/react-native/${releaseVersion}/${name}\n\
+      /tmp/maven-local/com/facebook/react/react-android/${releaseVersion}/${name}\n\
       was not correctly generated.`,
       );
       exit(1);
@@ -85,7 +85,6 @@ function generateiOSArtifacts(
   jsiFolder,
   hermesCoreSourceFolder,
   buildType,
-  releaseVersion,
   targetFolder,
 ) {
   pushd(`${hermesCoreSourceFolder}`);
@@ -109,7 +108,6 @@ function generateiOSArtifacts(
   const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
     hermesCoreSourceFolder,
     buildType,
-    releaseVersion,
     targetFolder,
     true, // this is excludeDebugSymbols, we keep it as the default
   );
@@ -117,8 +115,33 @@ function generateiOSArtifacts(
   return tarballOutputPath;
 }
 
+function failIfTagExists(version, buildType) {
+  // When dry-run in stable branch, the tag already exists.
+  // We are bypassing the tag-existence check when in a dry-run to have the CI pass
+  if (buildType === 'dry-run') {
+    return;
+  }
+
+  if (checkIfTagExists(version)) {
+    echo(`Tag v${version} already exists.`);
+    echo('You may want to rollback the last commit');
+    echo('git reset --hard HEAD~1');
+    exit(1);
+  }
+}
+
+function checkIfTagExists(version) {
+  const {code, stdout} = exec('git tag -l', {silent: true});
+  if (code !== 0) {
+    throw new Error('Failed to retrieve the list of tags');
+  }
+  const tags = new Set(stdout.split('\n'));
+  return tags.has(`v${version}`);
+}
+
 module.exports = {
   generateAndroidArtifacts,
   generateiOSArtifacts,
   publishAndroidArtifactsToMaven,
+  failIfTagExists,
 };

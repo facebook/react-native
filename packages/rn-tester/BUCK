@@ -19,8 +19,9 @@ load(
     "react_fabric_component_plugin_provider",
     "react_module_plugin_providers",
     "rn_apple_library",
+    "rn_apple_xplat_cxx_library",
     "rn_extra_build_flags",
-    "rn_xplat_cxx_library2",
+    "rn_xplat_cxx_library",
 )
 load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 
@@ -208,7 +209,7 @@ fb_xplat_resource(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RNTesterBundleBinary",
     srcs = ["//xplat/configurations/buck/apple/common_files:dummy.c"],
     deps = [":RNTesterBundleAssetCatalog"],
@@ -289,7 +290,7 @@ rn_apple_library(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "NativeComponentExample",
     plugins_only = True,
     srcs = glob(
@@ -326,7 +327,7 @@ rn_xplat_cxx_library2(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_xplat_cxx_library(
     name = "NativeCxxModuleExample",
     srcs = glob(["NativeCxxModuleExample/*.cpp"]),
     header_namespace = "",
