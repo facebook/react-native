@@ -13,11 +13,11 @@
 const {OS} = require('../../Utilities/Platform');
 const normalizeColor = require('../normalizeColor');
 
-it('forwards calls to @react-native/normalize-color', () => {
-  jest.resetModules().mock('@react-native/normalize-color', () => jest.fn());
+it('forwards calls to @react-native/normalize-colors', () => {
+  jest.resetModules().mock('@react-native/normalize-colors', () => jest.fn());
 
   expect(require('../normalizeColor')('#abc')).not.toBe(null);
-  expect(require('@react-native/normalize-color')).toBeCalled();
+  expect(require('@react-native/normalize-colors')).toBeCalled();
 });
 
 describe('iOS', () => {
