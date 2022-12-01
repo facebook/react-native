@@ -172,30 +172,8 @@ function throwIfModuleTypeIsUnsupported(
   propertyValue: $FlowFixMe,
   propertyName: string,
   propertyValueType: string,
-  language: ParserType,
-) {
-  if (language === 'Flow' && propertyValueType !== 'FunctionTypeAnnotation') {
-    throw new UnsupportedModulePropertyParserError(
-      nativeModuleName,
-      propertyValue,
-      propertyName,
-      propertyValueType,
-      language,
-    );
-  } else if (
-    language === 'TypeScript' &&
-    propertyValueType !== 'TSFunctionType' &&
-    propertyValueType !== 'TSMethodSignature'
-  ) {
-    throw new UnsupportedModulePropertyParserError(
-      nativeModuleName,
-      propertyValue,
-      propertyName,
-      propertyValueType,
-      language,
-    );
-  }
-}
+  parser: Parser
+) 
 
 const UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap = {
   FunctionTypeAnnotation: 'FunctionTypeAnnotation',

@@ -53,7 +53,17 @@ class FlowParser implements Parser {
   }
 
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-    return typeAnnotation.id.name;
+    if (language === 'Flow' && propertyValueType !== 'FunctionTypeAnnotation') {
+      throw new UnsupportedModulePropertyParserError(
+        nativeModuleName,
+        propertyValue,
+        propertyName,
+        propertyValueType,
+        parser.language(),
+      );
+    } else {
+      return typeAnnotation.id.name
+    }
   }
 
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {

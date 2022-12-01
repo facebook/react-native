@@ -414,6 +414,7 @@ function buildPropertySchema(
   // - a NullableTypeAnnoation containing a FunctionTypeAnnotation or GenericTypeAnnotation
   // Flow type this node
   property: $FlowFixMe,
+  parser: Parser,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
@@ -440,7 +441,7 @@ function buildPropertySchema(
     property.value,
     key.name,
     value.type,
-    language,
+    parser,
   );
 
   return {

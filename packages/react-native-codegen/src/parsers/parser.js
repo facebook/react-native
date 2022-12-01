@@ -24,6 +24,11 @@ export interface Parser {
   typeParameterInstantiation: string;
 
   /**
+   * This is the functionTypeAnnotation value
+   */
+  functionTypeAnnotation: string;
+
+  /**
    * Given a property or an index declaration, it returns the key name.
    * @parameter propertyOrIndex: an object containing a property or an index declaration.
    * @parameter hasteModuleName: a string with the native module name.
@@ -59,6 +64,7 @@ export interface Parser {
    * @returns: a boolean specifying if the Module is Invalid.
    */
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean;
+
   /**
    * Given a union annotation members types, it returns an array of remaped members names without duplicates.
    * @parameter membersTypes: union annotation members types
