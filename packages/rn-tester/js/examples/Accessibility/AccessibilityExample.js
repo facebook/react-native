@@ -1441,14 +1441,13 @@ function DisplayOptionStatusExample({
 }
 
 function AccessibilityLiveRegion(): React.Node {
-  const [expand, setExpanded] = React.useState(false);
-  const [pressed, setPressed] = React.useState(false);
   const [count, setCount] = React.useState(0);
+  const [enabled, setEnabled] = React.useState(false);
   const expandAction = {name: 'expand'};
   const collapseAction = {name: 'collapse'};
   return (
     <>
-      <RNTesterBlock title="LiveRegion">
+      <RNTesterBlock title="LiveRegion with Text Component">
         <TouchableWithoutFeedback onPress={() => setCount(count => count + 1)}>
           <View style={styles.embedded}>
             <Text>Click me</Text>
@@ -1457,6 +1456,21 @@ function AccessibilityLiveRegion(): React.Node {
         <View>
           <Text accessibilityLiveRegion="polite">Clicked {count} times</Text>
         </View>
+      </RNTesterBlock>
+      <RNTesterBlock title="LiveRegion With View component">
+        <TouchableWithoutFeedback
+          onPress={() => setEnabled(enable => !enabled)}>
+          <View style={styles.embedded}>
+            <Text>Click me</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <View
+          accessibilityLiveRegion="assertive"
+          accessibilityState={{disabled: !enabled}}
+          accessibilityHint={enabled ? null : 'my hint'}
+          style={{height: 100, width: 100, backgroundColor: 'red'}}
+        />
+        <View />
       </RNTesterBlock>
     </>
   );
