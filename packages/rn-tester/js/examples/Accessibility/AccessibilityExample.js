@@ -1475,10 +1475,74 @@ function AccessibilityLiveRegion(): React.Node {
   );
 }
 
+function AccessibilityExpandedExample(): React.Node {
+  const [expand, setExpanded] = React.useState(false);
+  const [pressed, setPressed] = React.useState(false);
+  const expandAction = {name: 'expand'};
+  const collapseAction = {name: 'collapse'};
+  return (
+    <>
+      <RNTesterBlock title="Collapse/Expanded state change (Paper)">
+        <Text>
+          The following component announces expanded/collapsed state correctly
+        </Text>
+        <Button
+          onPress={() => setExpanded(!expand)}
+          accessibilityState={{expanded: expand}}
+          accessibilityActions={expand ? [collapseAction] : [expandAction]}
+          onAccessibilityAction={event => {
+            switch (event.nativeEvent.actionName) {
+              case 'expand':
+                setExpanded(true);
+                break;
+              case 'collapse':
+                setExpanded(false);
+                break;
+            }
+          }}
+          title="click me to change state"
+        />
+      </RNTesterBlock>
+
+      <RNTesterBlock title="Screenreader announces the visible text">
+        <Text>Announcing expanded/collapse and the visible text.</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setExpanded(!expand)}
+          accessibilityState={{expanded: expand}}>
+          <Text>Click me to change state</Text>
+        </TouchableOpacity>
+      </RNTesterBlock>
+
+      <RNTesterBlock title="expanded/collapsed only managed through the accessibility menu">
+        <TouchableWithoutFeedback
+          accessibilityState={{expanded: true}}
+          accessible={true}>
+          <View>
+            <Text>Clicking me does not change state</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </RNTesterBlock>
+    </>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
+  {
+    title: 'Accessibility expanded',
+    render(): React.Element<typeof AccessibilityExpandedExample> {
+      return <AccessibilityExpandedExample />;
+    },
+  },
+  {
+    title: 'Accessibility elements',
+    render(): React.Element<typeof AccessibilityExample> {
+      return <AccessibilityExample />;
+    },
+  },
   {
     title: 'Accessibility Live Region',
     render(): React.Element<typeof AccessibilityLiveRegion> {
