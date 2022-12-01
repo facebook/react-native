@@ -435,8 +435,7 @@ android {
                     "-DANDROID_TOOLCHAIN=clang",
                     "-DANDROID_PLATFORM=android-21"
 
-                targets "jscexecutor",
-                    "jsijniprofiler",
+                targets "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
                     // prefab targets
@@ -463,7 +462,8 @@ android {
                     "react_render_uimanager",
                     "react_render_scheduler",
                     "react_render_mounting",
-                    "hermes_executor"
+                    "hermes_executor",
+                    "jscexecutor"
             }
         }
         ndk {
@@ -582,6 +582,9 @@ android {
         }
         hermes_executor {
             headers(new File(prefabHeadersDir, "hermes_executor").absolutePath)
+        }
+        jscexecutor {
+            headers(new File(prefabHeadersDir, "jscexecutor").absolutePath)
         }
     }
 
