@@ -7,19 +7,11 @@
 
 #pragma once
 
+#include <ReactCommon/SchedulerPriority.h>
 #include <react/debug/react_native_assert.h>
 #include <chrono>
 
-namespace facebook {
-namespace react {
-
-enum class SchedulerPriority : int {
-  ImmediatePriority = 1,
-  UserBlockingPriority = 2,
-  NormalPriority = 3,
-  LowPriority = 4,
-  IdlePriority = 5,
-};
+namespace facebook::react {
 
 static constexpr std::underlying_type<SchedulerPriority>::type serialize(
     SchedulerPriority schedulerPriority) {
@@ -61,21 +53,4 @@ static inline std::chrono::milliseconds timeoutForSchedulerPriority(
   }
 }
 
-static inline std::string debugValueForSchedulerPriority(
-    SchedulerPriority schedulerPriority) {
-  switch (schedulerPriority) {
-    case SchedulerPriority::ImmediatePriority:
-      return "SchedulerPriority::ImmediatePriority";
-    case SchedulerPriority::UserBlockingPriority:
-      return "SchedulerPriority::UserBlockingPriority";
-    case SchedulerPriority::NormalPriority:
-      return "SchedulerPriority::NormalPriority";
-    case SchedulerPriority::LowPriority:
-      return "SchedulerPriority::LowPriority";
-    case SchedulerPriority::IdlePriority:
-      return "SchedulerPriority::IdlePriority";
-  }
-}
-
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
