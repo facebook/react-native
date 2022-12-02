@@ -112,7 +112,6 @@ using namespace facebook::react;
         attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(accessibilityProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
         NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLabel
                                                                                     attributes:attrsDictionary];
-        dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.5);
         UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
       }
     }
