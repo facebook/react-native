@@ -100,7 +100,7 @@ def use_react_native! (
   else
     setup_jsc!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
   end
-  pod 'React-jsidynamic', :path => "#{prefix}/ReactCommon/jsi"
+
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
 

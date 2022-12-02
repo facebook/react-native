@@ -24,8 +24,8 @@ public class HermesExecutor extends JavaScriptExecutor {
     if (mode_ == null) {
       // libhermes must be loaded explicitly to invoke its JNI_OnLoad.
       SoLoader.loadLibrary("hermes");
-      SoLoader.loadLibrary("hermes-executor");
-      // libhermes-executor is built differently for Debug & Release so we load the proper mode.
+      SoLoader.loadLibrary("hermes_executor");
+      // libhermes_executor is built differently for Debug & Release so we load the proper mode.
       if (ReactBuildConfig.DEBUG == true) {
         mode_ = "Debug";
       } else {

@@ -1,13 +1,11 @@
-/**
+/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
- * @flow strict
- * @format
  */
 
-'use strict';
+#pragma once
 
-module.exports = require('@react-native/assets-registry/registry');
+// This header is left here for compatibility reasons.
+#include <react/bridging/CallbackWrapper.h>

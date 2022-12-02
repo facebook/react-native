@@ -109,7 +109,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   private final List<ResponseHandler> mResponseHandlers = new ArrayList<>();
   private boolean mShuttingDown;
 
-  /* package */ NetworkingModule(
+  public NetworkingModule(
       ReactApplicationContext reactContext,
       @Nullable String defaultUserAgent,
       OkHttpClient client,

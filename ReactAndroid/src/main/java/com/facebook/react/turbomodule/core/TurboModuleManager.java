@@ -16,7 +16,6 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.RuntimeExecutor;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
@@ -59,9 +58,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             runtimeExecutor,
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (CallInvokerHolderImpl) nativeCallInvokerHolder,
-            delegate,
-            ReactFeatureFlags.useGlobalCallbackCleanupScopeUsingRetainJSCallback,
-            ReactFeatureFlags.useTurboModuleManagerCallbackCleanupScope);
+            delegate);
     installJSIBindings();
 
     mEagerInitModuleNames =
@@ -293,9 +290,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       RuntimeExecutor runtimeExecutor,
       CallInvokerHolderImpl jsCallInvokerHolder,
       CallInvokerHolderImpl nativeCallInvokerHolder,
-      TurboModuleManagerDelegate tmmDelegate,
-      boolean useGlobalCallbackCleanupScopeUsingRetainJSCallback,
-      boolean useTurboModuleManagerCallbackCleanupScope);
+      TurboModuleManagerDelegate tmmDelegate);
 
   private native void installJSIBindings();
 

@@ -11,11 +11,13 @@
 'use strict';
 
 import type {
+  Nullable,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   Int32TypeAnnotation,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
+  NativeModuleTypeAnnotation,
   NativeModuleFloatTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleGenericObjectTypeAnnotation,
@@ -23,7 +25,7 @@ import type {
   NativeModuleNumberTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
-  Nullable,
+  NativeModuleUnionTypeAnnotation,
   ObjectTypeAnnotation,
   ReservedTypeAnnotation,
   StringTypeAnnotation,
@@ -37,9 +39,15 @@ import type {
   TypeDeclarationMap,
 } from './utils';
 
+const {UnsupportedUnionTypeAnnotationParserError} = require('./errors');
+const {
+  throwIfArrayElementTypeAnnotationIsUnsupported,
+} = require('./error-utils');
+const {nullGuard} = require('./parsers-utils');
 const {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   wrapNullable,
+  unwrapNullable,
   translateFunctionTypeAnnotation,
 } = require('./parsers-commons');
 
@@ -113,7 +121,7 @@ function emitFunction(
   return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
 }
 
-function emitMixedTypeAnnotation(
+function emitMixed(
   nullable: boolean,
 ): Nullable<NativeModuleMixedTypeAnnotation> {
   return wrapNullable(nullable, {
@@ -243,6 +251,88 @@ function emitFloat(
   });
 }
 
+function emitUnion(
+  nullable: boolean,
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): Nullable<NativeModuleUnionTypeAnnotation> {
+  const unionTypes = parser.remapUnionTypeAnnotationMemberNames(
+    typeAnnotation.types,
+  );
+
+  // Only support unionTypes of the same kind
+  if (unionTypes.length > 1) {
+    throw new UnsupportedUnionTypeAnnotationParserError(
+      hasteModuleName,
+      typeAnnotation,
+      unionTypes,
+      parser.language(),
+    );
+  }
+
+  return wrapNullable(nullable, {
+    type: 'UnionTypeAnnotation',
+    memberType: unionTypes[0],
+  });
+}
+
+function translateArrayTypeAnnotation(
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  cxxOnly: boolean,
+  arrayType: 'Array' | 'ReadonlyArray',
+  elementType: $FlowFixMe,
+  nullable: boolean,
+  language: ParserType,
+  translateTypeAnnotation: $FlowFixMe,
+): Nullable<NativeModuleTypeAnnotation> {
+  try {
+    /**
+     * TODO(T72031674): Migrate all our NativeModule specs to not use
+     * invalid Array ElementTypes. Then, make the elementType a required
+     * parameter.
+     */
+    const [_elementType, isElementTypeNullable] = unwrapNullable<$FlowFixMe>(
+      translateTypeAnnotation(
+        hasteModuleName,
+        elementType,
+        types,
+        aliasMap,
+        /**
+         * TODO(T72031674): Ensure that all ParsingErrors that are thrown
+         * while parsing the array element don't get captured and collected.
+         * Why? If we detect any parsing error while parsing the element,
+         * we should default it to null down the line, here. This is
+         * the correct behaviour until we migrate all our NativeModule specs
+         * to be parseable.
+         */
+        nullGuard,
+        cxxOnly,
+      ),
+    );
+
+    throwIfArrayElementTypeAnnotationIsUnsupported(
+      hasteModuleName,
+      elementType,
+      arrayType,
+      _elementType.type,
+      language,
+    );
+
+    return wrapNullable(nullable, {
+      type: 'ArrayTypeAnnotation',
+      // $FlowFixMe[incompatible-call]
+      elementType: wrapNullable(isElementTypeNullable, _elementType),
+    });
+  } catch (ex) {
+    return wrapNullable(nullable, {
+      type: 'ArrayTypeAnnotation',
+    });
+  }
+}
+
 module.exports = {
   emitBoolean,
   emitDouble,
@@ -256,6 +346,8 @@ module.exports = {
   emitVoid,
   emitString,
   emitStringish,
-  emitMixedTypeAnnotation,
+  emitMixed,
+  emitUnion,
   typeAliasResolution,
+  translateArrayTypeAnnotation,
 };

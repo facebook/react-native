@@ -528,18 +528,12 @@ void Binding::preallocateView(
   }
 
   auto shadowView = ShadowView(shadowNode);
-  auto preallocationFunction = [this,
-                                surfaceId,
-                                shadowView = std::move(shadowView)] {
-    auto mountingManager = verifyMountingManager("Binding::preallocateView");
-    if (!mountingManager) {
-      return;
-    }
+  auto mountingManager = verifyMountingManager("Binding::preallocateView");
+  if (!mountingManager) {
+    return;
+  }
 
-    mountingManager->preallocateShadowView(surfaceId, shadowView);
-  };
-
-  preallocationFunction();
+  mountingManager->preallocateShadowView(surfaceId, shadowView);
 }
 
 void Binding::schedulerDidDispatchCommand(

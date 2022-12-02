@@ -15,6 +15,7 @@
 #include <vector>
 
 namespace facebook::react {
+class PerformanceEntryReporter;
 
 #pragma mark - Structs
 
@@ -46,6 +47,7 @@ class NativePerformanceObserver
       std::enable_shared_from_this<NativePerformanceObserver> {
  public:
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
+  ~NativePerformanceObserver();
 
   void startReporting(jsi::Runtime &rt, std::string entryType);
 
@@ -57,8 +59,10 @@ class NativePerformanceObserver
       jsi::Runtime &rt,
       std::optional<AsyncCallback<>> callback);
 
+  void logEntryForDebug(jsi::Runtime &rt, RawPerformanceEntry entry);
+
  private:
-  std::optional<AsyncCallback<>> callback_;
+  std::unique_ptr<PerformanceEntryReporter> reporter_;
 };
 
 } // namespace facebook::react

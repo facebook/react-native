@@ -9,6 +9,14 @@
 
 #ifdef __cplusplus
 
+#if defined(__has_include) && __has_include(<version>)
+// needed to be able to evaluate defined(__cpp_lib_bit_cast)
+#include <version>
+#else
+// needed to be able to evaluate defined(__cpp_lib_bit_cast)
+#include <ciso646>
+#endif
+
 #ifdef __cpp_lib_bit_cast
 #include <bit>
 #else
