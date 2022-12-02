@@ -104,19 +104,15 @@ using namespace facebook::react;
   auto const &accessibilityProps = *std::static_pointer_cast<AccessibilityProps const>(_props);
 
   BOOL accessibilityLiveRegionEnabled = accessibilityProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
-  BOOL childAccessibilityLiveRegionEnabled = ![self.accessibilityLiveRegion isEqual:@"none"];
-  if (_state && paragraphProps.accessible && (accessibilityLiveRegionEnabled || childAccessibilityLiveRegionEnabled)) {
+  if (_state && paragraphProps.accessible && accessibilityLiveRegionEnabled) {
     if (@available(iOS 11.0, *)) {
       auto &data = _state->getData();
       if (![_accessibilityProvider isUpToDate:data.attributedString]) {
         NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-        if (childAccessibilityLiveRegionEnabled) {
-          attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @([self.accessibilityLiveRegion isEqual:@"polite"] ? YES : NO);
-        } else {
-          attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(accessibilityProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
-        }
+        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(accessibilityProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
         NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLabel
                                                                                     attributes:attrsDictionary];
+        dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.5);
         UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
       }
     }
