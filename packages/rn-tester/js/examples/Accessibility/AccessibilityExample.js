@@ -1593,7 +1593,9 @@ function AccessibilityLiveRegion(): React.Node {
             <Text>Click me</Text>
           </View>
         </TouchableWithoutFeedback>
-        <Text accessibilityLiveRegion="polite">Clicked {count} times</Text>
+        <View accessibilityLiveRegion="polite">
+          <Text>Clicked {count} times</Text>
+        </View>
       </RNTesterBlock>
       <RNTesterBlock title="LiveRegion With View component">
         <TouchableWithoutFeedback
