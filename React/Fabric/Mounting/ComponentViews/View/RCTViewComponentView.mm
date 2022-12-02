@@ -38,6 +38,7 @@ using namespace facebook::react;
     _props = defaultProps;
     _reactSubviews = [NSMutableArray new];
     self.multipleTouchEnabled = YES;
+    // self.accessibilityLiveRegion = AccessibilityLiveRegion::None;
   }
   return self;
 }
@@ -364,7 +365,11 @@ using namespace facebook::react;
   
   BOOL accessibilityLiveRegionEnabled = newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
   BOOL isReactRootView = RCTIsReactRootView(self.reactTag);
-  if (accessibilityLiveRegionEnabled && !isReactRootView) {
+  if ((accessibilityLiveRegionEnabled || self.accessibilityLiveRegionToChildren) && !isReactRootView) {
+    for (RCTViewComponentView *subview in self.subviews) {
+        // view.accessibilityLiveRegion = AccessibilityLiveRegion::Polite;
+        subview.accessibilityLiveRegionToChildren = YES;
+    }
     if (@available(iOS 11.0, *)) {
       NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
       if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {

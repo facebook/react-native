@@ -1452,9 +1452,7 @@ function AccessibilityLiveRegion(): React.Node {
             <Text>Click me</Text>
           </View>
         </TouchableWithoutFeedback>
-        <View>
-          <Text accessibilityLiveRegion="polite">Clicked {count} times</Text>
-        </View>
+        <Text accessibilityLiveRegion="polite">Clicked {count} times</Text>
       </RNTesterBlock>
       <RNTesterBlock title="LiveRegion With View component">
         <TouchableWithoutFeedback
@@ -1464,12 +1462,15 @@ function AccessibilityLiveRegion(): React.Node {
           </View>
         </TouchableWithoutFeedback>
         <View
-          accessibilityLiveRegion="polite"
-          accessibilityState={{disabled: !enabled}}
-          accessibilityHint={enabled ? null : 'my hint'}
-          style={{height: 100, width: 100, backgroundColor: 'red'}}
-        />
-        <View />
+          accessible={true}
+          focusable={true}
+          accessibilityLiveRegion="polite">
+          <TouchableOpacity
+            accessibilityState={{disabled: !enabled}}
+            accessibilityHint={enabled ? null : 'my hint'}
+            style={{height: 100, width: 100, backgroundColor: 'red'}}
+          />
+        </View>
       </RNTesterBlock>
     </>
   );
