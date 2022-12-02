@@ -28,6 +28,7 @@ using namespace facebook::react;
   BOOL _removeClippedSubviews;
   NSMutableArray<UIView *> *_reactSubviews;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
+  NSAttributedString *_Nullable _previousAnnouncement;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -37,6 +38,7 @@ using namespace facebook::react;
     _props = defaultProps;
     _reactSubviews = [NSMutableArray new];
     self.multipleTouchEnabled = YES;
+    self->_previousAnnouncement = nullptr;
   }
   return self;
 }
@@ -383,7 +385,7 @@ using namespace facebook::react;
         [accessibilityLiveRegionAnnouncement appendString:self.accessibilityLabel];
         [accessibilityLiveRegionAnnouncement appendString:@" "];
       }
-      
+    
       if (self.accessibilityHint && oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
         [accessibilityLiveRegionAnnouncement appendString:self.accessibilityHint];
         [accessibilityLiveRegionAnnouncement appendString:@" "];
@@ -396,9 +398,14 @@ using namespace facebook::react;
                                                                                     attributes:attrsDictionary];
         
         dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.5);
-        dispatch_after(delay, dispatch_get_main_queue(), ^(void){
-          UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
-        });
+        if (self->_previousAnnouncement != announcementWithAttrs) {
+          dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+            UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+          });
+          self->_previousAnnouncement = announcementWithAttrs;
+        } else {
+          self->_previousAnnouncement = nullptr;
+        }
       }
     }
   }
