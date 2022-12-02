@@ -56,11 +56,6 @@ RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
 RCT_EXTERN BOOL RCTTurboModuleManagerDelegateLockingDisabled(void);
 RCT_EXTERN void RCTDisableTurboModuleManagerDelegateLocking(BOOL enabled);
 
-// Turn off validAttribute: entries inside ViewConfigs for events
-// TODO(109509380): Remove this gating
-RCT_EXTERN BOOL RCTViewConfigEventValidAttributesDisabled(void);
-RCT_EXTERN void RCTDisableViewConfigEventValidAttributes(BOOL disabled);
-
 typedef enum {
   kRCTGlobalScope,
   kRCTGlobalScopeUsingRetainJSCallback,
