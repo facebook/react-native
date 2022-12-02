@@ -38,7 +38,7 @@ using namespace facebook::react;
     _props = defaultProps;
     _reactSubviews = [NSMutableArray new];
     self.multipleTouchEnabled = YES;
-    // self.accessibilityLiveRegion = AccessibilityLiveRegion::None;
+    self.accessibilityLiveRegion = @"none";
   }
   return self;
 }
@@ -369,6 +369,7 @@ using namespace facebook::react;
     for (RCTViewComponentView *subview in self.subviews) {
         // view.accessibilityLiveRegion = AccessibilityLiveRegion::Polite;
         subview.accessibilityLiveRegionToChildren = YES;
+        subview.accessibilityLiveRegion = newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? @"polite" : @"assertive";
     }
     if (@available(iOS 11.0, *)) {
       NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
@@ -398,11 +399,17 @@ using namespace facebook::react;
         
       if ([accessibilityLiveRegionAnnouncement length] != 0) {
         NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
-        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: accessibilityLiveRegionAnnouncement
-                                                                                    attributes:attrsDictionary];
-        
-        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+        if (self.accessibilityLiveRegionToChildren) {
+          attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @([self.accessibilityLiveRegion isEqual:@"polite"] ? YES : NO);
+          NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: accessibilityLiveRegionAnnouncement
+                                                                                      attributes:attrsDictionary];
+          UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+        } else {
+          attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
+          NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: accessibilityLiveRegionAnnouncement
+                                                                                      attributes:attrsDictionary];
+          UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+        }
       }
     }
   }
@@ -411,6 +418,7 @@ using namespace facebook::react;
 
   _props = std::static_pointer_cast<ViewProps const>(props);
 }
+
 
 - (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
 {
@@ -736,6 +744,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     }
   }
   return result;
+  
 }
 
 - (NSString *)accessibilityLabel
