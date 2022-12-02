@@ -97,7 +97,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
       self->_label.text = [NSString stringWithFormat:@"%lu", (unsigned long)self->_FPS];
     });
 
-    CGFloat scale = 60.0 / (CGFloat)_height;
+    CGFloat targetFps = MAX(_maxFPS, 60.0);
+    CGFloat scale = targetFps / (CGFloat)_height;
     for (NSUInteger i = 0; i < _length - 1; i++) {
       _frames[i] = _frames[i + 1];
     }
