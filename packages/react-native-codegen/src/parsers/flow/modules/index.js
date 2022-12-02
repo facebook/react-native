@@ -32,6 +32,7 @@ const {
   buildPropertySchema,
 } = require('../../parsers-commons');
 const {
+  emitArrayType,
   emitBoolean,
   emitDouble,
   emitFloat,
@@ -106,21 +107,14 @@ function translateTypeAnnotation(
         }
         case 'Array':
         case '$ReadOnlyArray': {
-          assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+          return emitArrayType(
             hasteModuleName,
             typeAnnotation,
             parser,
-          );
-
-          return translateArrayTypeAnnotation(
-            hasteModuleName,
             types,
             aliasMap,
             cxxOnly,
-            typeAnnotation.type,
-            typeAnnotation.typeParameters.params[0],
             nullable,
-            language,
             translateTypeAnnotation,
           );
         }

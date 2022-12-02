@@ -26,13 +26,13 @@ const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
 const {resolveTypeAnnotation, getTypes} = require('../utils.js');
 
 const {
-  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   parseObjectProperty,
   translateDefault,
   buildPropertySchema,
 } = require('../../parsers-commons');
 
 const {
+  emitArrayType,
   emitBoolean,
   emitDouble,
   emitFloat,
@@ -145,21 +145,14 @@ function translateTypeAnnotation(
         }
         case 'Array':
         case 'ReadonlyArray': {
-          assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+          return emitArrayType(
             hasteModuleName,
             typeAnnotation,
             parser,
-          );
-
-          return translateArrayTypeAnnotation(
-            hasteModuleName,
             types,
             aliasMap,
             cxxOnly,
-            typeAnnotation.type,
-            typeAnnotation.typeParameters.params[0],
             nullable,
-            language,
             translateTypeAnnotation,
           );
         }
