@@ -294,7 +294,7 @@ function translateArrayTypeAnnotation(
      * invalid Array ElementTypes. Then, make the elementType a required
      * parameter.
      */
-    const [_elementType, isElementTypeNullable] = unwrapNullable(
+    const [_elementType, isElementTypeNullable] = unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
         hasteModuleName,
         elementType,
