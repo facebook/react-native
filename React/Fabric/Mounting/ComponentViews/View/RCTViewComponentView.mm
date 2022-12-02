@@ -364,12 +364,13 @@ using namespace facebook::react;
   }
   
   BOOL accessibilityLiveRegionEnabled = newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
+  BOOL childAccessibilityLiveRegionEnabled = ![self.accessibilityLiveRegion isEqual:@"none"];
   BOOL isReactRootView = RCTIsReactRootView(self.reactTag);
-  if ((accessibilityLiveRegionEnabled || self.accessibilityLiveRegionToChildren) && !isReactRootView) {
-    for (RCTViewComponentView *subview in self.subviews) {
-        // view.accessibilityLiveRegion = AccessibilityLiveRegion::Polite;
-        subview.accessibilityLiveRegionToChildren = YES;
+  if ((accessibilityLiveRegionEnabled || childAccessibilityLiveRegionEnabled) && !isReactRootView) {
+    if (!childAccessibilityLiveRegionEnabled) {
+      for (RCTViewComponentView *subview in self.subviews) {
         subview.accessibilityLiveRegion = newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? @"polite" : @"assertive";
+      }
     }
     if (@available(iOS 11.0, *)) {
       NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
@@ -399,17 +400,14 @@ using namespace facebook::react;
         
       if ([accessibilityLiveRegionAnnouncement length] != 0) {
         NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-        if (self.accessibilityLiveRegionToChildren) {
+        if (childAccessibilityLiveRegionEnabled) {
           attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @([self.accessibilityLiveRegion isEqual:@"polite"] ? YES : NO);
-          NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: accessibilityLiveRegionAnnouncement
-                                                                                      attributes:attrsDictionary];
-          UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
         } else {
           attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
-          NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: accessibilityLiveRegionAnnouncement
-                                                                                      attributes:attrsDictionary];
-          UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
         }
+        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: accessibilityLiveRegionAnnouncement
+                                                                                    attributes:attrsDictionary];
+        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
       }
     }
   }
