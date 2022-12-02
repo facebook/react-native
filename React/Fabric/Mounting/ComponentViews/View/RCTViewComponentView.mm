@@ -387,12 +387,12 @@ using namespace facebook::react;
         }
       }
       
-      if (self.accessibilityLabel && oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
+      if ([self.accessibilityLabel length] != 0 && oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
         [accessibilityLiveRegionAnnouncement appendString:self.accessibilityLabel];
         [accessibilityLiveRegionAnnouncement appendString:@" "];
       }
       
-      if (self.accessibilityHint && oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
+      if ([self.accessibilityHint length] != 0 && oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
         [accessibilityLiveRegionAnnouncement appendString:self.accessibilityHint];
         [accessibilityLiveRegionAnnouncement appendString:@" "];
       }
