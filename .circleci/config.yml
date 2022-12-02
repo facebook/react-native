@@ -59,6 +59,7 @@ references:
     hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v2-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version"}}
     pods_cache_key: &pods_cache_key v8-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+    windows_choco_cache_key: &windows_choco_cache_key v1-win-choco-cache-{{ .Environment.CIRCLE_JOB }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
 
   cache_paths:
@@ -986,8 +987,22 @@ jobs:
       - ANDROID_BUILD_VERSION: 33
       - ANDROID_TOOLS_VERSION: 33.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
+      - CHOCO_CACHE_DIR: "C:\\ChocoCache"
     steps:
       - checkout_code_with_cache
+
+      - restore_cache:
+          keys:
+            - *windows_choco_cache_key
+
+      - run:
+          name: Choco cache
+          # Cache our dependencies which can be flakey to download
+          command: |
+            if (!Test-Path $env:CHOCO_CACHE_DIR) {
+              mkdir $env:CHOCO_CACHE_DIR
+            }
+            choco config set --name cacheLocation --value $env:CHOCO_CACHE_DIR
 
       - run:
           name: Disable NVM
@@ -1014,16 +1029,20 @@ jobs:
       - run:
           name: "Yarn: Install Dependencies"
           command: yarn install --frozen-lockfile --non-interactive
+
       - save_cache:
           key: *windows_yarn_cache_key
           paths:
             - C:\Users\circleci\AppData\Local\Yarn
 
-      # Try to install the SDK up to 3 times, since network flakiness can cause install failures
-      # Using a timeout of 9 mins, as circle ci will timeout if there is no output for 10 mins
       - run:
           name: Install Android SDK Tools
-          command: choco install android-sdk --timeout 540; if (!$?) { choco install android-sdk --timeout 540 --force --forcedependencies}; if (!$?) { choco install android-sdk  --force --forcedependencies}
+          command: choco install android-sdk;
+
+      - save_cache:
+          key: *windows_choco_cache_key
+          paths:
+            - $env:CHOCO_CACHE_DIR
 
       - run:
           name: Setup Android SDKs
