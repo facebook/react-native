@@ -1464,7 +1464,7 @@ function AccessibilityLiveRegion(): React.Node {
           </View>
         </TouchableWithoutFeedback>
         <View
-          accessibilityLiveRegion="assertive"
+          accessibilityLiveRegion="polite"
           accessibilityState={{disabled: !enabled}}
           accessibilityHint={enabled ? null : 'my hint'}
           style={{height: 100, width: 100, backgroundColor: 'red'}}
@@ -1531,6 +1531,12 @@ exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
   {
+    title: 'Accessibility Live Region',
+    render(): React.Element<typeof AccessibilityLiveRegion> {
+      return <AccessibilityLiveRegion />;
+    },
+  },
+  {
     title: 'Accessibility expanded',
     render(): React.Element<typeof AccessibilityExpandedExample> {
       return <AccessibilityExpandedExample />;
@@ -1540,12 +1546,6 @@ exports.examples = [
     title: 'Accessibility elements',
     render(): React.Element<typeof AccessibilityExample> {
       return <AccessibilityExample />;
-    },
-  },
-  {
-    title: 'Accessibility Live Region',
-    render(): React.Element<typeof AccessibilityLiveRegion> {
-      return <AccessibilityLiveRegion />;
     },
   },
   {

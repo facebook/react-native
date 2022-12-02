@@ -17,6 +17,7 @@
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
+#import "UIView+React.h"
 
 using namespace facebook::react;
 
@@ -364,7 +365,8 @@ using namespace facebook::react;
   }
   
   BOOL accessibilityLiveRegionEnabled = newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
-  if (accessibilityLiveRegionEnabled) {
+  BOOL isReactRootView = RCTIsReactRootView(self.reactTag);
+  if (accessibilityLiveRegionEnabled && !isReactRootView) {
     if (@available(iOS 11.0, *)) {
       NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
       if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
