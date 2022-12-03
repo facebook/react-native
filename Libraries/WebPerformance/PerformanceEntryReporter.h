@@ -22,6 +22,15 @@ enum class PerformanceEntryType {
 
 class PerformanceEntryReporter {
  public:
+  PerformanceEntryReporter(PerformanceEntryReporter const &) = delete;
+  void operator=(PerformanceEntryReporter const &) = delete;
+
+  // NOTE: This class is not thread safe, make sure that the calls are made from
+  // the same thread.
+  // TODO: Consider passing it as a parameter to the corresponding modules at
+  // creation time instead of having the singleton.
+  static PerformanceEntryReporter &getInstance();
+
   void setReportingCallback(std::optional<AsyncCallback<>> callback);
   void startReporting(PerformanceEntryType entryType);
   void stopReporting(PerformanceEntryType entryType);
@@ -35,7 +44,11 @@ class PerformanceEntryReporter {
     return reportingType_[static_cast<int>(entryType)];
   }
 
+  void mark(const std::string &name, double startTime, double duration);
+
  private:
+  PerformanceEntryReporter() {}
+
   std::optional<AsyncCallback<>> callback_;
   std::vector<RawPerformanceEntry> entries_;
   std::array<bool, (size_t)PerformanceEntryType::_COUNT> reportingType_{false};

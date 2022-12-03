@@ -10,9 +10,7 @@
 
 import type {HighResTimeStamp} from './PerformanceObserver';
 
-import NativePerformanceObserver, {
-  RawPerformanceEntryTypeValues,
-} from './NativePerformanceObserver';
+import NativePerformance from './NativePerformance';
 import {PerformanceEntry} from './PerformanceObserver';
 
 type DetailType = mixed;
@@ -49,12 +47,7 @@ export default class Performance {
     markOptions?: PerformanceMarkOptions,
   ): PerformanceMark {
     const mark = new PerformanceMark(markName, markOptions);
-    NativePerformanceObserver?.logEntryForDebug?.({
-      name: markName,
-      entryType: RawPerformanceEntryTypeValues.MARK,
-      startTime: mark.startTime,
-      duration: mark.duration,
-    });
+    NativePerformance?.mark?.(markName, mark.startTime, mark.duration);
     return mark;
   }
 

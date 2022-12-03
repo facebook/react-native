@@ -22,43 +22,36 @@ static PerformanceEntryType stringToPerformanceEntryType(
 
 NativePerformanceObserver::NativePerformanceObserver(
     std::shared_ptr<CallInvoker> jsInvoker)
-    : NativePerformanceObserverCxxSpec(std::move(jsInvoker)),
-      reporter_(std::make_unique<PerformanceEntryReporter>()) {}
-
-NativePerformanceObserver::~NativePerformanceObserver() {}
+    : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {}
 
 void NativePerformanceObserver::startReporting(
     jsi::Runtime &rt,
     std::string entryType) {
-  reporter_->startReporting(stringToPerformanceEntryType(entryType));
+  PerformanceEntryReporter::getInstance().startReporting(
+      stringToPerformanceEntryType(entryType));
 }
 
 void NativePerformanceObserver::stopReporting(
     jsi::Runtime &rt,
     std::string entryType) {
-  reporter_->stopReporting(stringToPerformanceEntryType(entryType));
+  PerformanceEntryReporter::getInstance().stopReporting(
+      stringToPerformanceEntryType(entryType));
 }
 
 std::vector<RawPerformanceEntry> NativePerformanceObserver::popPendingEntries(
     jsi::Runtime &rt) {
-  return reporter_->popPendingEntries();
+  return PerformanceEntryReporter::getInstance().popPendingEntries();
 }
 
 std::vector<RawPerformanceEntry> NativePerformanceObserver::getPendingEntries(
     jsi::Runtime &rt) {
-  return reporter_->getPendingEntries();
+  return PerformanceEntryReporter::getInstance().getPendingEntries();
 }
 
 void NativePerformanceObserver::setOnPerformanceEntryCallback(
     jsi::Runtime &rt,
     std::optional<AsyncCallback<>> callback) {
-  reporter_->setReportingCallback(callback);
-}
-
-void NativePerformanceObserver::logEntryForDebug(
-    jsi::Runtime &rt,
-    RawPerformanceEntry entry) {
-  reporter_->logEntry(entry);
+  PerformanceEntryReporter::getInstance().setReportingCallback(callback);
 }
 
 } // namespace facebook::react

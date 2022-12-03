@@ -36,9 +36,6 @@ export interface Spec extends TurboModule {
   +getPendingEntries: () => $ReadOnlyArray<RawPerformanceEntry>;
   +popPendingEntries?: () => $ReadOnlyArray<RawPerformanceEntry>;
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
-
-  // NOTE: this is for dev-only purposes (potentially is going to be moved elsewhere)
-  +logEntryForDebug?: (entry: RawPerformanceEntry) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

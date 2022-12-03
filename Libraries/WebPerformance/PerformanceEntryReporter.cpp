@@ -11,6 +11,11 @@
 #include "NativePerformanceObserver.h"
 
 namespace facebook::react {
+PerformanceEntryReporter &PerformanceEntryReporter::getInstance() {
+  static PerformanceEntryReporter instance;
+  return instance;
+}
+
 void PerformanceEntryReporter::setReportingCallback(
     std::optional<AsyncCallback<>> callback) {
   callback_ = callback;
@@ -48,5 +53,19 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
   // TODO: Add buffering/throttling - but for testing this works as well, for
   // now
   callback_->callWithPriority(SchedulerPriority::IdlePriority);
+}
+
+void PerformanceEntryReporter::mark(
+    const std::string &name,
+    double startTime,
+    double duration) {
+  logEntry(
+      {name,
+       static_cast<int>(PerformanceEntryType::MARK),
+       startTime,
+       duration,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt});
 }
 } // namespace facebook::react
