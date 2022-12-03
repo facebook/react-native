@@ -199,8 +199,12 @@ export default class PerformanceObserver {
         (_observedEntryTypeRefCount.get(type) ?? 0) + 1,
       );
     }
-    // TODO: Handle correctly the cases when "observe" is called multiple times
-    // on the same observer (potentially with different entry types)
+    // The same observer may have "observe" called multiple times,
+    // with different entry types
+    const observerData = _observers.get(this);
+    if (observerData !== undefined) {
+      entryTypes = new Set([...entryTypes, ...observerData.entryTypes]);
+    }
     _observers.set(this, {entryTypes, callback: this._callback});
   }
 
