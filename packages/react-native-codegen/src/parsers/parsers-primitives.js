@@ -333,7 +333,37 @@ function translateArrayTypeAnnotation(
   }
 }
 
+function emitArrayType(
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  cxxOnly: boolean,
+  nullable: boolean,
+  translateTypeAnnotation: $FlowFixMe,
+): Nullable<NativeModuleTypeAnnotation> {
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+    hasteModuleName,
+    typeAnnotation,
+    parser,
+  );
+
+  return translateArrayTypeAnnotation(
+    hasteModuleName,
+    types,
+    aliasMap,
+    cxxOnly,
+    typeAnnotation.type,
+    typeAnnotation.typeParameters.params[0],
+    nullable,
+    parser.language(),
+    translateTypeAnnotation,
+  );
+}
+
 module.exports = {
+  emitArrayType,
   emitBoolean,
   emitDouble,
   emitFloat,

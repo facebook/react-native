@@ -14,6 +14,7 @@
 import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema';
 
 const {
+  emitArrayType,
   emitBoolean,
   emitDouble,
   emitFloat,
@@ -908,6 +909,89 @@ describe('emitUnion', () => {
             emitUnion(false, hasteModuleName, typeAnnotation, typeScriptParser);
           }).toThrow(expected);
         });
+      });
+    });
+  });
+});
+
+describe('emitArrayType', () => {
+  const hasteModuleName = 'SampleTurboModule';
+
+  function emitArrayTypeForUnitTest(
+    typeAnnotation: $FlowFixMe,
+    nullable: boolean,
+  ): $FlowFixMe {
+    return emitArrayType(
+      hasteModuleName,
+      typeAnnotation,
+      parser,
+      /* types: TypeDeclarationMap */
+      {},
+      /* aliasMap: {...NativeModuleAliasMap} */
+      {},
+      /* cxxOnly: boolean */
+      false,
+      nullable,
+      /* the translateTypeAnnotation function */
+      (_, elementType) => elementType,
+    );
+  }
+
+  describe("when typeAnnotation doesn't have exactly one typeParameter", () => {
+    const nullable = false;
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+
+    it('throws an IncorrectlyParameterizedGenericParserError error', () => {
+      expect(() =>
+        emitArrayTypeForUnitTest(typeAnnotation, nullable),
+      ).toThrow();
+    });
+  });
+
+  describe('when typeAnnotation has exactly one typeParameter', () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1],
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+
+    describe('when nullable is true', () => {
+      const nullable = true;
+      it('returns nullable type annotation', () => {
+        const result = emitArrayTypeForUnitTest(typeAnnotation, nullable);
+        const expected = {
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: {
+            type: 'ArrayTypeAnnotation',
+            elementType: 1,
+          },
+        };
+
+        expect(result).toEqual(expected);
+      });
+    });
+    describe('when nullable is false', () => {
+      const nullable = false;
+      it('returns non nullable type annotation', () => {
+        const result = emitArrayTypeForUnitTest(typeAnnotation, nullable);
+        const expected = {
+          type: 'ArrayTypeAnnotation',
+          elementType: 1,
+        };
+
+        expect(result).toEqual(expected);
       });
     });
   });
