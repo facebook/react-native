@@ -34,6 +34,7 @@ export interface Spec extends TurboModule {
   +startReporting: (entryType: string) => void;
   +stopReporting: (entryType: string) => void;
   +getPendingEntries: () => $ReadOnlyArray<RawPerformanceEntry>;
+  +popPendingEntries?: () => $ReadOnlyArray<RawPerformanceEntry>;
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
 
   // NOTE: this is for dev-only purposes (potentially is going to be moved elsewhere)

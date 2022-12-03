@@ -23,8 +23,8 @@ void PerformanceEntryReporter::stopReporting(PerformanceEntryType entryType) {
   reportingType_[static_cast<int>(entryType)] = false;
 }
 
-std::vector<RawPerformanceEntry> PerformanceEntryReporter::getPendingEntries()
-    const {
+const std::vector<RawPerformanceEntry>
+    &PerformanceEntryReporter::getPendingEntries() const {
   return entries_;
 }
 

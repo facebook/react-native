@@ -39,9 +39,14 @@ void NativePerformanceObserver::stopReporting(
   reporter_->stopReporting(stringToPerformanceEntryType(entryType));
 }
 
-std::vector<RawPerformanceEntry> NativePerformanceObserver::getPendingEntries(
+std::vector<RawPerformanceEntry> NativePerformanceObserver::popPendingEntries(
     jsi::Runtime &rt) {
   return reporter_->popPendingEntries();
+}
+
+std::vector<RawPerformanceEntry> NativePerformanceObserver::getPendingEntries(
+    jsi::Runtime &rt) {
+  return reporter_->getPendingEntries();
 }
 
 void NativePerformanceObserver::setOnPerformanceEntryCallback(

@@ -26,7 +26,7 @@ class PerformanceEntryReporter {
   void startReporting(PerformanceEntryType entryType);
   void stopReporting(PerformanceEntryType entryType);
 
-  std::vector<RawPerformanceEntry> getPendingEntries() const;
+  const std::vector<RawPerformanceEntry> &getPendingEntries() const;
   std::vector<RawPerformanceEntry> popPendingEntries();
   void clearPendingEntries();
   void logEntry(const RawPerformanceEntry &entry);
