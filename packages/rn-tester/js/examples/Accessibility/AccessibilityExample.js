@@ -1609,7 +1609,11 @@ function AccessibilityLiveRegion(): React.Node {
           <TouchableOpacity
             accessibilityState={{disabled: !enabled}}
             accessibilityHint={enabled ? null : 'my hint'}
-            style={{height: 100, width: 100, backgroundColor: 'red'}}
+            style={{
+              height: 100,
+              width: 100,
+              backgroundColor: enabled ? null : 'red',
+            }}
           />
         </View>
       </RNTesterBlock>

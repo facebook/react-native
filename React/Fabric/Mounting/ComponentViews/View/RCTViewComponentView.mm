@@ -366,38 +366,39 @@ using namespace facebook::react;
   BOOL accessibilityLiveRegionEnabled = newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
   BOOL childAccessibilityLiveRegionEnabled = ![self.accessibilityLiveRegion isEqual:@"none"];
   BOOL isReactRootView = RCTIsReactRootView(self.reactTag);
-  if ((accessibilityLiveRegionEnabled || childAccessibilityLiveRegionEnabled) && !isReactRootView) {
-    if (!childAccessibilityLiveRegionEnabled) {
-      for (RCTViewComponentView *subview in self.subviews) {
-        subview.accessibilityLiveRegion = newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? @"polite" : @"assertive";
+  if (@available(iOS 11.0, *)) {
+    NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
+    self.accessibilityLiveRegionAnnouncement = accessibilityLiveRegionAnnouncement;
+    if ((accessibilityLiveRegionEnabled || childAccessibilityLiveRegionEnabled) && !isReactRootView) {
+      if (!childAccessibilityLiveRegionEnabled) {
+        for (RCTViewComponentView *subview in self.subviews) {
+          subview.accessibilityLiveRegion = newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? @"polite" : @"assertive";
+        }
       }
-    }
-    if (@available(iOS 11.0, *)) {
-      NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
       if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
         if (newViewProps.accessibilityState.selected) {
           [accessibilityLiveRegionAnnouncement insertString:@"selected " atIndex:0];
-          
+
         }
         if (newViewProps.accessibilityState.disabled) {
           [accessibilityLiveRegionAnnouncement insertString:@"disabled " atIndex:0];
         }
-        
+
         if (self.accessibilityValue) {
           [accessibilityLiveRegionAnnouncement insertString:self.accessibilityValue atIndex:0];
         }
       }
-      
+
       if ([self.accessibilityLabel length] != 0 && oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
         [accessibilityLiveRegionAnnouncement appendString:self.accessibilityLabel];
         [accessibilityLiveRegionAnnouncement appendString:@" "];
       }
-      
+
       if ([self.accessibilityHint length] != 0 && oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
         [accessibilityLiveRegionAnnouncement appendString:self.accessibilityHint];
         [accessibilityLiveRegionAnnouncement appendString:@" "];
       }
-        
+
       if ([accessibilityLiveRegionAnnouncement length] != 0) {
         if (childAccessibilityLiveRegionEnabled) {
           self.accessibilityPoliteAnnouncement = [self.accessibilityLiveRegion isEqual:@"polite"] ? YES : NO;
