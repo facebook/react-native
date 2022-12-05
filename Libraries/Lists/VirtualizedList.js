@@ -861,7 +861,7 @@ export default class VirtualizedList extends StateSafePureComponent<
       cells.push(
         React.cloneElement(element, {
           key: '$empty',
-          onLayout: event => {
+          onLayout: (event: LayoutEvent) => {
             this._onLayoutEmpty(event);
             if (element.props.onLayout) {
               element.props.onLayout(event);

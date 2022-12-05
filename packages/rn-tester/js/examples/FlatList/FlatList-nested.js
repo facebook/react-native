@@ -9,14 +9,14 @@
  */
 
 'use strict';
+import type {ViewToken} from '../../../../../Libraries/Lists/ViewabilityHelper';
+import type {RenderItemProps} from '../../../../../Libraries/Lists/VirtualizedListProps';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
+import RNTesterPage from '../../components/RNTesterPage';
 import * as React from 'react';
 import {useCallback, useEffect, useReducer} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
-
-import RNTesterPage from '../../components/RNTesterPage';
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {ViewToken} from '../../../../../Libraries/Lists/ViewabilityHelper';
 
 type OuterItem = 'head' | 'vertical' | 'horizontal' | 'filler';
 
@@ -200,7 +200,7 @@ function OuterItemRenderer({
           <View style={styles.col}>
             <FlatList
               data={items.map(i => index * items.length * 3 + i)}
-              renderItem={p => (
+              renderItem={(p: RenderItemProps<number>) => (
                 <InnerItemRenderer
                   item={p.item}
                   dispatchInner={dispatchInner}
@@ -215,7 +215,7 @@ function OuterItemRenderer({
           <View style={styles.col}>
             <FlatList
               data={items.map(i => index * items.length * 3 + i + items.length)}
-              renderItem={p => (
+              renderItem={(p: RenderItemProps<number>) => (
                 <InnerItemRenderer
                   item={p.item}
                   dispatchInner={dispatchInner}
@@ -238,7 +238,7 @@ function OuterItemRenderer({
             data={items.map(
               i => index * items.length * 3 + i + 2 * items.length,
             )}
-            renderItem={p => (
+            renderItem={(p: RenderItemProps<number>) => (
               <InnerItemRenderer item={p.item} dispatchInner={dispatchInner} />
             )}
             style={styles.childList}
