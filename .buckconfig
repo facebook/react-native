@@ -17,4 +17,4 @@
   rntester = //packages/rn-tester/android/app:app
 
 [buildfile]
-  includes = //tools/build_defs/preload.bzl
+  includes = //tools/build_defs/oss/preload.bzl
