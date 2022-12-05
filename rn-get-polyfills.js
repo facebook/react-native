@@ -9,4 +9,4 @@
 
 'use strict';
 
-module.exports = require('@react-native/polyfills');
+module.exports = require('@react-native/js-polyfills');

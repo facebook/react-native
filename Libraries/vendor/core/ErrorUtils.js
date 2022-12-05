@@ -8,7 +8,7 @@
  * @flow strict
  */
 
-import type {ErrorUtilsT} from '@react-native/polyfills/error-guard';
+import type {ErrorUtilsT} from '@react-native/js-polyfills/error-guard';
 
 /**
  * The particular require runtime that we are using looks for a global
