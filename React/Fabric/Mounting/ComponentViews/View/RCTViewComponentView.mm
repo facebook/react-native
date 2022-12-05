@@ -402,7 +402,7 @@ using namespace facebook::react;
         if (childAccessibilityLiveRegionEnabled) {
           self.accessibilityPoliteAnnouncement = [self.accessibilityLiveRegion isEqual:@"polite"] ? YES : NO;
         } else {
-          self.accessibilityPoliteAnnouncement =  newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? true : false;
+          self.accessibilityPoliteAnnouncement =  newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO;
         }
         self.accessibilityLiveRegionAnnouncement = accessibilityLiveRegionAnnouncement;
         _needsInvalidateLayer = YES;
@@ -591,6 +591,13 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
 - (void)invalidateLayer
 {
+  if ([self.accessibilityLiveRegionAnnouncement length] != 0) {
+    NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+    attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(self.accessibilityPoliteAnnouncement ? YES : NO);
+    NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLiveRegionAnnouncement
+                                                                                attributes:attrsDictionary];
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+  }
   CALayer *layer = self.layer;
 
   if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
@@ -714,13 +721,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
-
-  if ([self.accessibilityLiveRegionAnnouncement length] != 0) {
-    NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-    attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(self.accessibilityPoliteAnnouncement ? YES : NO);
-    NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLiveRegionAnnouncement
-                                                                                attributes:attrsDictionary];
-    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
   }
 }
 
