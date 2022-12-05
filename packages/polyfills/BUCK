@@ -22,7 +22,7 @@ yarn_workspace(
 
 rn_library(
     name = "polyfills",
-    base_path = relative_path_to_js_root() + "node_modules/@react-native/polyfills/",
+    base_path = relative_path_to_js_root() + "node_modules/@react-native/js-polyfills/",
     is_polyfill = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
