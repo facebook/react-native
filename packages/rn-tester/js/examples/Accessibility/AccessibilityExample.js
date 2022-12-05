@@ -1598,7 +1598,9 @@ function AccessibilityLiveRegion(): React.Node {
       </RNTesterBlock>
       <RNTesterBlock title="LiveRegion with child component">
         <TouchableWithoutFeedback
-          onPress={() => setLiveRegion(enable => !enabled)}>
+          onPress={() =>
+            setLiveRegion(liveRegionEnabled => !liveRegionEnabled)
+          }>
           <View style={styles.embedded}>
             <Text>
               Click me to {liveRegion ? 'disable' : 'enable'} liveRegion
@@ -1617,14 +1619,14 @@ function AccessibilityLiveRegion(): React.Node {
         <View
           accessible={true}
           focusable={true}
-          accessibilityLiveRegion={liveRegion ? 'polite' : 'none'}>
+          accessibilityLiveRegion={liveRegion ? 'polite' : null}>
           <TouchableOpacity
             accessibilityState={{disabled: enabled}}
             accessibilityHint={enabled ? 'my hint' : null}
             style={{
               height: 100,
               width: 100,
-              backgroundColor: enabled ? 'red' : null,
+              backgroundColor: enabled && liveRegion ? 'red' : null,
             }}
           />
         </View>

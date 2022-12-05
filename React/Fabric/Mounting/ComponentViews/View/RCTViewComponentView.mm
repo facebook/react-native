@@ -38,7 +38,6 @@ using namespace facebook::react;
     _props = defaultProps;
     _reactSubviews = [NSMutableArray new];
     self.multipleTouchEnabled = YES;
-    self.accessibilityLiveRegion = @"none";
   }
   return self;
 }
@@ -291,12 +290,43 @@ using namespace facebook::react;
   if (oldViewProps.accessible != newViewProps.accessible) {
     self.accessibilityElement.isAccessibilityElement = newViewProps.accessible;
   }
-
+  // have to handle nil value of new props
+  if (oldViewProps.accessibilityLiveRegion != newViewProps.accessibilityLiveRegion) {
+    NSString *newValueLiveRegion = self.accessibilityLiveRegionAnnouncementType;
+    if (newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite) {
+      newValueLiveRegion = @"polite";
+    };
+    if (newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Assertive) {
+      newValueLiveRegion = @"assertive";
+    };
+    if (newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::None) {
+      newValueLiveRegion = @"none";
+    };
+    for (RCTViewComponentView *subview in self.subviews) {
+      // add logic to over-ride behaviour when subview accessibilityLiveRegion is Polite or Assertive
+      if ([newValueLiveRegion length] != 0) {
+        subview.accessibilityLiveRegionAnnouncementType = newValueLiveRegion;
+      }
+    }
+    self.accessibilityLiveRegionAnnouncementType = newValueLiveRegion;
+  }
+  
+  NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
+  self.accessibilityLiveRegionAnnouncement = accessibilityLiveRegionAnnouncement;
+  BOOL accessibilityLiveRegionEnabled = self.accessibilityLiveRegionAnnouncementType && ![self.accessibilityLiveRegionAnnouncementType isEqual:@"none"];
+  BOOL isReactRootView = RCTIsReactRootView(self.reactTag);
+  BOOL triggerAnnouncement = !(newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None);
+  BOOL shouldAnnounceLiveRegionChanges = triggerAnnouncement && accessibilityLiveRegionEnabled && !isReactRootView;
+  
   // `accessibilityLabel`
   if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
     self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
+    if (shouldAnnounceLiveRegionChanges && [self.accessibilityLabel length] != 0) {
+      [accessibilityLiveRegionAnnouncement appendString:self.accessibilityLabel];
+      [accessibilityLiveRegionAnnouncement appendString:@" "];
+    }
   }
-
+  
   // `accessibilityLanguage`
   if (oldViewProps.accessibilityLanguage != newViewProps.accessibilityLanguage) {
     self.accessibilityElement.accessibilityLanguage =
@@ -306,6 +336,10 @@ using namespace facebook::react;
   // `accessibilityHint`
   if (oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
     self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
+    if (shouldAnnounceLiveRegionChanges && [self.accessibilityHint length] != 0) {
+      [accessibilityLiveRegionAnnouncement appendString:self.accessibilityHint];
+      [accessibilityLiveRegionAnnouncement appendString:@" "];
+    }
   }
 
   // `accessibilityViewIsModal`
@@ -327,11 +361,13 @@ using namespace facebook::react;
   // `accessibilityState`
   if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
     self.accessibilityTraits &= ~(UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected);
-    if (newViewProps.accessibilityState.selected) {
+    if (shouldAnnounceLiveRegionChanges && newViewProps.accessibilityState.selected) {
       self.accessibilityTraits |= UIAccessibilityTraitSelected;
+      [accessibilityLiveRegionAnnouncement insertString:@"selected " atIndex:0];
     }
-    if (newViewProps.accessibilityState.disabled) {
+    if (shouldAnnounceLiveRegionChanges && newViewProps.accessibilityState.disabled) {
       self.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+      [accessibilityLiveRegionAnnouncement insertString:@"disabled " atIndex:0];
     }
   }
 
@@ -356,71 +392,16 @@ using namespace facebook::react;
     } else {
       self.accessibilityElement.accessibilityValue = nil;
     }
+    /*
+    if (self.accessibilityValue) {
+      [accessibilityLiveRegionAnnouncement insertString:self.accessibilityValue atIndex:0];
+    }
+    */
   }
 
   // `testId`
   if (oldViewProps.testId != newViewProps.testId) {
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
-  }
-  
-  if (oldViewProps.accessibilityLiveRegion != newViewProps.accessibilityLiveRegion) {
-    NSString *newValueLiveRegion = @"none";
-    if (newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite) {
-      newValueLiveRegion = @"polite";
-    };
-    if (newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Assertive) {
-      newValueLiveRegion = @"assertive";
-    };
-    for (RCTViewComponentView *subview in self.subviews) {
-      subview.accessibilityLiveRegion = newValueLiveRegion;
-    }
-  }
-  
-  BOOL accessibilityLiveRegionEnabled = newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
-  BOOL childAccessibilityLiveRegionEnabled = ![self.accessibilityLiveRegion isEqual:@"none"];
-  BOOL isReactRootView = RCTIsReactRootView(self.reactTag);
-  if (@available(iOS 11.0, *)) {
-    NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
-    self.accessibilityLiveRegionAnnouncement = accessibilityLiveRegionAnnouncement;
-    if ((accessibilityLiveRegionEnabled || childAccessibilityLiveRegionEnabled) && !isReactRootView) {
-      if (!childAccessibilityLiveRegionEnabled) {
-        for (RCTViewComponentView *subview in self.subviews) {
-          subview.accessibilityLiveRegion = newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? @"polite" : @"assertive";
-        }
-      }
-      if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
-        if (newViewProps.accessibilityState.selected) {
-          [accessibilityLiveRegionAnnouncement insertString:@"selected " atIndex:0];
-
-        }
-        if (newViewProps.accessibilityState.disabled) {
-          [accessibilityLiveRegionAnnouncement insertString:@"disabled " atIndex:0];
-        }
-
-        if (self.accessibilityValue) {
-          [accessibilityLiveRegionAnnouncement insertString:self.accessibilityValue atIndex:0];
-        }
-      }
-
-      if ([self.accessibilityLabel length] != 0 && oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
-        [accessibilityLiveRegionAnnouncement appendString:self.accessibilityLabel];
-        [accessibilityLiveRegionAnnouncement appendString:@" "];
-      }
-
-      if ([self.accessibilityHint length] != 0 && oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
-        [accessibilityLiveRegionAnnouncement appendString:self.accessibilityHint];
-        [accessibilityLiveRegionAnnouncement appendString:@" "];
-      }
-
-      if ([accessibilityLiveRegionAnnouncement length] != 0) {
-        if (childAccessibilityLiveRegionEnabled) {
-          self.accessibilityPoliteAnnouncement = [self.accessibilityLiveRegion isEqual:@"polite"] ? YES : NO;
-        } else {
-          self.accessibilityPoliteAnnouncement =  newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO;
-        }
-        self.accessibilityLiveRegionAnnouncement = accessibilityLiveRegionAnnouncement;
-      }
-    }
   }
   
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
@@ -466,13 +447,17 @@ using namespace facebook::react;
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
-  if ([self.accessibilityLiveRegionAnnouncement length] != 0) {
-    NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-    attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(self.accessibilityPoliteAnnouncement ? YES : NO);
-    NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLiveRegionAnnouncement
-                                                                                attributes:attrsDictionary];
-    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+  // instead of checking length, check accessLiveRegion is not none or undefined
+  if (@available(iOS 11.0, *)) {
+    if ([self.accessibilityLiveRegionAnnouncement length] != 0 && ![self.accessibilityLiveRegionAnnouncementType  isEqual: @"none"]) {
+      NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+      attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @([self.accessibilityLiveRegionAnnouncementType  isEqual: @"polite"] ? YES : NO);
+      NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLiveRegionAnnouncement
+                                                                                  attributes:attrsDictionary];
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+    }
   }
+  
   [super finalizeUpdates:updateMask];
   if (!_needsInvalidateLayer) {
     return;
