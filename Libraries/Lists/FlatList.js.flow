@@ -14,7 +14,6 @@ const View = require('../Components/View/View');
 import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
-import type {RenderItemType} from './VirtualizedList';
 import type {
   RenderItemType,
   RenderItemProps,

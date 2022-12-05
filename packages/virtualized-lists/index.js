@@ -17,31 +17,20 @@ import typeof VirtualizedSectionList from './Lists/VirtualizedSectionList';
 import {typeof VirtualizedListContextResetter} from './Lists/VirtualizedListContext';
 import typeof ViewabilityHelper from './Lists/ViewabilityHelper';
 
-import type {
+export type {
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './Lists/ViewabilityHelper';
-import type {
+export type {
   RenderItemProps,
   RenderItemType,
   Separators,
 } from './Lists/VirtualizedListProps';
-import type {
+export type {
   Props as VirtualizedSectionListProps,
   ScrollToLocationParamsType,
   SectionBase,
 } from './Lists/VirtualizedSectionList';
-
-export type {
-  RenderItemProps,
-  RenderItemType,
-  ScrollToLocationParamsType,
-  SectionBase,
-  Separators,
-  VirtualizedSectionListProps,
-  ViewabilityConfigCallbackPair,
-  ViewToken,
-};
 
 module.exports = {
   keyExtractor,
