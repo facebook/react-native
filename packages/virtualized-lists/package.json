@@ -8,6 +8,9 @@
     "directory": "packages/virtualized-lists"
   },
   "license": "MIT",
+  "devDependencies": {
+    "react-test-renderer": "18.2.0"
+  },
   "peerDependencies": {
     "react-native": "*",
     "react-test-renderer": "18.2.0"
