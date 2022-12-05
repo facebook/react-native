@@ -8,6 +8,8 @@
 #import <XCTest/XCTest.h>
 
 #import <React/RCTAnimationUtils.h>
+#import <React/RCTConvert.h>
+#import <React/RCTInterpolationAnimatedNode.h>
 
 @interface RCTAnimationUtilsTests : XCTestCase
 
@@ -91,6 +93,36 @@ static CGFloat RCTSimpleInterpolation(CGFloat value, NSArray<NSNumber *> *inputR
   XCTAssertEqual(value, 30);
   value = RCTInterpolateValueInRange(5, input, output, EXTRAPOLATE_TYPE_IDENTITY, EXTRAPOLATE_TYPE_IDENTITY);
   XCTAssertEqual(value, 5);
+}
+
+- (void)testColorInterpolation
+{
+  NSArray<NSNumber *> *input = @[ @0, @1 ];
+  NSArray<UIColor *> *output = @[ [UIColor redColor], [UIColor blueColor] ];
+  uint32_t value;
+  value = RCTInterpolateColorInRange(0, input, output);
+  XCTAssertEqualObjects([RCTConvert UIColor:@(value)], [UIColor redColor]);
+  value = RCTInterpolateColorInRange(0.5, input, output);
+  XCTAssertEqualObjects(
+      [RCTConvert UIColor:@(value)], [UIColor colorWithRed:128. / 255 green:0 blue:128. / 255 alpha:1]);
+  value = RCTInterpolateColorInRange(1, input, output);
+  XCTAssertEqualObjects([RCTConvert UIColor:@(value)], [UIColor blueColor]);
+}
+
+- (void)testStringInterpolation
+{
+  NSString *pattern = @"M20,20L20,80L80,80L80,20Z";
+  NSArray<NSNumber *> *input = @[ @0, @1 ];
+  NSArray<NSArray<NSNumber *> *> *output = @[
+    @[ @20, @20, @20, @80, @80, @80, @80, @20 ],
+    @[ @40, @40, @33, @60, @60, @60, @65, @40 ],
+  ];
+
+  NSString *value;
+  value = RCTInterpolateString(pattern, 0, input, output, EXTRAPOLATE_TYPE_IDENTITY, EXTRAPOLATE_TYPE_IDENTITY);
+  XCTAssertEqualObjects(value, @"M20,20L20,80L80,80L80,20Z");
+  value = RCTInterpolateString(pattern, 0.5, input, output, EXTRAPOLATE_TYPE_IDENTITY, EXTRAPOLATE_TYPE_IDENTITY);
+  XCTAssertEqualObjects(value, @"M30,30L26.5,70L70,70L72.5,30Z");
 }
 
 @end
