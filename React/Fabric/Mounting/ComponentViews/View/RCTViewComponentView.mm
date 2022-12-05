@@ -399,15 +399,13 @@ using namespace facebook::react;
       }
         
       if ([accessibilityLiveRegionAnnouncement length] != 0) {
-        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
         if (childAccessibilityLiveRegionEnabled) {
-          attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @([self.accessibilityLiveRegion isEqual:@"polite"] ? YES : NO);
+          self.accessibilityPoliteAnnouncement = [self.accessibilityLiveRegion isEqual:@"polite"] ? YES : NO;
         } else {
-          attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
+          self.accessibilityPoliteAnnouncement =  newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? true : false;
         }
-        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: accessibilityLiveRegionAnnouncement
-                                                                                    attributes:attrsDictionary];
-        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+        self.accessibilityLiveRegionAnnouncement = accessibilityLiveRegionAnnouncement;
+        _needsInvalidateLayer = YES;
       }
     }
   }
@@ -716,6 +714,13 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
+
+  if ([self.accessibilityLiveRegionAnnouncement length] != 0) {
+    NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+    attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(self.accessibilityPoliteAnnouncement ? YES : NO);
+    NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLiveRegionAnnouncement
+                                                                                attributes:attrsDictionary];
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
   }
 }
 
