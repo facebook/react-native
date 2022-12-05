@@ -419,7 +419,6 @@ using namespace facebook::react;
           self.accessibilityPoliteAnnouncement =  newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO;
         }
         self.accessibilityLiveRegionAnnouncement = accessibilityLiveRegionAnnouncement;
-        _needsInvalidateLayer = YES;
       }
     }
   }
@@ -467,6 +466,13 @@ using namespace facebook::react;
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
+  if ([self.accessibilityLiveRegionAnnouncement length] != 0) {
+    NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+    attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(self.accessibilityPoliteAnnouncement ? YES : NO);
+    NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLiveRegionAnnouncement
+                                                                                attributes:attrsDictionary];
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+  }
   [super finalizeUpdates:updateMask];
   if (!_needsInvalidateLayer) {
     return;
@@ -605,13 +611,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
 - (void)invalidateLayer
 {
-  if ([self.accessibilityLiveRegionAnnouncement length] != 0) {
-    NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-    attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(self.accessibilityPoliteAnnouncement ? YES : NO);
-    NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLiveRegionAnnouncement
-                                                                                attributes:attrsDictionary];
-    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
-  }
   CALayer *layer = self.layer;
 
   if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
