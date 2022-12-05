@@ -14,6 +14,7 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export const RawPerformanceEntryTypeValues = {
   UNDEFINED: 0,
+  MARK: 1,
 };
 
 export type RawPerformanceEntryType = number;
@@ -33,6 +34,7 @@ export interface Spec extends TurboModule {
   +startReporting: (entryType: string) => void;
   +stopReporting: (entryType: string) => void;
   +getPendingEntries: () => $ReadOnlyArray<RawPerformanceEntry>;
+  +popPendingEntries?: () => $ReadOnlyArray<RawPerformanceEntry>;
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
 }
 

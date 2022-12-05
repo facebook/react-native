@@ -127,10 +127,10 @@ internal object NdkConfiguratorUtils {
       excludes.add("**/libjsc.so")
       excludes.add("**/libjscexecutor.so")
       includes.add("**/libhermes.so")
-      includes.add("**/libhermes-executor.so")
+      includes.add("**/libhermes_executor.so")
     } else {
       excludes.add("**/libhermes.so")
-      excludes.add("**/libhermes-executor.so")
+      excludes.add("**/libhermes_executor.so")
       includes.add("**/libjsc.so")
       includes.add("**/libjscexecutor.so")
     }

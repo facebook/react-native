@@ -43,15 +43,11 @@ const {
   publishAndroidArtifactsToMaven,
 } = require('./release-utils');
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
 const yargs = require('yargs');
 
 const buildTag = process.env.CIRCLE_TAG;
 const otp = process.env.NPM_CONFIG_OTP;
-const tmpPublishingFolder = fs.mkdtempSync(
-  path.join(os.tmpdir(), 'rn-publish-'),
-);
 
 const argv = yargs
   .option('n', {
@@ -80,10 +76,6 @@ const buildType = releaseBuild
   : nightlyBuild
   ? 'nightly'
   : 'dry-run';
-
-if (!argv.help) {
-  echo(`The temp publishing folder is ${tmpPublishingFolder}`);
-}
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
 const currentCommit = getCurrentCommit();
@@ -138,7 +130,7 @@ if (isCommitly) {
   }
 }
 
-generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
+generateAndroidArtifacts(releaseVersion);
 
 // Write version number to the build folder
 const releaseVersionFile = path.join('build', '.version');

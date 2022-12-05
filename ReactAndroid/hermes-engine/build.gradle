@@ -59,8 +59,9 @@ def jsiDir = new File(reactNativeRootDir, "ReactCommon/jsi")
 
 task downloadHermes(type: Download) {
     src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
-    onlyIfNewer(true)
-    overwrite(false)
+    onlyIfModified(true)
+    overwrite(true)
+    useETag(true)
     dest(new File(downloadsDir, "hermes.tar.gz"))
 }
 

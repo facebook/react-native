@@ -9,12 +9,12 @@
 
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #include <functional>
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 namespace facebook::react {
+class PerformanceEntryReporter;
 
 #pragma mark - Structs
 
@@ -51,6 +51,7 @@ class NativePerformanceObserver
 
   void stopReporting(jsi::Runtime &rt, std::string entryType);
 
+  std::vector<RawPerformanceEntry> popPendingEntries(jsi::Runtime &rt);
   std::vector<RawPerformanceEntry> getPendingEntries(jsi::Runtime &rt);
 
   void setOnPerformanceEntryCallback(
@@ -58,7 +59,6 @@ class NativePerformanceObserver
       std::optional<AsyncCallback<>> callback);
 
  private:
-  std::optional<AsyncCallback<>> callback_;
 };
 
 } // namespace facebook::react

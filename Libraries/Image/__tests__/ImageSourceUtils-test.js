@@ -94,7 +94,7 @@ describe('ImageSourceUtils', () => {
   });
 
   it('should warn when an unsupported scale is provided in srcSet', () => {
-    const mockWarn = jest.spyOn(console, 'warn');
+    const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     let uri1 = 'uri1';
     let scale1 = '300w';
 

@@ -61,7 +61,7 @@ Pod::Spec.new do |s|
     ss.subspec "core" do |sss|
       sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}",
                          "react/nativemodule/core/platform/ios/**/*.{mm,cpp,h}"
-      sss.dependency "React-jsidynamic", version
+      sss.exclude_files = "react/nativemodule/core/ReactCommon/{LongLivedObject,CallbackWrapper}.h"
     end
 
     ss.subspec "samples" do |sss|

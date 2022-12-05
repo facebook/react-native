@@ -8,6 +8,8 @@
 #import <React/RCTColorAnimatedNode.h>
 #import <React/RCTValueAnimatedNode.h>
 
+#import <React/RCTAnimationUtils.h>
+
 @implementation RCTColorAnimatedNode
 
 - (void)performUpdate
@@ -19,8 +21,7 @@
   RCTValueAnimatedNode *bNode = (RCTValueAnimatedNode *)[self.parentNodes objectForKey:self.config[@"b"]];
   RCTValueAnimatedNode *aNode = (RCTValueAnimatedNode *)[self.parentNodes objectForKey:self.config[@"a"]];
 
-  _color = ((int)round(aNode.value * 255) & 0xff) << 24 | ((int)round(rNode.value) & 0xff) << 16 |
-      ((int)round(gNode.value) & 0xff) << 8 | ((int)round(bNode.value) & 0xff);
+  _color = RCTColorFromComponents(rNode.value, gNode.value, bNode.value, aNode.value);
 
   // TODO (T111179606): Support platform colors for color animations
 }

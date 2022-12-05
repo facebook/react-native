@@ -101,38 +101,28 @@ static jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
   return jsi::Value::undefined();
 }
 
-static id convertJSIValueToObjCObject(
-    jsi::Runtime &runtime,
-    const jsi::Value &value,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    RCTRetainJSCallback retainJSCallback);
+static id
+convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
 static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::String &value)
 {
   return [NSString stringWithUTF8String:value.utf8(runtime).c_str()];
 }
 
-static NSArray *convertJSIArrayToNSArray(
-    jsi::Runtime &runtime,
-    const jsi::Array &value,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    RCTRetainJSCallback retainJSCallback)
+static NSArray *
+convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   size_t size = value.size(runtime);
   NSMutableArray *result = [NSMutableArray new];
   for (size_t i = 0; i < size; i++) {
     // Insert kCFNull when it's `undefined` value to preserve the indices.
     [result
-        addObject:convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker, retainJSCallback)
-            ?: (id)kCFNull];
+        addObject:convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker) ?: (id)kCFNull];
   }
   return [result copy];
 }
 
-static NSDictionary *convertJSIObjectToNSDictionary(
-    jsi::Runtime &runtime,
-    const jsi::Object &value,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    RCTRetainJSCallback retainJSCallback)
+static NSDictionary *
+convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   jsi::Array propertyNames = value.getPropertyNames(runtime);
   size_t size = propertyNames.size(runtime);
@@ -140,7 +130,7 @@ static NSDictionary *convertJSIObjectToNSDictionary(
   for (size_t i = 0; i < size; i++) {
     jsi::String name = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
     NSString *k = convertJSIStringToNSString(runtime, name);
-    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker, retainJSCallback);
+    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker);
     if (v) {
       result[k] = v;
     }
@@ -148,16 +138,10 @@ static NSDictionary *convertJSIObjectToNSDictionary(
   return [result copy];
 }
 
-static RCTResponseSenderBlock convertJSIFunctionToCallback(
-    jsi::Runtime &runtime,
-    const jsi::Function &value,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    RCTRetainJSCallback retainJSCallback);
-static id convertJSIValueToObjCObject(
-    jsi::Runtime &runtime,
-    const jsi::Value &value,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    RCTRetainJSCallback retainJSCallback)
+static RCTResponseSenderBlock
+convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker);
+static id
+convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   if (value.isUndefined() || value.isNull()) {
     return nil;
@@ -174,26 +158,21 @@ static id convertJSIValueToObjCObject(
   if (value.isObject()) {
     jsi::Object o = value.getObject(runtime);
     if (o.isArray(runtime)) {
-      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker, retainJSCallback);
+      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker);
     }
     if (o.isFunction(runtime)) {
-      return convertJSIFunctionToCallback(runtime, std::move(o.getFunction(runtime)), jsInvoker, retainJSCallback);
+      return convertJSIFunctionToCallback(runtime, std::move(o.getFunction(runtime)), jsInvoker);
     }
-    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker, retainJSCallback);
+    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
   }
 
   throw std::runtime_error("Unsupported jsi::jsi::Value kind");
 }
 
-static RCTResponseSenderBlock convertJSIFunctionToCallback(
-    jsi::Runtime &runtime,
-    const jsi::Function &value,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    RCTRetainJSCallback retainJSCallback)
+static RCTResponseSenderBlock
+convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
-  auto weakWrapper = retainJSCallback != nil
-      ? retainJSCallback(value.getFunction(runtime), runtime, jsInvoker)
-      : CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
+  auto weakWrapper = CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
   RCTBlockGuard *blockGuard = [[RCTBlockGuard alloc] initWithCleanup:^() {
     auto strongWrapper = weakWrapper.lock();
     if (strongWrapper) {
@@ -251,7 +230,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
       runtime,
       jsi::PropNameID::forAscii(runtime, "fn"),
       2,
-      [invokeCopy, jsInvoker = jsInvoker_, moduleName, methodName, retainJSCallback = retainJSCallback_](
+      [invokeCopy, jsInvoker = jsInvoker_, moduleName, methodName](
           jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
         std::string moduleMethod = moduleName + "." + methodName + "()";
 
@@ -264,12 +243,8 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
           return jsi::Value::undefined();
         }
 
-        auto weakResolveWrapper = retainJSCallback != nil
-            ? retainJSCallback(args[0].getObject(rt).getFunction(rt), rt, jsInvoker)
-            : CallbackWrapper::createWeak(args[0].getObject(rt).getFunction(rt), rt, jsInvoker);
-        auto weakRejectWrapper = retainJSCallback != nil
-            ? retainJSCallback(args[1].getObject(rt).getFunction(rt), rt, jsInvoker)
-            : CallbackWrapper::createWeak(args[1].getObject(rt).getFunction(rt), rt, jsInvoker);
+        auto weakResolveWrapper = CallbackWrapper::createWeak(args[0].getObject(rt).getFunction(rt), rt, jsInvoker);
+        auto weakRejectWrapper = CallbackWrapper::createWeak(args[1].getObject(rt).getFunction(rt), rt, jsInvoker);
 
         __block BOOL resolveWasCalled = NO;
         __block BOOL rejectWasCalled = NO;
@@ -592,8 +567,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
     /**
      * Convert arg to ObjC objects.
      */
-    id objCArg = convertJSIValueToObjCObject(runtime, *arg, jsInvoker_, retainJSCallback_);
-
+    id objCArg = convertJSIValueToObjCObject(runtime, *arg, jsInvoker_);
     if (objCArg) {
       NSString *methodNameNSString = @(methodName);
 
@@ -665,8 +639,7 @@ ObjCTurboModule::ObjCTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(params.instance),
       nativeInvoker_(params.nativeInvoker),
-      isSyncModule_(params.isSyncModule),
-      retainJSCallback_(params.retainJSCallback)
+      isSyncModule_(params.isSyncModule)
 {
 }
 
