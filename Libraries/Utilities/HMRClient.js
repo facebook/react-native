@@ -247,6 +247,7 @@ Error: ${e.message}`;
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
       const isNormalOrUnsetCloseReason =
+        closeEvent == null ||
         closeEvent.code === 1000 ||
         closeEvent.code === 1005 ||
         closeEvent.code == null;
