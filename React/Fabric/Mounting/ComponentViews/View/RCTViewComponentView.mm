@@ -363,6 +363,19 @@ using namespace facebook::react;
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
   }
   
+  if (oldViewProps.accessibilityLiveRegion != newViewProps.accessibilityLiveRegion) {
+    NSString *newValueLiveRegion = @"none";
+    if (newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite) {
+      newValueLiveRegion = @"polite";
+    };
+    if (newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Assertive) {
+      newValueLiveRegion = @"assertive";
+    };
+    for (RCTViewComponentView *subview in self.subviews) {
+      subview.accessibilityLiveRegion = newValueLiveRegion;
+    }
+  }
+  
   BOOL accessibilityLiveRegionEnabled = newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
   BOOL childAccessibilityLiveRegionEnabled = ![self.accessibilityLiveRegion isEqual:@"none"];
   BOOL isReactRootView = RCTIsReactRootView(self.reactTag);

@@ -1584,6 +1584,7 @@ function DisplayOptionStatusExample({
 function AccessibilityLiveRegion(): React.Node {
   const [count, setCount] = React.useState(0);
   const [enabled, setEnabled] = React.useState(false);
+  const [liveRegion, setLiveRegion] = React.useState(true);
   return (
     <>
       <RNTesterBlock title="LiveRegion with Text Component">
@@ -1595,24 +1596,35 @@ function AccessibilityLiveRegion(): React.Node {
         </TouchableWithoutFeedback>
         <Text accessibilityLiveRegion="polite">Clicked {count} times</Text>
       </RNTesterBlock>
-      <RNTesterBlock title="LiveRegion With View component">
+      <RNTesterBlock title="LiveRegion with child component">
+        <TouchableWithoutFeedback
+          onPress={() => setLiveRegion(enable => !enabled)}>
+          <View style={styles.embedded}>
+            <Text>
+              Click me to {liveRegion ? 'disable' : 'enable'} liveRegion
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           onPress={() => setEnabled(enable => !enabled)}>
           <View style={styles.embedded}>
-            <Text>Click me</Text>
+            <Text>
+              Click me to {enabled ? 'remove' : 'add'} accessibility
+              announcement
+            </Text>
           </View>
         </TouchableWithoutFeedback>
         <View
           accessible={true}
           focusable={true}
-          accessibilityLiveRegion="polite">
+          accessibilityLiveRegion={liveRegion ? 'polite' : 'none'}>
           <TouchableOpacity
-            accessibilityState={{disabled: !enabled}}
-            accessibilityHint={enabled ? null : 'my hint'}
+            accessibilityState={{disabled: enabled}}
+            accessibilityHint={enabled ? 'my hint' : null}
             style={{
               height: 100,
               width: 100,
-              backgroundColor: enabled ? null : 'red',
+              backgroundColor: enabled ? 'red' : null,
             }}
           />
         </View>
