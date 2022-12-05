@@ -249,7 +249,7 @@ class PathUtilsTest {
     assertEquals(localFile, findPackageJsonFile(project, extension))
   }
 
-  @Test(expected = FileNotFoundException::class)
+  @Test
   fun readPackageJsonFile_withMissingFile_returnsNull() {
     val moduleFolder = tempFolder.newFolder("awesome-module")
     val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
