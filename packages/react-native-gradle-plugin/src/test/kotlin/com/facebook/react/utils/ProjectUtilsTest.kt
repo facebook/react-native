@@ -161,4 +161,12 @@ class ProjectUtilsTest {
 
     assertFalse(project.needsCodegenFromPackageJson(model))
   }
+
+  @Test
+  fun needsCodegenFromPackageJson_withMissingPackageJson_returnsFalse() {
+    val project = createProject()
+    val extension = TestReactExtension(project)
+
+    assertFalse(project.needsCodegenFromPackageJson(extension))
+  }
 }

@@ -188,12 +188,19 @@ internal fun projectPathToLibraryName(projectPath: String): String =
  * Gradle module (generally the case for library projects) or we fallback to looking into the `root`
  * folder of a React Native project (generally the case for app projects).
  */
-internal fun findPackageJsonFile(project: Project, extension: ReactExtension): File? =
-    if (project.file("../package.json").exists()) {
-      project.file("../package.json")
-    } else {
-      extension.root.file("package.json").orNull?.asFile
-    }
+internal fun findPackageJsonFile(project: Project, extension: ReactExtension): File? {
+  val inParent = project.file("../package.json")
+  if (inParent.exists()) {
+    return inParent
+  }
+
+  val fromExtension = extension.root.file("package.json").orNull?.asFile
+  if (fromExtension?.exists() == true) {
+    return fromExtension
+  }
+
+  return null
+}
 
 /**
  * Function to look for the `package.json` and parse it. It returns a [ModelPackageJson] if found or
