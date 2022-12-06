@@ -65,7 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable, readonly) NSObject *accessibilityElement;
 
 @property (nonatomic, copy, nullable) NSString *accessibilityLiveRegionAnnouncementType;
-@property (nonatomic, copy, nullable) NSString *accessibilityLiveRegionAnnouncement;
+@property (nonatomic, copy) NSString *accessibilityLiveRegionAnnouncement;
+@property (nonatomic, copy) NSString *accessibilityLiveRegionPreviousAnnouncement;
 
 /**
  * Insets used when hit testing inside this view.

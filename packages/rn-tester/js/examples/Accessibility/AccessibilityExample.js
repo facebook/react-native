@@ -1619,8 +1619,9 @@ function AccessibilityLiveRegion(): React.Node {
         <View
           accessible={true}
           focusable={true}
-          accessibilityLiveRegion={liveRegion ? 'polite' : null}>
+          accessibilityLiveRegion={liveRegion ? 'assertive' : null}>
           <TouchableOpacity
+            accessibilityLabel={enabled ? 'my label' : null}
             accessibilityState={{disabled: enabled}}
             accessibilityHint={enabled ? 'my hint' : null}
             style={{
