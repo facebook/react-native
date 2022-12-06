@@ -113,7 +113,7 @@
     "@react-native-community/cli-platform-ios": "10.0.0-alpha.3",
     "@react-native/assets-registry": "^0.72.0",
     "@react-native/gradle-plugin": "^0.72.1",
-    "@react-native/polyfills": "2.0.0",
+    "@react-native/js-polyfills": "^0.72.0",
     "@react-native/normalize-colors": "^0.72.0",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
