@@ -290,7 +290,7 @@ using namespace facebook::react;
   if (oldViewProps.accessible != newViewProps.accessible) {
     self.accessibilityElement.isAccessibilityElement = newViewProps.accessible;
   }
-  // have to handle nil value of new props
+
   if (oldViewProps.accessibilityLiveRegion != newViewProps.accessibilityLiveRegion) {
     NSString *newValueLiveRegion = self.accessibilityLiveRegionAnnouncementType;
     if (newViewProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite) {
@@ -311,8 +311,10 @@ using namespace facebook::react;
     self.accessibilityLiveRegionAnnouncementType = newValueLiveRegion;
   }
   
-  NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
-  self.accessibilityLiveRegionAnnouncement = accessibilityLiveRegionAnnouncement;
+  // NSMutableString *accessibilityLiveRegionAnnouncement = [[NSMutableString alloc] initWithString:@""];
+  NSArray *accessibilityLiveRegionAnnouncement = @[@"",@"", @"", @""];
+  NSMutableArray *accessibilityLiveRegionAnnouncementUpdate = [accessibilityLiveRegionAnnouncement mutableCopy];
+  self.accessibilityLiveRegionAnnouncement = @"";
   BOOL accessibilityLiveRegionEnabled = self.accessibilityLiveRegionAnnouncementType && ![self.accessibilityLiveRegionAnnouncementType isEqual:@"none"];
   BOOL isReactRootView = RCTIsReactRootView(self.reactTag);
   BOOL triggerAnnouncement = !(newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None);
@@ -322,8 +324,7 @@ using namespace facebook::react;
   if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
     self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
     if (shouldAnnounceLiveRegionChanges && [self.accessibilityLabel length] != 0) {
-      [accessibilityLiveRegionAnnouncement appendString:self.accessibilityLabel];
-      [accessibilityLiveRegionAnnouncement appendString:@" "];
+      accessibilityLiveRegionAnnouncementUpdate[2] = self.accessibilityLabel;
     }
   }
   
@@ -337,8 +338,9 @@ using namespace facebook::react;
   if (oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
     self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
     if (shouldAnnounceLiveRegionChanges && [self.accessibilityHint length] != 0) {
-      [accessibilityLiveRegionAnnouncement appendString:self.accessibilityHint];
-      [accessibilityLiveRegionAnnouncement appendString:@" "];
+      accessibilityLiveRegionAnnouncementUpdate[3] = self.accessibilityHint;
+      accessibilityLiveRegionAnnouncement = [NSArray arrayWithArray:accessibilityLiveRegionAnnouncementUpdate];
+      self.accessibilityLiveRegionAnnouncement = [accessibilityLiveRegionAnnouncement componentsJoinedByString: @" "];
     }
   }
 
@@ -363,11 +365,15 @@ using namespace facebook::react;
     self.accessibilityTraits &= ~(UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected);
     if (shouldAnnounceLiveRegionChanges && newViewProps.accessibilityState.selected) {
       self.accessibilityTraits |= UIAccessibilityTraitSelected;
-      [accessibilityLiveRegionAnnouncement insertString:@"selected " atIndex:0];
+      accessibilityLiveRegionAnnouncementUpdate[0] = @"selected";
+      accessibilityLiveRegionAnnouncement = [NSArray arrayWithArray:accessibilityLiveRegionAnnouncementUpdate];
+      self.accessibilityLiveRegionAnnouncement = [accessibilityLiveRegionAnnouncement componentsJoinedByString: @" "];
     }
     if (shouldAnnounceLiveRegionChanges && newViewProps.accessibilityState.disabled) {
       self.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
-      [accessibilityLiveRegionAnnouncement insertString:@"disabled " atIndex:0];
+      accessibilityLiveRegionAnnouncementUpdate[1] = @"disabled";
+      accessibilityLiveRegionAnnouncement = [NSArray arrayWithArray:accessibilityLiveRegionAnnouncementUpdate];
+      self.accessibilityLiveRegionAnnouncement = [accessibilityLiveRegionAnnouncement componentsJoinedByString: @" "];
     }
   }
 
@@ -392,13 +398,8 @@ using namespace facebook::react;
     } else {
       self.accessibilityElement.accessibilityValue = nil;
     }
-    /*
-    if (self.accessibilityValue) {
-      [accessibilityLiveRegionAnnouncement insertString:self.accessibilityValue atIndex:0];
-    }
-    */
   }
-
+  
   // `testId`
   if (oldViewProps.testId != newViewProps.testId) {
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
