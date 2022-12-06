@@ -23,7 +23,7 @@ using namespace facebook::react;
 @end
 
 @implementation RCTSliderComponentView {
-  UISlider *_sliderView;
+  RCTUISlider *_sliderView; // TODO(macOS GH#774)
   float _previousValue;
 
   UIImage *_trackImage;
@@ -48,7 +48,7 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const SliderProps>();
     _props = defaultProps;
 
-    _sliderView = [[UISlider alloc] initWithFrame:self.bounds];
+    _sliderView = [[RCTUISlider alloc] initWithFrame:self.bounds]; // TODO(macOS GH#774)
 
     [_sliderView addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
     [_sliderView addTarget:self
@@ -284,17 +284,17 @@ using namespace facebook::react;
   [_sliderView setThumbImage:thumbImage forState:UIControlStateNormal];
 }
 
-- (void)onChange:(UISlider *)sender
+- (void)onChange:(RCTUISlider *)sender // TODO(macOS GH#774)
 {
   [self onChange:sender withContinuous:YES];
 }
 
-- (void)sliderTouchEnd:(UISlider *)sender
+- (void)sliderTouchEnd:(RCTUISlider *)sender // TODO(macOS GH#774)
 {
   [self onChange:sender withContinuous:NO];
 }
 
-- (void)onChange:(UISlider *)sender withContinuous:(BOOL)continuous
+- (void)onChange:(RCTUISlider *)sender withContinuous:(BOOL)continuous // TODO(macOS GH#774)
 {
   float value = sender.value;
 

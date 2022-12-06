@@ -468,3 +468,14 @@ NS_INLINE CGRect CGRectValue(NSValue *value)
 }
 
 #endif // ] TARGET_OS_OSX
+
+//
+// fabric component types
+//
+
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#define RCTUISlider UISlider
+#else
+@interface RCTUISlider : NSSlider
+@end
+#endif // ]TODO(macOS GH#774)
