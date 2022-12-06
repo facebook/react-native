@@ -51,6 +51,7 @@ module.exports = {
     },
     {
       files: ['*.jsx'],
+      parser: '@babel/eslint-parser',
     },
     {
       files: ['*.ts', '*.tsx'],
