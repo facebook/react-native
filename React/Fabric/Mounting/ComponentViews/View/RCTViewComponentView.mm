@@ -325,6 +325,8 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
     if (shouldAnnounceLiveRegionChanges && [self.accessibilityLabel length] != 0) {
       accessibilityLiveRegionAnnouncementUpdate[2] = self.accessibilityLabel;
+      accessibilityLiveRegionAnnouncement = [NSArray arrayWithArray:accessibilityLiveRegionAnnouncementUpdate];
+      self.accessibilityLiveRegionAnnouncement = [accessibilityLiveRegionAnnouncement componentsJoinedByString: @" "];
     }
   }
   

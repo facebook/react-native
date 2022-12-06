@@ -66,7 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readwrite, nullable) NSString *accessibilityLiveRegionAnnouncementType;
 @property (nonatomic, readwrite, nullable) NSString *accessibilityLiveRegionAnnouncement;
-@property (nonatomic, readwrite) BOOL accessibilityPoliteAnnouncement;
 
 /**
  * Insets used when hit testing inside this view.
