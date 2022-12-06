@@ -13,8 +13,7 @@
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/ShadowView.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Abstract class for Scheduler's delegate.
@@ -41,6 +40,10 @@ class SchedulerDelegate {
       std::string const &commandName,
       folly::dynamic const &args) = 0;
 
+  virtual void setNativeProps_DEPRECATED(
+      const ShadowView &shadowView,
+      Props::Shared props) = 0;
+
   virtual void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,
       std::string const &eventType) = 0;
@@ -56,5 +59,4 @@ class SchedulerDelegate {
   virtual ~SchedulerDelegate() noexcept = default;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -401,6 +401,7 @@ def fb_apple_library(*args, **kwargs):
     _ = kwargs.pop("plugins", [])
     _ = kwargs.pop("complete_nullability", False)
     _ = kwargs.pop("plugins_header", "")
+    _ = kwargs.pop("disable_infer_precompiled_header", False)
 
     native.apple_library(*args, **kwargs)
 

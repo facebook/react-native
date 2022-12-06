@@ -174,9 +174,7 @@ describe('Text compat with web', () => {
     `);
   });
 
-  // T138851366: prop-types are out of date causing a redbox
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('renders styles', () => {
+  it('renders styles', () => {
     const style = {
       display: 'flex',
       flex: 1,

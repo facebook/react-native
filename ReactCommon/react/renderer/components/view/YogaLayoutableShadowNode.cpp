@@ -202,6 +202,7 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     // react_native_assert(layoutableChildNode.yogaNode_.isDirty());
   } else {
     // The child is owned by some other node, we need to clone that.
+    // TODO: At this point, React has wrong reference to the node. (T138668036)
     auto clonedChildNode = childNode.clone({});
     auto &layoutableClonedChildNode =
         traitCast<YogaLayoutableShadowNode const &>(*clonedChildNode);

@@ -9,7 +9,6 @@
 
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #include <functional>
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -47,22 +46,19 @@ class NativePerformanceObserver
       std::enable_shared_from_this<NativePerformanceObserver> {
  public:
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
-  ~NativePerformanceObserver();
 
   void startReporting(jsi::Runtime &rt, std::string entryType);
 
   void stopReporting(jsi::Runtime &rt, std::string entryType);
 
+  std::vector<RawPerformanceEntry> popPendingEntries(jsi::Runtime &rt);
   std::vector<RawPerformanceEntry> getPendingEntries(jsi::Runtime &rt);
 
   void setOnPerformanceEntryCallback(
       jsi::Runtime &rt,
       std::optional<AsyncCallback<>> callback);
 
-  void logEntryForDebug(jsi::Runtime &rt, RawPerformanceEntry entry);
-
  private:
-  std::unique_ptr<PerformanceEntryReporter> reporter_;
 };
 
 } // namespace facebook::react

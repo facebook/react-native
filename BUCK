@@ -592,6 +592,7 @@ rn_apple_library(
     autoglob = False,
     complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
+    disable_infer_precompiled_header = True,
     extension_api_only = True,
     frameworks = [
         "Foundation",

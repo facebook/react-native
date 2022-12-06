@@ -8,13 +8,14 @@
 #pragma once
 
 #include <folly/dynamic.h>
+#include <react/renderer/core/RawProps.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 folly::dynamic mergeDynamicProps(
     folly::dynamic const &source,
     folly::dynamic const &patch);
 
-} // namespace react
-} // namespace facebook
+RawProps mergeRawProps(folly::dynamic const &source, RawProps const &patch);
+
+} // namespace facebook::react

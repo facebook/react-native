@@ -8,6 +8,7 @@
  * @flow
  */
 
+import type {PointerEvent} from '../Types/CoreEventTypes';
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {HostRef} from './getInspectorDataForViewAtPoint';
 
@@ -153,14 +154,14 @@ export default function DevtoolsOverlay({
   }, []);
 
   const onPointerMove = useCallback(
-    e => {
+    (e: PointerEvent) => {
       findViewForLocation(e.nativeEvent.x, e.nativeEvent.y);
     },
     [findViewForLocation],
   );
 
   const onResponderMove = useCallback(
-    e => {
+    (e: PressEvent) => {
       findViewForLocation(
         e.nativeEvent.touches[0].locationX,
         e.nativeEvent.touches[0].locationY,

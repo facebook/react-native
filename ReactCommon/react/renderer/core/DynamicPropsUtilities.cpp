@@ -8,6 +8,7 @@
 #include "DynamicPropsUtilities.h"
 
 namespace facebook::react {
+
 folly::dynamic mergeDynamicProps(
     folly::dynamic const &source,
     folly::dynamic const &patch) {
@@ -28,6 +29,10 @@ folly::dynamic mergeDynamicProps(
   }
 
   return result;
+}
+
+RawProps mergeRawProps(folly::dynamic const &source, RawProps const &patch) {
+  return {mergeDynamicProps((folly::dynamic)source, (folly::dynamic)patch)};
 }
 
 } // namespace facebook::react
