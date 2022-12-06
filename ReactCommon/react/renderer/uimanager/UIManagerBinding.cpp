@@ -675,6 +675,27 @@ jsi::Value UIManagerBinding::get(
     return {serialize(ReactEventPriority::Discrete)};
   }
 
+  if (methodName == "findShadowNodeByTag_DEPRECATED") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const &,
+            jsi::Value const *arguments,
+            size_t) -> jsi::Value {
+          auto shadowNode = uiManager->findShadowNodeByTag_DEPRECATED(
+              tagFromValue(arguments[0]));
+
+          if (!shadowNode) {
+            return jsi::Value::null();
+          }
+
+          return valueFromShadowNode(runtime, shadowNode);
+        });
+  }
+
   return jsi::Value::undefined();
 }
 

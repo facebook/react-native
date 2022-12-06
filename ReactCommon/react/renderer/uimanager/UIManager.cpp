@@ -351,6 +351,55 @@ void UIManager::configureNextLayoutAnimation(
   }
 }
 
+static ShadowNode::Shared findShadowNodeByTagRecursively(
+    ShadowNode::Shared parentShadowNode,
+    Tag tag) {
+  if (parentShadowNode->getTag() == tag) {
+    return parentShadowNode;
+  }
+
+  for (ShadowNode::Shared const &shadowNode : parentShadowNode->getChildren()) {
+    auto result = findShadowNodeByTagRecursively(shadowNode, tag);
+    if (result) {
+      return result;
+    }
+  }
+
+  return nullptr;
+}
+
+ShadowNode::Shared UIManager::findShadowNodeByTag_DEPRECATED(Tag tag) const {
+  auto shadowNode = ShadowNode::Shared{};
+
+  shadowTreeRegistry_.enumerate([&](ShadowTree const &shadowTree, bool &stop) {
+    RootShadowNode const *rootShadowNode;
+    // The public interface of `ShadowTree` discourages accessing a stored
+    // pointer to a root node because of the possible data race.
+    // To work around this, we ask for a commit and immediately cancel it
+    // returning `nullptr` instead of a new shadow tree.
+    // We don't want to add a way to access a stored pointer to a root node
+    // because this `findShadowNodeByTag` is deprecated. It is only added
+    // to make migration to the new architecture easier.
+    shadowTree.tryCommit([&](RootShadowNode const &oldRootShadowNode) {
+      rootShadowNode = &oldRootShadowNode;
+      return nullptr;
+    });
+
+    if (rootShadowNode != nullptr) {
+      auto const &children = rootShadowNode->getChildren();
+      if (!children.empty()) {
+        auto const &child = children.front();
+        shadowNode = findShadowNodeByTagRecursively(child, tag);
+        if (shadowNode) {
+          stop = true;
+        }
+      }
+    }
+  });
+
+  return shadowNode;
+}
+
 void UIManager::setComponentDescriptorRegistry(
     const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
   componentDescriptorRegistry_ = componentDescriptorRegistry;
@@ -440,7 +489,7 @@ void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
 void UIManager::animationTick() const {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
-    shadowTreeRegistry_.enumerate([](ShadowTree const &shadowTree) {
+    shadowTreeRegistry_.enumerate([](ShadowTree const &shadowTree, bool &) {
       shadowTree.notifyDelegatesOfUpdates();
     });
   }

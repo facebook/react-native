@@ -166,6 +166,14 @@ class UIManager final : public ShadowTreeDelegate {
       const ShadowNode::Shared &shadowNode,
       std::string const &eventType);
 
+  /*
+   * Iterates over all shadow nodes which are parts of all registered surfaces
+   * and find the one that has given `tag`. Returns `nullptr` if the node wasn't
+   * found. This is a temporary workaround that should not be used in any core
+   * functionality.
+   */
+  ShadowNode::Shared findShadowNodeByTag_DEPRECATED(Tag tag) const;
+
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
  private:

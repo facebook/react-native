@@ -151,7 +151,7 @@ Scheduler::~Scheduler() {
   // Then, let's verify that the requirement was satisfied.
   auto surfaceIds = std::vector<SurfaceId>{};
   uiManager_->getShadowTreeRegistry().enumerate(
-      [&surfaceIds](ShadowTree const &shadowTree) {
+      [&surfaceIds](ShadowTree const &shadowTree, bool &) {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
