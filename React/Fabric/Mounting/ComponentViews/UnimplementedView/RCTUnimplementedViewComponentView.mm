@@ -31,11 +31,11 @@ using namespace facebook::react;
     _props = defaultProps;
 
     _label = [[UILabel alloc] initWithFrame:self.bounds];
-    _label.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3];
+    _label.backgroundColor = [RCTUIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3]; // TODO(macOS GH#774)
     _label.lineBreakMode = NSLineBreakByCharWrapping;
     _label.numberOfLines = 0;
     _label.textAlignment = NSTextAlignmentCenter;
-    _label.textColor = [UIColor whiteColor];
+    _label.textColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
     _label.allowsDefaultTighteningForTruncation = YES;
     _label.adjustsFontSizeToFitWidth = YES;
 

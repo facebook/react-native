@@ -25,12 +25,12 @@ using namespace facebook::react;
 
     CGRect bounds = self.bounds;
     _label = [[UILabel alloc] initWithFrame:bounds];
-    _label.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3];
+    _label.backgroundColor = [RCTUIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3]; // TODO(macOS GH#774)
     _label.layoutMargins = UIEdgeInsetsMake(12, 12, 12, 12);
     _label.lineBreakMode = NSLineBreakByWordWrapping;
     _label.numberOfLines = 0;
     _label.textAlignment = NSTextAlignmentCenter;
-    _label.textColor = [UIColor whiteColor];
+    _label.textColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
 
     self.contentView = _label;
   }

@@ -21,7 +21,7 @@
 using namespace facebook::react;
 
 @implementation RCTViewComponentView {
-  UIColor *_backgroundColor;
+  RCTUIColor *_backgroundColor; // TODO(macOS GH#774)
   CALayer *_borderLayer;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
@@ -71,12 +71,12 @@ using namespace facebook::react;
   return CGRectContainsPoint(hitFrame, point);
 }
 
-- (UIColor *)backgroundColor
+- (RCTUIColor *)backgroundColor // TODO(macOS GH#774)
 {
   return _backgroundColor;
 }
 
-- (void)setBackgroundColor:(UIColor *)backgroundColor
+- (void)setBackgroundColor:(RCTUIColor *)backgroundColor // TODO(macOS GH#774)
 {
   _backgroundColor = backgroundColor;
 }
@@ -203,13 +203,13 @@ using namespace facebook::react;
 
   // `backgroundColor`
   if (oldViewProps.backgroundColor != newViewProps.backgroundColor) {
-    self.backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
+    self.backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor); // TODO(macOS GH#774)
     needsInvalidateLayer = YES;
   }
 
   // `foregroundColor`
   if (oldViewProps.foregroundColor != newViewProps.foregroundColor) {
-    self.foregroundColor = RCTUIColorFromSharedColor(newViewProps.foregroundColor);
+    self.foregroundColor = RCTUIColorFromSharedColor(newViewProps.foregroundColor); // TODO(macOS GH#774)
   }
 
   // `shadowColor`
