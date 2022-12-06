@@ -52,7 +52,16 @@ export type TextProps = $ReadOnly<{|
    */
   accessible?: ?boolean,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+
+  /**
+   * Indicates to accessibility services whether the user should be notified when this view changes.
+   * Works for Android API >= 19 and iOS 11.
+   * For android: see http://developer.android.com/reference/android/view/View.html#attr_android:accessibilityLiveRegion for references.
+   * For iOS: It does not support accessibilityValue and children can not over-ride the value inherited from parent accessibilityLiveRegion.
+   * see https://bit.ly/3P2jItf for more info
+   */
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
+
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityHint?: ?Stringish,
   accessibilityLanguage?: ?Stringish,

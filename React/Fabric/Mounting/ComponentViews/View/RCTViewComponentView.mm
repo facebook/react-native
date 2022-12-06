@@ -328,7 +328,7 @@ using namespace facebook::react;
       accessibilityLiveRegionAnnouncementUpdate[2] = self.accessibilityLabel;
     }
   }
-  
+
   // `accessibilityLanguage`
   if (oldViewProps.accessibilityLanguage != newViewProps.accessibilityLanguage) {
     self.accessibilityElement.accessibilityLanguage =
@@ -402,7 +402,7 @@ using namespace facebook::react;
   if (oldViewProps.testId != newViewProps.testId) {
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
   }
-  
+
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 
   _props = std::static_pointer_cast<ViewProps const>(props);
