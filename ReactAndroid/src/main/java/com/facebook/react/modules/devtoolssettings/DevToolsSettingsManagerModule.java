@@ -21,6 +21,7 @@ public class DevToolsSettingsManagerModule extends NativeDevToolsSettingsManager
 
   private static final String SHARED_PREFERENCES_PREFIX = "ReactNative__DevToolsSettings";
   private static final String KEY_CONSOLE_PATCH_SETTINGS = "ConsolePatchSettings";
+  private static final String KEY_PROFILING_SETTINGS = "ProfilingSettings";
 
   private final SharedPreferences mSharedPreferences;
 
@@ -45,5 +46,15 @@ public class DevToolsSettingsManagerModule extends NativeDevToolsSettingsManager
     Editor editor = mSharedPreferences.edit();
     editor.putString(KEY_CONSOLE_PATCH_SETTINGS, newSettings);
     editor.apply();
+  }
+
+  @Override
+  public @Nullable String getProfilingSettings() {
+    return mSharedPreferences.getString(KEY_PROFILING_SETTINGS, null);
+  }
+
+  @Override
+  public void setProfilingSettings(String newSettings) {
+    mSharedPreferences.edit().putString(KEY_PROFILING_SETTINGS, newSettings).apply();
   }
 }
