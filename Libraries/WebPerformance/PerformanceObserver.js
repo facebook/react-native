@@ -14,11 +14,12 @@ import type {
 } from './NativePerformanceObserver';
 
 import warnOnce from '../Utilities/warnOnce';
-import NativePerformanceObserver from './NativePerformanceObserver';
+import NativePerformanceObserver, {
+  RawPerformanceEntryTypeValues,
+} from './NativePerformanceObserver';
 
 export type HighResTimeStamp = number;
-// TODO: Extend once new types (such as event) are supported.
-export type PerformanceEntryType = 'mark';
+export type PerformanceEntryType = 'mark' | 'measure';
 
 export class PerformanceEntry {
   name: string;
@@ -52,7 +53,11 @@ export class PerformanceEntry {
 function rawToPerformanceEntryType(
   type: RawPerformanceEntryType,
 ): PerformanceEntryType {
-  return 'mark';
+  if (type === RawPerformanceEntryTypeValues.MARK) {
+    return 'mark';
+  } else {
+    return 'measure';
+  }
 }
 
 function rawToPerformanceEntry(entry: RawPerformanceEntry): PerformanceEntry {
@@ -232,5 +237,5 @@ export default class PerformanceObserver {
 
   static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
     // TODO: add types once they are fully supported
-    Object.freeze(['mark']);
+    Object.freeze(['mark', 'measure']);
 }

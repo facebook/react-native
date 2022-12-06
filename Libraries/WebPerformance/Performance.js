@@ -36,6 +36,30 @@ export class PerformanceMark extends PerformanceEntry {
   }
 }
 
+export type TimeStampOrName = HighResTimeStamp | string;
+
+export type PerformanceMeasureOptions = {
+  detail?: DetailType,
+  start?: TimeStampOrName,
+  end?: TimeStampOrName,
+  duration?: HighResTimeStamp,
+};
+
+export class PerformanceMeasure extends PerformanceEntry {
+  detail: DetailType;
+  constructor(measureName: string, measureOptions?: PerformanceMeasureOptions) {
+    super({
+      name: measureName,
+      entryType: 'measure',
+      startTime: 0,
+      duration: measureOptions?.duration ?? 0,
+    });
+    if (measureOptions !== undefined) {
+      this.detail = measureOptions.detail;
+    }
+  }
+}
+
 /**
  * Partial implementation of the Performance interface for RN,
  * corresponding to the standard in
@@ -50,8 +74,73 @@ export default class Performance {
     NativePerformance?.mark?.(markName, mark.startTime, mark.duration);
     return mark;
   }
+  clearMarks(markName?: string): void {
+    NativePerformance?.clearMarks?.(markName);
+  }
 
-  clearMarks(markName?: string): void {}
+  measure(
+    measureName: string,
+    startMarkOrOptions?: string | PerformanceMeasureOptions,
+    endMark?: string,
+  ): PerformanceMeasure {
+    let options;
+    let startMarkName,
+      endMarkName = endMark,
+      duration,
+      startTime = 0,
+      endTime = 0;
+    if (typeof startMarkOrOptions === 'string') {
+      startMarkName = startMarkOrOptions;
+    } else if (startMarkOrOptions !== undefined) {
+      options = startMarkOrOptions;
+      if (endMark !== undefined) {
+        throw new TypeError(
+          "Performance.measure: Can't have both options and endMark",
+        );
+      }
+      if (options.start === undefined && options.end === undefined) {
+        throw new TypeError(
+          'Performance.measure: Must have at least one of start/end specified in options',
+        );
+      }
+      if (
+        options.start !== undefined &&
+        options.end !== undefined &&
+        options.duration !== undefined
+      ) {
+        throw new TypeError(
+          "Performance.measure: Can't have both start/end and duration explicitly in options",
+        );
+      }
+
+      if (typeof options.start === 'number') {
+        startTime = options.start;
+      } else {
+        startMarkName = options.start;
+      }
+
+      if (typeof options.end === 'number') {
+        endTime = options.end;
+      } else {
+        endMarkName = options.end;
+      }
+
+      duration = options.duration ?? duration;
+    }
+    const measure = new PerformanceMeasure(measureName, options);
+    NativePerformance?.measure?.(
+      measureName,
+      startTime,
+      endTime,
+      duration,
+      startMarkName,
+      endMarkName,
+    );
+    return measure;
+  }
+  clearMeasures(measureName?: string): void {
+    NativePerformance?.clearMeasures?.(measureName);
+  }
 
   now(): HighResTimeStamp {
     return getCurrentTimeStamp();
