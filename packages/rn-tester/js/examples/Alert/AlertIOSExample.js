@@ -142,6 +142,80 @@ class PromptOptions extends React.Component<Props, State> {
   }
 }
 
+// [TODO(macOS GH#774)
+const PromptPresentation = () => {
+  return (
+    <View>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() =>
+          Alert.promptMacOS(
+            'Default sheet',
+            null,
+            null,
+            'default',
+            [{default: '', placeholder: ''}],
+            false,
+          )
+        }>
+        <View style={styles.button}>
+          <Text>Default sheet</Text>
+        </View>
+      </TouchableHighlight>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() =>
+          Alert.promptMacOS(
+            'Modal',
+            null,
+            null,
+            'default',
+            [{default: '', placeholder: ''}],
+            true,
+          )
+        }>
+        <View style={styles.button}>
+          <Text>Modal</Text>
+        </View>
+      </TouchableHighlight>
+    </View>
+  );
+};
+
+const PromptStyle = () => {
+  return (
+    <View>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() =>
+          Alert.promptMacOS('Default warning style', null, null, 'default')
+        }>
+        <View style={styles.button}>
+          <Text>Default warning style</Text>
+        </View>
+      </TouchableHighlight>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() =>
+          Alert.promptMacOS(
+            'Critical',
+            null,
+            null,
+            'default',
+            [{default: '', placeholder: ''}],
+            false,
+            true,
+          )
+        }>
+        <View style={styles.button}>
+          <Text>Critical</Text>
+        </View>
+      </TouchableHighlight>
+    </View>
+  );
+};
+// ]TODO(macOS GH#774)
+
 const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
@@ -161,7 +235,7 @@ const styles = StyleSheet.create({
 
 exports.framework = 'React';
 exports.title = 'Alerts';
-exports.description = 'iOS alerts and action sheets';
+exports.description = 'iOS / macOS alerts and action sheets'; // TODO(macOS GH#774)
 exports.documentationURL = 'https://reactnative.dev/docs/alert';
 exports.examples = ([
   ...SharedAlertExamples,
@@ -205,4 +279,20 @@ exports.examples = ([
       );
     },
   },
+  // [TODO(macOS GH#774)
+  {
+    title: 'Prompt Presentation',
+    platform: 'macos',
+    render(): React.Node {
+      return <PromptPresentation />;
+    },
+  },
+  {
+    title: 'Prompt Style',
+    platform: 'macos',
+    render(): React.Node {
+      return <PromptStyle />;
+    },
+  },
+  // ]TODO(macOS GH#774)
 ]: Array<RNTesterModuleExample>);

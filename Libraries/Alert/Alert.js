@@ -8,7 +8,6 @@
  * @flow
  */
 
-import AlertMacOS from './AlertMacOS'; // TODO(macOS GH#774)
 import Platform from '../Utilities/Platform';
 import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
 import RCTAlertManager from './RCTAlertManager';
@@ -25,14 +24,21 @@ export type Buttons = Array<{
   style?: AlertButtonStyle,
   ...
 }>;
+// [TODO(macOS GH#774)
+export type DefaultInputsArray = Array<{
+  default?: string,
+  placeholder?: string,
+  style?: AlertButtonStyle,
+}>;
+// ]TODO(macOS GH#774)
 
 type Options = {
   cancelable?: ?boolean,
   onDismiss?: ?() => void,
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   modal?: ?boolean,
   critical?: ?boolean,
-  // ]TODO(macOS ISS#2323203)
+  // ]TODO(macOS GH#774)
   ...
 };
 
@@ -52,7 +58,7 @@ class Alert {
       Alert.prompt(title, message, buttons, 'default');
       // [TODO(macOS ISS#2323203)
     } else if (Platform.OS === 'macos') {
-      promptMacOS(
+      Alert.promptMacOS(
         title,
         message,
         buttons,
@@ -167,53 +173,100 @@ class Alert {
       // [TODO(macOS GH#774)
     } else if (Platform.OS === 'macos') {
       const defaultInputs = [{default: defaultValue}];
-      promptMacOS(title, message, callbackOrButtons, type, defaultInputs);
+      Alert.promptMacOS(title, message, callbackOrButtons, type, defaultInputs);
     }
     // ]TODO(macOS GH#774)
   }
-}
 
-// [TODO(macOS ISS#2323203)
-function promptMacOS(
-  title: ?string,
-  message?: ?string,
-  callbackOrButtons?: ?((text: string) => void) | Buttons,
-  type?: ?AlertType = 'plain-text',
-  defaultInputs?: DefaultInputsArray,
-  modal?: ?boolean,
-  critical?: ?boolean,
-): void {
-  let callbacks = [];
-  const buttons = [];
-  if (typeof callbackOrButtons === 'function') {
-    callbacks = [callbackOrButtons];
-  } else if (callbackOrButtons instanceof Array) {
-    callbackOrButtons.forEach((btn, index) => {
-      callbacks[index] = btn.onPress;
-      if (btn.text || index < (callbackOrButtons || []).length - 1) {
-        const btnDef = {};
-        btnDef[index] = btn.text || '';
-        buttons.push(btnDef);
-      }
-    });
+  // [TODO(macOS GH#774)
+  /**
+   * Create and display a prompt to enter some text.
+   * @static
+   * @method promptMacOS
+   * @param title The dialog's title.
+   * @param message An optional message that appears above the text
+   *    input.
+   * @param callbackOrButtons This optional argument should
+   *    be either a single-argument function or an array of buttons. If passed
+   *    a function, it will be called with the prompt's value when the user
+   *    taps 'OK'.
+   *
+   *    If passed an array of button configurations, each button should include
+   *    a `text` key, as well as optional `onPress` key (see
+   *    example).
+   * @param type This configures the text input. One of 'plain-text',
+   *    'secure-text' or 'login-password'.
+   * @param defaultInputs This optional argument should be an array of couple
+   *    default value - placeholder for the input fields.
+   * @param modal The alert can be optionally run as an app-modal dialog, instead
+   *    of the default presentation as a sheet.
+   * @param critical This optional argument should be used when it's needed to
+   *    warn the user about severe consequences of an impending event
+   *    (such as deleting a file).
+   *
+   * @example <caption>Example with custom buttons</caption>
+   *
+   * AlertMacOS.promptMacOS(
+   *   'Enter password',
+   *   'Enter your password to claim your $1.5B in lottery winnings',
+   *   [
+   *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+   *     {text: 'OK', onPress: password => console.log('OK Pressed, password: ' + password)},
+   *   ],
+   *   'secure-text'
+   * );
+   *
+   * @example <caption>Example with the default button and a custom callback</caption>
+   *
+   * AlertMacOS.prompt(
+   *   'Update username',
+   *   null,
+   *   text => console.log("Your username is "+text),
+   *   null,
+   *   'default'
+   * );
+   */
+  static promptMacOS(
+    title: ?string,
+    message?: ?string,
+    callbackOrButtons?: ?((text: string) => void) | Buttons,
+    type?: ?AlertType = 'plain-text',
+    defaultInputs?: DefaultInputsArray,
+    modal?: ?boolean,
+    critical?: ?boolean,
+  ): void {
+    let callbacks = [];
+    const buttons = [];
+    if (typeof callbackOrButtons === 'function') {
+      callbacks = [callbackOrButtons];
+    } else if (callbackOrButtons instanceof Array) {
+      callbackOrButtons.forEach((btn, index) => {
+        callbacks[index] = btn.onPress;
+        if (btn.text || index < (callbackOrButtons || []).length - 1) {
+          const btnDef = {};
+          btnDef[index] = btn.text || '';
+          buttons.push(btnDef);
+        }
+      });
+    }
+
+    RCTAlertManager.alertWithArgs(
+      {
+        title: title || undefined,
+        message: message || undefined,
+        buttons,
+        type: type || undefined,
+        defaultInputs,
+        modal: modal || undefined,
+        critical: critical || undefined,
+      },
+      (id, value) => {
+        const cb = callbacks[id];
+        cb && cb(value);
+      },
+    );
   }
-
-  RCTAlertManager.alertWithArgs(
-    {
-      title: title || undefined,
-      message: message || undefined,
-      buttons,
-      type: type || undefined,
-      defaultInputs,
-      modal: modal || undefined,
-      critical: critical || undefined,
-    },
-    (id, value) => {
-      const cb = callbacks[id];
-      cb && cb(value);
-    },
-  );
+  // ]TODO(macOS GH#774)
 }
-// ]TODO(macOS ISS#2323203)
 
 module.exports = Alert;

@@ -10,7 +10,6 @@
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-import type {DefaultInputsArray} from './AlertMacOS'; // TODO(macOS GH#774)
 
 export type Args = {|
   title?: string,
@@ -21,16 +20,16 @@ export type Args = {|
   cancelButtonKey?: string,
   destructiveButtonKey?: string,
   keyboardType?: string,
-  // [TODO(macOS ISS#2323203)
-  defaultInputs?: DefaultInputsArray,
+  // [TODO(macOS GH#774)
+  defaultInputs?: Array<Object>,
   modal?: ?boolean,
   critical?: ?boolean,
-  // ]TODO(macOS ISS#2323203)
+  // ]TODO(macOS GH#774)
 |};
 
 export interface Spec extends TurboModule {
   +alertWithArgs: (
-    args: NativeArgs, // TODO(macOS GH#774): Args -> NativeArgs
+    args: Args,
     callback: (id: number, value: string) => void,
   ) => void;
 }

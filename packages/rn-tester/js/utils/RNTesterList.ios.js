@@ -230,11 +230,6 @@ const APIs: Array<RNTesterModuleInfo> = [
     category: 'iOS',
     supportsTVOS: true,
   },
-  // [TODO(macOS GH#774)
-  {
-    key: 'AlertMacOSExample',
-    module: require('../examples/Alert/AlertMacOSExample'),
-  }, // ]TODO(macOS GH#774)
   {
     key: 'AnimatedIndex',
     module: require('../examples/Animated/AnimatedIndex').default,

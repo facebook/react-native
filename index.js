@@ -49,7 +49,6 @@ import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionL
 // APIs
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
 import typeof Alert from './Libraries/Alert/Alert';
-import typeof AlertMacOS from './Libraries/Alert/AlertMacOS'; // TODO(macOS GH#774)
 import typeof Animated from './Libraries/Animated/Animated';
 import typeof Appearance from './Libraries/Utilities/Appearance';
 import typeof AppRegistry from './Libraries/ReactNative/AppRegistry';
@@ -271,16 +270,6 @@ module.exports = {
   get Alert(): Alert {
     return require('./Libraries/Alert/Alert');
   },
-  // [TODO(macOS GH#774)
-  get AlertMacOS(): AlertMacOS {
-    warnOnce(
-      'AlertMacOS-deprecated',
-      'AlertMacOS has been deprecated and will be removed in a future release. ' +
-        'Use Alert instead. ' +
-        'See https://github.com/microsoft/react-native-macos/issues/354',
-    );
-    return require('./Libraries/Alert/AlertMacOS');
-  }, // ]TODO(macOS GH#774)
   get Animated(): Animated {
     return require('./Libraries/Animated/Animated');
   },
