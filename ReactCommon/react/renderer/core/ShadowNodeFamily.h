@@ -86,6 +86,13 @@ class ShadowNodeFamily final {
   void dispatchRawState(StateUpdate &&stateUpdate, EventPriority priority)
       const;
 
+  /*
+   * Holds currently applied native props. `nullptr` if setNativeProps API is
+   * not used. It is used to backport setNativeProps API from the old
+   * architecture and will be removed in the future.
+   */
+  mutable std::unique_ptr<folly::dynamic> nativeProps_DEPRECATED;
+
  private:
   friend ShadowNode;
   friend ShadowNodeFamilyFragment;

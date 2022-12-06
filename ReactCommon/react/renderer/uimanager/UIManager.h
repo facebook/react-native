@@ -162,6 +162,10 @@ class UIManager final : public ShadowTreeDelegate {
       std::string const &commandName,
       folly::dynamic const &args) const;
 
+  void setNativeProps_DEPRECATED(
+      ShadowNode::Shared const &shadowNode,
+      RawProps const &rawProps) const;
+
   void sendAccessibilityEvent(
       const ShadowNode::Shared &shadowNode,
       std::string const &eventType);
