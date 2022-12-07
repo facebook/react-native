@@ -15,10 +15,8 @@ import com.facebook.fbreact.specs.NativeDevToolsSettingsManagerSpec;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
 
-@ReactModule(name = DevToolsSettingsManagerModule.NAME)
+@ReactModule(name = NativeDevToolsSettingsManagerSpec.NAME)
 public class DevToolsSettingsManagerModule extends NativeDevToolsSettingsManagerSpec {
-  public static final String NAME = "DevToolsSettingsManager";
-
   private static final String SHARED_PREFERENCES_PREFIX = "ReactNative__DevToolsSettings";
   private static final String KEY_CONSOLE_PATCH_SETTINGS = "ConsolePatchSettings";
   private static final String KEY_PROFILING_SETTINGS = "ProfilingSettings";
@@ -29,11 +27,6 @@ public class DevToolsSettingsManagerModule extends NativeDevToolsSettingsManager
     super(reactContext);
     mSharedPreferences =
         reactContext.getSharedPreferences(SHARED_PREFERENCES_PREFIX, Context.MODE_PRIVATE);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

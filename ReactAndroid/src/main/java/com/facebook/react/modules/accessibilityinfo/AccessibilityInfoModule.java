@@ -30,11 +30,9 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
  * Module that monitors and provides information about the state of Touch Exploration service on the
  * device. For API >= 19.
  */
-@ReactModule(name = AccessibilityInfoModule.NAME)
+@ReactModule(name = NativeAccessibilityInfoSpec.NAME)
 public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     implements LifecycleEventListener {
-
-  public static final String NAME = "AccessibilityInfo";
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private class ReactTouchExplorationStateChangeListener
@@ -99,11 +97,6 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     mReduceMotionEnabled = this.getIsReduceMotionEnabledValue();
     mTouchExplorationStateChangeListener = new ReactTouchExplorationStateChangeListener();
     mAccessibilityServiceChangeListener = new ReactAccessibilityServiceChangeListener();
-  }
-
-  @Override
-  public String getName() {
-    return "AccessibilityInfo";
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
