@@ -15,6 +15,7 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 export const RawPerformanceEntryTypeValues = {
   UNDEFINED: 0,
   MARK: 1,
+  MEASURE: 2,
 };
 
 export type RawPerformanceEntryType = number;
