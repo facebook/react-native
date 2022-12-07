@@ -155,7 +155,7 @@ const APIs: Array<RNTesterModuleInfo> = [
   },
   {
     key: 'AlertExample',
-    module: require('../examples/Alert/AlertExample').default,
+    module: require('../examples/Alert/AlertExample'),
     category: 'UI',
   },
   {
