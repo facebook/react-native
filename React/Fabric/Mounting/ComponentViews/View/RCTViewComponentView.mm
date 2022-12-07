@@ -338,7 +338,7 @@ using namespace facebook::react;
   if (oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
     self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
     if (shouldAnnounceLiveRegionChanges && [self.accessibilityHint length] != 0) {
-      accessibilityLiveRegionAnnouncementUpdate[3] = self.accessibilityHint;
+      accessibilityLiveRegionAnnouncementUpdate[4] = self.accessibilityHint;
     }
   }
 
@@ -381,7 +381,7 @@ using namespace facebook::react;
     if (newViewProps.accessibilityValue.text.has_value()) {
       self.accessibilityElement.accessibilityValue =
           RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityValue.text.value());
-      accessibilityLiveRegionAnnouncementUpdate[4] = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityValue.text.value());
+      accessibilityLiveRegionAnnouncementUpdate[3] = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityValue.text.value());
     } else if (
         newViewProps.accessibilityValue.now.has_value() && newViewProps.accessibilityValue.min.has_value() &&
         newViewProps.accessibilityValue.max.has_value()) {
@@ -389,9 +389,12 @@ using namespace facebook::react;
           (newViewProps.accessibilityValue.max.value() - newViewProps.accessibilityValue.min.value());
       self.accessibilityElement.accessibilityValue =
           [NSNumberFormatter localizedStringFromNumber:@(val) numberStyle:NSNumberFormatterPercentStyle];
-      accessibilityLiveRegionAnnouncementUpdate[4] = [NSNumberFormatter localizedStringFromNumber:@(val) numberStyle:NSNumberFormatterPercentStyle];
+      accessibilityLiveRegionAnnouncementUpdate[3] = [NSNumberFormatter localizedStringFromNumber:@(val) numberStyle:NSNumberFormatterPercentStyle];
     } else {
       self.accessibilityElement.accessibilityValue = nil;
+    }
+    if ([self.accessibilityValue length] != 0) {
+      accessibilityLiveRegionAnnouncementUpdate[3] = [NSString stringWithFormat:@"%@ %@", self.accessibilityValue, accessibilityLiveRegionAnnouncementUpdate[3]];
     }
   }
   if (shouldAnnounceLiveRegionChanges) {
