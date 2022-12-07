@@ -10,7 +10,7 @@
 
 import * as React from 'react';
 import type {RNTesterModule} from '../../types/RNTesterTypes';
-import {Alert, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
+import {Alert, StyleSheet, Text, Pressable, View} from 'react-native';
 
 // Shows log on the screen
 const Log = ({message}: {message: string}) =>
@@ -31,14 +31,14 @@ const AlertWithDefaultButton = () => {
 
   return (
     <View>
-      <TouchableHighlight
+      <Pressable
         testID="alert-with-default-button"
         style={styles.wrapper}
         onPress={() => Alert.alert('Alert', alertMessage)}>
         <View style={styles.button}>
           <Text>Tap to view alert</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
     </View>
   );
 };
@@ -50,7 +50,7 @@ const AlertWithTwoButtons = () => {
 
   return (
     <View>
-      <TouchableHighlight
+      <Pressable
         style={styles.wrapper}
         onPress={() =>
           Alert.alert('Action Required!', alertMessage, [
@@ -61,7 +61,7 @@ const AlertWithTwoButtons = () => {
         <View style={styles.button}>
           <Text>Tap to view alert</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
       <Log message={message} />
     </View>
   );
@@ -74,7 +74,7 @@ const AlertWithThreeButtons = () => {
 
   return (
     <View>
-      <TouchableHighlight
+      <Pressable
         testID="alert-with-three-buttons"
         style={styles.wrapper}
         onPress={() =>
@@ -87,7 +87,7 @@ const AlertWithThreeButtons = () => {
         <View style={styles.button}>
           <Text>Tap to view alert</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
       <Log message={message} />
     </View>
   );
@@ -102,7 +102,7 @@ const AlertWithManyButtons = () => {
 
   return (
     <View>
-      <TouchableHighlight
+      <Pressable
         style={styles.wrapper}
         onPress={() =>
           Alert.alert(
@@ -117,7 +117,7 @@ const AlertWithManyButtons = () => {
         <View style={styles.button}>
           <Text>Tap to view alert</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
       <Log message={message} />
     </View>
   );
@@ -130,7 +130,7 @@ const AlertWithCancelableTrue = () => {
 
   return (
     <View>
-      <TouchableHighlight
+      <Pressable
         style={styles.wrapper}
         onPress={() =>
           Alert.alert(
@@ -149,7 +149,7 @@ const AlertWithCancelableTrue = () => {
         <View style={styles.button}>
           <Text>Tap to view alert</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
       <Log message={message} />
     </View>
   );
@@ -162,7 +162,7 @@ const AlertWithStyles = () => {
 
   return (
     <View>
-      <TouchableHighlight
+      <Pressable
         style={styles.wrapper}
         onPress={() =>
           Alert.alert('Styled Buttons!', alertMessage, [
@@ -186,7 +186,7 @@ const AlertWithStyles = () => {
         <View style={styles.button}>
           <Text>Tap to view alert</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
       <Log message={message} />
     </View>
   );
@@ -200,7 +200,7 @@ const AlertWithStylesPreferred = () => {
 
   return (
     <View>
-      <TouchableHighlight
+      <Pressable
         style={styles.wrapper}
         onPress={() =>
           Alert.alert('Foo Title', alertMessage, [
@@ -219,7 +219,7 @@ const AlertWithStylesPreferred = () => {
         <View style={styles.button}>
           <Text>Tap to view alert</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
       <Log message={message} />
     </View>
   );
@@ -245,23 +245,23 @@ const PromptOptions = () => {
         <Text style={styles.bold}>Prompt value:</Text> {promptValue}
       </Text>
 
-      <TouchableHighlight
+      <Pressable
         style={styles.wrapper}
         onPress={() => Alert.prompt('Type a value', null, setPromptValue)}>
         <View style={styles.button}>
           <Text>prompt with title & callback</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
 
-      <TouchableHighlight
+      <Pressable
         style={styles.wrapper}
         onPress={() => Alert.prompt('Type a value', null, customButtons)}>
         <View style={styles.button}>
           <Text>prompt with title & custom buttons</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
 
-      <TouchableHighlight
+      <Pressable
         style={styles.wrapper}
         onPress={() =>
           Alert.prompt(
@@ -276,9 +276,9 @@ const PromptOptions = () => {
         <View style={styles.button}>
           <Text>prompt with title & custom keyboard</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
 
-      <TouchableHighlight
+      <Pressable
         style={styles.wrapper}
         onPress={() =>
           Alert.prompt(
@@ -292,9 +292,9 @@ const PromptOptions = () => {
         <View style={styles.button}>
           <Text>prompt with title, callback & default value</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
 
-      <TouchableHighlight
+      <Pressable
         style={styles.wrapper}
         onPress={() =>
           Alert.prompt(
@@ -310,7 +310,7 @@ const PromptOptions = () => {
             prompt with title, custom buttons, login/password & default value
           </Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
     </View>
   );
 };
@@ -318,21 +318,21 @@ const PromptOptions = () => {
 const PromptTypes = () => {
   return (
     <View>
-      <TouchableHighlight
+      <Pressable
         style={styles.wrapper}
         onPress={() => Alert.prompt('Plain Text Entry')}>
         <View style={styles.button}>
           <Text>plain-text</Text>
         </View>
-      </TouchableHighlight>
-      <TouchableHighlight
+      </Pressable>
+      <Pressable
         style={styles.wrapper}
         onPress={() => Alert.prompt('Secure Text', null, null, 'secure-text')}>
         <View style={styles.button}>
           <Text>secure-text</Text>
         </View>
-      </TouchableHighlight>
-      <TouchableHighlight
+      </Pressable>
+      <Pressable
         style={styles.wrapper}
         onPress={() =>
           Alert.prompt('Login & Password', null, null, 'login-password')
@@ -340,7 +340,7 @@ const PromptTypes = () => {
         <View style={styles.button}>
           <Text>login-password</Text>
         </View>
-      </TouchableHighlight>
+      </Pressable>
     </View>
   );
 };
