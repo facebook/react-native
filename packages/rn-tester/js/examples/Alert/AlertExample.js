@@ -447,6 +447,5 @@ export default ({
   documentationURL: 'https://reactnative.dev/docs/alert',
   description:
     'Alerts display a concise and informative message and prompt the user to make a decision.',
-  showIndividualExamples: true,
   examples,
 }: RNTesterModule);
