@@ -226,7 +226,7 @@ const AlertWithStylesPreferred = () => {
 };
 
 const PromptOptions = () => {
-  const [promptValue, setPromptValue] = React.useState<string>(undefined);
+  const [promptValue, setPromptValue] = React.useState<string>('');
 
   const customButtons = [
     {
