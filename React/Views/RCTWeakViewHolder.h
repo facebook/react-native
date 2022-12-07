@@ -14,6 +14,6 @@
  */
 @protocol RCTWeakViewHolder
 
-@property (nonatomic, strong) NSMapTable<NSNumber *, UIView *> *weakViews;
+@property (nonatomic, strong) NSMapTable<NSNumber *, RCTUIView *> *weakViews; // TODO(macOS GH#774)
 
 @end

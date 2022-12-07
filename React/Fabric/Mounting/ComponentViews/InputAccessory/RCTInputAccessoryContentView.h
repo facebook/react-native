@@ -7,6 +7,6 @@
 
 #import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
-@interface RCTInputAccessoryContentView : UIView
+@interface RCTInputAccessoryContentView : RCTUIView // TODO(macOS GH#774)
 
 @end

@@ -15,8 +15,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 void RCTCopyBackedTextInput(
-    UIView<RCTBackedTextInputViewProtocol> *fromTextInput,
-    UIView<RCTBackedTextInputViewProtocol> *toTextInput);
+    RCTUIView<RCTBackedTextInputViewProtocol> *fromTextInput,
+    RCTUIView<RCTBackedTextInputViewProtocol> *toTextInput); // TODO(macOS GH#774)
 
 UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(std::optional<bool> autoCorrect);
 

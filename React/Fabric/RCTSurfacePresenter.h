@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * Please do not use this, this will be deleted soon.
  */
-- (nullable UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag;
+- (nullable RCTUIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag; // TODO(macOS GH#774)
 
 @end
 

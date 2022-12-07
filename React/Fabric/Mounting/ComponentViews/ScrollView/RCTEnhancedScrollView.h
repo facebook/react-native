@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol RCTEnhancedScrollViewOverridingDelegate <NSObject>
 
-- (BOOL)touchesShouldCancelInContentView:(UIView *)view;
+- (BOOL)touchesShouldCancelInContentView:(RCTUIView *)view; // TODO(macOS GH#774)
 
 @end
 

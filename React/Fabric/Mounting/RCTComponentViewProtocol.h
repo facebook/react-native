@@ -54,14 +54,14 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  * component view.
  * Receiver must add `childComponentView` as a subview.
  */
-- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
+- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index; // TODO(macOS GH#774)
 
 /*
  * Called for unmounting (detaching) a child component view from `self`
  * component view.
  * Receiver must remove `childComponentView` as a subview.
  */
-- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
+- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index; // TODO(macOS GH#774)
 
 /*
  * Called for updating component's props.

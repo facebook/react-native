@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * Finds and returns the closet RCTScrollViewComponentView component to the given view
  */
-+ (nullable RCTScrollViewComponentView *)findScrollViewComponentViewForView:(UIView *)view;
++ (nullable RCTScrollViewComponentView *)findScrollViewComponentViewForView:(RCTUIView *)view; // TODO(macOS GH#774)
 
 /*
  * Returns an actual UIScrollView that this component uses under the hood.
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
  * separate component views from auxiliary views to be able to reliably implement pull-to-refresh- and RTL-related
  * functionality.
  */
-@property (nonatomic, strong, readonly) UIView *containerView;
+@property (nonatomic, strong, readonly) RCTUIView *containerView; // TODO(macOS GH#774)
 
 /*
  * Returns a delegate splitter that can be used to subscribe for UIScrollView delegate.

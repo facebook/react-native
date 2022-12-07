@@ -102,7 +102,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
   CGPoint _contentOffsetWhenClipped;
 }
 
-+ (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
++ (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(RCTUIView *)view // TODO(macOS GH#774)
 {
   do {
     view = view.superview;
@@ -124,7 +124,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
     _shouldUpdateContentInsetAdjustmentBehavior = YES;
     [self addSubview:_scrollView];
 
-    _containerView = [[UIView alloc] initWithFrame:CGRectZero];
+    _containerView = [[RCTUIView alloc] initWithFrame:CGRectZero]; // TODO(macOS GH#774)
     [_scrollView addSubview:_containerView];
 
     [self.scrollViewDelegateSplitter addDelegate:self];
@@ -334,12 +334,12 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
   [((RCTEnhancedScrollView *)_scrollView) preserveContentOffsetWithBlock:block];
 }
 
-- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // TODO(macOS GH#774)
 {
   [_containerView insertSubview:childComponentView atIndex:index];
 }
 
-- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // TODO(macOS GH#774)
 {
   [childComponentView removeFromSuperview];
 }
@@ -350,11 +350,11 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
  */
 - (BOOL)_shouldDisableScrollInteraction
 {
-  UIView *ancestorView = self.superview;
+  RCTUIView *ancestorView = self.superview;  // TODO(macOS GH#774)
 
   while (ancestorView) {
     if ([ancestorView respondsToSelector:@selector(isJSResponder)]) {
-      BOOL isJSResponder = ((UIView<RCTComponentViewProtocol> *)ancestorView).isJSResponder;
+      BOOL isJSResponder = ((RCTUIView<RCTComponentViewProtocol> *)ancestorView).isJSResponder; // TODO(macOS GH#774)
       if (isJSResponder) {
         return YES;
       }
@@ -409,7 +409,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
 
 #pragma mark - UIScrollViewDelegate
 
-- (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
+- (BOOL)touchesShouldCancelInContentView:(__unused RCTUIView *)view // TODO(macOS GH#774)
 {
   // Historically, `UIScrollView`s in React Native do not cancel touches
   // started on `UIControl`-based views (as normal iOS `UIScrollView`s do).
@@ -519,7 +519,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
   [self _updateStateWithContentOffset];
 }
 
-- (void)scrollViewWillBeginZooming:(RCTUIScrollView *)scrollView withView:(nullable UIView *)view // TODO(macOS GH#774)
+- (void)scrollViewWillBeginZooming:(RCTUIScrollView *)scrollView withView:(nullable RCTUIView *)view // TODO(macOS GH#774)
 {
   [self _forceDispatchNextScrollEvent];
 
@@ -530,7 +530,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
 }
 
-- (void)scrollViewDidEndZooming:(RCTUIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale // TODO(macOS GH#774)
+- (void)scrollViewDidEndZooming:(RCTUIScrollView *)scrollView withView:(nullable RCTUIView *)view atScale:(CGFloat)scale // TODO(macOS GH#774)
 {
   [self _forceDispatchNextScrollEvent];
 
@@ -542,7 +542,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
   [self _updateStateWithContentOffset];
 }
 
-- (UIView *)viewForZoomingInScrollView:(__unused RCTUIScrollView *)scrollView // TODO(macOS GH#774)
+- (RCTUIView *)viewForZoomingInScrollView:(__unused RCTUIScrollView *)scrollView // TODO(macOS GH#774)
 {
   return _containerView;
 }
@@ -610,7 +610,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
 
 #pragma mark - Child views mounting
 
-- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTUIView *)clipView // TODO(macOS GH#774)
 {
   // Do nothing. ScrollView manages its subview clipping individually in `_remountChildren`.
 }

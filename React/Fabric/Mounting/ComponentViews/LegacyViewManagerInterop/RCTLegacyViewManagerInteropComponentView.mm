@@ -22,7 +22,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 @implementation RCTLegacyViewManagerInteropComponentView {
   NSMutableArray<NSDictionary *> *_viewsToBeMounted;
-  NSMutableArray<UIView *> *_viewsToBeUnmounted;
+  NSMutableArray<RCTUIView *> *_viewsToBeUnmounted; // TODO(macOS GH#774)
   RCTLegacyViewManagerInteropCoordinatorAdapter *_adapter;
   LegacyViewManagerInteropShadowNode::ConcreteState::Shared _state;
   BOOL _hasInvokedForwardingWarning;
@@ -41,9 +41,9 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   return self;
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+- (RCTUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // TODO(macOS GH#774)
 {
-  UIView *result = [super hitTest:point withEvent:event];
+  RCTUIView *result = [super hitTest:point withEvent:event]; // TODO(macOS GH#774)
 
   if (result == _adapter.paperView) {
     return self;
@@ -149,7 +149,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   [super prepareForRecycle];
 }
 
-- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // TODO(macOS GH#774)
 {
   [_viewsToBeMounted addObject:@{
     kRCTLegacyInteropChildIndexKey : [NSNumber numberWithInteger:index],
@@ -157,7 +157,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   }];
 }
 
-- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // TODO(macOS GH#774)
 {
   if (_adapter) {
     [_adapter.paperView removeReactSubview:childComponentView];
@@ -208,7 +208,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
   [_viewsToBeMounted removeAllObjects];
 
-  for (UIView *view in _viewsToBeUnmounted) {
+  for (RCTUIView *view in _viewsToBeUnmounted) { // TODO(macOS GH#774)
     [_adapter.paperView removeReactSubview:view];
   }
 

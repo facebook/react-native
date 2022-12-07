@@ -22,12 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * UIView class for <View> component.
  */
-@interface RCTViewComponentView : UIView <RCTComponentViewProtocol, RCTTouchableComponentViewProtocol> {
+@interface RCTViewComponentView : RCTUIView <RCTComponentViewProtocol, RCTTouchableComponentViewProtocol> {
  @protected
   facebook::react::LayoutMetrics _layoutMetrics;
   facebook::react::SharedViewProps _props;
   facebook::react::SharedViewEventEmitter _eventEmitter;
-}
+} // TODO(macOS GH#774)
 
 /**
  * Represents the `UIView` instance that is being automatically attached to
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
  * to embed/bridge pure native views as component views.
  * Defaults to `nil`. Assign `nil` to remove view as subview.
  */
-@property (nonatomic, strong, nullable) UIView *contentView;
+@property (nonatomic, strong, nullable) RCTUIView *contentView; // TODO(macOS GH#774)
 
 /**
  * Provides access to `nativeId` prop of the component.

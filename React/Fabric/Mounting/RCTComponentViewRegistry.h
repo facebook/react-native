@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Finds a native component view by given `tag`.
  * Returns `nil` if there is no registered component with the `tag`.
  */
-- (nullable UIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(facebook::react::Tag)tag;
+- (nullable RCTUIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(facebook::react::Tag)tag; // TODO(macOS GH#774)
 
 /**
  * Creates a component view with a given type and puts it to the recycle pool.

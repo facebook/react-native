@@ -19,7 +19,7 @@
                  layoutManager:(RCTTextLayoutManager *)layoutManager
            paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                          frame:(CGRect)frame
-                          view:(UIView *)view;
+                          view:(RCTUIView *)view; // TODO(macOS GH#774)
 
 /*
  * Returns an array of `UIAccessibilityElement`s to be used for `UIAccessibilityContainer` implementation.

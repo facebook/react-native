@@ -116,7 +116,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   return iterator->second;
 }
 
-- (nullable UIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(Tag)tag
+- (nullable RCTUIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(Tag)tag // TODO(macOS GH#774)
 {
   RCTAssertMainQueue();
   auto iterator = _registry.find(tag);

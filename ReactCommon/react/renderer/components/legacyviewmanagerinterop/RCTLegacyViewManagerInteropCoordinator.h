@@ -20,13 +20,13 @@ typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
 
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData bridge:(RCTBridge *)bridge;
 
-- (UIView *)createPaperViewWithTag:(NSInteger)tag;
+- (RCTUIView *)createPaperViewWithTag:(NSInteger)tag; // TODO(macOS GH#774)
 
 - (void)addObserveForTag:(NSInteger)tag usingBlock:(InterceptorBlock)block;
 
 - (void)removeObserveForTag:(NSInteger)tag;
 
-- (void)setProps:(folly::dynamic const &)props forView:(UIView *)view;
+- (void)setProps:(folly::dynamic const &)props forView:(RCTUIView *)view; // TODO(macOS GH#774)
 
 - (NSString *)componentViewName;
 

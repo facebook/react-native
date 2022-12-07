@@ -20,18 +20,18 @@
 
 using namespace facebook::react;
 
-static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNativeId(UIView *view, NSString *nativeId)
+static RCTUIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNativeId(RCTUIView *view, NSString *nativeId) // TODO(macOS GH#774)
 {
   if ([view respondsToSelector:@selector(inputAccessoryViewID)] &&
       [view respondsToSelector:@selector(setInputAccessoryView:)]) {
-    UIView<RCTBackedTextInputViewProtocol> *typed = (UIView<RCTBackedTextInputViewProtocol> *)view;
+    RCTUIView<RCTBackedTextInputViewProtocol> *typed = (RCTUIView<RCTBackedTextInputViewProtocol> *)view; // TODO(macOS GH#774)
     if (!nativeId || [typed.inputAccessoryViewID isEqualToString:nativeId]) {
       return typed;
     }
   }
 
-  for (UIView *subview in view.subviews) {
-    UIView<RCTBackedTextInputViewProtocol> *result = RCTFindTextInputWithNativeId(subview, nativeId);
+  for (RCTUIView *subview in view.subviews) { // TODO(macOS GH#774)
+    RCTUIView<RCTBackedTextInputViewProtocol> *result = RCTFindTextInputWithNativeId(subview, nativeId); // TODO(macOS GH#774)
     if (result) {
       return result;
     }
@@ -44,7 +44,7 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
   InputAccessoryShadowNode::ConcreteState::Shared _state;
   RCTInputAccessoryContentView *_contentView;
   RCTSurfaceTouchHandler *_touchHandler;
-  UIView<RCTBackedTextInputViewProtocol> __weak *_textInput;
+  RCTUIView<RCTBackedTextInputViewProtocol> __weak *_textInput; // TODO(macOS GH#774)
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -83,7 +83,7 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
   return true;
 }
 
-- (UIView *)inputAccessoryView
+- (RCTUIView *)inputAccessoryView // TODO(macOS GH#774)
 {
   return _contentView;
 }
@@ -95,12 +95,12 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
   return concreteComponentDescriptorProvider<InputAccessoryComponentDescriptor>();
 }
 
-- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // TODO(macOS GH#774)
 {
   [_contentView insertSubview:childComponentView atIndex:index];
 }
 
-- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // TODO(macOS GH#774)
 {
   [childComponentView removeFromSuperview];
 }
