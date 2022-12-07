@@ -18,9 +18,22 @@ class Component {
  public:
   Component(Tag tag) : tag_(tag) {}
 
+  virtual ~Component() = default;
+
+  // Updates the prop with name and value received as a parameter in the
+  // component
   virtual void updateFloatProp(const std::string &propName, float value) = 0;
 
-  virtual ~Component() = default;
+  // Mounts the child component into the children index received as parameter
+  virtual void mountChildComponent(
+      std::shared_ptr<facebook::react::Component> component,
+      int index) = 0;
+
+  // Unmounts the child component from the index received as a parameter
+  virtual void unmountChildComponent(int index) = 0;
+
+  // Draw the component
+  virtual void draw() = 0;
 
  protected:
   Tag tag_ = -1;
