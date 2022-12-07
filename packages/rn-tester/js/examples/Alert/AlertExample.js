@@ -225,6 +225,131 @@ const AlertWithStylesPreferred = () => {
   );
 };
 
+const PromptOptions = () => {
+  const [promptValue, setPromptValue] = React.useState<string>(undefined);
+
+  const customButtons = [
+    {
+      text: 'Custom OK',
+      onPress: setPromptValue,
+    },
+    {
+      text: 'Custom Cancel',
+      style: 'cancel',
+    },
+  ];
+
+  return (
+    <View>
+    <Text style={styles.promptValue}>
+      <Text style={styles.promptValueLabel}>Prompt value:</Text>{' '}
+      {this.state.promptValue}
+    </Text>
+
+    <TouchableHighlight
+      style={styles.wrapper}
+      onPress={() => Alert.prompt('Type a value', null, setPromptValue)}>
+      <View style={styles.button}>
+        <Text>prompt with title & callback</Text>
+      </View>
+    </TouchableHighlight>
+
+    <TouchableHighlight
+      style={styles.wrapper}
+      onPress={() =>
+        Alert.prompt('Type a value', null, this.customButtons)
+      }>
+      <View style={styles.button}>
+        <Text>prompt with title & custom buttons</Text>
+      </View>
+    </TouchableHighlight>
+
+    <TouchableHighlight
+      style={styles.wrapper}
+      onPress={() =>
+        Alert.prompt(
+          'Type a phone number',
+          null,
+          null,
+          'plain-text',
+          undefined,
+          'phone-pad',
+        )
+      }>
+      <View style={styles.button}>
+        <Text>prompt with title & custom keyboard</Text>
+      </View>
+    </TouchableHighlight>
+
+    <TouchableHighlight
+      style={styles.wrapper}
+      onPress={() =>
+        Alert.prompt(
+          'Type a value',
+          null,
+          setPromptValue,
+          undefined,
+          'Default value',
+        )
+      }>
+      <View style={styles.button}>
+        <Text>prompt with title, callback & default value</Text>
+      </View>
+    </TouchableHighlight>
+
+    <TouchableHighlight
+      style={styles.wrapper}
+      onPress={() =>
+        Alert.prompt(
+          'Type a value',
+          null,
+          this.customButtons,
+          'login-password',
+          'admin@site.com',
+        )
+      }>
+      <View style={styles.button}>
+        <Text>
+          prompt with title, custom buttons, login/password & default value
+        </Text>
+      </View>
+    </TouchableHighlight>
+  </View>
+  );
+}
+
+const PromptTypes = () => {
+  return (
+    <View>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() => Alert.prompt('Plain Text Entry')}>
+        <View style={styles.button}>
+          <Text>plain-text</Text>
+        </View>
+      </TouchableHighlight>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() =>
+          Alert.prompt('Secure Text', null, null, 'secure-text')
+        }>
+        <View style={styles.button}>
+          <Text>secure-text</Text>
+        </View>
+      </TouchableHighlight>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() =>
+          Alert.prompt('Login & Password', null, null, 'login-password')
+        }>
+        <View style={styles.button}>
+          <Text>login-password</Text>
+        </View>
+      </TouchableHighlight>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
@@ -299,6 +424,20 @@ export const examples = [
       "Alert buttons with 'isPreferred' will be emphasized, even over cancel buttons",
     render(): React.Node {
       return <AlertWithStylesPreferred />;
+    },
+  },
+  {
+    title: 'Prompt Options',
+    platform: 'ios',
+    render(): React.Node {
+      return <PromptOptions />;
+    },
+  },
+  {
+    title: 'Prompt Types',
+    platform: 'ios',
+    render(): React.Node {
+      return <PromptTypes />;
     },
   },
 ];
