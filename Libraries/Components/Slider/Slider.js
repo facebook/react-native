@@ -240,10 +240,15 @@ const Slider = (
     ? {...props.accessibilityState, disabled: true}
     : props.accessibilityState;
 
+  const _accessibilityLiveRegion = props.accessibilityLiveRegion
+    ? props.accessibilityLiveRegion
+    : 'none';
+
   return (
     <SliderNativeComponent
       {...localProps}
       accessibilityState={accessibilityState}
+      accessibilityLiveRegion={_accessibilityLiveRegion}
       // TODO: Reconcile these across the two platforms.
       enabled={!disabled}
       disabled={disabled}

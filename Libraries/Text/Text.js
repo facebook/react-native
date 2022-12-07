@@ -97,6 +97,9 @@ const Text: React.AbstractComponent<
       onLongPress != null ||
       onStartShouldSetResponder != null) &&
     _disabled !== true;
+  const _accessibilityLiveRegion = props.accessibilityLiveRegion
+    ? props.accessibilityLiveRegion
+    : 'none';
 
   const initialized = useLazyInitialization(isPressable);
   const config = useMemo(
@@ -237,6 +240,7 @@ const Text: React.AbstractComponent<
         role ? getAccessibilityRoleFromRole(role) : accessibilityRole
       }
       accessibilityState={_accessibilityState}
+      accessibilityLiveRegion={_accessibilityLiveRegion}
       isHighlighted={isHighlighted}
       isPressable={isPressable}
       nativeID={id ?? nativeID}
@@ -256,6 +260,7 @@ const Text: React.AbstractComponent<
           role ? getAccessibilityRoleFromRole(role) : accessibilityRole
         }
         accessibilityState={nativeTextAccessibilityState}
+        accessibilityLiveRegion={_accessibilityLiveRegion}
         accessible={
           accessible == null && Platform.OS === 'android'
             ? _hasOnPressOrOnLongPress

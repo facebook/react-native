@@ -102,14 +102,18 @@ const View: React.AbstractComponent<
 
     const newPointerEvents = style?.pointerEvents || pointerEvents;
 
+    const _accessibilityLiveRegion = accessibilityLiveRegion
+      ? accessibilityLiveRegion
+      : 'none';
+
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
           {...otherProps}
-          accessibilityLiveRegion={
-            ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
-          }
           accessibilityLabel={ariaLabel ?? accessibilityLabel}
+          accessibilityLiveRegion={
+            ariaLive === 'off' ? 'none' : ariaLive ?? _accessibilityLiveRegion
+          }
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
           accessibilityState={_accessibilityState}
           accessibilityRole={
