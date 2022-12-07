@@ -1097,6 +1097,7 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
       <View>
         <View
           accessible={true}
+          accessibilityLiveRegion="none"
           accessibilityLabel="Fake Slider"
           accessibilityRole="adjustable"
           accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
@@ -1610,10 +1611,7 @@ function AccessibilityLiveRegion(): React.Node {
         <TouchableWithoutFeedback
           onPress={() => setEnabled(enable => !enabled)}>
           <View style={styles.embedded}>
-            <Text>
-              Click me to {enabled ? 'remove' : 'add'} accessibility
-              announcement
-            </Text>
+            <Text>Click me to change announcement</Text>
           </View>
         </TouchableWithoutFeedback>
         <View
@@ -1624,6 +1622,7 @@ function AccessibilityLiveRegion(): React.Node {
             accessibilityLabel={enabled ? 'my label' : null}
             accessibilityState={{disabled: enabled}}
             accessibilityHint={enabled ? 'my hint' : null}
+            accessibilityValue={enabled ? {now: 5, min: 1, max: 10} : {}}
             style={{
               height: 100,
               width: 100,

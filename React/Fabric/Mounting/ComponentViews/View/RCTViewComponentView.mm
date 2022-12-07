@@ -382,6 +382,7 @@ using namespace facebook::react;
     if (newViewProps.accessibilityValue.text.has_value()) {
       self.accessibilityElement.accessibilityValue =
           RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityValue.text.value());
+      accessibilityLiveRegionAnnouncementUpdate[4] = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityValue.text.value());
     } else if (
         newViewProps.accessibilityValue.now.has_value() && newViewProps.accessibilityValue.min.has_value() &&
         newViewProps.accessibilityValue.max.has_value()) {
@@ -389,7 +390,7 @@ using namespace facebook::react;
           (newViewProps.accessibilityValue.max.value() - newViewProps.accessibilityValue.min.value());
       self.accessibilityElement.accessibilityValue =
           [NSNumberFormatter localizedStringFromNumber:@(val) numberStyle:NSNumberFormatterPercentStyle];
-      ;
+      accessibilityLiveRegionAnnouncementUpdate[4] = [NSNumberFormatter localizedStringFromNumber:@(val) numberStyle:NSNumberFormatterPercentStyle];
     } else {
       self.accessibilityElement.accessibilityValue = nil;
     }
@@ -449,7 +450,8 @@ using namespace facebook::react;
   if (@available(iOS 11.0, *)) {
     BOOL accessibilityLiveRegionAnnouncementDidChange = ![self.accessibilityLiveRegionAnnouncement isEqual:self.accessibilityLiveRegionPreviousAnnouncement];
     BOOL accessibilityLiveRegionEnabled = ![self.accessibilityLiveRegionAnnouncementType isEqual: @"none"];
-    if (accessibilityLiveRegionAnnouncementDidChange && accessibilityLiveRegionEnabled) {
+    BOOL accessibilityLiveRegionAnnouncementNotEmpty = [self.accessibilityLiveRegionAnnouncement length] != 0;
+    if (accessibilityLiveRegionAnnouncementDidChange && accessibilityLiveRegionEnabled && accessibilityLiveRegionAnnouncementNotEmpty) {
       NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
       attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @([self.accessibilityLiveRegionAnnouncementType  isEqual: @"polite"] ? YES : NO);
       NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLiveRegionAnnouncement
