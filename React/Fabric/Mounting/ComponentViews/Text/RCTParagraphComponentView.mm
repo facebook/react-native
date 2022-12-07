@@ -8,7 +8,10 @@
 #import "RCTParagraphComponentView.h"
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 #import <MobileCoreServices/UTCoreTypes.h>
+#endif // ]TODO(macOS GH#774)
+
 #import <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #import <react/renderer/components/text/ParagraphProps.h>
 #import <react/renderer/components/text/ParagraphState.h>

@@ -21,6 +21,7 @@
 
 using namespace facebook::react;
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 static UIInterfaceOrientationMask supportedOrientationsMask(ModalHostViewSupportedOrientationsMask mask)
 {
   UIInterfaceOrientationMask supportedOrientations = 0;
@@ -93,12 +94,14 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
       : ModalHostViewEventEmitter::OnOrientationChangeOrientation::Landscape;
   return {orientation};
 }
+#endif // ]TODO(macOS GH#774)
 
 @interface RCTModalHostViewComponentView () <RCTFabricModalHostViewControllerDelegate>
 
 @end
 
 @implementation RCTModalHostViewComponentView {
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   RCTFabricModalHostViewController *_viewController;
   ModalHostViewShadowNode::ConcreteState::Shared _state;
   BOOL _shouldAnimatePresentation;
@@ -107,6 +110,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   RCTUIView *_modalContentsSnapshot; // TODO(macOS GH#774)
 }
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -278,6 +282,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 {
   [childComponentView removeFromSuperview];
 }
+#endif // ]TODO(macOS GH#774)
 
 @end
 
