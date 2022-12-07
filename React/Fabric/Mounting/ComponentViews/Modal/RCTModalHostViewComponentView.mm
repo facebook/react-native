@@ -101,7 +101,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 @end
 
 @implementation RCTModalHostViewComponentView {
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   RCTFabricModalHostViewController *_viewController;
   ModalHostViewShadowNode::ConcreteState::Shared _state;
   BOOL _shouldAnimatePresentation;
