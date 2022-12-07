@@ -242,7 +242,7 @@ const PromptOptions = () => {
   return (
     <View>
       <Text style={styles.promptValue}>
-        <Text style={styles.promptValueLabel}>Prompt value:</Text> {promptValue}
+        <Text style={styles.bold}>Prompt value:</Text> {promptValue}
       </Text>
 
       <TouchableHighlight
@@ -360,6 +360,9 @@ const styles = StyleSheet.create({
   },
   bold: {
     fontWeight: 'bold',
+  },
+  promptValue: {
+    marginBottom: 10,
   },
 });
 
