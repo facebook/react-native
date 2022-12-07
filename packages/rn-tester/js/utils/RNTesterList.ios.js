@@ -154,6 +154,11 @@ const APIs: Array<RNTesterModuleInfo> = [
     category: 'iOS',
   },
   {
+    key: 'AlertExample',
+    module: require('../examples/Alert/AlertExample').default,
+    category: 'UI',
+  },
+  {
     key: 'AnimatedIndex',
     module: require('../examples/Animated/AnimatedIndex').default,
   },
