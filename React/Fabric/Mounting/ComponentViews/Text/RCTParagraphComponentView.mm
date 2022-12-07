@@ -100,22 +100,6 @@ using namespace facebook::react;
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
-  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
-  auto const &accessibilityProps = *std::static_pointer_cast<AccessibilityProps const>(_props);
-
-  BOOL accessibilityLiveRegionEnabled = accessibilityProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
-  if (_state && paragraphProps.accessible && accessibilityLiveRegionEnabled) {
-    if (@available(iOS 11.0, *)) {
-      auto &data = _state->getData();
-      if (![_accessibilityProvider isUpToDate:data.attributedString]) {
-        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(accessibilityProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
-        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLabel
-                                                                                    attributes:attrsDictionary];
-        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
-      }
-    }
-  }
  
   [self setNeedsDisplay];
 }
@@ -180,6 +164,17 @@ using namespace facebook::react;
   if (![_accessibilityProvider isUpToDate:data.attributedString]) {
     auto textLayoutManager = data.layoutManager.lock();
     if (textLayoutManager) {
+      auto const &accessibilityProps = *std::static_pointer_cast<AccessibilityProps const>(_props);
+      BOOL accessibilityLiveRegionEnabled = accessibilityProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
+      if (accessibilityLiveRegionEnabled) {
+        if (@available(iOS 11.0, *)) {
+          NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+          attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(accessibilityProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
+          NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLabel attributes:attrsDictionary];
+          UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+        }
+      }
+
       RCTTextLayoutManager *nativeTextLayoutManager =
           (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
       CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
