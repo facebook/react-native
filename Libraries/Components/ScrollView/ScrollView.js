@@ -46,6 +46,7 @@ import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 import ScrollViewStickyHeader from './ScrollViewStickyHeader';
 import invariant from 'invariant';
 import memoize from 'memoize-one';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 
 if (Platform.OS === 'ios') {
@@ -978,7 +979,7 @@ class ScrollView extends React.Component<Props, State> {
     if (typeof nodeHandle === 'number') {
       UIManager.measureLayout(
         nodeHandle,
-        findNodeHandle(this),
+        nullthrows(findNodeHandle(this)),
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
         this._inputMeasureAndScrollToKeyboard,
