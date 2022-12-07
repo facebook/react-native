@@ -52,7 +52,7 @@ suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
 experimental.array_literal_providers=true
-inference_mode=constrain_writes
+inference_mode=experimental.lti
 
 [lints]
 sketchy-null-number=warn

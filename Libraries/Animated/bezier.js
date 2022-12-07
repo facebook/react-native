@@ -105,7 +105,7 @@ export default function bezier(
   // Precompute samples table
   const sampleValues = float32ArraySupported
     ? new Float32Array(kSplineTableSize)
-    : new Array(kSplineTableSize);
+    : new Array<number>(kSplineTableSize);
   if (mX1 !== mY1 || mX2 !== mY2) {
     for (let i = 0; i < kSplineTableSize; ++i) {
       sampleValues[i] = calcBezier(i * kSampleStepSize, mX1, mX2);

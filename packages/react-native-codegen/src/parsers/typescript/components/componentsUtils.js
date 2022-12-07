@@ -498,9 +498,9 @@ function flattenProperties(
       }
     })
     .filter(Boolean)
-    .reduce((acc, item) => {
+    .reduce((acc: Array<PropAST>, item) => {
       if (Array.isArray(item)) {
-        item.forEach(prop => {
+        item.forEach((prop: PropAST) => {
           verifyPropNotAlreadyDefined(acc, prop);
         });
         return acc.concat(item);

@@ -795,6 +795,7 @@ export default class VirtualizedList extends StateSafePureComponent<
 
   render(): React.Node {
     if (__DEV__) {
+      // $FlowFixMe[underconstrained-implicit-instantiation]
       const flatStyles = flattenStyle(this.props.contentContainerStyle);
       if (flatStyles != null && flatStyles.flexWrap === 'wrap') {
         console.warn(

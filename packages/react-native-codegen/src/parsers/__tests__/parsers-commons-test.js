@@ -66,7 +66,11 @@ describe('wrapNullable', () => {
 describe('unwrapNullable', () => {
   describe('when type annotation is nullable', () => {
     it('returns original type annotation', () => {
-      const result = unwrapNullable({
+      // $FlowFixMe[incompatible-call]
+      const result = unwrapNullable<{
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {type: 'BooleanTypeAnnotation'},
+      }>({
         type: 'NullableTypeAnnotation',
         typeAnnotation: {
           type: 'BooleanTypeAnnotation',
@@ -84,7 +88,7 @@ describe('unwrapNullable', () => {
   });
   describe('when type annotation is not nullable', () => {
     it('returns original type annotation', () => {
-      const result = unwrapNullable({
+      const result = unwrapNullable<{type: 'BooleanTypeAnnotation'}>({
         type: 'BooleanTypeAnnotation',
       });
       const expected = [

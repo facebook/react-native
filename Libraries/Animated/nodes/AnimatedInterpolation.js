@@ -233,7 +233,8 @@ function createStringInterpolation(
       isColor
         ? // $FlowIgnoreMe[incompatible-call]
           output.components
-        : output.components.filter(c => typeof c === 'number'),
+        : // $FlowIgnoreMe[incompatible-call]
+          output.components.filter(c => typeof c === 'number'),
     );
   const interpolations = numericComponents[0].map((_, i) =>
     createNumericInterpolation({

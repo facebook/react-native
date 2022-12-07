@@ -368,7 +368,7 @@ function buildModuleSchema(
     return $moduleName;
   });
 
-  const moduleNames = moduleName == null ? [] : [moduleName];
+  const moduleNames: Array<string> = moduleName == null ? [] : [moduleName];
 
   // Some module names use platform suffix to indicate platform-exclusive modules.
   // Eventually this should be made explicit in the Flow type itself.

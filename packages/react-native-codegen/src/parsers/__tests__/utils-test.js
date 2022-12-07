@@ -324,12 +324,12 @@ describe('buildSchemaFromConfigType', () => {
   };
 
   const wrapComponentSchemaMock = jest.fn();
-  const buildComponentSchemaMock = jest.fn(() => componentSchemaMock);
+  const buildComponentSchemaMock = jest.fn(_ => componentSchemaMock);
   const wrapModuleSchemaMock = jest.spyOn(
     require('../parsers-commons'),
     'wrapModuleSchema',
   );
-  const buildModuleSchemaMock = jest.fn(() => moduleSchemaMock);
+  const buildModuleSchemaMock = jest.fn((_0, _1, _2) => moduleSchemaMock);
 
   const buildSchemaFromConfigTypeHelper = (
     configType: 'module' | 'component' | 'none',

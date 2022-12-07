@@ -1418,6 +1418,7 @@ function InternalTextInput(props: Props): React.Node {
     };
   }
 
+  // $FlowFixMe[underconstrained-implicit-instantiation]
   let style = flattenStyle(props.style);
 
   if (Platform.OS === 'ios') {
@@ -1628,6 +1629,7 @@ const ExportedForwardRef: React.AbstractComponent<
   },
   forwardedRef: ReactRefSetter<TextInputInstance>,
 ) {
+  // $FlowFixMe[underconstrained-implicit-instantiation]
   let style = flattenStyle(restProps.style);
 
   if (style?.verticalAlign != null) {
