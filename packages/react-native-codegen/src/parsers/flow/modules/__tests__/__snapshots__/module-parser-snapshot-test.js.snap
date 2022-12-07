@@ -25,9 +25,7 @@ exports[`RN Codegen Flow Parser can generate fixture ANDROID_ONLY_NATIVE_MODULE 
       'spec': {
         'properties': []
       },
-      'moduleNames': [
-        'SampleTurboModuleAndroid'
-      ],
+      'moduleName': 'SampleTurboModuleAndroid',
       'excludedPlatforms': [
         'iOS'
       ]
@@ -243,9 +241,7 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModuleCxx'
-      ],
+      'moduleName': 'SampleTurboModuleCxx',
       'excludedPlatforms': [
         'iOS',
         'android'
@@ -264,9 +260,7 @@ exports[`RN Codegen Flow Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
       'spec': {
         'properties': []
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -326,9 +320,7 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModuleIOS'
-      ],
+      'moduleName': 'SampleTurboModuleIOS',
       'excludedPlatforms': [
         'android'
       ]
@@ -528,9 +520,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -571,9 +561,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -608,9 +596,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -676,9 +662,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_AR
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -770,9 +754,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -832,9 +814,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -893,9 +873,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1107,9 +1085,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1213,9 +1189,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1269,9 +1243,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AN
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1362,9 +1334,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_A
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1402,9 +1372,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1493,9 +1461,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1567,9 +1533,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1606,9 +1570,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1643,9 +1605,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_O
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1706,9 +1666,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION 1`
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1743,9 +1701,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_O
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1908,9 +1864,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"

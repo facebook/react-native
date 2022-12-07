@@ -28,7 +28,7 @@ const {
   MoreThanOneModuleInterfaceParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
-} = require('./errors.js');
+} = require('./errors');
 
 function throwIfModuleInterfaceIsMisnamed(
   nativeModuleName: string,
@@ -153,7 +153,7 @@ function throwIfUntypedModule(
   hasteModuleName: string,
   callExpression: $FlowFixMe,
   methodName: string,
-  $moduleName: string,
+  moduleName: string,
   language: ParserType,
 ) {
   if (typeArguments == null) {
@@ -161,7 +161,7 @@ function throwIfUntypedModule(
       hasteModuleName,
       callExpression,
       methodName,
-      $moduleName,
+      moduleName,
       language,
     );
   }
