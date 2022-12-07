@@ -242,8 +242,7 @@ const PromptOptions = () => {
   return (
     <View>
       <Text style={styles.promptValue}>
-        <Text style={styles.promptValueLabel}>Prompt value:</Text>{' '}
-        {this.state.promptValue}
+        <Text style={styles.promptValueLabel}>Prompt value:</Text> {promptValue}
       </Text>
 
       <TouchableHighlight
@@ -256,7 +255,7 @@ const PromptOptions = () => {
 
       <TouchableHighlight
         style={styles.wrapper}
-        onPress={() => Alert.prompt('Type a value', null, this.customButtons)}>
+        onPress={() => Alert.prompt('Type a value', null, customButtons)}>
         <View style={styles.button}>
           <Text>prompt with title & custom buttons</Text>
         </View>
@@ -301,7 +300,7 @@ const PromptOptions = () => {
           Alert.prompt(
             'Type a value',
             null,
-            this.customButtons,
+            customButtons,
             'login-password',
             'admin@site.com',
           )
