@@ -33,7 +33,7 @@ interface AlertOptions {
  * button will be an 'OK' button.
  *
  * This is an API that works both on iOS and Android and can show static
- * alerts. On iOS, you can show an alert that prompts the user to enter 
+ * alerts. On iOS, you can show an alert that prompts the user to enter
  * some information.
  *
  * ## iOS

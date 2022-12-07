@@ -241,82 +241,80 @@ const PromptOptions = () => {
 
   return (
     <View>
-    <Text style={styles.promptValue}>
-      <Text style={styles.promptValueLabel}>Prompt value:</Text>{' '}
-      {this.state.promptValue}
-    </Text>
+      <Text style={styles.promptValue}>
+        <Text style={styles.promptValueLabel}>Prompt value:</Text>{' '}
+        {this.state.promptValue}
+      </Text>
 
-    <TouchableHighlight
-      style={styles.wrapper}
-      onPress={() => Alert.prompt('Type a value', null, setPromptValue)}>
-      <View style={styles.button}>
-        <Text>prompt with title & callback</Text>
-      </View>
-    </TouchableHighlight>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() => Alert.prompt('Type a value', null, setPromptValue)}>
+        <View style={styles.button}>
+          <Text>prompt with title & callback</Text>
+        </View>
+      </TouchableHighlight>
 
-    <TouchableHighlight
-      style={styles.wrapper}
-      onPress={() =>
-        Alert.prompt('Type a value', null, this.customButtons)
-      }>
-      <View style={styles.button}>
-        <Text>prompt with title & custom buttons</Text>
-      </View>
-    </TouchableHighlight>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() => Alert.prompt('Type a value', null, this.customButtons)}>
+        <View style={styles.button}>
+          <Text>prompt with title & custom buttons</Text>
+        </View>
+      </TouchableHighlight>
 
-    <TouchableHighlight
-      style={styles.wrapper}
-      onPress={() =>
-        Alert.prompt(
-          'Type a phone number',
-          null,
-          null,
-          'plain-text',
-          undefined,
-          'phone-pad',
-        )
-      }>
-      <View style={styles.button}>
-        <Text>prompt with title & custom keyboard</Text>
-      </View>
-    </TouchableHighlight>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() =>
+          Alert.prompt(
+            'Type a phone number',
+            null,
+            null,
+            'plain-text',
+            undefined,
+            'phone-pad',
+          )
+        }>
+        <View style={styles.button}>
+          <Text>prompt with title & custom keyboard</Text>
+        </View>
+      </TouchableHighlight>
 
-    <TouchableHighlight
-      style={styles.wrapper}
-      onPress={() =>
-        Alert.prompt(
-          'Type a value',
-          null,
-          setPromptValue,
-          undefined,
-          'Default value',
-        )
-      }>
-      <View style={styles.button}>
-        <Text>prompt with title, callback & default value</Text>
-      </View>
-    </TouchableHighlight>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() =>
+          Alert.prompt(
+            'Type a value',
+            null,
+            setPromptValue,
+            undefined,
+            'Default value',
+          )
+        }>
+        <View style={styles.button}>
+          <Text>prompt with title, callback & default value</Text>
+        </View>
+      </TouchableHighlight>
 
-    <TouchableHighlight
-      style={styles.wrapper}
-      onPress={() =>
-        Alert.prompt(
-          'Type a value',
-          null,
-          this.customButtons,
-          'login-password',
-          'admin@site.com',
-        )
-      }>
-      <View style={styles.button}>
-        <Text>
-          prompt with title, custom buttons, login/password & default value
-        </Text>
-      </View>
-    </TouchableHighlight>
-  </View>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() =>
+          Alert.prompt(
+            'Type a value',
+            null,
+            this.customButtons,
+            'login-password',
+            'admin@site.com',
+          )
+        }>
+        <View style={styles.button}>
+          <Text>
+            prompt with title, custom buttons, login/password & default value
+          </Text>
+        </View>
+      </TouchableHighlight>
+    </View>
   );
-}
+};
 
 const PromptTypes = () => {
   return (
@@ -330,9 +328,7 @@ const PromptTypes = () => {
       </TouchableHighlight>
       <TouchableHighlight
         style={styles.wrapper}
-        onPress={() =>
-          Alert.prompt('Secure Text', null, null, 'secure-text')
-        }>
+        onPress={() => Alert.prompt('Secure Text', null, null, 'secure-text')}>
         <View style={styles.button}>
           <Text>secure-text</Text>
         </View>
@@ -348,7 +344,7 @@ const PromptTypes = () => {
       </TouchableHighlight>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   wrapper: {
