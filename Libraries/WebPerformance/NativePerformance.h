@@ -37,7 +37,6 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance>,
       std::optional<double> duration,
       std::optional<std::string> startMark,
       std::optional<std::string> endMark);
-
   void clearMeasures(jsi::Runtime &rt, std::optional<std::string> measureName);
 
  private:
