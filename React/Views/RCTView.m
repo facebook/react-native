@@ -128,6 +128,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderBottomRightRadius = -1;
     _borderBottomStartRadius = -1;
     _borderBottomEndRadius = -1;
+    _borderEndEndRadius = -1;
+    _borderEndStartRadius = -1;
+    _borderStartEndRadius = -1;
+    _borderStartStartRadius = -1;
     _borderCurve = RCTBorderCurveCircular;
     _borderStyle = RCTBorderStyleSolid;
     _hitTestEdgeInsets = UIEdgeInsetsZero;
@@ -668,10 +672,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   CGFloat bottomRightRadius;
 
   if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
-    const CGFloat topStartRadius = RCTDefaultIfNegativeTo(_borderTopLeftRadius, _borderTopStartRadius);
-    const CGFloat topEndRadius = RCTDefaultIfNegativeTo(_borderTopRightRadius, _borderTopEndRadius);
-    const CGFloat bottomStartRadius = RCTDefaultIfNegativeTo(_borderBottomLeftRadius, _borderBottomStartRadius);
-    const CGFloat bottomEndRadius = RCTDefaultIfNegativeTo(_borderBottomRightRadius, _borderBottomEndRadius);
+    const CGFloat topStartRadius = RCTDefaultIfNegativeTo(_borderTopLeftRadius, _borderStartStartRadius > 0 ? _borderStartStartRadius: _borderTopStartRadius);
+    const CGFloat topEndRadius = RCTDefaultIfNegativeTo(_borderTopRightRadius, _borderStartEndRadius > 0 ? _borderStartEndRadius: _borderTopEndRadius);
+    const CGFloat bottomStartRadius = RCTDefaultIfNegativeTo(_borderBottomLeftRadius, _borderEndStartRadius > 0 ? _borderEndStartRadius: _borderBottomStartRadius);
+    const CGFloat bottomEndRadius = RCTDefaultIfNegativeTo(_borderBottomRightRadius, _borderEndEndRadius > 0 ? _borderEndEndRadius: _borderBottomEndRadius);
 
     const CGFloat directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
     const CGFloat directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
@@ -683,10 +687,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     bottomLeftRadius = RCTDefaultIfNegativeTo(radius, directionAwareBottomLeftRadius);
     bottomRightRadius = RCTDefaultIfNegativeTo(radius, directionAwareBottomRightRadius);
   } else {
-    const CGFloat directionAwareTopLeftRadius = isRTL ? _borderTopEndRadius : _borderTopStartRadius;
-    const CGFloat directionAwareTopRightRadius = isRTL ? _borderTopStartRadius : _borderTopEndRadius;
-    const CGFloat directionAwareBottomLeftRadius = isRTL ? _borderBottomEndRadius : _borderBottomStartRadius;
-    const CGFloat directionAwareBottomRightRadius = isRTL ? _borderBottomStartRadius : _borderBottomEndRadius;
+    const CGFloat directionAwareTopLeftRadius = isRTL ? _borderStartEndRadius > 0 ? _borderStartEndRadius: _borderTopEndRadius : _borderStartStartRadius > 0 ? _borderStartStartRadius: _borderTopStartRadius;
+    const CGFloat directionAwareTopRightRadius = isRTL ? _borderStartStartRadius > 0 ? _borderStartStartRadius: _borderTopStartRadius : _borderStartEndRadius > 0 ? _borderStartEndRadius: _borderTopEndRadius;
+    const CGFloat directionAwareBottomLeftRadius = isRTL ? _borderEndEndRadius > 0 ? _borderEndEndRadius: _borderBottomEndRadius : _borderEndStartRadius > 0 ? _borderEndStartRadius: _borderBottomStartRadius;
+    const CGFloat directionAwareBottomRightRadius = isRTL ? _borderEndStartRadius > 0 ? _borderEndStartRadius: _borderBottomStartRadius : _borderEndEndRadius > 0 ? _borderEndEndRadius: _borderBottomEndRadius;
 
     topLeftRadius =
         RCTDefaultIfNegativeTo(radius, RCTDefaultIfNegativeTo(_borderTopLeftRadius, directionAwareTopLeftRadius));
@@ -946,7 +950,8 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 
                 setBorderRadius() setBorderRadius(TopLeft) setBorderRadius(TopRight) setBorderRadius(TopStart)
                     setBorderRadius(TopEnd) setBorderRadius(BottomLeft) setBorderRadius(BottomRight)
-                        setBorderRadius(BottomStart) setBorderRadius(BottomEnd)
+                        setBorderRadius(BottomStart) setBorderRadius(BottomEnd) setBorderRadius(EndEnd)
+                            setBorderRadius(EndStart) setBorderRadius(StartEnd) setBorderRadius(StartStart)
 
 #pragma mark - Border Curve
 

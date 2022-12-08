@@ -45,7 +45,10 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderTopEndRadius: true,
           borderBottomStartRadius: true,
           borderBottomEndRadius: true,
-
+          borderEndEndRadius: true,
+          borderEndStartRadius: true,
+          borderStartEndRadius: true,
+          borderStartStartRadius: true,
           borderStyle: true,
           hitSlop: true,
           pointerEvents: true,
