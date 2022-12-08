@@ -1584,10 +1584,43 @@ function DisplayOptionStatusExample({
 
 function AccessibilityLiveRegion(): React.Node {
   const [count, setCount] = React.useState(0);
+  const [messageCount, setMessageCount] = React.useState(0);
   const [enabled, setEnabled] = React.useState(false);
   const [liveRegion, setLiveRegion] = React.useState(true);
+  const [messages, setMessages] = React.useState([]);
   return (
     <>
+      <RNTesterBlock title="LiveRegion when adding child components">
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setMessageCount(previousCount => previousCount + 1);
+            setMessages(previousMessages => [
+              ...previousMessages,
+              <View
+                accessible={true}
+                focusable={true}
+                key={messageCount}
+                style={{
+                  height: 10,
+                  width: 200,
+                  backgroundColor: 'red',
+                }}
+                accessibilityLabel={`label ${messageCount}`}
+                accessibilityHint={`hint ${messageCount}`}
+              />,
+            ]);
+          }}>
+          <View style={styles.embedded}>
+            <Text>Click me to add child component</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <View
+          accessible={true}
+          focusable={true}
+          accessibilityLiveRegion="assertive">
+          {messages}
+        </View>
+      </RNTesterBlock>
       <RNTesterBlock title="LiveRegion with Text Component">
         <TouchableWithoutFeedback
           onPress={() => setCount(previousCount => previousCount + 1)}>

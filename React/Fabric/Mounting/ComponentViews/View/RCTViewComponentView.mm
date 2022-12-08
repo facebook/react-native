@@ -102,11 +102,16 @@ using namespace facebook::react;
       childComponentView,
       @(index),
       @([childComponentView.superview tag]));
-
-  if (_removeClippedSubviews) {
-    [_reactSubviews insertObject:childComponentView atIndex:index];
+  if (![self.accessibilityLiveRegionAnnouncementType isEqual:@"none"]) {
+    RCTViewComponentView *child = (RCTViewComponentView *)childComponentView;
+    child.accessibilityLiveRegionAnnouncementType = @"assertive";
+    [self insertSubview:child atIndex:index];
   } else {
-    [self insertSubview:childComponentView atIndex:index];
+    if (_removeClippedSubviews) {
+      [_reactSubviews insertObject:childComponentView atIndex:index];
+    } else {
+      [self insertSubview:childComponentView atIndex:index];
+    }
   }
 }
 
@@ -305,7 +310,7 @@ using namespace facebook::react;
       newValueLiveRegion = @"none";
     };
 
-    if (![newValueLiveRegion isEqual:@"none"] && [newValueLiveRegion length] != 0) {
+    if ([newValueLiveRegion length] != 0) {
       for (RCTViewComponentView *subview in self.subviews) {
         subview.accessibilityLiveRegionAnnouncementType = newValueLiveRegion;
       }
