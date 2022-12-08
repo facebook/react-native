@@ -1593,25 +1593,25 @@ function AccessibilityLiveRegion(): React.Node {
       <RNTesterBlock title="LiveRegion when adding child components">
         <TouchableWithoutFeedback
           onPress={() => {
-            setMessageCount(previousCount => previousCount + 1);
             setMessages(previousMessages => [
               ...previousMessages,
               <View
                 accessible={true}
                 focusable={true}
-                key={messageCount}
+                key={messages.length}
                 style={{
                   height: 10,
                   width: 200,
                   backgroundColor: 'red',
                 }}
-                accessibilityLabel={`label ${messageCount}`}
-                accessibilityHint={`hint ${messageCount}`}
+                accessibilityHint={
+                  'this is the hint of a new component number' + messages.length
+                }
               />,
             ]);
           }}>
           <View style={styles.embedded}>
-            <Text>Click me to add child component</Text>
+            <Text>Click me</Text>
           </View>
         </TouchableWithoutFeedback>
         <View

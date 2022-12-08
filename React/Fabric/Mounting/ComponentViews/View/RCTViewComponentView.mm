@@ -102,16 +102,11 @@ using namespace facebook::react;
       childComponentView,
       @(index),
       @([childComponentView.superview tag]));
-  if (![self.accessibilityLiveRegionAnnouncementType isEqual:@"none"]) {
-    RCTViewComponentView *child = (RCTViewComponentView *)childComponentView;
-    child.accessibilityLiveRegionAnnouncementType = @"assertive";
-    [self insertSubview:child atIndex:index];
+  BOOL isReactRootView = RCTIsReactRootView(self.reactTag);
+  if (_removeClippedSubviews) {
+    [_reactSubviews insertObject:childComponentView atIndex:index];
   } else {
-    if (_removeClippedSubviews) {
-      [_reactSubviews insertObject:childComponentView atIndex:index];
-    } else {
-      [self insertSubview:childComponentView atIndex:index];
-    }
+    [self insertSubview:childComponentView atIndex:index];
   }
 }
 
