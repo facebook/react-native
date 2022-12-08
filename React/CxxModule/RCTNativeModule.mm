@@ -7,6 +7,7 @@
 
 #import "RCTNativeModule.h"
 
+#import <Foundation/Foundation.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
