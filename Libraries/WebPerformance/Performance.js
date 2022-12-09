@@ -20,17 +20,27 @@ export type PerformanceMarkOptions = {
   startTime?: HighResTimeStamp,
 };
 
-function getCurrentTimeStamp(): HighResTimeStamp {
-  return global.nativePerformanceNow?.() ?? Date.now();
-}
+declare var global: {
+  // This value is defined directly via JSI, if available.
+  +nativePerformanceNow?: ?() => number,
+};
+
+const getCurrentTimeStamp: () => HighResTimeStamp = global.nativePerformanceNow
+  ? global.nativePerformanceNow
+  : () => Date.now();
 
 export class PerformanceMark extends PerformanceEntry {
   detail: DetailType;
 
   constructor(markName: string, markOptions?: PerformanceMarkOptions) {
-    let startTime = markOptions?.startTime ?? getCurrentTimeStamp();
-    super({name: markName, entryType: 'mark', startTime, duration: 0});
-    if (markOptions !== undefined) {
+    super({
+      name: markName,
+      entryType: 'mark',
+      startTime: markOptions?.startTime ?? getCurrentTimeStamp(),
+      duration: 0,
+    });
+
+    if (markOptions) {
       this.detail = markOptions.detail;
     }
   }
@@ -47,6 +57,7 @@ export type PerformanceMeasureOptions = {
 
 export class PerformanceMeasure extends PerformanceEntry {
   detail: DetailType;
+
   constructor(measureName: string, measureOptions?: PerformanceMeasureOptions) {
     super({
       name: measureName,
@@ -54,7 +65,8 @@ export class PerformanceMeasure extends PerformanceEntry {
       startTime: 0,
       duration: measureOptions?.duration ?? 0,
     });
-    if (measureOptions !== undefined) {
+
+    if (measureOptions) {
       this.detail = measureOptions.detail;
     }
   }
@@ -74,6 +86,7 @@ export default class Performance {
     NativePerformance?.mark?.(markName, mark.startTime, mark.duration);
     return mark;
   }
+
   clearMarks(markName?: string): void {
     NativePerformance?.clearMarks?.(markName);
   }
@@ -89,6 +102,7 @@ export default class Performance {
       duration,
       startTime = 0,
       endTime = 0;
+
     if (typeof startMarkOrOptions === 'string') {
       startMarkName = startMarkOrOptions;
     } else if (startMarkOrOptions !== undefined) {
@@ -127,7 +141,9 @@ export default class Performance {
 
       duration = options.duration ?? duration;
     }
+
     const measure = new PerformanceMeasure(measureName, options);
+
     NativePerformance?.measure?.(
       measureName,
       startTime,
@@ -136,8 +152,10 @@ export default class Performance {
       startMarkName,
       endMarkName,
     );
+
     return measure;
   }
+
   clearMeasures(measureName?: string): void {
     NativePerformance?.clearMeasures?.(measureName);
   }
