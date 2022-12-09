@@ -1590,6 +1590,39 @@ function AccessibilityLiveRegion(): React.Node {
   const [messages, setMessages] = React.useState([]);
   return (
     <>
+      <RNTesterBlock title="LiveRegion with child component">
+        <TouchableWithoutFeedback
+          onPress={() =>
+            setLiveRegion(liveRegionEnabled => !liveRegionEnabled)
+          }>
+          <View style={styles.embedded}>
+            <Text>
+              Click me to {liveRegion ? 'disable' : 'enable'} liveRegion
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          onPress={() => setEnabled(enable => !enabled)}>
+          <View style={styles.embedded}>
+            <Text>Click me to change announcement</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <View accessibilityLiveRegion={liveRegion ? 'assertive' : null}>
+          <TouchableOpacity
+            accessible={true}
+            focusable={true}
+            accessibilityState={{disabled: enabled, checked: enabled}}
+            accessibilityHint={enabled ? 'my hint' : null}
+            accessibilityLabel={enabled ? 'my label' : null}
+            accessibilityValue={enabled ? {now: 5, min: 1, max: 10} : {}}
+            style={{
+              height: 100,
+              width: 100,
+              backgroundColor: enabled && liveRegion ? 'red' : null,
+            }}
+          />
+        </View>
+      </RNTesterBlock>
       <RNTesterBlock title="LiveRegion when adding child components">
         <TouchableWithoutFeedback
           onPress={() => {
@@ -1630,40 +1663,6 @@ function AccessibilityLiveRegion(): React.Node {
         </TouchableWithoutFeedback>
         <View accessibilityLiveRegion="polite">
           <Text>Clicked {count} times</Text>
-        </View>
-      </RNTesterBlock>
-      <RNTesterBlock title="LiveRegion with child component">
-        <TouchableWithoutFeedback
-          onPress={() =>
-            setLiveRegion(liveRegionEnabled => !liveRegionEnabled)
-          }>
-          <View style={styles.embedded}>
-            <Text>
-              Click me to {liveRegion ? 'disable' : 'enable'} liveRegion
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          onPress={() => setEnabled(enable => !enabled)}>
-          <View style={styles.embedded}>
-            <Text>Click me to change announcement</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <View
-          accessible={true}
-          focusable={true}
-          accessibilityLiveRegion={liveRegion ? 'assertive' : null}>
-          <TouchableOpacity
-            accessibilityLabel={enabled ? 'my label' : null}
-            accessibilityState={{checked: enabled, disabled: enabled}}
-            accessibilityHint={enabled ? 'my hint' : null}
-            accessibilityValue={enabled ? {now: 5, min: 1, max: 10} : {}}
-            style={{
-              height: 100,
-              width: 100,
-              backgroundColor: enabled && liveRegion ? 'red' : null,
-            }}
-          />
         </View>
       </RNTesterBlock>
     </>
