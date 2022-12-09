@@ -93,7 +93,7 @@ using namespace facebook::react;
       [self disableContextMenu];
     }
   }
-  
+
   [super updateProps:props oldProps:oldProps];
 }
 
@@ -102,15 +102,13 @@ using namespace facebook::react;
   _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
   auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
   if (!_state || !paragraphProps.accessible) {
-    return;
-  }
-  
-  auto &data = _state->getData();
-  if (![_accessibilityProvider isUpToDate:data.attributedString]) {
-    auto const &accessibilityProps = *std::static_pointer_cast<AccessibilityProps const>(_props);
-    BOOL accessibilityLiveRegionEnabled = accessibilityProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
-    if (accessibilityLiveRegionEnabled) {
-      self.accessibilityLiveRegionAnnouncement = self.accessibilityLabel;
+    auto &data = _state->getData();
+    if (![_accessibilityProvider isUpToDate:data.attributedString]) {
+      auto const &accessibilityProps = *std::static_pointer_cast<AccessibilityProps const>(_props);
+      BOOL accessibilityLiveRegionEnabled = accessibilityProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
+      if (accessibilityLiveRegionEnabled) {
+        self.accessibilityLiveRegionAnnouncement = self.accessibilityLabel;
+      }
     }
   }
   [self setNeedsDisplay];
