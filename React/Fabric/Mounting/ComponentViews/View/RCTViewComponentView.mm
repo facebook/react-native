@@ -442,6 +442,18 @@ using namespace facebook::react;
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
+  [self announceForAccessibilityWithOptions];
+  [super finalizeUpdates:updateMask];
+  if (!_needsInvalidateLayer) {
+    return;
+  }
+
+  _needsInvalidateLayer = NO;
+  [self invalidateLayer];
+}
+
+- (void)announceForAccessibilityWithOptions
+{
   if (@available(iOS 11.0, *)) {
     BOOL accessibilityLiveRegionAnnouncementDidChange = ![self.accessibilityLiveRegionAnnouncement isEqual:self.accessibilityLiveRegionPreviousAnnouncement];
     BOOL accessibilityLiveRegionEnabled = ![self.accessibilityLiveRegionAnnouncementType isEqual: @"none"];
@@ -455,14 +467,6 @@ using namespace facebook::react;
       self.accessibilityLiveRegionPreviousAnnouncement = self.accessibilityLiveRegionAnnouncement;
     }
   }
-  
-  [super finalizeUpdates:updateMask];
-  if (!_needsInvalidateLayer) {
-    return;
-  }
-
-  _needsInvalidateLayer = NO;
-  [self invalidateLayer];
 }
 
 - (void)prepareForRecycle

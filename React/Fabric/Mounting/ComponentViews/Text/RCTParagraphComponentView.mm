@@ -93,14 +93,26 @@ using namespace facebook::react;
       [self disableContextMenu];
     }
   }
-
+  
   [super updateProps:props oldProps:oldProps];
 }
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
- 
+  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+  if (!_state || !paragraphProps.accessible) {
+    return;
+  }
+  
+  auto &data = _state->getData();
+  if (![_accessibilityProvider isUpToDate:data.attributedString]) {
+    auto const &accessibilityProps = *std::static_pointer_cast<AccessibilityProps const>(_props);
+    BOOL accessibilityLiveRegionEnabled = accessibilityProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
+    if (accessibilityLiveRegionEnabled) {
+      self.accessibilityLiveRegionAnnouncement = self.accessibilityLabel;
+    }
+  }
   [self setNeedsDisplay];
 }
 
@@ -177,29 +189,6 @@ using namespace facebook::react;
   }
 
   return _accessibilityProvider.accessibilityElements;
-}
-
-- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
-{
-  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
-  if (!_state || !paragraphProps.accessible) {
-    return;
-  }
-  
-  auto &data = _state->getData();
-  if (![_accessibilityProvider isUpToDate:data.attributedString]) {
-    auto const &accessibilityProps = *std::static_pointer_cast<AccessibilityProps const>(_props);
-    BOOL accessibilityLiveRegionEnabled = accessibilityProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
-    if (accessibilityLiveRegionEnabled) {
-      if (@available(iOS 11.0, *)) {
-        NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-        attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] =  @(accessibilityProps.accessibilityLiveRegion == AccessibilityLiveRegion::Polite ? YES : NO);
-        NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString: self.accessibilityLabel attributes:attrsDictionary];
-        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
-      }
-    }
-  }
-  [super finalizeUpdates:updateMask];
 }
 
 - (UIAccessibilityTraits)accessibilityTraits
