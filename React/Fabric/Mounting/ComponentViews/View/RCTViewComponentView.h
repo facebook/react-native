@@ -64,9 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, nullable, readonly) NSObject *accessibilityElement;
 
-@property (nonatomic, readwrite) facebook::react::AccessibilityLiveRegion accessibilityLiveRegion;
-@property (nonatomic, copy) NSString *accessibilityLiveRegionAnnouncement;
-@property (nonatomic, copy) NSString *accessibilityLiveRegionPreviousAnnouncement;
+@property (nonatomic, readwrite) facebook::react::AccessibilityLiveRegion accessibilityLiveRegion;;
 @property (nonatomic, readwrite) BOOL triggerLiveRegionAccessibilityAnnouncement;
 
 /**
@@ -90,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
  * This is a fragment of temporary workaround that we need only temporary and will get rid of soon.
  */
 - (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN;
-- (void)announceForAccessibilityWithOptions;
+- (void)announceForAccessibilityWithOptions:(NSString *)announcement;
 
 @end
 

@@ -1590,6 +1590,17 @@ function AccessibilityLiveRegion(): React.Node {
   const [messages, setMessages] = React.useState([]);
   return (
     <>
+      <RNTesterBlock title="LiveRegion with Text Component">
+        <TouchableWithoutFeedback
+          onPress={() => setCount(previousCount => previousCount + 1)}>
+          <View style={styles.embedded}>
+            <Text>Click me</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <View accessibilityLiveRegion="polite">
+          <Text>Clicked {count} times</Text>
+        </View>
+      </RNTesterBlock>
       <RNTesterBlock title="LiveRegion with child component">
         <TouchableWithoutFeedback
           onPress={() =>
@@ -1652,17 +1663,6 @@ function AccessibilityLiveRegion(): React.Node {
           focusable={true}
           accessibilityLiveRegion="assertive">
           {messages}
-        </View>
-      </RNTesterBlock>
-      <RNTesterBlock title="LiveRegion with Text Component">
-        <TouchableWithoutFeedback
-          onPress={() => setCount(previousCount => previousCount + 1)}>
-          <View style={styles.embedded}>
-            <Text>Click me</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <View accessibilityLiveRegion="polite">
-          <Text>Clicked {count} times</Text>
         </View>
       </RNTesterBlock>
     </>

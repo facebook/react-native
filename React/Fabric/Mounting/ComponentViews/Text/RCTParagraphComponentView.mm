@@ -101,17 +101,26 @@ using namespace facebook::react;
 {
   _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
   auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
-  if (!_state || !paragraphProps.accessible) {
+  if (_state && paragraphProps.accessible) {
     auto &data = _state->getData();
     if (![_accessibilityProvider isUpToDate:data.attributedString]) {
       auto const &accessibilityProps = *std::static_pointer_cast<AccessibilityProps const>(_props);
       BOOL accessibilityLiveRegionEnabled = accessibilityProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
       if (accessibilityLiveRegionEnabled) {
-        self.accessibilityLiveRegionAnnouncement = self.accessibilityLabel;
+        self.triggerLiveRegionAccessibilityAnnouncement = YES;
       }
     }
   }
   [self setNeedsDisplay];
+}
+
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
+{
+  if (self.triggerLiveRegionAccessibilityAnnouncement) {
+    [self announceForAccessibilityWithOptions:self.accessibilityLabel];
+  }
+  
+  [super finalizeUpdates:updateMask];
 }
 
 - (void)prepareForRecycle

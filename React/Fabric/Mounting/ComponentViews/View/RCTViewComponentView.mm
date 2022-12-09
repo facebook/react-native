@@ -39,8 +39,6 @@ using namespace facebook::react;
     _props = defaultProps;
     _reactSubviews = [NSMutableArray new];
     self.multipleTouchEnabled = YES;
-    self.accessibilityLiveRegionPreviousAnnouncement = @"";
-    self.accessibilityLiveRegionAnnouncement = @"";
     self.triggerLiveRegionAccessibilityAnnouncement = NO;
   }
   return self;
