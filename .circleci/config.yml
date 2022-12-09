@@ -120,7 +120,7 @@ executors:
       xcode: *xcode_version
     resource_class: macos.x86.medium.gen2
     environment:
-      - META_CI: true
+      - REACT_NATIVE_CI: true
 
 # -------------------------
 #        COMMANDS
