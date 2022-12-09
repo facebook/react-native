@@ -18,9 +18,11 @@ import processColor from '../StyleSheet/processColor';
 import {getAccessibilityRoleFromRole} from '../Utilities/AcessibilityMapping';
 import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
+import ViewAncestor from '../Components/View/ViewAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
+import c from 'metro/src/integration_tests/basic_bundle/require-context/subdir/c';
 
 /**
  * Text is the fundamental component for displaying text.
@@ -37,6 +39,7 @@ const Text: React.AbstractComponent<
     accessibilityRole,
     accessibilityState,
     allowFontScaling,
+    accessibilityLiveRegion,
     'aria-busy': ariaBusy,
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
@@ -97,9 +100,6 @@ const Text: React.AbstractComponent<
       onLongPress != null ||
       onStartShouldSetResponder != null) &&
     _disabled !== true;
-  const _accessibilityLiveRegion = props.accessibilityLiveRegion
-    ? props.accessibilityLiveRegion
-    : 'none';
 
   const initialized = useLazyInitialization(isPressable);
   const config = useMemo(
@@ -204,6 +204,12 @@ const Text: React.AbstractComponent<
   }
 
   const hasTextAncestor = useContext(TextAncestor);
+  const parentLiveRegion = useContext(ViewAncestor);
+  const _accessibilityLiveRegion =
+    accessibilityLiveRegion == null &&
+    (parentLiveRegion === 'assertive' || parentLiveRegion === 'polite')
+      ? parentLiveRegion
+      : accessibilityLiveRegion;
 
   const _accessible = Platform.select({
     ios: accessible !== false,

@@ -23,7 +23,6 @@
 #import <react/renderer/mounting/TelemetryController.h>
 
 #import "RCTComponentViewProtocol.h"
-#import "RCTViewComponentView.h"
 #import "RCTComponentViewRegistry.h"
 #import "RCTConversions.h"
 #import "RCTMountingTransactionObserverCoordinator.h"
@@ -85,22 +84,15 @@ static void RCTPerformMountInstructions(
         UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
 
         RCTAssert(newChildShadowView.props, @"`newChildShadowView.props` must not be null.");
-        
-        RCTViewComponentView *parentView = (RCTViewComponentView *) parentViewDescriptor.view;
-        RCTViewComponentView *childView = (RCTViewComponentView *) newChildViewDescriptor.view;
-        
-        if (![parentView.accessibilityLiveRegionAnnouncementType isEqual:@"none"]) {
-          childView.accessibilityLiveRegionAnnouncementType = @"assertive";
-        }
+
         [newChildComponentView updateProps:newChildShadowView.props oldProps:oldChildShadowView.props];
         [newChildComponentView updateEventEmitter:newChildShadowView.eventEmitter];
         [newChildComponentView updateState:newChildShadowView.state oldState:oldChildShadowView.state];
         [newChildComponentView updateLayoutMetrics:newChildShadowView.layoutMetrics
                                   oldLayoutMetrics:oldChildShadowView.layoutMetrics];
         [newChildComponentView finalizeUpdates:RNComponentViewUpdateMaskAll];
-        
+
         [parentViewDescriptor.view mountChildComponentView:newChildComponentView index:mutation.index];
-        
         break;
       }
 
