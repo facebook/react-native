@@ -91,7 +91,7 @@ export type Props = $ReadOnly<{|
    * The `statusBarTranslucent` prop determines whether your modal should go under
    * the system statusbar.
    *
-   * See https://reactnative.dev/docs/modal#transparent
+   * See https://reactnative.dev/docs/modal.html#statusbartranslucent-android
    */
   statusBarTranslucent?: ?boolean,
 
