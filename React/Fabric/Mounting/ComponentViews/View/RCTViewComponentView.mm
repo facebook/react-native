@@ -423,7 +423,6 @@ using namespace facebook::react;
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
   if (self.triggerLiveRegionAccessibilityAnnouncement) {
-    // add self.accessibilityTraits
     NSString *announcement = @"";
     if (self.accessibilityValue) {
       announcement = [NSString stringWithFormat:@"%@ %@", announcement, self.accessibilityValue];
