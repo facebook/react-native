@@ -743,7 +743,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     }
   }
   return result;
-  
 }
 
 - (NSString *)accessibilityLabel

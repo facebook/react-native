@@ -22,7 +22,6 @@ import ViewAncestor from '../Components/View/ViewAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
-import c from 'metro/src/integration_tests/basic_bundle/require-context/subdir/c';
 
 /**
  * Text is the fundamental component for displaying text.

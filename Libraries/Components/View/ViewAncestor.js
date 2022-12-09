@@ -13,7 +13,7 @@
 const React = require('react');
 
 /**
- * Whether the current element is the descendant of a <View> element.
+ * Used to retrieve parent view accessibilityLiveRegion
  */
 const ViewAncestorContext = (React.createContext(
   false,
