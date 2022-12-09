@@ -16,6 +16,7 @@
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
+#import "RCTConvert+Modal.h"
 
 @implementation RCTModalHostView {
   __weak RCTBridge *_bridge;
@@ -185,7 +186,19 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     if (@available(iOS 13.0, *)) {
       _modalViewController.presentationController.delegate = self;
     }
-    [self handleDetent];
+    if (@available(iOS 15.0, *)) {
+      UISheetPresentationController *sheetPresentationController =
+        _modalViewController.sheetPresentationController;
+
+      if (sheetPresentationController && self.detents != nil) {
+        NSArray<UISheetPresentationControllerDetent *> *detents = self.detents != nil
+          ? [RCTConvert UISheetPresentationControllerDetentArray:self.detents]
+            // The default value is an array that contains the value largeDetent
+          : @[[UISheetPresentationControllerDetent largeDetent]];
+        sheetPresentationController.detents = detents;
+        sheetPresentationController.prefersGrabberVisible = detents.count > 1;
+      }
+    }
     [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = YES;
   }
@@ -193,18 +206,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   BOOL shouldBeHidden = _isPresented && (!_visible || !self.superview);
   if (shouldBeHidden) {
     [self dismissModalViewController];
-  }
-}
-
-- (void)handleDetent
-{
-  if (@available(iOS 15.0, *)) {
-    if (!_modalViewController.sheetPresentationController) {
-      return;
-    }
-
-    _modalViewController.sheetPresentationController.prefersGrabberVisible = _detents.count > 1;
-    _modalViewController.sheetPresentationController.detents = [self convertedDetents];
   }
 }
 
@@ -217,37 +218,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   _modalViewController.modalPresentationStyle =
       transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
 }
-
-- (NSMutableArray<UISheetPresentationControllerDetent *> *)convertedDetents API_AVAILABLE(ios(15.0))
-{
-  NSMutableArray<UISheetPresentationControllerDetent *> *detents = [[NSMutableArray alloc] init];
-    
-  for (NSString *detent in _detents) {
-    if ([detent isEqualToString:@"medium"]) {
-      [detents addObject:UISheetPresentationControllerDetent.mediumDetent];
-    } else if ([detent isEqualToString:@"large"]) {
-      [detents addObject:UISheetPresentationControllerDetent.largeDetent];
-    } else {
-      [detents addObject: [self getCustomDetent:detent]];
-    }
-  }
-    
-  return detents;
-}
-
-- (UISheetPresentationControllerDetent *)getCustomDetent:(NSString *)detent API_AVAILABLE(ios(15.0))
-{
-  if (@available(iOS 16.0, *)) {
-    UISheetPresentationControllerDetent *customDetent = [UISheetPresentationControllerDetent customDetentWithIdentifier:nil resolver:^CGFloat(id<UISheetPresentationControllerDetentResolutionContext>  _Nonnull context) {
-      return [detent intValue];
-    }];
-        
-    return customDetent;
-  }
-    
-  return nil;
-}
-
 
 - (UIInterfaceOrientationMask)supportedOrientationsMask
 {
