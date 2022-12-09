@@ -10,6 +10,7 @@
 
 import type {HighResTimeStamp} from './PerformanceObserver';
 
+import warnOnce from '../Utilities/warnOnce';
 import NativePerformance from './NativePerformance';
 import {PerformanceEntry} from './PerformanceObserver';
 
@@ -72,6 +73,13 @@ export class PerformanceMeasure extends PerformanceEntry {
   }
 }
 
+function warnNoNativePerformance() {
+  warnOnce(
+    'missing-native-performance',
+    'Missing native implementation of Performance',
+  );
+}
+
 /**
  * Partial implementation of the Performance interface for RN,
  * corresponding to the standard in
@@ -83,12 +91,23 @@ export default class Performance {
     markOptions?: PerformanceMarkOptions,
   ): PerformanceMark {
     const mark = new PerformanceMark(markName, markOptions);
-    NativePerformance?.mark?.(markName, mark.startTime, mark.duration);
+
+    if (NativePerformance?.mark) {
+      NativePerformance.mark(markName, mark.startTime, mark.duration);
+    } else {
+      warnNoNativePerformance();
+    }
+
     return mark;
   }
 
   clearMarks(markName?: string): void {
-    NativePerformance?.clearMarks?.(markName);
+    if (!NativePerformance?.clearMarks) {
+      warnNoNativePerformance();
+      return;
+    }
+
+    NativePerformance.clearMarks(markName);
   }
 
   measure(
@@ -144,20 +163,29 @@ export default class Performance {
 
     const measure = new PerformanceMeasure(measureName, options);
 
-    NativePerformance?.measure?.(
-      measureName,
-      startTime,
-      endTime,
-      duration,
-      startMarkName,
-      endMarkName,
-    );
+    if (NativePerformance?.measure) {
+      NativePerformance.measure(
+        measureName,
+        startTime,
+        endTime,
+        duration,
+        startMarkName,
+        endMarkName,
+      );
+    } else {
+      warnNoNativePerformance();
+    }
 
     return measure;
   }
 
   clearMeasures(measureName?: string): void {
-    NativePerformance?.clearMeasures?.(measureName);
+    if (!NativePerformance?.clearMeasures) {
+      warnNoNativePerformance();
+      return;
+    }
+
+    NativePerformance.clearMeasures(measureName);
   }
 
   now(): HighResTimeStamp {
