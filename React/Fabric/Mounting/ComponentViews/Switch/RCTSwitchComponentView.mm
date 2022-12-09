@@ -22,7 +22,7 @@ using namespace facebook::react;
 @end
 
 @implementation RCTSwitchComponentView {
-  UISwitch *_switchView;
+  RCTUISwitch *_switchView; // TODO(macOS GH#774)
   BOOL _isInitialValueSet;
 }
 
@@ -32,7 +32,7 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const SwitchProps>();
     _props = defaultProps;
 
-    _switchView = [[UISwitch alloc] initWithFrame:self.bounds];
+    _switchView = [[RCTUISwitch alloc] initWithFrame:self.bounds]; // TODO(macOS GH#774)
 
     [_switchView addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
 
@@ -90,7 +90,7 @@ using namespace facebook::react;
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)onChange:(UISwitch *)sender
+- (void)onChange:(RCTUISwitch *)sender // TODO(macOS GH#774)
 {
   const auto &props = *std::static_pointer_cast<const SwitchProps>(_props);
   if (props.value == sender.on) {

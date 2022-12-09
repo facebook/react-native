@@ -479,3 +479,12 @@ NS_INLINE CGRect CGRectValue(NSValue *value)
 @interface RCTUISlider : NSSlider
 @end
 #endif // ]TODO(macOS GH#774)
+
+// RCTUISwitch
+
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#define RCTUISwitch UISwitch
+#else
+@interface RCTUISwitch : NSSwitch
+@end
+#endif // ]TODO(macOS GH#774)
