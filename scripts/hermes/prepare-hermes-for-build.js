@@ -39,7 +39,7 @@ async function main(isInCI) {
   }
 }
 
-const isInCI = process.env.CI === 'true';
+const isInCI = process.env.META_CI === 'true';
 
 main(isInCI).then(() => {
   process.exit(0);

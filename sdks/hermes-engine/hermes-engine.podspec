@@ -17,7 +17,7 @@ version = package['version']
 
 # sdks/.hermesversion
 hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
-isInCI = ENV['CI'] === 'true'
+isInCI = ENV['META_CI'] === 'true'
 
 source = {}
 git = "https://github.com/facebook/hermes.git"
