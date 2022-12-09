@@ -6,7 +6,7 @@ platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
 USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
-IN_CI = ENV['CI'] == 'true'
+IN_CI = ENV['REACT_NATIVE_CI'] == 'true'
 
 @prefix_path = "../.."
 
