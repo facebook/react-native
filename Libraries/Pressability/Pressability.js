@@ -281,6 +281,8 @@ const DEFAULT_PRESS_RECT_OFFSETS = {
 };
 const DEFAULT_MIN_PRESS_DURATION = 130;
 
+const DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE = 10;
+let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
 /**
  * Pressability implements press handling capabilities.
  *
@@ -430,6 +432,10 @@ export default class Pressability {
     return this._eventHandlers;
   }
 
+  static setLongPressDeactivationDistance(distance: number): void {
+    longPressDeactivationDistance = distance;
+  }
+
   _createEventHandlers(): EventHandlers {
     const focusEventHandlers = {
       onBlur: (event: BlurEvent): void => {
@@ -508,7 +514,7 @@ export default class Pressability {
         if (this._touchActivatePosition != null) {
           const deltaX = this._touchActivatePosition.pageX - touch.pageX;
           const deltaY = this._touchActivatePosition.pageY - touch.pageY;
-          if (Math.hypot(deltaX, deltaY) > 10) {
+          if (Math.hypot(deltaX, deltaY) > longPressDeactivationDistance) {
             this._cancelLongPressDelayTimeout();
           }
         }
