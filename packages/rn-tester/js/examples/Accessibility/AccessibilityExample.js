@@ -1590,17 +1590,6 @@ function AccessibilityLiveRegion(): React.Node {
   const [messages, setMessages] = React.useState([]);
   return (
     <>
-      <RNTesterBlock title="LiveRegion with Text Component">
-        <TouchableWithoutFeedback
-          onPress={() => setCount(previousCount => previousCount + 1)}>
-          <View style={styles.embedded}>
-            <Text>Click me</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <View accessibilityLiveRegion="polite">
-          <Text>Clicked {count} times</Text>
-        </View>
-      </RNTesterBlock>
       <RNTesterBlock title="LiveRegion with child component">
         <TouchableWithoutFeedback
           onPress={() =>
@@ -1622,7 +1611,11 @@ function AccessibilityLiveRegion(): React.Node {
           <TouchableOpacity
             accessible={true}
             focusable={true}
-            accessibilityState={{disabled: enabled, checked: enabled}}
+            accessibilityState={{
+              disabled: !enabled,
+              checked: enabled,
+              selected: enabled,
+            }}
             accessibilityHint={enabled ? 'my hint' : null}
             accessibilityLabel={enabled ? 'my label' : null}
             accessibilityValue={enabled ? {now: 5, min: 1, max: 10} : {}}
@@ -1632,6 +1625,17 @@ function AccessibilityLiveRegion(): React.Node {
               backgroundColor: enabled && liveRegion ? 'red' : null,
             }}
           />
+        </View>
+      </RNTesterBlock>
+      <RNTesterBlock title="LiveRegion with Text Component">
+        <TouchableWithoutFeedback
+          onPress={() => setCount(previousCount => previousCount + 1)}>
+          <View style={styles.embedded}>
+            <Text>Click me</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <View accessibilityLiveRegion="polite">
+          <Text>Clicked {count} times</Text>
         </View>
       </RNTesterBlock>
       <RNTesterBlock title="LiveRegion when adding child components">

@@ -14,7 +14,6 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTConversions.h>
-#import "RCTViewManager.h"
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
@@ -341,6 +340,12 @@ using namespace facebook::react;
   // `accessibilityState`
   if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
     self.accessibilityTraits &= ~(UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected);
+    if (newViewProps.accessibilityState.selected) {
+      self.accessibilityTraits |= UIAccessibilityTraitSelected;
+    }
+    if (newViewProps.accessibilityState.disabled) {
+      self.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+    }
     if (shouldAnnounceLiveRegionChanges) {
       self.triggerLiveRegionAccessibilityAnnouncement = YES;
     }
@@ -432,6 +437,12 @@ using namespace facebook::react;
     }
     if (self.accessibilityHint) {
       announcement = [NSString stringWithFormat:@"%@ %@", announcement, self.accessibilityHint];
+    }
+    if (self.accessibilityTraits == UIAccessibilityTraitSelected) {
+      announcement = [NSString stringWithFormat:@"%@ %@", announcement, @"selected"];
+    }
+    if (self.accessibilityTraits == UIAccessibilityTraitNotEnabled) {
+      announcement = [NSString stringWithFormat:@"%@ %@", announcement, @"disabled"];
     }
     [self announceForAccessibilityWithOptions:announcement];
   }
