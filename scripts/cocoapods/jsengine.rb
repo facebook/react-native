@@ -72,7 +72,7 @@ def is_building_hermes_from_source(react_native_version, react_native_path)
     isInMain = react_native_version.include?('1000.0.0')
 
     hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
-    isInCI = ENV['CI'] === 'true'
+    isInCI = ENV['REACT_NATIVE_CI'] === 'true'
 
     isReleaseBranch = File.exist?(hermestag_file) && isInCI
 

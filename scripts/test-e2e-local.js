@@ -97,7 +97,7 @@ if (argv.target === 'RNTester') {
     exec(
       `cd packages/rn-tester && USE_HERMES=${
         argv.hermes ? 1 : 0
-      } CI=${onReleaseBranch} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
+      } REACT_NATIVE_CI=${onReleaseBranch} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
 
     // if everything succeeded so far, we can launch Metro and the app

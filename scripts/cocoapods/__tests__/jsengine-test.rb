@@ -27,7 +27,7 @@ class JSEngineTests < Test::Unit::TestCase
         Pod::UI.reset()
         podSpy_cleanUp()
         ENV['USE_HERMES'] = '1'
-        ENV['CI'] = nil
+        ENV['REACT_NATIVE_CI'] = nil
         File.reset()
     end
 
@@ -133,7 +133,7 @@ class JSEngineTests < Test::Unit::TestCase
     end
 
     def test_isBuildingHermesFromSource_whenTarballIsNilAndInReleaseBranch_returnTrue
-        ENV['CI'] = 'true'
+        ENV['REACT_NATIVE_CI'] = 'true'
         File.mocked_existing_files(['../../sdks/.hermesversion'])
         assert_true(is_building_hermes_from_source("0.999.0", '../..'))
     end
