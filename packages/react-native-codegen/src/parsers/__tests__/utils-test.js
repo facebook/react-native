@@ -126,64 +126,67 @@ describe('createParserErrorCapturer', () => {
 
 describe('verifyPlatforms', () => {
   it('exclude android given an iOS only module', () => {
-    let result = verifyPlatforms('NativeSampleTurboModule', [
+    let result = verifyPlatforms(
+      'NativeSampleTurboModule',
       'SampleTurboModuleIOS',
-    ]);
+    );
 
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['android']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleIOS', [
-      'SampleTurboModule',
-    ]);
+    result = verifyPlatforms('NativeSampleTurboModuleIOS', 'SampleTurboModule');
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['android']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleIOS', [
+    result = verifyPlatforms(
+      'NativeSampleTurboModuleIOS',
       'SampleTurboModuleIOS',
-    ]);
+    );
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['android']);
   });
 
   it('exclude iOS given an android only module', () => {
-    let result = verifyPlatforms('NativeSampleTurboModule', [
+    let result = verifyPlatforms(
+      'NativeSampleTurboModule',
       'SampleTurboModuleAndroid',
-    ]);
+    );
 
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['iOS']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleAndroid', [
+    result = verifyPlatforms(
+      'NativeSampleTurboModuleAndroid',
       'SampleTurboModule',
-    ]);
+    );
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['iOS']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleAndroid', [
+    result = verifyPlatforms(
+      'NativeSampleTurboModuleAndroid',
       'SampleTurboModuleAndroid',
-    ]);
+    );
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['iOS']);
   });
 
   it('exclude iOS and android given a Cxx only module', () => {
-    let result = verifyPlatforms('NativeSampleTurboModule', [
+    let result = verifyPlatforms(
+      'NativeSampleTurboModule',
       'SampleTurboModuleCxx',
-    ]);
+    );
 
     expect(result.cxxOnly).toBe(true);
     expect(result.excludedPlatforms).toEqual(['iOS', 'android']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleCxx', [
-      'SampleTurboModule',
-    ]);
+    result = verifyPlatforms('NativeSampleTurboModuleCxx', 'SampleTurboModule');
     expect(result.cxxOnly).toBe(true);
     expect(result.excludedPlatforms).toEqual(['iOS', 'android']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleCxx', [
+    result = verifyPlatforms(
+      'NativeSampleTurboModuleCxx',
       'SampleTurboModuleCxx',
-    ]);
+    );
     expect(result.cxxOnly).toBe(true);
     expect(result.excludedPlatforms).toEqual(['iOS', 'android']);
   });
@@ -320,16 +323,16 @@ describe('buildSchemaFromConfigType', () => {
     type: 'NativeModule',
     aliases: {},
     spec: {properties: []},
-    moduleNames: [],
+    moduleName: '',
   };
 
   const wrapComponentSchemaMock = jest.fn();
-  const buildComponentSchemaMock = jest.fn(() => componentSchemaMock);
+  const buildComponentSchemaMock = jest.fn(_ => componentSchemaMock);
   const wrapModuleSchemaMock = jest.spyOn(
     require('../parsers-commons'),
     'wrapModuleSchema',
   );
-  const buildModuleSchemaMock = jest.fn(() => moduleSchemaMock);
+  const buildModuleSchemaMock = jest.fn((_0, _1, _2) => moduleSchemaMock);
 
   const buildSchemaFromConfigTypeHelper = (
     configType: 'module' | 'component' | 'none',

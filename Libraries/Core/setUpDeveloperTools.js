@@ -56,7 +56,7 @@ if (__DEV__) {
         'debug',
       ].forEach(level => {
         const originalFunction = console[level];
-        console[level] = function (...args) {
+        console[level] = function (...args: $ReadOnlyArray<mixed>) {
           HMRClient.log(level, args);
           originalFunction.apply(console, args);
         };

@@ -85,11 +85,10 @@ import java.util.concurrent.atomic.AtomicReference;
  * This isolates us from the problems that may be caused by concurrent updates of animated graph
  * while UI thread is "executing" the animation loop.
  */
-@ReactModule(name = NativeAnimatedModule.NAME)
+@ReactModule(name = NativeAnimatedModuleSpec.NAME)
 public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     implements LifecycleEventListener, UIManagerListener {
 
-  public static final String NAME = "NativeAnimatedModule";
   public static final boolean ANIMATED_MODULE_DEBUG = false;
 
   // For `queueAndExecuteBatchedOperations`
@@ -375,11 +374,6 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   public void onHostDestroy() {
     // Is it possible for onHostDestroy to be called without a corresponding onHostPause?
     clearFrameCallback();
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   /**

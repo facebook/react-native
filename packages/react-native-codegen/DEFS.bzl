@@ -167,6 +167,7 @@ def rn_codegen_modules(
         autoglob = False,
         labels = library_labels + ["codegen_rule"],
         language = "JAVA",
+        required_for_source_only_abi = True,
         visibility = ["PUBLIC"],
         deps = [
             react_native_dep("third-party/java/jsr-305:jsr-305"),

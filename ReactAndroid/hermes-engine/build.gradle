@@ -59,8 +59,9 @@ def jsiDir = new File(reactNativeRootDir, "ReactCommon/jsi")
 
 task downloadHermes(type: Download) {
     src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
-    onlyIfNewer(true)
-    overwrite(false)
+    onlyIfModified(true)
+    overwrite(true)
+    useETag(true)
     dest(new File(downloadsDir, "hermes.tar.gz"))
 }
 
@@ -173,7 +174,6 @@ android {
         release {
             externalNativeBuild {
                 cmake {
-                    arguments "-DHERMES_ENABLE_DEBUGGER=False"
                     arguments "-DCMAKE_BUILD_TYPE=MinSizeRel"
                 }
             }

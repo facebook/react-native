@@ -78,7 +78,7 @@ function mockRefRegistry<T>(): {
       },
     mockObjectRef: (name: string): {current: T, ...} => ({
       // $FlowIgnore[unsafe-getters-setters] - Intentional.
-      set current(current) {
+      set current(current: $FlowFixMe) {
         registry.push({[name]: TestViewInstance.fromValue(current)});
       },
     }),

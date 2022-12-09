@@ -11,11 +11,16 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
 import {Appearance, Text, useColorScheme, View} from 'react-native';
-import type {AppearancePreferences} from 'react-native/Libraries/Utilities/NativeAppearance';
+import type {
+  AppearancePreferences,
+  ColorSchemeName,
+} from 'react-native/Libraries/Utilities/NativeAppearance';
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';
 
 function ColorSchemeSubscription() {
-  const [colorScheme, setScheme] = useState(Appearance.getColorScheme());
+  const [colorScheme, setScheme] = useState<?ColorSchemeName | string>(
+    Appearance.getColorScheme(),
+  );
 
   useEffect(() => {
     const subscription = Appearance.addChangeListener(

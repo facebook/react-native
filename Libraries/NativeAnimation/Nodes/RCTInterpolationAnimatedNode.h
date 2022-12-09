@@ -7,6 +7,20 @@
 
 #import "RCTValueAnimatedNode.h"
 
+#import <React/RCTDefines.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+RCT_EXTERN NSString *RCTInterpolateString(
+    NSString *pattern,
+    CGFloat inputValue,
+    NSArray *inputRange,
+    NSArray<NSArray<NSNumber *> *> *outputRange,
+    NSString *extrapolateLeft,
+    NSString *extrapolateRight);
+
 @interface RCTInterpolationAnimatedNode : RCTValueAnimatedNode
 
 @end
+
+NS_ASSUME_NONNULL_END

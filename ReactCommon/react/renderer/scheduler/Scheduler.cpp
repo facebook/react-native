@@ -151,7 +151,7 @@ Scheduler::~Scheduler() {
   // Then, let's verify that the requirement was satisfied.
   auto surfaceIds = std::vector<SurfaceId>{};
   uiManager_->getShadowTreeRegistry().enumerate(
-      [&surfaceIds](ShadowTree const &shadowTree) {
+      [&surfaceIds](ShadowTree const &shadowTree, bool &) {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
@@ -318,6 +318,17 @@ void Scheduler::uiManagerDidDispatchCommand(
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+  }
+}
+
+void Scheduler::setNativeProps_DEPRECATED(
+    const ShadowNode::Shared &shadowNode,
+    Props::Shared props) {
+  SystraceSection s("Scheduler::setNativeProps_DEPRECATED");
+
+  if (delegate_ != nullptr) {
+    auto shadowView = ShadowView(*shadowNode);
+    delegate_->setNativeProps_DEPRECATED(shadowView, std::move(props));
   }
 }
 

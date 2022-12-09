@@ -44,7 +44,7 @@ public class ReactChoreographer {
 
     private final int mOrder;
 
-    private CallbackType(int order) {
+    CallbackType(int order) {
       mOrder = order;
     }
 

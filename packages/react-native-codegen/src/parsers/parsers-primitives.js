@@ -25,6 +25,7 @@ import type {
   NativeModuleNumberTypeAnnotation,
   NativeModulePromiseTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
+  NativeModuleUnionTypeAnnotation,
   ObjectTypeAnnotation,
   ReservedTypeAnnotation,
   StringTypeAnnotation,
@@ -38,6 +39,7 @@ import type {
   TypeDeclarationMap,
 } from './utils';
 
+const {UnsupportedUnionTypeAnnotationParserError} = require('./errors');
 const {
   throwIfArrayElementTypeAnnotationIsUnsupported,
 } = require('./error-utils');
@@ -119,7 +121,7 @@ function emitFunction(
   return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
 }
 
-function emitMixedTypeAnnotation(
+function emitMixed(
   nullable: boolean,
 ): Nullable<NativeModuleMixedTypeAnnotation> {
   return wrapNullable(nullable, {
@@ -249,6 +251,32 @@ function emitFloat(
   });
 }
 
+function emitUnion(
+  nullable: boolean,
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): Nullable<NativeModuleUnionTypeAnnotation> {
+  const unionTypes = parser.remapUnionTypeAnnotationMemberNames(
+    typeAnnotation.types,
+  );
+
+  // Only support unionTypes of the same kind
+  if (unionTypes.length > 1) {
+    throw new UnsupportedUnionTypeAnnotationParserError(
+      hasteModuleName,
+      typeAnnotation,
+      unionTypes,
+      parser.language(),
+    );
+  }
+
+  return wrapNullable(nullable, {
+    type: 'UnionTypeAnnotation',
+    memberType: unionTypes[0],
+  });
+}
+
 function translateArrayTypeAnnotation(
   hasteModuleName: string,
   types: TypeDeclarationMap,
@@ -266,7 +294,7 @@ function translateArrayTypeAnnotation(
      * invalid Array ElementTypes. Then, make the elementType a required
      * parameter.
      */
-    const [_elementType, isElementTypeNullable] = unwrapNullable(
+    const [_elementType, isElementTypeNullable] = unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
         hasteModuleName,
         elementType,
@@ -305,7 +333,37 @@ function translateArrayTypeAnnotation(
   }
 }
 
+function emitArrayType(
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  cxxOnly: boolean,
+  nullable: boolean,
+  translateTypeAnnotation: $FlowFixMe,
+): Nullable<NativeModuleTypeAnnotation> {
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+    hasteModuleName,
+    typeAnnotation,
+    parser,
+  );
+
+  return translateArrayTypeAnnotation(
+    hasteModuleName,
+    types,
+    aliasMap,
+    cxxOnly,
+    typeAnnotation.type,
+    typeAnnotation.typeParameters.params[0],
+    nullable,
+    parser.language(),
+    translateTypeAnnotation,
+  );
+}
+
 module.exports = {
+  emitArrayType,
   emitBoolean,
   emitDouble,
   emitFloat,
@@ -318,7 +376,8 @@ module.exports = {
   emitVoid,
   emitString,
   emitStringish,
-  emitMixedTypeAnnotation,
+  emitMixed,
+  emitUnion,
   typeAliasResolution,
   translateArrayTypeAnnotation,
 };

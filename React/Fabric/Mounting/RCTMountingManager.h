@@ -10,6 +10,7 @@
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTPrimitives.h>
 #import <react/renderer/core/ComponentDescriptor.h>
+#import <react/renderer/core/RawProps.h>
 #import <react/renderer/core/ReactPrimitives.h>
 #import <react/renderer/mounting/MountingCoordinator.h>
 #import <react/renderer/mounting/ShadowView.h>
@@ -54,6 +55,13 @@ NS_ASSUME_NONNULL_BEGIN
  * Can be called from any thread.
  */
 - (void)dispatchCommand:(ReactTag)reactTag commandName:(NSString *)commandName args:(NSArray *)args;
+
+/**
+ * Set props on native view directly. It is a performance shortcut that skips render pipeline.
+ * This is a backport of setNativeProps from the old architecture and will be removed in the future.
+ * Can be called from any thread.
+ */
+- (void)setNativeProps_DEPRECATED:(ReactTag)reactTag withProps:(facebook::react::Props::Shared)props;
 
 /**
  * Dispatch an accessibility event to be performed on the main thread.

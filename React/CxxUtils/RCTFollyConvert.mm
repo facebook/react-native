@@ -7,6 +7,7 @@
 
 #import "RCTFollyConvert.h"
 
+#import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
 namespace facebook {

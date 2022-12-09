@@ -18,21 +18,21 @@ import type {
   NativeModulePropertyShape,
   NativeModuleSchema,
   Nullable,
-} from '../../../CodegenSchema.js';
+} from '../../../CodegenSchema';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
-const {resolveTypeAnnotation, getTypes} = require('../utils.js');
+const {resolveTypeAnnotation, getTypes} = require('../utils');
 const {
   unwrapNullable,
   wrapNullable,
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   parseObjectProperty,
-  emitUnionTypeAnnotation,
   translateDefault,
   buildPropertySchema,
 } = require('../../parsers-commons');
 const {
+  emitArrayType,
   emitBoolean,
   emitDouble,
   emitFloat,
@@ -45,7 +45,8 @@ const {
   emitVoid,
   emitString,
   emitStringish,
-  emitMixedTypeAnnotation,
+  emitMixed,
+  emitUnion,
   typeAliasResolution,
   translateArrayTypeAnnotation,
 } = require('../../parsers-primitives');
@@ -53,7 +54,7 @@ const {
 const {
   UnsupportedTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
-} = require('../../errors.js');
+} = require('../../errors');
 
 const {
   throwIfModuleInterfaceNotFound,
@@ -66,7 +67,7 @@ const {
   throwIfMoreThanOneModuleInterfaceParserError,
 } = require('../../error-utils');
 
-const {FlowParser} = require('../parser.js');
+const {FlowParser} = require('../parser');
 
 const language = 'Flow';
 const parser = new FlowParser();
@@ -106,21 +107,14 @@ function translateTypeAnnotation(
         }
         case 'Array':
         case '$ReadOnlyArray': {
-          assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+          return emitArrayType(
             hasteModuleName,
             typeAnnotation,
             parser,
-          );
-
-          return translateArrayTypeAnnotation(
-            hasteModuleName,
             types,
             aliasMap,
             cxxOnly,
-            typeAnnotation.type,
-            typeAnnotation.typeParameters.params[0],
             nullable,
-            language,
             translateTypeAnnotation,
           );
         }
@@ -232,12 +226,7 @@ function translateTypeAnnotation(
       );
     }
     case 'UnionTypeAnnotation': {
-      return emitUnionTypeAnnotation(
-        nullable,
-        hasteModuleName,
-        typeAnnotation,
-        parser,
-      );
+      return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
     }
     case 'StringLiteralTypeAnnotation': {
       // 'a' is a special case for 'a' | 'b' but the type name is different
@@ -248,7 +237,7 @@ function translateTypeAnnotation(
     }
     case 'MixedTypeAnnotation': {
       if (cxxOnly) {
-        return emitMixedTypeAnnotation(nullable);
+        return emitMixed(nullable);
       }
       // Fallthrough
     }
@@ -301,8 +290,8 @@ function buildModuleSchema(
 
   throwIfModuleInterfaceIsMisnamed(hasteModuleName, moduleSpec.id, language);
 
-  // Parse Module Names
-  const moduleName = tryParse((): string => {
+  // Parse Module Name
+  const moduleName = ((): string => {
     const callExpressions = [];
     visit(ast, {
       CallExpression(node) {
@@ -369,9 +358,7 @@ function buildModuleSchema(
     );
 
     return $moduleName;
-  });
-
-  const moduleNames = moduleName == null ? [] : [moduleName];
+  })();
 
   // Some module names use platform suffix to indicate platform-exclusive modules.
   // Eventually this should be made explicit in the Flow type itself.
@@ -379,7 +366,7 @@ function buildModuleSchema(
   // Note: this shape is consistent with ComponentSchema.
   const {cxxOnly, excludedPlatforms} = verifyPlatforms(
     hasteModuleName,
-    moduleNames,
+    moduleName,
   );
 
   // $FlowFixMe[missing-type-arg]
@@ -390,7 +377,6 @@ function buildModuleSchema(
       propertyShape: NativeModulePropertyShape,
     }>(property => {
       const aliasMap: {...NativeModuleAliasMap} = {};
-
       return tryParse(() => ({
         aliasMap: aliasMap,
         propertyShape: buildPropertySchema(
@@ -408,22 +394,20 @@ function buildModuleSchema(
     })
     .filter(Boolean)
     .reduce(
-      (moduleSchema: NativeModuleSchema, {aliasMap, propertyShape}) => {
-        return {
-          type: 'NativeModule',
-          aliases: {...moduleSchema.aliases, ...aliasMap},
-          spec: {
-            properties: [...moduleSchema.spec.properties, propertyShape],
-          },
-          moduleNames: moduleSchema.moduleNames,
-          excludedPlatforms: moduleSchema.excludedPlatforms,
-        };
-      },
+      (moduleSchema: NativeModuleSchema, {aliasMap, propertyShape}) => ({
+        type: 'NativeModule',
+        aliases: {...moduleSchema.aliases, ...aliasMap},
+        spec: {
+          properties: [...moduleSchema.spec.properties, propertyShape],
+        },
+        moduleName: moduleSchema.moduleName,
+        excludedPlatforms: moduleSchema.excludedPlatforms,
+      }),
       {
         type: 'NativeModule',
         aliases: {},
         spec: {properties: []},
-        moduleNames: moduleNames,
+        moduleName,
         excludedPlatforms:
           excludedPlatforms.length !== 0 ? [...excludedPlatforms] : undefined,
       },

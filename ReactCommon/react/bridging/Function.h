@@ -10,6 +10,8 @@
 #include <react/bridging/Base.h>
 #include <react/bridging/CallbackWrapper.h>
 
+#include <ReactCommon/SchedulerPriority.h>
+
 #include <butter/function.h>
 
 namespace facebook::react {
@@ -45,6 +47,21 @@ class AsyncCallback {
     auto argsTuple = std::make_tuple(std::forward<Args>(args)...);
 
     wrapper->jsInvoker().invokeAsync(
+        [callback = callback_,
+         argsPtr = std::make_shared<decltype(argsTuple)>(
+             std::move(argsTuple))] { callback->apply(std::move(*argsPtr)); });
+  }
+
+  void callWithPriority(SchedulerPriority priority, Args... args) const {
+    auto wrapper = callback_->wrapper_.lock();
+    if (!wrapper) {
+      throw std::runtime_error("Failed to call invalidated async callback");
+    }
+
+    auto argsTuple = std::make_tuple(std::forward<Args>(args)...);
+
+    wrapper->jsInvoker().invokeAsync(
+        priority,
         [callback = callback_,
          argsPtr = std::make_shared<decltype(argsTuple)>(
              std::move(argsTuple))] { callback->apply(std::move(*argsPtr)); });

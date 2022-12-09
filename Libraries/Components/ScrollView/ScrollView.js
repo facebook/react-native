@@ -46,6 +46,7 @@ import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 import ScrollViewStickyHeader from './ScrollViewStickyHeader';
 import invariant from 'invariant';
 import memoize from 'memoize-one';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 
 if (Platform.OS === 'ios') {
@@ -753,7 +754,7 @@ class ScrollView extends React.Component<Props, State> {
   _becameResponderWhileAnimating: boolean = false;
   _preventNegativeScrollOffset: ?boolean = null;
 
-  _animated = null;
+  _animated: ?boolean = null;
 
   _subscriptionKeyboardWillShow: ?EventSubscription = null;
   _subscriptionKeyboardWillHide: ?EventSubscription = null;
@@ -978,7 +979,7 @@ class ScrollView extends React.Component<Props, State> {
     if (typeof nodeHandle === 'number') {
       UIManager.measureLayout(
         nodeHandle,
-        findNodeHandle(this),
+        nullthrows(findNodeHandle(this)),
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
         this._inputMeasureAndScrollToKeyboard,
@@ -1665,6 +1666,7 @@ class ScrollView extends React.Component<Props, State> {
       this.props.contentContainerStyle,
     ];
     if (__DEV__ && this.props.style !== undefined) {
+      // $FlowFixMe[underconstrained-implicit-instantiation]
       const style = flattenStyle(this.props.style);
       const childLayoutProps = ['alignItems', 'justifyContent'].filter(
         prop => style && style[prop] !== undefined,
@@ -1838,6 +1840,7 @@ class ScrollView extends React.Component<Props, State> {
         // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
         // Note: we should split props.style on the inner and outer props
         // however, the ScrollView still needs the baseStyle to be scrollable
+        // $FlowFixMe[underconstrained-implicit-instantiation]
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         return React.cloneElement(
           refreshControl,

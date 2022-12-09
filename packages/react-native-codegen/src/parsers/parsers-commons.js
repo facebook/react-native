@@ -21,7 +21,6 @@ import type {
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
-  NativeModuleUnionTypeAnnotation,
   SchemaType,
 } from '../CodegenSchema.js';
 
@@ -42,7 +41,6 @@ const {
   UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
-  UnsupportedUnionTypeAnnotationParserError,
   UnnamedFunctionParamParserError,
 } = require('./errors');
 
@@ -205,32 +203,6 @@ function parseObjectProperty(
     optional,
     typeAnnotation: wrapNullable(isPropertyNullable, propertyTypeAnnotation),
   };
-}
-
-function emitUnionTypeAnnotation(
-  nullable: boolean,
-  hasteModuleName: string,
-  typeAnnotation: $FlowFixMe,
-  parser: Parser,
-): Nullable<NativeModuleUnionTypeAnnotation> {
-  const unionTypes = parser.remapUnionTypeAnnotationMemberNames(
-    typeAnnotation.types,
-  );
-
-  // Only support unionTypes of the same kind
-  if (unionTypes.length > 1) {
-    throw new UnsupportedUnionTypeAnnotationParserError(
-      hasteModuleName,
-      typeAnnotation,
-      unionTypes,
-      parser.language(),
-    );
-  }
-
-  return wrapNullable(nullable, {
-    type: 'UnionTypeAnnotation',
-    memberType: unionTypes[0],
-  });
 }
 
 function translateDefault(
@@ -469,7 +441,6 @@ module.exports = {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   isObjectProperty,
   parseObjectProperty,
-  emitUnionTypeAnnotation,
   translateDefault,
   translateFunctionTypeAnnotation,
   buildPropertySchema,

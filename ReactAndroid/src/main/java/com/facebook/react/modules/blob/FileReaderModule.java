@@ -14,19 +14,13 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
-@ReactModule(name = FileReaderModule.NAME)
+@ReactModule(name = NativeFileReaderModuleSpec.NAME)
 public class FileReaderModule extends NativeFileReaderModuleSpec {
 
-  public static final String NAME = "FileReaderModule";
   private static final String ERROR_INVALID_BLOB = "ERROR_INVALID_BLOB";
 
   public FileReaderModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   private BlobModule getBlobModule(String reason) {
