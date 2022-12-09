@@ -1,6 +1,6 @@
 {
   "name": "@react-native/codegen",
-  "version": "0.72.0",
+  "version": "0.72.1",
   "description": "⚛️ Code generation tools for React Native",
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen",
   "repository": {

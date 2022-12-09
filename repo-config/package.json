@@ -14,7 +14,7 @@
     "@babel/generator": "^7.20.0",
     "@babel/plugin-transform-regenerator": "^7.0.0",
     "@definitelytyped/dtslint": "^0.0.127",
-    "@react-native/codegen": "^0.72.0",
+    "@react-native/codegen": "^0.72.1",
     "@react-native/eslint-config": "*",
     "@react-native/eslint-plugin": "*",
     "@react-native/eslint-plugin-specs": "^0.72.0",
