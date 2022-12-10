@@ -17,7 +17,7 @@
     "@react-native/codegen": "^0.72.1",
     "@react-native/eslint-config": "*",
     "@react-native/eslint-plugin": "*",
-    "@react-native/eslint-plugin-specs": "^0.72.0",
+    "@react-native/eslint-plugin-specs": "^0.72.1",
     "@reactions/component": "^2.0.2",
     "@types/react": "^18.0.18",
     "@typescript-eslint/parser": "^5.30.5",
