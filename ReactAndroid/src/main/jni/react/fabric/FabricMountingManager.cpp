@@ -6,7 +6,6 @@
  */
 
 #include "FabricMountingManager.h"
-#include "CppViewMutationsWrapper.h"
 #include "EventEmitterWrapper.h"
 #include "StateWrapperImpl.h"
 
@@ -77,8 +76,6 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
       return 7; // tag, parentTag, x, y, w, h, DisplayType
     case CppMountItem::Type::UpdateOverflowInset:
       return 5; // tag, left, top, right, bottom
-    case CppMountItem::Type::RunCPPMutations:
-      return 1;
     case CppMountItem::Undefined:
     case CppMountItem::Multiple:
       return -1;
@@ -819,36 +816,6 @@ void FabricMountingManager::executeMount(
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
       intBufferPosition += 1;
     }
-  }
-
-  if (cppViewMutations.size() > 0) {
-    writeIntBufferTypePreamble(
-        CppMountItem::Type::RunCPPMutations,
-        1,
-        env,
-        intBufferArray,
-        intBufferPosition);
-
-    // TODO review this logic and memory mamangement
-    // this might not be necessary:
-    // temp[0] = 1234;
-    // env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
-    // intBufferPosition += 1;
-
-    // Do not hold a reference to javaCppMutations from the C++ side.
-    auto javaCppMutations = CppViewMutationsWrapper::newObjectJavaArgs();
-    CppViewMutationsWrapper *cppViewMutationsWrapper = cthis(javaCppMutations);
-
-    // TODO move this to init methods
-    cppViewMutationsWrapper->cppComponentRegistry = cppComponentRegistry_;
-    // TODO is moving the cppViewMutations safe / thread safe?
-    // cppViewMutations will be accessed from the UI Thread in a near future
-    // can they dissapear?
-    cppViewMutationsWrapper->cppViewMutations =
-        std::make_shared<std::vector<facebook::react::ShadowViewMutation>>(
-            std::move(cppViewMutations));
-
-    (*objBufferArray)[objBufferPosition++] = javaCppMutations.get();
   }
 
   // If there are no items, we pass a nullptr instead of passing the object
