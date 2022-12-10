@@ -42,9 +42,5 @@ CppComponentRegistry::getComponentManager(const std::string &name) const {
   return componentManagerResolver_.getComponentManager(name);
 }
 
-bool CppComponentRegistry::isRootComponent(std::string name) const {
-  return componentManagerResolver_.isRootComponent(name);
-}
-
 } // namespace react
 } // namespace facebook

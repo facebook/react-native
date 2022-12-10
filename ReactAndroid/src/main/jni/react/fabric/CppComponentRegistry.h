@@ -35,14 +35,10 @@ class CppComponentRegistry : public jni::HybridClass<CppComponentRegistry> {
       std::function<std::shared_ptr<facebook::react::ComponentManager>(
           const std::string &name)> f);
 
-  bool isRootComponent(std::string name) const;
-
   bool containsComponentManager(std::string name) const;
 
   std::shared_ptr<facebook::react::ComponentManager> getComponentManager(
       const std::string &name) const;
-
-  void deleteComponentInstance(Tag tag) const;
 
  private:
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);

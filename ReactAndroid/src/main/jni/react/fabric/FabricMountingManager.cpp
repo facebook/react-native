@@ -324,13 +324,6 @@ void FabricMountingManager::executeMount(
         if (cppComponentRegistry_->containsComponentManager(name)) {
           // is this thread safe?
           cppViewMutations.push_back(mutation);
-
-          // This is a hack that could be avoided by using Portals
-          // Only execute mutations instructions for Root C++ ViewManagers
-          // because Root C++ Components have a Android view counterpart.
-          if (!cppComponentRegistry_->isRootComponent(name)) {
-            continue;
-          }
         }
       }
 
