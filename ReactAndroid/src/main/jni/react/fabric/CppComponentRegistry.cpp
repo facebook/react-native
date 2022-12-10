@@ -42,29 +42,8 @@ CppComponentRegistry::getComponentManager(const std::string &name) const {
   return componentManagerResolver_.getComponentManager(name);
 }
 
-std::shared_ptr<facebook::react::ComponentDeprecatedAPI>
-CppComponentRegistry::getComponentInstance(Tag tag) const {
-  return components_[tag];
-}
-
 bool CppComponentRegistry::isRootComponent(std::string name) const {
   return componentManagerResolver_.isRootComponent(name);
-}
-
-std::shared_ptr<facebook::react::ComponentDeprecatedAPI>
-CppComponentRegistry::createComponentInstance(
-    const std::string &componentName,
-    Tag tag,
-    Props::Shared initialProps) const {
-  // TODO: cache component managers
-  auto componentManager = getComponentManager(componentName);
-  auto component = componentManager->createComponent(tag, initialProps);
-  components_[tag] = component;
-  return component;
-}
-
-void CppComponentRegistry::deleteComponentInstance(Tag tag) const {
-  components_.erase(tag);
 }
 
 } // namespace react

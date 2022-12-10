@@ -8,7 +8,6 @@
 #pragma once
 
 #include <react/cxxcomponents/Component.h>
-#include <react/cxxcomponents/ComponentDeprecatedAPI.h>
 #include <react/renderer/core/Props.h>
 
 namespace facebook::react {
@@ -16,10 +15,6 @@ namespace facebook::react {
 class ComponentManager {
  public:
   ComponentManager() {}
-
-  virtual std::shared_ptr<ComponentDeprecatedAPI> createComponent(
-      Tag tag,
-      Props::Shared initialProps) = 0;
 
   virtual std::shared_ptr<Component> createComponent(Tag tag) = 0;
 
