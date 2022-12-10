@@ -21,7 +21,7 @@
 using namespace facebook::react;
 
 @implementation RCTUnimplementedViewComponentView {
-  UILabel *_label;
+  RCTUILabel *_label; // TODO(macOS GH#774)
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -30,16 +30,26 @@ using namespace facebook::react;
     static auto const defaultProps = std::make_shared<UnimplementedViewProps const>();
     _props = defaultProps;
 
-    _label = [[UILabel alloc] initWithFrame:self.bounds];
+    _label = [[RCTUILabel alloc] initWithFrame:self.bounds]; // TODO(macOS GH#774)
     _label.backgroundColor = [RCTUIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3]; // TODO(macOS GH#774)
     _label.lineBreakMode = NSLineBreakByCharWrapping;
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
     _label.numberOfLines = 0;
     _label.textAlignment = NSTextAlignmentCenter;
+#else
+    _label.alignment = NSTextAlignmentCenter;
+#endif // ]TODO(macOS GH#774)
     _label.textColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
     _label.allowsDefaultTighteningForTruncation = YES;
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
     _label.adjustsFontSizeToFitWidth = YES;
+#endif // ]TODO(macOS GH#774)
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
     self.contentView = _label;
+#else
+    [self.contentView addSubview:_label];
+#endif // ]TODO(macOS GH#774)
   }
 
   return self;

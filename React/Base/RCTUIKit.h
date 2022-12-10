@@ -473,6 +473,8 @@ NS_INLINE CGRect CGRectValue(NSValue *value)
 // fabric component types
 //
 
+// RCTUISlider
+
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
 #define RCTUISlider UISlider
 #else
@@ -480,11 +482,11 @@ NS_INLINE CGRect CGRectValue(NSValue *value)
 @end
 #endif // ]TODO(macOS GH#774)
 
-// RCTUISwitch
+// RCTUILabel
 
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
-#define RCTUISwitch UISwitch
+#define RCTUILabel UILabel
 #else
-@interface RCTUISwitch : NSSwitch
+@interface RCTUILabel : NSTextField
 @end
 #endif // ]TODO(macOS GH#774)
