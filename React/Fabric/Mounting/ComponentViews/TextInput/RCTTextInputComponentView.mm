@@ -116,6 +116,8 @@ using namespace facebook::react;
     [self _setMultiline:newTextInputProps.traits.multiline];
   }
 
+
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   if (newTextInputProps.traits.autocapitalizationType != oldTextInputProps.traits.autocapitalizationType) {
     _backedTextInputView.autocapitalizationType =
         RCTUITextAutocapitalizationTypeFromAutocapitalizationType(newTextInputProps.traits.autocapitalizationType);
@@ -125,6 +127,7 @@ using namespace facebook::react;
     _backedTextInputView.autocorrectionType =
         RCTUITextAutocorrectionTypeFromOptionalBool(newTextInputProps.traits.autoCorrect);
   }
+#endif // ]TODO(macOS GH#774)
 
   if (newTextInputProps.traits.contextMenuHidden != oldTextInputProps.traits.contextMenuHidden) {
     _backedTextInputView.contextMenuHidden = newTextInputProps.traits.contextMenuHidden;
@@ -139,6 +142,7 @@ using namespace facebook::react;
     _backedTextInputView.enablesReturnKeyAutomatically = newTextInputProps.traits.enablesReturnKeyAutomatically;
   }
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   if (newTextInputProps.traits.keyboardAppearance != oldTextInputProps.traits.keyboardAppearance) {
     _backedTextInputView.keyboardAppearance =
         RCTUIKeyboardAppearanceFromKeyboardAppearance(newTextInputProps.traits.keyboardAppearance);
@@ -148,20 +152,24 @@ using namespace facebook::react;
     _backedTextInputView.spellCheckingType =
         RCTUITextSpellCheckingTypeFromOptionalBool(newTextInputProps.traits.spellCheck);
   }
+#endif // ]TODO(macOS GH#774)
 
   if (newTextInputProps.traits.caretHidden != oldTextInputProps.traits.caretHidden) {
     _backedTextInputView.caretHidden = newTextInputProps.traits.caretHidden;
   }
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   if (newTextInputProps.traits.clearButtonMode != oldTextInputProps.traits.clearButtonMode) {
     _backedTextInputView.clearButtonMode =
         RCTUITextFieldViewModeFromTextInputAccessoryVisibilityMode(newTextInputProps.traits.clearButtonMode);
   }
+#endif // ]TODO(macOS GH#774)
 
   if (newTextInputProps.traits.scrollEnabled != oldTextInputProps.traits.scrollEnabled) {
     _backedTextInputView.scrollEnabled = newTextInputProps.traits.scrollEnabled;
   }
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   if (newTextInputProps.traits.secureTextEntry != oldTextInputProps.traits.secureTextEntry) {
     _backedTextInputView.secureTextEntry = newTextInputProps.traits.secureTextEntry;
   }
@@ -184,6 +192,7 @@ using namespace facebook::react;
           RCTUITextInputPasswordRulesFromString(newTextInputProps.traits.passwordRules);
     }
   }
+#endif // ]TODO(macOS GH#774)
 
   // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentially here
   // because they are being checked on-demand.
@@ -202,9 +211,11 @@ using namespace facebook::react;
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
   }
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   if (newTextInputProps.selectionColor != oldTextInputProps.selectionColor) {
     _backedTextInputView.tintColor = RCTUIColorFromSharedColor(newTextInputProps.selectionColor);
   }
+#endif // ]TODO(macOS GH#774)
 
   if (newTextInputProps.inputAccessoryViewID != oldTextInputProps.inputAccessoryViewID) {
     _backedTextInputView.inputAccessoryViewID = RCTNSStringFromString(newTextInputProps.inputAccessoryViewID);
@@ -449,6 +460,7 @@ using namespace facebook::react;
     [self _updateState];
   }
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   UITextPosition *startPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                                                       offset:start];
   UITextPosition *endPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
@@ -458,6 +470,7 @@ using namespace facebook::react;
     UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
     [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
   }
+#endif // ]TODO(macOS GH#774)
   _comingFromJS = NO;
 }
 
@@ -468,11 +481,14 @@ using namespace facebook::react;
   // InputAccessoryView component sets the inputAccessoryView when inputAccessoryViewID exists
   if (_backedTextInputView.inputAccessoryViewID) {
     if (_backedTextInputView.isFirstResponder) {
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
       [_backedTextInputView reloadInputViews];
+#endif
     }
     return;
   }
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   UIKeyboardType keyboardType = _backedTextInputView.keyboardType;
 
   // These keyboard types (all are number pads) don't have a "Done" button by default,
@@ -500,16 +516,21 @@ using namespace facebook::react;
   } else {
     _backedTextInputView.inputAccessoryView = nil;
   }
+#endif // ]TODO(macOS GH#774)
 
   if (_backedTextInputView.isFirstResponder) {
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
     [_backedTextInputView reloadInputViews];
+#endif // ]TODO(macOS GH#774)
   }
 }
 
 - (void)handleInputAccessoryDoneButton
 {
   if ([self textInputShouldReturn]) {
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
     [_backedTextInputView endEditing:YES];
+#endif // ]TODO(macOS GH#774)
   }
 }
 
@@ -556,12 +577,17 @@ using namespace facebook::react;
 
 - (AttributedString::Range)_selectionRange
 {
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   UITextRange *selectedTextRange = _backedTextInputView.selectedTextRange;
   NSInteger start = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                   toPosition:selectedTextRange.start];
   NSInteger end = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                 toPosition:selectedTextRange.end];
   return AttributedString::Range{(int)start, (int)(end - start)};
+#else
+  // [Fabric] Placeholder till we implement selection in Fabric
+  return AttributedString::Range({0, 1});
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)_restoreTextSelection
@@ -570,11 +596,13 @@ using namespace facebook::react;
   if (!selection.has_value()) {
     return;
   }
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   auto start = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                                    offset:selection->start];
   auto end = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument offset:selection->end];
   auto range = [_backedTextInputView textRangeFromPosition:start toPosition:end];
   [_backedTextInputView setSelectedTextRange:range notifyDelegate:YES];
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)_setAttributedString:(NSAttributedString *)attributedString
@@ -582,6 +610,7 @@ using namespace facebook::react;
   if ([self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
     return;
   }
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
@@ -598,6 +627,7 @@ using namespace facebook::react;
   }
   [self _restoreTextSelection];
   _lastStringStateWasUpdatedWith = attributedString;
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)_setMultiline:(BOOL)multiline
@@ -631,6 +661,7 @@ using namespace facebook::react;
                      }
                    }];
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   BOOL shouldFallbackToBareTextComparison =
       [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
       _backedTextInputView.markedTextRange || _backedTextInputView.isSecureTextEntry || fontHasBeenUpdatedBySystem;
@@ -638,8 +669,11 @@ using namespace facebook::react;
   if (shouldFallbackToBareTextComparison) {
     return ([newText.string isEqualToString:oldText.string]);
   } else {
+#endif // ]TODO(macOS GH#774)
     return ([newText isEqualToAttributedString:oldText]);
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   }
+#endif // ]TODO(macOS GH#774)
 }
 
 @end

@@ -26,20 +26,29 @@ void RCTCopyBackedTextInput(
   toTextInput.placeholder = fromTextInput.placeholder;
   toTextInput.placeholderColor = fromTextInput.placeholderColor;
   toTextInput.textContainerInset = fromTextInput.textContainerInset;
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   toTextInput.inputAccessoryView = fromTextInput.inputAccessoryView;
+#endif // ]TODO(macOS GH#774)
   toTextInput.textInputDelegate = fromTextInput.textInputDelegate;
   toTextInput.placeholderColor = fromTextInput.placeholderColor;
   toTextInput.defaultTextAttributes = fromTextInput.defaultTextAttributes;
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   toTextInput.autocapitalizationType = fromTextInput.autocapitalizationType;
   toTextInput.autocorrectionType = fromTextInput.autocorrectionType;
+#endif // ]TODO(macOS GH#774)
   toTextInput.contextMenuHidden = fromTextInput.contextMenuHidden;
   toTextInput.editable = fromTextInput.editable;
   toTextInput.enablesReturnKeyAutomatically = fromTextInput.enablesReturnKeyAutomatically;
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   toTextInput.keyboardAppearance = fromTextInput.keyboardAppearance;
   toTextInput.spellCheckingType = fromTextInput.spellCheckingType;
+#endif // ]TODO(macOS GH#774)
   toTextInput.caretHidden = fromTextInput.caretHidden;
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   toTextInput.clearButtonMode = fromTextInput.clearButtonMode;
+#endif // ]TODO(macOS GH#774)
   toTextInput.scrollEnabled = fromTextInput.scrollEnabled;
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   toTextInput.secureTextEntry = fromTextInput.secureTextEntry;
   toTextInput.keyboardType = fromTextInput.keyboardType;
   toTextInput.textContentType = fromTextInput.textContentType;
@@ -49,8 +58,10 @@ void RCTCopyBackedTextInput(
   }
 
   [toTextInput setSelectedTextRange:fromTextInput.selectedTextRange notifyDelegate:NO];
+#endif // ]TODO(macOS GH#774)
 }
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(std::optional<bool> autoCorrect)
 {
   return autoCorrect.has_value() ? (*autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo)
@@ -232,3 +243,4 @@ UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(std::string cons
 {
   return [UITextInputPasswordRules passwordRulesWithDescriptor:RCTNSStringFromStringNilIfEmpty(passwordRules)];
 }
+#endif // ]TODO(macOS GH#774)

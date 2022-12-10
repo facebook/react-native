@@ -18,6 +18,7 @@ void RCTCopyBackedTextInput(
     RCTUIView<RCTBackedTextInputViewProtocol> *fromTextInput,
     RCTUIView<RCTBackedTextInputViewProtocol> *toTextInput); // TODO(macOS GH#774)
 
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(std::optional<bool> autoCorrect);
 
 UITextAutocapitalizationType RCTUITextAutocapitalizationTypeFromAutocapitalizationType(
@@ -40,5 +41,6 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
 
 API_AVAILABLE(ios(12.0))
 UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(std::string const &passwordRules);
+#endif // ]TODO(macOS GH#774)
 
 NS_ASSUME_NONNULL_END

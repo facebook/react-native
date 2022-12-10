@@ -25,9 +25,9 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 @protocol RCTBackedTextInputViewProtocol <UITextInput>
-#else // [TODO(macOS GH#774)
+#else
 @protocol RCTBackedTextInputViewProtocol
 #endif // ]TODO(macOS GH#774)
 
