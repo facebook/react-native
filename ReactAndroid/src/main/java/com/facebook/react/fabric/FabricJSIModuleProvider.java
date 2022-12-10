@@ -61,8 +61,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
         uiManager,
         eventBeatManager,
         mComponentFactory,
-        mConfig,
-        mCppComponentRegistry);
+        mConfig);
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

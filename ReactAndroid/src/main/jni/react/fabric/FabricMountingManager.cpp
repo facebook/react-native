@@ -38,10 +38,8 @@ static bool getFeatureFlagValue(const char *name) {
 
 FabricMountingManager::FabricMountingManager(
     std::shared_ptr<const ReactNativeConfig> &config,
-    std::shared_ptr<const CppComponentRegistry> &cppComponentRegistry,
     global_ref<jobject> &javaUIManager)
     : javaUIManager_(javaUIManager),
-      cppComponentRegistry_(cppComponentRegistry),
       useOverflowInset_(getFeatureFlagValue("useOverflowInset")) {
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
 }
@@ -314,19 +312,6 @@ void FabricMountingManager::executeMount(
       auto &index = mutation.index;
 
       bool isVirtual = mutation.mutatedViewIsVirtual();
-
-      // Detect if the mutation instruction belongs to C++ view managers
-      if (cppComponentRegistry_) {
-        auto componentName = newChildShadowView.componentName
-            ? newChildShadowView.componentName
-            : oldChildShadowView.componentName;
-        auto name = std::string(componentName);
-        if (cppComponentRegistry_->containsComponentManager(name)) {
-          // is this thread safe?
-          cppViewMutations.push_back(mutation);
-        }
-      }
-
       switch (mutationType) {
         case ShadowViewMutation::Create: {
           bool allocationCheck =

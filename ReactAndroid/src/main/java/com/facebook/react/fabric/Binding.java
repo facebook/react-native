@@ -44,8 +44,7 @@ public class Binding {
       Object uiManager,
       EventBeatManager eventBeatManager,
       ComponentFactory componentsRegistry,
-      Object reactNativeConfig,
-      CppComponentRegistry cppComponentRegistry);
+      Object reactNativeConfig);
 
   public native void startSurface(
       int surfaceId, @NonNull String moduleName, @NonNull NativeMap initialProps);
@@ -92,24 +91,6 @@ public class Binding {
       @NonNull EventBeatManager eventBeatManager,
       @NonNull ComponentFactory componentFactory,
       @NonNull ReactNativeConfig reactNativeConfig) {
-    register(
-        runtimeExecutor,
-        runtimeScheduler,
-        fabricUIManager,
-        eventBeatManager,
-        componentFactory,
-        reactNativeConfig,
-        null);
-  }
-
-  public void register(
-      @NonNull RuntimeExecutor runtimeExecutor,
-      @Nullable RuntimeScheduler runtimeScheduler,
-      @NonNull FabricUIManager fabricUIManager,
-      @NonNull EventBeatManager eventBeatManager,
-      @NonNull ComponentFactory componentFactory,
-      @NonNull ReactNativeConfig reactNativeConfig,
-      @Nullable CppComponentRegistry cppComponentRegistry) {
     fabricUIManager.setBinding(this);
     installFabricUIManager(
         runtimeExecutor,
@@ -117,8 +98,7 @@ public class Binding {
         fabricUIManager,
         eventBeatManager,
         componentFactory,
-        reactNativeConfig,
-        cppComponentRegistry);
+        reactNativeConfig);
 
     setPixelDensity(PixelUtil.getDisplayMetricDensity());
   }
