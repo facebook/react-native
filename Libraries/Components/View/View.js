@@ -112,7 +112,7 @@ const View: React.AbstractComponent<
         : accessibilityLiveRegion;
     return (
       <TextAncestor.Provider value={false}>
-        <ViewAncestor.Provider value={accessibilityLiveRegion}>
+        <ViewAncestor.Provider value={ariaLive ?? accessibilityLiveRegion}>
           <ViewNativeComponent
             {...otherProps}
             accessibilityLabel={ariaLabel ?? accessibilityLabel}
