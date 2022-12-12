@@ -210,7 +210,7 @@ def rn_codegen_modules(
     )
 
     ##############
-    # iOS handling
+    # macOS and iOS handling
     ##############
     if not IS_OSS_BUILD:
         # iOS Buck build isn't fully working in OSS, so let's skip it for OSS for now.
@@ -232,7 +232,7 @@ def rn_codegen_modules(
             name = "{}Apple".format(name),
             extension_api_only = True,
             header_namespace = "",
-            sdks = (IOS),
+            sdks = (IOS, MACOSX),
             compiler_flags = [
                 "-Wno-unused-private-field",
             ],
@@ -248,10 +248,15 @@ def rn_codegen_modules(
             autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
-            exported_deps = [
+            ios_exported_deps = [
                 "//xplat/js/react-native-github:RCTTypeSafety",
                 "//xplat/js/react-native-github/Libraries/RCTRequired:RCTRequired",
                 react_native_xplat_target_apple("react/nativemodule/core:core"),
+            ],
+            macosx_exported_deps = [
+                react_native_desktop_root_target(":RCTTypeSafetyAppleMac"),
+                react_native_desktop_root_target(":RCTRequiredAppleMac"),
+                react_native_desktop_root_target(":nativemoduleAppleMac"),
             ],
         )
 
