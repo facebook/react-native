@@ -72,6 +72,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
+@property (nonatomic, assign) UIAccessibilityTraits accessibilityTraits;
+
 /**
  * Enforcing `call super` semantic for overridden methods from `RCTComponentViewProtocol`.
  * The methods update the instance variables.

@@ -1586,10 +1586,34 @@ function AccessibilityLiveRegion(): React.Node {
   const [count, setCount] = React.useState(0);
   const [messageCount, setMessageCount] = React.useState(0);
   const [enabled, setEnabled] = React.useState(false);
+  const [disabled, setDisabled] = React.useState(false);
   const [liveRegion, setLiveRegion] = React.useState(true);
   const [messages, setMessages] = React.useState([]);
   return (
     <>
+      <RNTesterBlock title="LiveRegion with Text Component">
+        <TouchableWithoutFeedback
+          onPress={() => setDisabled(disabled => !disabled)}>
+          <View style={styles.embedded}>
+            <Text>Click me to set Text state disabled</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <View accessibilityLiveRegion="assertive">
+          {/*
+          <View
+            focusable
+            accessible
+            style={{height: 100, width: 400, backgroundColor: 'red'}}
+            accessibilityState={{disabled: disabled}}
+          />
+          */}
+          <Text
+            accessibilityState={{disabled: disabled}}
+            style={{color: disabled ? 'grey' : null}}>
+            this is a text
+          </Text>
+        </View>
+      </RNTesterBlock>
       <RNTesterBlock title="LiveRegion with child component">
         <TouchableWithoutFeedback
           onPress={() =>

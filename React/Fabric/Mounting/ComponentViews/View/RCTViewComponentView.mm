@@ -442,7 +442,7 @@ using namespace facebook::react;
       announcement = [NSString stringWithFormat:@"%@ %@", announcement, @"selected"];
     }
     if (self.accessibilityTraits == UIAccessibilityTraitNotEnabled) {
-      announcement = [NSString stringWithFormat:@"%@ %@", announcement, @"disabled"];
+      announcement = [NSString stringWithFormat:@"%@ %@", announcement, @"dimmed"];
     }
     [self announceForAccessibilityWithOptions:announcement];
   }

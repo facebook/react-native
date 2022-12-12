@@ -116,11 +116,10 @@ using namespace facebook::react;
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
+  [super finalizeUpdates:updateMask];
   if (self.triggerLiveRegionAccessibilityAnnouncement) {
     [self announceForAccessibilityWithOptions:self.accessibilityLabel];
   }
-  
-  [super finalizeUpdates:updateMask];
 }
 
 - (void)prepareForRecycle
@@ -196,11 +195,6 @@ using namespace facebook::react;
   }
 
   return _accessibilityProvider.accessibilityElements;
-}
-
-- (UIAccessibilityTraits)accessibilityTraits
-{
-  return [super accessibilityTraits] | UIAccessibilityTraitStaticText;
 }
 
 #pragma mark - RCTTouchableComponentViewProtocol
