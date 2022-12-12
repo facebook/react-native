@@ -429,13 +429,13 @@ using namespace facebook::react;
 {
   if (self.triggerLiveRegionAccessibilityAnnouncement) {
     NSString *announcement = @"";
-    if (self.accessibilityValue) {
+    if ([self.accessibilityValue length] != 0) {
       announcement = [NSString stringWithFormat:@"%@ %@", announcement, self.accessibilityValue];
     }
-    if (self.accessibilityLabel) {
+    if ([self.accessibilityLabel length] != 0) {
       announcement = [NSString stringWithFormat:@"%@ %@", announcement, self.accessibilityLabel];
     }
-    if (self.accessibilityHint) {
+    if ([self.accessibilityHint length] != 0) {
       announcement = [NSString stringWithFormat:@"%@ %@", announcement, self.accessibilityHint];
     }
     if (self.accessibilityTraits == UIAccessibilityTraitSelected) {

@@ -1598,19 +1598,18 @@ function AccessibilityLiveRegion(): React.Node {
             <Text>Click me to set Text state disabled</Text>
           </View>
         </TouchableWithoutFeedback>
-        <View accessibilityLiveRegion="assertive">
-          {/*
+        <View accessibilityLiveRegion="polite">
           <View
             focusable
             accessible
             style={{height: 100, width: 400, backgroundColor: 'red'}}
-            accessibilityState={{disabled: disabled}}
-          />
-          */}
+            accessibilityState={{selected: disabled}}>
+            <Text>This is text one</Text>
+          </View>
           <Text
             accessibilityState={{disabled: disabled}}
             style={{color: disabled ? 'grey' : null}}>
-            this is a text
+            this is text two
           </Text>
         </View>
       </RNTesterBlock>
