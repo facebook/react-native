@@ -119,6 +119,8 @@ executors:
     macos:
       xcode: *xcode_version
     resource_class: macos.x86.medium.gen2
+    environment:
+      - REACT_NATIVE_CI: true
 
 # -------------------------
 #        COMMANDS
@@ -266,7 +268,7 @@ commands:
             echo "$VERSION" > /tmp/react-native-version
             echo "React Native Version is $(cat /tmp/react-native-version)"
             echo "Hermes commit is $(cat /tmp/hermes/hermesversion)"
-            
+
   with_hermes_tarball_cache_span:
     parameters:
       steps:
@@ -1127,6 +1129,7 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_VERSION_FILE: "sdks/.hermesversion"
+      - REACT_NATIVE_CI: true
     steps:
       - run:
           name: Install dependencies
