@@ -43,10 +43,10 @@ internal fun detectedCliFile(config: ReactExtension): File =
  * Computes the `hermesc` command location. The Algo follows this order:
  * 1. The path provided by the `hermesCommand` config in the `react` Gradle extension
  * 2. The file located in `node_modules/react-native/sdks/hermes/build/bin/hermesc`. This will be
- * used if the user is building Hermes from source.
+ *    used if the user is building Hermes from source.
  * 3. The file located in `node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc` where `%OS-BIN%`
- * is substituted with the correct OS arch. This will be used if the user is using a precompiled
- * hermes-engine package.
+ *    is substituted with the correct OS arch. This will be used if the user is using a precompiled
+ *    hermes-engine package.
  * 4. Fails otherwise
  */
 internal fun detectedHermesCommand(config: ReactExtension): String =
@@ -106,10 +106,10 @@ private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): F
  * Computes the `hermesc` command location. The Algo follows this order:
  * 1. The path provided by the `hermesCommand` config in the `react` Gradle extension
  * 2. The file located in `node_modules/react-native/sdks/hermes/build/bin/hermesc`. This will be
- * used if the user is building Hermes from source.
+ *    used if the user is building Hermes from source.
  * 3. The file located in `node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc` where `%OS-BIN%`
- * is substituted with the correct OS arch. This will be used if the user is using a precompiled
- * hermes-engine package.
+ *    is substituted with the correct OS arch. This will be used if the user is using a precompiled
+ *    hermes-engine package.
  * 4. Fails otherwise
  */
 internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String): String {

@@ -11,10 +11,11 @@ import java.io.Serializable
 
 /**
  * This data class represents an entry that can be consumed by the [PreparePrefabHeadersTask].
+ *
  * @param libraryName The name of the library that you're preparing for Prefab
  * @param pathToPrefixCouples A list of pairs Path to Header prefix. You can use this list to supply
- * a list of paths that you want to be considered for prefab. Each path can specify an header prefix
- * that will be used by prefab to re-created the header layout.
+ *   a list of paths that you want to be considered for prefab. Each path can specify an header
+ *   prefix that will be used by prefab to re-created the header layout.
  */
 data class PrefabPreprocessingEntry(
     val libraryName: String,
