@@ -315,6 +315,7 @@ describe('TextInput compat with web', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityLiveRegion="polite"
         accessibilityState={
           Object {
             "busy": true,
@@ -345,7 +346,6 @@ describe('TextInput compat with web', () => {
         aria-label="label"
         aria-labelledby="labelledby"
         aria-level={3}
-        aria-live="polite"
         aria-modal={true}
         aria-multiline={true}
         aria-multiselectable={true}

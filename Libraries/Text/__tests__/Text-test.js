@@ -116,6 +116,7 @@ describe('Text compat with web', () => {
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTText
         accessibilityLabel="label"
+        accessibilityLiveRegion="polite"
         accessibilityState={
           Object {
             "busy": true,
@@ -145,7 +146,6 @@ describe('Text compat with web', () => {
         aria-keyshortcuts="Cmd+S"
         aria-labelledby="labelledby"
         aria-level={3}
-        aria-live="polite"
         aria-modal={true}
         aria-multiline={true}
         aria-multiselectable={true}
