@@ -1600,10 +1600,11 @@ function AccessibilityLiveRegion(): React.Node {
           </View>
         </TouchableWithoutFeedback>
         <View accessibilityLiveRegion="polite">
-          <Image
+          <TextInput
             accessible
             accessibilityLabel={disabled ? 'label1' : 'label2'}
-            accessibilityState={{disabled: disabled}}></Image>
+            accessibilityState={{disabled: disabled}}
+          />
         </View>
       </RNTesterBlock>
       <RNTesterBlock title="LiveRegion with child component">

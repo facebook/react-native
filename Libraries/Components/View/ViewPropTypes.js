@@ -284,23 +284,13 @@ type AndroidViewProps = $ReadOnly<{|
   needsOffscreenAlphaCompositing?: ?boolean,
 
   /**
-   * Indicates to accessibility services whether the user should be notified
-   * when this view changes. Works for Android API >= 19 only.
+   * Indicates to accessibility services whether the user should be notified when this view changes.
+   * Works for Android API >= 19 and iOS 11.
    *
-   * @platform android
-   *
-   * See https://reactnative.dev/docs/view#accessibilityliveregion
+   * For android see https://bit.ly/3HukgWQ
+   * For iOS see https://bit.ly/3P2jItf
    */
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
-
-  /**
-   * Indicates to accessibility services whether the user should be notified
-   * when this view changes. Works for Android API >= 19 only.
-   *
-   * @platform android
-   *
-   * See https://reactnative.dev/docs/view#accessibilityliveregion
-   */
   'aria-live'?: ?('polite' | 'assertive' | 'off'),
 
   /**

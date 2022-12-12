@@ -149,6 +149,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-live': ariaLive,
     'aria-selected': ariaSelected,
     height,
     src,
@@ -178,7 +179,9 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
         return (
           <ImageViewNativeComponent
             accessibilityState={_accessibilityState}
-            accessibilityLiveRegion={_accessibilityLiveRegion}
+            accessibilityLiveRegion={
+              ariaLive === 'off' ? 'none' : ariaLive ?? _accessibilityLiveRegion
+            }
             {...restProps}
             accessible={props.alt !== undefined ? true : props.accessible}
             accessibilityLabel={accessibilityLabel ?? props.alt}

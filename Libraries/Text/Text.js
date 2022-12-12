@@ -44,6 +44,7 @@ const Text: React.AbstractComponent<
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
     'aria-label': ariaLabel,
+    'aria-live': ariaLive,
     'aria-selected': ariaSelected,
     ellipsizeMode,
     id,
@@ -203,12 +204,6 @@ const Text: React.AbstractComponent<
   }
 
   const hasTextAncestor = useContext(TextAncestor);
-  const parentLiveRegion = useContext(ViewAncestor);
-  const _accessibilityLiveRegion =
-    accessibilityLiveRegion == null &&
-    (parentLiveRegion === 'assertive' || parentLiveRegion === 'polite')
-      ? parentLiveRegion
-      : accessibilityLiveRegion;
 
   const _accessible = Platform.select({
     ios: accessible !== false,
@@ -236,6 +231,13 @@ const Text: React.AbstractComponent<
   const _hasOnPressOrOnLongPress =
     props.onPress != null || props.onLongPress != null;
 
+  const parentLiveRegion = useContext(ViewAncestor);
+  const _accessibilityLiveRegion =
+    accessibilityLiveRegion == null &&
+    (parentLiveRegion === 'assertive' || parentLiveRegion === 'polite')
+      ? parentLiveRegion
+      : accessibilityLiveRegion;
+
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
@@ -245,7 +247,9 @@ const Text: React.AbstractComponent<
         role ? getAccessibilityRoleFromRole(role) : accessibilityRole
       }
       accessibilityState={_accessibilityState}
-      accessibilityLiveRegion={_accessibilityLiveRegion}
+      accessibilityLiveRegion={
+        ariaLive === 'off' ? 'none' : ariaLive ?? _accessibilityLiveRegion
+      }
       isHighlighted={isHighlighted}
       isPressable={isPressable}
       nativeID={id ?? nativeID}
@@ -265,7 +269,9 @@ const Text: React.AbstractComponent<
           role ? getAccessibilityRoleFromRole(role) : accessibilityRole
         }
         accessibilityState={nativeTextAccessibilityState}
-        accessibilityLiveRegion={_accessibilityLiveRegion}
+        accessibilityLiveRegion={
+          ariaLive === 'off' ? 'none' : ariaLive ?? _accessibilityLiveRegion
+        }
         accessible={
           accessible == null && Platform.OS === 'android'
             ? _hasOnPressOrOnLongPress

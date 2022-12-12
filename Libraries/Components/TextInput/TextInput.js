@@ -1081,6 +1081,7 @@ function InternalTextInput(props: Props): React.Node {
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
     'aria-selected': ariaSelected,
+    'aria-live': ariaLive,
     accessibilityState,
     accessibilityLiveRegion,
     id,
@@ -1454,7 +1455,9 @@ function InternalTextInput(props: Props): React.Node {
         {...otherProps}
         {...eventHandlers}
         accessibilityState={_accessibilityState}
-        accessibilityLiveRegion={_accessibilityLiveRegion}
+        accessibilityLiveRegion={
+          ariaLive === 'off' ? 'none' : ariaLive ?? _accessibilityLiveRegion
+        }
         accessible={accessible}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
