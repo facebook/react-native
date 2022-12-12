@@ -16,6 +16,7 @@ import type {
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputType} from './TextInput.flow';
+import ViewAncestor from '../View/ViewAncestor';
 
 import usePressability from '../../Pressability/usePressability';
 import flattenStyle from '../../StyleSheet/flattenStyle';
@@ -32,7 +33,13 @@ import TextInputState from './TextInputState';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-import {useCallback, useLayoutEffect, useRef, useState} from 'react';
+import {
+  useContext,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
 type TextInputInstance = React.ElementRef<HostComponent<mixed>> & {
@@ -1075,6 +1082,7 @@ function InternalTextInput(props: Props): React.Node {
     'aria-expanded': ariaExpanded,
     'aria-selected': ariaSelected,
     accessibilityState,
+    accessibilityLiveRegion,
     id,
     tabIndex,
     ...otherProps
@@ -1432,6 +1440,13 @@ function InternalTextInput(props: Props): React.Node {
       (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
       !(props.onChange || props.onChangeText);
 
+    const parentLiveRegion = useContext(ViewAncestor);
+    const _accessibilityLiveRegion =
+      accessibilityLiveRegion == null &&
+      (parentLiveRegion === 'assertive' || parentLiveRegion === 'polite')
+        ? parentLiveRegion
+        : accessibilityLiveRegion;
+
     textInput = (
       <RCTTextInputView
         // $FlowFixMe[incompatible-type] - Figure out imperative + forward refs.
@@ -1439,6 +1454,7 @@ function InternalTextInput(props: Props): React.Node {
         {...otherProps}
         {...eventHandlers}
         accessibilityState={_accessibilityState}
+        accessibilityLiveRegion={_accessibilityLiveRegion}
         accessible={accessible}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}

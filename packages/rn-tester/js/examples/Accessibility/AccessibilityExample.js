@@ -1599,18 +1599,11 @@ function AccessibilityLiveRegion(): React.Node {
           </View>
         </TouchableWithoutFeedback>
         <View accessibilityLiveRegion="polite">
-          <View
-            focusable
-            accessible
-            style={{height: 100, width: 400, backgroundColor: 'red'}}
-            accessibilityState={{selected: disabled}}>
-            <Text>This is text one</Text>
-          </View>
-          <Text
+          <TextInput
+            placeholder="my placehoder"
+            accessibilityLabel={disabled ? 'label1' : 'label2'}
             accessibilityState={{disabled: disabled}}
-            style={{color: disabled ? 'grey' : null}}>
-            this is text two
-          </Text>
+          />
         </View>
       </RNTesterBlock>
       <RNTesterBlock title="LiveRegion with child component">
@@ -1640,8 +1633,6 @@ function AccessibilityLiveRegion(): React.Node {
               selected: enabled,
             }}
             accessibilityHint={enabled ? 'my hint' : null}
-            accessibilityLabel={enabled ? 'my label' : null}
-            accessibilityValue={enabled ? {now: 5, min: 1, max: 10} : {}}
             style={{
               height: 100,
               width: 100,
@@ -1675,7 +1666,7 @@ function AccessibilityLiveRegion(): React.Node {
                   width: 200,
                   backgroundColor: 'red',
                 }}
-                accessibilityHint={
+                accessibilityLabel={
                   'this is the hint of a new component number' + messages.length
                 }
               />,
