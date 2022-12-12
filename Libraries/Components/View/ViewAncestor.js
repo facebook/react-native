@@ -16,7 +16,7 @@ const React = require('react');
  * Used to retrieve parent view accessibilityLiveRegion
  */
 const ViewAncestorContext = (React.createContext(
-  false,
+  'none',
 ): React$Context<$FlowFixMe>);
 if (__DEV__) {
   ViewAncestorContext.displayName = 'ViewAncestorContext';
