@@ -13,6 +13,7 @@ import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
+import ViewAncestor from '../View/ViewAncestor';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
@@ -23,6 +24,7 @@ import SwitchNativeComponent, {
   Commands as SwitchCommands,
 } from './SwitchNativeComponent';
 import * as React from 'react';
+import {useContext} from 'react';
 
 type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -217,9 +219,16 @@ const SwitchWithForwardedRef: React.AbstractComponent<
       />
     );
   } else {
+    const parentLiveRegion = useContext(ViewAncestor);
+    const _accessibilityLiveRegion =
+      props.accessibilityLiveRegion == null &&
+      (parentLiveRegion === 'assertive' || parentLiveRegion === 'polite')
+        ? parentLiveRegion
+        : props.accessibilityLiveRegion;
     const platformProps = {
       disabled,
       onTintColor: trackColorForTrue,
+      accessibilityLiveRegion: _accessibilityLiveRegion,
       style: StyleSheet.compose(
         {height: 31, width: 51},
         StyleSheet.compose(

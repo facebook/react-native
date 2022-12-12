@@ -30,6 +30,7 @@ const {
   Platform,
   Switch,
   ScrollView,
+  Pressable,
 } = require('react-native');
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
@@ -1599,11 +1600,10 @@ function AccessibilityLiveRegion(): React.Node {
           </View>
         </TouchableWithoutFeedback>
         <View accessibilityLiveRegion="polite">
-          <TextInput
-            placeholder="my placehoder"
+          <Image
+            accessible
             accessibilityLabel={disabled ? 'label1' : 'label2'}
-            accessibilityState={{disabled: disabled}}
-          />
+            accessibilityState={{disabled: disabled}}></Image>
         </View>
       </RNTesterBlock>
       <RNTesterBlock title="LiveRegion with child component">

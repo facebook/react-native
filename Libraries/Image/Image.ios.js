@@ -13,6 +13,7 @@ import type {RootTag} from '../Types/RootTagTypes';
 import type {ImageIOS} from './Image.flow';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
+import ViewAncestor from '../Components/View/ViewAncestor';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
@@ -23,6 +24,7 @@ import ImageViewNativeComponent from './ImageViewNativeComponent';
 import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 import resolveAssetSource from './resolveAssetSource';
 import * as React from 'react';
+import {useContext} from 'react';
 
 function getSize(
   uri: string,
@@ -163,12 +165,20 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   };
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
+  const parentLiveRegion = useContext(ViewAncestor);
+  const _accessibilityLiveRegion =
+    props.accessibilityLiveRegion == null &&
+    (parentLiveRegion === 'assertive' || parentLiveRegion === 'polite')
+      ? parentLiveRegion
+      : props.accessibilityLiveRegion;
+
   return (
     <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
         return (
           <ImageViewNativeComponent
             accessibilityState={_accessibilityState}
+            accessibilityLiveRegion={_accessibilityLiveRegion}
             {...restProps}
             accessible={props.alt !== undefined ? true : props.accessible}
             accessibilityLabel={accessibilityLabel ?? props.alt}
