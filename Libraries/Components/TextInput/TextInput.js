@@ -1430,11 +1430,6 @@ function InternalTextInput(props: Props): React.Node {
   let style = flattenStyle(props.style);
 
   const parentLiveRegion = useContext(ViewAncestor);
-  const _accessibilityLiveRegion =
-    accessibilityLiveRegion == null &&
-    (parentLiveRegion === 'assertive' || parentLiveRegion === 'polite')
-      ? parentLiveRegion
-      : accessibilityLiveRegion;
 
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
@@ -1447,6 +1442,12 @@ function InternalTextInput(props: Props): React.Node {
     const useOnChangeSync =
       (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
       !(props.onChange || props.onChangeText);
+
+    const _accessibilityLiveRegion =
+      accessibilityLiveRegion == null &&
+      (parentLiveRegion === 'assertive' || parentLiveRegion === 'polite')
+        ? parentLiveRegion
+        : accessibilityLiveRegion;
 
     textInput = (
       <RCTTextInputView
@@ -1509,6 +1510,9 @@ function InternalTextInput(props: Props): React.Node {
         {...otherProps}
         {...eventHandlers}
         accessibilityState={_accessibilityState}
+        accessibilityLiveRegion={
+          ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
+        }
         accessibilityLabelledBy={_accessibilityLabelledBy}
         accessible={accessible}
         autoCapitalize={autoCapitalize}

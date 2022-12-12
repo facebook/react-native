@@ -1599,8 +1599,10 @@ function AccessibilityLiveRegion(): React.Node {
             <Text>Click me to set Text state disabled</Text>
           </View>
         </TouchableWithoutFeedback>
-        <View accessibilityLiveRegion="polite">
+        <View>
           <TextInput
+            aria-live="polite"
+            multiline={false}
             accessible
             accessibilityLabel={disabled ? 'label1' : 'label2'}
             accessibilityState={{disabled: disabled}}
@@ -1649,8 +1651,8 @@ function AccessibilityLiveRegion(): React.Node {
             <Text>Click me</Text>
           </View>
         </TouchableWithoutFeedback>
-        <View accessibilityLiveRegion="polite">
-          <Text>Clicked {count} times</Text>
+        <View>
+          <Text aria-live="assertive">Clicked {count} times</Text>
         </View>
       </RNTesterBlock>
       <RNTesterBlock title="LiveRegion when adding child components">
