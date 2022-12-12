@@ -1050,7 +1050,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               mSurfaceId,
               mEditText.getId(),
               s.toString(),
-              mEditText.incrementAndGetEventCounter()));
+              mEditText.incrementAndGetEventCounter(),
+              start + count));
 
       mEventDispatcher.dispatchEvent(
           new ReactTextInputEvent(

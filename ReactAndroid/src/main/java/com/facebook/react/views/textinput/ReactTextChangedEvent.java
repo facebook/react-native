@@ -22,16 +22,18 @@ public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
 
   private String mText;
   private int mEventCount;
+  private int mCursorPosition;
 
   @Deprecated
-  public ReactTextChangedEvent(int viewId, String text, int eventCount) {
-    this(-1, viewId, text, eventCount);
+  public ReactTextChangedEvent(int viewId, String text, int eventCount, int cursorPosition) {
+    this(-1, viewId, text, eventCount, cursorPosition);
   }
 
-  public ReactTextChangedEvent(int surfaceId, int viewId, String text, int eventCount) {
+  public ReactTextChangedEvent(int surfaceId, int viewId, String text, int eventCount, int cursorPosition) {
     super(surfaceId, viewId);
     mText = text;
     mEventCount = eventCount;
+    mCursorPosition = cursorPosition;
   }
 
   @Override
@@ -46,6 +48,7 @@ public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
     eventData.putString("text", mText);
     eventData.putInt("eventCount", mEventCount);
     eventData.putInt("target", getViewTag());
+    eventData.putInt("cursorPosition", mCursorPosition);
     return eventData;
   }
 }

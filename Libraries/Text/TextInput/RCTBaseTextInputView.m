@@ -503,6 +503,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       @"text" : [self.attributedText.string copy],
       @"target" : self.reactTag,
       @"eventCount" : @(_nativeEventCount),
+      @"cursorPosition": [NSNumber numberWithInt: self.selection.start],
     });
   }
 }
