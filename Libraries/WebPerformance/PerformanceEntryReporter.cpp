@@ -50,9 +50,11 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
 
   entries_.emplace_back(entry);
 
-  // TODO: Add buffering/throttling - but for testing this works as well, for
-  // now
-  callback_->callWithPriority(SchedulerPriority::IdlePriority);
+  if (entries_.size() == 1) {
+    // If the buffer was empty, it signals that JS side just has possibly
+    // consumed it and is ready to get more
+    scheduleFlushBuffer();
+  }
 }
 
 void PerformanceEntryReporter::mark(
@@ -163,6 +165,12 @@ void PerformanceEntryReporter::clearEntries(
     pos--;
   }
   entries_.resize(lastPos + 1);
+}
+
+void PerformanceEntryReporter::scheduleFlushBuffer() {
+  if (callback_) {
+    callback_->callWithPriority(SchedulerPriority::IdlePriority);
+  }
 }
 
 } // namespace facebook::react

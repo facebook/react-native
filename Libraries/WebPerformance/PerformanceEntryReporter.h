@@ -89,6 +89,7 @@ class PerformanceEntryReporter {
 
   double getMarkTime(const std::string &markName) const;
   void clearEntries(std::function<bool(const RawPerformanceEntry &)> predicate);
+  void scheduleFlushBuffer();
 
   std::optional<AsyncCallback<>> callback_;
   std::vector<RawPerformanceEntry> entries_;
