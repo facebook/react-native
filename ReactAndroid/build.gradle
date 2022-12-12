@@ -147,6 +147,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair(new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                     new Pair("../ReactCommon/butter/", "butter/"),
                     new Pair("../ReactCommon/callinvoker/", ""),
+                    new Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                     new Pair("../ReactCommon/react/bridging/", "react/bridging/"),
                     new Pair("../ReactCommon/react/config/", "react/config/"),
                     new Pair("../ReactCommon/react/nativemodule/core/", ""),
