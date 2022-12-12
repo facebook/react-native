@@ -126,7 +126,7 @@ inline void putOptionalFloat(
 }
 
 MapBuffer convertBorderRadii(CascadedBorderRadii const &radii) {
-  MapBufferBuilder builder(9);
+  MapBufferBuilder builder(13);
   putOptionalFloat(builder, CORNER_TOP_LEFT, radii.topLeft);
   putOptionalFloat(builder, CORNER_TOP_RIGHT, radii.topRight);
   putOptionalFloat(builder, CORNER_BOTTOM_RIGHT, radii.bottomRight);
