@@ -19,6 +19,7 @@ target_link_libraries(hermes_executor_common
         jsireact
         hermes-engine::libhermes
         jsi
+        debug
         hermes_inspector
 )
 
