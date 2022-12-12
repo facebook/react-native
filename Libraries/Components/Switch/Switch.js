@@ -186,6 +186,13 @@ const SwitchWithForwardedRef: React.AbstractComponent<
     }
   }, [value, native]);
 
+  const parentLiveRegion = useContext(ViewAncestor);
+  const _accessibilityLiveRegion =
+    props.accessibilityLiveRegion == null &&
+    (parentLiveRegion === 'assertive' || parentLiveRegion === 'polite')
+      ? parentLiveRegion
+      : props.accessibilityLiveRegion;
+
   if (Platform.OS === 'android') {
     const {accessibilityState} = restProps;
     const _disabled =
@@ -219,12 +226,6 @@ const SwitchWithForwardedRef: React.AbstractComponent<
       />
     );
   } else {
-    const parentLiveRegion = useContext(ViewAncestor);
-    const _accessibilityLiveRegion =
-      props.accessibilityLiveRegion == null &&
-      (parentLiveRegion === 'assertive' || parentLiveRegion === 'polite')
-        ? parentLiveRegion
-        : props.accessibilityLiveRegion;
     const platformProps = {
       disabled,
       onTintColor: trackColorForTrue,
