@@ -8,6 +8,7 @@
 package com.facebook.react
 
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.gradle.AppExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.tasks.BuildCodegenCLITask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
@@ -52,6 +53,17 @@ class ReactPlugin : Plugin<Project> {
       project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
         onVariants(selector().all()) { variant ->
           project.configureReactTasks(variant = variant, config = extension)
+        }
+      }
+
+      // This is a legacy AGP api. Needed as AGP 7.3 is not consuming generated resources correctly.
+      // Can be removed as we bump to AGP 7.4 stable.
+      // This registers the $buildDir/generated/res/react/<variant> folder as a
+      // res folder to be consumed with the old AGP Apis which are not broken.
+      project.extensions.getByType(AppExtension::class.java).apply {
+        this.applicationVariants.all {
+          it.registerGeneratedResFolders(
+              project.layout.buildDirectory.files("generated/res/react/${it.name}"))
         }
       }
       configureCodegen(project, extension, isLibrary = false)
