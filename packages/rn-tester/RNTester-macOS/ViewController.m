@@ -24,7 +24,7 @@
   rootView.backgroundColor = [NSColor windowBackgroundColor];
   rootView.frame = self.view.bounds;
   rootView.autoresizingMask =
-      (NSViewMinXMargin | NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewWidthSizable |
+      (NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewWidthSizable |
        NSViewHeightSizable);
 }
 

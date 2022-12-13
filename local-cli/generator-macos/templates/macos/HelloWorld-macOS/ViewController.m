@@ -16,7 +16,7 @@
   [view addSubview:rootView];
   [rootView setBackgroundColor:[NSColor windowBackgroundColor]];
   [rootView setFrame:[view bounds]];
-  [rootView setAutoresizingMask:(NSViewMinXMargin | NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewWidthSizable | NSViewHeightSizable)];
+  [rootView setAutoresizingMask:(NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewWidthSizable | NSViewHeightSizable)];
 }
 
 @end
