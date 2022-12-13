@@ -202,6 +202,7 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     // react_native_assert(layoutableChildNode.yogaNode_.isDirty());
   } else {
     // The child is owned by some other node, we need to clone that.
+    // TODO: At this point, React has wrong reference to the node. (T138668036)
     auto clonedChildNode = childNode.clone({});
     auto &layoutableClonedChildNode =
         traitCast<YogaLayoutableShadowNode const &>(*clonedChildNode);
@@ -316,13 +317,62 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   ensureUnsealed();
 
   auto props = static_cast<YogaStylableProps const &>(*props_);
+  auto styleResult = applyAliasedProps(props.yogaStyle, props);
 
   // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was changed.
-  if (!yogaNode_.isDirty() && (props.yogaStyle != yogaNode_.getStyle())) {
+  if (!yogaNode_.isDirty() && (styleResult != yogaNode_.getStyle())) {
     yogaNode_.setDirty(true);
   }
 
-  yogaNode_.setStyle(props.yogaStyle);
+  yogaNode_.setStyle(styleResult);
+}
+
+/*static*/ YGStyle YogaLayoutableShadowNode::applyAliasedProps(
+    const YGStyle &baseStyle,
+    const YogaStylableProps &props) {
+  YGStyle result{baseStyle};
+
+  // Aliases with precedence
+  if (!props.marginInline.isUndefined()) {
+    result.margin()[YGEdgeHorizontal] = props.marginInline;
+  }
+  if (!props.marginInlineStart.isUndefined()) {
+    result.margin()[YGEdgeStart] = props.marginInlineStart;
+  }
+  if (!props.marginInlineEnd.isUndefined()) {
+    result.margin()[YGEdgeEnd] = props.marginInlineEnd;
+  }
+  if (!props.marginBlock.isUndefined()) {
+    result.margin()[YGEdgeVertical] = props.marginBlock;
+  }
+  if (!props.paddingInline.isUndefined()) {
+    result.padding()[YGEdgeHorizontal] = props.paddingInline;
+  }
+  if (!props.paddingInlineStart.isUndefined()) {
+    result.padding()[YGEdgeStart] = props.paddingInlineStart;
+  }
+  if (!props.paddingInlineEnd.isUndefined()) {
+    result.padding()[YGEdgeEnd] = props.paddingInlineEnd;
+  }
+  if (!props.paddingBlock.isUndefined()) {
+    result.padding()[YGEdgeVertical] = props.paddingBlock;
+  }
+
+  // Aliases without precedence
+  if (CompactValue(result.margin()[YGEdgeTop]).isUndefined()) {
+    result.margin()[YGEdgeTop] = props.marginBlockStart;
+  }
+  if (CompactValue(result.margin()[YGEdgeBottom]).isUndefined()) {
+    result.margin()[YGEdgeBottom] = props.marginBlockEnd;
+  }
+  if (CompactValue(result.padding()[YGEdgeTop]).isUndefined()) {
+    result.padding()[YGEdgeTop] = props.paddingBlockStart;
+  }
+  if (CompactValue(result.padding()[YGEdgeBottom]).isUndefined()) {
+    result.padding()[YGEdgeBottom] = props.paddingBlockEnd;
+  }
+
+  return result;
 }
 
 void YogaLayoutableShadowNode::setSize(Size size) const {

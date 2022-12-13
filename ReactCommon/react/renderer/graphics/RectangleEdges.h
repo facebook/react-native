@@ -44,7 +44,7 @@ struct RectangleEdges {
 };
 
 template <typename T>
-constexpr RectangleEdges<T> const RectangleEdges<T>::ZERO = {};
+RectangleEdges<T> const RectangleEdges<T>::ZERO = {};
 
 template <typename T>
 RectangleEdges<T> operator+(

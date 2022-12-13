@@ -107,7 +107,11 @@ function findEventArgumentsAndType(
   types: TypeDeclarationMap,
   bubblingType: void | 'direct' | 'bubble',
   paperName: ?$FlowFixMe,
-) {
+): {
+  argumentProps: ?$ReadOnlyArray<$FlowFixMe>,
+  paperTopLevelNameDeprecated: ?$FlowFixMe,
+  bubblingType: ?'direct' | 'bubble',
+} {
   if (typeAnnotation.type === 'TSInterfaceDeclaration') {
     return {
       argumentProps: flattenProperties([typeAnnotation], types),

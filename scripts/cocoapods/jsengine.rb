@@ -11,9 +11,9 @@ require_relative './utils.rb'
 # @parameter fabric_enabled: whether Fabirc is enabled
 def setup_jsc!(react_native_path: "../node_modules/react-native", fabric_enabled: false)
     pod 'React-jsi', :path => "#{react_native_path}/ReactCommon/jsi"
-    pod 'React-jsc', :path => "#{react_native_path}/ReactCommon/jsi"
+    pod 'React-jsc', :path => "#{react_native_path}/ReactCommon/jsc"
     if fabric_enabled
-        pod 'React-jsc/Fabric', :path => "#{react_native_path}/ReactCommon/jsi"
+        pod 'React-jsc/Fabric', :path => "#{react_native_path}/ReactCommon/jsc"
     end
 end
 
@@ -60,6 +60,19 @@ def remove_copy_hermes_framework_script_phase(installer, react_native_path)
     project.save()
 end
 
-def remove_hermesc_build_dir(react_native_path)
-    %x(rm -rf #{react_native_path}/sdks/hermes-engine/build_host_hermesc)
+# TODO: Use this same function in the `hermes-engine.podspec` somehow
+def is_building_hermes_from_source(react_native_version, react_native_path)
+    if ENV['HERMES_ENGINE_TARBALL_PATH'] != nil
+        return false
+    end
+
+    isInMain = react_native_version.include?('1000.0.0')
+
+    hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
+    isInCI = ENV['CI'] === 'true'
+
+    isReleaseBranch = File.exist?(hermestag_file) && isInCI
+
+
+    return isInMain || isReleaseBranch
 end

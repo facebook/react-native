@@ -73,6 +73,12 @@ static TextAttributes convertRawProp(
       "allowFontScaling",
       sourceTextAttributes.allowFontScaling,
       defaultTextAttributes.allowFontScaling);
+  textAttributes.dynamicTypeRamp = convertRawProp(
+      context,
+      rawProps,
+      "dynamicTypeRamp",
+      sourceTextAttributes.dynamicTypeRamp,
+      defaultTextAttributes.dynamicTypeRamp);
   textAttributes.letterSpacing = convertRawProp(
       context,
       rawProps,

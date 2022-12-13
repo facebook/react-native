@@ -26,8 +26,8 @@ load(
     "react_native_xplat_dep",
     "react_native_xplat_target",
     "rn_apple_library",
+    "rn_apple_xplat_cxx_library",
     "rn_extra_build_flags",
-    "rn_xplat_cxx_library2",
     "subdir_glob",
 )
 load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
@@ -70,7 +70,7 @@ rn_codegen_components(
     schema_target = ":codegen_rn_components_schema_rncore",
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTCxxBridge",
     srcs = glob([
         "React/CxxBridge/*.mm",
@@ -115,7 +115,7 @@ rn_xplat_cxx_library2(
         react_native_root_target("React/CoreModules:CoreModules"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
-        react_native_xplat_target("jsi:JSCRuntime"),
+        react_native_xplat_target("jsc:JSCRuntime"),
         react_native_xplat_target("jsiexecutor:jsiexecutor"),
         react_native_xplat_target("reactperflogger:reactperflogger"),
     ],
@@ -130,7 +130,7 @@ RCTCXXMODULE_PUBLIC_HEADERS = {
     ]
 }
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTCxxModule",
     srcs = glob([
         "React/CxxModule/*.mm",
@@ -171,7 +171,7 @@ rn_xplat_cxx_library2(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTCxxUtils",
     srcs = glob([
         "React/CxxUtils/*.mm",
@@ -203,7 +203,7 @@ rn_xplat_cxx_library2(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTCxxLogUtils",
     srcs = glob([
         "React/CxxLogUtils/*.mm",
@@ -267,6 +267,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTDevLoadingViewProtocol.h": RCTDEVSUPPORT_PATH + "RCTDevLoadingViewProtocol.h",
     "React/RCTDevLoadingViewSetEnabled.h": RCTDEVSUPPORT_PATH + "RCTDevLoadingViewSetEnabled.h",
     "React/RCTDisplayLink.h": RCTBASE_PATH + "RCTDisplayLink.h",
+    "React/RCTDynamicTypeRamp.h": RCTLIB_PATH + "Text/Text/RCTDynamicTypeRamp.h",
     "React/RCTErrorCustomizer.h": RCTBASE_PATH + "RCTErrorCustomizer.h",
     "React/RCTErrorInfo.h": RCTBASE_PATH + "RCTErrorInfo.h",
     # NOTE: RCTEventDispatcher.h is exported from CoreModules:CoreModulesApple
@@ -362,7 +363,7 @@ REACT_COMPONENTVIEWS_BASE_FILES = [
     "React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.mm",
 ]
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "ReactInternal",
     srcs = glob(
         [
@@ -405,12 +406,6 @@ rn_xplat_cxx_library2(
         "-Wno-global-constructors",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    exported_linker_flags = [
-        "-weak_framework",
-        "UserNotifications",
-        "-weak_framework",
-        "WebKit",
-    ],
     exported_preprocessor_flags = rn_extra_build_flags(),
     fbobjc_enable_exceptions = True,
     frameworks = [
@@ -425,6 +420,7 @@ rn_xplat_cxx_library2(
         "$SDKROOT/System/Library/Frameworks/SystemConfiguration.framework",
         "$SDKROOT/System/Library/Frameworks/UIKit.framework",
         "$SDKROOT/System/Library/Frameworks/UserNotifications.framework",
+        "$SDKROOT/System/Library/Frameworks/WebKit.framework",
     ],
     labels = [
         "depslint_never_add",
@@ -462,7 +458,7 @@ rn_xplat_cxx_library2(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTFabric",
     srcs = glob(
         [
@@ -596,6 +592,7 @@ rn_apple_library(
     autoglob = False,
     complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
+    disable_infer_precompiled_header = True,
     extension_api_only = True,
     frameworks = [
         "Foundation",
@@ -689,7 +686,7 @@ rn_apple_library(
 # Ideally, each component view gets its own target, and each target uses react_fabric_component_plugin_provider.
 # For each component, an app can import the base component view, or an app-specific subclass.
 # i.e. Apps depend on "ImageView" target for RCTImageComponentView.h, and "FBReactImageView" target for FBReactImageComponentView.h
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTFabricComponentViewsBase",
     srcs = glob(REACT_COMPONENTVIEWS_BASE_FILES),
     header_namespace = "",
@@ -1201,7 +1198,7 @@ rn_apple_library(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTText",
     srcs = glob([
         "Libraries/Text/**/*.m",
@@ -1307,7 +1304,7 @@ rn_apple_library(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTWrapper",
     srcs = glob([
         "Libraries/Wrapper/*.m",
@@ -1339,7 +1336,7 @@ rn_xplat_cxx_library2(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTWrapperExample",
     srcs = glob([
         "Libraries/Wrapper/Example/*.m",
@@ -1372,7 +1369,7 @@ rn_xplat_cxx_library2(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTSurfaceHostingComponent",
     srcs = glob([
         "Libraries/SurfaceHostingComponent/**/*.m",
@@ -1407,7 +1404,7 @@ rn_xplat_cxx_library2(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTSurfaceBackedComponent",
     srcs = glob([
         "Libraries/SurfaceBackedComponent/**/*.m",
@@ -1443,7 +1440,7 @@ rn_xplat_cxx_library2(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTMapView_RNHeader",
     header_namespace = "",
     exported_headers = {
@@ -1458,7 +1455,7 @@ rn_xplat_cxx_library2(
     ],
 )
 
-rn_xplat_cxx_library2(
+rn_apple_xplat_cxx_library(
     name = "RCTWebPerformance",
     srcs = glob([
         "Libraries/WebPerformance/**/*.cpp",

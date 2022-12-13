@@ -795,6 +795,7 @@ export default class VirtualizedList extends StateSafePureComponent<
 
   render(): React.Node {
     if (__DEV__) {
+      // $FlowFixMe[underconstrained-implicit-instantiation]
       const flatStyles = flattenStyle(this.props.contentContainerStyle);
       if (flatStyles != null && flatStyles.flexWrap === 'wrap') {
         console.warn(
@@ -861,7 +862,7 @@ export default class VirtualizedList extends StateSafePureComponent<
       cells.push(
         React.cloneElement(element, {
           key: '$empty',
-          onLayout: event => {
+          onLayout: (event: LayoutEvent) => {
             this._onLayoutEmpty(event);
             if (element.props.onLayout) {
               element.props.onLayout(event);

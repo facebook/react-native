@@ -61,14 +61,14 @@ function createParserErrorCapturer(): [
 
 function verifyPlatforms(
   hasteModuleName: string,
-  moduleNames: string[],
+  moduleName: string,
 ): $ReadOnly<{
   cxxOnly: boolean,
   excludedPlatforms: Array<'iOS' | 'android'>,
 }> {
   let cxxOnly = false;
   const excludedPlatforms = new Set<'iOS' | 'android'>();
-  const namesToValidate = [...moduleNames, hasteModuleName];
+  const namesToValidate = [moduleName, hasteModuleName];
 
   namesToValidate.forEach(name => {
     if (name.endsWith('Android')) {

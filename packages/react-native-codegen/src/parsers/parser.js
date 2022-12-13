@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {UnionTypeAnnotationMemberType} from '../CodegenSchema.js';
 import type {ParserType} from './errors';
 
 /**
@@ -22,6 +23,18 @@ export interface Parser {
    */
   typeParameterInstantiation: string;
 
+  /**
+   * Given a declaration, it returns true if it is a property
+   */
+  isProperty(property: $FlowFixMe): boolean;
+  /**
+   * Given a property declaration, it returns the key name.
+   * @parameter property: an object containing a property declaration.
+   * @parameter hasteModuleName: a string with the native module name.
+   * @returns: the key name.
+   * @throws if property does not contain a property declaration.
+   */
+  getKeyName(property: $FlowFixMe, hasteModuleName: string): string;
   /**
    * Given a type declaration, it possibly returns the name of the Enum type.
    * @parameter maybeEnumDeclaration: an object possibly containing an Enum declaration.
@@ -44,4 +57,18 @@ export interface Parser {
    * @returns: the name of the type.
    */
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string;
+  /**
+   * Given a type arguments, it returns a boolean specifying if the Module is Invalid.
+   * @parameter typeArguments: the type arguments.
+   * @returns: a boolean specifying if the Module is Invalid.
+   */
+  checkIfInvalidModule(typeArguments: $FlowFixMe): boolean;
+  /**
+   * Given a union annotation members types, it returns an array of remaped members names without duplicates.
+   * @parameter membersTypes: union annotation members types
+   * @returns: an array of remaped members names without duplicates.
+   */
+  remapUnionTypeAnnotationMemberNames(
+    types: $FlowFixMe,
+  ): UnionTypeAnnotationMemberType[];
 }

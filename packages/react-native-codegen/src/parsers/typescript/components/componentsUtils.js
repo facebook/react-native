@@ -11,7 +11,10 @@
 'use strict';
 import type {ASTNode} from '../utils';
 import type {NamedShape} from '../../../CodegenSchema.js';
-const {parseTopLevelType} = require('../parseTopLevelType');
+const {
+  parseTopLevelType,
+  flattenIntersectionType,
+} = require('../parseTopLevelType');
 import type {TypeDeclarationMap} from '../../utils';
 
 function getProperties(
@@ -163,6 +166,102 @@ function detectArrayType<T>(
   return null;
 }
 
+function buildObjectType<T>(
+  rawProperties: Array<$FlowFixMe>,
+  types: TypeDeclarationMap,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+): $FlowFixMe {
+  const flattenedProperties = flattenProperties(rawProperties, types);
+  const properties = flattenedProperties
+    .map(prop => buildSchema(prop, types))
+    .filter(Boolean);
+
+  return {
+    type: 'ObjectTypeAnnotation',
+    properties,
+  };
+}
+
+function getCommonTypeAnnotation<T>(
+  name: string,
+  forArray: boolean,
+  type: string,
+  typeAnnotation: $FlowFixMe,
+  defaultValue: $FlowFixMe | void,
+  types: TypeDeclarationMap,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+): $FlowFixMe {
+  switch (type) {
+    case 'TSTypeLiteral':
+      return buildObjectType(typeAnnotation.members, types, buildSchema);
+    case 'TSInterfaceDeclaration':
+      return buildObjectType([typeAnnotation], types, buildSchema);
+    case 'TSIntersectionType':
+      return buildObjectType(
+        flattenIntersectionType(typeAnnotation, types),
+        types,
+        buildSchema,
+      );
+    case 'ImageSource':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'ImageSourcePrimitive',
+      };
+    case 'ImageRequest':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'ImageRequestPrimitive',
+      };
+    case 'ColorValue':
+    case 'ProcessedColorValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'ColorPrimitive',
+      };
+    case 'PointValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'PointPrimitive',
+      };
+    case 'EdgeInsetsValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'EdgeInsetsPrimitive',
+      };
+    case 'TSUnionType':
+      return getUnionOfLiterals(
+        name,
+        forArray,
+        typeAnnotation.types,
+        defaultValue,
+        types,
+      );
+    case 'Int32':
+      return {
+        type: 'Int32TypeAnnotation',
+      };
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
+      };
+    case 'Float':
+      return {
+        type: 'FloatTypeAnnotation',
+      };
+    case 'TSBooleanKeyword':
+      return {
+        type: 'BooleanTypeAnnotation',
+      };
+    case 'Stringish':
+    case 'TSStringKeyword':
+      return {
+        type: 'StringTypeAnnotation',
+      };
+    default:
+      return undefined;
+  }
+}
+
 function getTypeAnnotationForArray<T>(
   name: string,
   typeAnnotation: $FlowFixMe,
@@ -207,88 +306,54 @@ function getTypeAnnotationForArray<T>(
         extractedTypeAnnotation.typeName?.name ||
         extractedTypeAnnotation.type;
 
+  const common = getCommonTypeAnnotation(
+    name,
+    true,
+    type,
+    extractedTypeAnnotation,
+    defaultValue,
+    types,
+    buildSchema,
+  );
+  if (common) {
+    return common;
+  }
+
   switch (type) {
-    case 'TSTypeLiteral':
-    case 'TSInterfaceDeclaration': {
-      const rawProperties =
-        type === 'TSInterfaceDeclaration'
-          ? [extractedTypeAnnotation]
-          : extractedTypeAnnotation.members;
-      if (rawProperties === undefined) {
-        throw new Error(type);
-      }
-      return {
-        type: 'ObjectTypeAnnotation',
-        properties: flattenProperties(rawProperties, types)
-          .map(prop => buildSchema(prop, types))
-          .filter(Boolean),
-      };
-    }
     case 'TSNumberKeyword':
       return {
         type: 'FloatTypeAnnotation',
       };
-    case 'ImageSource':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ImageSourcePrimitive',
-      };
-    case 'ImageRequest':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ImageRequestPrimitive',
-      };
-    case 'ColorValue':
-    case 'ProcessedColorValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ColorPrimitive',
-      };
-    case 'PointValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'PointPrimitive',
-      };
-    case 'EdgeInsetsValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'EdgeInsetsPrimitive',
-      };
-    case 'Stringish':
-      return {
-        type: 'StringTypeAnnotation',
-      };
-    case 'Int32':
-      return {
-        type: 'Int32TypeAnnotation',
-      };
-    case 'Double':
-      return {
-        type: 'DoubleTypeAnnotation',
-      };
-    case 'Float':
-      return {
-        type: 'FloatTypeAnnotation',
-      };
-    case 'TSBooleanKeyword':
-      return {
-        type: 'BooleanTypeAnnotation',
-      };
-    case 'TSStringKeyword':
-      return {
-        type: 'StringTypeAnnotation',
-      };
-    case 'TSUnionType':
-      return getUnionOfLiterals(
-        name,
-        true,
-        extractedTypeAnnotation.types,
-        defaultValue,
-        types,
-      );
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": ${type}`);
+  }
+}
+
+function setDefaultValue(
+  common: $FlowFixMe,
+  defaultValue: $FlowFixMe | void,
+): void {
+  switch (common.type) {
+    case 'Int32TypeAnnotation':
+    case 'DoubleTypeAnnotation':
+      common.default = ((defaultValue ? defaultValue : 0): number);
+      break;
+    case 'FloatTypeAnnotation':
+      common.default = ((defaultValue === null
+        ? null
+        : defaultValue
+        ? defaultValue
+        : 0): number | null);
+      break;
+    case 'BooleanTypeAnnotation':
+      common.default = defaultValue === null ? null : !!defaultValue;
+      break;
+    case 'StringTypeAnnotation':
+      common.default = ((defaultValue === undefined ? null : defaultValue):
+        | string
+        | null);
+      break;
   }
 }
 
@@ -319,39 +384,21 @@ function getTypeAnnotation<T>(
       ? typeAnnotation.typeName.name
       : typeAnnotation.type;
 
-  switch (type) {
-    case 'TSTypeLiteral':
-    case 'TSInterfaceDeclaration': {
-      const rawProperties =
-        type === 'TSInterfaceDeclaration'
-          ? [typeAnnotation]
-          : typeAnnotation.members;
-      const flattenedProperties = flattenProperties(rawProperties, types);
-      const properties = flattenedProperties
-        .map(prop => buildSchema(prop, types))
-        .filter(Boolean);
+  const common = getCommonTypeAnnotation(
+    name,
+    false,
+    type,
+    typeAnnotation,
+    defaultValue,
+    types,
+    buildSchema,
+  );
+  if (common) {
+    setDefaultValue(common, defaultValue);
+    return common;
+  }
 
-      return {
-        type: 'ObjectTypeAnnotation',
-        properties,
-      };
-    }
-    case 'ImageSource':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ImageSourcePrimitive',
-      };
-    case 'ImageRequest':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ImageRequestPrimitive',
-      };
-    case 'ColorValue':
-    case 'ProcessedColorValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'ColorPrimitive',
-      };
+  switch (type) {
     case 'ColorArrayValue':
       return {
         type: 'ArrayTypeAnnotation',
@@ -360,65 +407,9 @@ function getTypeAnnotation<T>(
           name: 'ColorPrimitive',
         },
       };
-    case 'PointValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'PointPrimitive',
-      };
-    case 'EdgeInsetsValue':
-      return {
-        type: 'ReservedPropTypeAnnotation',
-        name: 'EdgeInsetsPrimitive',
-      };
-    case 'Int32':
-      return {
-        type: 'Int32TypeAnnotation',
-        default: ((defaultValue ? defaultValue : 0): number),
-      };
-    case 'Double':
-      return {
-        type: 'DoubleTypeAnnotation',
-        default: ((defaultValue ? defaultValue : 0): number),
-      };
-    case 'Float':
-      return {
-        type: 'FloatTypeAnnotation',
-        default: ((defaultValue === null
-          ? null
-          : defaultValue
-          ? defaultValue
-          : 0): number | null),
-      };
-    case 'TSBooleanKeyword':
-      return {
-        type: 'BooleanTypeAnnotation',
-        default: defaultValue === null ? null : !!defaultValue,
-      };
-    case 'TSStringKeyword':
-      return {
-        type: 'StringTypeAnnotation',
-        default: ((defaultValue === undefined ? null : defaultValue):
-          | string
-          | null),
-      };
-    case 'Stringish':
-      return {
-        type: 'StringTypeAnnotation',
-        default: ((defaultValue === undefined ? null : defaultValue):
-          | string
-          | null),
-      };
     case 'TSNumberKeyword':
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
-      );
-    case 'TSUnionType':
-      return getUnionOfLiterals(
-        name,
-        false,
-        typeAnnotation.types,
-        defaultValue,
-        types,
       );
     default:
       (type: empty);
@@ -498,6 +489,8 @@ function flattenProperties(
         return flattenProperties(property.members, types);
       } else if (property.type === 'TSInterfaceDeclaration') {
         return flattenProperties(getProperties(property.id.name, types), types);
+      } else if (property.type === 'TSIntersectionType') {
+        return flattenProperties(property.types, types);
       } else {
         throw new Error(
           `${property.type} is not a supported object literal type.`,
@@ -505,9 +498,9 @@ function flattenProperties(
       }
     })
     .filter(Boolean)
-    .reduce((acc, item) => {
+    .reduce((acc: Array<PropAST>, item) => {
       if (Array.isArray(item)) {
-        item.forEach(prop => {
+        item.forEach((prop: PropAST) => {
           verifyPropNotAlreadyDefined(acc, prop);
         });
         return acc.concat(item);

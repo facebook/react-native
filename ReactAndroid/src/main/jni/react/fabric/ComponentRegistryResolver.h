@@ -34,8 +34,6 @@ class ComponentRegistryResolver {
 
   bool containsComponentManager(std::string componentName) const;
 
-  bool isRootComponent(std::string componentName) const;
-
   std::shared_ptr<facebook::react::ComponentManager> getComponentManager(
       std::string name) const;
 

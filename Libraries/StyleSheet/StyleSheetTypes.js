@@ -179,8 +179,27 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   margin?: DimensionValue,
 
+  /** Setting `marginBlock` has the same effect as setting both
+   *  `marginTop` and `marginBottom`.
+   */
+  marginBlock?: DimensionValue,
+
+  /** `marginBlockEnd` works like `margin-block-end`in CSS. Because React
+   *  Native doesn not support `writing-mode` this is always mapped to
+   *  `margin-bottom`. See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-block-end
+   *  for more details.
+   */
+  marginBlockEnd?: DimensionValue,
+
+  /** `marginBlockEnd` works like `margin-block-end`in CSS. Because React
+   *  Native doesn not support `writing-mode` this is always mapped to
+   *  `margin-top`. See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-block-end
+   *  for more details.
+   */
+  marginBlockStart?: DimensionValue,
+
   /** `marginBottom` works like `margin-bottom` in CSS.
-   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-bottom
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-block-start
    *  for more details.
    */
   marginBottom?: DimensionValue,
@@ -195,6 +214,23 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  both `marginLeft` and `marginRight`.
    */
   marginHorizontal?: DimensionValue,
+
+  /** Setting `marginInline` has the same effect as setting
+   *  both `marginLeft` and `marginRight`.
+   */
+  marginInline?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `marginInlineEnd` is equivalent to `marginRight`.
+   * When direction is `rtl`, `marginInlineEnd` is equivalent to `marginLeft`.
+   */
+  marginInlineEnd?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `marginInlineStart` is equivalent to `marginLeft`.
+   * When direction is `rtl`, `marginInlineStart` is equivalent to `marginRight`.
+   */
+  marginInlineStart?: DimensionValue,
 
   /** `marginLeft` works like `margin-left` in CSS.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-left
@@ -232,6 +268,25 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   padding?: DimensionValue,
 
+  /** Setting `paddingBlock` is like setting both of
+   *  `paddingTop` and `paddingBottom`.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-block
+   * for more details.
+   */
+  paddingBlock?: DimensionValue,
+
+  /** `paddingBlockEnd` works like `padding-bottom` in CSS.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-block-end
+   * for more details.
+   */
+  paddingBlockEnd?: DimensionValue,
+
+  /** `paddingBlockStart` works like `padding-top` in CSS.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-block-start
+   * for more details.
+   */
+  paddingBlockStart?: DimensionValue,
+
   /** `paddingBottom` works like `padding-bottom` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-bottom
    * for more details.
@@ -248,6 +303,23 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  `paddingLeft` and `paddingRight`.
    */
   paddingHorizontal?: DimensionValue,
+
+  /** Setting `paddingInline` is like setting both of
+   *  `paddingLeft` and `paddingRight`.
+   */
+  paddingInline?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `paddingInlineEnd` is equivalent to `paddingRight`.
+   * When direction is `rtl`, `paddingInlineEnd` is equivalent to `paddingLeft`.
+   */
+  paddingInlineEnd?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `paddingInlineStart` is equivalent to `paddingLeft`.
+   * When direction is `rtl`, `paddingInlineStart` is equivalent to `paddingRight`.
+   */
+  paddingInlineStart?: DimensionValue,
 
   /** `paddingLeft` works like `padding-left` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-left
@@ -482,6 +554,19 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  @platform ios
    */
   direction?: 'inherit' | 'ltr' | 'rtl',
+
+  /**
+   * In React Native, gap works the same way it does in CSS.
+   * If there are two or more children in a container, they will be separated from each other
+   * by the value of the gap - but the children will not be separated from the edges of their parent container.
+   * For horizontal gaps, use columnGap, for vertical gaps, use rowGap, and to apply both at the same time, it's gap.
+   * When align-content or justify-content are set to space-between or space-around, the separation
+   * between children may be larger than the gap value.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/gap for more details.
+   */
+  rowGap?: number,
+  columnGap?: number,
+  gap?: number,
 }>;
 
 /**
@@ -518,19 +603,6 @@ export type ____ShadowStyle_InternalCore = $ReadOnly<{
    * @platform ios
    */
   shadowRadius?: number,
-
-  /**
-   * In React Native, gap works the same way it does in CSS.
-   * If there are two or more children in a container, they will be separated from each other
-   * by the value of the gap - but the children will not be separated from the edges of their parent container.
-   * For horizontal gaps, use columnGap, for vertical gaps, use rowGap, and to apply both at the same time, it's gap.
-   * When align-content or justify-content are set to space-between or space-around, the separation
-   * between children may be larger than the gap value.
-   * See https://developer.mozilla.org/en-US/docs/Web/CSS/gap for more details.
-   */
-  rowGap?: number,
-  columnGap?: number,
-  gap?: number,
 }>;
 
 export type ____ShadowStyle_Internal = $ReadOnly<{

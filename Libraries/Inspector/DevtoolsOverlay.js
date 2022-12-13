@@ -8,6 +8,7 @@
  * @flow
  */
 
+import type {PointerEvent} from '../Types/CoreEventTypes';
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {HostRef} from './getInspectorDataForViewAtPoint';
 
@@ -24,7 +25,6 @@ const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint
 const {useEffect, useState, useCallback, useRef} = React;
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-const isFabric = global.nativeFabricUIManager != null;
 
 export default function DevtoolsOverlay({
   inspectedView,
@@ -126,11 +126,11 @@ export default function DevtoolsOverlay({
       getInspectorDataForViewAtPoint(inspectedView, x, y, viewData => {
         const {touchedViewTag, closestInstance, frame} = viewData;
         if (closestInstance != null || touchedViewTag != null) {
+          // We call `selectNode` for both non-fabric(viewTag) and fabric(instance),
+          // this makes sure it works for both architectures.
+          agent.selectNode(findNodeHandle(touchedViewTag));
           if (closestInstance != null) {
-            // Fabric
             agent.selectNode(closestInstance);
-          } else {
-            agent.selectNode(findNodeHandle(touchedViewTag));
           }
           setInspected({
             frame,
@@ -154,14 +154,14 @@ export default function DevtoolsOverlay({
   }, []);
 
   const onPointerMove = useCallback(
-    e => {
+    (e: PointerEvent) => {
       findViewForLocation(e.nativeEvent.x, e.nativeEvent.y);
     },
     [findViewForLocation],
   );
 
   const onResponderMove = useCallback(
-    e => {
+    (e: PressEvent) => {
       findViewForLocation(
         e.nativeEvent.touches[0].locationX,
         e.nativeEvent.touches[0].locationY,
@@ -182,7 +182,7 @@ export default function DevtoolsOverlay({
   if (isInspecting) {
     const events =
       // Pointer events only work on fabric
-      isFabric && ReactNativeFeatureFlags.shouldEmitW3CPointerEvents
+      ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()
         ? {
             onPointerMove,
             onPointerDown: onPointerMove,

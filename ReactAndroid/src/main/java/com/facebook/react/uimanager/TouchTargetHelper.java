@@ -140,7 +140,7 @@ public class TouchTargetHelper {
         pathAccumulator = pathAccumulator.subList(firstReactAncestor, pathAccumulator.size());
       }
 
-      int targetTag = getTouchTargetForView(reactTargetView, eventX, eventY);
+      int targetTag = getTouchTargetForView(reactTargetView, viewCoords[0], viewCoords[1]);
       if (targetTag != reactTargetView.getId()) {
         pathAccumulator.add(0, new ViewTarget(targetTag, (View) null));
       }
@@ -396,11 +396,11 @@ public class TouchTargetHelper {
     }
   }
 
-  private static int getTouchTargetForView(View targetView, float eventX, float eventY) {
+  private static int getTouchTargetForView(View targetView, float viewX, float viewY) {
     if (targetView instanceof ReactCompoundView) {
       // Use coordinates relative to the view, which have been already computed by
       // {@link #findTouchTargetView()}.
-      return ((ReactCompoundView) targetView).reactTagForTouch(eventX, eventY);
+      return ((ReactCompoundView) targetView).reactTagForTouch(viewX, viewY);
     }
     return targetView.getId();
   }

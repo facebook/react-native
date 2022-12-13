@@ -313,6 +313,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   if (showSoftInputOnFocus) {
     // Resets to default keyboard.
     self.backedTextInputView.inputView = nil;
+
+    // Without the call to reloadInputViews, the keyboard will not change until the textInput field (the first
+    // responder) loses and regains focus.
+    if (self.backedTextInputView.isFirstResponder) {
+      [self.backedTextInputView reloadInputViews];
+    }
   } else {
     // Hides keyboard, but keeps blinking cursor.
     self.backedTextInputView.inputView = [UIView new];

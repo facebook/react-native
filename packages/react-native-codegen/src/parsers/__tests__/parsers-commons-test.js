@@ -17,19 +17,18 @@ import {
   parseObjectProperty,
   wrapNullable,
   unwrapNullable,
-  emitUnionTypeAnnotation,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
-import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema';
 
 const {
-  UnsupportedUnionTypeAnnotationParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('../errors');
 
 import {MockedParser} from '../parserMock';
+import {TypeScriptParser} from '../typescript/parser';
 
 const parser = new MockedParser();
+const typeScriptParser = new TypeScriptParser();
 
 const flowTranslateTypeAnnotation = require('../flow/modules/index');
 const typeScriptTranslateTypeAnnotation = require('../typescript/modules/index');
@@ -67,7 +66,11 @@ describe('wrapNullable', () => {
 describe('unwrapNullable', () => {
   describe('when type annotation is nullable', () => {
     it('returns original type annotation', () => {
-      const result = unwrapNullable({
+      // $FlowFixMe[incompatible-call]
+      const result = unwrapNullable<{
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {type: 'BooleanTypeAnnotation'},
+      }>({
         type: 'NullableTypeAnnotation',
         typeAnnotation: {
           type: 'BooleanTypeAnnotation',
@@ -85,7 +88,7 @@ describe('unwrapNullable', () => {
   });
   describe('when type annotation is not nullable', () => {
     it('returns original type annotation', () => {
-      const result = unwrapNullable({
+      const result = unwrapNullable<{type: 'BooleanTypeAnnotation'}>({
         type: 'BooleanTypeAnnotation',
       });
       const expected = [
@@ -119,7 +122,7 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
     ).not.toThrow();
   });
 
-  it('throws an IncorrectlyParameterizedGenericParserError if typeParameters is null', () => {
+  it('throws a MissingTypeParameterGenericParserError if typeParameters is null', () => {
     const typeAnnotation = {
       typeParameters: null,
       id: {
@@ -158,7 +161,7 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
     );
   });
 
-  it("throws an IncorrectlyParameterizedGenericParserError if typeParameters don't have 1 exactly parameter", () => {
+  it("throws a MoreThanOneTypeParameterGenericParserError if typeParameters don't have 1 exactly parameter", () => {
     const typeAnnotationWithTwoParams = {
       typeParameters: {
         params: [1, 2],
@@ -222,18 +225,7 @@ describe('isObjectProperty', () => {
       expect(result).toEqual(true);
     });
 
-    it("returns 'true' if 'property.type' is 'ObjectTypeIndexer'", () => {
-      const result = isObjectProperty(
-        {
-          type: 'ObjectTypeIndexer',
-          ...propertyStub,
-        },
-        language,
-      );
-      expect(result).toEqual(true);
-    });
-
-    it("returns 'false' if 'property.type' is not 'ObjectTypeProperty' or 'ObjectTypeIndexer'", () => {
+    it("returns 'false' if 'property.type' is not 'ObjectTypeProperty'", () => {
       const result = isObjectProperty(
         {
           type: 'notObjectTypeProperty',
@@ -258,18 +250,7 @@ describe('isObjectProperty', () => {
       expect(result).toEqual(true);
     });
 
-    it("returns 'true' if 'property.type' is 'TSIndexSignature'", () => {
-      const result = isObjectProperty(
-        {
-          type: 'TSIndexSignature',
-          ...propertyStub,
-        },
-        language,
-      );
-      expect(result).toEqual(true);
-    });
-
-    it("returns 'false' if 'property.type' is not 'TSPropertySignature' or 'TSIndexSignature'", () => {
+    it("returns 'false' if 'property.type' is not 'TSPropertySignature'", () => {
       const result = isObjectProperty(
         {
           type: 'notTSPropertySignature',
@@ -292,7 +273,7 @@ describe('parseObjectProperty', () => {
 
   describe("when 'language' is 'Flow'", () => {
     const language: ParserType = 'Flow';
-    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'ObjectTypeProperty' or 'ObjectTypeIndexer'.", () => {
+    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'ObjectTypeProperty'.", () => {
       const property = {
         type: 'notObjectTypeProperty',
         typeAnnotation: {
@@ -316,9 +297,9 @@ describe('parseObjectProperty', () => {
           aliasMap,
           tryParse,
           cxxOnly,
-          language,
           nullable,
           flowTranslateTypeAnnotation,
+          parser,
         ),
       ).toThrow(expected);
     });
@@ -326,7 +307,7 @@ describe('parseObjectProperty', () => {
 
   describe("when 'language' is 'TypeScript'", () => {
     const language: ParserType = 'TypeScript';
-    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'TSPropertySignature' or 'TSIndexSignature'.", () => {
+    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'TSPropertySignature'.", () => {
       const property = {
         type: 'notTSPropertySignature',
         typeAnnotation: {
@@ -349,477 +330,11 @@ describe('parseObjectProperty', () => {
           aliasMap,
           tryParse,
           cxxOnly,
-          language,
           nullable,
           typeScriptTranslateTypeAnnotation,
+          parser,
         ),
       ).toThrow(expected);
-    });
-
-    it("returns a 'NativeModuleBaseTypeAnnotation' object with 'typeAnnotation.type' equal to 'GenericObjectTypeAnnotation', if 'property.type' is 'TSIndexSignature'.", () => {
-      const property = {
-        type: 'TSIndexSignature',
-        typeAnnotation: {
-          type: 'TSIndexSignature',
-          typeAnnotation: 'TSIndexSignature',
-        },
-        key: {
-          name: 'testKeyName',
-        },
-        value: 'wrongValue',
-        name: 'wrongName',
-        parameters: [{name: 'testName'}],
-      };
-      const result = parseObjectProperty(
-        property,
-        moduleName,
-        types,
-        aliasMap,
-        tryParse,
-        cxxOnly,
-        language,
-        nullable,
-        typeScriptTranslateTypeAnnotation,
-      );
-      const expected = {
-        name: 'testName',
-        optional: false,
-        typeAnnotation: wrapNullable(nullable, {
-          type: 'GenericObjectTypeAnnotation',
-        }),
-      };
-      expect(result).toEqual(expected);
-    });
-  });
-});
-
-describe('emitUnionTypeAnnotation', () => {
-  const hasteModuleName = 'SampleTurboModule';
-
-  describe('when language is flow', () => {
-    const language: ParserType = 'Flow';
-
-    describe('when members type is numeric', () => {
-      const typeAnnotation = {
-        type: 'UnionTypeAnnotation',
-        types: [
-          {type: 'NumberLiteralTypeAnnotation'},
-          {type: 'NumberLiteralTypeAnnotation'},
-        ],
-      };
-      describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            true,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'NullableTypeAnnotation',
-            typeAnnotation: {
-              type: 'UnionTypeAnnotation',
-              memberType: 'NumberTypeAnnotation',
-            },
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-
-      describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            false,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'UnionTypeAnnotation',
-            memberType: 'NumberTypeAnnotation',
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-    });
-
-    describe('when members type is string', () => {
-      const typeAnnotation = {
-        type: 'UnionTypeAnnotation',
-        types: [
-          {type: 'StringLiteralTypeAnnotation'},
-          {type: 'StringLiteralTypeAnnotation'},
-        ],
-      };
-      describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            true,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'NullableTypeAnnotation',
-            typeAnnotation: {
-              type: 'UnionTypeAnnotation',
-              memberType: 'StringTypeAnnotation',
-            },
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-
-      describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            false,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'UnionTypeAnnotation',
-            memberType: 'StringTypeAnnotation',
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-    });
-
-    describe('when members type is object', () => {
-      const typeAnnotation = {
-        type: 'UnionTypeAnnotation',
-        types: [{type: 'ObjectTypeAnnotation'}, {type: 'ObjectTypeAnnotation'}],
-      };
-      describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            true,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'NullableTypeAnnotation',
-            typeAnnotation: {
-              type: 'UnionTypeAnnotation',
-              memberType: 'ObjectTypeAnnotation',
-            },
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-
-      describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            false,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'UnionTypeAnnotation',
-            memberType: 'ObjectTypeAnnotation',
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-    });
-
-    describe('when members type is mixed', () => {
-      const typeAnnotation = {
-        type: 'UnionTypeAnnotation',
-        types: [
-          {type: 'NumberLiteralTypeAnnotation'},
-          {type: 'StringLiteralTypeAnnotation'},
-          {type: 'ObjectTypeAnnotation'},
-        ],
-      };
-      const unionTypes: UnionTypeAnnotationMemberType[] = [
-        'NumberTypeAnnotation',
-        'StringTypeAnnotation',
-        'ObjectTypeAnnotation',
-      ];
-      describe('when nullable is true', () => {
-        it('throws an excpetion', () => {
-          const expected = new UnsupportedUnionTypeAnnotationParserError(
-            hasteModuleName,
-            typeAnnotation,
-            unionTypes,
-            language,
-          );
-
-          expect(() => {
-            emitUnionTypeAnnotation(
-              true,
-              hasteModuleName,
-              typeAnnotation,
-              language,
-            );
-          }).toThrow(expected);
-        });
-      });
-
-      describe('when nullable is false', () => {
-        it('throws an excpetion', () => {
-          const expected = new UnsupportedUnionTypeAnnotationParserError(
-            hasteModuleName,
-            typeAnnotation,
-            unionTypes,
-            language,
-          );
-
-          expect(() => {
-            emitUnionTypeAnnotation(
-              false,
-              hasteModuleName,
-              typeAnnotation,
-              language,
-            );
-          }).toThrow(expected);
-        });
-      });
-    });
-  });
-
-  describe('when language is typescript', () => {
-    const language: ParserType = 'TypeScript';
-
-    describe('when members type is numeric', () => {
-      const typeAnnotation = {
-        type: 'TSUnionType',
-        types: [
-          {
-            type: 'TSLiteralType',
-            literal: {type: 'NumericLiteral'},
-          },
-          {
-            type: 'TSLiteralType',
-            literal: {type: 'NumericLiteral'},
-          },
-        ],
-      };
-      describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            true,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'NullableTypeAnnotation',
-            typeAnnotation: {
-              type: 'UnionTypeAnnotation',
-              memberType: 'NumberTypeAnnotation',
-            },
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-
-      describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            false,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'UnionTypeAnnotation',
-            memberType: 'NumberTypeAnnotation',
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-    });
-
-    describe('when members type is string', () => {
-      const typeAnnotation = {
-        type: 'TSUnionType',
-        types: [
-          {
-            type: 'TSLiteralType',
-            literal: {type: 'StringLiteral'},
-          },
-          {
-            type: 'TSLiteralType',
-            literal: {type: 'StringLiteral'},
-          },
-        ],
-      };
-      describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            true,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'NullableTypeAnnotation',
-            typeAnnotation: {
-              type: 'UnionTypeAnnotation',
-              memberType: 'StringTypeAnnotation',
-            },
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-
-      describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            false,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'UnionTypeAnnotation',
-            memberType: 'StringTypeAnnotation',
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-    });
-
-    describe('when members type is object', () => {
-      const typeAnnotation = {
-        type: 'TSUnionType',
-        types: [
-          {
-            type: 'TSLiteralType',
-          },
-          {
-            type: 'TSLiteralType',
-          },
-        ],
-      };
-      describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            true,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'NullableTypeAnnotation',
-            typeAnnotation: {
-              type: 'UnionTypeAnnotation',
-              memberType: 'ObjectTypeAnnotation',
-            },
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-
-      describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
-          const result = emitUnionTypeAnnotation(
-            false,
-            hasteModuleName,
-            typeAnnotation,
-            language,
-          );
-
-          const expected = {
-            type: 'UnionTypeAnnotation',
-            memberType: 'ObjectTypeAnnotation',
-          };
-
-          expect(result).toEqual(expected);
-        });
-      });
-    });
-
-    describe('when members type is mixed', () => {
-      const typeAnnotation = {
-        type: 'TSUnionType',
-        types: [
-          {
-            type: 'TSLiteralType',
-            literal: {type: 'NumericLiteral'},
-          },
-          {
-            type: 'TSLiteralType',
-            literal: {type: 'StringLiteral'},
-          },
-          {
-            type: 'TSLiteralType',
-          },
-        ],
-      };
-      const unionTypes = [
-        'NumberTypeAnnotation',
-        'StringTypeAnnotation',
-        'ObjectTypeAnnotation',
-      ];
-      describe('when nullable is true', () => {
-        it('throws an excpetion', () => {
-          const expected = new UnsupportedUnionTypeAnnotationParserError(
-            hasteModuleName,
-            typeAnnotation,
-            unionTypes,
-            language,
-          );
-
-          expect(() => {
-            emitUnionTypeAnnotation(
-              true,
-              hasteModuleName,
-              typeAnnotation,
-              language,
-            );
-          }).toThrow(expected);
-        });
-      });
-
-      describe('when nullable is false', () => {
-        it('throws an excpetion', () => {
-          const expected = new UnsupportedUnionTypeAnnotationParserError(
-            hasteModuleName,
-            typeAnnotation,
-            unionTypes,
-            language,
-          );
-
-          expect(() => {
-            emitUnionTypeAnnotation(
-              false,
-              hasteModuleName,
-              typeAnnotation,
-              language,
-            );
-          }).toThrow(expected);
-        });
-      });
     });
   });
 });

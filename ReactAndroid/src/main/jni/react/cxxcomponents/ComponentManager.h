@@ -16,9 +16,7 @@ class ComponentManager {
  public:
   ComponentManager() {}
 
-  virtual std::shared_ptr<Component> createComponent(
-      Tag tag,
-      Props::Shared initialProps) = 0;
+  virtual std::shared_ptr<Component> createComponent(Tag tag) = 0;
 
   virtual ~ComponentManager() = default;
 };

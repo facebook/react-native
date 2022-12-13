@@ -161,7 +161,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         <FlatList
           data={Object.keys(this._tests)}
           keyExtractor={item => item}
-          renderItem={({item}) => (
+          renderItem={({item}: {item: Examples, ...}) => (
             <View style={styles.item}>
               <TouchableOpacity
                 style={[styles.column, styles.button]}

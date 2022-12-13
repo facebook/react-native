@@ -8,6 +8,7 @@
 #import "RCTViewComponentView.h"
 
 #import <CoreGraphics/CoreGraphics.h>
+#import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 
 #import <React/RCTAssert.h>
@@ -28,8 +29,6 @@ using namespace facebook::react;
   NSMutableArray<UIView *> *_reactSubviews;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
-
-@synthesize removeClippedSubviews = _removeClippedSubviews;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {

@@ -20,7 +20,6 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/core/propsConversions.h>
-#include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/conversions.h>
 #include <cmath>
 
@@ -33,6 +32,84 @@
 
 namespace facebook {
 namespace react {
+
+inline std::string toString(const DynamicTypeRamp &dynamicTypeRamp) {
+  switch (dynamicTypeRamp) {
+    case DynamicTypeRamp::Caption2:
+      return "caption2";
+    case DynamicTypeRamp::Caption1:
+      return "caption1";
+    case DynamicTypeRamp::Footnote:
+      return "footnote";
+    case DynamicTypeRamp::Subheadline:
+      return "subheadline";
+    case DynamicTypeRamp::Callout:
+      return "callout";
+    case DynamicTypeRamp::Body:
+      return "body";
+    case DynamicTypeRamp::Headline:
+      return "headline";
+    case DynamicTypeRamp::Title3:
+      return "title3";
+    case DynamicTypeRamp::Title2:
+      return "title2";
+    case DynamicTypeRamp::Title1:
+      return "title1";
+    case DynamicTypeRamp::LargeTitle:
+      return "largeTitle";
+  }
+
+  LOG(ERROR) << "Unsupported DynamicTypeRamp value";
+  react_native_assert(false);
+
+  // Sane default in case of parsing errors
+  return "body";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    DynamicTypeRamp &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "caption2") {
+      result = DynamicTypeRamp::Caption2;
+    } else if (string == "caption1") {
+      result = DynamicTypeRamp::Caption1;
+    } else if (string == "footnote") {
+      result = DynamicTypeRamp::Footnote;
+    } else if (string == "subheadline") {
+      result = DynamicTypeRamp::Subheadline;
+    } else if (string == "callout") {
+      result = DynamicTypeRamp::Callout;
+    } else if (string == "body") {
+      result = DynamicTypeRamp::Body;
+    } else if (string == "headline") {
+      result = DynamicTypeRamp::Headline;
+    } else if (string == "title3") {
+      result = DynamicTypeRamp::Title3;
+    } else if (string == "title2") {
+      result = DynamicTypeRamp::Title2;
+    } else if (string == "title1") {
+      result = DynamicTypeRamp::Title1;
+    } else if (string == "largeTitle") {
+      result = DynamicTypeRamp::LargeTitle;
+    } else {
+      // sane default
+      LOG(ERROR) << "Unsupported DynamicTypeRamp value: " << string;
+      react_native_assert(false);
+      result = DynamicTypeRamp::Body;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported DynamicTypeRamp type";
+  react_native_assert(false);
+
+  // Sane default in case of parsing errors
+  result = DynamicTypeRamp::Body;
+}
 
 inline std::string toString(const EllipsizeMode &ellipsisMode) {
   switch (ellipsisMode) {

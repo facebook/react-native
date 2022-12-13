@@ -44,7 +44,7 @@ export interface Spec extends TurboModule {
     commandArgs: ?Array<any>,
   ) => void;
   +measure: (
-    reactTag: ?number,
+    reactTag: number,
     callback: (
       left: number,
       top: number,
@@ -55,7 +55,7 @@ export interface Spec extends TurboModule {
     ) => void,
   ) => void;
   +measureInWindow: (
-    reactTag: ?number,
+    reactTag: number,
     callback: (x: number, y: number, width: number, height: number) => void,
   ) => void;
   +viewIsDescendantOf: (
@@ -64,8 +64,8 @@ export interface Spec extends TurboModule {
     callback: (result: Array<boolean>) => void,
   ) => void;
   +measureLayout: (
-    reactTag: ?number,
-    ancestorReactTag: ?number,
+    reactTag: number,
+    ancestorReactTag: number,
     errorCallback: (error: Object) => void,
     callback: (
       left: number,
@@ -75,7 +75,7 @@ export interface Spec extends TurboModule {
     ) => void,
   ) => void;
   +measureLayoutRelativeToParent: (
-    reactTag: ?number,
+    reactTag: number,
     errorCallback: (error: Object) => void,
     callback: (
       left: number,

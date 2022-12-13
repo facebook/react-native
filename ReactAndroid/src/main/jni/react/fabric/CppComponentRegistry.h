@@ -14,7 +14,6 @@
 #include <mutex>
 #include <unordered_set>
 
-#include <react/cxxcomponents/Component.h>
 #include <react/cxxcomponents/ComponentManager.h>
 #include <react/fabric/ComponentRegistryResolver.h>
 
@@ -36,28 +35,14 @@ class CppComponentRegistry : public jni::HybridClass<CppComponentRegistry> {
       std::function<std::shared_ptr<facebook::react::ComponentManager>(
           const std::string &name)> f);
 
-  bool isRootComponent(std::string name) const;
-
   bool containsComponentManager(std::string name) const;
 
   std::shared_ptr<facebook::react::ComponentManager> getComponentManager(
       const std::string &name) const;
 
-  std::shared_ptr<facebook::react::Component> getComponentInstance(
-      Tag tag) const;
-
-  std::shared_ptr<facebook::react::Component> createComponentInstance(
-      const std::string &componentName,
-      Tag tag,
-      Props::Shared initialProps) const;
-
-  void deleteComponentInstance(Tag tag) const;
-
  private:
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
   ComponentRegistryResolver componentManagerResolver_{};
-  mutable butter::map<Tag, std::shared_ptr<facebook::react::Component>>
-      components_{};
 };
 
 } // namespace react

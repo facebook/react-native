@@ -98,32 +98,32 @@ class CodegenUtils
             ].join(' ')
           },
           'dependencies': {
-            "FBReactNativeSpec": [version],
-            "React-jsiexecutor": [version],
-            "RCT-Folly": [folly_version],
-            "RCTRequired": [version],
-            "RCTTypeSafety": [version],
-            "React-Core": [version],
-            "React-jsi": [version],
-            "ReactCommon/turbomodule/bridging": [version],
-            "ReactCommon/turbomodule/core": [version]
+            "FBReactNativeSpec": [],
+            "React-jsiexecutor": [],
+            "RCT-Folly": [],
+            "RCTRequired": [],
+            "RCTTypeSafety": [],
+            "React-Core": [],
+            "React-jsi": [],
+            "ReactCommon/turbomodule/bridging": [],
+            "ReactCommon/turbomodule/core": []
           }
         }
 
         if fabric_enabled
           spec[:'dependencies'].merge!({
-            'React-graphics': [version],
-            'React-rncore':  [version],
+            'React-graphics': [],
+            'React-rncore':  [],
           });
         end
 
         if hermes_enabled
           spec[:'dependencies'].merge!({
-            'hermes-engine': [version],
+            'hermes-engine': [],
           });
         else
           spec[:'dependencies'].merge!({
-            'React-jsc': [version],
+            'React-jsc': [],
           });
         end
 

@@ -12,6 +12,7 @@
 
 import type {NativeModuleTypeAnnotation} from '../CodegenSchema';
 import type {ParserType} from './errors';
+import type {Parser} from './parser';
 
 const {
   MisnamedModuleInterfaceParserError,
@@ -26,7 +27,8 @@ const {
   UnsupportedModulePropertyParserError,
   MoreThanOneModuleInterfaceParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
-} = require('./errors.js');
+  UnsupportedArrayElementTypeAnnotationParserError,
+} = require('./errors');
 
 function throwIfModuleInterfaceIsMisnamed(
   nativeModuleName: string,
@@ -111,7 +113,7 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
   typeArguments: $FlowFixMe,
   methodName: string,
   moduleName: string,
-  language: ParserType,
+  parser: Parser,
 ) {
   function throwError() {
     throw new IncorrectModuleRegistryCallTypeParameterParserError(
@@ -119,28 +121,12 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
       typeArguments,
       methodName,
       moduleName,
-      language,
+      parser.language(),
     );
   }
 
-  if (language === 'Flow') {
-    if (
-      typeArguments.type !== 'TypeParameterInstantiation' ||
-      typeArguments.params.length !== 1 ||
-      typeArguments.params[0].type !== 'GenericTypeAnnotation' ||
-      typeArguments.params[0].id.name !== 'Spec'
-    ) {
-      throwError();
-    }
-  } else if (language === 'TypeScript') {
-    if (
-      typeArguments.type !== 'TSTypeParameterInstantiation' ||
-      typeArguments.params.length !== 1 ||
-      typeArguments.params[0].type !== 'TSTypeReference' ||
-      typeArguments.params[0].typeName.name !== 'Spec'
-    ) {
-      throwError();
-    }
+  if (parser.checkIfInvalidModule(typeArguments)) {
+    throwError();
   }
 }
 
@@ -167,7 +153,7 @@ function throwIfUntypedModule(
   hasteModuleName: string,
   callExpression: $FlowFixMe,
   methodName: string,
-  $moduleName: string,
+  moduleName: string,
   language: ParserType,
 ) {
   if (typeArguments == null) {
@@ -175,7 +161,7 @@ function throwIfUntypedModule(
       hasteModuleName,
       callExpression,
       methodName,
-      $moduleName,
+      moduleName,
       language,
     );
   }
@@ -265,6 +251,33 @@ function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
   );
 }
 
+function throwIfArrayElementTypeAnnotationIsUnsupported(
+  hasteModuleName: string,
+  flowElementType: $FlowFixMe,
+  flowArrayType: 'Array' | '$ReadOnlyArray' | 'ReadonlyArray',
+  type: string,
+  language: ParserType,
+) {
+  const TypeMap = {
+    FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+    VoidTypeAnnotation: 'void',
+    PromiseTypeAnnotation: 'Promise',
+    // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
+    // Right now they are partially treated as UnionTypeAnnotation
+    UnionTypeAnnotation: 'UnionTypeAnnotation',
+  };
+
+  if (type in TypeMap) {
+    throw new UnsupportedArrayElementTypeAnnotationParserError(
+      hasteModuleName,
+      flowElementType,
+      flowArrayType,
+      TypeMap[type],
+      language,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -278,4 +291,5 @@ module.exports = {
   throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+  throwIfArrayElementTypeAnnotationIsUnsupported,
 };

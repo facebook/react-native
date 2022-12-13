@@ -8,25 +8,24 @@
  * @flow
  */
 
-import {BackHandler, StyleSheet, useColorScheme, View} from 'react-native';
-import * as React from 'react';
-
+import {RNTesterEmptyBookmarksState} from './components/RNTesterEmptyBookmarksState';
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
-import RNTesterList from './utils/RNTesterList';
-import {
-  Screens,
-  initialNavigationState,
-  getExamplesListWithBookmarksAndRecentlyUsed,
-} from './utils/testerStateUtils';
-import {
-  RNTesterNavigationReducer,
-  RNTesterNavigationActionsType,
-} from './utils/RNTesterNavigationReducer';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import RNTTitleBar from './components/RNTTitleBar';
-import {RNTesterEmptyBookmarksState} from './components/RNTesterEmptyBookmarksState';
+import RNTesterList from './utils/RNTesterList';
+import {
+  RNTesterNavigationActionsType,
+  RNTesterNavigationReducer,
+} from './utils/RNTesterNavigationReducer';
+import {
+  Screens,
+  getExamplesListWithBookmarksAndRecentlyUsed,
+  initialNavigationState,
+} from './utils/testerStateUtils';
+import * as React from 'react';
+import {BackHandler, StyleSheet, View, useColorScheme} from 'react-native';
 
 // RNTester App currently uses in memory storage for storing navigation state
 
@@ -79,7 +78,7 @@ const RNTesterApp = (): React.Node => {
   }, [activeModuleKey, handleBackPress]);
 
   const handleModuleCardPress = React.useCallback(
-    ({exampleType, key, title}) => {
+    ({exampleType, key, title}: any) => {
       dispatch({
         type: RNTesterNavigationActionsType.MODULE_CARD_PRESS,
         data: {exampleType, key, title},
@@ -99,7 +98,7 @@ const RNTesterApp = (): React.Node => {
   );
 
   const toggleBookmark = React.useCallback(
-    ({exampleType, key}) => {
+    ({exampleType, key}: any) => {
       dispatch({
         type: RNTesterNavigationActionsType.BOOKMARK_PRESS,
         data: {exampleType, key},

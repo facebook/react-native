@@ -144,6 +144,11 @@ void LayoutAnimationKeyFrameManager::setComponentDescriptorRegistry(
   componentDescriptorRegistry_ = componentDescriptorRegistry;
 }
 
+void LayoutAnimationKeyFrameManager::setReduceDeleteCreateMutation(
+    const bool reduceDeleteCreateMutation) {
+  reduceDeleteCreateMutation_ = reduceDeleteCreateMutation;
+}
+
 bool LayoutAnimationKeyFrameManager::shouldAnimateFrame() const {
   std::lock_guard<std::mutex> lock(currentAnimationMutex_);
   return currentAnimation_ || !inflightAnimations_.empty();
@@ -732,6 +737,40 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
       auto finalConflictingMutations = ShadowViewMutationList{};
       for (auto &keyFrame : conflictingAnimations) {
+        // Special-case: if the next conflicting animation contain "delete",
+        // while the final mutation has the same tag with "create", we should
+        // remove both the delete and create as they have no effect when
+        // combined in the same frame. The Fabric mount layer assumes no such
+        // combinations in the final mutations either.
+        if (reduceDeleteCreateMutation_) {
+          for (auto itMutation = immediateMutations.begin();
+               itMutation != immediateMutations.end();) {
+            auto &mutation = *itMutation;
+            bool hasCreateMutationDeletedWithSameTag = false;
+            if (mutation.newChildShadowView.tag == keyFrame.tag &&
+                mutation.type == ShadowViewMutation::Create) {
+              for (auto itKeyFrame = keyFrame.finalMutationsForKeyFrame.begin();
+                   itKeyFrame != keyFrame.finalMutationsForKeyFrame.end();) {
+                auto &conflictFinalMutation = *itKeyFrame;
+                if (conflictFinalMutation.type == ShadowViewMutation::Delete) {
+                  itKeyFrame =
+                      keyFrame.finalMutationsForKeyFrame.erase(itKeyFrame);
+                  hasCreateMutationDeletedWithSameTag = true;
+                  break;
+                } else {
+                  itKeyFrame++;
+                }
+              }
+            }
+
+            if (hasCreateMutationDeletedWithSameTag) {
+              itMutation = immediateMutations.erase(itMutation);
+            } else {
+              itMutation++;
+            }
+          }
+        }
+
         // Special-case: if we have some (1) ongoing UPDATE animation,
         // (2) it conflicted with a new MOVE operation (REMOVE+INSERT)
         // without another corresponding UPDATE, we should re-queue the

@@ -25,19 +25,3 @@ target_include_directories(jsi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(jsi
         folly_runtime
         glog)
-
-##################
-### jscruntime ###
-##################
-
-add_library(jscruntime STATIC
-        JSCRuntime.h
-        JSCRuntime.cpp)
-
-target_include_directories(jscruntime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
-target_link_libraries(jscruntime folly_runtime jsc glog)
-
-# TODO: Remove this flag when ready.
-# Android has this enabled by default, but the flag is still needed for iOS.
-target_compile_options(jscruntime PRIVATE -DRN_FABRIC_ENABLED)

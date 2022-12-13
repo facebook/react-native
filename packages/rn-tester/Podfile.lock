@@ -124,18 +124,18 @@ PODS:
     - React-RCTVibration (= 1000.0.0)
   - React-callinvoker (1000.0.0)
   - React-Codegen (1000.0.0):
-    - FBReactNativeSpec (= 1000.0.0)
-    - hermes-engine (= 1000.0.0)
-    - RCT-Folly (= 2021.07.22.00)
-    - RCTRequired (= 1000.0.0)
-    - RCTTypeSafety (= 1000.0.0)
-    - React-Core (= 1000.0.0)
-    - React-graphics (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-jsiexecutor (= 1000.0.0)
-    - React-rncore (= 1000.0.0)
-    - ReactCommon/turbomodule/bridging (= 1000.0.0)
-    - ReactCommon/turbomodule/core (= 1000.0.0)
+    - FBReactNativeSpec
+    - hermes-engine
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-graphics
+    - React-jsi
+    - React-jsiexecutor
+    - React-rncore
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
   - React-Core (1000.0.0):
     - glog
     - RCT-Folly (= 2021.07.22.00)
@@ -500,7 +500,6 @@ PODS:
     - RCTTypeSafety (= 1000.0.0)
     - React-graphics (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-    - React-jsidynamic (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-Fabric/debug_core (1000.0.0):
@@ -599,7 +598,6 @@ PODS:
     - RCTTypeSafety (= 1000.0.0)
     - React-graphics (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-    - React-jsidynamic (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-Fabric/utils (1000.0.0):
@@ -620,25 +618,21 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - RCT-Folly/Futures (= 2021.07.22.00)
     - React-cxxreact (= 1000.0.0)
-    - React-jsidynamic (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - React-jsinspector (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
   - React-jsi (1000.0.0):
-    - hermes-engine
-  - React-jsidynamic (1000.0.0):
     - boost (= 1.76.0)
     - DoubleConversion
     - glog
+    - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
-    - React-jsi (= 1000.0.0)
   - React-jsiexecutor (1000.0.0):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-    - React-jsidynamic (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
   - React-jsinspector (1000.0.0)
   - React-logger (1000.0.0):
@@ -740,7 +734,6 @@ PODS:
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-    - React-jsidynamic (= 1000.0.0)
     - React-logger (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
   - ReactCommon/turbomodule/samples (1000.0.0):
@@ -808,7 +801,6 @@ DEPENDENCIES:
   - React-graphics (from `../../ReactCommon/react/renderer/graphics`)
   - React-hermes (from `../../ReactCommon/hermes`)
   - React-jsi (from `../../ReactCommon/jsi`)
-  - React-jsidynamic (from `../../ReactCommon/jsi`)
   - React-jsiexecutor (from `../../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../ReactCommon/jsinspector`)
   - React-logger (from `../../ReactCommon/logger`)
@@ -890,8 +882,6 @@ EXTERNAL SOURCES:
     :path: "../../ReactCommon/hermes"
   React-jsi:
     :path: "../../ReactCommon/jsi"
-  React-jsidynamic:
-    :path: "../../ReactCommon/jsi"
   React-jsiexecutor:
     :path: "../../ReactCommon/jsiexecutor"
   React-jsinspector:
@@ -942,7 +932,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: d68947eddece25638eb0f642d1b957c90388afd1
-  FBReactNativeSpec: 9a029e7dec747a8836d785b3b7a433db5960504b
+  FBReactNativeSpec: 0ded2dec004001d5888590a9c13df3e0c357a59f
   Flipper: 26fc4b7382499f1281eb8cb921e5c3ad6de91fe0
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
@@ -954,7 +944,7 @@ SPEC CHECKSUMS:
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: d344c89c3f4657f7031e5280e1b3dd531b425bfd
+  hermes-engine: 62aa33fe860de4c9fde92adea000ce2e56c70370
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
@@ -962,17 +952,16 @@ SPEC CHECKSUMS:
   RCTTypeSafety: a41e253b4ed644708899857d912b2f50c7b6214d
   React: 2fc6c4c656cccd6753016528ad41199c16fd558e
   React-callinvoker: a7d5e883a83bb9bd3985b08be832c5e76451d18f
-  React-Codegen: 4a022870a58b95e17da8f32641ba3d72b551f268
+  React-Codegen: 4f1e911c128928e425e11698ad7859dfd0f92e20
   React-Core: 719bec4b41c93b1affb1e2c3a43956ec482ecb9f
   React-CoreModules: feaa45c54c58e1420981f6dd544c8b3d01200caa
-  React-cxxreact: c5f93e7a35f3545489d8e1f89beb9d2d56acfde5
-  React-Fabric: 8a854fd89c932ab073f67036bb45d1787d0d31a4
+  React-cxxreact: 97903bdac0fb53409663fd312e2183ae1dd730e5
+  React-Fabric: 4d08ce0b0f15513b2724ae1000c2aaedf73ebc32
   React-graphics: cb8a85648695c60f33a00d732b985f734d1470d8
-  React-hermes: 299c7f56d32e8953480fd8e7fba2a7968a534b3f
-  React-jsi: d40e13b7f545f9af2af780f153f5321018b5e2f8
-  React-jsidynamic: 8aa406dfc1eff081f3443e55a28b51d11616a3bf
-  React-jsiexecutor: 04a945f040cc085d79655359ec29e5f501fb6e01
-  React-jsinspector: a56861590ddfcb5cb544877ade3e007a32ff9616
+  React-hermes: e35ea664b36773a2ce84c583febf1396080e59f7
+  React-jsi: e4c75a1cf727c8761908ac2eeb1084e47ba88a26
+  React-jsiexecutor: dcc8c2b89b6e0b5abb9bbbfb6df86adf44e3e877
+  React-jsinspector: 9b56a373a6797114e1d89a7dffa98ee98af67a8f
   React-logger: 07c9b44040a6f948b8e2033207b23cb623f0b9b4
   React-perflogger: b4b9fb2ddd856b78003708ab3cf66ce03e6bc7c4
   React-RCTActionSheet: 1b1501ef80928be10702cd0ce09120358094cd82
@@ -990,12 +979,12 @@ SPEC CHECKSUMS:
   React-RCTVibration: ecfd04c1886a9c9a4e31a466c0fbcf6b36e92fde
   React-rncore: 08566b41339706758229f407c8907b2f7987f058
   React-runtimeexecutor: c7b2cd6babf6cc50340398bfbb7a9da13c93093f
-  ReactCommon: fc336a81ae40421e172c3ca9496677e34d7e3ed5
+  ReactCommon: 0647fbd9bd50b59214f51050360ce38ec461b04b
   ScreenshotManager: 2bd28f9b590a13c811f1f4ce32aab767f8845c6b
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1b1a12ff3d86a10565ea7cbe057d42f5e5fb2a07
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 20298ecd3f30aa788ad491637e593ed0d8c100ca
+PODFILE CHECKSUM: 5d1fc1e8809808c4384337ae55c5be2de48ffe4c
 
 COCOAPODS: 1.11.3

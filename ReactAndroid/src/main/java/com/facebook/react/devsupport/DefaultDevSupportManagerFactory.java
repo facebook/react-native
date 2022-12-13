@@ -11,6 +11,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
@@ -28,6 +29,8 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
   private static final String DEVSUPPORT_IMPL_PACKAGE = "com.facebook.react.devsupport";
   private static final String DEVSUPPORT_IMPL_CLASS = "BridgeDevSupportManager";
 
+  /** @deprecated in favor of the customisable create for DevSupportManagerFactory */
+  @Deprecated
   public DevSupportManager create(
       Context applicationContext,
       ReactInstanceDevHelper reactInstanceDevHelper,
@@ -44,6 +47,7 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
         null,
         minNumShakes,
         null,
+        null,
         null);
   }
 
@@ -57,7 +61,8 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
-      @Nullable SurfaceDelegateFactory surfaceDelegateFactory) {
+      @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
+      @Nullable DevLoadingViewManager devLoadingViewManager) {
     if (!enableOnCreate) {
       return new DisabledDevSupportManager();
     }
@@ -85,7 +90,8 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
               DevBundleDownloadListener.class,
               int.class,
               Map.class,
-              SurfaceDelegateFactory.class);
+              SurfaceDelegateFactory.class,
+              DevLoadingViewManager.class);
       return (DevSupportManager)
           constructor.newInstance(
               applicationContext,
@@ -96,7 +102,8 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
               devBundleDownloadListener,
               minNumShakes,
               customPackagerCommandHandlers,
-              surfaceDelegateFactory);
+              surfaceDelegateFactory,
+              devLoadingViewManager);
     } catch (Exception e) {
       return new PerftestDevSupportManager(applicationContext);
     }

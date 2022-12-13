@@ -324,7 +324,7 @@ module.exports = {
       const {
         aliases,
         spec: {properties},
-        moduleNames: [moduleName],
+        moduleName,
       } = nativeModules[hasteModuleName];
       const resolveAlias = createAliasResolver(aliases);
       const structs = createStructs(moduleName, aliases, resolveAlias);

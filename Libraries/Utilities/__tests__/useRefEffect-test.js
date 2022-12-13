@@ -9,6 +9,13 @@
  * @oncall react_native
  */
 
+import type {
+  HostComponent,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+  MeasureOnSuccessCallback,
+} from '../../Renderer/shims/ReactNativeTypes.js';
+
 import View from '../../Components/View/View';
 import useRefEffect from '../useRefEffect';
 import * as React from 'react';
@@ -24,7 +31,18 @@ function TestView({
   childKey: ?string,
   effect: () => (() => void) | void,
 }) {
-  const ref = useRefEffect(effect);
+  const ref = useRefEffect<{
+    blur(): void,
+    focus(): void,
+    measure(callback: MeasureOnSuccessCallback): void,
+    measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
+    measureLayout(
+      relativeToNativeNode: number | React.ElementRef<HostComponent<mixed>>,
+      onSuccess: MeasureLayoutOnSuccessCallback,
+      onFail?: () => void,
+    ): void,
+    setNativeProps(nativeProps: {...}): void,
+  }>(effect);
   return <View key={childKey} ref={ref} testID={childKey} />;
 }
 

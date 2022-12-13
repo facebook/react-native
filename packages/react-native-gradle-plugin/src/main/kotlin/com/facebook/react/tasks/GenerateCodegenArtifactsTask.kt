@@ -26,8 +26,6 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
 
   @get:Internal abstract val reactNativeDir: DirectoryProperty
 
-  @get:Internal abstract val codegenDir: DirectoryProperty
-
   @get:Internal abstract val generatedSrcDir: DirectoryProperty
 
   @get:InputFile abstract val packageJsonFile: RegularFileProperty
@@ -37,10 +35,6 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   @get:Input abstract val codegenJavaPackageName: Property<String>
 
   @get:Input abstract val libraryName: Property<String>
-
-  @get:InputFile
-  val combineJsToSchemaCli: Provider<RegularFile> =
-      codegenDir.file("lib/cli/combine/combine-js-to-schema-cli.js")
 
   @get:InputFile
   val generatedSchemaFile: Provider<RegularFile> = generatedSrcDir.file("schema.json")

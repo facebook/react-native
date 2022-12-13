@@ -11,6 +11,8 @@
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {Message} from '../Data/parseLogBoxLog';
 
+import Linking from '../../Linking/Linking';
+import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import * as React from 'react';
 
@@ -21,6 +23,81 @@ type Props = {
   maxLength?: ?number,
   ...
 };
+
+type Range = {
+  lowerBound: number,
+  upperBound: number,
+};
+
+function getLinkRanges(string: string): $ReadOnlyArray<Range> {
+  const regex = /https?:\/\/[^\s$.?#].[^\s]*/gi;
+  const matches = [];
+
+  let regexResult: RegExp$matchResult | null;
+  while ((regexResult = regex.exec(string)) !== null) {
+    if (regexResult != null) {
+      matches.push({
+        lowerBound: regexResult.index,
+        upperBound: regex.lastIndex,
+      });
+    }
+  }
+
+  return matches;
+}
+
+function TappableLinks(props: {
+  content: string,
+  style: void | TextStyleProp,
+}): React.Node {
+  const matches = getLinkRanges(props.content);
+
+  if (matches.length === 0) {
+    // No URLs detected. Just return the content.
+    return <Text style={props.style}>{props.content}</Text>;
+  }
+
+  // URLs were detected. Construct array of Text nodes.
+
+  let fragments: Array<React.Node> = [];
+  let indexCounter = 0;
+  let startIndex = 0;
+
+  for (const linkRange of matches) {
+    if (startIndex < linkRange.lowerBound) {
+      const text = props.content.substring(startIndex, linkRange.lowerBound);
+      fragments.push(<Text key={++indexCounter}>{text}</Text>);
+    }
+
+    const link = props.content.substring(
+      linkRange.lowerBound,
+      linkRange.upperBound,
+    );
+    fragments.push(
+      <Text
+        onPress={() => {
+          Linking.openURL(link);
+        }}
+        key={++indexCounter}
+        style={styles.linkText}>
+        {link}
+      </Text>,
+    );
+
+    startIndex = linkRange.upperBound;
+  }
+
+  if (startIndex < props.content.length) {
+    const text = props.content.substring(startIndex);
+    fragments.push(
+      <Text key={++indexCounter} style={props.style}>
+        {text}
+      </Text>,
+    );
+  }
+
+  return <Text style={props.style}>{fragments}</Text>;
+}
 
 const cleanContent = (content: string) =>
   content.replace(/^(TransformError |Warning: (Warning: )?|Error: )/g, '');
@@ -49,9 +126,7 @@ function LogBoxMessage(props: Props): React.Node {
 
     if (length < maxLength) {
       elements.push(
-        <Text key={key} style={style}>
-          {cleanMessage}
-        </Text>,
+        <TappableLinks content={cleanMessage} key={key} style={style} />,
       );
     }
 
@@ -86,5 +161,11 @@ function LogBoxMessage(props: Props): React.Node {
 
   return <>{elements}</>;
 }
+
+const styles = StyleSheet.create({
+  linkText: {
+    textDecorationLine: 'underline',
+  },
+});
 
 export default LogBoxMessage;

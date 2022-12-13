@@ -39,6 +39,7 @@
 #import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
 
+using namespace facebook;
 using namespace facebook::react;
 
 static dispatch_queue_t RCTGetBackgroundQueue()
@@ -369,6 +370,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   NSArray *argsArray = convertFollyDynamicToId(args);
 
   [_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
+}
+
+- (void)setNativeProps_DEPRECATED:(ShadowView const &)shadowView withProps:(Props::Shared)props
+{
+  ReactTag tag = shadowView.tag;
+  [self->_mountingManager setNativeProps_DEPRECATED:tag withProps:props];
 }
 
 - (void)schedulerDidSendAccessibilityEvent:(const facebook::react::ShadowView &)shadowView

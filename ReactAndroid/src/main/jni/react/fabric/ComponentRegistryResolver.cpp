@@ -37,15 +37,5 @@ ComponentRegistryResolver::getComponentManager(
   return nullptr;
 }
 
-bool ComponentRegistryResolver::isRootComponent(
-    std::string componentName) const {
-  auto iterator = resolverMap_.find(componentName);
-  if (iterator != resolverMap_.end()) {
-    return iterator->second.isRootComponent;
-  }
-
-  return false;
-}
-
 } // namespace react
 } // namespace facebook

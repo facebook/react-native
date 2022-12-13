@@ -7,6 +7,7 @@
 
 #import "RCTMountingManager.h"
 
+#import <QuartzCore/QuartzCore.h>
 #import <butter/map.h>
 
 #import <React/RCTAssert.h>
@@ -224,8 +225,21 @@ static void RCTPerformMountInstructions(
   }
 
   RCTExecuteOnMainQueue(^{
-    RCTAssertMainQueue();
     [self synchronouslyDispatchCommandOnUIThread:reactTag commandName:commandName args:args];
+  });
+}
+
+- (void)setNativeProps_DEPRECATED:(ReactTag)reactTag withProps:(Props::Shared)props
+{
+  if (RCTIsMainQueue()) {
+    UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
+    Props::Shared oldProps = [componentView props];
+    [componentView updateProps:props oldProps:oldProps];
+    [componentView finalizeUpdates:RNComponentViewUpdateMaskProps];
+    return;
+  }
+  RCTExecuteOnMainQueue(^{
+    [self setNativeProps_DEPRECATED:reactTag withProps:std::move(props)];
   });
 }
 
@@ -240,7 +254,6 @@ static void RCTPerformMountInstructions(
   }
 
   RCTExecuteOnMainQueue(^{
-    RCTAssertMainQueue();
     [self synchronouslyDispatchAccessbilityEventOnUIThread:reactTag eventType:eventType];
   });
 }

@@ -64,7 +64,7 @@ export default function EventfulView(props: {|
     onCancelCapture,
     ...restProps
   } = props;
-  const [tag, setTag] = React.useState('');
+  const [tag, setTag] = React.useState<?string>('');
 
   const eventLog =
     (eventName: string, handler: ?(e: PointerEvent) => void) =>

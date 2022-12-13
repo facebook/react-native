@@ -250,10 +250,14 @@ public class JSPointerDispatcher {
       case MotionEvent.ACTION_CANCEL:
         dispatchCancelEvent(eventState, motionEvent, eventDispatcher);
         break;
+      case MotionEvent.ACTION_HOVER_ENTER:
+      case MotionEvent.ACTION_HOVER_EXIT:
+        // These are handled by HOVER_MOVE
+        break;
       default:
         FLog.w(
             ReactConstants.TAG,
-            "Warning : Motion Event was ignored. Action=" + action + " Target=" + activeTargetTag);
+            "Motion Event was ignored. Action=" + action + " Target=" + activeTargetTag);
         return;
     }
 

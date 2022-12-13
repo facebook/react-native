@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -184,6 +184,60 @@ function parseTopLevelType(
   }
 }
 
+function handleIntersectionAndParen(
+  type: $FlowFixMe,
+  result: Array<$FlowFixMe>,
+  knownTypes?: TypeDeclarationMap,
+): void {
+  switch (type.type) {
+    case 'TSParenthesizedType': {
+      handleIntersectionAndParen(type.typeAnnotation, result, knownTypes);
+      break;
+    }
+    case 'TSIntersectionType': {
+      for (const t of type.types) {
+        handleIntersectionAndParen(t, result, knownTypes);
+      }
+      break;
+    }
+    case 'TSTypeReference':
+      if (type.typeName.name === 'Readonly') {
+        handleIntersectionAndParen(
+          type.typeParameters.params[0],
+          result,
+          knownTypes,
+        );
+      } else if (type.typeName.name === 'WithDefault') {
+        throw new Error('WithDefault<> is now allowed in intersection types.');
+      } else if (!knownTypes) {
+        result.push(type);
+      } else {
+        const resolvedType = getValueFromTypes(type, knownTypes);
+        if (
+          resolvedType.type === 'TSTypeReference' &&
+          resolvedType.typeName.name === type.typeName.name
+        ) {
+          result.push(type);
+        } else {
+          handleIntersectionAndParen(resolvedType, result, knownTypes);
+        }
+      }
+      break;
+    default:
+      result.push(type);
+  }
+}
+
+function flattenIntersectionType(
+  type: $FlowFixMe,
+  knownTypes?: TypeDeclarationMap,
+): Array<$FlowFixMe> {
+  const result: Array<$FlowFixMe> = [];
+  handleIntersectionAndParen(type, result, knownTypes);
+  return result;
+}
+
 module.exports = {
   parseTopLevelType,
+  flattenIntersectionType,
 };

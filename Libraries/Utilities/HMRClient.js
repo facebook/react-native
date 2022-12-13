@@ -25,7 +25,7 @@ let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
 let currentCompileErrorMessage: string | null = null;
 let didConnect: boolean = false;
-let pendingLogs: Array<[LogLevel, Array<mixed>]> = [];
+let pendingLogs: Array<[LogLevel, $ReadOnlyArray<mixed>]> = [];
 
 type LogLevel =
   | 'trace'
@@ -42,7 +42,7 @@ export type HMRClientNativeInterface = {|
   enable(): void,
   disable(): void,
   registerBundle(requestUrl: string): void,
-  log(level: LogLevel, data: Array<mixed>): void,
+  log(level: LogLevel, data: $ReadOnlyArray<mixed>): void,
   setup(
     platform: string,
     bundleEntry: string,
@@ -105,7 +105,7 @@ const HMRClient: HMRClientNativeInterface = {
     registerBundleEntryPoints(hmrClient);
   },
 
-  log(level: LogLevel, data: Array<mixed>) {
+  log(level: LogLevel, data: $ReadOnlyArray<mixed>) {
     if (!hmrClient) {
       // Catch a reasonable number of early logs
       // in case hmrClient gets initialized later.
@@ -247,6 +247,7 @@ Error: ${e.message}`;
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
       const isNormalOrUnsetCloseReason =
+        closeEvent == null ||
         closeEvent.code === 1000 ||
         closeEvent.code === 1005 ||
         closeEvent.code == null;

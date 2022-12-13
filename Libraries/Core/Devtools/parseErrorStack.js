@@ -48,7 +48,7 @@ function parseErrorStack(errorStack?: string): Array<StackFrame> {
     ? errorStack
     : global.HermesInternal
     ? convertHermesStack(parseHermesStack(errorStack))
-    : stacktraceParser.parse(errorStack).map(frame => ({
+    : stacktraceParser.parse(errorStack).map((frame): StackFrame => ({
         ...frame,
         column: frame.column != null ? frame.column - 1 : null,
       }));

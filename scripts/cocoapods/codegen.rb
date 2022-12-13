@@ -10,7 +10,7 @@
 # @throws an error if it could not find the codegen folder.
 def build_codegen!(react_native_path, relative_installation_root)
     codegen_repo_path = "#{relative_installation_root}/#{react_native_path}/packages/react-native-codegen";
-    codegen_npm_path = "#{relative_installation_root}/#{react_native_path}/../react-native-codegen";
+    codegen_npm_path = "#{relative_installation_root}/#{react_native_path}/../@react-native/codegen";
     codegen_cli_path = ""
 
     if Dir.exist?(codegen_repo_path)

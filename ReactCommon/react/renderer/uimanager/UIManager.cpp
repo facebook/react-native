@@ -8,10 +8,10 @@
 #include "UIManager.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
-#include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
@@ -110,14 +110,29 @@ ShadowNode::Shared UIManager::cloneNode(
       shadowNode.getFamily().getSurfaceId(), *contextContainer_.get()};
 
   auto &componentDescriptor = shadowNode.getComponentDescriptor();
+  auto &family = shadowNode.getFamily();
+  auto props = ShadowNodeFragment::propsPlaceholder();
+
+  if (rawProps != nullptr) {
+    if (family.nativeProps_DEPRECATED != nullptr) {
+      family.nativeProps_DEPRECATED =
+          std::make_unique<folly::dynamic>(mergeDynamicProps(
+              (folly::dynamic)*rawProps, *family.nativeProps_DEPRECATED));
+
+      props = componentDescriptor.cloneProps(
+          propsParserContext,
+          shadowNode.getProps(),
+          mergeRawProps(*family.nativeProps_DEPRECATED, *rawProps));
+    } else {
+      props = componentDescriptor.cloneProps(
+          propsParserContext, shadowNode.getProps(), *rawProps);
+    }
+  }
+
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       shadowNode,
       {
-          /* .props = */
-          rawProps != nullptr
-              ? componentDescriptor.cloneProps(
-                    propsParserContext, shadowNode.getProps(), *rawProps)
-              : ShadowNodeFragment::propsPlaceholder(),
+          /* .props = */ props,
           /* .children = */ children,
       });
 
@@ -330,6 +345,34 @@ void UIManager::dispatchCommand(
   }
 }
 
+void UIManager::setNativeProps_DEPRECATED(
+    ShadowNode::Shared const &shadowNode,
+    RawProps const &rawProps) const {
+  if (delegate_ != nullptr) {
+    auto &family = shadowNode->getFamily();
+    if (family.nativeProps_DEPRECATED) {
+      family.nativeProps_DEPRECATED =
+          std::make_unique<folly::dynamic>(mergeDynamicProps(
+              *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
+    } else {
+      family.nativeProps_DEPRECATED =
+          std::make_unique<folly::dynamic>((folly::dynamic)rawProps);
+    }
+
+    PropsParserContext propsParserContext{
+        family.getSurfaceId(), *contextContainer_.get()};
+    auto &componentDescriptor =
+        componentDescriptorRegistry_->at(shadowNode->getComponentHandle());
+
+    auto props = componentDescriptor.cloneProps(
+        propsParserContext,
+        getNewestCloneOfShadowNode(*shadowNode)->getProps(),
+        RawProps(*family.nativeProps_DEPRECATED));
+
+    delegate_->setNativeProps_DEPRECATED(shadowNode, std::move(props));
+  }
+}
+
 void UIManager::sendAccessibilityEvent(
     const ShadowNode::Shared &shadowNode,
     std::string const &eventType) {
@@ -350,6 +393,55 @@ void UIManager::configureNextLayoutAnimation(
         std::move(successCallback),
         std::move(failureCallback));
   }
+}
+
+static ShadowNode::Shared findShadowNodeByTagRecursively(
+    ShadowNode::Shared parentShadowNode,
+    Tag tag) {
+  if (parentShadowNode->getTag() == tag) {
+    return parentShadowNode;
+  }
+
+  for (ShadowNode::Shared const &shadowNode : parentShadowNode->getChildren()) {
+    auto result = findShadowNodeByTagRecursively(shadowNode, tag);
+    if (result) {
+      return result;
+    }
+  }
+
+  return nullptr;
+}
+
+ShadowNode::Shared UIManager::findShadowNodeByTag_DEPRECATED(Tag tag) const {
+  auto shadowNode = ShadowNode::Shared{};
+
+  shadowTreeRegistry_.enumerate([&](ShadowTree const &shadowTree, bool &stop) {
+    RootShadowNode const *rootShadowNode;
+    // The public interface of `ShadowTree` discourages accessing a stored
+    // pointer to a root node because of the possible data race.
+    // To work around this, we ask for a commit and immediately cancel it
+    // returning `nullptr` instead of a new shadow tree.
+    // We don't want to add a way to access a stored pointer to a root node
+    // because this `findShadowNodeByTag` is deprecated. It is only added
+    // to make migration to the new architecture easier.
+    shadowTree.tryCommit([&](RootShadowNode const &oldRootShadowNode) {
+      rootShadowNode = &oldRootShadowNode;
+      return nullptr;
+    });
+
+    if (rootShadowNode != nullptr) {
+      auto const &children = rootShadowNode->getChildren();
+      if (!children.empty()) {
+        auto const &child = children.front();
+        shadowNode = findShadowNodeByTagRecursively(child, tag);
+        if (shadowNode) {
+          stop = true;
+        }
+      }
+    }
+  });
+
+  return shadowNode;
 }
 
 void UIManager::setComponentDescriptorRegistry(
@@ -441,7 +533,7 @@ void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
 void UIManager::animationTick() const {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
-    shadowTreeRegistry_.enumerate([](ShadowTree const &shadowTree) {
+    shadowTreeRegistry_.enumerate([](ShadowTree const &shadowTree, bool &) {
       shadowTree.notifyDelegatesOfUpdates();
     });
   }

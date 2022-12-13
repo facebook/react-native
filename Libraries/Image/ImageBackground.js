@@ -76,6 +76,7 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
       ...props
     } = this.props;
 
+    // $FlowFixMe[underconstrained-implicit-instantiation]
     const flattenedStyle = flattenStyle(style);
     return (
       <View

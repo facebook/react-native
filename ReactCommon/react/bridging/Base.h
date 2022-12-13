@@ -10,7 +10,7 @@
 #include <react/bridging/Convert.h>
 
 #include <ReactCommon/CallInvoker.h>
-#include <folly/Function.h>
+#include <butter/function.h>
 #include <jsi/jsi.h>
 
 #include <cstdint>
@@ -36,12 +36,12 @@ struct function_wrapper;
 
 template <typename C, typename R, typename... Args>
 struct function_wrapper<R (C::*)(Args...)> {
-  using type = folly::Function<R(Args...)>;
+  using type = butter::function<R(Args...)>;
 };
 
 template <typename C, typename R, typename... Args>
 struct function_wrapper<R (C::*)(Args...) const> {
-  using type = folly::Function<R(Args...)>;
+  using type = butter::function<R(Args...)>;
 };
 
 template <typename T, typename = void>

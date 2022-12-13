@@ -122,7 +122,7 @@ function validateBaseUrl(url: string) {
 
 export class URL {
   _url: string;
-  _searchParamsInstance = null;
+  _searchParamsInstance: ?URLSearchParams = null;
 
   static createObjectURL(blob: Blob): string {
     if (BLOB_URL_PREFIX === null) {
@@ -220,6 +220,7 @@ export class URL {
     if (this._searchParamsInstance === null) {
       return this._url;
     }
+    // $FlowFixMe[incompatible-use]
     const instanceString = this._searchParamsInstance.toString();
     const separator = this._url.indexOf('?') > -1 ? '&' : '?';
     return this._url + separator + instanceString;
