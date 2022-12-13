@@ -771,7 +771,7 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
-"@babel/types@^7.20.0":
+"@babel/types@^7.20.0", "@babel/types@^7.20.5":
   version "7.20.5"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.20.5.tgz#e206ae370b5393d94dfd1d04cd687cace53efa84"
   integrity sha512-c9fst/h2/dcF7H+MJKZ2T0KjEQ8hY/BNnDk/H3XY8C4Aw/eWQXWn/lWntHF9ooUBnGmEvbfGrTgLWc+um0YDUg==
@@ -5171,10 +5171,10 @@ merge2@^1.3.0, merge2@^1.4.1:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
-metro-babel-register@0.73.3:
-  version "0.73.3"
-  resolved "https://registry.yarnpkg.com/metro-babel-register/-/metro-babel-register-0.73.3.tgz#fc5601bbe166efb59d063d8b330de062475c257b"
-  integrity sha512-uuNoggz/tr5FrG5lbzMHMO5wN0L3BZi/AYC/8oPTbiIJEavZ5ugVaePOoTU04c67KMGgNLIbJESZpLZn/ttN7A==
+metro-babel-register@0.73.5:
+  version "0.73.5"
+  resolved "https://registry.yarnpkg.com/metro-babel-register/-/metro-babel-register-0.73.5.tgz#1a7df21c5ed945b617246f5519c5315900ab29ec"
+  integrity sha512-zPTEkpfceLYYAcrGNKNpPnuVOo/DJRUmNYvGf3eB3tcvAnitPq+P+3EU+Q2uP02EdDVeIll6IZku5hT1zpJYdQ==
   dependencies:
     "@babel/core" "^7.14.0"
     "@babel/plugin-proposal-nullish-coalescing-operator" "^7.0.0"
@@ -5266,10 +5266,10 @@ metro-inspector-proxy@0.73.5:
     ws "^7.5.1"
     yargs "^17.5.1"
 
-metro-memory-fs@0.73.3:
-  version "0.73.3"
-  resolved "https://registry.yarnpkg.com/metro-memory-fs/-/metro-memory-fs-0.73.3.tgz#cd5feba53b77f35c31e530de763c856aa5685d13"
-  integrity sha512-uE/LLrf+LqsLUunWjSmrnHpdqaO1rTBAN/HExQ16TLwwAEovUF/UKS2CqTp4VEKGwfD/458c6YXL45xxLDOp3g==
+metro-memory-fs@0.73.5:
+  version "0.73.5"
+  resolved "https://registry.yarnpkg.com/metro-memory-fs/-/metro-memory-fs-0.73.5.tgz#3424fd46decbd001706b639f8a2b60273a6b3872"
+  integrity sha512-HSLoCkyOoLNO9q+bpJXrxW5ElvcAbNTPv84EaRZ/tA6CdxcQz7wGc2RioifwF4efVmAy0TRgPN9AaoYO4MhKxw==
 
 metro-minify-terser@0.73.5:
   version "0.73.5"
@@ -6197,10 +6197,10 @@ react-native-codegen@^0.71.3:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-gradle-plugin@^0.71.10:
-  version "0.71.10"
-  resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.10.tgz#3dc5148b85cd80b771fcb4c8fc417628b1eb27ba"
-  integrity sha512-0oWZ9UxJ1eJljxV+k31bz12OzN0oqnpbIW8utg7aNLD4nxUHWw5zydD3Okxx4Gizmf3E8ptAx90hP15X8UqdTA==
+react-native-gradle-plugin@^0.71.11:
+  version "0.71.11"
+  resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.11.tgz#0483740373b9778d058a297ecc61acbd0bd8a63b"
+  integrity sha512-2m9OwAi93MwqBLxCnqqgwlHyatmkyCk9q3XCl2R0DxOLTY5+WuaL/yb8xRyrWZqmRpbIGy+hotF20c2UKMPqWQ==
 
 react-refresh@^0.4.0:
   version "0.4.0"
