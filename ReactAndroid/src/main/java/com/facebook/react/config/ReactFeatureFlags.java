@@ -109,4 +109,10 @@ public class ReactFeatureFlags {
    * border.
    */
   public static boolean enableCloseVisibleGapBetweenPaths = true;
+
+  /**
+   * Allow fix in layout animation to drop delete...create mutations which could cause missing view
+   * state in Fabric SurfaceMountingManager.
+   */
+  public static boolean reduceDeleteCreateMutationLayoutAnimation = true;
 }
