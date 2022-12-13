@@ -16,7 +16,6 @@ import type {
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputType} from './TextInput.flow';
-import ViewAncestor from '../View/ViewAncestor';
 
 import usePressability from '../../Pressability/usePressability';
 import flattenStyle from '../../StyleSheet/flattenStyle';
@@ -29,13 +28,14 @@ import Text from '../../Text/Text';
 import TextAncestor from '../../Text/TextAncestor';
 import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
+import ViewAncestor from '../View/ViewAncestor';
 import TextInputState from './TextInputState';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {
-  useContext,
   useCallback,
+  useContext,
   useLayoutEffect,
   useRef,
   useState,

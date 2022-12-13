@@ -61,7 +61,6 @@ export type TextProps = $ReadOnly<{|
    * For iOS see https://bit.ly/3P2jItf
    */
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
-  'aria-live'?: ?('polite' | 'assertive' | 'off'),
 
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityHint?: ?Stringish,
@@ -100,6 +99,7 @@ export type TextProps = $ReadOnly<{|
   'aria-checked'?: ?boolean | 'mixed',
   'aria-disabled'?: ?boolean,
   'aria-expanded'?: ?boolean,
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
   'aria-selected'?: ?boolean,
 
   /**

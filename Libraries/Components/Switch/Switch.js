@@ -13,10 +13,10 @@ import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
-import ViewAncestor from '../View/ViewAncestor';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
+import ViewAncestor from '../View/ViewAncestor';
 import AndroidSwitchNativeComponent, {
   Commands as AndroidSwitchCommands,
 } from './AndroidSwitchNativeComponent';

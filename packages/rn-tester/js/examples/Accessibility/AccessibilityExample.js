@@ -30,7 +30,6 @@ const {
   Platform,
   Switch,
   ScrollView,
-  Pressable,
 } = require('react-native');
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
@@ -1585,7 +1584,6 @@ function DisplayOptionStatusExample({
 
 function AccessibilityLiveRegion(): React.Node {
   const [count, setCount] = React.useState(0);
-  const [messageCount, setMessageCount] = React.useState(0);
   const [enabled, setEnabled] = React.useState(false);
   const [disabled, setDisabled] = React.useState(false);
   const [liveRegion, setLiveRegion] = React.useState(true);
@@ -1594,14 +1592,13 @@ function AccessibilityLiveRegion(): React.Node {
     <>
       <RNTesterBlock title="LiveRegion with Text Component">
         <TouchableWithoutFeedback
-          onPress={() => setDisabled(disabled => !disabled)}>
+          onPress={() => setDisabled(previousState => !previousState)}>
           <View style={styles.embedded}>
             <Text>Click me to set Text state disabled</Text>
           </View>
         </TouchableWithoutFeedback>
-        <View>
+        <View aria-live="polite">
           <Text
-            aria-live="polite"
             accessible
             accessibilityLabel={disabled ? 'label1' : 'label2'}
             accessibilityState={{disabled: disabled}}>

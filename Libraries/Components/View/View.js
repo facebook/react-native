@@ -12,8 +12,8 @@ import type {ViewProps} from './ViewPropTypes';
 
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import TextAncestor from '../../Text/TextAncestor';
-import ViewAncestor from './ViewAncestor';
 import {getAccessibilityRoleFromRole} from '../../Utilities/AcessibilityMapping';
+import ViewAncestor from './ViewAncestor';
 import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 import {useContext} from 'react';

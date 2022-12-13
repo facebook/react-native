@@ -101,6 +101,7 @@ using namespace facebook::react;
       childComponentView,
       @(index),
       @([childComponentView.superview tag]));
+
   if (_removeClippedSubviews) {
     [_reactSubviews insertObject:childComponentView atIndex:index];
   } else {
@@ -295,9 +296,8 @@ using namespace facebook::react;
     self.accessibilityLiveRegion = newViewProps.accessibilityLiveRegion;
   }
   
-  BOOL isReactRootView = RCTIsReactRootView(self.reactTag);
   BOOL accessibilityLiveRegionEnabled = newViewProps.accessible && newViewProps.accessibilityLiveRegion != AccessibilityLiveRegion::None;
-  BOOL shouldAnnounceLiveRegionChanges = accessibilityLiveRegionEnabled && !isReactRootView;
+  BOOL shouldAnnounceLiveRegionChanges = accessibilityLiveRegionEnabled && ![self isReactRootView];
   
   // `accessibilityLabel`
   if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {

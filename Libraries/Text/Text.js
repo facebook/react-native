@@ -11,6 +11,7 @@
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {TextProps} from './TextProps';
 
+import ViewAncestor from '../Components/View/ViewAncestor';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import flattenStyle from '../StyleSheet/flattenStyle';
@@ -18,7 +19,6 @@ import processColor from '../StyleSheet/processColor';
 import {getAccessibilityRoleFromRole} from '../Utilities/AcessibilityMapping';
 import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
-import ViewAncestor from '../Components/View/ViewAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
