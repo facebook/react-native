@@ -23,7 +23,9 @@ const {cd, cp, echo, exec, exit, mv} = require('shelljs');
 const spawn = require('child_process').spawn;
 const argv = require('yargs').argv;
 const path = require('path');
-const {setupVerdaccio} = require('./setup-verdaccio');
+
+const forEachPackage = require('./monorepo/for-each-package');
+const setupVerdaccio = require('./setup-verdaccio');
 
 const SCRIPTS = __dirname;
 const ROOT = path.normalize(path.join(__dirname, '..'));
@@ -76,14 +78,18 @@ try {
   VERDACCIO_PID = setupVerdaccio();
 
   describe('Publish packages');
-  const packages = JSON.parse(
-    JSON.parse(exec('yarn --json workspaces info').stdout).data,
+  forEachPackage(
+    (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
+      if (packageManifest.private) {
+        return;
+      }
+
+      exec(
+        'npm publish --registry http://localhost:4873 --yes --access public',
+        {cwd: packageAbsolutePath},
+      );
+    },
   );
-  Object.keys(packages).forEach(packageName => {
-    exec(
-      `cd ${packages[packageName].location} && npm publish --registry http://localhost:4873 --yes --access public`,
-    );
-  });
 
   describe('Scaffold a basic React Native app from template');
   exec(`rsync -a ${ROOT}/template ${REACT_NATIVE_TEMP_DIR}`);
