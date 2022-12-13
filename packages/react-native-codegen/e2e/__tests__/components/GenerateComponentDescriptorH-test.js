@@ -11,8 +11,7 @@
 
 'use strict';
 
-const {parseFile} = require('../../../src/parsers/utils');
-const FlowParser = require('../../../src/parsers/flow');
+const {FlowParser} = require('../../../src/parsers/flow/parser');
 const generator = require('../../../src/generators/components/GenerateComponentDescriptorH');
 const fs = require('fs');
 
@@ -20,13 +19,12 @@ const FIXTURE_DIR = `${__dirname}/../../__test_fixtures__/components`;
 
 const fixtures = fs.readdirSync(FIXTURE_DIR);
 
+const parser = new FlowParser();
+
 fixtures.forEach(fixture => {
   it(`GenerateComponentDescriptorH can generate for '${fixture}'`, () => {
     const libName = 'RNCodegenModuleFixtures';
-    const schema = parseFile(
-      `${FIXTURE_DIR}/${fixture}`,
-      FlowParser.buildSchema,
-    );
+    const schema = parser.parseFile(`${FIXTURE_DIR}/${fixture}`);
     const output = generator.generate(libName, schema);
     expect(Object.fromEntries(output)).toMatchSnapshot();
   });

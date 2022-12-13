@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType} from '../CodegenSchema.js';
+import type {UnionTypeAnnotationMemberType, SchemaType} from '../CodegenSchema';
 import type {ParserType} from './errors';
 
 /**
@@ -71,4 +71,10 @@ export interface Parser {
   remapUnionTypeAnnotationMemberNames(
     types: $FlowFixMe,
   ): UnionTypeAnnotationMemberType[];
+  /**
+   * Given the content of a file and options, it returns an AST.
+   * @parameter contents: the content of the file.
+   * @returns: the AST of the file (given in program property for typescript).
+   */
+  parseFile(filename: string): SchemaType;
 }

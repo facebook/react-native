@@ -11,6 +11,8 @@
 
 'use strict';
 
+const {MockedParser} = require('../parserMock');
+
 const {
   extractNativeModuleName,
   createParserErrorCapturer,
@@ -297,6 +299,8 @@ describe('visit', () => {
 });
 
 describe('buildSchemaFromConfigType', () => {
+  const parser = new MockedParser();
+
   const astMock = {
     type: 'Program',
     loc: {
@@ -332,7 +336,7 @@ describe('buildSchemaFromConfigType', () => {
     require('../parsers-commons'),
     'wrapModuleSchema',
   );
-  const buildModuleSchemaMock = jest.fn((_0, _1, _2) => moduleSchemaMock);
+  const buildModuleSchemaMock = jest.fn((_0, _1, _2, _3) => moduleSchemaMock);
 
   const buildSchemaFromConfigTypeHelper = (
     configType: 'module' | 'component' | 'none',
@@ -345,6 +349,7 @@ describe('buildSchemaFromConfigType', () => {
       wrapComponentSchemaMock,
       buildComponentSchemaMock,
       buildModuleSchemaMock,
+      parser,
     );
 
   describe('when configType is none', () => {
@@ -426,6 +431,7 @@ describe('buildSchemaFromConfigType', () => {
             'filename',
             astMock,
             expect.any(Function),
+            parser,
           );
           expect(wrapModuleSchemaMock).toHaveBeenCalledTimes(1);
           expect(wrapModuleSchemaMock).toHaveBeenCalledWith(
