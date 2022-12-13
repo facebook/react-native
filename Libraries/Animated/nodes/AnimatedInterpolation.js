@@ -171,7 +171,8 @@ function mapStringToNumericComponents(
   } else {
     const components: Array<string | number> = [];
     let lastMatchEnd = 0;
-    for (const match of input.matchAll(numericComponentRegex)) {
+    let match: RegExp$matchResult;
+    while ((match = (numericComponentRegex.exec(input): any)) != null) {
       if (match.index > lastMatchEnd) {
         components.push(input.substring(lastMatchEnd, match.index));
       }
@@ -245,7 +246,6 @@ function createStringInterpolation(
   if (!isColor) {
     return input => {
       const values = interpolations.map(interpolation => interpolation(input));
-      console.log({values});
       let i = 0;
       return outputRange[0].components
         .map(c => (typeof c === 'number' ? values[i++] : c))
