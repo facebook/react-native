@@ -20,9 +20,15 @@ class Component {
 
   virtual ~Component() = default;
 
-  // Updates the prop with name and value received as a parameter in the
+  // Updates the prop with name and float value received as a parameter in the
   // component
-  virtual void updateFloatProp(const std::string &propName, float value) = 0;
+  virtual void updateFloatProp(const std::string &propName, float value){};
+
+  // Updates the prop with name and string value received as a parameter in the
+  // component
+  virtual void updateStringProp(
+      const std::string &propName,
+      const std::string &value){};
 
   // Mounts the child component into the children index received as parameter
   virtual void mountChildComponent(
