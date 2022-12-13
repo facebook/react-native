@@ -671,11 +671,16 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   CGFloat bottomLeftRadius;
   CGFloat bottomRightRadius;
 
+  const CGFloat logicalTopStartRadius = RCTDefaultIfNegativeTo(_borderStartStartRadius, _borderTopStartRadius);
+  const CGFloat logicalTopEndRadius = RCTDefaultIfNegativeTo(_borderStartEndRadius, _borderTopEndRadius);
+  const CGFloat logicalBottomStartRadius = RCTDefaultIfNegativeTo(_borderEndStartRadius, _borderBottomStartRadius);
+  const CGFloat logicalBottomEndRadius = RCTDefaultIfNegativeTo(_borderEndEndRadius, _borderBottomEndRadius);
+
   if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
-    const CGFloat topStartRadius = RCTDefaultIfNegativeTo(_borderTopLeftRadius, _borderStartStartRadius > 0 ? _borderStartStartRadius: _borderTopStartRadius);
-    const CGFloat topEndRadius = RCTDefaultIfNegativeTo(_borderTopRightRadius, _borderStartEndRadius > 0 ? _borderStartEndRadius: _borderTopEndRadius);
-    const CGFloat bottomStartRadius = RCTDefaultIfNegativeTo(_borderBottomLeftRadius, _borderEndStartRadius > 0 ? _borderEndStartRadius: _borderBottomStartRadius);
-    const CGFloat bottomEndRadius = RCTDefaultIfNegativeTo(_borderBottomRightRadius, _borderEndEndRadius > 0 ? _borderEndEndRadius: _borderBottomEndRadius);
+    const CGFloat topStartRadius = RCTDefaultIfNegativeTo(_borderTopLeftRadius, logicalTopStartRadius);
+    const CGFloat topEndRadius = RCTDefaultIfNegativeTo(_borderTopRightRadius, logicalTopEndRadius);
+    const CGFloat bottomStartRadius = RCTDefaultIfNegativeTo(_borderBottomLeftRadius, logicalBottomStartRadius);
+    const CGFloat bottomEndRadius = RCTDefaultIfNegativeTo(_borderBottomRightRadius, logicalBottomEndRadius);
 
     const CGFloat directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
     const CGFloat directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
@@ -687,10 +692,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     bottomLeftRadius = RCTDefaultIfNegativeTo(radius, directionAwareBottomLeftRadius);
     bottomRightRadius = RCTDefaultIfNegativeTo(radius, directionAwareBottomRightRadius);
   } else {
-    const CGFloat directionAwareTopLeftRadius = isRTL ? _borderStartEndRadius > 0 ? _borderStartEndRadius: _borderTopEndRadius : _borderStartStartRadius > 0 ? _borderStartStartRadius: _borderTopStartRadius;
-    const CGFloat directionAwareTopRightRadius = isRTL ? _borderStartStartRadius > 0 ? _borderStartStartRadius: _borderTopStartRadius : _borderStartEndRadius > 0 ? _borderStartEndRadius: _borderTopEndRadius;
-    const CGFloat directionAwareBottomLeftRadius = isRTL ? _borderEndEndRadius > 0 ? _borderEndEndRadius: _borderBottomEndRadius : _borderEndStartRadius > 0 ? _borderEndStartRadius: _borderBottomStartRadius;
-    const CGFloat directionAwareBottomRightRadius = isRTL ? _borderEndStartRadius > 0 ? _borderEndStartRadius: _borderBottomStartRadius : _borderEndEndRadius > 0 ? _borderEndEndRadius: _borderBottomEndRadius;
+    const CGFloat directionAwareTopLeftRadius = isRTL ? logicalTopEndRadius : logicalTopStartRadius;
+    const CGFloat directionAwareTopRightRadius = isRTL ? logicalTopStartRadius : logicalTopEndRadius;
+    const CGFloat directionAwareBottomLeftRadius = isRTL ? logicalBottomEndRadius : logicalBottomStartRadius;
+    const CGFloat directionAwareBottomRightRadius = isRTL ? logicalBottomStartRadius : logicalBottomEndRadius;
 
     topLeftRadius =
         RCTDefaultIfNegativeTo(radius, RCTDefaultIfNegativeTo(_borderTopLeftRadius, directionAwareTopLeftRadius));

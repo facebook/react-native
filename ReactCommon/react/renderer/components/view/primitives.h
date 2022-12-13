@@ -166,18 +166,15 @@ struct CascadedRectangleCorners {
   OptionalT startStart{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
-    const auto topLeading = isRTL ? startEnd ? startEnd : topEnd
-        : startStart              ? startStart
-                                  : topStart;
-    const auto topTrailing = isRTL ? startStart ? startStart : topStart
-        : startEnd                 ? startEnd
-                                   : topEnd;
-    const auto bottomLeading = isRTL ? endEnd ? endEnd : bottomEnd
-        : endStart                   ? endStart
-                                     : bottomStart;
-    const auto bottomTrailing = isRTL ? endStart ? endStart : bottomStart
-        : endEnd                      ? endEnd
-                                      : bottomEnd;
+    const auto logicalTopStart = topStart ? topStart : startStart;
+    const auto logicalTopEnd = topEnd ? topEnd : startEnd;
+    const auto logicalBottomStart = bottomStart ? bottomStart : endStart;
+    const auto logicalBottomEnd = bottomEnd ? bottomEnd : endEnd;
+
+    const auto topLeading = isRTL ? logicalTopEnd : logicalTopStart;
+    const auto topTrailing = isRTL ? logicalTopStart : logicalTopEnd;
+    const auto bottomLeading = isRTL ? logicalBottomEnd : logicalBottomStart;
+    const auto bottomTrailing = isRTL ? logicalBottomStart : logicalBottomEnd;
 
     return {
         /* .topLeft = */ topLeft.value_or(
