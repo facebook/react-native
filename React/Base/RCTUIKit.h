@@ -480,7 +480,7 @@ NS_INLINE CGRect CGRectValue(NSValue *value)
 #else
 @interface RCTUISlider : NSSlider
 @end
-#endif // ]TODO(macOS GH#774)
+#endif // ]TODO(macOS GH#774)n
 
 // RCTUILabel
 
@@ -497,5 +497,23 @@ NS_INLINE CGRect CGRectValue(NSValue *value)
 #define RCTUISwitch UISwitch
 #else
 @interface RCTUISwitch : NSSwitch
+@end
+#endif // ]TODO(macOS GH#774)
+
+// RCTUIActivityIndicatorView
+
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#define RCTUIActivityIndicatorView UIActivityIndicatorView
+#else
+@interface RCTUIActivityIndicatorView : NSProgressIndicator
+
+@property (nonatomic, assign) UIActivityIndicatorViewStyle activityIndicatorViewStyle;
+@property (nonatomic, assign) BOOL hidesWhenStopped;
+@property (nullable, readwrite, nonatomic, strong) RCTUIColor *color;
+@property (nonatomic, readonly, getter=isAnimating) BOOL animating;
+
+- (void)startAnimating;
+- (void)stopAnimating;
+
 @end
 #endif // ]TODO(macOS GH#774)
