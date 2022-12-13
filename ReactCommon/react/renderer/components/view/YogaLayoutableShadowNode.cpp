@@ -751,25 +751,6 @@ void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
   auto &props = const_cast<ViewProps &>(typedCasting);
 
   // Swap border node values, borderRadii, borderColors and borderStyles.
-  if (props.borderRadii.startEnd.has_value()) {
-    props.borderRadii.topEnd = props.borderRadii.startEnd;
-    props.borderRadii.startEnd.reset();
-  }
-
-  if (props.borderRadii.startStart.has_value()) {
-    props.borderRadii.topStart = props.borderRadii.startStart;
-    props.borderRadii.startStart.reset();
-  }
-
-  if (props.borderRadii.endEnd.has_value()) {
-    props.borderRadii.bottomEnd = props.borderRadii.endEnd;
-    props.borderRadii.endEnd.reset();
-  }
-
-  if (props.borderRadii.endStart.has_value()) {
-    props.borderRadii.bottomStart = props.borderRadii.endStart;
-    props.borderRadii.endStart.reset();
-  }
 
   if (props.borderRadii.topLeft.has_value()) {
     props.borderRadii.topStart = props.borderRadii.topLeft;
