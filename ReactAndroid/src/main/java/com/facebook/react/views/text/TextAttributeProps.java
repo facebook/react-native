@@ -77,6 +77,7 @@ public class TextAttributeProps {
   private static final int DEFAULT_HYPHENATION_FREQUENCY =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
   private static final String[] SUPPORTED_TYPES_VALUES = {
+    TtsSpan.TYPE_CARDINAL,
     TtsSpan.TYPE_ORDINAL,
     TtsSpan.TYPE_DECIMAL,
     TtsSpan.TYPE_FRACTION,

@@ -745,8 +745,6 @@ inline void fromRawValue(
       result = AccessibilityRole::Button;
     } else if (string == "link") {
       result = AccessibilityRole::Link;
-    } else if (string == "verbatim") {
-      result = AccessibilityRole::Verbatim;
     } else if (string == "date") {
       result = AccessibilityRole::Date;
     } else if (string == "cardinal") {
