@@ -37,32 +37,6 @@ describe('FlowParser', () => {
       });
     });
 
-    describe('when propertyOrIndex is ObjectTypeIndexer', () => {
-      it('returns indexer name', () => {
-        const indexer = {
-          type: 'ObjectTypeIndexer',
-          id: {
-            name: 'indexerName',
-          },
-        };
-
-        const expected = 'indexerName';
-
-        expect(parser.getKeyName(indexer, hasteModuleName)).toEqual(expected);
-      });
-
-      it('returns `key` if indexer has no name', () => {
-        const indexer = {
-          type: 'ObjectTypeIndexer',
-          id: {},
-        };
-
-        const expected = 'key';
-
-        expect(parser.getKeyName(indexer, hasteModuleName)).toEqual(expected);
-      });
-    });
-
     describe('when propertyOrIndex is not ObjectTypeProperty or ObjectTypeIndexer', () => {
       it('throw UnsupportedObjectPropertyTypeAnnotationParserError', () => {
         const indexer = {
@@ -110,23 +84,6 @@ describe('TypeScriptParser', () => {
         const expected = 'propertyName';
 
         expect(parser.getKeyName(property, hasteModuleName)).toEqual(expected);
-      });
-    });
-
-    describe('when propertyOrIndex is TSIndexSignature', () => {
-      it('returns indexer name', () => {
-        const indexer = {
-          type: 'TSIndexSignature',
-          parameters: [
-            {
-              name: 'indexerName',
-            },
-          ],
-        };
-
-        const expected = 'indexerName';
-
-        expect(parser.getKeyName(indexer, hasteModuleName)).toEqual(expected);
       });
     });
 

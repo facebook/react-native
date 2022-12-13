@@ -712,7 +712,8 @@ export interface Spec extends TurboModule {
   returnObjectArray(): Promise<Array<Object>>;
   returnNullableNumber(): Promise<number | null>;
   returnEmpty(): Promise<empty>;
-  returnIndex(): Promise<{ [string]: 'authorized' | 'denied' | 'undetermined' | true | false }>;
+  returnUnsupportedIndex(): Promise<{ [string]: 'authorized' | 'denied' | 'undetermined' | true | false }>;
+  returnSupportedIndex(): Promise<{ [string]: CustomObject }>;
   returnEnum() : Promise<Season>;
   returnObject() : Promise<CustomObject>;
 }
