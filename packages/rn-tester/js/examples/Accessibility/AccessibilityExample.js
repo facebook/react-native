@@ -1097,7 +1097,6 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
       <View>
         <View
           accessible={true}
-          accessibilityLiveRegion="none"
           accessibilityLabel="Fake Slider"
           accessibilityRole="adjustable"
           accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
