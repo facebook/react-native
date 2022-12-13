@@ -111,8 +111,10 @@ static NSString *RCTGenerateFormBoundary()
   // Print headers.
   NSMutableDictionary<NSString *, NSString *> *headers = [_parts[0][@"headers"] mutableCopy];
   NSString *partContentType = result[@"contentType"];
-  if (partContentType != nil) {
+  if (partContentType != nil && ![partContentType isEqual:[NSNull null]]) {
     headers[@"content-type"] = partContentType;
+  } else if (nil == headers[@"content-type"]) {
+    headers[@"content-type"] = @"application/octet-stream";
   }
   [headers enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop) {
     [self->_multipartBody appendData:[[NSString stringWithFormat:@"%@: %@\r\n", parameterKey, parameterValue]
@@ -331,7 +333,7 @@ RCT_EXPORT_MODULE()
                                 request.HTTPBody = result[@"body"];
                                 NSString *dataContentType = result[@"contentType"];
                                 NSString *requestContentType = [request valueForHTTPHeaderField:@"Content-Type"];
-                                BOOL isMultipart = [dataContentType hasPrefix:@"multipart"];
+                                BOOL isMultipart = ![dataContentType isEqual:[NSNull null]] && [dataContentType hasPrefix:@"multipart"];
 
                                 // For multipart requests we need to override caller-specified content type with one
                                 // from the data object, because it contains the boundary string
@@ -407,7 +409,12 @@ RCT_EXPORT_MODULE()
     NSData *data = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
     return callback(nil, @{@"body" : data});
   }
-  NSURLRequest *request = [RCTConvert NSURLRequest:query[@"uri"]];
+  NSURLRequest *request;
+  NSString *uri = [RCTConvert NSString:query[@"uri"]];
+  if (uri) {
+    NSDictionary *headers = [RCTConvert NSDictionary:query[@"headers"]];
+    request = [RCTConvert NSURLRequest:(headers ? @{@"uri":uri, @"headers":headers} : uri)];
+  }
   if (request) {
     __block RCTURLRequestCancellationBlock cancellationBlock = nil;
     RCTNetworkTask *task =
