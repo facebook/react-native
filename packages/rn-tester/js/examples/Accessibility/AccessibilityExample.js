@@ -1579,7 +1579,7 @@ function DisplayOptionStatusExample({
 
 function AccessibilityErrorWithButtons(): React.Node {
   const [text, setText] = React.useState('');
-  const [error, setError] = React.useState<null | String>(null);
+  const [error, setError] = React.useState<?string>(null);
   const [accessibilityInvalid, setAccessibilityInvalid] = React.useState(false);
   return (
     <View>
