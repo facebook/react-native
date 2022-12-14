@@ -65,7 +65,7 @@ GEM
     httpclient (2.8.3)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
-    json (2.6.2)
+    json (2.6.3)
     minitest (5.16.3)
     molinillo (0.8.0)
     nanaimo (0.3.0)
