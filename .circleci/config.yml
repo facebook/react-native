@@ -1577,6 +1577,7 @@ jobs:
     executor: reactnativeandroid
     steps:
       - checkout
+      - run_yarn
       - run:
           name: Set NPM auth token
           command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
