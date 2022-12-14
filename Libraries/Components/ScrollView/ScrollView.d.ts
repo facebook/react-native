@@ -841,7 +841,7 @@ export class ScrollView extends ScrollViewBase {
    * The options object has an animated prop, that enables the scrolling animation or not.
    * The animated prop defaults to true
    */
-  scrollToEnd(options?: {animated: boolean}): void;
+  scrollToEnd(options?: {animated?: boolean}): void;
 
   /**
    * Displays the scroll indicators momentarily.
