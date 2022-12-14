@@ -104,12 +104,15 @@ public class ReactFeatureFlags {
   /** Temporary flag to allow execution of mount items up to 15ms earlier than normal. */
   public static boolean enableEarlyScheduledMountItemExecution = false;
 
-  // TODO (T136375139): Remove this once finish testing
-  public static boolean enableAtomicRegisterSegment = false;
-
   /**
    * Allow closing the small gap that appears between paths when drawing a rounded View with a
    * border.
    */
   public static boolean enableCloseVisibleGapBetweenPaths = true;
+
+  /**
+   * Allow fix in layout animation to drop delete...create mutations which could cause missing view
+   * state in Fabric SurfaceMountingManager.
+   */
+  public static boolean reduceDeleteCreateMutationLayoutAnimation = true;
 }

@@ -362,8 +362,7 @@ void Binding::installFabricUIManager(
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     ComponentFactory *componentsRegistry,
-    jni::alias_ref<jobject> reactNativeConfig,
-    CppComponentRegistry *cppComponentRegistry) {
+    jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
   std::shared_ptr<const ReactNativeConfig> config =
@@ -377,19 +376,13 @@ void Binding::installFabricUIManager(
                  << this << ").";
   }
 
-  // TODO[T135327389]: Investigate why code relying on CppComponentRegistry
-  // crashing during hot reload restart.
-  // sharedCppComponentRegistry_ =
-  //     std::shared_ptr<const facebook::react::CppComponentRegistry>(
-  //         cppComponentRegistry ? cppComponentRegistry : nullptr);
-
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
   // at the same time
   std::unique_lock<butter::shared_mutex> lock(installMutex_);
 
   auto globalJavaUiManager = make_global(javaUIManager);
-  mountingManager_ = std::make_shared<FabricMountingManager>(
-      config, sharedCppComponentRegistry_, globalJavaUiManager);
+  mountingManager_ =
+      std::make_shared<FabricMountingManager>(config, globalJavaUiManager);
 
   ContextContainer::Shared contextContainer =
       std::make_shared<ContextContainer>();
@@ -480,7 +473,6 @@ void Binding::uninstallFabricUIManager() {
   scheduler_ = nullptr;
   mountingManager_ = nullptr;
   reactNativeConfig_ = nullptr;
-  sharedCppComponentRegistry_ = nullptr;
 }
 
 std::shared_ptr<FabricMountingManager> Binding::verifyMountingManager(
@@ -517,16 +509,6 @@ void Binding::preallocateView(
     SurfaceId surfaceId,
     ShadowNode const &shadowNode) {
   auto name = std::string(shadowNode.getComponentName());
-
-  // Disable preallocation in java for C++ view managers
-  // RootComponents that are implmented as C++ view managers are still
-  // preallocated (this could be avoided by using Portals)
-  if (sharedCppComponentRegistry_ && sharedCppComponentRegistry_.get() &&
-      sharedCppComponentRegistry_->containsComponentManager(name) &&
-      !sharedCppComponentRegistry_->isRootComponent(name)) {
-    return;
-  }
-
   auto shadowView = ShadowView(shadowNode);
   auto mountingManager = verifyMountingManager("Binding::preallocateView");
   if (!mountingManager) {
@@ -547,6 +529,12 @@ void Binding::schedulerDidDispatchCommand(
   }
 
   mountingManager->dispatchCommand(shadowView, commandName, args);
+}
+
+void Binding::setNativeProps_DEPRECATED(
+    const ShadowView &shadowView,
+    Props::Shared props) {
+  // TODO(T130729920): Add Android implementation for setNativeProps.
 }
 
 void Binding::schedulerDidSendAccessibilityEvent(

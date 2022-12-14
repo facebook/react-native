@@ -15,6 +15,7 @@ import type {____FlattenStyleProp_Internal} from './StyleSheetTypes';
 
 function flattenStyle<+TStyleProp: DangerouslyImpreciseStyleProp>(
   style: ?TStyleProp,
+  // $FlowFixMe[underconstrained-implicit-instantiation]
 ): ?____FlattenStyleProp_Internal<TStyleProp> {
   if (style === null || typeof style !== 'object') {
     return undefined;
@@ -26,6 +27,7 @@ function flattenStyle<+TStyleProp: DangerouslyImpreciseStyleProp>(
 
   const result: {[string]: $FlowFixMe} = {};
   for (let i = 0, styleLength = style.length; i < styleLength; ++i) {
+    // $FlowFixMe[underconstrained-implicit-instantiation]
     const computedStyle = flattenStyle(style[i]);
     if (computedStyle) {
       for (const key in computedStyle) {

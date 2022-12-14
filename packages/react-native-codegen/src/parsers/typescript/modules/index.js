@@ -18,12 +18,12 @@ import type {
   NativeModuleTypeAnnotation,
   NativeModuleSchema,
   Nullable,
-} from '../../../CodegenSchema.js';
+} from '../../../CodegenSchema';
 
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
-const {resolveTypeAnnotation, getTypes} = require('../utils.js');
+const {resolveTypeAnnotation, getTypes} = require('../utils');
 
 const {
   parseObjectProperty,
@@ -55,7 +55,7 @@ const {
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
-} = require('../../errors.js');
+} = require('../../errors');
 
 const {
   throwIfUntypedModule,
@@ -184,6 +184,28 @@ function translateTypeAnnotation(
       }
     }
     case 'TSTypeLiteral': {
+      // if there is TSIndexSignature, then it is a dictionary
+      if (typeAnnotation.members) {
+        const indexSignatures = typeAnnotation.members.filter(
+          member => member.type === 'TSIndexSignature',
+        );
+        if (indexSignatures.length > 0) {
+          // check the property type to prevent developers from using unsupported types
+          // the return value from `translateTypeAnnotation` is unused
+          const propertyType = indexSignatures[0].typeAnnotation;
+          translateTypeAnnotation(
+            hasteModuleName,
+            propertyType,
+            types,
+            aliasMap,
+            tryParse,
+            cxxOnly,
+          );
+          // no need to do further checking
+          return emitObject(nullable);
+        }
+      }
+
       const objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         // $FlowFixMe[missing-type-arg]
@@ -298,8 +320,8 @@ function buildModuleSchema(
 
   throwIfModuleInterfaceIsMisnamed(hasteModuleName, moduleSpec.id, language);
 
-  // Parse Module Names
-  const moduleName = tryParse((): string => {
+  // Parse Module Name
+  const moduleName = ((): string => {
     const callExpressions = [];
     visit(ast, {
       CallExpression(node) {
@@ -366,9 +388,7 @@ function buildModuleSchema(
     );
 
     return $moduleName;
-  });
-
-  const moduleNames = moduleName == null ? [] : [moduleName];
+  })();
 
   // Some module names use platform suffix to indicate platform-exclusive modules.
   // Eventually this should be made explicit in the Flow type itself.
@@ -376,7 +396,7 @@ function buildModuleSchema(
   // Note: this shape is consistent with ComponentSchema.
   const {cxxOnly, excludedPlatforms} = verifyPlatforms(
     hasteModuleName,
-    moduleNames,
+    moduleName,
   );
 
   // $FlowFixMe[missing-type-arg]
@@ -416,7 +436,7 @@ function buildModuleSchema(
           spec: {
             properties: [...moduleSchema.spec.properties, propertyShape],
           },
-          moduleNames: moduleSchema.moduleNames,
+          moduleName: moduleSchema.moduleName,
           excludedPlatforms: moduleSchema.excludedPlatforms,
         };
       },
@@ -424,7 +444,7 @@ function buildModuleSchema(
         type: 'NativeModule',
         aliases: {},
         spec: {properties: []},
-        moduleNames: moduleNames,
+        moduleName: moduleName,
         excludedPlatforms:
           excludedPlatforms.length !== 0 ? [...excludedPlatforms] : undefined,
       },

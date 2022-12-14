@@ -52,11 +52,11 @@ references:
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_workspace_cache_key: &hermes_workspace_cache_key v4-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v3-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
-    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v3-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version"}}
-    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v2-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version"}}
+    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v4-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     pods_cache_key: &pods_cache_key v8-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     windows_choco_cache_key: &windows_choco_cache_key v1-win-choco-cache-{{ .Environment.CIRCLE_JOB }}
@@ -257,6 +257,17 @@ commands:
           name: Report size of RNTester.app (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
 
+  get_react_native_version:
+    steps:
+      - run:
+          name: Get React Native version
+          command: |
+            VERSION=$( grep '"version"' package.json | cut -d '"' -f 4 | head -1)
+            # Save the react native version we are building in a file so we can use that file as part of the cache key.
+            echo "$VERSION" > /tmp/react-native-version
+            echo "React Native Version is $(cat /tmp/react-native-version)"
+            echo "Hermes commit is $(cat /tmp/hermes/hermesversion)"
+
   with_hermes_tarball_cache_span:
     parameters:
       steps:
@@ -273,12 +284,7 @@ commands:
         type: string
         default: *hermes_tarball_artifacts_dir
     steps:
-      - run:
-          name: Get React Native version
-          command: |
-            VERSION=$( grep '"version"' package.json | cut -d '"' -f 4 | head -1)
-            # Save the react native version we are building in a file so we can use that file as part of the cache key.
-            echo "$VERSION" > /tmp/react-native-version
+      - get_react_native_version
       - when:
           condition:
             equal: [ << parameters.flavor >>, "Debug"]
@@ -323,6 +329,21 @@ commands:
 
                   echo "Found Hermes tarball at $TARBALL_PATH"
                   echo "export HERMES_ENGINE_TARBALL_PATH=$TARBALL_PATH" >> $BASH_ENV
+      - run:
+          name: Print Hermes version
+          command: |
+              HERMES_TARBALL_ARTIFACTS_DIR=<< parameters.hermes_tarball_artifacts_dir >>
+              TARBALL_FILENAME=$(node ~/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>")
+              TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
+              if [[ -e $TARBALL_PATH ]]; then
+                tar -xf $TARBALL_PATH
+                echo 'print(HermesInternal?.getRuntimeProperties?.()["OSS Release Version"])' > test.js
+                ./destroot/bin/hermes test.js
+                rm test.js
+                rm -rf destroot
+              else
+                echo 'No Hermes tarball found.'
+              fi
       - steps: << parameters.steps >>
       - when:
           condition:
@@ -1214,6 +1235,7 @@ jobs:
       - checkout_code_with_cache
       - run_yarn
       - *attach_hermes_workspace
+      - get_react_native_version
       - when:
           condition:
             equal: [ << parameters.flavor >>, "Debug"]

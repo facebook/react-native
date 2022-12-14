@@ -40,7 +40,6 @@ const {
   MoreThanOneTypeParameterGenericParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
-  UnsupportedObjectPropertyTypeAnnotationParserError,
   UnnamedFunctionParamParserError,
 } = require('./errors');
 
@@ -116,15 +115,9 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
 function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
   switch (language) {
     case 'Flow':
-      return (
-        property.type === 'ObjectTypeProperty' ||
-        property.type === 'ObjectTypeIndexer'
-      );
+      return property.type === 'ObjectTypeProperty';
     case 'TypeScript':
-      return (
-        property.type === 'TSPropertySignature' ||
-        property.type === 'TSIndexSignature'
-      );
+      return property.type === 'TSPropertySignature';
     default:
       return false;
   }
@@ -143,34 +136,12 @@ function parseObjectProperty(
 ): NamedShape<Nullable<NativeModuleBaseTypeAnnotation>> {
   const language = parser.language();
 
-  if (!isObjectProperty(property, language)) {
-    throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-      hasteModuleName,
-      property,
-      property.type,
-      language,
-    );
-  }
-
-  const {optional = false} = property;
   const name = parser.getKeyName(property, hasteModuleName);
+  const {optional = false} = property;
   const languageTypeAnnotation =
     language === 'TypeScript'
       ? property.typeAnnotation.typeAnnotation
       : property.value;
-
-  if (
-    property.type === 'ObjectTypeIndexer' ||
-    property.type === 'TSIndexSignature'
-  ) {
-    return {
-      name,
-      optional,
-      typeAnnotation: wrapNullable(nullable, {
-        type: 'GenericObjectTypeAnnotation',
-      }), //TODO: use `emitObject` for typeAnnotation
-    };
-  }
 
   const [propertyTypeAnnotation, isPropertyNullable] =
     unwrapNullable<$FlowFixMe>(

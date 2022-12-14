@@ -22,10 +22,18 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import javax.annotation.Nonnull;
 
 public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public static final String NAME = \\"SampleTurboModule\\";
+
   public NativeSampleTurboModuleSpec(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public @Nonnull String getName() {
+    return NAME;
   }
 
 
@@ -61,11 +69,19 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public static final String NAME = \\"SampleTurboModule\\";
+
   public NativeSampleTurboModuleSpec(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public @Nonnull String getName() {
+    return NAME;
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
@@ -124,10 +140,18 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import javax.annotation.Nonnull;
 
 public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public static final String NAME = \\"SampleTurboModule\\";
+
   public NativeSampleTurboModuleSpec(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public @Nonnull String getName() {
+    return NAME;
   }
 
 
@@ -159,10 +183,18 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import javax.annotation.Nonnull;
 
 public abstract class AliasTurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public static final String NAME = \\"AliasTurboModule\\";
+
   public AliasTurboModuleSpec(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public @Nonnull String getName() {
+    return NAME;
   }
 
   @ReactMethod
@@ -198,10 +230,18 @@ import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import javax.annotation.Nonnull;
 
 public abstract class NativeCameraRollManagerSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public static final String NAME = \\"CameraRollManager\\";
+
   public NativeCameraRollManagerSpec(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public @Nonnull String getName() {
+    return NAME;
   }
 
   @ReactMethod
@@ -239,10 +279,18 @@ import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import javax.annotation.Nonnull;
 
 public abstract class NativeExceptionsManagerSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public static final String NAME = \\"ExceptionsManager\\";
+
   public NativeExceptionsManagerSpec(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public @Nonnull String getName() {
+    return NAME;
   }
 
   @ReactMethod
@@ -302,11 +350,19 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public static final String NAME = \\"SampleTurboModule\\";
+
   public NativeSampleTurboModuleSpec(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public @Nonnull String getName() {
+    return NAME;
   }
 
   protected abstract Map<String, Object> getTypedExportedConstants();
@@ -411,10 +467,18 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import javax.annotation.Nonnull;
 
 public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public static final String NAME = \\"SampleTurboModule\\";
+
   public NativeSampleTurboModuleSpec(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public @Nonnull String getName() {
+    return NAME;
   }
 
   @ReactMethod
@@ -442,10 +506,18 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import javax.annotation.Nonnull;
 
 public abstract class NativeSampleTurboModule2Spec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public static final String NAME = \\"SampleTurboModule2\\";
+
   public NativeSampleTurboModule2Spec(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public @Nonnull String getName() {
+    return NAME;
   }
 
   @ReactMethod

@@ -115,22 +115,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     }));
   }
 
-  _renderResult(
-    name:
-      | 'callback'
-      | 'getArray'
-      | 'getBool'
-      | 'getConstants'
-      | 'getNumber'
-      | 'getObject'
-      | 'getRootTag'
-      | 'getString'
-      | 'getUnsafeObject'
-      | 'getValue'
-      | 'promise'
-      | 'rejectPromise'
-      | 'voidFunc',
-  ): React.Node {
+  _renderResult(name: string): React.Node {
     const result = this.state.testResults[name] || {};
     return (
       <View style={styles.result}>

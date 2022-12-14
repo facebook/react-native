@@ -21,20 +21,20 @@ const {
 class TypeScriptParser implements Parser {
   typeParameterInstantiation: string = 'TSTypeParameterInstantiation';
 
-  getKeyName(propertyOrIndex: $FlowFixMe, hasteModuleName: string): string {
-    switch (propertyOrIndex.type) {
-      case 'TSPropertySignature':
-        return propertyOrIndex.key.name;
-      case 'TSIndexSignature':
-        return propertyOrIndex.parameters[0].name;
-      default:
-        throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-          hasteModuleName,
-          propertyOrIndex,
-          propertyOrIndex.type,
-          this.language(),
-        );
+  isProperty(property: $FlowFixMe): boolean {
+    return property.type === 'TSPropertySignature';
+  }
+
+  getKeyName(property: $FlowFixMe, hasteModuleName: string): string {
+    if (!this.isProperty(property)) {
+      throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+        hasteModuleName,
+        property,
+        property.type,
+        this.language(),
+      );
     }
+    return property.key.name;
   }
 
   getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {

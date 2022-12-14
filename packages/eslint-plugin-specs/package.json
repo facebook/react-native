@@ -1,6 +1,6 @@
 {
   "name": "@react-native/eslint-plugin-specs",
-  "version": "0.72.0",
+  "version": "0.72.1",
   "description": "ESLint rules to validate NativeModule and Component Specs",
   "main": "index.js",
   "repository": {

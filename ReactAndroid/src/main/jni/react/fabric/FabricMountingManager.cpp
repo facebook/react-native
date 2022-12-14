@@ -6,7 +6,6 @@
  */
 
 #include "FabricMountingManager.h"
-#include "CppViewMutationsWrapper.h"
 #include "EventEmitterWrapper.h"
 #include "StateWrapperImpl.h"
 
@@ -39,10 +38,8 @@ static bool getFeatureFlagValue(const char *name) {
 
 FabricMountingManager::FabricMountingManager(
     std::shared_ptr<const ReactNativeConfig> &config,
-    std::shared_ptr<const CppComponentRegistry> &cppComponentRegistry,
     global_ref<jobject> &javaUIManager)
     : javaUIManager_(javaUIManager),
-      cppComponentRegistry_(cppComponentRegistry),
       useOverflowInset_(getFeatureFlagValue("useOverflowInset")) {
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
 }
@@ -77,8 +74,6 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
       return 7; // tag, parentTag, x, y, w, h, DisplayType
     case CppMountItem::Type::UpdateOverflowInset:
       return 5; // tag, left, top, right, bottom
-    case CppMountItem::Type::RunCPPMutations:
-      return 1;
     case CppMountItem::Undefined:
     case CppMountItem::Multiple:
       return -1;
@@ -317,26 +312,6 @@ void FabricMountingManager::executeMount(
       auto &index = mutation.index;
 
       bool isVirtual = mutation.mutatedViewIsVirtual();
-
-      // Detect if the mutation instruction belongs to C++ view managers
-      if (cppComponentRegistry_) {
-        auto componentName = newChildShadowView.componentName
-            ? newChildShadowView.componentName
-            : oldChildShadowView.componentName;
-        auto name = std::string(componentName);
-        if (cppComponentRegistry_->containsComponentManager(name)) {
-          // is this thread safe?
-          cppViewMutations.push_back(mutation);
-
-          // This is a hack that could be avoided by using Portals
-          // Only execute mutations instructions for Root C++ ViewManagers
-          // because Root C++ Components have a Android view counterpart.
-          if (!cppComponentRegistry_->isRootComponent(name)) {
-            continue;
-          }
-        }
-      }
-
       switch (mutationType) {
         case ShadowViewMutation::Create: {
           bool allocationCheck =
@@ -819,36 +794,6 @@ void FabricMountingManager::executeMount(
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
       intBufferPosition += 1;
     }
-  }
-
-  if (cppViewMutations.size() > 0) {
-    writeIntBufferTypePreamble(
-        CppMountItem::Type::RunCPPMutations,
-        1,
-        env,
-        intBufferArray,
-        intBufferPosition);
-
-    // TODO review this logic and memory mamangement
-    // this might not be necessary:
-    // temp[0] = 1234;
-    // env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
-    // intBufferPosition += 1;
-
-    // Do not hold a reference to javaCppMutations from the C++ side.
-    auto javaCppMutations = CppViewMutationsWrapper::newObjectJavaArgs();
-    CppViewMutationsWrapper *cppViewMutationsWrapper = cthis(javaCppMutations);
-
-    // TODO move this to init methods
-    cppViewMutationsWrapper->cppComponentRegistry = cppComponentRegistry_;
-    // TODO is moving the cppViewMutations safe / thread safe?
-    // cppViewMutations will be accessed from the UI Thread in a near future
-    // can they dissapear?
-    cppViewMutationsWrapper->cppViewMutations =
-        std::make_shared<std::vector<facebook::react::ShadowViewMutation>>(
-            std::move(cppViewMutations));
-
-    (*objBufferArray)[objBufferPosition++] = javaCppMutations.get();
   }
 
   // If there are no items, we pass a nullptr instead of passing the object

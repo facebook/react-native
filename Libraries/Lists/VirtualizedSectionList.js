@@ -530,6 +530,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
 
   React.useEffect(() => {
     setSelfHighlightCallback(cellKey, setSeparatorHighlighted);
+    // $FlowFixMe[incompatible-call]
     setSelfUpdatePropsCallback(cellKey, setSeparatorProps);
 
     return () => {

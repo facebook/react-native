@@ -20,6 +20,7 @@ const React = require('react');
 
 class ElementBox extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
+    // $FlowFixMe[underconstrained-implicit-instantiation]
     const style = flattenStyle(this.props.style) || {};
     let margin = resolveBoxStyle('margin', style);
     let padding = resolveBoxStyle('padding', style);

@@ -174,7 +174,6 @@ android {
         release {
             externalNativeBuild {
                 cmake {
-                    arguments "-DHERMES_ENABLE_DEBUGGER=False"
                     arguments "-DCMAKE_BUILD_TYPE=MinSizeRel"
                 }
             }

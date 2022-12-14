@@ -10,6 +10,7 @@
 
 import type {HighResTimeStamp} from './PerformanceObserver';
 
+import warnOnce from '../Utilities/warnOnce';
 import NativePerformance from './NativePerformance';
 import {PerformanceEntry} from './PerformanceObserver';
 
@@ -20,20 +21,63 @@ export type PerformanceMarkOptions = {
   startTime?: HighResTimeStamp,
 };
 
-function getCurrentTimeStamp(): HighResTimeStamp {
-  return global.nativePerformanceNow?.() ?? Date.now();
-}
+declare var global: {
+  // This value is defined directly via JSI, if available.
+  +nativePerformanceNow?: ?() => number,
+};
+
+const getCurrentTimeStamp: () => HighResTimeStamp = global.nativePerformanceNow
+  ? global.nativePerformanceNow
+  : () => Date.now();
 
 export class PerformanceMark extends PerformanceEntry {
   detail: DetailType;
 
   constructor(markName: string, markOptions?: PerformanceMarkOptions) {
-    let startTime = markOptions?.startTime ?? getCurrentTimeStamp();
-    super({name: markName, entryType: 'mark', startTime, duration: 0});
-    if (markOptions !== undefined) {
+    super({
+      name: markName,
+      entryType: 'mark',
+      startTime: markOptions?.startTime ?? getCurrentTimeStamp(),
+      duration: 0,
+    });
+
+    if (markOptions) {
       this.detail = markOptions.detail;
     }
   }
+}
+
+export type TimeStampOrName = HighResTimeStamp | string;
+
+export type PerformanceMeasureOptions = {
+  detail?: DetailType,
+  start?: TimeStampOrName,
+  end?: TimeStampOrName,
+  duration?: HighResTimeStamp,
+};
+
+export class PerformanceMeasure extends PerformanceEntry {
+  detail: DetailType;
+
+  constructor(measureName: string, measureOptions?: PerformanceMeasureOptions) {
+    super({
+      name: measureName,
+      entryType: 'measure',
+      startTime: 0,
+      duration: measureOptions?.duration ?? 0,
+    });
+
+    if (measureOptions) {
+      this.detail = measureOptions.detail;
+    }
+  }
+}
+
+function warnNoNativePerformance() {
+  warnOnce(
+    'missing-native-performance',
+    'Missing native implementation of Performance',
+  );
 }
 
 /**
@@ -47,11 +91,102 @@ export default class Performance {
     markOptions?: PerformanceMarkOptions,
   ): PerformanceMark {
     const mark = new PerformanceMark(markName, markOptions);
-    NativePerformance?.mark?.(markName, mark.startTime, mark.duration);
+
+    if (NativePerformance?.mark) {
+      NativePerformance.mark(markName, mark.startTime, mark.duration);
+    } else {
+      warnNoNativePerformance();
+    }
+
     return mark;
   }
 
-  clearMarks(markName?: string): void {}
+  clearMarks(markName?: string): void {
+    if (!NativePerformance?.clearMarks) {
+      warnNoNativePerformance();
+      return;
+    }
+
+    NativePerformance.clearMarks(markName);
+  }
+
+  measure(
+    measureName: string,
+    startMarkOrOptions?: string | PerformanceMeasureOptions,
+    endMark?: string,
+  ): PerformanceMeasure {
+    let options;
+    let startMarkName,
+      endMarkName = endMark,
+      duration,
+      startTime = 0,
+      endTime = 0;
+
+    if (typeof startMarkOrOptions === 'string') {
+      startMarkName = startMarkOrOptions;
+    } else if (startMarkOrOptions !== undefined) {
+      options = startMarkOrOptions;
+      if (endMark !== undefined) {
+        throw new TypeError(
+          "Performance.measure: Can't have both options and endMark",
+        );
+      }
+      if (options.start === undefined && options.end === undefined) {
+        throw new TypeError(
+          'Performance.measure: Must have at least one of start/end specified in options',
+        );
+      }
+      if (
+        options.start !== undefined &&
+        options.end !== undefined &&
+        options.duration !== undefined
+      ) {
+        throw new TypeError(
+          "Performance.measure: Can't have both start/end and duration explicitly in options",
+        );
+      }
+
+      if (typeof options.start === 'number') {
+        startTime = options.start;
+      } else {
+        startMarkName = options.start;
+      }
+
+      if (typeof options.end === 'number') {
+        endTime = options.end;
+      } else {
+        endMarkName = options.end;
+      }
+
+      duration = options.duration ?? duration;
+    }
+
+    const measure = new PerformanceMeasure(measureName, options);
+
+    if (NativePerformance?.measure) {
+      NativePerformance.measure(
+        measureName,
+        startTime,
+        endTime,
+        duration,
+        startMarkName,
+        endMarkName,
+      );
+    } else {
+      warnNoNativePerformance();
+    }
+
+    return measure;
+  }
+
+  clearMeasures(measureName?: string): void {
+    if (!NativePerformance?.clearMeasures) {
+      warnNoNativePerformance();
+      return;
+    }
+
+    NativePerformance.clearMeasures(measureName);
+  }
 
   now(): HighResTimeStamp {
     return getCurrentTimeStamp();

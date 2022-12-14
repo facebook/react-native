@@ -22,4 +22,28 @@ void NativePerformance::mark(
   PerformanceEntryReporter::getInstance().mark(name, startTime, duration);
 }
 
+void NativePerformance::clearMarks(
+    jsi::Runtime &rt,
+    std::optional<std::string> markName) {
+  PerformanceEntryReporter::getInstance().clearMarks(markName);
+}
+
+void NativePerformance::measure(
+    jsi::Runtime &rt,
+    std::string name,
+    double startTime,
+    double endTime,
+    std::optional<double> duration,
+    std::optional<std::string> startMark,
+    std::optional<std::string> endMark) {
+  PerformanceEntryReporter::getInstance().measure(
+      name, startTime, endTime, duration, startMark, endMark);
+}
+
+void NativePerformance::clearMeasures(
+    jsi::Runtime &rt,
+    std::optional<std::string> measureName) {
+  PerformanceEntryReporter::getInstance().clearMeasures(measureName);
+}
+
 } // namespace facebook::react

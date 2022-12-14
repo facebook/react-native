@@ -54,10 +54,12 @@ class ShadowTreeRegistry final {
 
   /*
    * Enumerates all stored shadow trees.
+   * Set `stop` to `true` to interrupt the enumeration.
    * Can be called from any thread.
    */
   void enumerate(
-      std::function<void(const ShadowTree &shadowTree)> const &callback) const;
+      std::function<void(const ShadowTree &shadowTree, bool &stop)> const
+          &callback) const;
 
  private:
   mutable butter::shared_mutex mutex_;

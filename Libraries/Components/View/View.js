@@ -98,6 +98,7 @@ const View: React.AbstractComponent<
       };
     }
 
+    // $FlowFixMe[underconstrained-implicit-instantiation]
     let style = flattenStyle(otherProps.style);
 
     const newPointerEvents = style?.pointerEvents || pointerEvents;

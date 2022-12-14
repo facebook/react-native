@@ -72,8 +72,7 @@ struct CppMountItem final {
     UpdateEventEmitter = 256,
     UpdatePadding = 512,
     UpdateOverflowInset = 1024,
-    RemoveDeleteTree = 2048,
-    RunCPPMutations = 4096
+    RemoveDeleteTree = 2048
   };
 
 #pragma mark - Fields

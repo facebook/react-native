@@ -91,12 +91,10 @@ const FileTemplate = ({
   libraryName: string,
   include: string,
   modules: string,
-  moduleLookups: $ReadOnlyArray<
-    $ReadOnly<{
-      hasteModuleName: string,
-      moduleName: string,
-    }>,
-  >,
+  moduleLookups: $ReadOnlyArray<{
+    hasteModuleName: string,
+    moduleName: string,
+  }>,
 }>) => {
   return `
 /**
@@ -487,8 +485,10 @@ module.exports = {
       })
       .join('\n');
 
-    // $FlowFixMe[missing-type-arg]
-    const moduleLookups = Object.keys(nativeModules)
+    const moduleLookups: $ReadOnlyArray<{
+      hasteModuleName: string,
+      moduleName: string,
+    }> = Object.keys(nativeModules)
       .filter(hasteModuleName => {
         const module = nativeModules[hasteModuleName];
         return !(
@@ -497,10 +497,8 @@ module.exports = {
         );
       })
       .sort((a, b) => {
-        const moduleA = nativeModules[a];
-        const moduleB = nativeModules[b];
-        const nameA = moduleA.moduleNames[0];
-        const nameB = moduleB.moduleNames[0];
+        const nameA = nativeModules[a].moduleName;
+        const nameB = nativeModules[b].moduleName;
         if (nameA < nameB) {
           return -1;
         } else if (nameA > nameB) {
@@ -508,15 +506,10 @@ module.exports = {
         }
         return 0;
       })
-      .flatMap<{moduleName: string, hasteModuleName: string}>(
-        (hasteModuleName: string) => {
-          const {moduleNames} = nativeModules[hasteModuleName];
-          return moduleNames.map(moduleName => ({
-            moduleName,
-            hasteModuleName,
-          }));
-        },
-      );
+      .map((hasteModuleName: string) => ({
+        moduleName: nativeModules[hasteModuleName].moduleName,
+        hasteModuleName,
+      }));
 
     const fileName = `${libraryName}-generated.cpp`;
     const replacedTemplate = FileTemplate({

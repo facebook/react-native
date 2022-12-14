@@ -196,7 +196,7 @@ function flattenProperties(
         );
       }
     })
-    .reduce((acc, item) => {
+    .reduce((acc: Array<PropAST>, item) => {
       if (Array.isArray(item)) {
         item.forEach(prop => {
           verifyPropNotAlreadyDefined(acc, prop);

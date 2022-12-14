@@ -15,18 +15,11 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** A module that allows JS to get/set clipboard contents. */
-@ReactModule(name = ClipboardModule.NAME)
+@ReactModule(name = NativeClipboardSpec.NAME)
 public class ClipboardModule extends NativeClipboardSpec {
 
   public ClipboardModule(ReactApplicationContext context) {
     super(context);
-  }
-
-  public static final String NAME = "Clipboard";
-
-  @Override
-  public String getName() {
-    return ClipboardModule.NAME;
   }
 
   private ClipboardManager getClipboardService() {

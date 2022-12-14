@@ -15,7 +15,7 @@ import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.module.annotations.ReactModule;
 
-@ReactModule(name = LogBoxModule.NAME)
+@ReactModule(name = NativeLogBoxSpec.NAME)
 public class LogBoxModule extends NativeLogBoxSpec {
 
   public static final String NAME = "LogBox";
@@ -47,11 +47,6 @@ public class LogBoxModule extends NativeLogBoxSpec {
             mSurfaceDelegate.createContentView("LogBox");
           }
         });
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

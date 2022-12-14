@@ -117,7 +117,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             new PrefabPreprocessingEntry(
                 "fabricjni",
-                new Pair("src/main/jni/react/fabric", "")
+                [
+                    new Pair("src/main/jni/react/fabric", ""),
+                    new Pair("src/main/jni/react/cxxcomponents", "react/cxxcomponents/")
+                ]
             ),
             new PrefabPreprocessingEntry(
                 "react_render_mapbuffer",
@@ -147,6 +150,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair(new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                     new Pair("../ReactCommon/butter/", "butter/"),
                     new Pair("../ReactCommon/callinvoker/", ""),
+                    new Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                     new Pair("../ReactCommon/react/bridging/", "react/bridging/"),
                     new Pair("../ReactCommon/react/config/", "react/config/"),
                     new Pair("../ReactCommon/react/nativemodule/core/", ""),
@@ -205,7 +209,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             new PrefabPreprocessingEntry(
                 "reactnativejni",
-                new Pair("src/main/jni/react/jni", "react/jni/"),
+                [
+                    new Pair("src/main/jni/react/jni", "react/jni/"),
+                    new Pair("../ReactCommon/cxxreact/", "cxxreact/"),
+                ]
             ),
         ]
     )

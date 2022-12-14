@@ -26,10 +26,8 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** Intent module. Launch other activities or open URLs. */
-@ReactModule(name = IntentModule.NAME)
+@ReactModule(name = NativeIntentAndroidSpec.NAME)
 public class IntentModule extends NativeIntentAndroidSpec {
-
-  public static final String NAME = "IntentAndroid";
 
   private @Nullable LifecycleEventListener mInitialURLListener = null;
 
@@ -37,11 +35,6 @@ public class IntentModule extends NativeIntentAndroidSpec {
 
   public IntentModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

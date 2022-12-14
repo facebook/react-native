@@ -15,6 +15,8 @@ static PerformanceEntryType stringToPerformanceEntryType(
     const std::string &entryType) {
   if (entryType == "mark") {
     return PerformanceEntryType::MARK;
+  } else if (entryType == "measure") {
+    return PerformanceEntryType::MEASURE;
   } else {
     return PerformanceEntryType::UNDEFINED;
   }

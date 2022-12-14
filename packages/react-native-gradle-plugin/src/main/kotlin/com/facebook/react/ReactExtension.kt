@@ -89,7 +89,7 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    * will:
    * - Not be bundled (the bundle file will not be created and won't be copied over).
    * - Have the Hermes Debug flags set. That's useful if you have another variant (say `canary`)
-   * where you want dev mode to be enabled. Default: ['debug']
+   *   where you want dev mode to be enabled. Default: ['debug']
    */
   val debuggableVariants: ListProperty<String> =
       objects.listProperty(String::class.java).convention(listOf("debug"))

@@ -18,11 +18,11 @@ import type {
   NativeModulePropertyShape,
   NativeModuleSchema,
   Nullable,
-} from '../../../CodegenSchema.js';
+} from '../../../CodegenSchema';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
-const {resolveTypeAnnotation, getTypes} = require('../utils.js');
+const {resolveTypeAnnotation, getTypes} = require('../utils');
 const {
   unwrapNullable,
   wrapNullable,
@@ -54,7 +54,7 @@ const {
 const {
   UnsupportedTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
-} = require('../../errors.js');
+} = require('../../errors');
 
 const {
   throwIfModuleInterfaceNotFound,
@@ -67,7 +67,7 @@ const {
   throwIfMoreThanOneModuleInterfaceParserError,
 } = require('../../error-utils');
 
-const {FlowParser} = require('../parser.js');
+const {FlowParser} = require('../parser');
 
 const language = 'Flow';
 const parser = new FlowParser();
@@ -166,6 +166,28 @@ function translateTypeAnnotation(
       }
     }
     case 'ObjectTypeAnnotation': {
+      // if there is any indexer, then it is a dictionary
+      if (typeAnnotation.indexers) {
+        const indexers = typeAnnotation.indexers.filter(
+          member => member.type === 'ObjectTypeIndexer',
+        );
+        if (indexers.length > 0) {
+          // check the property type to prevent developers from using unsupported types
+          // the return value from `translateTypeAnnotation` is unused
+          const propertyType = indexers[0].value;
+          translateTypeAnnotation(
+            hasteModuleName,
+            propertyType,
+            types,
+            aliasMap,
+            tryParse,
+            cxxOnly,
+          );
+          // no need to do further checking
+          return emitObject(nullable);
+        }
+      }
+
       const objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         // $FlowFixMe[missing-type-arg]
@@ -238,8 +260,9 @@ function translateTypeAnnotation(
     case 'MixedTypeAnnotation': {
       if (cxxOnly) {
         return emitMixed(nullable);
+      } else {
+        return emitObject(nullable);
       }
-      // Fallthrough
     }
     default: {
       throw new UnsupportedTypeAnnotationParserError(
@@ -290,8 +313,8 @@ function buildModuleSchema(
 
   throwIfModuleInterfaceIsMisnamed(hasteModuleName, moduleSpec.id, language);
 
-  // Parse Module Names
-  const moduleName = tryParse((): string => {
+  // Parse Module Name
+  const moduleName = ((): string => {
     const callExpressions = [];
     visit(ast, {
       CallExpression(node) {
@@ -358,9 +381,7 @@ function buildModuleSchema(
     );
 
     return $moduleName;
-  });
-
-  const moduleNames = moduleName == null ? [] : [moduleName];
+  })();
 
   // Some module names use platform suffix to indicate platform-exclusive modules.
   // Eventually this should be made explicit in the Flow type itself.
@@ -368,7 +389,7 @@ function buildModuleSchema(
   // Note: this shape is consistent with ComponentSchema.
   const {cxxOnly, excludedPlatforms} = verifyPlatforms(
     hasteModuleName,
-    moduleNames,
+    moduleName,
   );
 
   // $FlowFixMe[missing-type-arg]
@@ -379,7 +400,6 @@ function buildModuleSchema(
       propertyShape: NativeModulePropertyShape,
     }>(property => {
       const aliasMap: {...NativeModuleAliasMap} = {};
-
       return tryParse(() => ({
         aliasMap: aliasMap,
         propertyShape: buildPropertySchema(
@@ -397,22 +417,20 @@ function buildModuleSchema(
     })
     .filter(Boolean)
     .reduce(
-      (moduleSchema: NativeModuleSchema, {aliasMap, propertyShape}) => {
-        return {
-          type: 'NativeModule',
-          aliases: {...moduleSchema.aliases, ...aliasMap},
-          spec: {
-            properties: [...moduleSchema.spec.properties, propertyShape],
-          },
-          moduleNames: moduleSchema.moduleNames,
-          excludedPlatforms: moduleSchema.excludedPlatforms,
-        };
-      },
+      (moduleSchema: NativeModuleSchema, {aliasMap, propertyShape}) => ({
+        type: 'NativeModule',
+        aliases: {...moduleSchema.aliases, ...aliasMap},
+        spec: {
+          properties: [...moduleSchema.spec.properties, propertyShape],
+        },
+        moduleName: moduleSchema.moduleName,
+        excludedPlatforms: moduleSchema.excludedPlatforms,
+      }),
       {
         type: 'NativeModule',
         aliases: {},
         spec: {properties: []},
-        moduleNames: moduleNames,
+        moduleName,
         excludedPlatforms:
           excludedPlatforms.length !== 0 ? [...excludedPlatforms] : undefined,
       },

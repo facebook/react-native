@@ -207,6 +207,7 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
+  // $FlowFixMe[underconstrained-implicit-instantiation]
   style = flattenStyle(style);
 
   if (typeof style?.fontWeight === 'number') {

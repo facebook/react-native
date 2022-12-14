@@ -167,8 +167,7 @@ public class PointerEventHelper {
       return true;
     }
 
-    int source = motionEvent.getSource();
-    return source == InputDevice.SOURCE_MOUSE;
+    return motionEvent.isFromSource(InputDevice.SOURCE_MOUSE);
   }
 
   public static boolean isExitEvent(String eventName) {

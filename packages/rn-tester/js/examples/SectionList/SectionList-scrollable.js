@@ -181,6 +181,7 @@ export function SectionList_scrollable(Props: {
   let startIndex = 0;
   const endIndex = filteredData.length - 1;
   for (let ii = 10; ii <= endIndex + 10; ii += 10) {
+    // $FlowFixMe[incompatible-call]
     filteredSectionData.push({
       key: `${filteredData[startIndex].key} - ${
         filteredData[Math.min(ii - 1, endIndex)].key

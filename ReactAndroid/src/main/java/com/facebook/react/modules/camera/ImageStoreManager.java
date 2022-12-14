@@ -24,19 +24,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-@ReactModule(name = ImageStoreManager.NAME)
+@ReactModule(name = NativeImageStoreAndroidSpec.NAME)
 public class ImageStoreManager extends NativeImageStoreAndroidSpec {
 
-  public static final String NAME = "ImageStoreManager";
   private static final int BUFFER_SIZE = 8192;
 
   public ImageStoreManager(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   /**
