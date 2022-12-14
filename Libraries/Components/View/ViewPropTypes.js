@@ -29,7 +29,6 @@ import type {
   AccessibilityValue,
   AccessibilityActionEvent,
   AccessibilityActionInfo,
-  AccessibilityNodeInfoProp, // TODO(android ISS)
 } from './ViewAccessibility';
 
 // [TODO(macOS GH#774)
@@ -289,23 +288,6 @@ type AndroidViewProps = $ReadOnly<{|
   needsOffscreenAlphaCompositing?: ?boolean,
 
   /**
-   * When `true`, indicates that the view is clickable. By default,
-   * all the touchable elements are clickable.
-   *
-   * @platform android
-   */
-  focusable?: ?boolean, // TODO(android ISS)
-
-  /**
-   * When `clickable` is true, the system will try to invoke this function
-   * when the user performs a click.
-   *
-   * @platform android
-   */
-
-  onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
-
-  /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.
    *
@@ -314,13 +296,6 @@ type AndroidViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#accessibilityliveregion
    */
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
-
-  /**
-   * fired when the view focus changes (gain->lose or lose->gain)
-   *
-   * @platform android
-   */
-  onFocusChange?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(android ISS)
 
   /**
    * Controls how view is important for accessibility which is if it
@@ -332,8 +307,6 @@ type AndroidViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#importantforaccessibility
    */
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
-
-  accessibilityNodeInfo?: AccessibilityNodeInfoProp, // TODO(android ISS)
 
   /**
    * Whether to force the Android TV focus engine to move focus to this view.

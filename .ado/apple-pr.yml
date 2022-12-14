@@ -18,19 +18,12 @@ pr:
 jobs:
   - job: JavaScriptRNPR
     displayName: JavaScript React Native PR
-    strategy:
-      matrix:
-        office:
-          apply_office_patches: 'true'
-        public:
-          apply_office_patches: 'false'
     pool:
       vmImage: $(VmImageApple)
       demands: ['xcode', 'sh', 'npm']
     steps:
       - template: templates/apple-job-javascript.yml
         parameters:
-            apply_office_patches: $(apply_office_patches)
             slice_name: $(slice_name)
             xcode_version: $(xcode_version)
 
@@ -42,10 +35,9 @@ jobs:
           packager_platform: 'ios'
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
-          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 12'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions_debug: 'build test'
           xcode_actions_release: 'build'
-          apply_office_patches: 'false'
         macos:
           packager_platform: 'macos'
           xcode_sdk: macosx
@@ -53,23 +45,6 @@ jobs:
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions_debug: 'build test'
           xcode_actions_release: 'build'
-          apply_office_patches: 'false'
-        ios-office:
-          packager_platform: 'ios'
-          xcode_sdk: iphonesimulator
-          xcode_scheme: 'RNTester'
-          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 12'
-          xcode_actions_debug: 'build test'
-          xcode_actions_release: 'build'
-          apply_office_patches: 'true'
-        macos-office:
-          packager_platform: 'macos'
-          xcode_sdk: macosx
-          xcode_scheme: 'RNTester-macOS'
-          xcode_destination: 'platform=macOS,arch=x86_64'
-          xcode_actions_debug: 'build test'
-          xcode_actions_release: 'build'
-          apply_office_patches: 'true'
     pool:
       vmImage: $(VmImageApple)
       demands: ['xcode', 'sh', 'npm']
@@ -85,7 +60,6 @@ jobs:
           xcode_actions_debug: $(xcode_actions_debug)
           xcode_actions_release: $(xcode_actions_release)
           xcode_destination: $(xcode_destination)
-          apply_office_patches: $(apply_office_patches)
           slice_name: $(slice_name)
           xcode_version: $(xcode_version)
 

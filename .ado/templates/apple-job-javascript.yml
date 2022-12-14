@@ -1,5 +1,4 @@
 parameters:
-  apply_office_patches: ''
   slice_name: ''
   xcode_version: ''
 

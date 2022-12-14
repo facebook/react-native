@@ -3,8 +3,3 @@
 # the global will be requested for
 # review when someone opens a pull request.
 * @microsoft/apple-rn-team
-
-# React Android specific ones
-/ReactAndroid/ @microsoft/rnandroid
-/android-patches/ @microsoft/rnandroid
-/.ado/**/*droid* @microsoft/rnandroid
