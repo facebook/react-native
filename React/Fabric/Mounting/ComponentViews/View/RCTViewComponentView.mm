@@ -389,7 +389,6 @@ using namespace facebook::react;
   _props = std::static_pointer_cast<ViewProps const>(props);
 }
 
-
 - (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
 {
   assert(std::dynamic_pointer_cast<ViewEventEmitter const>(eventEmitter));

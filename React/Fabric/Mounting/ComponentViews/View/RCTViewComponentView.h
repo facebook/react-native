@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, nullable, readonly) NSObject *accessibilityElement;
 
-@property (nonatomic, readwrite) facebook::react::AccessibilityLiveRegion accessibilityLiveRegion;;
+@property (nonatomic, readwrite) facebook::react::AccessibilityLiveRegion accessibilityLiveRegion;
 @property (nonatomic, readwrite) BOOL triggerLiveRegionAccessibilityAnnouncement;
 
 /**
