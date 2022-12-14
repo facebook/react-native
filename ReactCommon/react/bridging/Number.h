@@ -44,4 +44,15 @@ struct Bridging<int32_t> {
   }
 };
 
+template <>
+struct Bridging<uint32_t> {
+  static uint32_t fromJs(jsi::Runtime &, const jsi::Value &value) {
+    return (uint32_t)value.asNumber();
+  }
+
+  static jsi::Value toJs(jsi::Runtime &, uint32_t value) {
+    return (double)value;
+  }
+};
+
 } // namespace facebook::react
