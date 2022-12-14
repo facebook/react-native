@@ -300,6 +300,42 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
       case AccessibilityRole::Link:
         attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("link");
         break;
+      case facebook::react::AccessibilityRole::Cardinal:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("cardinal");
+        break;
+      case facebook::react::AccessibilityRole::Ordinal:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("ordinal");
+        break;
+      case facebook::react::AccessibilityRole::Decimal:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("decimal");
+        break;
+      case facebook::react::AccessibilityRole::Fraction:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("fraction");
+        break;
+      case facebook::react::AccessibilityRole::Measure:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("measure");
+        break;
+      case facebook::react::AccessibilityRole::Time:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("time");
+        break;
+      case facebook::react::AccessibilityRole::Date:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("date");
+        break;
+      case facebook::react::AccessibilityRole::Telephone:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("telephone");
+        break;
+      case facebook::react::AccessibilityRole::Electronic:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("electronic");
+        break;
+      case facebook::react::AccessibilityRole::Money:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("money");
+        break;
+      case facebook::react::AccessibilityRole::Digits:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("digits");
+        break;
+      case facebook::react::AccessibilityRole::Verbatim:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("verbatim");
+        break;
       case AccessibilityRole::Search:
         attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("search");
         break;
