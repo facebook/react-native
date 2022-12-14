@@ -70,7 +70,9 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
           it.hermesFlags.set(config.hermesFlags)
           it.reactNativeDir.set(config.reactNativeDir)
         }
-    variant.sources.res?.addGeneratedSourceDirectory(bundleTask, BundleHermesCTask::resourcesDir)
+    // Currently broken inside AGP 7.3 We need to wait for a release of AGP 7.4 in order to use
+    // the addGeneratedSourceDirectory API.
+    // variant.sources.res?.addGeneratedSourceDirectory(bundleTask, BundleHermesCTask::resourcesDir)
     variant.sources.assets?.addGeneratedSourceDirectory(bundleTask, BundleHermesCTask::jsBundleDir)
   }
 }
