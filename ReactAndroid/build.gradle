@@ -93,6 +93,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 new Pair("src/main/jni/react/newarchdefaults", "")
             ),
             new PrefabPreprocessingEntry(
+                "react_render_animations",
+                new Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")
+            ),
+            new PrefabPreprocessingEntry(
                 "react_render_core",
                 new Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/")
             ),
@@ -454,6 +458,7 @@ android {
                     "react_debug",
                     "react_render_componentregistry",
                     "react_newarchdefaults",
+                    "react_render_animations",
                     "react_render_core",
                     "react_render_graphics",
                     "rrc_image",
@@ -538,6 +543,9 @@ android {
         }
         react_newarchdefaults {
             headers(new File(prefabHeadersDir, "react_newarchdefaults").absolutePath)
+        }
+        react_render_animations {
+            headers(new File(prefabHeadersDir, "react_render_animations").absolutePath)
         }
         react_render_core {
             headers(new File(prefabHeadersDir, "react_render_core").absolutePath)
