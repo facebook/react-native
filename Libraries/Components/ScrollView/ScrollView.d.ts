@@ -829,8 +829,8 @@ export class ScrollView extends ScrollViewBase {
           y?: number | undefined;
           animated?: boolean | undefined;
         },
-    x?: number,
-    animated?: boolean,
+    deprecatedX?: number,
+    deprecatedAnimated?: boolean,
   ): void;
 
   /**
