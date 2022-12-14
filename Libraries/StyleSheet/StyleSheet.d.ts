@@ -87,10 +87,10 @@ export namespace StyleSheet {
    * an array, saving allocations and maintaining reference equality for
    * PureComponent checks.
    */
-  export function compose<T>(
+  export function compose<T, U>(
     style1: StyleProp<T> | Array<StyleProp<T>>,
-    style2: StyleProp<T> | Array<StyleProp<T>>,
-  ): StyleProp<T>;
+    style2: StyleProp<U> | Array<StyleProp<U>>,
+  ): StyleProp<T & U>;
 
   /**
    * WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will
