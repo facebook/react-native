@@ -168,6 +168,8 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 @implementation RCTBackedTextViewDelegateAdapter {
   __weak UITextView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
+  NSAttributedString *_lastStringStateWasUpdatedWith;
+  BOOL _ignoreNextTextInputCall;
   BOOL _textDidChangeIsComing;
   UITextRange *_previousSelectedTextRange;
 }
@@ -254,12 +256,21 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textViewDidChange:(__unused UITextView *)textView
 {
+  if (_ignoreNextTextInputCall && [_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
+    _ignoreNextTextInputCall = NO;
+    return;
+  }
+  _lastStringStateWasUpdatedWith = _backedTextInputView.attributedText;
   _textDidChangeIsComing = NO;
   [_backedTextInputView.textInputDelegate textInputDidChange];
 }
 
 - (void)textViewDidChangeSelection:(__unused UITextView *)textView
 {
+  if (![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
+    [self textViewDidChange:_backedTextInputView];
+    _ignoreNextTextInputCall = YES;
+  }
   [self textViewProbablyDidChangeSelection];
 }
 
