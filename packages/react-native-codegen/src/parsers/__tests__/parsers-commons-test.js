@@ -25,10 +25,8 @@ const {
 } = require('../errors');
 
 import {MockedParser} from '../parserMock';
-import {TypeScriptParser} from '../typescript/parser';
 
 const parser = new MockedParser();
-const typeScriptParser = new TypeScriptParser();
 
 const flowTranslateTypeAnnotation = require('../flow/modules/index');
 const typeScriptTranslateTypeAnnotation = require('../typescript/modules/index');
