@@ -240,16 +240,17 @@ ${value.properties
 
   static jsi::Object toJs(
       jsi::Runtime &rt,
-      const ${structName}<${templateParameter}> &value) {
+      const ${structName}<${templateParameter}> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
 ${value.properties
   .map((v, i) => {
     if (v.optional) {
       return `    if (value.${v.name}) {
-      result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value()));
+      result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
     }`;
     } else {
-      return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}));`;
+      return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}, jsInvoker));`;
     }
   })
   .join('\n')}
