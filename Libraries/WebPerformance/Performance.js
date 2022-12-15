@@ -188,6 +188,10 @@ export default class Performance {
     NativePerformance.clearMeasures(measureName);
   }
 
+  /**
+   * Returns a double, measured in milliseconds.
+   * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+   */
   now(): HighResTimeStamp {
     return getCurrentTimeStamp();
   }
