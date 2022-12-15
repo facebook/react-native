@@ -122,7 +122,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "fabricjni",
                 [
-                    new Pair("src/main/jni/react/fabric", ""),
+                    new Pair("src/main/jni/react/fabric", "react/fabric/"),
                     new Pair("src/main/jni/react/cxxcomponents", "react/cxxcomponents/")
                 ]
             ),
