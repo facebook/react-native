@@ -116,6 +116,17 @@ export namespace Animated {
 
   type ValueListenerCallback = (state: {value: number}) => void;
 
+  type Animation = {
+    start(
+      fromValue: number,
+      onUpdate: (value: number) => void,
+      onEnd: EndCallback | null,
+      previousAnimation: Animation | null,
+      animatedValue: AnimatedValue,
+    ): void;
+    stop(): void;
+  };
+
   /**
    * Standard value for driving animations.  One `Animated.Value` can drive
    * multiple properties in a synchronized fashion, but can only be driven by one
