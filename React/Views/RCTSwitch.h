@@ -9,18 +9,9 @@
 
 #import <React/RCTComponent.h>
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
-@interface RCTSwitch : UISwitch
-#else // [TODO(macOS GH#774)
-@interface RCTSwitch : NSSwitch
-#endif // ]TODO(macOS GH#774)
+@interface RCTSwitch : RCTUISwitch
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @property (nonatomic, assign) BOOL wasOn;
-#else // [TODO(macOS GH#774)
-@property (nonatomic, assign) BOOL on;
-- (void)setOn:(BOOL)on animated:(BOOL)animated;
-#endif // ]TODO(macOS GH#774)
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end
