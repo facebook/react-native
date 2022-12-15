@@ -11,6 +11,7 @@
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
 #include <glog/logging.h>
+#include <react/config/ReactNativeConfig.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/core/LayoutMetrics.h>
@@ -382,7 +383,8 @@ inline void fromRawValue(
   } else if (value.hasType<std::string>()) {
     const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
-      result = YGValueAuto;
+      auto reactNativeConfig = context.contextContainer.at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
+      result = reactNativeConfig->getBool("react_fabric:treat_auto_as_undefined") ? YGValueUndefined : YGValueAuto;
       return;
     } else {
       if (stringValue.back() == '%') {
