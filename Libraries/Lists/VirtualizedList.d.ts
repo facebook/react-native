@@ -11,7 +11,12 @@ import type * as React from 'react';
 import type {LayoutChangeEvent} from '../../types';
 import {StyleProp} from '../StyleSheet/StyleSheet';
 import {ViewStyle} from '../StyleSheet/StyleSheetTypes';
-import type {ScrollViewProps} from '../Components/ScrollView/ScrollView';
+import type {
+  ScrollResponderMixin,
+  ScrollView,
+  ScrollViewProps,
+} from '../Components/ScrollView/ScrollView';
+import type {View} from '../Components/View/View';
 
 export interface ViewToken {
   item: any;
@@ -98,6 +103,7 @@ export class VirtualizedList<ItemT> extends React.Component<
   scrollToItem: (params: {
     animated?: boolean | undefined;
     item: ItemT;
+    viewOffset?: number | undefined;
     viewPosition?: number | undefined;
   }) => void;
 
@@ -113,6 +119,13 @@ export class VirtualizedList<ItemT> extends React.Component<
   }) => void;
 
   recordInteraction: () => void;
+
+  getScrollRef: () =>
+    | React.ElementRef<typeof ScrollView>
+    | React.ElementRef<typeof View>
+    | null;
+
+  getScrollResponder: () => ScrollResponderMixin | null;
 }
 
 /**
