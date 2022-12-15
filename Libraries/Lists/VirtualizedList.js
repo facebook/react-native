@@ -263,6 +263,7 @@ export default class VirtualizedList extends StateSafePureComponent<
   scrollToItem(params: {
     animated?: ?boolean,
     item: Item,
+    viewOffset?: number,
     viewPosition?: number,
     ...
   }) {
