@@ -45,7 +45,9 @@ enum class PerformanceEntryType {
   UNDEFINED = 0,
   MARK = 1,
   MEASURE = 2,
-  _COUNT = 3,
+  EVENT = 3,
+  FIRST_INPUT = 4,
+  _COUNT = 5,
 };
 
 class PerformanceEntryReporter {
@@ -87,6 +89,15 @@ class PerformanceEntryReporter {
       const std::optional<std::string> &startMark,
       const std::optional<std::string> &endMark);
   void clearMeasures(const std::optional<std::string> &measureName);
+
+  void event(
+      const std::string &name,
+      double startTime,
+      double duration,
+      bool isFirstInput,
+      double processingStart,
+      double processingEnd,
+      uint32_t interactionId);
 
  private:
   PerformanceEntryReporter() {}

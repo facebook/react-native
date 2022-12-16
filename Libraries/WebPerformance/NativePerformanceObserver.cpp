@@ -17,6 +17,10 @@ static PerformanceEntryType stringToPerformanceEntryType(
     return PerformanceEntryType::MARK;
   } else if (entryType == "measure") {
     return PerformanceEntryType::MEASURE;
+  } else if (entryType == "event") {
+    return PerformanceEntryType::EVENT;
+  } else if (entryType == "first-input") {
+    return PerformanceEntryType::FIRST_INPUT;
   } else {
     return PerformanceEntryType::UNDEFINED;
   }

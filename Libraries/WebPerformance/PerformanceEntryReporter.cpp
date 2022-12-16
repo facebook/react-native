@@ -167,6 +167,26 @@ double PerformanceEntryReporter::getMarkTime(
   }
 }
 
+void PerformanceEntryReporter::event(
+    const std::string &name,
+    double startTime,
+    double duration,
+    bool isFirstInput,
+    double processingStart,
+    double processingEnd,
+    uint32_t interactionId) {
+  logEntry(
+      {name,
+       static_cast<int>(
+           isFirstInput ? PerformanceEntryType::FIRST_INPUT
+                        : PerformanceEntryType::MEASURE),
+       startTime,
+       duration,
+       processingStart,
+       processingEnd,
+       interactionId});
+}
+
 void PerformanceEntryReporter::clearEntries(
     std::function<bool(const RawPerformanceEntry &)> predicate) {
   int lastPos = entries_.size() - 1;

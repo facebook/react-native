@@ -26,7 +26,7 @@ using RawPerformanceEntry = NativePerformanceObserverCxxBaseRawPerformanceEntry<
     // For "event" entries only:
     std::optional<double>,
     std::optional<double>,
-    std::optional<double>>;
+    std::optional<uint32_t>>;
 
 template <>
 struct Bridging<RawPerformanceEntry>
@@ -37,7 +37,7 @@ struct Bridging<RawPerformanceEntry>
           double,
           std::optional<double>,
           std::optional<double>,
-          std::optional<double>> {};
+          std::optional<uint32_t>> {};
 
 using GetPendingEntriesResult =
     NativePerformanceObserverCxxBaseGetPendingEntriesResult<

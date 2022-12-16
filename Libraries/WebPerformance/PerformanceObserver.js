@@ -19,7 +19,7 @@ import NativePerformanceObserver, {
 } from './NativePerformanceObserver';
 
 export type HighResTimeStamp = number;
-export type PerformanceEntryType = 'mark' | 'measure';
+export type PerformanceEntryType = 'mark' | 'measure' | 'event' | 'first-input';
 
 export class PerformanceEntry {
   name: string;
@@ -62,6 +62,10 @@ function rawToPerformanceEntryType(
       return 'mark';
     case RawPerformanceEntryTypeValues.MEASURE:
       return 'measure';
+    case RawPerformanceEntryTypeValues.EVENT:
+      return 'event';
+    case RawPerformanceEntryTypeValues.FIRST_INPUT:
+      return 'first-input';
     default:
       throw new TypeError(
         `unexpected performance entry type received: ${type}`,
@@ -311,7 +315,7 @@ export default class PerformanceObserver {
   }
 
   static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
-    Object.freeze(['mark', 'measure']);
+    Object.freeze(['mark', 'measure', 'event', 'first-input']);
 }
 
 function union<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {

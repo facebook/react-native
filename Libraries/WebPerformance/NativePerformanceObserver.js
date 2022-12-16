@@ -16,6 +16,8 @@ export const RawPerformanceEntryTypeValues = {
   UNDEFINED: 0,
   MARK: 1,
   MEASURE: 2,
+  EVENT: 3,
+  FIRST_INPUT: 4,
 };
 
 export type RawPerformanceEntryType = number;
