@@ -49,7 +49,11 @@ class Dir
 
     def self.glob(path)
         @@glob_invocation.push(path)
-        return @@mocked_existing_globs[path]
+        return @@mocked_existing_globs[path] != nil ? @@mocked_existing_globs[path] : []
+    end
+
+    def self.remove_mocked_paths(path)
+        @@mocked_existing_globs = @@mocked_existing_globs.select { |k, v| v != path }
     end
 
     def self.set_pwd(pwd)

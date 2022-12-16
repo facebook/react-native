@@ -423,12 +423,59 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.clean_up_build_folder(@base_path, codegen_dir)
 
         # Assert
-        assert_equal(Dir.exist_invocation_params, [codegen_path])
-        assert_equal(Dir.glob_invocation, ["#{codegen_path}/*"])
+        assert_equal(Dir.exist_invocation_params, [codegen_path, codegen_path])
+        assert_equal(Dir.glob_invocation, ["#{codegen_path}/*", "#{codegen_path}/*"])
         assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 1)
         assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [globs])
         assert_equal(CodegenUtils.cleanup_done(), true)
+    end
 
+    # ===================================== #
+    # Test - Assert Codegen Folder Is Empty #
+    # ===================================== #
+
+    def test_assertCodegenFolderIsEmpty_whenItDoesNotExists_doesNotAbort
+        # Arrange
+        codegen_dir = "build/generated/ios"
+        codegen_path = "#{@base_path}/#{codegen_dir}"
+
+        # Act
+        CodegenUtils.assert_codegen_folder_is_empty(@base_path, codegen_dir)
+
+        # Assert
+        assert_equal(Pod::UI.collected_warns, [])
+    end
+
+    def test_assertCodegenFolderIsEmpty_whenItExistsAndIsEmpty_doesNotAbort
+        # Arrange
+        codegen_dir = "build/generated/ios"
+        codegen_path = "#{@base_path}/#{codegen_dir}"
+        Dir.mocked_existing_dirs(codegen_path)
+        Dir.mocked_existing_globs([], "#{codegen_path}/*")
+
+        # Act
+        CodegenUtils.assert_codegen_folder_is_empty(@base_path, codegen_dir)
+
+        # Assert
+        assert_equal(Pod::UI.collected_warns, [])
+    end
+
+    def test_assertCodegenFolderIsEmpty_whenItIsNotEmpty_itAborts
+        # Arrange
+        codegen_dir = "build/generated/ios"
+        codegen_path = "#{@base_path}/#{codegen_dir}"
+        Dir.mocked_existing_dirs(codegen_path)
+        Dir.mocked_existing_globs(["#{codegen_path}/MyModuleSpecs/MyModule.mm",], "#{codegen_path}/*")
+
+        # Act
+        assert_raises() {
+            CodegenUtils.assert_codegen_folder_is_empty(@base_path, codegen_dir)
+        }
+
+        # Assert
+        assert_equal(Pod::UI.collected_warns, [
+            "Unable to remove the content of ~/app/ios/build/generated/ios folder. Please run rm -rf ~/app/ios/build/generated/ios and try again."
+        ])
     end
 
     private
