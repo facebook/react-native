@@ -30,7 +30,9 @@ export type ComponentProviderInstrumentationHook = (
   scopedPerformanceLogger: IPerformanceLogger,
 ) => React.ComponentType<any>;
 
-export type WrapperComponentProvider = (any) => React.ComponentType<any>;
+export type WrapperComponentProvider = (
+  appParameters: any,
+) => React.ComponentType<any>;
 
 /**
  * `AppRegistry` is the JS entry point to running all React Native apps.  App
@@ -50,7 +52,7 @@ export type WrapperComponentProvider = (any) => React.ComponentType<any>;
 export namespace AppRegistry {
   export function setWrapperComponentProvider(
     provider: WrapperComponentProvider,
-  );
+  ): void;
 
   export function registerConfig(config: AppConfig[]): void;
 
@@ -94,7 +96,7 @@ export namespace AppRegistry {
 
   export function setComponentProviderInstrumentationHook(
     hook: ComponentProviderInstrumentationHook,
-  );
+  ): void;
 
   export function registerHeadlessTask(
     taskKey: string,
