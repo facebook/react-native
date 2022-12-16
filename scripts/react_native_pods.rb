@@ -61,6 +61,10 @@ def use_react_native! (
   app_path: '..',
   config_file_dir: '')
 
+  # Current target definition is provided by Cocoapods and it refers to the target
+  # that has invoked the `use_react_native!` function.
+  ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
+
   CodegenUtils.clean_up_build_folder(app_path, $CODEGEN_OUTPUT_DIR)
 
   # We are relying on this flag also in third parties libraries to proper install dependencies.

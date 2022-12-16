@@ -163,4 +163,26 @@ class ReactNativePodsUtils
 
         system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
     end
+
+    # It examines the target_definition property and sets the appropriate value for
+    # ENV['USE_FRAMEWORKS'] variable.
+    #
+    # - parameter target_definition: The current target definition
+    def self.detect_use_frameworks(target_definition)
+        if ENV['USE_FRAMEWORKS'] != nil
+            return
+        end
+
+        framework_build_type = target_definition.build_type.to_s
+
+        Pod::UI.puts("Framework build type is #{framework_build_type}")
+
+        if framework_build_type === "static framework"
+            ENV['USE_FRAMEWORKS'] = 'static'
+        elsif framework_build_type === "dynamic framework"
+            ENV['USE_FRAMEWORKS'] = 'dynamic'
+        else
+            ENV['USE_FRAMEWORKS'] = nil
+        end
+    end
 end
