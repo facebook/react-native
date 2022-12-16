@@ -52,7 +52,6 @@ class NativePerformanceObserver
   void stopReporting(jsi::Runtime &rt, std::string entryType);
 
   std::vector<RawPerformanceEntry> popPendingEntries(jsi::Runtime &rt);
-  std::vector<RawPerformanceEntry> getPendingEntries(jsi::Runtime &rt);
 
   void setOnPerformanceEntryCallback(
       jsi::Runtime &rt,

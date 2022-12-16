@@ -34,10 +34,7 @@ export type RawPerformanceEntry = {|
 export interface Spec extends TurboModule {
   +startReporting: (entryType: string) => void;
   +stopReporting: (entryType: string) => void;
-  // TODO: This is unused and only kept for the compatibility check.
-  // Clean it up once the API is complete.
-  +getPendingEntries: () => $ReadOnlyArray<RawPerformanceEntry>;
-  +popPendingEntries?: () => $ReadOnlyArray<RawPerformanceEntry>;
+  +popPendingEntries: () => $ReadOnlyArray<RawPerformanceEntry>;
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
 }
 

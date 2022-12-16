@@ -45,11 +45,6 @@ std::vector<RawPerformanceEntry> NativePerformanceObserver::popPendingEntries(
   return PerformanceEntryReporter::getInstance().popPendingEntries();
 }
 
-std::vector<RawPerformanceEntry> NativePerformanceObserver::getPendingEntries(
-    jsi::Runtime &rt) {
-  return PerformanceEntryReporter::getInstance().getPendingEntries();
-}
-
 void NativePerformanceObserver::setOnPerformanceEntryCallback(
     jsi::Runtime &rt,
     std::optional<AsyncCallback<>> callback) {

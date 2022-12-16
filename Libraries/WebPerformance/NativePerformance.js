@@ -13,10 +13,10 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +mark?: (name: string, startTime: number, duration: number) => void;
-  +clearMarks?: (markName?: string) => void;
+  +mark: (name: string, startTime: number, duration: number) => void;
+  +clearMarks: (markName?: string) => void;
 
-  +measure?: (
+  +measure: (
     name: string,
     startTime: number,
     endTime: number,
@@ -24,7 +24,7 @@ export interface Spec extends TurboModule {
     startMark?: string,
     endMark?: string,
   ) => void;
-  +clearMeasures?: (measureName?: string) => void;
+  +clearMeasures: (measureName?: string) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('NativePerformanceCxx'): ?Spec);

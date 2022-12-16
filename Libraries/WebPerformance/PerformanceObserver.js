@@ -137,7 +137,7 @@ const onPerformanceEntry = () => {
   if (!NativePerformanceObserver) {
     return;
   }
-  const rawEntries = NativePerformanceObserver.popPendingEntries?.() ?? [];
+  const rawEntries = NativePerformanceObserver.popPendingEntries() ?? [];
   if (rawEntries.length === 0) {
     return;
   }
