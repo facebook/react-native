@@ -7,23 +7,38 @@
 
 #pragma once
 
+#include <butter/source_location.h>
 #include <react/bridging/Base.h>
 
 namespace facebook::react {
 
 class Error {
  public:
-  // TODO (T114055466): Retain stack trace (at least caller location)
-  Error(std::string message) : message_(std::move(message)) {}
+  Error(
+      std::string message,
+      std::source_location location = std::source_location::current())
+      : message_(std::move(message)),
+        stack_(
+            "\nin " + std::string(location.function_name()) + " at " +
+            std::string(location.file_name()) + ":" +
+            std::to_string(location.line())) {}
 
-  Error(const char *message) : Error(std::string(message)) {}
+  Error(
+      const char *message,
+      std::source_location location = std::source_location::current())
+      : Error(std::string(message), location) {}
 
   const std::string &message() const {
     return message_;
   }
 
+  const std::string &stack() const {
+    return stack_;
+  }
+
  private:
   std::string message_;
+  std::string stack_;
 };
 
 template <>
@@ -44,7 +59,8 @@ struct Bridging<jsi::JSError> {
 template <>
 struct Bridging<Error> {
   static jsi::Value toJs(jsi::Runtime &rt, const Error &error) {
-    return jsi::Value(rt, jsi::JSError(rt, error.message()).value());
+    return jsi::Value(
+        rt, jsi::JSError(rt, error.message(), error.stack()).value());
   }
 };
 
