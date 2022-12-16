@@ -9,7 +9,7 @@
 #import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
 
-#if RCT_NEW_ARCH_ENABLED
+#if RCT_NEW_ARCH_ENABLED && __cplusplus
 // When the new architecture is enabled, the RCTAppDelegate imports some additional headers
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
@@ -100,7 +100,7 @@
 
 @end
 
-#if RCT_NEW_ARCH_ENABLED
+#if RCT_NEW_ARCH_ENABLED && __cplusplus
 /// Extension that makes the RCTAppDelegate conform to New Architecture delegates
 @interface RCTAppDelegate () <RCTTurboModuleManagerDelegate, RCTCxxBridgeDelegate>
 
