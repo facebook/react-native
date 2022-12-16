@@ -40,7 +40,7 @@ void NativePerformanceObserver::stopReporting(
       stringToPerformanceEntryType(entryType));
 }
 
-std::vector<RawPerformanceEntry> NativePerformanceObserver::popPendingEntries(
+GetPendingEntriesResult NativePerformanceObserver::popPendingEntries(
     jsi::Runtime &rt) {
   return PerformanceEntryReporter::getInstance().popPendingEntries();
 }

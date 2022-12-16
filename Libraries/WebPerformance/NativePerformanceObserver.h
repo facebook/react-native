@@ -39,6 +39,17 @@ struct Bridging<RawPerformanceEntry>
           std::optional<double>,
           std::optional<double>> {};
 
+using GetPendingEntriesResult =
+    NativePerformanceObserverCxxBaseGetPendingEntriesResult<
+        std::vector<RawPerformanceEntry>,
+        uint32_t>;
+
+template <>
+struct Bridging<GetPendingEntriesResult>
+    : NativePerformanceObserverCxxBaseGetPendingEntriesResultBridging<
+          std::vector<RawPerformanceEntry>,
+          uint32_t> {};
+
 #pragma mark - implementation
 
 class NativePerformanceObserver
@@ -51,7 +62,7 @@ class NativePerformanceObserver
 
   void stopReporting(jsi::Runtime &rt, std::string entryType);
 
-  std::vector<RawPerformanceEntry> popPendingEntries(jsi::Runtime &rt);
+  GetPendingEntriesResult popPendingEntries(jsi::Runtime &rt);
 
   void setOnPerformanceEntryCallback(
       jsi::Runtime &rt,

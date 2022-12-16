@@ -112,6 +112,8 @@ export class PerformanceObserverEntryList {
 export type PerformanceObserverCallback = (
   list: PerformanceObserverEntryList,
   observer: PerformanceObserver,
+  // The number of buffered entries which got dropped from the buffer due to the buffer being full:
+  droppedEntryCount?: number,
 ) => void;
 
 export type PerformanceObserverInit =
@@ -137,7 +139,9 @@ const onPerformanceEntry = () => {
   if (!NativePerformanceObserver) {
     return;
   }
-  const rawEntries = NativePerformanceObserver.popPendingEntries() ?? [];
+  const entryResult = NativePerformanceObserver.popPendingEntries();
+  const rawEntries = entryResult?.entries ?? [];
+  const droppedEntriesCount = entryResult?.droppedEntriesCount;
   if (rawEntries.length === 0) {
     return;
   }
@@ -149,6 +153,7 @@ const onPerformanceEntry = () => {
     observerConfig.callback(
       new PerformanceObserverEntryList(entriesForObserver),
       observer,
+      droppedEntriesCount,
     );
   }
 };

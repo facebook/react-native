@@ -10,6 +10,11 @@
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include "NativePerformanceObserver.h"
 
+// All the unflushed entries beyond this amount will get discarded, with
+// the amount of discarded ones sent back to the observers' callbacks as
+// "droppedEntryCount" value
+static constexpr size_t MAX_ENTRY_BUFFER_SIZE = 1024;
+
 namespace facebook::react {
 PerformanceEntryReporter &PerformanceEntryReporter::getInstance() {
   static PerformanceEntryReporter instance;
@@ -33,10 +38,11 @@ const std::vector<RawPerformanceEntry>
   return entries_;
 }
 
-std::vector<RawPerformanceEntry> PerformanceEntryReporter::popPendingEntries() {
-  auto entriesToReturn = std::move(entries_);
+GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
+  GetPendingEntriesResult res = {std::move(entries_), droppedEntryCount_};
   entries_ = {};
-  return entriesToReturn;
+  droppedEntryCount_ = 0;
+  return res;
 }
 
 void PerformanceEntryReporter::clearPendingEntries() {
@@ -45,6 +51,14 @@ void PerformanceEntryReporter::clearPendingEntries() {
 
 void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
   if (!isReportingType(static_cast<PerformanceEntryType>(entry.entryType))) {
+    return;
+  }
+
+  if (entries_.size() == MAX_ENTRY_BUFFER_SIZE) {
+    // Start dropping entries once reached maximum buffer size.
+    // The number of dropped entries will be reported back to the corresponding
+    // PerformanceObserver callback.
+    droppedEntryCount_ += 1;
     return;
   }
 
@@ -63,21 +77,21 @@ void PerformanceEntryReporter::mark(
     double duration) {
   // Register the mark for further possible "measure" lookup, as well as add
   // it to a circular buffer:
-  PerformanceMark &mark = marks_buffer_[marks_buffer_position_];
-  marks_buffer_position_ = (marks_buffer_position_ + 1) % marks_buffer_.size();
+  PerformanceMark &mark = marksBuffer_[marksBufferPosition_];
+  marksBufferPosition_ = (marksBufferPosition_ + 1) % marksBuffer_.size();
 
   if (!mark.name.empty()) {
     // Drop off the oldest mark out of the queue, but only if that's indeed the
     // oldest one
-    auto it = marks_registry_.find(&mark);
-    if (it != marks_registry_.end() && *it == &mark) {
-      marks_registry_.erase(it);
+    auto it = marksRegistry_.find(&mark);
+    if (it != marksRegistry_.end() && *it == &mark) {
+      marksRegistry_.erase(it);
     }
   }
 
   mark.name = name;
   mark.timeStamp = startTime;
-  marks_registry_.insert(&mark);
+  marksRegistry_.insert(&mark);
 
   logEntry(
       {name,
@@ -93,13 +107,13 @@ void PerformanceEntryReporter::clearMarks(
     const std::optional<std::string> &markName) {
   if (markName) {
     PerformanceMark mark{{*markName, 0}};
-    marks_registry_.erase(&mark);
+    marksRegistry_.erase(&mark);
     clearEntries([&markName](const RawPerformanceEntry &entry) {
       return entry.entryType == static_cast<int>(PerformanceEntryType::MARK) &&
           entry.name == markName;
     });
   } else {
-    marks_registry_.clear();
+    marksRegistry_.clear();
     clearEntries([](const RawPerformanceEntry &entry) {
       return entry.entryType == static_cast<int>(PerformanceEntryType::MARK);
     });
@@ -135,7 +149,7 @@ void PerformanceEntryReporter::clearMeasures(
           entry.name == measureName;
     });
   } else {
-    marks_registry_.clear();
+    marksRegistry_.clear();
     clearEntries([](const RawPerformanceEntry &entry) {
       return entry.entryType == static_cast<int>(PerformanceEntryType::MEASURE);
     });
@@ -145,8 +159,8 @@ void PerformanceEntryReporter::clearMeasures(
 double PerformanceEntryReporter::getMarkTime(
     const std::string &markName) const {
   PerformanceMark mark{{std::move(markName), 0}};
-  auto it = marks_registry_.find(&mark);
-  if (it != marks_registry_.end()) {
+  auto it = marksRegistry_.find(&mark);
+  if (it != marksRegistry_.end()) {
     return (*it)->timeStamp;
   } else {
     return 0.0;

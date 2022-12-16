@@ -31,10 +31,15 @@ export type RawPerformanceEntry = {|
   interactionId?: number,
 |};
 
+export type GetPendingEntriesResult = {|
+  entries: $ReadOnlyArray<RawPerformanceEntry>,
+  droppedEntriesCount: number,
+|};
+
 export interface Spec extends TurboModule {
   +startReporting: (entryType: string) => void;
   +stopReporting: (entryType: string) => void;
-  +popPendingEntries: () => $ReadOnlyArray<RawPerformanceEntry>;
+  +popPendingEntries: () => GetPendingEntriesResult;
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
 }
 

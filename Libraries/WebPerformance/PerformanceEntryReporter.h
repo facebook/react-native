@@ -64,12 +64,16 @@ class PerformanceEntryReporter {
   void stopReporting(PerformanceEntryType entryType);
 
   const std::vector<RawPerformanceEntry> &getPendingEntries() const;
-  std::vector<RawPerformanceEntry> popPendingEntries();
+  GetPendingEntriesResult popPendingEntries();
   void clearPendingEntries();
   void logEntry(const RawPerformanceEntry &entry);
 
   bool isReportingType(PerformanceEntryType entryType) const {
     return reportingType_[static_cast<int>(entryType)];
+  }
+
+  uint32_t getDroppedEntryCount() const {
+    return droppedEntryCount_;
   }
 
   void mark(const std::string &name, double startTime, double duration);
@@ -96,9 +100,10 @@ class PerformanceEntryReporter {
   std::array<bool, (size_t)PerformanceEntryType::_COUNT> reportingType_{false};
 
   // Mark registry for "measure" lookup
-  PerformanceMarkRegistryType marks_registry_;
-  std::array<PerformanceMark, MARKS_BUFFER_SIZE> marks_buffer_;
-  size_t marks_buffer_position_{0};
+  PerformanceMarkRegistryType marksRegistry_;
+  std::array<PerformanceMark, MARKS_BUFFER_SIZE> marksBuffer_;
+  size_t marksBufferPosition_{0};
+  uint32_t droppedEntryCount_{0};
 };
 
 } // namespace facebook::react
