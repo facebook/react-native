@@ -24,6 +24,7 @@ type AppEvent = {
   ts: number,
   ...
 };
+  
 type State = {
   sent: 'none' | AppEvent,
   received: 'none' | AppEvent,
