@@ -21,7 +21,7 @@ Steps file imports screen object (with the same name). Step files define one scr
 
 # root files 📄
 ## e2e-config.js
-Android and iOS physical device configuration, process.env.E2E_device global variable is defined there - it can be used across the whole rn-tester-e2e directory
+Android and iOS emulator/physical device configuration, process.env.E2E_device global variable is defined there - it can be used across the whole rn-tester-e2e directory
 
 ## jest.config.js
 Global jest config setup - such as timeout, test runner path
