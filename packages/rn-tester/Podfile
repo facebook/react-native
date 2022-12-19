@@ -37,7 +37,8 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
     flipper_configuration: use_flipper ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
-    production: !ENV['PRODUCTION'].nil?
+    production: !ENV['PRODUCTION'].nil?,
+    ios_folder: '.',
   )
   pod 'ReactCommon/turbomodule/samples', :path => "#{@prefix_path}/ReactCommon"
 
