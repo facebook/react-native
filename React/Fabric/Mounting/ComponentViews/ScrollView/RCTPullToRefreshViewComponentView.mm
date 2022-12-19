@@ -131,7 +131,10 @@ using namespace facebook::react;
   if (!_scrollViewComponentView) {
     return;
   }
-  _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
+
+  if (@available(macCatalyst 13.1, *)) {
+    _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
+  }
 }
 
 - (void)_detach
@@ -143,7 +146,9 @@ using namespace facebook::react;
   // iOS requires to end refreshing before unmounting.
   [_refreshControl endRefreshing];
 
-  _scrollViewComponentView.scrollView.refreshControl = nil;
+  if (@available(macCatalyst 13.1, *)) {
+     _scrollViewComponentView.scrollView.refreshControl = nil;
+   }
   _scrollViewComponentView = nil;
 }
 
