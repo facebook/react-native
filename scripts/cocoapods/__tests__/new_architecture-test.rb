@@ -125,6 +125,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         assert_equal(spec.compiler_flags, NewArchitectureHelper.folly_compiler_flags)
         assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\"")
         assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
+        assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
         assert_equal(
             spec.dependencies,
             [
