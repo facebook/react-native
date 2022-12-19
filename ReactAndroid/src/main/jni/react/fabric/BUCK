@@ -34,7 +34,6 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/renderer/components/scrollview:scrollview"),
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
-        "//xplat/js/react-native-github/ReactAndroid/src/main/jni/react/cxxcomponents:components",
         react_native_target("jni/react/jni:jni"),
         "//xplat/fbsystrace:fbsystrace",
         "//xplat/jsi:JSIDynamic",
