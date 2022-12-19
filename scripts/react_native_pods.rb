@@ -51,6 +51,7 @@ end
 # - flipper_configuration: The configuration to use for flipper.
 # - app_path: path to the React Native app. Required by the New Architecture.
 # - config_file_dir: directory of the `package.json` file, required by the New Architecture.
+# - ios_folder: the folder where the iOS code base lives. For a template app, it is `ios`, the default. For RNTester, it is `.`.
 def use_react_native! (
   path: "../node_modules/react-native",
   fabric_enabled: false,
@@ -59,13 +60,15 @@ def use_react_native! (
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
-  config_file_dir: '')
+  config_file_dir: '',
+  ios_folder: 'ios'
+)
 
   # Current target definition is provided by Cocoapods and it refers to the target
   # that has invoked the `use_react_native!` function.
   ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
 
-  CodegenUtils.clean_up_build_folder(app_path, $CODEGEN_OUTPUT_DIR)
+  CodegenUtils.clean_up_build_folder(app_path, ios_folder, $CODEGEN_OUTPUT_DIR)
 
   # We are relying on this flag also in third parties libraries to proper install dependencies.
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
