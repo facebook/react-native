@@ -18,7 +18,7 @@ import type {
   Layout,
   LayoutEvent,
   ScrollEvent, // TODO(macOS GH#774)
-  KeyEvent,
+  KeyEvent, // TODO(macOS GH#774)
 } from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
@@ -33,8 +33,6 @@ import type {
 
 // [TODO(macOS GH#774)
 import type {DraggedTypesType} from '../View/DraggedType';
-//$FlowFixMe
-import {array} from 'yargs';
 // ]TODO(macOS GH#774)
 
 export type ViewLayout = Layout;
@@ -43,8 +41,8 @@ export type ViewLayoutEvent = LayoutEvent;
 type BubblingEventProps = $ReadOnly<{|
   onBlur?: ?(event: BlurEvent) => mixed,
   onFocus?: ?(event: FocusEvent) => mixed,
-  onKeyDown?: ?(event: KeyEvent) => mixed,
-  onKeyUp?: ?(event: KeyEvent) => mixed,
+  onKeyDown?: ?(event: KeyEvent) => mixed, // TODO(macOS GH#774)
+  onKeyUp?: ?(event: KeyEvent) => mixed, // TODO(macOS GH#774)
 |}>;
 
 type DirectEventProps = $ReadOnly<{|
@@ -63,23 +61,25 @@ type DirectEventProps = $ReadOnly<{|
    */
   onAccessibilityTap?: ?() => mixed,
 
+  // [TODO(macOS GH#774)
   /**
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs accessibility double click gesture.
    */
-  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS GH#774)
+  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed,
 
   /**
    * This event is fired when the scrollView's inverted property changes.
    * @platform macos
    */
-  onInvertedDidChange?: ?() => mixed, // TODO(macOS GH#774)
+  onInvertedDidChange?: ?() => mixed,
 
   /**
    * This event is fired when the system's preferred scroller style changes.
    * The `preferredScrollerStyle` key will be `legacy` or `overlay`.
    */
-  onPreferredScrollerStyleDidChange?: ?(event: ScrollEvent) => mixed, // TODO(macOS GH#774)
+  onPreferredScrollerStyleDidChange?: ?(event: ScrollEvent) => mixed,
+  // ]TODO(macOS GH#774)
 
   /**
    * Invoked on mount and layout changes with:
@@ -353,7 +353,7 @@ type AndroidViewProps = $ReadOnly<{|
   /**
    * Whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
    *
-   * @platform android
+   * @platform android macos
    */
   focusable?: boolean,
 
@@ -393,29 +393,103 @@ type IOSViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#accessibilityElementsHidden
    */
   accessibilityElementsHidden?: ?boolean,
-  /**
-   * Reverses the direction of scroll. Uses native inversion on macOS and scale transforms of -1 elsewhere
-   */
-  inverted?: ?boolean, // TODO(macOS GH#774)
-
-  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS GH#774)
 
   /**
-   * When `accessible` is true, the system will try to invoke this function
-   * when the user performs accessibility tap gesture.
+   * Whether this `View` should be rendered as a bitmap before compositing.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
-   */
-  onAccessibilityTap?: ?() => void,
-
-  /**
-   * When `accessible` is `true`, the system will invoke this function when the
-   * user performs the magic tap gesture.
+   * @platform ios
    *
    * See https://reactnative.dev/docs/view#shouldrasterizeios
    */
   shouldRasterizeIOS?: ?boolean,
 |}>;
+
+// [TODO(macOS GH#774)
+type MacOSViewProps = $ReadOnly<{|
+  /**
+   * Fired when a dragged element enters a valid drop target
+   *
+   * @platform macos
+   */
+  onDragEnter?: (event: MouseEvent) => void,
+
+  /**
+   * Fired when a dragged element leaves a valid drop target
+   *
+   * @platform macos
+   */
+  onDragLeave?: (event: MouseEvent) => void,
+
+  /**
+   * Fired when an element is dropped on a valid drop target
+   *
+   * @platform macos
+   */
+  onDrop?: (event: MouseEvent) => void,
+
+  /**
+   * Specifies the Tooltip for the view
+   * @platform macos
+   */
+  tooltip?: ?string,
+
+  /**
+   * Specifies whether the view should receive the mouse down event when the
+   * containing window is in the background.
+   *
+   * @platform macos
+   */
+  acceptsFirstMouse?: ?boolean,
+
+  /**
+   * The react tag of the view that follows the current view in the key view loop.
+   *
+   * @platform macos
+   */
+  nextKeyViewTag?: ?number,
+
+  /**
+   * Specifies whether focus ring should be drawn when the view has the first responder status.
+   *
+   * @platform macos
+   */
+  enableFocusRing?: ?boolean,
+
+  /**
+   * Array of keys to receive key down events for
+   *
+   * @platform macos
+   */
+  validKeysDown?: ?Array<string>,
+
+  /**
+   * Array of keys to receive key up events for
+   *
+   * @platform macos
+   */
+  validKeysUp?: ?Array<string>,
+
+  /**
+   * Enables Drag'n'Drop Support for certain types of dragged types
+   *
+   * Possible values for `draggedTypes` are:
+   *
+   * - `'fileUrl'`
+   *
+   * @platform macos
+   */
+  draggedTypes?: ?DraggedTypesType,
+
+  /**
+   * Reverses the direction of scroll. Uses native inversion on macOS and scale transforms of -1 elsewhere
+   *
+   * @platform macos
+   */
+  inverted?: ?boolean,
+
+  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed,
+|}>;
+// ]TODO(macOS GH#774)
 
 export type ViewProps = $ReadOnly<{|
   ...BubblingEventProps,
@@ -425,6 +499,7 @@ export type ViewProps = $ReadOnly<{|
   ...TouchEventProps,
   ...AndroidViewProps,
   ...IOSViewProps,
+  ...MacOSViewProps, // TODO(macOS GH#774)
 
   children?: Node,
   style?: ?ViewStyleProp,
@@ -542,72 +617,4 @@ export type ViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#removeclippedsubviews
    */
   removeClippedSubviews?: ?boolean,
-
-  /**
-   * Fired when a dragged element enters a valid drop target
-   *
-   * @platform macos
-   */
-  onDragEnter?: (event: MouseEvent) => void, // TODO(macOS GH#774)
-
-  /**
-   * Fired when a dragged element leaves a valid drop target
-   *
-   * @platform macos
-   */
-  onDragLeave?: (event: MouseEvent) => void, // TODO(macOS GH#774)
-
-  /**
-   * Fired when an element is dropped on a valid drop target
-   *
-   * @platform macos
-   */
-  onDrop?: (event: MouseEvent) => void, // TODO(macOS GH#774)
-
-  /**
-   * Specifies the Tooltip for the view
-   * @platform macos
-   */
-  tooltip?: ?string, // TODO(macOS GH#774)
-
-  /**
-   * Specifies whether the view should receive the mouse down event when the
-   * containing window is in the background.
-   *
-   * @platform macos
-   */
-  acceptsFirstMouse?: ?boolean, // TODO(macOS GH#774)
-
-  /**
-   * The react tag of the view that follows the current view in the key view loop.
-   */
-  nextKeyViewTag?: ?number, // TODO(macOS GH#768)
-
-  /**
-   * Specifies whether focus ring should be drawn when the view has the first responder status.
-   */
-  enableFocusRing?: ?boolean, // TODO(macOS GH#774)
-
-  /*
-   * Array of keys to receive key down events for
-   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
-   */
-  validKeysDown?: ?Array<string>,
-
-  /*
-   * Array of keys to receive key up events for
-   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
-   */
-  validKeysUp?: ?Array<string>,
-
-  /**
-   * Enables Dran'n'Drop Support for certain types of dragged types
-   *
-   * Possible values for `draggedTypes` are:
-   *
-   * - `'fileUrl'`
-   *
-   * @platform macos
-   */
-  draggedTypes?: ?DraggedTypesType, // TODO(macOS GH#774)
 |}>;
