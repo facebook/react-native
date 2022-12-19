@@ -25,7 +25,7 @@ module.exports = {
   ],
   moduleNameMapper: {
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$': require.resolve(
-      './jest/assetFileTransformer.js',
+      './jest/assetFileMock.js',
     ),
   },
   setupFiles: [require.resolve('./jest/setup.js')],
