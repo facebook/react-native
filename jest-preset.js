@@ -23,6 +23,11 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/)',
   ],
+  moduleNameMapper: {
+    '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$': require.resolve(
+      './jest/assetFileTransformer.js',
+    ),
+  },
   setupFiles: [require.resolve('./jest/setup.js')],
   testEnvironment: require.resolve('./jest/react-native-env.js'),
 };
