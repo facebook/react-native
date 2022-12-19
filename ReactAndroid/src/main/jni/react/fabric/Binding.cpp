@@ -8,7 +8,6 @@
 #include "Binding.h"
 
 #include "AsyncEventBeat.h"
-#include "CppComponentRegistry.h"
 #include "EventEmitterWrapper.h"
 #include "JBackgroundExecutor.h"
 #include "ReactNativeConfigHolder.h"
