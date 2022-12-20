@@ -147,8 +147,8 @@ using namespace facebook::react;
   [_refreshControl endRefreshing];
 
   if (@available(macCatalyst 13.1, *)) {
-     _scrollViewComponentView.scrollView.refreshControl = nil;
-   }
+    _scrollViewComponentView.scrollView.refreshControl = nil;
+  }
   _scrollViewComponentView = nil;
 }
 
