@@ -200,7 +200,7 @@ end
 # - installer: the Cocoapod object that allows to customize the project.
 # - react_native_path: path to React Native.
 # - mac_catalyst_enabled: whether we are running the Pod on a Mac Catalyst project or not.
-def react_native_post_install(installer, react_native_path = "../node_modules/react-native", mac_catalyst_enabled: false)
+def react_native_post_install(installer, react_native_path = File.expand_path("..", __dir__), mac_catalyst_enabled: false)
   ReactNativePodsUtils.turn_off_resource_bundle_react_core(installer)
 
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
