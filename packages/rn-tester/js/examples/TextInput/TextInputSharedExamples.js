@@ -598,6 +598,7 @@ module.exports = ([
     render: function (): React.Node {
       return (
         <TextInput
+          keyboardType={'numeric'}
           autoFocus={true}
           style={styles.default}
           accessibilityLabel="I am the accessibility label for text input"
@@ -633,6 +634,7 @@ module.exports = ([
         <View>
           <WithLabel label="none">
             <TextInput
+              keyboardType="no-suggestions"
               testID="capitalize-none"
               autoCapitalize="none"
               style={styles.default}
@@ -640,6 +642,7 @@ module.exports = ([
           </WithLabel>
           <WithLabel label="sentences">
             <TextInput
+              keyboardType="numeric"
               testID="capitalize-sentences"
               autoCapitalize="sentences"
               style={styles.default}

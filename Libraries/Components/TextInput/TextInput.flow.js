@@ -120,6 +120,7 @@ export type KeyboardType =
   // iOS 10+ only
   | 'ascii-capable-number-pad'
   // Android-only
+  | 'no-suggestions'
   | 'visible-password';
 
 export type InputMode =

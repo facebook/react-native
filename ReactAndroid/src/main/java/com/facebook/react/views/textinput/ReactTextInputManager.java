@@ -165,6 +165,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final String KEYBOARD_TYPE_VISIBLE_PASSWORD = "visible-password";
   private static final String KEYBOARD_TYPE_URI = "url";
+  private static final String KEYBOARD_TYPE_NO_SUGGESTIONS = "no-suggestions";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
   private static final String[] DRAWABLE_FIELDS = {
@@ -874,6 +875,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     } else if (KEYBOARD_TYPE_URI.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_TEXT_VARIATION_URI;
+    } else if (KEYBOARD_TYPE_NO_SUGGESTIONS.equalsIgnoreCase(keyboardType)) {
+      flagsToSet = InputType.TYPE_TEXT_VARIATION_FILTER | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
     }
 
     updateStagedInputTypeFlag(view, InputType.TYPE_MASK_CLASS, flagsToSet);

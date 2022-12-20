@@ -39,7 +39,7 @@ export type KeyboardTypeIOS =
   | 'name-phone-pad'
   | 'twitter'
   | 'web-search';
-export type KeyboardTypeAndroid = 'visible-password';
+export type KeyboardTypeAndroid = 'no-suggestions' | 'visible-password';
 export type KeyboardTypeOptions =
   | KeyboardType
   | KeyboardTypeAndroid
