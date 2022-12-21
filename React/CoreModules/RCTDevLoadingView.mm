@@ -110,21 +110,35 @@ RCT_EXPORT_MODULE()
     return;
   }
 
+  // Input validation
+  if (message == nil || [message isEqualToString:@""]) {
+    NSLog(@"Error: message cannot be nil or empty");
+    return;
+  }
+  if (color == nil) {
+    NSLog(@"Error: color cannot be nil");
+    return;
+  }
+  if (backgroundColor == nil) {
+    NSLog(@"Error: backgroundColor cannot be nil");
+    return;
+  }
+
   dispatch_async(dispatch_get_main_queue(), ^{
     self->_showDate = [NSDate date];
-    if (!self->_window && !RCTRunningInTestEnvironment()) {
+    if (!self->_uiWindow && !RCTRunningInTestEnvironment()) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
 
       UIWindow *window = RCTSharedApplication().keyWindow;
-      self->_window =
+      self->_uiWindow =
           [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 10)];
       self->_label =
           [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top - 10, screenSize.width, 20)];
-      [self->_window addSubview:self->_label];
+      [self->_uiWindow addSubview:self->_label];
 
-      self->_window.windowLevel = UIWindowLevelStatusBar + 1;
+      self->_uiWindow.windowLevel = UIWindowLevelStatusBar + 1;
       // set a root VC so rotation is supported
-      self->_window.rootViewController = [UIViewController new];
+      self->_uiWindow.rootViewController = [UIViewController new];
 
       self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
       self->_label.textAlignment = NSTextAlignmentCenter;
@@ -133,14 +147,14 @@ RCT_EXPORT_MODULE()
     self->_label.text = message;
     self->_label.textColor = color;
 
-    self->_window.backgroundColor = backgroundColor;
-    self->_window.hidden = NO;
+    self->_uiWindow.backgroundColor = backgroundColor;
+    self->_uiWindow.hidden = NO;
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
     if (@available(iOS 13.0, *)) {
       UIWindowScene *scene = (UIWindowScene *)RCTSharedApplication().connectedScenes.anyObject;
-      self->_window.windowScene = scene;
+      self->_uiWindow.windowScene = scene;
     }
 #endif
   });
