@@ -126,19 +126,19 @@ RCT_EXPORT_MODULE()
 
   dispatch_async(dispatch_get_main_queue(), ^{
     self->_showDate = [NSDate date];
-    if (!self->_uiWindow && !RCTRunningInTestEnvironment()) {
+    if (!self->_window && !RCTRunningInTestEnvironment()) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
 
       UIWindow *window = RCTSharedApplication().keyWindow;
-      self->_uiWindow =
+      self->_window =
           [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 10)];
       self->_label =
           [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top - 10, screenSize.width, 20)];
-      [self->_uiWindow addSubview:self->_label];
+      [self->_window addSubview:self->_label];
 
-      self->_uiWindow.windowLevel = UIWindowLevelStatusBar + 1;
+      self->_window.windowLevel = UIWindowLevelStatusBar + 1;
       // set a root VC so rotation is supported
-      self->_uiWindow.rootViewController = [UIViewController new];
+      self->_window.rootViewController = [UIViewController new];
 
       self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
       self->_label.textAlignment = NSTextAlignmentCenter;
@@ -147,14 +147,14 @@ RCT_EXPORT_MODULE()
     self->_label.text = message;
     self->_label.textColor = color;
 
-    self->_uiWindow.backgroundColor = backgroundColor;
-    self->_uiWindow.hidden = NO;
+    self->_window.backgroundColor = backgroundColor;
+    self->_window.hidden = NO;
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
     if (@available(iOS 13.0, *)) {
       UIWindowScene *scene = (UIWindowScene *)RCTSharedApplication().connectedScenes.anyObject;
-      self->_uiWindow.windowScene = scene;
+      self->_window.windowScene = scene;
     }
 #endif
   });
