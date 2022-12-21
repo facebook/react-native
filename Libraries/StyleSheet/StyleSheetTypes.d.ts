@@ -59,6 +59,13 @@ export interface FlexStyle {
   flexShrink?: number | undefined;
   flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;
   height?: number | string | undefined;
+  inset?: number | string | undefined;
+  insetBlock?: number | string | undefined;
+  insetBlockEnd?: number | string | undefined;
+  insetBlockStart?: number | string | undefined;
+  insetInline?: number | string | undefined;
+  insetInlineEnd?: number | string | undefined;
+  insetInlineStart?: number | string | undefined;
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
