@@ -51,6 +51,7 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   Float opacity{1.0};
   SharedColor foregroundColor{};
   SharedColor backgroundColor{};
+  std::string textVerticalAlign{""};
 
   // Borders
   CascadedBorderRadii borderRadii{};

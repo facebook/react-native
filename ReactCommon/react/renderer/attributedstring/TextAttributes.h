@@ -81,6 +81,7 @@ class TextAttributes : public DebugStringConvertible {
   // construction.
   std::optional<LayoutDirection> layoutDirection{};
   std::optional<AccessibilityRole> accessibilityRole{};
+  std::string textVerticalAlign{""};
 
 #pragma mark - Operations
 

@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -53,6 +54,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 22;
+  public static final short TA_KEY_VERTICAL_ALIGN = 23;
 
   public static final int UNSET = -1;
 
@@ -99,6 +101,7 @@ public class TextAttributeProps {
   protected boolean mIsUnderlineTextDecorationSet = false;
   protected boolean mIsLineThroughTextDecorationSet = false;
   protected boolean mIncludeFontPadding = true;
+  protected String mVerticalAlign;
 
   protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
@@ -204,6 +207,9 @@ public class TextAttributeProps {
           break;
         case TA_KEY_ACCESSIBILITY_ROLE:
           result.setAccessibilityRole(entry.getStringValue());
+          break;
+        case TA_KEY_VERTICAL_ALIGN:
+          result.setVerticalAlign(entry.getStringValue());
           break;
       }
     }
@@ -606,6 +612,13 @@ public class TextAttributeProps {
           ReactAccessibilityDelegate.AccessibilityRole.fromValue(accessibilityRole);
       mIsAccessibilityLink =
           mAccessibilityRole.equals(ReactAccessibilityDelegate.AccessibilityRole.LINK);
+    }
+  }
+
+  private void setVerticalAlign(@Nullable String verticalAlign) {
+    FLog.w("React::", "verticalAlign: " + (verticalAlign));
+    if (verticalAlign != null) {
+      mVerticalAlign = verticalAlign;
     }
   }
 

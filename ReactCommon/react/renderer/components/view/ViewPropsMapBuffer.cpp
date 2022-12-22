@@ -60,6 +60,10 @@ void ViewProps::propsDiffMapBuffer(
     builder.putInt(VP_FG_COLOR, toAndroidRepr(newProps.foregroundColor));
   }
 
+  if (oldProps.textVerticalAlign != newProps.textVerticalAlign) {
+    builder.putString(VP_TEXT_VERTICAL_ALIGN, newProps.textVerticalAlign);
+  }
+      
   if (oldProps.borderCurves != newProps.borderCurves) {
     builder.putMapBuffer(
         VP_BORDER_CURVES, convertCascadedCorners(newProps.borderCurves));
