@@ -205,7 +205,20 @@ class TextExample extends React.Component<{...}> {
     return (
       <RNTesterPage title="<Text>">
         <RNTesterBlock title="Dynamic Font Size Adjustment">
-          <AdjustingFontSize />
+          <Text>
+            This text a{' '}
+            <Text accessibilityRole="link" style={{backgroundColor: 'red'}}>
+              SuperScript
+            </Text>
+          </Text>
+          <Text
+            style={{
+              verticalAlign: 'bottom',
+              height: 100,
+              backgroundColor: 'red',
+            }}>
+            Bottom
+          </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Font Size Adjustment with Dynamic Layout">
           <TextAdjustsDynamicLayoutExample />

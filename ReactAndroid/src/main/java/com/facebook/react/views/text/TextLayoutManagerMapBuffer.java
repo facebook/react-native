@@ -141,7 +141,7 @@ public class TextLayoutManagerMapBuffer {
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
       } else if (end >= start) {
         if (textAttributes.mIsAccessibilityLink) {
-          ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
+          ops.add(new SetSpanOperation(start, end, new ReactSuperscriptSpan()));
         }
         if (textAttributes.mIsColorSet) {
           ops.add(
