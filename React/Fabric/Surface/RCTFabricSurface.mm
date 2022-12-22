@@ -66,10 +66,12 @@ using namespace facebook::react;
 
     [self _updateLayoutContext];
 
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleContentSizeCategoryDidChangeNotification:)
                                                  name:UIContentSizeCategoryDidChangeNotification
                                                object:nil];
+#endif // TODO(macOS GH#774)
   }
 
   return self;
