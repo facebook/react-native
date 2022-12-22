@@ -608,7 +608,7 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
   return self;
 }
 
-@end  // ]TODO(macOS GH#774)
+@end // ]TODO(macOS GH#774)
 
 @implementation RCTUISwitch
 

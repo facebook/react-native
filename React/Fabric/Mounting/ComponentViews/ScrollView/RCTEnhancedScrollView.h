@@ -40,7 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
  * resilient to other code as possible: even if something else nil the delegate, other delegates that were subscribed
  * via the splitter will continue working.
  */
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @property (nonatomic, strong, readonly) RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *delegateSplitter;
+#endif // TODO(macOS GH#774)
 
 @property (nonatomic, weak) id<RCTEnhancedScrollViewOverridingDelegate> overridingDelegate;
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
