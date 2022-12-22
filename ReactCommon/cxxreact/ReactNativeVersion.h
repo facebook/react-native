@@ -14,10 +14,6 @@
 
 namespace facebook::react {
 
-// [TODO(macOS GH#944)
-// Note: Be careful not to override these version numbers
-// when we merge upstream stable branches into main
-// TODO(macOS GH#944)]
 constexpr struct {
   int32_t Major = 0;
   int32_t Minor = 0;
