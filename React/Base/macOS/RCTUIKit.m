@@ -551,7 +551,6 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
   self.verticalScrollElasticity = alwaysBounceVertical ? NSScrollElasticityAllowed : NSScrollElasticityNone;
 }
 
-
 @end
 
 BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
@@ -590,6 +589,18 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
 }
 
 @end
+
+// RCTUISlider
+
+@implementation RCTUISlider {} // [TODO(macOS GH#774)
+
+- (void)setValue:(float)value animated:(__unused BOOL)animated
+{
+  self.animator.floatValue = value;
+}
+
+@end  // ]TODO(macOS GH#774)
+
 
 // RCTUILabel
 
