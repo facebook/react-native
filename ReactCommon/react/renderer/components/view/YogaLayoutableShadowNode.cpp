@@ -333,6 +333,21 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   YGStyle result{baseStyle};
 
   // Aliases with precedence
+  if (!props.inset.isUndefined()) {
+    result.position()[YGEdgeAll] = props.inset;
+  }
+  if (!props.insetBlock.isUndefined()) {
+    result.position()[YGEdgeVertical] = props.insetBlock;
+  }
+  if (!props.insetInline.isUndefined()) {
+    result.position()[YGEdgeHorizontal] = props.insetInline;
+  }
+  if (!props.insetInlineEnd.isUndefined()) {
+    result.position()[YGEdgeEnd] = props.insetInlineEnd;
+  }
+  if (!props.insetInlineStart.isUndefined()) {
+    result.position()[YGEdgeStart] = props.insetInlineStart;
+  }
   if (!props.marginInline.isUndefined()) {
     result.margin()[YGEdgeHorizontal] = props.marginInline;
   }
@@ -359,6 +374,12 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   }
 
   // Aliases without precedence
+  if (CompactValue(result.position()[YGEdgeBottom]).isUndefined()) {
+    result.position()[YGEdgeBottom] = props.insetBlockEnd;
+  }
+  if (CompactValue(result.position()[YGEdgeTop]).isUndefined()) {
+    result.position()[YGEdgeTop] = props.insetBlockStart;
+  }
   if (CompactValue(result.margin()[YGEdgeTop]).isUndefined()) {
     result.margin()[YGEdgeTop] = props.marginBlockStart;
   }

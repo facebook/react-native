@@ -232,6 +232,14 @@ const validAttributesForNonEventProps = {
   bottom: true,
   left: true,
 
+  inset: true,
+  insetBlock: true,
+  insetBlockEnd: true,
+  insetBlockStart: true,
+  insetInline: true,
+  insetInlineEnd: true,
+  insetInlineStart: true,
+
   width: true,
   height: true,
 

@@ -132,6 +132,22 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   top?: DimensionValue,
 
+  /** `inset` is a shorthand that corresponds to the top, right, bottom, and/or left properties.
+   *
+   *  It works similarly to `inset` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset
+   *  for more details of how `inset` affects layout.
+   */
+  inset?: DimensionValue,
+  insetBlock?: DimensionValue,
+  insetBlockEnd?: DimensionValue,
+  insetBlockStart?: DimensionValue,
+  insetInline?: DimensionValue,
+  insetInlineEnd?: DimensionValue,
+  insetInlineStart?: DimensionValue,
+
   /** `minWidth` is the minimum width for this component, in logical pixels.
    *
    *  It works similarly to `min-width` in CSS, but in React Native you
