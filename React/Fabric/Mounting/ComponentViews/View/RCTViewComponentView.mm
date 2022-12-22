@@ -38,7 +38,9 @@ using namespace facebook::react;
     static auto const defaultProps = std::make_shared<ViewProps const>();
     _props = defaultProps;
     _reactSubviews = [NSMutableArray new];
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     self.multipleTouchEnabled = YES;
+#endif // TODO(macOS GH#774)
   }
   return self;
 }
@@ -246,7 +248,11 @@ using namespace facebook::react;
   // `shouldRasterize`
   if (oldViewProps.shouldRasterize != newViewProps.shouldRasterize) {
     self.layer.shouldRasterize = newViewProps.shouldRasterize;
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     self.layer.rasterizationScale = newViewProps.shouldRasterize ? [UIScreen mainScreen].scale : 1.0;
+#else // [TODO(macOS GH#774)
+    self.layer.rasterizationScale = 1.0;
+#endif // ]TODO(macOS GH#774)
   }
 
   // `pointerEvents`
@@ -287,6 +293,7 @@ using namespace facebook::react;
     self.nativeId = RCTNSStringFromStringNilIfEmpty(newViewProps.nativeId);
   }
 
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   // `accessible`
   if (oldViewProps.accessible != newViewProps.accessible) {
     self.accessibilityElement.isAccessibilityElement = newViewProps.accessible;
@@ -351,6 +358,7 @@ using namespace facebook::react;
       self.accessibilityElement.accessibilityValue = nil;
     }
   }
+#endif // TODO(macOS GH#774)
 
   // `testId`
   if (oldViewProps.testId != newViewProps.testId) {
@@ -695,6 +703,7 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS G
   auto const &props = *std::static_pointer_cast<ViewProps const>(_props);
 
   // Handle Switch.
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   if ((self.accessibilityTraits & AccessibilityTraitSwitch) == AccessibilityTraitSwitch) {
     if (props.accessibilityState.checked == AccessibilityState::Checked) {
       return @"1";
@@ -702,6 +711,7 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS G
       return @"0";
     }
   }
+#endif // TODO(macOS GH#774)
 
   // Handle states which haven't already been handled.
   if (props.accessibilityState.checked == AccessibilityState::Checked) {

@@ -32,7 +32,9 @@ using namespace facebook::react;
   ParagraphShadowNode::ConcreteState::Shared _state;
   ParagraphAttributes _paragraphAttributes;
   RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
+#endif // TODO(macOS GH#774)
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -93,11 +95,13 @@ using namespace facebook::react;
   _paragraphAttributes = newParagraphProps.paragraphAttributes;
 
   if (newParagraphProps.isSelectable != oldParagraphProps.isSelectable) {
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     if (newParagraphProps.isSelectable) {
       [self enableContextMenu];
     } else {
       [self disableContextMenu];
     }
+#endif // TODO(macOS GH#774)
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -153,6 +157,7 @@ using namespace facebook::react;
   return NO;
 }
 
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (NSArray *)accessibilityElements
 {
   auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
@@ -188,6 +193,7 @@ using namespace facebook::react;
 {
   return [super accessibilityTraits] | UIAccessibilityTraitStaticText;
 }
+#endif // TODO(macOS GH#774)
 
 #pragma mark - RCTTouchableComponentViewProtocol
 
@@ -222,6 +228,7 @@ using namespace facebook::react;
 
 #pragma mark - Context Menu
 
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)enableContextMenu
 {
   _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
@@ -253,6 +260,7 @@ using namespace facebook::react;
   [menuController setMenuVisible:YES animated:YES];
 #endif
 }
+#endif // TODO(macOS GH#774)
 
 - (BOOL)canBecomeFirstResponder
 {
@@ -260,6 +268,7 @@ using namespace facebook::react;
   return paragraphProps.isSelectable;
 }
 
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
   auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
@@ -270,6 +279,7 @@ using namespace facebook::react;
 
   return [self.nextResponder canPerformAction:action withSender:sender];
 }
+#endif // TODO(macOS GH#774)
 
 - (void)copy:(id)sender
 {
@@ -287,8 +297,14 @@ using namespace facebook::react;
 
   [item setObject:attributedText.string forKey:(id)kUTTypeUTF8PlainText];
 
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
   pasteboard.items = @[ item ];
+#else // [TODO(macOS GH#774)
+  NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+  [pasteboard clearContents];
+  [pasteboard setData:rtf forType:NSPasteboardTypeRTFD];
+#endif // ]TODO(macOS GH#774)
 }
 
 @end
