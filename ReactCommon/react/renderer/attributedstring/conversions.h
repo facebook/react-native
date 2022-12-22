@@ -1036,9 +1036,9 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "accessibilityRole", toString(*textAttributes.accessibilityRole));
   }
-  if (!textAttributes.textVerticalAlign.empty()) {
+  if (!textAttributes.textAlignVertical.empty()) {
     _textAttributes(
-                    "textVerticalAlign", textAttributes.textVerticalAlign);
+                    "textAlignVertical", textAttributes.textAlignVertical);
   }
   return _textAttributes;
 }
@@ -1261,9 +1261,9 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
     builder.putString(
         TA_KEY_ACCESSIBILITY_ROLE, toString(*textAttributes.accessibilityRole));
   }
-  if (textAttributes.textVerticalAlign.empty()) {
+  if (!textAttributes.textAlignVertical.empty()) {
     builder.putString(
-                      TA_KEY_VERTICAL_ALIGN, textAttributes.textVerticalAlign);
+                      TA_KEY_VERTICAL_ALIGN, textAttributes.textAlignVertical);
   }
   return builder.build();
 }

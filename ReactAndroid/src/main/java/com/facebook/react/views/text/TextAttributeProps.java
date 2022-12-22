@@ -54,7 +54,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 22;
-  public static final short TA_KEY_VERTICAL_ALIGN = 23;
+  public static final short TA_KEY_ALIGN_VERTICAL = 24;
 
   public static final int UNSET = -1;
 
@@ -208,8 +208,8 @@ public class TextAttributeProps {
         case TA_KEY_ACCESSIBILITY_ROLE:
           result.setAccessibilityRole(entry.getStringValue());
           break;
-        case TA_KEY_VERTICAL_ALIGN:
-          result.setVerticalAlign(entry.getStringValue());
+        case TA_KEY_ALIGN_VERTICAL:
+          result.setTextAlignVertical(entry.getStringValue());
           break;
       }
     }
@@ -615,9 +615,9 @@ public class TextAttributeProps {
     }
   }
 
-  private void setVerticalAlign(@Nullable String verticalAlign) {
-    FLog.w("React::", "verticalAlign: " + (verticalAlign));
+  private void setTextAlignVertical(@Nullable String verticalAlign) {
     if (verticalAlign != null) {
+      FLog.w("React::", "verticalAlign: " + (verticalAlign));
       mVerticalAlign = verticalAlign;
     }
   }

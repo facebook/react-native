@@ -197,12 +197,12 @@ static TextAttributes convertRawProp(
       sourceTextAttributes.backgroundColor,
       defaultTextAttributes.backgroundColor);
   
-  textAttributes.textVerticalAlign = convertRawProp(
+  textAttributes.textAlignVertical = convertRawProp(
                                                   context,
                                                   rawProps,
-                                                  "textVerticalAlign",
-                                                  sourceTextAttributes.textVerticalAlign,
-                                                  defaultTextAttributes.textVerticalAlign);
+                                                  "textAlignVertical",
+                                                  sourceTextAttributes.textAlignVertical,
+                                                  defaultTextAttributes.textAlignVertical);
 
   return textAttributes;
 }
@@ -305,7 +305,7 @@ void BaseTextProps::setProp(
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, backgroundColor, "backgroundColor");
       REBUILD_FIELD_SWITCH_CASE(
-                                defaults, value, textAttributes, backgroundColor, "textVerticalAlign");
+                                defaults, value, textAttributes, backgroundColor, "textAlignVertical");
   }
 }
 
