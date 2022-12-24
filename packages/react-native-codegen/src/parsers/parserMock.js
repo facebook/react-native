@@ -20,6 +20,8 @@ import type {
   NativeModuleParamTypeAnnotation,
 } from '../CodegenSchema';
 
+// $FlowFixMe[untyped-import] there's no flowtype flow-parser
+const flowParser = require('flow-parser');
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('./errors');
@@ -87,6 +89,12 @@ export class MockedParser implements Parser {
         },
       },
     };
+  }
+
+  getAst(contents: string): $FlowFixMe {
+    return flowParser.parse(contents, {
+      enums: true,
+    });
   }
 
   getFunctionTypeAnnotationParameters(

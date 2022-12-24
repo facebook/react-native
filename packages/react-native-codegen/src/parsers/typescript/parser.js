@@ -20,6 +20,9 @@ import type {
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
 
+// $FlowFixMe[untyped-import] Use flow-types for @babel/parser
+const babelParser = require('@babel/parser');
+
 const {buildSchema} = require('./buildSchema');
 
 const fs = require('fs');
@@ -96,6 +99,13 @@ class TypeScriptParser implements Parser {
     const contents = fs.readFileSync(filename, 'utf8');
 
     return buildSchema(contents, filename, this);
+  }
+
+  getAst(contents: string): $FlowFixMe {
+    return babelParser.parse(contents, {
+      sourceType: 'module',
+      plugins: ['typescript'],
+    }).program;
   }
 
   getFunctionTypeAnnotationParameters(

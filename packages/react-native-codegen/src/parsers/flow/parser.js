@@ -20,6 +20,9 @@ import type {
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
 
+// $FlowFixMe[untyped-import] there's no flowtype flow-parser
+const flowParser = require('flow-parser');
+
 const {buildSchema} = require('./buildSchema');
 
 const fs = require('fs');
@@ -90,6 +93,12 @@ class FlowParser implements Parser {
     const contents = fs.readFileSync(filename, 'utf8');
 
     return buildSchema(contents, filename, this);
+  }
+
+  getAst(contents: string): $FlowFixMe {
+    return flowParser.parse(contents, {
+      enums: true,
+    });
   }
 
   getFunctionTypeAnnotationParameters(

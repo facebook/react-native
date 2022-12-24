@@ -13,8 +13,6 @@
 import type {SchemaType} from '../../CodegenSchema';
 import type {Parser} from '../parser';
 
-// $FlowFixMe[untyped-import] there's no flowtype flow-parser
-const flowParser = require('flow-parser');
 const {
   getConfigType,
   buildSchemaFromConfigType,
@@ -59,7 +57,7 @@ function buildSchema(
     return {modules: {}};
   }
 
-  const ast = flowParser.parse(contents, {enums: true});
+  const ast = parser.getAst(contents);
   const configType = getConfigType(ast, Visitor);
 
   return buildSchemaFromConfigType(

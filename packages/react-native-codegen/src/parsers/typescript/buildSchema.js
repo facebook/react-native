@@ -13,8 +13,6 @@
 import type {SchemaType} from '../../CodegenSchema';
 import type {Parser} from '../parser';
 
-// $FlowFixMe[untyped-import] Use flow-types for @babel/parser
-const babelParser = require('@babel/parser');
 const {
   buildSchemaFromConfigType,
   getConfigType,
@@ -65,11 +63,7 @@ function buildSchema(
     return {modules: {}};
   }
 
-  const ast = babelParser.parse(contents, {
-    sourceType: 'module',
-    plugins: ['typescript'],
-  }).program;
-
+  const ast = parser.getAst(contents);
   const configType = getConfigType(ast, Visitor);
 
   return buildSchemaFromConfigType(
