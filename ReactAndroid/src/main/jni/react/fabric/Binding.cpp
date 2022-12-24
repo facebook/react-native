@@ -530,12 +530,6 @@ void Binding::schedulerDidDispatchCommand(
   mountingManager->dispatchCommand(shadowView, commandName, args);
 }
 
-void Binding::setNativeProps_DEPRECATED(
-    const ShadowView &shadowView,
-    Props::Shared props) {
-  // TODO(T130729920): Add Android implementation for setNativeProps.
-}
-
 void Binding::schedulerDidSendAccessibilityEvent(
     const ShadowView &shadowView,
     std::string const &eventType) {
