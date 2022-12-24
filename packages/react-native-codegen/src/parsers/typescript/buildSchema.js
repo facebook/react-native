@@ -10,17 +10,16 @@
 
 'use strict';
 
-import type {SchemaType} from '../../CodegenSchema';
+import type {SchemaType, NativeModuleSchema} from '../../CodegenSchema';
 import type {Parser} from '../parser';
+import type {ParserErrorCapturer} from '../utils';
+import type {ComponentSchemaBuilderConfig} from './components/schema';
 
 const {
   buildSchemaFromConfigType,
   getConfigType,
   isModuleRegistryCall,
 } = require('../utils');
-const {buildComponentSchema} = require('./components');
-const {wrapComponentSchema} = require('./components/schema');
-const {buildModuleSchema} = require('./modules');
 
 function Visitor(infoMap: {isComponent: boolean, isModule: boolean}) {
   return {
@@ -53,6 +52,14 @@ function Visitor(infoMap: {isComponent: boolean, isModule: boolean}) {
 function buildSchema(
   contents: string,
   filename: ?string,
+  wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
+  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildModuleSchema: (
+    hasteModuleName: string,
+    ast: $FlowFixMe,
+    tryParse: ParserErrorCapturer,
+    parser: Parser,
+  ) => NativeModuleSchema,
   parser: Parser,
 ): SchemaType {
   // Early return for non-Spec JavaScript files

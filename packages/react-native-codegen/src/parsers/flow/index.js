@@ -15,17 +15,34 @@ import type {SchemaType} from '../../CodegenSchema.js';
 const fs = require('fs');
 const {buildSchema} = require('./buildSchema');
 const {FlowParser} = require('./parser');
+const {buildComponentSchema} = require('./components');
+const {wrapComponentSchema} = require('./components/schema');
+const {buildModuleSchema} = require('./modules');
 
 const parser = new FlowParser();
 
 function parseModuleFixture(filename: string): SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
-  return buildSchema(contents, 'path/NativeSampleTurboModule.js', parser);
+  return buildSchema(
+    contents,
+    'path/NativeSampleTurboModule.js',
+    wrapComponentSchema,
+    buildComponentSchema,
+    buildModuleSchema,
+    parser,
+  );
 }
 
 function parseString(contents: string, filename: ?string): SchemaType {
-  return buildSchema(contents, filename, parser);
+  return buildSchema(
+    contents,
+    filename,
+    wrapComponentSchema,
+    buildComponentSchema,
+    buildModuleSchema,
+    parser,
+  );
 }
 
 module.exports = {
