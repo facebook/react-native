@@ -12,7 +12,9 @@
 
 const {isModuleRegistryCall} = require('../utils');
 
-function Visitor(infoMap: {isComponent: boolean, isModule: boolean}) {
+function Visitor(infoMap: {isComponent: boolean, isModule: boolean}): {
+  [type: string]: (node: $FlowFixMe) => void,
+} {
   return {
     CallExpression(node: $FlowFixMe) {
       if (
