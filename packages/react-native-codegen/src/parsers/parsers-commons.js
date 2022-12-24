@@ -27,6 +27,9 @@ import type {
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
 import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {ComponentSchemaBuilderConfig} from './flow/components/schema';
+
+const {getConfigType, buildSchemaFromConfigType} = require('./utils');
 
 const {
   throwIfPropertyValueTypeIsUnsupported,
@@ -365,6 +368,44 @@ function buildPropertySchema(
   };
 }
 
+function buildSchema(
+  contents: string,
+  filename: ?string,
+  wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
+  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildModuleSchema: (
+    hasteModuleName: string,
+    ast: $FlowFixMe,
+    tryParse: ParserErrorCapturer,
+    parser: Parser,
+  ) => NativeModuleSchema,
+  Visitor: ({isComponent: boolean, isModule: boolean}) => {
+    [type: string]: (node: $FlowFixMe) => void,
+  },
+  parser: Parser,
+): SchemaType {
+  // Early return for non-Spec JavaScript files
+  if (
+    !contents.includes('codegenNativeComponent') &&
+    !contents.includes('TurboModule')
+  ) {
+    return {modules: {}};
+  }
+
+  const ast = parser.getAst(contents);
+  const configType = getConfigType(ast, Visitor);
+
+  return buildSchemaFromConfigType(
+    configType,
+    filename,
+    ast,
+    wrapComponentSchema,
+    buildComponentSchema,
+    buildModuleSchema,
+    parser,
+  );
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -375,4 +416,5 @@ module.exports = {
   translateDefault,
   translateFunctionTypeAnnotation,
   buildPropertySchema,
+  buildSchema,
 };

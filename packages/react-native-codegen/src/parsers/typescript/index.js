@@ -13,7 +13,9 @@
 import type {SchemaType} from '../../CodegenSchema.js';
 
 const fs = require('fs');
-const {buildSchema} = require('./buildSchema');
+
+const {buildSchema} = require('../parsers-commons');
+const {Visitor} = require('./buildSchema');
 const {TypeScriptParser} = require('./parser');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
@@ -30,6 +32,7 @@ function parseModuleFixture(filename: string): SchemaType {
     wrapComponentSchema,
     buildComponentSchema,
     buildModuleSchema,
+    Visitor,
     parser,
   );
 }
@@ -41,6 +44,7 @@ function parseString(contents: string, filename: ?string): SchemaType {
     wrapComponentSchema,
     buildComponentSchema,
     buildModuleSchema,
+    Visitor,
     parser,
   );
 }

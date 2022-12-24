@@ -23,7 +23,8 @@ import type {Parser} from '../parser';
 // $FlowFixMe[untyped-import] Use flow-types for @babel/parser
 const babelParser = require('@babel/parser');
 
-const {buildSchema} = require('./buildSchema');
+const {buildSchema} = require('../parsers-commons');
+const {Visitor} = require('./buildSchema');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
@@ -107,6 +108,7 @@ class TypeScriptParser implements Parser {
       wrapComponentSchema,
       buildComponentSchema,
       buildModuleSchema,
+      Visitor,
       this,
     );
   }

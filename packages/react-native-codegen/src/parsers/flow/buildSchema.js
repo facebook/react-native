@@ -10,16 +10,7 @@
 
 'use strict';
 
-import type {SchemaType, NativeModuleSchema} from '../../CodegenSchema';
-import type {Parser} from '../parser';
-import type {ParserErrorCapturer} from '../utils';
-import type {ComponentSchemaBuilderConfig} from './components/schema';
-
-const {
-  getConfigType,
-  buildSchemaFromConfigType,
-  isModuleRegistryCall,
-} = require('../utils');
+const {isModuleRegistryCall} = require('../utils');
 
 function Visitor(infoMap: {isComponent: boolean, isModule: boolean}) {
   return {
@@ -43,41 +34,6 @@ function Visitor(infoMap: {isComponent: boolean, isModule: boolean}) {
   };
 }
 
-function buildSchema(
-  contents: string,
-  filename: ?string,
-  wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
-  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
-  buildModuleSchema: (
-    hasteModuleName: string,
-    ast: $FlowFixMe,
-    tryParse: ParserErrorCapturer,
-    parser: Parser,
-  ) => NativeModuleSchema,
-  parser: Parser,
-): SchemaType {
-  // Early return for non-Spec JavaScript files
-  if (
-    !contents.includes('codegenNativeComponent') &&
-    !contents.includes('TurboModule')
-  ) {
-    return {modules: {}};
-  }
-
-  const ast = parser.getAst(contents);
-  const configType = getConfigType(ast, Visitor);
-
-  return buildSchemaFromConfigType(
-    configType,
-    filename,
-    ast,
-    wrapComponentSchema,
-    buildComponentSchema,
-    buildModuleSchema,
-    parser,
-  );
-}
-
 module.exports = {
-  buildSchema,
+  Visitor,
 };

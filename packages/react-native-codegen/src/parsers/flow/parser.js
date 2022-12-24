@@ -23,7 +23,8 @@ import type {Parser} from '../parser';
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 
-const {buildSchema} = require('./buildSchema');
+const {buildSchema} = require('../parsers-commons');
+const {Visitor} = require('./buildSchema');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
@@ -101,6 +102,7 @@ class FlowParser implements Parser {
       wrapComponentSchema,
       buildComponentSchema,
       buildModuleSchema,
+      Visitor,
       this,
     );
   }
