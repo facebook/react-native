@@ -17,9 +17,14 @@ import {
   parseObjectProperty,
   wrapNullable,
   unwrapNullable,
+  buildSchema,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
 
+const {Visitor} = require('../flow/Visitor');
+const {wrapComponentSchema} = require('../flow/components/schema');
+const {buildComponentSchema} = require('../flow/components');
+const {buildModuleSchema} = require('../flow/modules');
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('../errors');
@@ -30,6 +35,10 @@ const parser = new MockedParser();
 
 const flowTranslateTypeAnnotation = require('../flow/modules/index');
 const typeScriptTranslateTypeAnnotation = require('../typescript/modules/index');
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('wrapNullable', () => {
   describe('when nullable is true', () => {
@@ -333,6 +342,149 @@ describe('parseObjectProperty', () => {
           parser,
         ),
       ).toThrow(expected);
+    });
+  });
+});
+
+describe('buildSchema', () => {
+  const getConfigTypeSpy = jest.spyOn(require('../utils'), 'getConfigType');
+
+  describe('when there is no codegenNativeComponent and no TurboModule', () => {
+    const contents = '';
+
+    it('returns an empty module', () => {
+      const schema = buildSchema(
+        contents,
+        'fileName',
+        wrapComponentSchema,
+        buildComponentSchema,
+        buildModuleSchema,
+        Visitor,
+        parser,
+      );
+
+      expect(getConfigTypeSpy).not.toHaveBeenCalled();
+      expect(schema).toEqual({modules: {}});
+    });
+  });
+
+  describe('when there is a codegenNativeComponent', () => {
+    const contents = `
+      import type {ViewProps} from 'ViewPropTypes';
+      import type {HostComponent} from 'react-native';
+      
+      const codegenNativeComponent = require('codegenNativeComponent');
+      
+      export type ModuleProps = $ReadOnly<{|
+        ...ViewProps,
+      |}>;
+      
+      export default (codegenNativeComponent<ModuleProps>(
+        'Module',
+      ): HostComponent<ModuleProps>);
+    `;
+
+    it('returns a module with good properties', () => {
+      const schema = buildSchema(
+        contents,
+        'fileName',
+        wrapComponentSchema,
+        buildComponentSchema,
+        buildModuleSchema,
+        Visitor,
+        parser,
+      );
+
+      expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
+      expect(getConfigTypeSpy).toHaveBeenCalledWith(
+        parser.getAst(contents),
+        Visitor,
+      );
+      expect(schema).toEqual({
+        modules: {
+          Module: {
+            type: 'Component',
+            components: {
+              Module: {
+                extendsProps: [
+                  {
+                    type: 'ReactNativeBuiltInType',
+                    knownTypeName: 'ReactNativeCoreViewProps',
+                  },
+                ],
+                events: [],
+                props: [],
+                commands: [],
+              },
+            },
+          },
+        },
+      });
+    });
+  });
+
+  describe('when there is a TurboModule', () => {
+    const contents = `
+      import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+      import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+      
+      export interface Spec extends TurboModule {
+        +getArray: (a: Array<any>) => Array<string>;
+      }
+      
+      export default (TurboModuleRegistry.getEnforcing<Spec>(
+        'SampleTurboModule',
+      ): Spec);
+    `;
+
+    it('returns a module with good properties', () => {
+      const schema = buildSchema(
+        contents,
+        'fileName',
+        wrapComponentSchema,
+        buildComponentSchema,
+        buildModuleSchema,
+        Visitor,
+        parser,
+      );
+
+      expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
+      expect(getConfigTypeSpy).toHaveBeenCalledWith(
+        parser.getAst(contents),
+        Visitor,
+      );
+      expect(schema).toEqual({
+        modules: {
+          fileName: {
+            type: 'NativeModule',
+            aliases: {},
+            spec: {
+              properties: [
+                {
+                  name: 'getArray',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'FunctionTypeAnnotation',
+                    returnTypeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {type: 'StringTypeAnnotation'},
+                    },
+                    params: [
+                      {
+                        name: 'a',
+                        optional: false,
+                        typeAnnotation: {type: 'ArrayTypeAnnotation'},
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+            moduleName: 'SampleTurboModule',
+            excludedPlatforms: undefined,
+          },
+        },
+      });
     });
   });
 });
