@@ -24,7 +24,7 @@ import type {Parser} from '../parser';
 const babelParser = require('@babel/parser');
 
 const {buildSchema} = require('../parsers-commons');
-const {Visitor} = require('./buildSchema');
+const {Visitor} = require('./Visitor');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');

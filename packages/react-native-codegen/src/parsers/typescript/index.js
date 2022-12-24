@@ -15,7 +15,7 @@ import type {SchemaType} from '../../CodegenSchema.js';
 const fs = require('fs');
 
 const {buildSchema} = require('../parsers-commons');
-const {Visitor} = require('./buildSchema');
+const {Visitor} = require('./Visitor');
 const {TypeScriptParser} = require('./parser');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
