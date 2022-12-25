@@ -20,14 +20,31 @@
 - (UIWindow *)alertWindow
 {
   if (_alertWindow == nil) {
-    UIWindow *keyWindow = RCTSharedApplication().keyWindow;
-    if (keyWindow) {
-      _alertWindow = [[UIWindow alloc] initWithFrame:keyWindow.bounds];
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    if (@available(iOS 13.0, *)) {
+      for (UIScene *scene in RCTSharedApplication().connectedScenes) {
+        if (scene.activationState == UISceneActivationStateForegroundActive && [scene isKindOfClass:[UIWindowScene class]]) {
+          _alertWindow = [[UIWindow alloc] initWithWindowScene:(UIWindowScene *)scene];
+          break;
+        }
+      }
+    }
+#endif
+
+    if (_alertWindow == nil) {
+      UIWindow *keyWindow = RCTSharedApplication().keyWindow;
+      if (keyWindow) {
+        _alertWindow = [[UIWindow alloc] initWithFrame:keyWindow.bounds];
+      } else {
+        // keyWindow is nil, so we cannot create and initialize _alertWindow
+        NSLog(@"Unable to create alert window: keyWindow is nil");
+      }
+    }
+
+    if (_alertWindow) {
       _alertWindow.rootViewController = [UIViewController new];
       _alertWindow.windowLevel = UIWindowLevelAlert + 1;
-    } else {
-      // keyWindow is nil, so we cannot create and initialize _alertWindow
-      NSLog(@"Unable to create alert window: keyWindow is nil");
     }
   }
 
