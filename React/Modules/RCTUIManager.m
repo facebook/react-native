@@ -1004,7 +1004,8 @@ RCT_EXPORT_METHOD(createView
       return;
     }
 
-    preliminaryCreatedView = [componentData createViewWithTag:reactTag rootTag:rootTag];
+    // preliminaryCreatedView = [componentData createViewWithTag:reactTag rootTag:rootTag];
+    preliminaryCreatedView = [componentData createViewWithTag:reactTag rootTag:rootTag props:props];
 
     if (preliminaryCreatedView) {
       self->_viewRegistry[reactTag] = preliminaryCreatedView;
