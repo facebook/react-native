@@ -207,7 +207,7 @@ class TextExample extends React.Component<{...}> {
         <RNTesterBlock title="Dynamic Font Size Adjustment">
           <Text>
             This text a{' '}
-            <Text accessibilityRole="link" style={{backgroundColor: 'red'}}>
+            <Text style={{textAlignVertical: 'top', backgroundColor: 'red'}}>
               SuperScript
             </Text>
           </Text>

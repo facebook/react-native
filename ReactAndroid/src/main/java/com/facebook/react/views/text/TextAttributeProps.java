@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -615,10 +614,9 @@ public class TextAttributeProps {
     }
   }
 
-  private void setTextAlignVertical(@Nullable String verticalAlign) {
-    if (verticalAlign != null) {
-      FLog.w("React::", "verticalAlign: " + (verticalAlign));
-      mVerticalAlign = verticalAlign;
+  private void setTextAlignVertical(@Nullable String alignVertical) {
+    if (alignVertical != null) {
+      mVerticalAlign = alignVertical;
     }
   }
 

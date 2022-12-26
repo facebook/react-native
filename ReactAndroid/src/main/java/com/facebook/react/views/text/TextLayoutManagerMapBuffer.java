@@ -140,11 +140,11 @@ public class TextLayoutManagerMapBuffer {
                 sb.length(),
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
       } else if (end >= start) {
-        if (textAttributes.mVerticalAlign == "super") {
+        if (textAttributes.mVerticalAlign != null && textAttributes.mVerticalAlign.equals("top")) {
           ops.add(new SetSpanOperation(start, end, new ReactSuperscriptSpan()));
         }
         if (textAttributes.mIsAccessibilityLink) {
-          ops.add(new SetSpanOperation(start, end, new ReactSuperscriptSpan()));
+          ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
         }
         if (textAttributes.mIsColorSet) {
           ops.add(

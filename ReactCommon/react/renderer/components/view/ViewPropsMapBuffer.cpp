@@ -61,7 +61,7 @@ void ViewProps::propsDiffMapBuffer(
   }
 
   if (oldProps.textAlignVertical != newProps.textAlignVertical) {
-    builder.putString(VP_TEXT_VERTICAL_ALIGN, newProps.textAlignVertical);
+    builder.putString(VP_TEXT_ALIGN_VERTICAL, newProps.textAlignVertical);
   }
       
   if (oldProps.borderCurves != newProps.borderCurves) {

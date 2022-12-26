@@ -46,7 +46,7 @@ constexpr MapBuffer::Key VP_POINTER_OUT = 43;
 constexpr MapBuffer::Key VP_POINTER_OUT_CAPTURE = 44;
 constexpr MapBuffer::Key VP_BORDER_CURVES = 45;
 constexpr MapBuffer::Key VP_FG_COLOR = 46;
-constexpr MapBuffer::Key VP_TEXT_VERTICAL_ALIGN = 47;
+constexpr MapBuffer::Key VP_TEXT_ALIGN_VERTICAL = 47;
 
 // Yoga values
 constexpr MapBuffer::Key YG_BORDER_WIDTH = 100;
