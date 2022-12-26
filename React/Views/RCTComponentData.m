@@ -88,6 +88,19 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   return view;
 }
 
+- (UIView *)createpropsViewWithTag:(nullable NSNumber *)tag rootTag:(nullable NSNumber *)rootTag props:(NSDictionary *)props
+{
+  RCTAssertMainQueue();
+
+  UIView *view = [self.manager view:props];
+  view.reactTag = tag;
+  view.rootTag = rootTag;
+  view.multipleTouchEnabled = YES;
+  view.userInteractionEnabled = YES; // required for touch handling
+  view.layer.allowsGroupOpacity = YES; // required for touch handling
+  return view;
+}
+
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag
 {
   RCTShadowView *shadowView = [self.manager shadowView];

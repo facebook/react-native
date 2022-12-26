@@ -35,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
                      eventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
 - (UIView *)createViewWithTag:(nullable NSNumber *)tag rootTag:(nullable NSNumber *)rootTag;
+- (UIView *)createpropsViewWithTag:(nullable NSNumber *)tag rootTag:(nullable NSNumber *)rootTag props:(NSDictionary *)props;
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;
