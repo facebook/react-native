@@ -17,6 +17,7 @@ import {
   parseObjectProperty,
   wrapNullable,
   unwrapNullable,
+  buildSchemaFromConfigType,
   buildSchema,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
@@ -25,7 +26,9 @@ const {Visitor} = require('../flow/Visitor');
 const {wrapComponentSchema} = require('../flow/components/schema');
 const {buildComponentSchema} = require('../flow/components');
 const {buildModuleSchema} = require('../flow/modules');
+const {isModuleRegistryCall} = require('../utils.js');
 const {
+  ParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('../errors');
 
@@ -342,6 +345,288 @@ describe('parseObjectProperty', () => {
           parser,
         ),
       ).toThrow(expected);
+    });
+  });
+});
+
+describe('buildSchemaFromConfigType', () => {
+  const astMock = {
+    type: 'Program',
+    loc: {
+      source: null,
+      start: {line: 2, column: 10},
+      end: {line: 16, column: 62},
+    },
+    range: [11, 373],
+    body: [],
+    comments: [],
+    errors: [],
+  };
+
+  const componentSchemaMock = {
+    filename: 'filename',
+    componentName: 'componentName',
+    extendsProps: [],
+    events: [],
+    props: [],
+    commands: [],
+  };
+
+  const moduleSchemaMock = {
+    type: 'NativeModule',
+    aliases: {},
+    spec: {properties: []},
+    moduleName: '',
+  };
+
+  const wrapComponentSchemaMock = jest.fn();
+  const buildComponentSchemaMock = jest.fn(_ => componentSchemaMock);
+  const buildModuleSchemaMock = jest.fn((_0, _1, _2, _3) => moduleSchemaMock);
+
+  const buildSchemaFromConfigTypeHelper = (
+    configType: 'module' | 'component' | 'none',
+    filename: ?string,
+  ) =>
+    buildSchemaFromConfigType(
+      configType,
+      filename,
+      astMock,
+      wrapComponentSchemaMock,
+      buildComponentSchemaMock,
+      buildModuleSchemaMock,
+      parser,
+    );
+
+  describe('when configType is none', () => {
+    it('returns an empty schema', () => {
+      const schema = buildSchemaFromConfigTypeHelper('none');
+
+      expect(schema).toEqual({modules: {}});
+    });
+  });
+
+  describe('when configType is component', () => {
+    it('calls buildComponentSchema with ast and wrapComponentSchema with the result', () => {
+      buildSchemaFromConfigTypeHelper('component');
+
+      expect(buildComponentSchemaMock).toHaveBeenCalledTimes(1);
+      expect(buildComponentSchemaMock).toHaveBeenCalledWith(astMock);
+      expect(wrapComponentSchemaMock).toHaveBeenCalledTimes(1);
+      expect(wrapComponentSchemaMock).toHaveBeenCalledWith(componentSchemaMock);
+
+      expect(buildModuleSchemaMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when configType is module', () => {
+    describe('when filename is undefined', () => {
+      it('throws an error', () => {
+        expect(() => buildSchemaFromConfigTypeHelper('module')).toThrow(
+          'Filepath expected while parasing a module',
+        );
+      });
+    });
+
+    describe('when filename is null', () => {
+      it('throws an error', () => {
+        expect(() => buildSchemaFromConfigTypeHelper('module', null)).toThrow(
+          'Filepath expected while parasing a module',
+        );
+      });
+    });
+
+    describe('when filename is defined and not null', () => {
+      describe('when buildModuleSchema throws', () => {
+        it('throws the error', () => {
+          const parserError = new ParserError(
+            'moduleName',
+            astMock,
+            'Something went wrong',
+          );
+          buildModuleSchemaMock.mockImplementationOnce(() => {
+            throw parserError;
+          });
+
+          expect(() =>
+            buildSchemaFromConfigTypeHelper('module', 'filename'),
+          ).toThrow(parserError);
+        });
+      });
+
+      describe('when buildModuleSchema returns null', () => {
+        it('throws an error', () => {
+          // $FlowIgnore[incompatible-call] - This is to test an invariant
+          buildModuleSchemaMock.mockReturnValueOnce(null);
+
+          expect(() =>
+            buildSchemaFromConfigTypeHelper('module', 'filename'),
+          ).toThrow(
+            'When there are no parsing errors, the schema should not be null',
+          );
+        });
+      });
+
+      describe('when buildModuleSchema returns a schema', () => {
+        it('calls buildModuleSchema with ast and wrapModuleSchema with the result', () => {
+          buildSchemaFromConfigTypeHelper('module', 'filename');
+
+          expect(buildModuleSchemaMock).toHaveBeenCalledTimes(1);
+          expect(buildModuleSchemaMock).toHaveBeenCalledWith(
+            'filename',
+            astMock,
+            expect.any(Function),
+            parser,
+          );
+
+          expect(buildComponentSchemaMock).not.toHaveBeenCalled();
+          expect(wrapComponentSchemaMock).not.toHaveBeenCalled();
+        });
+      });
+    });
+  });
+
+  describe('isModuleRegistryCall', () => {
+    describe('when node is not of CallExpression type', () => {
+      it('returns false', () => {
+        const node = {
+          type: 'NotCallExpression',
+        };
+        expect(isModuleRegistryCall(node)).toBe(false);
+      });
+    });
+
+    describe('when node is of CallExpressionType', () => {
+      describe('when callee type is not of MemberExpression type', () => {
+        it('returns false', () => {
+          const node = {
+            type: 'CallExpression',
+            callee: {
+              type: 'NotMemberExpression',
+            },
+          };
+          expect(isModuleRegistryCall(node)).toBe(false);
+        });
+      });
+
+      describe('when callee type is of MemberExpression type', () => {
+        describe('when memberExpression has an object of type different than "Identifier"', () => {
+          it('returns false', () => {
+            const node = {
+              type: 'CallExpression',
+              callee: {
+                type: 'MemberExpression',
+                object: {
+                  type: 'NotIdentifier',
+                  name: 'TurboModuleRegistry',
+                },
+              },
+            };
+            expect(isModuleRegistryCall(node)).toBe(false);
+          });
+        });
+
+        describe('when memberExpression has an object of name different than "TurboModuleRegistry"', () => {
+          it('returns false', () => {
+            const node = {
+              type: 'CallExpression',
+              callee: {
+                type: 'MemberExpression',
+                object: {
+                  type: 'Identifier',
+                  name: 'NotTurboModuleRegistry',
+                },
+              },
+            };
+            expect(isModuleRegistryCall(node)).toBe(false);
+          });
+        });
+
+        describe('when memberExpression has an object of type "Identifier" and name "TurboModuleRegistry', () => {
+          describe('when memberExpression has a property of type different than "Identifier"', () => {
+            it('returns false', () => {
+              const node = {
+                type: 'CallExpression',
+                callee: {
+                  type: 'MemberExpression',
+                  object: {
+                    type: 'Identifier',
+                    name: 'TurboModuleRegistry',
+                  },
+                  property: {
+                    type: 'NotIdentifier',
+                    name: 'get',
+                  },
+                },
+              };
+              expect(isModuleRegistryCall(node)).toBe(false);
+            });
+          });
+
+          describe('when memberExpression has a property of name different than "get" or "getEnforcing', () => {
+            it('returns false', () => {
+              const node = {
+                type: 'CallExpression',
+                callee: {
+                  type: 'MemberExpression',
+                  object: {
+                    type: 'Identifier',
+                    name: 'TurboModuleRegistry',
+                  },
+                  property: {
+                    type: 'Identifier',
+                    name: 'NotGet',
+                  },
+                },
+              };
+              expect(isModuleRegistryCall(node)).toBe(false);
+            });
+          });
+
+          describe('when memberExpression has a property of type "Identifier" and of name "get" or "getEnforcing', () => {
+            describe('when memberExpression is computed', () => {
+              it('returns false', () => {
+                const node = {
+                  type: 'CallExpression',
+                  callee: {
+                    type: 'MemberExpression',
+                    object: {
+                      type: 'Identifier',
+                      name: 'TurboModuleRegistry',
+                    },
+                    property: {
+                      type: 'Identifier',
+                      name: 'get',
+                    },
+                    computed: true,
+                  },
+                };
+                expect(isModuleRegistryCall(node)).toBe(false);
+              });
+            });
+
+            describe('when memberExpression is not computed', () => {
+              it('returns true', () => {
+                const node = {
+                  type: 'CallExpression',
+                  callee: {
+                    type: 'MemberExpression',
+                    object: {
+                      type: 'Identifier',
+                      name: 'TurboModuleRegistry',
+                    },
+                    property: {
+                      type: 'Identifier',
+                      name: 'get',
+                    },
+                    computed: false,
+                  },
+                };
+                expect(isModuleRegistryCall(node)).toBe(true);
+              });
+            });
+          });
+        });
+      });
     });
   });
 });
