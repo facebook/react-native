@@ -55,7 +55,7 @@ public class ReactContext extends ContextWrapper {
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
   private volatile boolean mDestroyed = false;
-  private @Nullable CatalystInstance mCatalystInstance;
+  private @Nullable volatile CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
   private @Nullable MessageQueueThread mUiMessageQueueThread;
   private @Nullable MessageQueueThread mNativeModulesMessageQueueThread;
