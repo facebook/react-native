@@ -141,7 +141,7 @@ public class TextLayoutManagerMapBuffer {
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
       } else if (end >= start) {
         if (textAttributes.mVerticalAlign != null && textAttributes.mVerticalAlign.equals("top")) {
-          ops.add(new SetSpanOperation(start, end, new ReactSuperscriptSpan()));
+          ops.add(new SetSpanOperation(start, end, new ReactTopAlignSpan()));
         }
         if (textAttributes.mIsAccessibilityLink) {
           ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
