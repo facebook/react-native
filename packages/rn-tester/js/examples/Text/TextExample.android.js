@@ -18,7 +18,13 @@ const React = require('react');
 const TextInlineView = require('../../components/TextInlineView');
 import TextLegend from '../../components/TextLegend';
 
-const {LayoutAnimation, StyleSheet, Text, View} = require('react-native');
+const {
+  Image,
+  LayoutAnimation,
+  StyleSheet,
+  Text,
+  View,
+} = require('react-native');
 
 class Entity extends React.Component<{|children: React.Node|}> {
   render(): React.Node {
@@ -205,16 +211,35 @@ class TextExample extends React.Component<{...}> {
     return (
       <RNTesterPage title="<Text>">
         <RNTesterBlock title="Dynamic Font Size Adjustment">
-          <Text>
-            This text a{' '}
-            <Text style={{textAlignVertical: 'top', backgroundColor: 'red'}}>
-              SuperScript
+          <Text
+            onLayout={event => {
+              console.log('height', event.nativeEvent.layout.height);
+              const layout = event.nativeEvent.layout;
+              console.log('layout:', layout);
+            }}
+            style={{
+              textAlignVertical: 'bottom',
+              backgroundColor: 'yellow',
+            }}>
+            A parent text with{' '}
+            <Text
+              style={{
+                textAlignVertical: 'bottom-child',
+                backgroundColor: 'red',
+              }}>
+              Top
+            </Text>
+            <Text
+              style={{
+                textAlignVertical: 'top-child',
+                backgroundColor: 'green',
+              }}>
+              Bottom
             </Text>
           </Text>
           <Text
             style={{
               verticalAlign: 'bottom',
-              height: 100,
               backgroundColor: 'red',
             }}>
             Bottom

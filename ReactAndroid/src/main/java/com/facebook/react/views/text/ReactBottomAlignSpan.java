@@ -7,17 +7,16 @@
 
 package com.facebook.react.views.text;
 
-import android.graphics.Rect;
 import android.text.TextPaint;
-import android.text.style.SuperscriptSpan;
+import android.text.style.SubscriptSpan;
 
 /** ratio 0 for center ratio 0.4 for top ratio */
-public class ReactTopAlignSpan extends SuperscriptSpan implements ReactSpan {
+public class ReactBottomAlignSpan extends SubscriptSpan implements ReactSpan {
+  private static final String TAG = "ReactBottomAlignSpan";
+
   @Override
   public void updateDrawState(TextPaint ds) {
-    Rect bounds = new Rect();
-    ds.getTextBounds("1A", 0, 2, bounds);
-    ds.baselineShift -= bounds.top - ds.getFontMetrics().ascent;
+    ds.baselineShift += ds.getFontMetrics().descent / 2;
   }
 
   @Override
