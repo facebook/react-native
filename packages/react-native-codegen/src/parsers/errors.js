@@ -231,11 +231,7 @@ class UnsupportedObjectPropertyValueTypeAnnotationParserError extends ParserErro
  */
 
 class UnnamedFunctionParamParserError extends ParserError {
-  constructor(
-    functionParam: $FlowFixMe,
-    nativeModuleName: string,
-    language: ParserType,
-  ) {
+  constructor(functionParam: $FlowFixMe, nativeModuleName: string) {
     super(
       nativeModuleName,
       functionParam,

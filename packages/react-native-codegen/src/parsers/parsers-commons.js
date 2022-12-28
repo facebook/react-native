@@ -273,11 +273,7 @@ function translateFunctionTypeAnnotation(
   )) {
     const parsedParam = tryParse(() => {
       if (getFunctionNameFromParameter(param, parser.language()) == null) {
-        throw new UnnamedFunctionParamParserError(
-          param,
-          hasteModuleName,
-          parser.language(),
-        );
+        throw new UnnamedFunctionParamParserError(param, hasteModuleName);
       }
 
       const paramName = getParameterName(param, parser.language());
