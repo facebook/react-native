@@ -13,11 +13,18 @@ import android.text.style.SuperscriptSpan;
 
 /** ratio 0 for center ratio 0.4 for top ratio */
 public class ReactTopAlignSpan extends SuperscriptSpan implements ReactSpan {
+  private static final String TAG = "ReactTopAlignSpan";
+  private Integer mHeight;
+
   @Override
   public void updateDrawState(TextPaint ds) {
-    Rect bounds = new Rect();
-    ds.getTextBounds("1A", 0, 2, bounds);
-    ds.baselineShift -= bounds.top - ds.getFontMetrics().ascent;
+    if (mHeight != null) {
+      ds.baselineShift -= mHeight - ds.getTextSize();
+    }
+  }
+
+  public void setHeight(Integer height) {
+    mHeight = height;
   }
 
   @Override

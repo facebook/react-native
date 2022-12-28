@@ -50,8 +50,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
       new ViewGroup.LayoutParams(0, 0);
+  private static final String TAG = "ReactTextView";
 
   private boolean mContainsImages;
+  private boolean mContainsSpans;
   private final int mDefaultGravityHorizontal;
   private final int mDefaultGravityVertical;
   private int mTextAlign;
@@ -182,6 +184,16 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   protected void onLayout(
       boolean changed, int textViewLeft, int textViewTop, int textViewRight, int textViewBottom) {
     // TODO T62882314: Delete this method when Fabric is fully released in OSS
+    if (getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      ReactTopAlignSpan[] spans = text.getSpans(0, text.length(), ReactTopAlignSpan.class);
+      if (spans.length != 0) {
+        for (ReactTopAlignSpan span : spans) {
+          span.setHeight(getHeight());
+          invalidate();
+        }
+      }
+    }
     int reactTag = getId();
     if (!(getText() instanceof Spanned)
         || ViewUtil.getUIManagerType(reactTag) == UIManagerType.FABRIC) {
