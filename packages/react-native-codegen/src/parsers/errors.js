@@ -264,7 +264,6 @@ class UnsupportedFunctionReturnTypeAnnotationParserError extends ParserError {
     nativeModuleName: string,
     flowReturnTypeAnnotation: $FlowFixMe,
     invalidReturnType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,

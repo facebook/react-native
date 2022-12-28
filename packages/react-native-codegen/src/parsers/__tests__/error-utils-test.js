@@ -179,8 +179,7 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
       returnType: '',
     },
     nativeModuleName = 'moduleName',
-    invalidReturnType = 'FunctionTypeAnnotation',
-    language = 'Flow';
+    invalidReturnType = 'FunctionTypeAnnotation';
 
   it('do not throw error if cxxOnly is true', () => {
     const cxxOnly = true,
@@ -191,7 +190,6 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
         nativeModuleName,
         returnTypeAnnotation,
         invalidReturnType,
-        language,
         cxxOnly,
         returnType,
       );
@@ -207,7 +205,6 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
         nativeModuleName,
         returnTypeAnnotation,
         invalidReturnType,
-        language,
         cxxOnly,
         returnType,
       );
@@ -223,7 +220,6 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
         nativeModuleName,
         returnTypeAnnotation,
         invalidReturnType,
-        language,
         cxxOnly,
         returnType,
       );

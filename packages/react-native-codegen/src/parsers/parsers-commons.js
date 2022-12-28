@@ -339,7 +339,6 @@ function translateFunctionTypeAnnotation(
     hasteModuleName,
     typeAnnotation,
     'FunctionTypeAnnotation',
-    parser.language(),
     cxxOnly,
     returnTypeAnnotation.type,
   );

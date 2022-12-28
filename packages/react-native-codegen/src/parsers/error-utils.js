@@ -124,7 +124,6 @@ function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
   nativeModuleName: string,
   returnTypeAnnotation: $FlowFixMe,
   invalidReturnType: string,
-  language: ParserType,
   cxxOnly: boolean,
   returnType: string,
 ) {
@@ -133,7 +132,6 @@ function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
       nativeModuleName,
       returnTypeAnnotation.returnType,
       'FunctionTypeAnnotation',
-      language,
     );
   }
 }
