@@ -186,10 +186,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // TODO T62882314: Delete this method when Fabric is fully released in OSS
     if (getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
-      ReactTopAlignSpan[] spans = text.getSpans(0, text.length(), ReactTopAlignSpan.class);
+      ReactAlignSpan[] spans = text.getSpans(0, text.length(), ReactAlignSpan.class);
       if (spans.length != 0) {
-        for (ReactTopAlignSpan span : spans) {
-          span.setHeight(getHeight());
+        for (ReactAlignSpan span : spans) {
+          span.updateSpan(getHeight(), getGravity());
           invalidate();
         }
       }
