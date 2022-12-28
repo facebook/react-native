@@ -176,7 +176,6 @@ class UnsupportedArrayElementTypeAnnotationParserError extends ParserError {
     arrayElementTypeAST: $FlowFixMe,
     arrayType: 'Array' | '$ReadOnlyArray' | 'ReadonlyArray',
     invalidArrayElementType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,

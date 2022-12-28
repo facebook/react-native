@@ -240,7 +240,6 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
   flowElementType: $FlowFixMe,
   flowArrayType: 'Array' | '$ReadOnlyArray' | 'ReadonlyArray',
   type: string,
-  language: ParserType,
 ) {
   const TypeMap = {
     FunctionTypeAnnotation: 'FunctionTypeAnnotation',
@@ -257,7 +256,6 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
       flowElementType,
       flowArrayType,
       TypeMap[type],
-      language,
     );
   }
 }

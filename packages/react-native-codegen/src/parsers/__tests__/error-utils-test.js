@@ -624,7 +624,6 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
     UnsupportedArrayElementTypeAnnotationParserError,
   } = require('../errors.js');
   const moduleName = 'moduleName';
-  const language = 'Flow';
 
   it('throws the error if it is the type is void type annotation', () => {
     expect(() => {
@@ -633,7 +632,6 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
         undefined,
         'Array',
         'VoidTypeAnnotation',
-        language,
       );
     }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
   });
@@ -645,7 +643,6 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
         undefined,
         'Array',
         'PromiseTypeAnnotation',
-        language,
       );
     }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
   });
@@ -657,7 +654,6 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
         undefined,
         'Array',
         'FunctionTypeAnnotation',
-        language,
       );
     }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
   });
@@ -669,7 +665,6 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
         undefined,
         'Array',
         'StringTypeAnnotation',
-        language,
       );
     }).not.toThrow(UnsupportedArrayElementTypeAnnotationParserError);
   });
