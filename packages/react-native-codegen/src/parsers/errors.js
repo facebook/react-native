@@ -283,7 +283,6 @@ class UnsupportedEnumDeclarationParserError extends ParserError {
     nativeModuleName: string,
     arrayElementTypeAST: $FlowFixMe,
     memberType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,

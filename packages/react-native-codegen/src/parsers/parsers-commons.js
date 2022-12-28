@@ -203,7 +203,6 @@ function translateDefault(
         hasteModuleName,
         typeAnnotation,
         memberType,
-        parser.language(),
       );
     }
   }
