@@ -319,11 +319,7 @@ class UnsupportedUnionTypeAnnotationParserError extends ParserError {
  */
 
 class UnusedModuleInterfaceParserError extends ParserError {
-  constructor(
-    nativeModuleName: string,
-    flowInterface: $FlowFixMe,
-    language: ParserType,
-  ) {
+  constructor(nativeModuleName: string, flowInterface: $FlowFixMe) {
     super(
       nativeModuleName,
       flowInterface,

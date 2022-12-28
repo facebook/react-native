@@ -119,13 +119,11 @@ describe('throwIfUnusedModuleInterfaceParserError', () => {
     const nativeModuleName = 'moduleName';
     const callExpressions: Array<$FlowFixMe> = [];
     const spec = {name: 'Spec'};
-    const parserType = 'Flow';
     expect(() => {
       throwIfUnusedModuleInterfaceParserError(
         nativeModuleName,
         spec,
         callExpressions,
-        parserType,
       );
     }).toThrow(UnusedModuleInterfaceParserError);
   });
@@ -134,13 +132,11 @@ describe('throwIfUnusedModuleInterfaceParserError', () => {
     const nativeModuleName = 'moduleName';
     const callExpressions = [{name: 'callExpression1'}];
     const spec = {name: 'Spec'};
-    const parserType = 'TypeScript';
     expect(() => {
       throwIfUnusedModuleInterfaceParserError(
         nativeModuleName,
         spec,
         callExpressions,
-        parserType,
       );
     }).not.toThrow(UnusedModuleInterfaceParserError);
   });
