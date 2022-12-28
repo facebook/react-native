@@ -77,6 +77,7 @@ export type Props = $ReadOnly<{|
     | 'pageSheet'
     | 'formSheet'
     | 'overFullScreen'
+    | 'overCurrentContext'
   ),
 
   /**
@@ -163,7 +164,7 @@ function confirmProps(props: Props) {
   if (__DEV__) {
     if (
       props.presentationStyle &&
-      props.presentationStyle !== 'overFullScreen' &&
+      (props.presentationStyle !== 'overFullScreen' || props.presentationStyle !== 'overCurrentContext') &&
       props.transparent === true
     ) {
       console.warn(
