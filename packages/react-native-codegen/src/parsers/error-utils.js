@@ -194,7 +194,6 @@ function throwIfPropertyValueTypeIsUnsupported(
   propertyValue: $FlowFixMe,
   propertyKey: string,
   type: string,
-  language: ParserType,
 ) {
   const invalidPropertyValueType =
     UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap[type];
@@ -204,7 +203,6 @@ function throwIfPropertyValueTypeIsUnsupported(
     propertyValue,
     propertyKey,
     invalidPropertyValueType,
-    language,
   );
 }
 

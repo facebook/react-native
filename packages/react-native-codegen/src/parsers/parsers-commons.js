@@ -166,7 +166,6 @@ function parseObjectProperty(
       languageTypeAnnotation,
       property.key,
       propertyTypeAnnotation.type,
-      language,
     );
   }
 

@@ -216,7 +216,6 @@ class UnsupportedObjectPropertyValueTypeAnnotationParserError extends ParserErro
     propertyValueAST: $FlowFixMe,
     propertyName: string,
     invalidPropertyValueType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
