@@ -23,6 +23,7 @@ RCT_ENUM_CONVERTER(
       @"pageSheet" : @(UIModalPresentationPageSheet),
       @"formSheet" : @(UIModalPresentationFormSheet),
       @"overFullScreen" : @(UIModalPresentationOverFullScreen),
+      @"overCurrentContext" : @(UIModalPresentationOverCurrentContext)
     }),
     UIModalPresentationFullScreen,
     integerValue)
