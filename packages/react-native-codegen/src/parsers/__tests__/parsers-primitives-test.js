@@ -672,7 +672,6 @@ describe('emitUnion', () => {
             hasteModuleName,
             typeAnnotation,
             unionTypes,
-            flowParser.language(),
           );
 
           expect(() => {
@@ -687,7 +686,6 @@ describe('emitUnion', () => {
             hasteModuleName,
             typeAnnotation,
             unionTypes,
-            flowParser.language(),
           );
 
           expect(() => {
@@ -887,7 +885,6 @@ describe('emitUnion', () => {
             hasteModuleName,
             typeAnnotation,
             unionTypes,
-            typeScriptParser.language(),
           );
 
           expect(() => {
@@ -902,7 +899,6 @@ describe('emitUnion', () => {
             hasteModuleName,
             typeAnnotation,
             unionTypes,
-            typeScriptParser.language(),
           );
 
           expect(() => {

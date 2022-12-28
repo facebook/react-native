@@ -302,7 +302,6 @@ class UnsupportedUnionTypeAnnotationParserError extends ParserError {
     nativeModuleName: string,
     arrayElementTypeAST: $FlowFixMe,
     types: UnionTypeAnnotationMemberType[],
-    language: ParserType,
   ) {
     super(
       nativeModuleName,

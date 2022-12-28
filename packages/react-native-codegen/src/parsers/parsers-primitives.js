@@ -267,7 +267,6 @@ function emitUnion(
       hasteModuleName,
       typeAnnotation,
       unionTypes,
-      parser.language(),
     );
   }
 
