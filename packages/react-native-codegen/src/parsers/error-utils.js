@@ -119,7 +119,6 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
       typeArguments,
       methodName,
       moduleName,
-      parser.language(),
     );
   }
 

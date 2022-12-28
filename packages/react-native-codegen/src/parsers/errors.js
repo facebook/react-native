@@ -369,7 +369,6 @@ class IncorrectModuleRegistryCallTypeParameterParserError extends ParserError {
     flowTypeArguments: $FlowFixMe,
     methodName: string,
     moduleName: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
