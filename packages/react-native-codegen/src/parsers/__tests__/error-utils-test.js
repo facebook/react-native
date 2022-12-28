@@ -91,28 +91,24 @@ describe('throwIfMoreThanOneModuleRegistryCalls', () => {
       {name: 'callExpression1'},
       {name: 'callExpression2'},
     ];
-    const parserType = 'Flow';
 
     expect(() => {
       throwIfMoreThanOneModuleRegistryCalls(
         nativeModuleName,
         callExpressions,
         callExpressions.length,
-        parserType,
       );
     }).toThrow(MoreThanOneModuleRegistryCallsParserError);
   });
   it("don't throw error if single module registry call", () => {
     const nativeModuleName = 'moduleName';
     const callExpressions = [{name: 'callExpression1'}];
-    const parserType = 'TypeScript';
 
     expect(() => {
       throwIfMoreThanOneModuleRegistryCalls(
         nativeModuleName,
         callExpressions,
         callExpressions.length,
-        parserType,
       );
     }).not.toThrow(MoreThanOneModuleRegistryCallsParserError);
   });

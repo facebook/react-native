@@ -337,7 +337,6 @@ class MoreThanOneModuleRegistryCallsParserError extends ParserError {
     nativeModuleName: string,
     flowCallExpressions: $FlowFixMe,
     numCalls: number,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,

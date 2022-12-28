@@ -338,7 +338,6 @@ function buildModuleSchema(
       hasteModuleName,
       callExpressions,
       callExpressions.length,
-      language,
     );
 
     const [callExpression] = callExpressions;

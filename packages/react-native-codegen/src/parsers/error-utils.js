@@ -63,14 +63,12 @@ function throwIfMoreThanOneModuleRegistryCalls(
   hasteModuleName: string,
   callExpressions: $FlowFixMe,
   callExpressionsLength: number,
-  language: ParserType,
 ) {
   if (callExpressions.length > 1) {
     throw new MoreThanOneModuleRegistryCallsParserError(
       hasteModuleName,
       callExpressions,
       callExpressionsLength,
-      language,
     );
   }
 }
