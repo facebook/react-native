@@ -39,38 +39,36 @@ class AsyncCallback {
   }
 
   void call(Args... args) const {
-    auto wrapper = callback_->wrapper_.lock();
-    if (!wrapper) {
-      throw std::runtime_error("Failed to call invalidated async callback");
-    }
-
-    auto argsTuple = std::make_tuple(std::forward<Args>(args)...);
-
-    wrapper->jsInvoker().invokeAsync(
-        [callback = callback_,
-         argsPtr = std::make_shared<decltype(argsTuple)>(
-             std::move(argsTuple))] { callback->apply(std::move(*argsPtr)); });
+    callInternal(std::nullopt, std::forward<Args>(args)...);
   }
 
   void callWithPriority(SchedulerPriority priority, Args... args) const {
-    auto wrapper = callback_->wrapper_.lock();
-    if (!wrapper) {
-      throw std::runtime_error("Failed to call invalidated async callback");
-    }
-
-    auto argsTuple = std::make_tuple(std::forward<Args>(args)...);
-
-    wrapper->jsInvoker().invokeAsync(
-        priority,
-        [callback = callback_,
-         argsPtr = std::make_shared<decltype(argsTuple)>(
-             std::move(argsTuple))] { callback->apply(std::move(*argsPtr)); });
+    callInternal(priority, std::forward<Args>(args)...);
   }
 
  private:
   friend Bridging<AsyncCallback>;
 
   std::shared_ptr<SyncCallback<void(Args...)>> callback_;
+
+  void callInternal(std::optional<SchedulerPriority> priority, Args... args)
+      const {
+    auto wrapper = callback_->wrapper_.lock();
+    if (!wrapper) {
+      throw std::runtime_error("Failed to call invalidated async callback");
+    }
+    auto fn = [callback = callback_,
+               argsPtr = std::make_shared<std::tuple<Args...>>(
+                   std::make_tuple(std::forward<Args>(args)...))] {
+      callback->apply(std::move(*argsPtr));
+    };
+
+    if (priority) {
+      wrapper->jsInvoker().invokeAsync(*priority, std::move(fn));
+    } else {
+      wrapper->jsInvoker().invokeAsync(std::move(fn));
+    }
+  }
 };
 
 template <typename R, typename... Args>
