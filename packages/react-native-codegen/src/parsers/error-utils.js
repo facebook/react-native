@@ -95,7 +95,6 @@ function throwIfWrongNumberOfCallExpressionArgs(
   flowCallExpression: $FlowFixMe,
   methodName: string,
   numberOfCallExpressionArgs: number,
-  language: ParserType,
 ) {
   if (numberOfCallExpressionArgs !== 1) {
     throw new IncorrectModuleRegistryCallArityParserError(
@@ -103,7 +102,6 @@ function throwIfWrongNumberOfCallExpressionArgs(
       flowCallExpression,
       methodName,
       numberOfCallExpressionArgs,
-      language,
     );
   }
 }

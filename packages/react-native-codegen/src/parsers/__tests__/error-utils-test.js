@@ -156,14 +156,12 @@ describe('throwErrorIfWrongNumberOfCallExpressionArgs', () => {
     const flowCallExpression: {argument: Array<$FlowFixMe>} = {argument: []};
     const methodName = 'methodName';
     const numberOfCallExpressionArgs = flowCallExpression.argument.length;
-    const language = 'Flow';
     expect(() => {
       throwIfWrongNumberOfCallExpressionArgs(
         nativeModuleName,
         flowCallExpression,
         methodName,
         numberOfCallExpressionArgs,
-        language,
       );
     }).toThrow(IncorrectModuleRegistryCallArityParserError);
   });
@@ -173,14 +171,12 @@ describe('throwErrorIfWrongNumberOfCallExpressionArgs', () => {
     const flowCallExpression = {argument: ['argument']};
     const methodName = 'methodName';
     const numberOfCallExpressionArgs = flowCallExpression.argument.length;
-    const language = 'Flow';
     expect(() => {
       throwIfWrongNumberOfCallExpressionArgs(
         nativeModuleName,
         flowCallExpression,
         methodName,
         numberOfCallExpressionArgs,
-        language,
       );
     }).not.toThrow(IncorrectModuleRegistryCallArityParserError);
   });

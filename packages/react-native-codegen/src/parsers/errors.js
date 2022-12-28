@@ -385,7 +385,6 @@ class IncorrectModuleRegistryCallArityParserError extends ParserError {
     flowCallExpression: $FlowFixMe,
     methodName: string,
     incorrectArity: number,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
