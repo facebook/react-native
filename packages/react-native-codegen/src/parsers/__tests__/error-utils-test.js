@@ -481,7 +481,6 @@ describe('throwIfUntypedModule', () => {
 
   it('should throw error if module does not have a type', () => {
     const typeArguments = null;
-    const language = 'Flow';
     expect(() =>
       throwIfUntypedModule(
         typeArguments,
@@ -489,7 +488,6 @@ describe('throwIfUntypedModule', () => {
         callExpressions,
         methodName,
         moduleName,
-        language,
       ),
     ).toThrowError(UntypedModuleRegistryCallParserError);
   });
@@ -500,7 +498,6 @@ describe('throwIfUntypedModule', () => {
       params: [],
     };
 
-    const language = 'TypeScript';
     expect(() =>
       throwIfUntypedModule(
         typeArguments,
@@ -508,7 +505,6 @@ describe('throwIfUntypedModule', () => {
         callExpressions,
         methodName,
         moduleName,
-        language,
       ),
     ).not.toThrowError(UntypedModuleRegistryCallParserError);
   });

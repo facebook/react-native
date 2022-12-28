@@ -151,7 +151,6 @@ function throwIfUntypedModule(
   callExpression: $FlowFixMe,
   methodName: string,
   moduleName: string,
-  language: ParserType,
 ) {
   if (typeArguments == null) {
     throw new UntypedModuleRegistryCallParserError(
@@ -159,7 +158,6 @@ function throwIfUntypedModule(
       callExpression,
       methodName,
       moduleName,
-      language,
     );
   }
 }

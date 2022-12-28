@@ -353,7 +353,6 @@ class UntypedModuleRegistryCallParserError extends ParserError {
     flowCallExpression: $FlowFixMe,
     methodName: string,
     moduleName: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
