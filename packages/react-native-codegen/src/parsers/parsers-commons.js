@@ -166,7 +166,6 @@ function parseObjectProperty(
       languageTypeAnnotation,
       property.key,
       propertyTypeAnnotation.type,
-      language,
     );
   }
 
@@ -203,7 +202,6 @@ function translateDefault(
         hasteModuleName,
         typeAnnotation,
         memberType,
-        parser.language(),
       );
     }
   }
@@ -274,11 +272,7 @@ function translateFunctionTypeAnnotation(
   )) {
     const parsedParam = tryParse(() => {
       if (getFunctionNameFromParameter(param, parser.language()) == null) {
-        throw new UnnamedFunctionParamParserError(
-          param,
-          hasteModuleName,
-          parser.language(),
-        );
+        throw new UnnamedFunctionParamParserError(param, hasteModuleName);
       }
 
       const paramName = getParameterName(param, parser.language());
@@ -340,7 +334,6 @@ function translateFunctionTypeAnnotation(
     hasteModuleName,
     typeAnnotation,
     'FunctionTypeAnnotation',
-    parser.language(),
     cxxOnly,
     returnTypeAnnotation.type,
   );

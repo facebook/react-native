@@ -331,14 +331,12 @@ function buildModuleSchema(
       hasteModuleName,
       moduleSpec,
       callExpressions,
-      language,
     );
 
     throwIfMoreThanOneModuleRegistryCalls(
       hasteModuleName,
       callExpressions,
       callExpressions.length,
-      language,
     );
 
     const [callExpression] = callExpressions;
@@ -350,7 +348,6 @@ function buildModuleSchema(
       callExpression,
       methodName,
       callExpression.arguments.length,
-      language,
     );
 
     if (callExpression.arguments[0].type !== 'Literal') {
@@ -360,7 +357,6 @@ function buildModuleSchema(
         callExpression.arguments[0],
         methodName,
         type,
-        language,
       );
     }
 
@@ -372,7 +368,6 @@ function buildModuleSchema(
       callExpression,
       methodName,
       $moduleName,
-      language,
     );
 
     throwIfIncorrectModuleRegistryCallTypeParameterParserError(
