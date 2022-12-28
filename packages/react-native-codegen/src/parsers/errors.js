@@ -401,7 +401,6 @@ class IncorrectModuleRegistryCallArgumentTypeParserError extends ParserError {
     flowArgument: $FlowFixMe,
     methodName: string,
     type: string,
-    language: ParserType,
   ) {
     const a = /[aeiouy]/.test(type.toLowerCase()) ? 'an' : 'a';
     super(

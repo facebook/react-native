@@ -365,7 +365,6 @@ function buildModuleSchema(
         callExpression.arguments[0],
         methodName,
         type,
-        language,
       );
     }
 
