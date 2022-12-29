@@ -213,15 +213,6 @@ function translateDefault(
   );
 }
 
-function getTypeAnnotationParameters(
-  typeAnnotation: $FlowFixMe,
-  language: ParserType,
-): $ReadOnlyArray<$FlowFixMe> {
-  return language === 'Flow'
-    ? typeAnnotation.params
-    : typeAnnotation.parameters;
-}
-
 function getFunctionNameFromParameter(
   param: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
   language: ParserType,
@@ -255,7 +246,7 @@ function translateFunctionTypeAnnotation(
   hasteModuleName: string,
   // TODO(T108222691): Use flow-types for @babel/parser
   // TODO(T71778680): This is a FunctionTypeAnnotation. Type this.
-  typeAnnotation: $FlowFixMe,
+  functionTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
@@ -266,9 +257,8 @@ function translateFunctionTypeAnnotation(
   type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
   const params: Array<Param> = [];
 
-  for (const param of getTypeAnnotationParameters(
-    typeAnnotation,
-    parser.language(),
+  for (const param of parser.getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation,
   )) {
     const parsedParam = tryParse(() => {
       if (getFunctionNameFromParameter(param, parser.language()) == null) {
@@ -321,7 +311,7 @@ function translateFunctionTypeAnnotation(
     unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
         hasteModuleName,
-        getTypeAnnotationReturnType(typeAnnotation, parser.language()),
+        getTypeAnnotationReturnType(functionTypeAnnotation, parser.language()),
         types,
         aliasMap,
         tryParse,
@@ -332,7 +322,7 @@ function translateFunctionTypeAnnotation(
 
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
     hasteModuleName,
-    typeAnnotation,
+    functionTypeAnnotation,
     'FunctionTypeAnnotation',
     cxxOnly,
     returnTypeAnnotation.type,

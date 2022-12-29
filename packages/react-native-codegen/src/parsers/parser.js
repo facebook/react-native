@@ -77,4 +77,13 @@ export interface Parser {
    * @returns: the AST of the file (given in program property for typescript).
    */
   parseFile(filename: string): SchemaType;
+
+  /**
+   * Given a FunctionTypeAnnotation, it returns an array of its parameters.
+   * @parameter functionTypeAnnotation: a FunctionTypeAnnotation
+   * @returns: the parameters of the FunctionTypeAnnotation.
+   */
+  getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<$FlowFixMe>;
 }

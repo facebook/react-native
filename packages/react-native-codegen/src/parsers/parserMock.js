@@ -82,4 +82,10 @@ export class MockedParser implements Parser {
       },
     };
   }
+
+  getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<$FlowFixMe> {
+    return functionTypeAnnotation.params;
+  }
 }

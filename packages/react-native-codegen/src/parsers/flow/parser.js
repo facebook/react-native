@@ -88,6 +88,12 @@ class FlowParser implements Parser {
 
     return buildSchema(contents, filename, this);
   }
+
+  getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<$FlowFixMe> {
+    return functionTypeAnnotation.params;
+  }
 }
 
 module.exports = {

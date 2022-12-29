@@ -94,6 +94,12 @@ class TypeScriptParser implements Parser {
 
     return buildSchema(contents, filename, this);
   }
+
+  getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<$FlowFixMe> {
+    return functionTypeAnnotation.parameters;
+  }
 }
 module.exports = {
   TypeScriptParser,
