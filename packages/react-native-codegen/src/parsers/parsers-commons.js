@@ -213,15 +213,6 @@ function translateDefault(
   );
 }
 
-function getParameterTypeAnnotation(
-  param: $FlowFixMe,
-  language: ParserType,
-): $FlowFixMe {
-  return language === 'Flow'
-    ? param.typeAnnotation
-    : param.typeAnnotation.typeAnnotation;
-}
-
 function getTypeAnnotationReturnType(
   typeAnnotation: $FlowFixMe,
   language: ParserType,
@@ -260,7 +251,7 @@ function translateFunctionTypeAnnotation(
         unwrapNullable<$FlowFixMe>(
           translateTypeAnnotation(
             hasteModuleName,
-            getParameterTypeAnnotation(param, parser.language()),
+            parser.getParameterTypeAnnotation(param),
             types,
             aliasMap,
             tryParse,

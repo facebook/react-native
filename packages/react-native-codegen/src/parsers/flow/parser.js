@@ -107,6 +107,10 @@ class FlowParser implements Parser {
   getParameterName(parameter: $FlowFixMe): string {
     return parameter.name.name;
   }
+
+  getParameterTypeAnnotation(parameter: $FlowFixMe): $FlowFixMe {
+    return parameter.typeAnnotation;
+  }
 }
 
 module.exports = {

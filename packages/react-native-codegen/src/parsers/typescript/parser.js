@@ -113,6 +113,10 @@ class TypeScriptParser implements Parser {
   getParameterName(parameter: $FlowFixMe): string {
     return parameter.name;
   }
+
+  getParameterTypeAnnotation(parameter: $FlowFixMe): $FlowFixMe {
+    return parameter.typeAnnotation.typeAnnotation;
+  }
 }
 module.exports = {
   TypeScriptParser,

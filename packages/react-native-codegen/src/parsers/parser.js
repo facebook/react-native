@@ -108,4 +108,11 @@ export interface Parser {
    * @returns: the name of the parameter.
    */
   getParameterName(parameter: $FlowFixMe): string;
+
+  /**
+   * Given a parameter, it returns its typeAnnotation.
+   * @parameter parameter: a parameter of a FunctionTypeAnnotation.
+   * @returns: the typeAnnotation of the parameter.
+   */
+  getParameterTypeAnnotation(param: $FlowFixMe): $FlowFixMe;
 }
