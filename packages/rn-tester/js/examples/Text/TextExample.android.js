@@ -211,39 +211,30 @@ class TextExample extends React.Component<{...}> {
     return (
       <RNTesterPage title="<Text>">
         <RNTesterBlock title="Dynamic Font Size Adjustment">
-          <Text
-            onLayout={event => {
-              console.log('height', event.nativeEvent.layout.height);
-              const layout = event.nativeEvent.layout;
-              console.log('layout:', layout);
-            }}
-            style={{
-              textAlignVertical: 'bottom',
-              backgroundColor: 'yellow',
-            }}>
-            A parent text with{' '}
+          <View style={{height: 150}}>
             <Text
               style={{
-                textAlignVertical: 'bottom-child',
-                backgroundColor: 'red',
+                flex: 1,
+                textAlignVertical: 'center',
+                backgroundColor: 'yellow',
               }}>
-              Top
+              <Text
+                style={{
+                  textAlignVertical: 'bottom',
+                  backgroundColor: 'red',
+                }}>
+                Bottom
+              </Text>
+              <Text
+                style={{
+                  textAlignVertical: 'top',
+                  backgroundColor: 'green',
+                }}>
+                Top
+              </Text>
+              A parent text with{' '}
             </Text>
-            <Text
-              style={{
-                textAlignVertical: 'top-child',
-                backgroundColor: 'green',
-              }}>
-              Bottom
-            </Text>
-          </Text>
-          <Text
-            style={{
-              verticalAlign: 'bottom',
-              backgroundColor: 'red',
-            }}>
-            Bottom
-          </Text>
+          </View>
         </RNTesterBlock>
         <RNTesterBlock title="Font Size Adjustment with Dynamic Layout">
           <TextAdjustsDynamicLayoutExample />
