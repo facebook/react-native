@@ -12,7 +12,13 @@
 
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
-import type {UnionTypeAnnotationMemberType, SchemaType} from '../CodegenSchema';
+import type {
+  UnionTypeAnnotationMemberType,
+  SchemaType,
+  NamedShape,
+  Nullable,
+  NativeModuleParamTypeAnnotation,
+} from '../CodegenSchema';
 
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
@@ -87,5 +93,11 @@ export class MockedParser implements Parser {
     functionTypeAnnotation: $FlowFixMe,
   ): $ReadOnlyArray<$FlowFixMe> {
     return functionTypeAnnotation.params;
+  }
+
+  getFunctionNameFromParameter(
+    parameter: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
+  ): $FlowFixMe {
+    return parameter.name;
   }
 }

@@ -10,7 +10,13 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType, SchemaType} from '../CodegenSchema';
+import type {
+  UnionTypeAnnotationMemberType,
+  SchemaType,
+  NamedShape,
+  Nullable,
+  NativeModuleParamTypeAnnotation,
+} from '../CodegenSchema';
 import type {ParserType} from './errors';
 
 /**
@@ -86,4 +92,13 @@ export interface Parser {
   getFunctionTypeAnnotationParameters(
     functionTypeAnnotation: $FlowFixMe,
   ): $ReadOnlyArray<$FlowFixMe>;
+
+  /**
+   * Given a parameter, it returns the function name of the parameter.
+   * @parameter parameter: a parameter of a FunctionTypeAnnotation.
+   * @returns: the function name of the parameter.
+   */
+  getFunctionNameFromParameter(
+    parameter: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
+  ): $FlowFixMe;
 }
