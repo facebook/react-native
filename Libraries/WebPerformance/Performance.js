@@ -8,11 +8,11 @@
  * @flow strict
  */
 
-import type {HighResTimeStamp} from './PerformanceObserver';
+import type {HighResTimeStamp} from './PerformanceEntry';
 
 import warnOnce from '../Utilities/warnOnce';
 import NativePerformance from './NativePerformance';
-import {PerformanceEntry} from './PerformanceObserver';
+import {PerformanceEntry} from './PerformanceEntry';
 
 type DetailType = mixed;
 

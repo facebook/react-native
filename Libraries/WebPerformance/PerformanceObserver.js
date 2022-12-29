@@ -12,47 +12,14 @@ import type {
   RawPerformanceEntry,
   RawPerformanceEntryType,
 } from './NativePerformanceObserver';
+import type {PerformanceEntryType} from './PerformanceEntry';
 
 import warnOnce from '../Utilities/warnOnce';
 import NativePerformanceObserver, {
   RawPerformanceEntryTypeValues,
 } from './NativePerformanceObserver';
-
-export type HighResTimeStamp = number;
-export type PerformanceEntryType = 'mark' | 'measure' | 'event' | 'first-input';
-
-export class PerformanceEntry {
-  name: string;
-  entryType: PerformanceEntryType;
-  startTime: HighResTimeStamp;
-  duration: HighResTimeStamp;
-
-  constructor(init: {
-    name: string,
-    entryType: PerformanceEntryType,
-    startTime: HighResTimeStamp,
-    duration: HighResTimeStamp,
-  }) {
-    this.name = init.name;
-    this.entryType = init.entryType;
-    this.startTime = init.startTime;
-    this.duration = init.duration;
-  }
-
-  toJSON(): {
-    name: string,
-    entryType: PerformanceEntryType,
-    startTime: HighResTimeStamp,
-    duration: HighResTimeStamp,
-  } {
-    return {
-      name: this.name,
-      entryType: this.entryType,
-      startTime: this.startTime,
-      duration: this.duration,
-    };
-  }
-}
+import {PerformanceEntry} from './PerformanceEntry';
+import {PerformanceEventTiming} from './PerformanceEventTiming';
 
 function rawToPerformanceEntryType(
   type: RawPerformanceEntryType,
@@ -74,12 +41,28 @@ function rawToPerformanceEntryType(
 }
 
 function rawToPerformanceEntry(entry: RawPerformanceEntry): PerformanceEntry {
-  return new PerformanceEntry({
-    name: entry.name,
-    entryType: rawToPerformanceEntryType(entry.entryType),
-    startTime: entry.startTime,
-    duration: entry.duration,
-  });
+  if (
+    entry.entryType === RawPerformanceEntryTypeValues.EVENT ||
+    entry.entryType === RawPerformanceEntryTypeValues.FIRST_INPUT
+  ) {
+    return new PerformanceEventTiming({
+      name: entry.name,
+      startTime: entry.startTime,
+      duration: entry.duration,
+      processingStart: entry.processingStart,
+      processingEnd: entry.processingEnd,
+      interactionId: entry.interactionId,
+      isFirstInput:
+        entry.entryType === RawPerformanceEntryTypeValues.FIRST_INPUT,
+    });
+  } else {
+    return new PerformanceEntry({
+      name: entry.name,
+      entryType: rawToPerformanceEntryType(entry.entryType),
+      startTime: entry.startTime,
+      duration: entry.duration,
+    });
+  }
 }
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
