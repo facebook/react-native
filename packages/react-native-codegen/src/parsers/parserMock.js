@@ -100,4 +100,8 @@ export class MockedParser implements Parser {
   ): $FlowFixMe {
     return parameter.name;
   }
+
+  getParameterName(parameter: $FlowFixMe): string {
+    return parameter.name.name;
+  }
 }

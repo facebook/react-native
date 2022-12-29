@@ -213,17 +213,6 @@ function translateDefault(
   );
 }
 
-function getFunctionNameFromParameter(
-  param: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
-  language: ParserType,
-): $FlowFixMe {
-  return language === 'Flow' ? param.name : param.typeAnnotation;
-}
-
-function getParameterName(param: $FlowFixMe, language: ParserType): string {
-  return language === 'Flow' ? param.name.name : param.name;
-}
-
 function getParameterTypeAnnotation(
   param: $FlowFixMe,
   language: ParserType,
@@ -265,7 +254,7 @@ function translateFunctionTypeAnnotation(
         throw new UnnamedFunctionParamParserError(param, hasteModuleName);
       }
 
-      const paramName = getParameterName(param, parser.language());
+      const paramName = parser.getParameterName(param);
 
       const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
         unwrapNullable<$FlowFixMe>(

@@ -101,4 +101,11 @@ export interface Parser {
   getFunctionNameFromParameter(
     parameter: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
   ): $FlowFixMe;
+
+  /**
+   * Given a parameter, it returns its name.
+   * @parameter parameter: a parameter of a FunctionTypeAnnotation.
+   * @returns: the name of the parameter.
+   */
+  getParameterName(parameter: $FlowFixMe): string;
 }
