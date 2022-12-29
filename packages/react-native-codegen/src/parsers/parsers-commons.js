@@ -213,15 +213,6 @@ function translateDefault(
   );
 }
 
-function getTypeAnnotationReturnType(
-  typeAnnotation: $FlowFixMe,
-  language: ParserType,
-): $FlowFixMe {
-  return language === 'Flow'
-    ? typeAnnotation.returnType
-    : typeAnnotation.typeAnnotation.typeAnnotation;
-}
-
 function translateFunctionTypeAnnotation(
   hasteModuleName: string,
   // TODO(T108222691): Use flow-types for @babel/parser
@@ -291,7 +282,7 @@ function translateFunctionTypeAnnotation(
     unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
         hasteModuleName,
-        getTypeAnnotationReturnType(functionTypeAnnotation, parser.language()),
+        parser.getFunctionTypeAnnotationReturnType(functionTypeAnnotation),
         types,
         aliasMap,
         tryParse,

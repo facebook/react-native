@@ -108,4 +108,10 @@ export class MockedParser implements Parser {
   getParameterTypeAnnotation(parameter: $FlowFixMe): $FlowFixMe {
     return parameter.typeAnnotation;
   }
+
+  getFunctionTypeAnnotationReturnType(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $FlowFixMe {
+    return functionTypeAnnotation.returnType;
+  }
 }

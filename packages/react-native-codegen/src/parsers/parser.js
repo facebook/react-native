@@ -115,4 +115,13 @@ export interface Parser {
    * @returns: the typeAnnotation of the parameter.
    */
   getParameterTypeAnnotation(param: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a FunctionTypeAnnotation, it returns its returnType.
+   * @parameter functionTypeAnnotation: a FunctionTypeAnnotation
+   * @returns: the returnType of the FunctionTypeAnnotation.
+   */
+  getFunctionTypeAnnotationReturnType(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $FlowFixMe;
 }
