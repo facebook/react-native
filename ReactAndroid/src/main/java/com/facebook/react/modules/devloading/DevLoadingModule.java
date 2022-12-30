@@ -7,19 +7,36 @@
 
 package com.facebook.react.modules.devloading;
 
-import android.util.Log;
+import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativeDevLoadingViewSpec;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.devsupport.BridgeDevSupportManager;
+import com.facebook.react.devsupport.DefaultDevLoadingViewImplementation;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** {@link NativeModule} that allows JS to show dev loading view. */
 @ReactModule(name = NativeDevLoadingViewSpec.NAME)
 public class DevLoadingModule extends NativeDevLoadingViewSpec {
 
+  private final JSExceptionHandler mJSExceptionHandler;
+  private @Nullable DevLoadingViewManager mDevLoadingViewManager;
+
   public DevLoadingModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    mJSExceptionHandler = reactContext.getJSExceptionHandler();
+    if (mJSExceptionHandler != null && mJSExceptionHandler instanceof BridgeDevSupportManager) {
+      mDevLoadingViewManager =
+          ((BridgeDevSupportManager) mJSExceptionHandler).getDevLoadingViewManager();
+      mDevLoadingViewManager =
+          mDevLoadingViewManager != null
+              ? mDevLoadingViewManager
+              : new DefaultDevLoadingViewImplementation(
+                  ((BridgeDevSupportManager) mJSExceptionHandler).getReactInstanceManagerHelper());
+    }
   }
 
   @Override
@@ -29,7 +46,7 @@ public class DevLoadingModule extends NativeDevLoadingViewSpec {
         new Runnable() {
           @Override
           public void run() {
-            Log.w(NAME, "Showing Message in DevLoadingModule java.");
+            mDevLoadingViewManager.showMessage(message);
           }
         });
   }
@@ -41,7 +58,7 @@ public class DevLoadingModule extends NativeDevLoadingViewSpec {
         new Runnable() {
           @Override
           public void run() {
-            Log.w(NAME, "Hiding Message in DevLoadingModule java.");
+            mDevLoadingViewManager.hide();
           }
         });
   }

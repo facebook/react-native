@@ -444,6 +444,10 @@ public class ReactContext extends ContextWrapper {
     return mExceptionHandlerWrapper;
   }
 
+  public JSExceptionHandler getJSExceptionHandler() {
+    return mJSExceptionHandler;
+  }
+
   public boolean hasCurrentActivity() {
     return mCurrentActivity != null && mCurrentActivity.get() != null;
   }
