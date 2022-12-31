@@ -209,9 +209,6 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
     flipper_post_install(installer)
   end
 
-  package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
-  version = package['version']
-
   ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
