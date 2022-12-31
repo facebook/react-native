@@ -20,17 +20,7 @@
 - (UIWindow *)alertWindow
 {
   if (_alertWindow == nil) {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-    if (@available(iOS 13.0, *)) {
-      for (UIScene *scene in RCTSharedApplication().connectedScenes) {
-        if (scene.activationState == UISceneActivationStateForegroundActive && [scene isKindOfClass:[UIWindowScene class]]) {
-          _alertWindow = [[UIWindow alloc] initWithWindowScene:(UIWindowScene *)scene];
-          break;
-        }
-      }
-    }
-#endif
+    _alertWindow = [self getUIWindowFromScene];
 
     if (_alertWindow == nil) {
       UIWindow *keyWindow = RCTSharedApplication().keyWindow;
@@ -71,6 +61,18 @@
   }
 
   _alertWindow = nil;
+}
+
+- (UIWindow *)getUIWindowFromScene
+{
+  if (@available(iOS 13.0, *)) {
+    for (UIScene *scene in RCTSharedApplication().connectedScenes) {
+      if (scene.activationState == UISceneActivationStateForegroundActive && [scene isKindOfClass:[UIWindowScene class]]) {
+        return [[UIWindow alloc] initWithWindowScene:(UIWindowScene *)scene];
+      }
+    }
+  }
+  return nil;
 }
 
 @end
