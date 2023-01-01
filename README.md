@@ -45,7 +45,7 @@ React Native brings [**React**'s][r] declarative UI framework to iOS and Android
 
 - **Declarative.** React makes it painless to create interactive UIs. Declarative views make your code more predictable and easier to debug.
 - **Component-Based.** Build encapsulated components that manage their state, then compose them to make complex UIs.
-- **Developer Velocity.** See local changes in seconds. Changes to JavaScript code can be live reloaded without rebuilding the native app.
+- **Developer Velocity.** See local changes in seconds. Changes to JavaScript code can be live-reloaded without rebuilding the native app.
 - **Portability.** Reuse code across iOS, Android, and [other platforms][p].
 
 React Native is developed and supported by many companies and individual core contributors. Find out more in our [ecosystem overview][e].
@@ -104,7 +104,7 @@ React Native releases are discussed [in this discussion repo](https://github.com
 
 ## 👏 How to Contribute
 
-The main purpose of this repository is to continue evolving React Native core. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bug fixes and improvements. Read below to learn how you can take part in improving React Native.
+The main purpose of this repository is to continue evolving the React Native core. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bug fixes and improvements. Read below to learn how you can take part in improving React Native.
 
 ### [Code of Conduct][code]
 
