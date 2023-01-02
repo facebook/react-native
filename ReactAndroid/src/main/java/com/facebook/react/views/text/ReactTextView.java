@@ -187,10 +187,16 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     if (getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
       ReactAlignSpan[] spans = text.getSpans(0, text.length(), ReactAlignSpan.class);
-      if (spans.length != 0) {
-        for (ReactAlignSpan span : spans) {
-          span.updateSpan(getHeight(), getGravity());
-          invalidate();
+      Layout layout = getLayout();
+      if (layout != null) {
+        int lineCount = layout != null ? layout.getLineCount() : 1;
+        int lineHeight = layout != null ? layout.getHeight() : 0;
+        if (spans.length != 0) {
+          for (ReactAlignSpan span : spans) {
+            int start = text.getSpanStart(span);
+            int currentLine = layout.getLineForOffset(start);
+            span.updateSpan(getHeight(), getGravity(), lineCount, layout.getHeight(), currentLine);
+          }
         }
       }
     }
@@ -219,6 +225,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
+    FLog.w("React::" + TAG, "onLayout " + " layout.getHeight(): " + (layout.getHeight()));
     if (layout == null) {
       // Text layout is calculated during pre-draw phase, so in some cases it can be empty during
       // layout phase, which usually happens before drawing.

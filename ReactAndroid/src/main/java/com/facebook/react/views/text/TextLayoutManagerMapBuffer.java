@@ -142,10 +142,10 @@ public class TextLayoutManagerMapBuffer {
       } else if (end >= start) {
         if (textAttributes.mVerticalAlign != null
             && (textAttributes.mVerticalAlign.equals("top-child")
-                || textAttributes.mVerticalAlign.equals("bottom-child"))) {
+                || textAttributes.mVerticalAlign.equals("bottom-child")
+                || textAttributes.mVerticalAlign.equals("center-child"))) {
           ops.add(
-              new SetSpanOperation(
-                  start, end, new ReactAlignSpan(textAttributes.mVerticalAlign)));
+              new SetSpanOperation(start, end, new ReactAlignSpan(textAttributes.mVerticalAlign)));
         }
         if (textAttributes.mIsAccessibilityLink) {
           ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
@@ -411,6 +411,11 @@ public class TextLayoutManagerMapBuffer {
         paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : UNSET;
+
+    // Calculate the positions of the attachments (views) that will be rendered inside the
+    // Spanned Text. The following logic is only executed when a text contains views inside.
+    // This follows a similar logic than used in pre-fabric (see ReactTextView.onLayout method).
+    //   int currentLine = layout.getLineForOffset(start);
 
     int calculatedLineCount =
         maximumNumberOfLines == UNSET || maximumNumberOfLines == 0

@@ -211,13 +211,16 @@ class TextExample extends React.Component<{...}> {
     return (
       <RNTesterPage title="<Text>">
         <RNTesterBlock title="Dynamic Font Size Adjustment">
-          <View style={{height: 150}}>
+          <View style={{height: 250}}>
             <Text
+              textTransform="uppercase"
               style={{
                 flex: 1,
                 textAlignVertical: 'center',
                 backgroundColor: 'yellow',
               }}>
+              This is one additional line of text This is one additional line of
+              text This is one additional line of text
               <Text
                 style={{
                   textAlignVertical: 'bottom',
@@ -225,14 +228,6 @@ class TextExample extends React.Component<{...}> {
                 }}>
                 Bottom
               </Text>
-              <Text
-                style={{
-                  textAlignVertical: 'top',
-                  backgroundColor: 'green',
-                }}>
-                Top
-              </Text>
-              A parent text with{' '}
             </Text>
           </View>
         </RNTesterBlock>

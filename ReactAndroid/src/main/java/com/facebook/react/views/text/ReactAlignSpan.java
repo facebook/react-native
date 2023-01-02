@@ -14,11 +14,13 @@ import com.facebook.common.logging.FLog;
 
 /** ratio 0 for center ratio 0.4 for top ratio */
 public class ReactAlignSpan extends SuperscriptSpan implements ReactSpan {
-  private static final String TAG = "ReactTopAlignSpan";
+  private static final String TAG = "ReactAlignSpan";
   private Integer mParentHeight;
   private String mTextAlignVertical;
-  private String mParentTextAlignVertical;
   private Integer mParentGravity;
+  private int mParentLineCount;
+  private int mCurrentLine;
+  private float mCalculatedHeight;
 
   ReactAlignSpan(String textAlignVertical) {
     mTextAlignVertical = textAlignVertical;
@@ -63,7 +65,10 @@ public class ReactAlignSpan extends SuperscriptSpan implements ReactSpan {
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    if (mTextAlignVertical == null || mParentGravity == null) {
+    if (mTextAlignVertical == null
+        || mParentGravity == null
+        || mCalculatedHeight == 0.0f
+        || mParentLineCount == 0.0f) {
       return;
     }
     double convertedTextAlignVertical = convertTextAlignToStep(mTextAlignVertical);
@@ -72,19 +77,31 @@ public class ReactAlignSpan extends SuperscriptSpan implements ReactSpan {
       return;
     }
     double numberOfSteps = convertedTextAlignVertical - convertedParentTextAlignVertical;
-
+    double absSteps = Math.abs(numberOfSteps);
     if (mParentHeight != null) {
-      if (numberOfSteps >= 0) {
-        ds.baselineShift -= (mParentHeight - ds.getTextSize()) * numberOfSteps;
-      } else {
-        ds.baselineShift -= (mParentHeight - ds.getTextSize() - ds.descent()) * numberOfSteps;
+      if (numberOfSteps > 0) {
+        double shift =
+            mParentHeight * absSteps
+                - ds.getTextSize() * absSteps
+                + ds.getTextSize() / mParentLineCount * mCurrentLine;
+        ds.baselineShift -= shift;
+      }
+      if (numberOfSteps == -0.5) {
+        double lineHeight = mCalculatedHeight / mParentLineCount;
+        double margin = (mParentHeight - mCalculatedHeight) / 2;
+        double additionalLines = lineHeight * (mParentLineCount - mCurrentLine);
+        ds.baselineShift += margin + additionalLines;
       }
     }
   }
 
-  public void updateSpan(Integer height, int gravity) {
+  public void updateSpan(
+      Integer height, int gravity, int lineCount, float calculatedHeight, int currentLine) {
     mParentHeight = height;
     mParentGravity = gravity;
+    mParentLineCount = lineCount;
+    mCalculatedHeight = calculatedHeight;
+    mCurrentLine = currentLine + 1;
   }
 
   @Override
