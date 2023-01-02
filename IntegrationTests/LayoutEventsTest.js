@@ -50,7 +50,7 @@ class LayoutEventsTest extends React.Component<Props, State> {
     didAnimation: false,
   };
 
-  animateViewLayout() {
+animateViewLayout() {
     debug('animateViewLayout invoked');
     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring, () => {
       debug('animateViewLayout done');
@@ -166,7 +166,7 @@ class LayoutEventsTest extends React.Component<Props, State> {
             A simple piece of text.{this.state.extraText}
           </Text>
           <Text>
-            {'\n'}
+            {' '}
             Text w/h: {textLayout.width}/{textLayout.height + '\n'}
             Image x/y: {imageLayout.x}/{imageLayout.y}
           </Text>
