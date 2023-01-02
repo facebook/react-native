@@ -66,6 +66,7 @@ public class ReactAlignSpan extends SuperscriptSpan implements ReactSpan {
   @Override
   public void updateDrawState(TextPaint ds) {
     if (mTextAlignVertical == null
+        || mParentHeight == null
         || mParentGravity == null
         || mCalculatedHeight == 0.0f
         || mParentLineCount == 0.0f) {
@@ -80,22 +81,13 @@ public class ReactAlignSpan extends SuperscriptSpan implements ReactSpan {
     if (numberOfSteps == 0) {
       return;
     }
-    double absSteps = Math.abs(numberOfSteps);
-    if (mParentHeight != null) {
-      double margin = (mParentHeight - mCalculatedHeight);
-      double lineHeight = mCalculatedHeight / mParentLineCount;
-      if (Math.abs(numberOfSteps) == 0.5) {
-        margin = (mParentHeight - mCalculatedHeight) / 2;
-      }
-      if (numberOfSteps > 0) {
-        double additionalLines = lineHeight * mCurrentLine;
-        ds.baselineShift -= margin + additionalLines;
-      }
-      if (numberOfSteps < 0) {
-        double additionalLines = lineHeight * (mParentLineCount - mCurrentLine - 1);
-        ds.baselineShift += margin + additionalLines;
-      }
+    double margin = mParentHeight - mCalculatedHeight;
+    double lineHeight = mCalculatedHeight / mParentLineCount;
+    double additionalLines = lineHeight * mCurrentLine;
+    if (numberOfSteps < 0) {
+      additionalLines = lineHeight * (mParentLineCount - mCurrentLine - 1) * -1;
     }
+    ds.baselineShift -= margin * numberOfSteps + additionalLines;
   }
 
   public void updateSpan(
