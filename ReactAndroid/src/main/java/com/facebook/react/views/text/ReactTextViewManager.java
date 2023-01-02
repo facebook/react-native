@@ -11,6 +11,7 @@ import android.content.Context;
 import android.text.Spannable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -43,6 +44,7 @@ public class ReactTextViewManager
   private static final short TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
 
   @VisibleForTesting public static final String REACT_CLASS = "RCTText";
+  private static final String TAG = "ReactTextViewManager";
 
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
 
@@ -132,6 +134,9 @@ public class ReactTextViewManager
   public Object updateState(
       ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
+    FLog.w(
+        "React::" + TAG,
+        "updateState view.getText(): " + view.getText() + " view.getHeight(): " + view.getHeight());
     if (stateMapBuffer != null) {
       return getReactTextUpdate(view, props, stateMapBuffer);
     }

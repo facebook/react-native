@@ -219,8 +219,24 @@ class TextExample extends React.Component<{...}> {
                 textAlignVertical: 'center',
                 backgroundColor: 'yellow',
               }}>
-              This is one additional line of text This is one additional line of
-              text This is one additional line of text
+              A parent text line more in the text a line more in the text a line
+              <Text
+                style={{
+                  textAlignVertical: 'top',
+                  backgroundColor: 'green',
+                }}>
+                Top
+              </Text>
+              more in the text a line more in the text line more the text a line
+              <Text
+                style={{
+                  textAlignVertical: 'center',
+                  backgroundColor: 'blue',
+                  color: 'white',
+                }}>
+                Bottom
+              </Text>
+              more in the text a line more in the text line more in the
               <Text
                 style={{
                   textAlignVertical: 'bottom',

@@ -77,19 +77,22 @@ public class ReactAlignSpan extends SuperscriptSpan implements ReactSpan {
       return;
     }
     double numberOfSteps = convertedTextAlignVertical - convertedParentTextAlignVertical;
+    if (numberOfSteps == 0) {
+      return;
+    }
     double absSteps = Math.abs(numberOfSteps);
     if (mParentHeight != null) {
-      if (numberOfSteps > 0) {
-        double shift =
-            mParentHeight * absSteps
-                - ds.getTextSize() * absSteps
-                + ds.getTextSize() / mParentLineCount * mCurrentLine;
-        ds.baselineShift -= shift;
+      double margin = (mParentHeight - mCalculatedHeight);
+      double lineHeight = mCalculatedHeight / mParentLineCount;
+      if (Math.abs(numberOfSteps) == 0.5) {
+        margin = (mParentHeight - mCalculatedHeight) / 2;
       }
-      if (numberOfSteps == -0.5) {
-        double lineHeight = mCalculatedHeight / mParentLineCount;
-        double margin = (mParentHeight - mCalculatedHeight) / 2;
-        double additionalLines = lineHeight * (mParentLineCount - mCurrentLine);
+      if (numberOfSteps > 0) {
+        double additionalLines = lineHeight * mCurrentLine;
+        ds.baselineShift -= margin + additionalLines;
+      }
+      if (numberOfSteps < 0) {
+        double additionalLines = lineHeight * (mParentLineCount - mCurrentLine - 1);
         ds.baselineShift += margin + additionalLines;
       }
     }
@@ -101,7 +104,7 @@ public class ReactAlignSpan extends SuperscriptSpan implements ReactSpan {
     mParentGravity = gravity;
     mParentLineCount = lineCount;
     mCalculatedHeight = calculatedHeight;
-    mCurrentLine = currentLine + 1;
+    mCurrentLine = currentLine;
   }
 
   @Override
