@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.71.0-rc.4
+## v0.71.0-rc.5
 
 ### Breaking
 
@@ -84,6 +84,7 @@
 <!-- The next entry has been marked as internal and we may want to remove it from the changelog -->
 - Hook up offscreen api to runApplication ([0d3596aa4b](https://github.com/facebook/react-native/commit/0d3596aa4b22b0679487c14c4b6159ae29c3833e) by [@philIip](https://github.com/philIip))
 
+
 #### Android specific
 
 - Added Flavor Support to React Native Gradle Plugin (RNGP) ([8ad86c70b6](https://github.com/facebook/react-native/commit/8ad86c70b6341f2e8bd40f5ba86f1a0d451008b0) by [@cortinico](https://github.com/cortinico))
@@ -115,6 +116,9 @@
 - Added the RCTAppDelegate library ([7cc2d1a249](https://github.com/facebook/react-native/commit/7cc2d1a24983d00282fcc694986faad88991845e) by [@cipolleschi](https://github.com/cipolleschi))
 - Support setting an Alert button as "preferred", to emphasize it without needing to set it as a "cancel" button. ([000bbe8013](https://github.com/facebook/react-native/commit/000bbe8013ec72d20f969c5c3a1f655b3f20c6ba) by [@robbie-c](https://github.com/robbie-c))
 - Added `borderCurve` style prop for smooth border radius (squircle effect) ([8993ffc82e](https://github.com/facebook/react-native/commit/8993ffc82e8d4010d82dcb1d69c33a609bb2771a) by [@eric-edouard](https://github.com/eric-edouard))
+- Automatically detect when use frameworks is used ([f7b35c0d43](https://github.com/facebook/react-native/commit/f7b35c0d434a5e98228311722926819ffe80c4b6) by [@cipolleschi](https://github.com/cipolleschi))
+- Add compiler flag for the new Arch when enabled. ([5b32348add](https://github.com/facebook/react-native/commit/5b32348add5dbb8e348c4e37d12e7ce01496d87e) by [@cipolleschi](https://github.com/cipolleschi))
+- Improve Codegen Cleanup ([aaa795b](https://github.com/facebook/react-native/commit/aaa795bcaec5265a9b0404333934d1115d148db8) by [@cipolleschi](https://github.com/cipolleschi))
 
 ### Changed
 
@@ -234,6 +238,10 @@
 - Bump git checkout cache key (fourth time) ([41a80f2ee2](https://github.com/facebook/react-native/commit/41a80f2ee20f6e2e7d754d6cd3d47d4cd558c49a) by [@kelset](https://github.com/kelset))
 - Replace Toast with Log.w on ReactImageView when null URL specified ([30411ae1a4](https://github.com/facebook/react-native/commit/30411ae1a42e46d0e5a2da494a39ed2767ba8808))
 - Views with overflow: hidden and borderRadius: >0 now render anti-aliased borders. ([7708cdccef](https://github.com/facebook/react-native/commit/7708cdcceff9a268ae19c196c2b8baeadf4d9d83))
+- Expose react_render_animations via prefab. ([98ad3996c8](https://github.com/facebook/react-native/commit/98ad3996c8b144bf80e1d3f9e6a79ee11e5a2142) by [@cortinico](https://github.com/cortinico))
+- Remove unnecessary repositories{} block from top level build.gradle ([f65dfa86ab](https://github.com/facebook/react-native/commit/f65dfa86abcba829c0d65c11ef5c98f1033e2905) by [@cortinico](https://github.com/cortinico))
+- Fix prefab prefix for fabricjni ([621d901e10](https://github.com/facebook/react-native/commit/621d901e105d6160a297f8e371889ba2fb631ce2) by [@cortinico](https://github.com/cortinico))
+- De-bump AGP to 7.3.1 and do not use addGeneratedSourceDirectory ([caa79b7c01](https://github.com/facebook/react-native/commit/caa79b7c017accd91c0e852bd701ef3f21ac0e6d) by [@cortinico](https://github.com/cortinico))
 
 #### iOS specific
 
@@ -367,6 +375,21 @@
 - Add missing class annotations xplat/js [suppressions] ([2e649006f1](https://github.com/facebook/react-native/commit/2e649006f1a78539f5504bce79cbd51816679e13) by [@pieterv](https://github.com/pieterv))
 - Add missing class annotations xplat/js ([ee3d3c248d](https://github.com/facebook/react-native/commit/ee3d3c248df4e8be3a331ead5f6eea75c1cf237a) by [@pieterv](https://github.com/pieterv))
 - Apply lint updates from buildifier in xplat ([a70354df12](https://github.com/facebook/react-native/commit/a70354df12ef71aec08583cca4f1fed5fb77d874) by [@chatura-atapattu](https://github.com/chatura-atapattu))
+- fix: remove gap if its last element in line (fix flex gap extra spacing when children determine parents main axis size)([](https://github.com/facebook/react-native/commit/a0ee98dfeec1a75e649a935b733c70ae2cc1628d) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Add missing AccessibilityInfo Types to TS Typings ([dc1b20d495](https://github.com/facebook/react-native/commit/dc1b20d49514ec5962a6c165a99d9406a66ba67d) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix Errors with TypeScript Tests ([ed08edd966](https://github.com/facebook/react-native/commit/ed08edd966aa17764436042b8202704144d61861) by [@NickGerleman](https://github.com/NickGerleman))
+- Add missing VirtualizedList Imperative Types ([de1136359c](https://github.com/facebook/react-native/commit/de1136359cf78fa3f2593388924893c36c526650) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix virtual list type ([1bd3831cc5](https://github.com/facebook/react-native/commit/1bd3831cc56bb77ada47c4a71fd6cd69fd731938) by [@aliakbarazizi](https://github.com/aliakbarazizi))
+- Add missing types for AppRegistry ([213c26c23d](https://github.com/facebook/react-native/commit/213c26c23d91ee994d86f0f9e0e886f4e8a1837e) by [@NickGerleman](https://github.com/NickGerleman))
+- Add type for RootTagContext ([fd28032be6](https://github.com/facebook/react-native/commit/fd28032be621ce50e9c8785b35f853b51c44df9d) by [@NickGerleman](https://github.com/NickGerleman))
+- Add missing types to PushNotificationIOS ([f04f067aae](https://github.com/facebook/react-native/commit/f04f067aae8c07faa8dce19500eeb7f2dcca99ad) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix missing animation type (CircleCI Break) ([696f4b5c39](https://github.com/facebook/react-native/commit/696f4b5c39d67bf62d4eae6cfd497293f2c1bd08) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix types for deprecated scrollTo fields ([f9ab91c3ab](https://github.com/facebook/react-native/commit/f9ab91c3abe9baef520255e580005b24be282991) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix Vibration.vibrate() allowing null params ([9b7618856f](https://github.com/facebook/react-native/commit/9b7618856f6e1fd423f302cdfab7121f913caf7f) by [@NickGerleman](https://github.com/NickGerleman))
+- Mark scrollToEnd animated as optional ([8770b2724a](https://github.com/facebook/react-native/commit/8770b2724ae9783b649824249fa252ec7900471d) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix type for StyleSheet.compose() ([754524ea9d](https://github.com/facebook/react-native/commit/754524ea9d2f4b5f8c3eb9e05b2fd25a3e0c3418) by [@NickGerleman](https://github.com/NickGerleman))
+- Remove testID from TS ViewStyle ([172f23a2ee](https://github.com/facebook/react-native/commit/172f23a2ee167c322bd84e9d43d3f39fed51116b) by [@NickGerleman](https://github.com/NickGerleman))
+- Add missing type for AnimatedValue.resetAnimation() and AnimatedValue.animate() ([1b5066c21d](https://github.com/facebook/react-native/commit/1b5066c21dde90f31753d6d84bce3d8817071451) by [@NickGerleman](https://github.com/NickGerleman))
 
 #### Android specific
 
@@ -453,6 +476,7 @@
 - Fix copy-hermes-xcode.sh ([fc1dbb8f0b](https://github.com/facebook/react-native/commit/fc1dbb8f0be19d83653566e9b4340785350c7aba) by [@dmytrorykun](https://github.com/dmytrorykun))
 - Merge pull request #35188 from dmytrorykun/export-D40979350 ([151498a122](https://github.com/facebook/react-native/commit/151498a1224dde415c839833cbce36c94ed3410b) by [@cipolleschi](https://github.com/cipolleschi))
 - Center text if line height isn't 0 ([70cc27c901](https://github.com/facebook/react-native/commit/70cc27c901aeb447910e30ac3ceac85990d3c16d) by [@sammy-SC](https://github.com/sammy-SC))
+- Fix cleanup not working on template app ([ce3eefe12c](https://github.com/facebook/react-native/commit/ce3eefe12c89378773c83cb3311e8997fd35e2b8) by [@cipolleschi](https://github.com/cipolleschi))
 
 ### Security
 
