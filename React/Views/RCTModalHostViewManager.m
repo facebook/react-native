@@ -75,13 +75,15 @@ RCT_EXPORT_MODULE()
       modalHostView.onShow(nil);
     }
   };
-  if (_presentationBlock) {
-    _presentationBlock([modalHostView reactViewController], viewController, animated, completionBlock);
-  } else {
-    [[modalHostView reactViewController] presentViewController:viewController
-                                                      animated:animated
-                                                    completion:completionBlock];
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (self->_presentationBlock) {
+      self->_presentationBlock([modalHostView reactViewController], viewController, animated, completionBlock);
+    } else {
+      [[modalHostView reactViewController] presentViewController:viewController
+                                                        animated:animated
+                                                      completion:completionBlock];
+    }
+  });
 }
 
 - (void)dismissModalHostView:(RCTModalHostView *)modalHostView
@@ -93,11 +95,13 @@ RCT_EXPORT_MODULE()
       [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
     }
   };
-  if (_dismissalBlock) {
-    _dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
-  } else {
-    [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (self->_dismissalBlock) {
+      self->_dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
+    } else {
+      [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+    }
+  });
 }
 
 - (RCTShadowView *)shadowView
