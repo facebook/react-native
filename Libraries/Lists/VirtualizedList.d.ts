@@ -262,8 +262,18 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
    */
   maxToRenderPerBatch?: number | undefined;
 
+  /**
+   * Called once when the scroll position gets within within `onEndReachedThreshold`
+   * from the logical end of the list.
+   */
   onEndReached?: ((info: {distanceFromEnd: number}) => void) | null | undefined;
 
+  /**
+   * How far from the end (in units of visible length of the list) the trailing edge of the
+   * list must be from the end of the content to trigger the `onEndReached` callback.
+   * Thus, a value of 0.5 will trigger `onEndReached` when the end of the content is
+   * within half the visible length of the list.
+   */
   onEndReachedThreshold?: number | null | undefined;
 
   onLayout?: ((event: LayoutChangeEvent) => void) | undefined;
@@ -286,6 +296,23 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
         averageItemLength: number;
       }) => void)
     | undefined;
+
+  /**
+   * Called once when the scroll position gets within within `onStartReachedThreshold`
+   * from the logical start of the list.
+   */
+  onStartReached?:
+    | ((info: {distanceFromStart: number}) => void)
+    | null
+    | undefined;
+
+  /**
+   * How far from the start (in units of visible length of the list) the leading edge of the
+   * list must be from the start of the content to trigger the `onStartReached` callback.
+   * Thus, a value of 0.5 will trigger `onStartReached` when the start of the content is
+   * within half the visible length of the list.
+   */
+  onStartReachedThreshold?: number | null | undefined;
 
   /**
    * Called when the viewability of rows changes, as defined by the

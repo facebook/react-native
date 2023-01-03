@@ -356,6 +356,168 @@ describe('VirtualizedList', () => {
     expect(scrollRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
     expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
+
+  it('calls onStartReached when near the start', () => {
+    const ITEM_HEIGHT = 40;
+    const layout = {width: 300, height: 600};
+    let data = Array(40)
+      .fill()
+      .map((_, index) => ({key: `key-${index}`}));
+    const onStartReached = jest.fn();
+    const props = {
+      data,
+      initialNumToRender: 10,
+      onStartReachedThreshold: 1,
+      windowSize: 10,
+      renderItem: ({item}) => <item value={item.key} />,
+      getItem: (items, index) => items[index],
+      getItemCount: items => items.length,
+      getItemLayout: (items, index) => ({
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index,
+        index,
+      }),
+      onStartReached,
+      initialScrollIndex: data.length - 1,
+    };
+
+    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+
+    const instance = component.getInstance();
+
+    instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
+    instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
+
+    // Make sure onStartReached is not called initially when initialScrollIndex is set.
+    performAllBatches();
+    expect(onStartReached).not.toHaveBeenCalled();
+
+    // Scroll for a small amount and make sure onStartReached is not called.
+    instance._onScroll({
+      timeStamp: 1000,
+      nativeEvent: {
+        contentOffset: {y: (data.length - 2) * ITEM_HEIGHT, x: 0},
+        layoutMeasurement: layout,
+        contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+        zoomScale: 1,
+        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+      },
+    });
+    performAllBatches();
+    expect(onStartReached).not.toHaveBeenCalled();
+
+    // Scroll to start and make sure onStartReached is called.
+    instance._onScroll({
+      timeStamp: 1000,
+      nativeEvent: {
+        contentOffset: {y: 0, x: 0},
+        layoutMeasurement: layout,
+        contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+        zoomScale: 1,
+        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+      },
+    });
+    performAllBatches();
+    expect(onStartReached).toHaveBeenCalled();
+  });
+
+  it('calls onStartReached initially', () => {
+    const ITEM_HEIGHT = 40;
+    const layout = {width: 300, height: 600};
+    let data = Array(40)
+      .fill()
+      .map((_, index) => ({key: `key-${index}`}));
+    const onStartReached = jest.fn();
+    const props = {
+      data,
+      initialNumToRender: 10,
+      onStartReachedThreshold: 1,
+      windowSize: 10,
+      renderItem: ({item}) => <item value={item.key} />,
+      getItem: (items, index) => items[index],
+      getItemCount: items => items.length,
+      getItemLayout: (items, index) => ({
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index,
+        index,
+      }),
+      onStartReached,
+    };
+
+    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+
+    const instance = component.getInstance();
+
+    instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
+    instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
+
+    performAllBatches();
+    expect(onStartReached).toHaveBeenCalled();
+  });
+
+  it('calls onEndReached when near the end', () => {
+    const ITEM_HEIGHT = 40;
+    const layout = {width: 300, height: 600};
+    let data = Array(40)
+      .fill()
+      .map((_, index) => ({key: `key-${index}`}));
+    const onEndReached = jest.fn();
+    const props = {
+      data,
+      initialNumToRender: 10,
+      onEndReachedThreshold: 1,
+      windowSize: 10,
+      renderItem: ({item}) => <item value={item.key} />,
+      getItem: (items, index) => items[index],
+      getItemCount: items => items.length,
+      getItemLayout: (items, index) => ({
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index,
+        index,
+      }),
+      onEndReached,
+    };
+
+    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+
+    const instance = component.getInstance();
+
+    instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
+    instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
+
+    // Make sure onEndReached is not called initially.
+    performAllBatches();
+    expect(onEndReached).not.toHaveBeenCalled();
+
+    // Scroll for a small amount and make sure onEndReached is not called.
+    instance._onScroll({
+      timeStamp: 1000,
+      nativeEvent: {
+        contentOffset: {y: ITEM_HEIGHT, x: 0},
+        layoutMeasurement: layout,
+        contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+        zoomScale: 1,
+        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+      },
+    });
+    performAllBatches();
+    expect(onEndReached).not.toHaveBeenCalled();
+
+    // Scroll to end and make sure onEndReached is called.
+    instance._onScroll({
+      timeStamp: 1000,
+      nativeEvent: {
+        contentOffset: {y: data.length * ITEM_HEIGHT, x: 0},
+        layoutMeasurement: layout,
+        contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+        zoomScale: 1,
+        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+      },
+    });
+    performAllBatches();
+    expect(onEndReached).toHaveBeenCalled();
+  });
+
   it('does not call onEndReached when onContentSizeChange happens after onLayout', () => {
     const ITEM_HEIGHT = 40;
     const layout = {width: 300, height: 600};
