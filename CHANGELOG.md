@@ -2,7 +2,7 @@
 
 ## v0.71.0-rc.5
 
-### Breaking
+### Breaking Changes
 
 *Note well: while there are not direct breaking changes in existing code behavior, do read carefully the **Changed** and **Removed** sections.*
 
@@ -190,8 +190,6 @@
 - Enable -Wpedantic in OSS Android Targets ([06b55a3d04](https://github.com/facebook/react-native/commit/06b55a3d044a9fbbcd97df6e6531cad98dd34ca1) by [@NickGerleman](https://github.com/NickGerleman))
 - Do not load Flipper via reflection ([9214da1238](https://github.com/facebook/react-native/commit/9214da12385fd88264ca5de3e5fdc78559ec3080) by [@cortinico](https://github.com/cortinico))
 - Collapse catch blocks in template ([a379879adf](https://github.com/facebook/react-native/commit/a379879adf99800d22da8bc10c3a22f06cb02e20) by [@danilobuerger](https://github.com/danilobuerger))
-- Bump RNGP ([415d6a8858](https://github.com/facebook/react-native/commit/415d6a8858272bae15190194bfd38ba51f2b58fd) by [@cipolleschi](https://github.com/cipolleschi))
-- Publish RNGP 71.10 ([832c0af408](https://github.com/facebook/react-native/commit/832c0af4081232c5f2b19da2a941d4380edef0a7) by [@cipolleschi](https://github.com/cipolleschi))
 - Bump git checkout cache key (fourth time) ([41a80f2ee2](https://github.com/facebook/react-native/commit/41a80f2ee20f6e2e7d754d6cd3d47d4cd558c49a) by [@kelset](https://github.com/kelset))
 - Replace Toast with Log.w on ReactImageView when null URL specified ([30411ae1a4](https://github.com/facebook/react-native/commit/30411ae1a42e46d0e5a2da494a39ed2767ba8808))
 - Views with overflow: hidden and borderRadius: >0 now render anti-aliased borders. ([7708cdccef](https://github.com/facebook/react-native/commit/7708cdcceff9a268ae19c196c2b8baeadf4d9d83))
@@ -205,7 +203,6 @@
 - Fix imports in React Bridging for Old Arch and frameworks ([c5de1eb1ba](https://github.com/facebook/react-native/commit/c5de1eb1bac0a4e653688d86654be131984d0e2f) by [@cipolleschi](https://github.com/cipolleschi))
 - Abort pod install if bad HERMES_ENGINE_TARBALL_PATH is set. ([27e7295ca7](https://github.com/facebook/react-native/commit/27e7295ca76111c00bcf83327b0a151f21c23743))
 - Hermes is integrated into Xcode build. ([6b8e13f53c](https://github.com/facebook/react-native/commit/6b8e13f53c5fc9c5e794bb7491648e4b25ad5811))
-- Display a RedBox with the JS stack (instead of native stack) when an unhandled JS exceptions occurs ([5449148482](https://github.com/facebook/react-native/commit/5449148482271d60c87f6e5fa4483e69d4410320) by [@p-sun](https://github.com/p-sun))
 - Display a RedBox with the JS stack (instead of native stack) when an unhandled JS exceptions occurs ([ff398e4e26](https://github.com/facebook/react-native/commit/ff398e4e2632ece8a6f22d744e96e489ca3b9d92) by [@p-sun](https://github.com/p-sun))
 - Resolve JSI ODR violation, make hermes-engine the JSI provider when Hermes is enabled ([a68c418082](https://github.com/facebook/react-native/commit/a68c4180822e13ae6eecf86601864d1e9f2825a9) by [@hramos](https://github.com/hramos))
 - The JSC Runtime is now provided by the React-jsc Pod instead of React-jsi. Libraries that declared a dependency on React-jsi in order to specifically create a JSC runtime (`makeJSCRuntime()`) will need to add React-jsc to their dependencies. ([6b129d81ed](https://github.com/facebook/react-native/commit/6b129d81ed8cab301775d2a04971e255df9290de) by [@hramos](https://github.com/hramos))
@@ -214,8 +211,6 @@
 - Remove debugger from Hermes when building for release ([2fc44ac8e1](https://github.com/facebook/react-native/commit/2fc44ac8e144b7d93e1ccc95163dd33c94d2a197) by [@hramos](https://github.com/hramos))
 - Use debug Hermes builds by default ([ce4aa93173](https://github.com/facebook/react-native/commit/ce4aa9317370cbbf4e8c80c0a8db3db5a80ef70b) by [@hramos](https://github.com/hramos))
 - Add function to simplify podspecs ([82e9c6ad61](https://github.com/facebook/react-native/commit/82e9c6ad611f1fb816de056ff031716f8cb24b4e) by [@cipolleschi](https://github.com/cipolleschi))
-- Replace Folly with MapBuffer for passing js error data ([b6bf1fd373](https://github.com/facebook/react-native/commit/b6bf1fd373c7bfe1e96d82458a1e7de6c5897af7) by [@sshic](https://github.com/sshic))
-- Replace Folly with MapBuffer for passing js error data ([e6ef0836c1](https://github.com/facebook/react-native/commit/e6ef0836c132d6b798e2ff1fc1e1a66c7e238e0b) by [@sshic](https://github.com/sshic))
 - Enable pedantic warnings in C++ podspecs ([545c82b490](https://github.com/facebook/react-native/commit/545c82b490f1389056cf2f945a547a22b1274f60) by [@NickGerleman](https://github.com/NickGerleman))
 - Cleanup codegen build folder before installing the pods ([0e316ec671](https://github.com/facebook/react-native/commit/0e316ec671617f5e7c1985b4b05cd0d45bcea403) by [@cipolleschi](https://github.com/cipolleschi))
 - Properly support both libraries and use_frameworks ([c6fa633597](https://github.com/facebook/react-native/commit/c6fa6335971459158efc8bf094822547a4333235) by [@cipolleschi](https://github.com/cipolleschi))
@@ -359,7 +354,7 @@
 - Fix `AttributedString` comparison logic for TextInput state updates ([089c9a5c9c](https://github.com/facebook/react-native/commit/089c9a5c9c9a60b6bbff6dda0c9eefa9d501a092) by [@NickGerleman](https://github.com/NickGerleman))
 - Invoke closeAndReleaseSonatypeStagingRepository in the publish gradle invocation ([e4f23f4783](https://github.com/facebook/react-native/commit/e4f23f4783968e40924ab0f3500018dc79c2d366) by [@cortinico](https://github.com/cortinico))
 - Do not eat taps/clicks in ScrollView when soft-keyboard is detached from viewport ([fd1e82a10f](https://github.com/facebook/react-native/commit/fd1e82a10f80c76bd37e7eef65c0dc2220c6bb8d) by [@NickGerleman](https://github.com/NickGerleman))
-- Add missing class annotations xplat/js [android] ([c687dd3a77](https://github.com/facebook/react-native/commit/c687dd3a77e28b7318514e5ab318be302f0e7643) by [@pieterv](https://github.com/pieterv))
+- Add missing class annotations xplat/js ([c687dd3a77](https://github.com/facebook/react-native/commit/c687dd3a77e28b7318514e5ab318be302f0e7643) by [@pieterv](https://github.com/pieterv))
 
 #### iOS specific
 
@@ -395,10 +390,8 @@
 - CI broken due to Hermes Commit ([ff7f5a332f](https://github.com/facebook/react-native/commit/ff7f5a332f62e7b13a52d71fabc573224f812816) by [@cipolleschi](https://github.com/cipolleschi))
 - Typo in AppDelegate.mm ([0a59c284a9](https://github.com/facebook/react-native/commit/0a59c284a91acb04053bcf2f2e6c47f7f53ddbfe) by [@jeremybarbet](https://github.com/jeremybarbet))
 - When source maps are enabled, clean up temporary files from the build directory. Reduces bundle size by at least 1MB. ([e0a71fc7b5](https://github.com/facebook/react-native/commit/e0a71fc7b5cb8c264000147099be5b2575931193) by [@dmytrorykun](https://github.com/dmytrorykun))
-- USE_HERMES envvar check fixed in react-native-xcode.sh. ([61106ac680](https://github.com/facebook/react-native/commit/61106ac6805cddef97e16e473b155abdad701797) by [@dmytrorykun](https://github.com/dmytrorykun))
 - USE_HERMES envvar check fixed in react-native-xcode.sh. Now source maps are generated by default. ([03de19745e](https://github.com/facebook/react-native/commit/03de19745eec9a0d4d1075bac48639ecf1d41352) by [@dmytrorykun](https://github.com/dmytrorykun))
 - Fix keyboard accessory button not triggering onSubmitEditing ([98d74d6eb9](https://github.com/facebook/react-native/commit/98d74d6eb98c602a3c76adf54cc45767fb58b555))
-- Possible fix for convertIdToFollyDynamic crash in RCTBaseTextInputView and RCTEventDispatcher ([547220fee4](https://github.com/facebook/react-native/commit/547220fee47478666298bba51d75f6e65cb5de9b) by [@christophpurrer](https://github.com/christophpurrer))
 - Possible fix for convertIdToFollyDynamic crash in RCTBaseTextInputView and RCTEventDispatcher ([8b174a57c8](https://github.com/facebook/react-native/commit/8b174a57c8e732bbfe7c69e7a5f66f48cb300539) by [@christophpurrer](https://github.com/christophpurrer))
 - Fix exception thrown by [RCTTextView description] on macOS ([7db6c080f5](https://github.com/facebook/react-native/commit/7db6c080f5992df76b10930908c2373634cd1911) by [@christophpurrer](https://github.com/christophpurrer))
 - Allow preferred Alert button regardless of the style ([653a19a8cd](https://github.com/facebook/react-native/commit/653a19a8cde60e7ab337559492c17d3aa0a860f6) by [@danilobuerger](https://github.com/danilobuerger))
