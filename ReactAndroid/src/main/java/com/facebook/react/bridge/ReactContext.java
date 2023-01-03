@@ -422,7 +422,7 @@ public class ReactContext extends ContextWrapper {
           "Unable to handle Exception - catalystInstanceVariableExists: "
               + catalystInstanceVariableExists
               + " - isCatalystInstanceAlive: "
-              + !isCatalystInstanceAlive
+              + isCatalystInstanceAlive
               + " - hasExceptionHandler: "
               + hasExceptionHandler,
           e);
