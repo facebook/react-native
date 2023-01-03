@@ -493,7 +493,7 @@ jsi::Value UIManagerBinding::get(
           auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
           if (shadowNode) {
             uiManager->dispatchCommand(
-                shadowNodeFromValue(runtime, arguments[0]),
+                shadowNode,
                 stringFromValue(runtime, arguments[1]),
                 commandArgsFromValue(runtime, arguments[2]));
           }
