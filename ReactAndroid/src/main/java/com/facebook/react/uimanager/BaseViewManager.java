@@ -366,12 +366,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = ViewProps.ACCESSIBILITY_VALUE)
   public void setAccessibilityValue(T view, ReadableMap accessibilityValue) {
     if (accessibilityValue == null) {
-      return;
-    }
-
-    view.setTag(R.id.accessibility_value, accessibilityValue);
-    if (accessibilityValue.hasKey("text")) {
-      updateViewContentDescription(view);
+      view.setTag(R.id.accessibility_value, null);
+      view.setContentDescription(null);
+    } else {
+      view.setTag(R.id.accessibility_value, accessibilityValue);
+      if (accessibilityValue.hasKey("text")) {
+        updateViewContentDescription(view);
+      }
     }
   }
 
