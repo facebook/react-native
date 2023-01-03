@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include <react/renderer/core/EventLogger.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/ValueFactory.h>
 
@@ -68,6 +69,7 @@ struct RawEvent {
   ValueFactory payloadFactory;
   SharedEventTarget eventTarget;
   Category category;
+  EventTag loggingTag{0};
 };
 
 } // namespace react

@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "EventQueue.h"
-
+#include <cxxreact/JSExecutor.h>
 #include "EventEmitter.h"
+#include "EventLogger.h"
+#include "EventQueue.h"
 #include "ShadowNodeFamily.h"
 
 namespace facebook::react {
@@ -47,12 +48,21 @@ void EventQueueProcessor::flushEvents(
       reactPriority = ReactEventPriority::Discrete;
     }
 
+    auto eventLogger = getEventLogger();
+    if (eventLogger != nullptr) {
+      eventLogger->onEventDispatch(event.loggingTag);
+    }
+
     eventPipe_(
         runtime,
         event.eventTarget.get(),
         event.type,
         reactPriority,
         event.payloadFactory);
+
+    if (eventLogger != nullptr) {
+      eventLogger->onEventEnd(event.loggingTag);
+    }
 
     if (event.category == RawEvent::Category::ContinuousStart) {
       hasContinuousEventStarted_ = true;

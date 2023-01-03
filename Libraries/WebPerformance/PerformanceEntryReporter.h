@@ -8,9 +8,12 @@
 #pragma once
 
 #include <react/bridging/Function.h>
+#include <react/renderer/core/EventLogger.h>
 #include <array>
 #include <functional>
+#include <mutex>
 #include <optional>
+#include <unordered_map>
 #include <unordered_set>
 #include "NativePerformanceObserver.h"
 
@@ -50,7 +53,7 @@ enum class PerformanceEntryType {
   _COUNT = 5,
 };
 
-class PerformanceEntryReporter {
+class PerformanceEntryReporter : public EventLogger {
  public:
   PerformanceEntryReporter(PerformanceEntryReporter const &) = delete;
   void operator=(PerformanceEntryReporter const &) = delete;
@@ -65,9 +68,7 @@ class PerformanceEntryReporter {
   void startReporting(PerformanceEntryType entryType);
   void stopReporting(PerformanceEntryType entryType);
 
-  const std::vector<RawPerformanceEntry> &getPendingEntries() const;
   GetPendingEntriesResult popPendingEntries();
-  void clearPendingEntries();
   void logEntry(const RawPerformanceEntry &entry);
 
   bool isReportingType(PerformanceEntryType entryType) const {
@@ -99,6 +100,10 @@ class PerformanceEntryReporter {
       double processingEnd,
       uint32_t interactionId);
 
+  EventTag onEventStart(const char *name) override;
+  void onEventDispatch(EventTag tag) override;
+  void onEventEnd(EventTag tag) override;
+
  private:
   PerformanceEntryReporter() {}
 
@@ -106,8 +111,22 @@ class PerformanceEntryReporter {
   void clearEntries(std::function<bool(const RawPerformanceEntry &)> predicate);
   void scheduleFlushBuffer();
 
+  bool isReportingEvents() const {
+    return isReportingType(PerformanceEntryType::EVENT) ||
+        isReportingType(PerformanceEntryType::FIRST_INPUT);
+  }
+
+  bool isFirstInput(std::string name) {
+    if (firstInputs_.find(name) == firstInputs_.end()) {
+      firstInputs_.insert(std::move(name));
+      return true;
+    }
+    return false;
+  }
+
   std::optional<AsyncCallback<>> callback_;
   std::vector<RawPerformanceEntry> entries_;
+  std::mutex entriesMutex_;
   std::array<bool, (size_t)PerformanceEntryType::_COUNT> reportingType_{false};
 
   // Mark registry for "measure" lookup
@@ -115,6 +134,22 @@ class PerformanceEntryReporter {
   std::array<PerformanceMark, MARKS_BUFFER_SIZE> marksBuffer_;
   size_t marksBufferPosition_{0};
   uint32_t droppedEntryCount_{0};
+
+  struct EventEntry {
+    std::string name;
+    double startTime{0.0};
+    double dispatchTime{0.0};
+  };
+
+  // Registry to store the events that are currently ongoing.
+  // Note that we could probably use a more efficient container for that,
+  // but since we only report discrete events, the volume is normally low,
+  // so a hash map should be just fine.
+  std::unordered_map<EventTag, EventEntry> eventsInFlight_;
+  std::mutex eventsInFlightMutex_;
+  std::unordered_set<std::string> firstInputs_;
+
+  static EventTag sCurrentEventTag_;
 };
 
 } // namespace facebook::react

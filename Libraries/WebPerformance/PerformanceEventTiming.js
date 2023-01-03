@@ -28,7 +28,7 @@ export class PerformanceEventTiming extends PerformanceEntry {
   }) {
     super({
       name: init.name,
-      entryType: init.isFirstInput === true ? 'first-input' : 'measure',
+      entryType: init.isFirstInput === true ? 'first-input' : 'event',
       startTime: init.startTime ?? 0,
       duration: init.duration ?? 0,
     });
