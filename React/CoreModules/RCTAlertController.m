@@ -20,10 +20,17 @@
 - (UIWindow *)alertWindow
 {
   if (_alertWindow == nil) {
-    _alertWindow = [[UIWindow alloc] initWithFrame:RCTSharedApplication().keyWindow.bounds];
-    _alertWindow.rootViewController = [UIViewController new];
-    _alertWindow.windowLevel = UIWindowLevelAlert + 1;
+    UIWindow *keyWindow = RCTSharedApplication().keyWindow;
+    if (keyWindow) {
+      _alertWindow = [[UIWindow alloc] initWithFrame:keyWindow.bounds];
+      _alertWindow.rootViewController = [UIViewController new];
+      _alertWindow.windowLevel = UIWindowLevelAlert + 1;
+    } else {
+      // keyWindow is nil, so we cannot create and initialize _alertWindow
+      NSLog(@"Unable to create alert window: keyWindow is nil");
+    }
   }
+
   return _alertWindow;
 }
 
