@@ -80,6 +80,9 @@
 - SyncCallback/AsyncCallback/AsyncPromise bridging types in C++ now allow wrapping JSI types. ([610bb7f688](https://github.com/facebook/react-native/commit/610bb7f68844df150503623297304dbb67984bfe) by [@nlutsenko](https://github.com/nlutsenko))
 - Add types for onFocusCapture/onBlurCapture ([aabb5df7ec](https://github.com/facebook/react-native/commit/aabb5df7ec884b7e08b8b8bef658727653406fd9) by [@NickGerleman](https://github.com/NickGerleman))
 - Remove usages of `blurOnSubmit` in native code and convert `blurOnSubmit` to `returnKeyAction` in the JavaScript conversion layer ([1e3cb91707](https://github.com/facebook/react-native/commit/1e3cb9170794afa03a3b4b15f75b711dace7a774))
+- Re-add support for using Yoga without exceptions ([793ebf6812](https://github.com/facebook/react-native/commit/793ebf6812f41ad9b07fe04d43a8509a55ebe45e) by [@Yannic](https://github.com/Yannic))
+<!-- The next entry has been marked as internal and we may want to remove it from the changelog -->
+- Hook up offscreen api to runApplication ([0d3596aa4b](https://github.com/facebook/react-native/commit/0d3596aa4b22b0679487c14c4b6159ae29c3833e) by [@philIip](https://github.com/philIip))
 
 #### Android specific
 
@@ -166,6 +169,34 @@
 - Attach the `.hermes-cache-key-file` to the workspace to avoid race conditions for new PR landing on Hermes and changing the head commit between the time Hermes is built and the time it has to be consumed. ([ccdf9ac985](https://github.com/facebook/react-native/commit/ccdf9ac9853601a81ff21f8f42f5bd866dd4de75) by [@cipolleschi](https://github.com/cipolleschi))
 - Build hermes when in CI and not when there is a tarball ([4b51207735](https://github.com/facebook/react-native/commit/4b512077354eb4702ce144e9958d7513c1607275) by [@cipolleschi](https://github.com/cipolleschi))
 - Make sure we can build Hermes from source when PR are opened agains -stable ([361d939afd](https://github.com/facebook/react-native/commit/361d939afd0b43b2e9e6ea0d4c619482e91e82e3) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Hermes for 0.71 version ([4e5fc68672](https://github.com/facebook/react-native/commit/4e5fc68672b469f7a3548822d6fca0b7b3f2d51e) by [@kelset](https://github.com/kelset))
+- Merge pull request #35510 from facebook/nc/71rc3-pick-requests ([4ba52ac555](https://github.com/facebook/react-native/commit/4ba52ac555abc27cffb0ce0beb2f3e8dbac8dc7d) by [@kelset](https://github.com/kelset))
+- Bump RNGP and codegen in root package.json too ([18b847fa28](https://github.com/facebook/react-native/commit/18b847fa289be87cbe79236d5345b3ce58626a32) by [@kelset](https://github.com/kelset))
+- Bump Codegen and RNGP ([a7792da695](https://github.com/facebook/react-native/commit/a7792da695f77be8d46b5e84ab697631b884db91) by [@cipolleschi](https://github.com/cipolleschi))
+- Update yarn lock ([ceaebc6975](https://github.com/facebook/react-native/commit/ceaebc69759e59bfc465722924fee98f2deac825) by [@kelset](https://github.com/kelset))
+- Bump git checkout cache key (third time) ([5c9f160764](https://github.com/facebook/react-native/commit/5c9f1607642f92c70d02718f0023360e0d1793f0) by [@kelset](https://github.com/kelset))
+- Bump git checkout cache key (again) ([b8f8ac0e1c](https://github.com/facebook/react-native/commit/b8f8ac0e1c5b53e6bbbca34f6e423d2ae9b63ff5) by [@kelset](https://github.com/kelset))
+- Bump git checkout cache key ([fd5e282290](https://github.com/facebook/react-native/commit/fd5e2822901afc34e3401b66d3b0f40e2e5b1d2c) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump CLI to 10 alpha3 ([741d102476](https://github.com/facebook/react-native/commit/741d10247601997debdf9197f75774830fe04ae5) by [@kelset](https://github.com/kelset))
+- Hermes version bump for 0.71.0-RC0 ([5f656e98c9](https://github.com/facebook/react-native/commit/5f656e98c947a7c375fdaff3a0c5ccbb9a54d67e) by [@cipolleschi](https://github.com/cipolleschi))
+- Supermodule:xplat/default/public.hermes ([cd020bd7f4](https://github.com/facebook/react-native/commit/cd020bd7f49f0c733c9b340fcc995397ac4ce5c9))
+- Supermodule:xplat/default/public.react_native.infra ([e69e6f4014](https://github.com/facebook/react-native/commit/e69e6f4014303925f906c125fc3787aa7607144c))
+- Add oncall annotation for BUCK files in xplat based on supermodule information - /home/s2shi/tmp/xplat_buck_oncall/xplat_buck_2nd_batch00 ([860b4d9144](https://github.com/facebook/react-native/commit/860b4d914407ef11d0d5de80e5add275f83de3fd))
+- Add oncall annotation for BUCK files in xplat based on supermodule information - /home/s2shi/tmp/xplat_buck_oncall/xplat_buck_batch10 ([d941940b4c](https://github.com/facebook/react-native/commit/d941940b4ce7ed9030be4f72980fb45d9b62365d))
+- Supermodule:xplat/default/public.react_native.playground ([712fcdec9d](https://github.com/facebook/react-native/commit/712fcdec9d7dc3bb06311319a34c696209d14a64))
+- Supermodule:xplat/default/public.react_native.tests ([6353f28664](https://github.com/facebook/react-native/commit/6353f2866470400738a0169be0ba6bf9ad73e823))
+- Supermodule:xplat/default/public.react_native.core ([0fcce547dc](https://github.com/facebook/react-native/commit/0fcce547dcc4fedd8238c6a1bce3f11a1040de1a))
+- @emails -> @oncall (misc) ([bc1bc36a0c](https://github.com/facebook/react-native/commit/bc1bc36a0ca93adb2752b1e310e9df3451b81de1) by [@Drizzlecrj](https://github.com/Drizzlecrj))
+- Update ktfmt component on FBS:master ([47548c1149](https://github.com/facebook/react-native/commit/47548c114993433ba03f32398876c1e11aeac0d3) by [@cgrushko](https://github.com/cgrushko))
+- Add explicit React useState annotations in xplat/js ([ff14ff3d92](https://github.com/facebook/react-native/commit/ff14ff3d92b2c32f851ee8d25d8e8ea6dfe2ec9e) by [@pieterv](https://github.com/pieterv))
+- '@emails' -> '@oncall' (*.js) ([41c6c69aaa](https://github.com/facebook/react-native/commit/41c6c69aaaea68c95d03262332a68b1025ea4791) by [@Drizzlecrj](https://github.com/Drizzlecrj))
+- @emails -> @oncall (remaining ones) ([b2ac528156](https://github.com/facebook/react-native/commit/b2ac5281563b1dc304fbba45a5b082eac7289f9e) by [@Drizzlecrj](https://github.com/Drizzlecrj))
+- Improve sample app ([03cb5aca3f](https://github.com/facebook/react-native/commit/03cb5aca3f5b8594287608265d4bde7104f07b87) by [@pieterv](https://github.com/pieterv))
+- Mirror fbcode directory structure for container targets ([10ea6fb9a3](https://github.com/facebook/react-native/commit/10ea6fb9a3f408bc23881235427427c3b9e97149))
+- Update ktfmt component on FBS:master ([0538f45e45](https://github.com/facebook/react-native/commit/0538f45e45acf494fdafda0757c090a60e730746) by [@cgrushko](https://github.com/cgrushko))
+- Rewrite CompactValue to avoid undefined behavior from the use of a union for type-punning ([e7a8d21df5](https://github.com/facebook/react-native/commit/e7a8d21df563e48e1812caace7fbe1f7cbc1c015) by [@htpiv](https://github.com/htpiv))
+- Bump react-native/babel-plugin-codegen to v0.71.0 ([4f6929bb3c](https://github.com/facebook/react-native/commit/4f6929bb3c4b4d8ba53fa250645b5ae4e297a1b3) by [@RSNara](https://github.com/RSNara))
+- Bump packages version number: ([e44150409e](https://github.com/facebook/react-native/commit/e44150409e1332145274563a5eca37aa3fc4c070) by [@dmytrorykun](https://github.com/dmytrorykun))
 
 #### Android specific
 
@@ -198,6 +229,11 @@
 - Do not load Flipper via reflection ([9214da1238](https://github.com/facebook/react-native/commit/9214da12385fd88264ca5de3e5fdc78559ec3080) by [@cortinico](https://github.com/cortinico))
 - Collapse catch blocks in template ([a379879adf](https://github.com/facebook/react-native/commit/a379879adf99800d22da8bc10c3a22f06cb02e20) by [@danilobuerger](https://github.com/danilobuerger))
 - Bump Soloader to 0.10.4 ([1237952d07](https://github.com/facebook/react-native/commit/1237952d070bfe28ff2c94cd9bf8ea19e6cdd395) by [@simpleton](https://github.com/simpleton))
+- Bump RNGP ([415d6a8858](https://github.com/facebook/react-native/commit/415d6a8858272bae15190194bfd38ba51f2b58fd) by [@cipolleschi](https://github.com/cipolleschi))
+- Publish RNGP 71.10 ([832c0af408](https://github.com/facebook/react-native/commit/832c0af4081232c5f2b19da2a941d4380edef0a7) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump git checkout cache key (fourth time) ([41a80f2ee2](https://github.com/facebook/react-native/commit/41a80f2ee20f6e2e7d754d6cd3d47d4cd558c49a) by [@kelset](https://github.com/kelset))
+- Replace Toast with Log.w on ReactImageView when null URL specified ([30411ae1a4](https://github.com/facebook/react-native/commit/30411ae1a42e46d0e5a2da494a39ed2767ba8808))
+- Views with overflow: hidden and borderRadius: >0 now render anti-aliased borders. ([7708cdccef](https://github.com/facebook/react-native/commit/7708cdcceff9a268ae19c196c2b8baeadf4d9d83))
 
 #### iOS specific
 
@@ -218,6 +254,13 @@
 - Replace Folly with MapBuffer for passing js error data ([e6ef0836c1](https://github.com/facebook/react-native/commit/e6ef0836c132d6b798e2ff1fc1e1a66c7e238e0b) by [@sshic](https://github.com/sshic))
 - Enable pedantic warnings in C++ podspecs ([545c82b490](https://github.com/facebook/react-native/commit/545c82b490f1389056cf2f945a547a22b1274f60) by [@NickGerleman](https://github.com/NickGerleman))
 - Cleanup codegen build folder before installing the pods ([0e316ec671](https://github.com/facebook/react-native/commit/0e316ec671617f5e7c1985b4b05cd0d45bcea403) by [@cipolleschi](https://github.com/cipolleschi))
+- Properly support both libraries and use_frameworks ([c6fa633597](https://github.com/facebook/react-native/commit/c6fa6335971459158efc8bf094822547a4333235) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Podfile.lock to avoid failures when testing/in ci ([13785cf60f](https://github.com/facebook/react-native/commit/13785cf60f365189c1776c9fc3ddfdeaca5b7b91) by [@kelset](https://github.com/kelset))
+- Bump Podfile.lock to avoid failures when testing/in ci ([aa2b243bc5](https://github.com/facebook/react-native/commit/aa2b243bc547a54ae94ed89f23792503d0cd8769) by [@cipolleschi](https://github.com/cipolleschi))
+- Supermodule:ios/isolation/infra.react_native ([c42d82441a](https://github.com/facebook/react-native/commit/c42d82441a45d9fd828a0872727b8e2f954662c4))
+- Add link group label to talkios deps ([b33961d7a0](https://github.com/facebook/react-native/commit/b33961d7a0fbf5783513a81b217ec1a90700d817))
+- Add link group label to fbios deps ([065db683a2](https://github.com/facebook/react-native/commit/065db683a20b273ea3656dead29845327637669a))
+- Use an SDKRoot based Foundation framework ([ee4ce2df2f](https://github.com/facebook/react-native/commit/ee4ce2df2f57b07e523bfb4d4728543d73b5a009) by [@chatura-atapattu](https://github.com/chatura-atapattu))
 
 ### Deprecated
 
@@ -242,12 +285,17 @@
 - Remove usages of listKey ([bc5cb7cd79](https://github.com/facebook/react-native/commit/bc5cb7cd7933da707c02ff0dd993c607ba7d40b3) by [@NickGerleman](https://github.com/NickGerleman))
 - Remove VirtualizedList `listKey` prop ([010da67bef](https://github.com/facebook/react-native/commit/010da67bef0c22418d0d41b7c2eae664672a4a27) by [@NickGerleman](https://github.com/NickGerleman))
 - Remove MaskedViewIOS ([a67360b0f3](https://github.com/facebook/react-native/commit/a67360b0f3aec0e679be32715b02467429002c31) by [@sokolnickim](https://github.com/sokolnickim))
+- Remove unneed/obsolete job ([8e3b62019e](https://github.com/facebook/react-native/commit/8e3b62019ee412399ece0fbda91e58bb395f7e98) by [@kelset](https://github.com/kelset))
+- Remove flexlayout from react-native ([bf05df1723](https://github.com/facebook/react-native/commit/bf05df17230e1063ff29d5ae5d86feac85e122b3) by [@NickGerleman](https://github.com/NickGerleman))
+<!-- The next entry is internal and we may want to remove it -->
+- Remove enableEarlyEventEmitterUpdate experiment ([fceb1425dd](https://github.com/facebook/react-native/commit/fceb1425dd0d076a420a744fe07650270d70146a) by [@mdvacca](https://github.com/mdvacca))
 
 #### Android specific
 
 - Removed AsyncStorage module ([5738fe6426](https://github.com/facebook/react-native/commit/5738fe642601237e16417105d6727f777e73aae3) by [@hoxyq](https://github.com/hoxyq))
 - Deprecate react.gradle ([af6aafff90](https://github.com/facebook/react-native/commit/af6aafff90c4d40abfe160c4cfc8e1ae8fa0d956) by [@cortinico](https://github.com/cortinico))
 - Removed deprecated UIImplementationProvider ([e7d7563195](https://github.com/facebook/react-native/commit/e7d75631959f1ce3f50a44f13056eacaf82378ff) by [@javache](https://github.com/javache))
+- Cleanup Buck usages from New App Template ([32fc551c55](https://github.com/facebook/react-native/commit/32fc551c55a203bc4a511c12ae362632acb3b286) by [@cortinico](https://github.com/cortinico))
 
 #### iOS specific
 
@@ -297,6 +345,28 @@
 - Fix FlatList not calling render items for nullish values when numColumns > 1 ([cc19cdcdbe](https://github.com/facebook/react-native/commit/cc19cdcdbe927368ae1cf4c62a52edd838413252) by [@AntoineDoubovetzky](https://github.com/AntoineDoubovetzky))
 - Fix macro errors for Windows. ([fc26dbfce0](https://github.com/facebook/react-native/commit/fc26dbfce0ed16edf1efcfebc01dd4ca584eb902) by [@chiaramooney](https://github.com/chiaramooney))
 - Adding grid role to ViewAccessibility to fix flow errors. ([5ddb9977e6](https://github.com/facebook/react-native/commit/5ddb9977e662a1b41dd7203605ca8480432fc06a) by [@fabriziobertoglio1987](https://github.com/fabriziobertoglio1987))
+- Fix: use REACT_NATIVE_CI instead of CI envvar ([ed16fdbbb8](https://github.com/facebook/react-native/commit/ed16fdbbb8f9f5943d4bb9d9a0f40caf89904d33) by [@dmytrorykun](https://github.com/dmytrorykun))
+- Bypass tag check in dry run ([ba1a9defbb](https://github.com/facebook/react-native/commit/ba1a9defbbc3261dca43ba20bde41dc6613aa4cf) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix removal of version from Hermes tarball, part 2 ([6107793fda](https://github.com/facebook/react-native/commit/6107793fda11a85297b3a3e2b8f259930d6c0f41) by [@kelset](https://github.com/kelset))
+- Fix removal of version from Hermes tarball ([e809e4b1ec](https://github.com/facebook/react-native/commit/e809e4b1ecafc942463becfd6a5d62e5132f8f94) by [@kelset](https://github.com/kelset))
+- Fix e2e script ([67c373ff3a](https://github.com/facebook/react-native/commit/67c373ff3a4ab0dfaaa752f08f6cc22657d4dadc) by [@kelset](https://github.com/kelset))
+- Fix up dependency from repo-config up to root for testing on CI ([05646f8f38](https://github.com/facebook/react-native/commit/05646f8f38b65abb9487a348d0ba7e02a35751d9) by [@kelset](https://github.com/kelset))
+- This reverts commit 2c26c8fdedd8cfc53cc7e5c2c716b19bce2caf23. ([229be89121](https://github.com/facebook/react-native/commit/229be89121d665a9e369bf10d40b77d61def75fb) by [@cipolleschi](https://github.com/cipolleschi))
+- Better fix for param ([32931b19b1](https://github.com/facebook/react-native/commit/32931b19b1f83081dd9e1085ff0add922630f81b) by [@kelset](https://github.com/kelset))
+- Fix publish npm post strict ([0f72abfc03](https://github.com/facebook/react-native/commit/0f72abfc03532ca3919554cbbecc8a31d76c231b) by [@kelset](https://github.com/kelset))
+- Fix some issues exposed when making function statics sealed ([662115077a](https://github.com/facebook/react-native/commit/662115077a9d7dab260ec93d89c7ca02145a47f8) by [@gkz](https://github.com/gkz))
+- Fix measure inner dimensions ([11f47432ff](https://github.com/facebook/react-native/commit/11f47432ff10d0cfe81883f942256c469ac34140) by [@kinarobin](https://github.com/kinarobin))
+- Annotate empty objects in xplat ([abb21dd908](https://github.com/facebook/react-native/commit/abb21dd908729fa69daf2fa63366e488009b63bd) by [@SamChou19815](https://github.com/SamChou19815))
+- Fix comment typo 'layed out' to 'laid out' ([108c876206](https://github.com/facebook/react-native/commit/108c8762060c9d52e295a1e0f9cdeb6c6a44b53e) by [@lwyj123](https://github.com/lwyj123))
+- Fix missing dll exports ([619d115822](https://github.com/facebook/react-native/commit/619d115822bce7b0f6fa194c133d895dc77e717e) by [@justjavac](https://github.com/justjavac))
+- Fix FillRateHelper Accessing -1 Frame ([052617611d](https://github.com/facebook/react-native/commit/052617611d68042b0c228955ed5de10a07da203a) by [@NickGerleman](https://github.com/NickGerleman))
+- Attempt fix #2 for `cellsAroundViewport` reaching out of bounds ([0ef770587f](https://github.com/facebook/react-native/commit/0ef770587f78389ea4c56f5ace4389d07281947c) by [@NickGerleman](https://github.com/NickGerleman))
+- Attempt fix for `cellsAroundViewport` reaching out of bounds ([7aa203beda](https://github.com/facebook/react-native/commit/7aa203beda3cd358703c2fa535ed045771761612) by [@NickGerleman](https://github.com/NickGerleman))
+- Reland D38460202 and fix tests ([c4ddaa8fdb](https://github.com/facebook/react-native/commit/c4ddaa8fdba54dd0a7e8587859a7c30ef0d6ce6c) by [@sshic](https://github.com/sshic))
+- Add missing class annotations and lock xplat/js ([0ccbe5f704](https://github.com/facebook/react-native/commit/0ccbe5f70463b5259ae1adcb65deeb89204b1948) by [@pieterv](https://github.com/pieterv))
+- Add missing class annotations xplat/js [suppressions] ([2e649006f1](https://github.com/facebook/react-native/commit/2e649006f1a78539f5504bce79cbd51816679e13) by [@pieterv](https://github.com/pieterv))
+- Add missing class annotations xplat/js ([ee3d3c248d](https://github.com/facebook/react-native/commit/ee3d3c248df4e8be3a331ead5f6eea75c1cf237a) by [@pieterv](https://github.com/pieterv))
+- Apply lint updates from buildifier in xplat ([a70354df12](https://github.com/facebook/react-native/commit/a70354df12ef71aec08583cca4f1fed5fb77d874) by [@chatura-atapattu](https://github.com/chatura-atapattu))
 
 #### Android specific
 
@@ -328,6 +398,9 @@
 - Remove extra indexOf call in BackHandler.removeEventListener ([14c207d9e1](https://github.com/facebook/react-native/commit/14c207d9e1ffbfa8eeb3b2c6d2a6e334168a4d73) by [@vitalii-tb](https://github.com/vitalii-tb))
 - Fix such that when the scrollviews call `onChildStartedNativeGesture`, they appropriately call `onChildEndedNativeGesture` to unlock the native gesture such that `JSTouchDispatcher` or `JSPointerDispatcher` will continue to emit events. ([143a0f74b8](https://github.com/facebook/react-native/commit/143a0f74b86bf2593dd29ce3c85d73d703d7a9f5))
 - Fix `AttributedString` comparison logic for TextInput state updates ([089c9a5c9c](https://github.com/facebook/react-native/commit/089c9a5c9c9a60b6bbff6dda0c9eefa9d501a092) by [@NickGerleman](https://github.com/NickGerleman))
+- Invoke closeAndReleaseSonatypeStagingRepository in the publish gradle invocation ([e4f23f4783](https://github.com/facebook/react-native/commit/e4f23f4783968e40924ab0f3500018dc79c2d366) by [@cortinico](https://github.com/cortinico))
+- Do not eat taps/clicks in ScrollView when soft-keyboard is detached from viewport ([fd1e82a10f](https://github.com/facebook/react-native/commit/fd1e82a10f80c76bd37e7eef65c0dc2220c6bb8d) by [@NickGerleman](https://github.com/NickGerleman))
+- Add missing class annotations xplat/js [android] ([c687dd3a77](https://github.com/facebook/react-native/commit/c687dd3a77e28b7318514e5ab318be302f0e7643) by [@pieterv](https://github.com/pieterv))
 
 #### iOS specific
 
@@ -373,6 +446,13 @@
 - Fix `contentInsetAdjustmentBehavior` set to `automatic` on `ScrollView` in the new architecture ([27fe6f1079](https://github.com/facebook/react-native/commit/27fe6f10796ecd47314279b1ae7cdfe29c16d1f0) by [@grahammendick](https://github.com/grahammendick))
 - Use readlink instead of realpath in packager.sh ([698b14789c](https://github.com/facebook/react-native/commit/698b14789cb0777961fe5f1d4363387f9f185b1b) by [@dminkovsky](https://github.com/dminkovsky))
 - Fix cocoapods cli native_modules require for pnpm node_modules ([af3dfbaa47](https://github.com/facebook/react-native/commit/af3dfbaa47f4d58f3f3f892a5debd8d54113c2c3) by [@danilobuerger](https://github.com/danilobuerger))
+- Use the right logic for build from source ([49c0267b66](https://github.com/facebook/react-native/commit/49c0267b6695199651e5eb3cc3bb10647fb5e37e) by [@cipolleschi](https://github.com/cipolleschi))
+- Remove the hermes engine cache in the clean script ([9979e38c70](https://github.com/facebook/react-native/commit/9979e38c7093ba78db5d5b4b11456c78592ea8c5) by [@kelset](https://github.com/kelset))
+- Make sure to export a single version for hermes artifacts and wipe Podfile.lock while in release ([41bf725ada](https://github.com/facebook/react-native/commit/41bf725ada85ed4752006e2c2dcf43037e5c53e4) by [@cipolleschi](https://github.com/cipolleschi))
+- Let React Native decide the Hermes version to use in the Codegen ([becb47ccb6](https://github.com/facebook/react-native/commit/becb47ccb6a6ed77e81b5488561ef6d683933ffe) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix copy-hermes-xcode.sh ([fc1dbb8f0b](https://github.com/facebook/react-native/commit/fc1dbb8f0be19d83653566e9b4340785350c7aba) by [@dmytrorykun](https://github.com/dmytrorykun))
+- Merge pull request #35188 from dmytrorykun/export-D40979350 ([151498a122](https://github.com/facebook/react-native/commit/151498a1224dde415c839833cbce36c94ed3410b) by [@cipolleschi](https://github.com/cipolleschi))
+- Center text if line height isn't 0 ([70cc27c901](https://github.com/facebook/react-native/commit/70cc27c901aeb447910e30ac3ceac85990d3c16d) by [@sammy-SC](https://github.com/sammy-SC))
 
 ### Security
 
@@ -380,102 +460,7 @@
 
 #### Android specific
 
-
-
 #### iOS specific
-
-
-
-### Unknown
-
-- Bump RNGP ([415d6a8858](https://github.com/facebook/react-native/commit/415d6a8858272bae15190194bfd38ba51f2b58fd) by [@cipolleschi](https://github.com/cipolleschi))
-- Properly support both libraries and use_frameworks ([c6fa633597](https://github.com/facebook/react-native/commit/c6fa6335971459158efc8bf094822547a4333235) by [@cipolleschi](https://github.com/cipolleschi))
-- Fix: use REACT_NATIVE_CI instead of CI envvar ([ed16fdbbb8](https://github.com/facebook/react-native/commit/ed16fdbbb8f9f5943d4bb9d9a0f40caf89904d33) by [@dmytrorykun](https://github.com/dmytrorykun))
-- Bump Podfile.lock to avoid failures when testing/in ci ([13785cf60f](https://github.com/facebook/react-native/commit/13785cf60f365189c1776c9fc3ddfdeaca5b7b91) by [@kelset](https://github.com/kelset))
-- Publish RNGP 71.10 ([832c0af408](https://github.com/facebook/react-native/commit/832c0af4081232c5f2b19da2a941d4380edef0a7) by [@cipolleschi](https://github.com/cipolleschi))
-- Bump Hermes for 0.71 version ([4e5fc68672](https://github.com/facebook/react-native/commit/4e5fc68672b469f7a3548822d6fca0b7b3f2d51e) by [@kelset](https://github.com/kelset))
-- Merge pull request #35510 from facebook/nc/71rc3-pick-requests ([4ba52ac555](https://github.com/facebook/react-native/commit/4ba52ac555abc27cffb0ce0beb2f3e8dbac8dc7d) by [@kelset](https://github.com/kelset))
-- Bump Podfile.lock to avoid failures when testing/in ci ([aa2b243bc5](https://github.com/facebook/react-native/commit/aa2b243bc547a54ae94ed89f23792503d0cd8769) by [@cipolleschi](https://github.com/cipolleschi))
-- Use the right logic for build from source ([49c0267b66](https://github.com/facebook/react-native/commit/49c0267b6695199651e5eb3cc3bb10647fb5e37e) by [@cipolleschi](https://github.com/cipolleschi))
-- Remove the hermes engine cache in the clean script ([9979e38c70](https://github.com/facebook/react-native/commit/9979e38c7093ba78db5d5b4b11456c78592ea8c5) by [@kelset](https://github.com/kelset))
-- Bump RNGP and codegen in root package.json too ([18b847fa28](https://github.com/facebook/react-native/commit/18b847fa289be87cbe79236d5345b3ce58626a32) by [@kelset](https://github.com/kelset))
-- Bump Codegen and RNGP ([a7792da695](https://github.com/facebook/react-native/commit/a7792da695f77be8d46b5e84ab697631b884db91) by [@cipolleschi](https://github.com/cipolleschi))
-- Bypass tag check in dry run ([ba1a9defbb](https://github.com/facebook/react-native/commit/ba1a9defbbc3261dca43ba20bde41dc6613aa4cf) by [@cipolleschi](https://github.com/cipolleschi))
-- Fix removal of version from Hermes tarball, part 2 ([6107793fda](https://github.com/facebook/react-native/commit/6107793fda11a85297b3a3e2b8f259930d6c0f41) by [@kelset](https://github.com/kelset))
-- Fix removal of version from Hermes tarball ([e809e4b1ec](https://github.com/facebook/react-native/commit/e809e4b1ecafc942463becfd6a5d62e5132f8f94) by [@kelset](https://github.com/kelset))
-- Fix e2e script ([67c373ff3a](https://github.com/facebook/react-native/commit/67c373ff3a4ab0dfaaa752f08f6cc22657d4dadc) by [@kelset](https://github.com/kelset))
-- Update yarn lock ([ceaebc6975](https://github.com/facebook/react-native/commit/ceaebc69759e59bfc465722924fee98f2deac825) by [@kelset](https://github.com/kelset))
-- Fix up dependency from repo-config up to root for testing on CI ([05646f8f38](https://github.com/facebook/react-native/commit/05646f8f38b65abb9487a348d0ba7e02a35751d9) by [@kelset](https://github.com/kelset))
-- This reverts commit 2c26c8fdedd8cfc53cc7e5c2c716b19bce2caf23. ([229be89121](https://github.com/facebook/react-native/commit/229be89121d665a9e369bf10d40b77d61def75fb) by [@cipolleschi](https://github.com/cipolleschi))
-- Bump git checkout cache key (fourth time) ([41a80f2ee2](https://github.com/facebook/react-native/commit/41a80f2ee20f6e2e7d754d6cd3d47d4cd558c49a) by [@kelset](https://github.com/kelset))
-- Invoke closeAndReleaseSonatypeStagingRepository in the publish gradle invocation ([e4f23f4783](https://github.com/facebook/react-native/commit/e4f23f4783968e40924ab0f3500018dc79c2d366) by [@cortinico](https://github.com/cortinico))
-- Bump git checkout cache key (third time) ([5c9f160764](https://github.com/facebook/react-native/commit/5c9f1607642f92c70d02718f0023360e0d1793f0) by [@kelset](https://github.com/kelset))
-- Better fix for param ([32931b19b1](https://github.com/facebook/react-native/commit/32931b19b1f83081dd9e1085ff0add922630f81b) by [@kelset](https://github.com/kelset))
-- Bump git checkout cache key (again) ([b8f8ac0e1c](https://github.com/facebook/react-native/commit/b8f8ac0e1c5b53e6bbbca34f6e423d2ae9b63ff5) by [@kelset](https://github.com/kelset))
-- Remove unneed/obsolete job ([8e3b62019e](https://github.com/facebook/react-native/commit/8e3b62019ee412399ece0fbda91e58bb395f7e98) by [@kelset](https://github.com/kelset))
-- Fix publish npm post strict ([0f72abfc03](https://github.com/facebook/react-native/commit/0f72abfc03532ca3919554cbbecc8a31d76c231b) by [@kelset](https://github.com/kelset))
-- Bump git checkout cache key ([fd5e282290](https://github.com/facebook/react-native/commit/fd5e2822901afc34e3401b66d3b0f40e2e5b1d2c) by [@cipolleschi](https://github.com/cipolleschi))
-- Bump CLI to 10 alpha3 ([741d102476](https://github.com/facebook/react-native/commit/741d10247601997debdf9197f75774830fe04ae5) by [@kelset](https://github.com/kelset))
-- Make sure to export a single version for hermes artifacts and wipe Podfile.lock while in release ([41bf725ada](https://github.com/facebook/react-native/commit/41bf725ada85ed4752006e2c2dcf43037e5c53e4) by [@cipolleschi](https://github.com/cipolleschi))
-- Let React Native decide the Hermes version to use in the Codegen ([becb47ccb6](https://github.com/facebook/react-native/commit/becb47ccb6a6ed77e81b5488561ef6d683933ffe) by [@cipolleschi](https://github.com/cipolleschi))
-- Hermes version bump for 0.71.0-RC0 ([5f656e98c9](https://github.com/facebook/react-native/commit/5f656e98c947a7c375fdaff3a0c5ccbb9a54d67e) by [@cipolleschi](https://github.com/cipolleschi))
-- Fix some issues exposed when making function statics sealed ([662115077a](https://github.com/facebook/react-native/commit/662115077a9d7dab260ec93d89c7ca02145a47f8) by [@gkz](https://github.com/gkz))
-- Supermodule:xplat/default/public.hermes ([cd020bd7f4](https://github.com/facebook/react-native/commit/cd020bd7f49f0c733c9b340fcc995397ac4ce5c9))
-- Supermodule:xplat/default/public.react_native.infra ([e69e6f4014](https://github.com/facebook/react-native/commit/e69e6f4014303925f906c125fc3787aa7607144c))
-- Add oncall annotation for BUCK files in xplat based on supermodule information - /home/s2shi/tmp/xplat_buck_oncall/xplat_buck_2nd_batch00 ([860b4d9144](https://github.com/facebook/react-native/commit/860b4d914407ef11d0d5de80e5add275f83de3fd))
-- Add oncall annotation for BUCK files in xplat based on supermodule information - /home/s2shi/tmp/xplat_buck_oncall/xplat_buck_batch10 ([d941940b4c](https://github.com/facebook/react-native/commit/d941940b4ce7ed9030be4f72980fb45d9b62365d))
-- Supermodule:xplat/default/public.react_native.playground ([712fcdec9d](https://github.com/facebook/react-native/commit/712fcdec9d7dc3bb06311319a34c696209d14a64))
-- Supermodule:xplat/default/public.react_native.tests ([6353f28664](https://github.com/facebook/react-native/commit/6353f2866470400738a0169be0ba6bf9ad73e823))
-- Supermodule:xplat/default/public.react_native.core ([0fcce547dc](https://github.com/facebook/react-native/commit/0fcce547dcc4fedd8238c6a1bce3f11a1040de1a))
-- Fix measure inner dimensions ([11f47432ff](https://github.com/facebook/react-native/commit/11f47432ff10d0cfe81883f942256c469ac34140) by [@kinarobin](https://github.com/kinarobin))
-- Annotate empty objects in xplat ([abb21dd908](https://github.com/facebook/react-native/commit/abb21dd908729fa69daf2fa63366e488009b63bd) by [@SamChou19815](https://github.com/SamChou19815))
-- Fix comment typo 'layed out' to 'laid out' ([108c876206](https://github.com/facebook/react-native/commit/108c8762060c9d52e295a1e0f9cdeb6c6a44b53e) by [@lwyj123](https://github.com/lwyj123))
-- Re-add support for using Yoga without exceptions ([793ebf6812](https://github.com/facebook/react-native/commit/793ebf6812f41ad9b07fe04d43a8509a55ebe45e) by [@Yannic](https://github.com/Yannic))
-- Fix missing dll exports ([619d115822](https://github.com/facebook/react-native/commit/619d115822bce7b0f6fa194c133d895dc77e717e) by [@justjavac](https://github.com/justjavac))
-- Replace Toast with Log.w on ReactImageView when null URL specified ([30411ae1a4](https://github.com/facebook/react-native/commit/30411ae1a42e46d0e5a2da494a39ed2767ba8808))
-- @emails -> @oncall (misc) ([bc1bc36a0c](https://github.com/facebook/react-native/commit/bc1bc36a0ca93adb2752b1e310e9df3451b81de1) by [@Drizzlecrj](https://github.com/Drizzlecrj))
-- Remove flexlayout from react-native ([bf05df1723](https://github.com/facebook/react-native/commit/bf05df17230e1063ff29d5ae5d86feac85e122b3) by [@NickGerleman](https://github.com/NickGerleman))
-- Update ktfmt component on FBS:master ([47548c1149](https://github.com/facebook/react-native/commit/47548c114993433ba03f32398876c1e11aeac0d3) by [@cgrushko](https://github.com/cgrushko))
-- Add explicit React useState annotations in xplat/js ([ff14ff3d92](https://github.com/facebook/react-native/commit/ff14ff3d92b2c32f851ee8d25d8e8ea6dfe2ec9e) by [@pieterv](https://github.com/pieterv))
-- '@emails' -> '@oncall' (*.js) ([41c6c69aaa](https://github.com/facebook/react-native/commit/41c6c69aaaea68c95d03262332a68b1025ea4791) by [@Drizzlecrj](https://github.com/Drizzlecrj))
-- @emails -> @oncall (remaining ones) ([b2ac528156](https://github.com/facebook/react-native/commit/b2ac5281563b1dc304fbba45a5b082eac7289f9e) by [@Drizzlecrj](https://github.com/Drizzlecrj))
-- Improve sample app ([03cb5aca3f](https://github.com/facebook/react-native/commit/03cb5aca3f5b8594287608265d4bde7104f07b87) by [@pieterv](https://github.com/pieterv))
-- Fix FillRateHelper Accessing -1 Frame ([052617611d](https://github.com/facebook/react-native/commit/052617611d68042b0c228955ed5de10a07da203a) by [@NickGerleman](https://github.com/NickGerleman))
-- Attempt fix #2 for `cellsAroundViewport` reaching out of bounds ([0ef770587f](https://github.com/facebook/react-native/commit/0ef770587f78389ea4c56f5ace4389d07281947c) by [@NickGerleman](https://github.com/NickGerleman))
-- Attempt fix for `cellsAroundViewport` reaching out of bounds ([7aa203beda](https://github.com/facebook/react-native/commit/7aa203beda3cd358703c2fa535ed045771761612) by [@NickGerleman](https://github.com/NickGerleman))
-- Mirror fbcode directory structure for container targets ([10ea6fb9a3](https://github.com/facebook/react-native/commit/10ea6fb9a3f408bc23881235427427c3b9e97149))
-- Reland D38460202 and fix tests ([c4ddaa8fdb](https://github.com/facebook/react-native/commit/c4ddaa8fdba54dd0a7e8587859a7c30ef0d6ce6c) by [@sshic](https://github.com/sshic))
-- Add missing class annotations and lock xplat/js ([0ccbe5f704](https://github.com/facebook/react-native/commit/0ccbe5f70463b5259ae1adcb65deeb89204b1948) by [@pieterv](https://github.com/pieterv))
-- Add missing class annotations xplat/js [suppressions] ([2e649006f1](https://github.com/facebook/react-native/commit/2e649006f1a78539f5504bce79cbd51816679e13) by [@pieterv](https://github.com/pieterv))
-- Add missing class annotations xplat/js ([ee3d3c248d](https://github.com/facebook/react-native/commit/ee3d3c248df4e8be3a331ead5f6eea75c1cf237a) by [@pieterv](https://github.com/pieterv))
-- Update ktfmt component on FBS:master ([0538f45e45](https://github.com/facebook/react-native/commit/0538f45e45acf494fdafda0757c090a60e730746) by [@cgrushko](https://github.com/cgrushko))
-- Rewrite CompactValue to avoid undefined behavior from the use of a union for type-punning ([e7a8d21df5](https://github.com/facebook/react-native/commit/e7a8d21df563e48e1812caace7fbe1f7cbc1c015) by [@htpiv](https://github.com/htpiv))
-- Apply lint updates from buildifier in xplat ([a70354df12](https://github.com/facebook/react-native/commit/a70354df12ef71aec08583cca4f1fed5fb77d874) by [@chatura-atapattu](https://github.com/chatura-atapattu))
-
-#### Android Unknown
-
-- Do not eat taps/clicks in ScrollView when soft-keyboard is detached from viewport ([fd1e82a10f](https://github.com/facebook/react-native/commit/fd1e82a10f80c76bd37e7eef65c0dc2220c6bb8d) by [@NickGerleman](https://github.com/NickGerleman))
-- Add missing class annotations xplat/js [android] ([c687dd3a77](https://github.com/facebook/react-native/commit/c687dd3a77e28b7318514e5ab318be302f0e7643) by [@pieterv](https://github.com/pieterv))
-
-#### iOS Unknown
-
-- Fix copy-hermes-xcode.sh ([fc1dbb8f0b](https://github.com/facebook/react-native/commit/fc1dbb8f0be19d83653566e9b4340785350c7aba) by [@dmytrorykun](https://github.com/dmytrorykun))
-- Merge pull request #35188 from dmytrorykun/export-D40979350 ([151498a122](https://github.com/facebook/react-native/commit/151498a1224dde415c839833cbce36c94ed3410b) by [@cipolleschi](https://github.com/cipolleschi))
-- Supermodule:ios/isolation/infra.react_native ([c42d82441a](https://github.com/facebook/react-native/commit/c42d82441a45d9fd828a0872727b8e2f954662c4))
-- Add link group label to talkios deps ([b33961d7a0](https://github.com/facebook/react-native/commit/b33961d7a0fbf5783513a81b217ec1a90700d817))
-- Add link group label to fbios deps ([065db683a2](https://github.com/facebook/react-native/commit/065db683a20b273ea3656dead29845327637669a))
-- Use an SDKRoot based Foundation framework ([ee4ce2df2f](https://github.com/facebook/react-native/commit/ee4ce2df2f57b07e523bfb4d4728543d73b5a009) by [@chatura-atapattu](https://github.com/chatura-atapattu))
-
-#### Failed to parse
-
-- Remove enableEarlyEventEmitterUpdate experiment ([fceb1425dd](https://github.com/facebook/react-native/commit/fceb1425dd0d076a420a744fe07650270d70146a) by [@mdvacca](https://github.com/mdvacca))
-- Center text if line height isn't 0 ([70cc27c901](https://github.com/facebook/react-native/commit/70cc27c901aeb447910e30ac3ceac85990d3c16d) by [@sammy-SC](https://github.com/sammy-SC))
-- Cleanup Buck usages from New App Template ([32fc551c55](https://github.com/facebook/react-native/commit/32fc551c55a203bc4a511c12ae362632acb3b286) by [@cortinico](https://github.com/cortinico))
-- Hook up offscreen api to runApplication ([0d3596aa4b](https://github.com/facebook/react-native/commit/0d3596aa4b22b0679487c14c4b6159ae29c3833e) by [@philIip](https://github.com/philIip))
-- Bump react-native/babel-plugin-codegen to v0.71.0 ([4f6929bb3c](https://github.com/facebook/react-native/commit/4f6929bb3c4b4d8ba53fa250645b5ae4e297a1b3) by [@RSNara](https://github.com/RSNara))
-- Views with overflow: hidden and borderRadius: >0 now render anti-aliased borders. ([7708cdccef](https://github.com/facebook/react-native/commit/7708cdcceff9a268ae19c196c2b8baeadf4d9d83))
-- Bump packages version number: ([e44150409e](https://github.com/facebook/react-native/commit/e44150409e1332145274563a5eca37aa3fc4c070) by [@dmytrorykun](https://github.com/dmytrorykun))
-
 
 ## v0.70.6
 
