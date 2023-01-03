@@ -351,7 +351,7 @@ module.exports = {
     return require('./Libraries/Utilities/useWindowDimensions').default;
   },
   get UTFSequence(): UTFSequence {
-    return require('./Libraries/UTFSequence');
+    return require('./Libraries/UTFSequence').default;
   },
   get Vibration(): Vibration {
     return require('./Libraries/Vibration/Vibration');
