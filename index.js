@@ -282,7 +282,7 @@ module.exports = {
     return require('./Libraries/Linking/Linking');
   },
   get LogBox(): LogBox {
-    return require('./Libraries/LogBox/LogBox');
+    return require('./Libraries/LogBox/LogBox').default;
   },
   get NativeDialogManagerAndroid(): NativeDialogManagerAndroid {
     return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid')
