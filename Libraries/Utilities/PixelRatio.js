@@ -124,4 +124,4 @@ class PixelRatio {
   static startDetecting() {}
 }
 
-module.exports = PixelRatio;
+export default PixelRatio;

@@ -301,7 +301,7 @@ module.exports = {
     return require('./Libraries/PermissionsAndroid/PermissionsAndroid');
   },
   get PixelRatio(): PixelRatio {
-    return require('./Libraries/Utilities/PixelRatio');
+    return require('./Libraries/Utilities/PixelRatio').default;
   },
   get PushNotificationIOS(): PushNotificationIOS {
     warnOnce(
