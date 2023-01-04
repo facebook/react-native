@@ -382,7 +382,7 @@ module.exports = {
       .PlatformColor;
   },
   get processColor(): processColor {
-    return require('./Libraries/StyleSheet/processColor');
+    return require('./Libraries/StyleSheet/processColor').default;
   },
   get requireNativeComponent(): <T>(
     uiViewClassName: string,

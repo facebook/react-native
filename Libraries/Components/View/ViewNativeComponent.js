@@ -61,15 +61,27 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderStartWidth: true,
           borderEndWidth: true,
 
-          borderColor: {process: require('../../StyleSheet/processColor')},
-          borderLeftColor: {process: require('../../StyleSheet/processColor')},
-          borderRightColor: {process: require('../../StyleSheet/processColor')},
-          borderTopColor: {process: require('../../StyleSheet/processColor')},
-          borderBottomColor: {
-            process: require('../../StyleSheet/processColor'),
+          borderColor: {
+            process: require('../../StyleSheet/processColor').default,
           },
-          borderStartColor: {process: require('../../StyleSheet/processColor')},
-          borderEndColor: {process: require('../../StyleSheet/processColor')},
+          borderLeftColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
+          borderRightColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
+          borderTopColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
+          borderBottomColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
+          borderStartColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
+          borderEndColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
 
           focusable: true,
           overflow: true,
