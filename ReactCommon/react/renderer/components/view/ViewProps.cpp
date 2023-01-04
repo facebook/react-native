@@ -334,7 +334,7 @@ void ViewProps::setProp(
     VIEW_EVENT_CASE(ViewEvents::Offset::ResponderStart, "onResponderStart");
     VIEW_EVENT_CASE(ViewEvents::Offset::ResponderEnd, "onResponderEnd");
     VIEW_EVENT_CASE(ViewEvents::Offset::ResponderRelease, "onResponderRelease");
-    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderMove, "ResponderMove");
+    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderMove, "onResponderMove");
     VIEW_EVENT_CASE(
         ViewEvents::Offset::ResponderTerminate, "onResponderTerminate");
     VIEW_EVENT_CASE(
