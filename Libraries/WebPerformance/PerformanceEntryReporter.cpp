@@ -10,7 +10,7 @@
 #include <react/renderer/core/EventLogger.h>
 #include "NativePerformanceObserver.h"
 
-#include <algorithm>
+#include <unordered_map>
 
 // All the unflushed entries beyond this amount will get discarded, with
 // the amount of discarded ones sent back to the observers' callbacks as
@@ -167,14 +167,14 @@ double PerformanceEntryReporter::getMarkTime(
 }
 
 void PerformanceEntryReporter::event(
-    const std::string &name,
+    std::string name,
     double startTime,
     double duration,
     double processingStart,
     double processingEnd,
     uint32_t interactionId) {
   logEntry(
-      {name,
+      {std::move(name),
        static_cast<int>(PerformanceEntryType::EVENT),
        startTime,
        duration,
@@ -203,14 +203,77 @@ void PerformanceEntryReporter::scheduleFlushBuffer() {
   }
 }
 
-static bool isDiscreteEvent(const char *name) {
-  return !std::strstr(name, "Move") && !std::strstr(name, "Layout");
-}
+struct StrKey {
+  uint32_t key;
+  constexpr StrKey(const char *s)
+      : key(folly::hash::fnv32_buf(s, std::strlen(s))) {}
+
+  constexpr bool operator==(const StrKey &rhs) const {
+    return key == rhs.key;
+  }
+};
+
+struct StrKeyHash {
+  constexpr size_t operator()(const StrKey &strKey) const {
+    return static_cast<size_t>(strKey.key);
+  }
+};
+
+// Supported events for reporting, see
+// https://www.w3.org/TR/event-timing/#sec-events-exposed
+// Not all of these are currently supported by RN, but we map them anyway for
+// future-proofing.
+static const std::unordered_map<StrKey, const char *, StrKeyHash>
+    SUPPORTED_EVENTS = {
+        {"topAuxClick", "auxclick"},
+        {"topClick", "click"},
+        {"topContextMenu", "contextmenu"},
+        {"topDblClick", "dblclick"},
+        {"topMouseDown", "mousedown"},
+        {"topMouseEnter", "mouseenter"},
+        {"topMouseLeave", "mouseleave"},
+        {"topMouseOut", "mouseout"},
+        {"topMouseOver", "mouseover"},
+        {"topMouseUp", "mouseup"},
+        {"topPointerOver", "pointerover"},
+        {"topPointerEnter", "pointerenter"},
+        {"topPointerDown", "pointerdown"},
+        {"topPointerUp", "pointerup"},
+        {"topPointerCancel", "pointercancel"},
+        {"topPointerOut", "pointerout"},
+        {"topPointerLeave", "pointerleave"},
+        {"topGotPointerCapture", "gotpointercapture"},
+        {"topLostPointerCapture", "lostpointercapture"},
+        {"topTouchStart", "touchstart"},
+        {"topTouchEnd", "touchend"},
+        {"topTouchCancel", "touchcancel"},
+        {"topKeyDown", "keydown"},
+        {"topKeyPress", "keypress"},
+        {"topKeyUp", "keyup"},
+        {"topBeforeInput", "beforeinput"},
+        {"topInput", "input"},
+        {"topCompositionStart", "compositionstart"},
+        {"topCompositionUpdate", "compositionupdate"},
+        {"topCompositionEnd", "compositionend"},
+        {"topDragStart", "dragstart"},
+        {"topDragEnd", "dragend"},
+        {"topDragEnter", "dragenter"},
+        {"topDragLeave", "dragleave"},
+        {"topDragOver", "dragover"},
+        {"topDrop", "drop"},
+};
 
 EventTag PerformanceEntryReporter::onEventStart(const char *name) {
-  if (!isReportingEvents() || !isDiscreteEvent(name)) {
+  if (!isReportingEvents()) {
     return 0;
   }
+
+  auto it = SUPPORTED_EVENTS.find(name);
+  if (it == SUPPORTED_EVENTS.end()) {
+    return 0;
+  }
+
+  const char *reportedName = it->second;
 
   sCurrentEventTag_++;
   if (sCurrentEventTag_ == 0) {
@@ -218,16 +281,11 @@ EventTag PerformanceEntryReporter::onEventStart(const char *name) {
     sCurrentEventTag_ = 1;
   }
 
-  if (std::strstr(name, "top") == name) {
-    // Skip the "top" prefix if present
-    name += 3;
-  }
-
   auto timeStamp = JSExecutor::performanceNow();
   {
     std::lock_guard<std::mutex> lock(eventsInFlightMutex_);
-    eventsInFlight_.emplace(
-        std::make_pair(sCurrentEventTag_, EventEntry{name, timeStamp, 0.0}));
+    eventsInFlight_.emplace(std::make_pair(
+        sCurrentEventTag_, EventEntry{reportedName, timeStamp, 0.0}));
   }
   return sCurrentEventTag_;
 }
@@ -259,13 +317,12 @@ void PerformanceEntryReporter::onEventEnd(EventTag tag) {
     }
     auto &entry = it->second;
     auto &name = entry.name;
-    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
     // TODO: Define the way to assign interaction IDs to the event chains
     // (T141358175)
     const uint32_t interactionId = 0;
     event(
-        std::move(name),
+        name,
         entry.startTime,
         timeStamp - entry.startTime,
         entry.dispatchTime,

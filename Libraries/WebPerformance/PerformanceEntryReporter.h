@@ -91,7 +91,7 @@ class PerformanceEntryReporter : public EventLogger {
   void clearMeasures(const std::optional<std::string> &measureName);
 
   void event(
-      const std::string &name,
+      std::string name,
       double startTime,
       double duration,
       double processingStart,
@@ -125,7 +125,7 @@ class PerformanceEntryReporter : public EventLogger {
   uint32_t droppedEntryCount_{0};
 
   struct EventEntry {
-    std::string name;
+    const char *name;
     double startTime{0.0};
     double dispatchTime{0.0};
   };
