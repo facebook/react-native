@@ -258,7 +258,7 @@ module.exports = {
     return require('./Libraries/Utilities/DevSettings');
   },
   get Dimensions(): Dimensions {
-    return require('./Libraries/Utilities/Dimensions');
+    return require('./Libraries/Utilities/Dimensions').default;
   },
   get Easing(): Easing {
     return require('./Libraries/Animated/Easing').default;
