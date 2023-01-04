@@ -29,4 +29,4 @@ const requireNativeComponent = <T>(uiViewClassName: string): HostComponent<T> =>
     getNativeComponentAttributes(uiViewClassName),
   ): any): HostComponent<T>);
 
-module.exports = requireNativeComponent;
+export default requireNativeComponent;

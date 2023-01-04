@@ -387,7 +387,7 @@ module.exports = {
   get requireNativeComponent(): <T>(
     uiViewClassName: string,
   ) => HostComponent<T> {
-    return require('./Libraries/ReactNative/requireNativeComponent');
+    return require('./Libraries/ReactNative/requireNativeComponent').default;
   },
   get RootTagContext(): RootTagContext {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;

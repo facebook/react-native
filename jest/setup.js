@@ -338,10 +338,10 @@ jest
   .mock('../Libraries/NativeComponent/NativeComponentRegistry', () => {
     return {
       get: jest.fn((name, viewConfigProvider) => {
-        return jest.requireActual('./mockNativeComponent')(name);
+        return jest.requireActual('./mockNativeComponent').default(name);
       }),
       getWithFallback_DEPRECATED: jest.fn((name, viewConfigProvider) => {
-        return jest.requireActual('./mockNativeComponent')(name);
+        return jest.requireActual('./mockNativeComponent').default(name);
       }),
       setRuntimeConfigProvider: jest.fn(),
     };
