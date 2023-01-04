@@ -164,11 +164,14 @@ jest
     const mockScrollView = jest.requireActual('./mockScrollView');
     return mockScrollView(baseComponent);
   })
-  .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () =>
-    mockComponent(
+  .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () => ({
+    __esModule: true,
+    default: mockComponent(
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',
+      null,
+      true,
     ),
-  )
+  }))
   .mock('../Libraries/AppState/AppState', () => ({
     addEventListener: jest.fn(() => ({
       remove: jest.fn(),

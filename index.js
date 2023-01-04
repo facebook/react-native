@@ -108,7 +108,8 @@ module.exports = {
       .default;
   },
   get ActivityIndicator(): ActivityIndicator {
-    return require('./Libraries/Components/ActivityIndicator/ActivityIndicator');
+    return require('./Libraries/Components/ActivityIndicator/ActivityIndicator')
+      .default;
   },
   get Button(): Button {
     return require('./Libraries/Components/Button');
