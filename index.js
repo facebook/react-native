@@ -292,7 +292,7 @@ module.exports = {
     return require('./Libraries/EventEmitter/NativeEventEmitter').default;
   },
   get Networking(): Networking {
-    return require('./Libraries/Network/RCTNetworking');
+    return require('./Libraries/Network/RCTNetworking').default;
   },
   get PanResponder(): PanResponder {
     return require('./Libraries/Interaction/PanResponder');
