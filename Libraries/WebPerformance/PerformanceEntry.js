@@ -9,7 +9,7 @@
  */
 
 export type HighResTimeStamp = number;
-export type PerformanceEntryType = 'mark' | 'measure' | 'event' | 'first-input';
+export type PerformanceEntryType = 'mark' | 'measure' | 'event';
 
 export class PerformanceEntry {
   name: string;

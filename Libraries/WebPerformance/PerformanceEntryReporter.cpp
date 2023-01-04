@@ -170,15 +170,12 @@ void PerformanceEntryReporter::event(
     const std::string &name,
     double startTime,
     double duration,
-    bool isFirstInput,
     double processingStart,
     double processingEnd,
     uint32_t interactionId) {
   logEntry(
       {name,
-       static_cast<int>(
-           isFirstInput ? PerformanceEntryType::FIRST_INPUT
-                        : PerformanceEntryType::EVENT),
+       static_cast<int>(PerformanceEntryType::EVENT),
        startTime,
        duration,
        processingStart,
@@ -267,12 +264,10 @@ void PerformanceEntryReporter::onEventEnd(EventTag tag) {
     // TODO: Define the way to assign interaction IDs to the event chains
     // (T141358175)
     const uint32_t interactionId = 0;
-    bool firstInput = isFirstInput(name);
     event(
         std::move(name),
         entry.startTime,
         timeStamp - entry.startTime,
-        firstInput,
         entry.dispatchTime,
         timeStamp,
         interactionId);

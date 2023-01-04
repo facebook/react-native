@@ -31,8 +31,6 @@ function rawToPerformanceEntryType(
       return 'measure';
     case RawPerformanceEntryTypeValues.EVENT:
       return 'event';
-    case RawPerformanceEntryTypeValues.FIRST_INPUT:
-      return 'first-input';
     default:
       throw new TypeError(
         `unexpected performance entry type received: ${type}`,
@@ -41,10 +39,7 @@ function rawToPerformanceEntryType(
 }
 
 function rawToPerformanceEntry(entry: RawPerformanceEntry): PerformanceEntry {
-  if (
-    entry.entryType === RawPerformanceEntryTypeValues.EVENT ||
-    entry.entryType === RawPerformanceEntryTypeValues.FIRST_INPUT
-  ) {
+  if (entry.entryType === RawPerformanceEntryTypeValues.EVENT) {
     return new PerformanceEventTiming({
       name: entry.name,
       startTime: entry.startTime,
@@ -52,8 +47,6 @@ function rawToPerformanceEntry(entry: RawPerformanceEntry): PerformanceEntry {
       processingStart: entry.processingStart,
       processingEnd: entry.processingEnd,
       interactionId: entry.interactionId,
-      isFirstInput:
-        entry.entryType === RawPerformanceEntryTypeValues.FIRST_INPUT,
     });
   } else {
     return new PerformanceEntry({
@@ -298,7 +291,7 @@ export default class PerformanceObserver {
   }
 
   static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
-    Object.freeze(['mark', 'measure', 'event', 'first-input']);
+    Object.freeze(['mark', 'measure', 'event']);
 }
 
 function union<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {

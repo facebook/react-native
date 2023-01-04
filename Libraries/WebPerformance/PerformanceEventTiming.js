@@ -24,11 +24,10 @@ export class PerformanceEventTiming extends PerformanceEntry {
     processingStart?: HighResTimeStamp,
     processingEnd?: HighResTimeStamp,
     interactionId?: number,
-    isFirstInput?: boolean,
   }) {
     super({
       name: init.name,
-      entryType: init.isFirstInput === true ? 'first-input' : 'event',
+      entryType: 'event',
       startTime: init.startTime ?? 0,
       duration: init.duration ?? 0,
     });

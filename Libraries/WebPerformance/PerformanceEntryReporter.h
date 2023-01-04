@@ -49,8 +49,7 @@ enum class PerformanceEntryType {
   MARK = 1,
   MEASURE = 2,
   EVENT = 3,
-  FIRST_INPUT = 4,
-  _COUNT = 5,
+  _COUNT = 4,
 };
 
 class PerformanceEntryReporter : public EventLogger {
@@ -95,7 +94,6 @@ class PerformanceEntryReporter : public EventLogger {
       const std::string &name,
       double startTime,
       double duration,
-      bool isFirstInput,
       double processingStart,
       double processingEnd,
       uint32_t interactionId);
@@ -112,16 +110,7 @@ class PerformanceEntryReporter : public EventLogger {
   void scheduleFlushBuffer();
 
   bool isReportingEvents() const {
-    return isReportingType(PerformanceEntryType::EVENT) ||
-        isReportingType(PerformanceEntryType::FIRST_INPUT);
-  }
-
-  bool isFirstInput(std::string name) {
-    if (firstInputs_.find(name) == firstInputs_.end()) {
-      firstInputs_.insert(std::move(name));
-      return true;
-    }
-    return false;
+    return isReportingType(PerformanceEntryType::EVENT);
   }
 
   std::optional<AsyncCallback<>> callback_;
@@ -147,7 +136,6 @@ class PerformanceEntryReporter : public EventLogger {
   // so a hash map should be just fine.
   std::unordered_map<EventTag, EventEntry> eventsInFlight_;
   std::mutex eventsInFlightMutex_;
-  std::unordered_set<std::string> firstInputs_;
 
   static EventTag sCurrentEventTag_;
 };
