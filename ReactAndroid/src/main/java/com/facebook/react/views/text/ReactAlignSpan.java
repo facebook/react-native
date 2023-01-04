@@ -7,23 +7,28 @@
 
 package com.facebook.react.views.text;
 
+import android.graphics.Rect;
 import android.text.TextPaint;
-import android.text.style.SuperscriptSpan;
+import android.text.style.MetricAffectingSpan;
 import android.view.Gravity;
 import com.facebook.common.logging.FLog;
 
 /** ratio 0 for center ratio 0.4 for top ratio */
-public class ReactAlignSpan extends SuperscriptSpan implements ReactSpan {
+public class ReactAlignSpan extends MetricAffectingSpan implements ReactSpan {
   private static final String TAG = "ReactAlignSpan";
+  private final double mLineHeight;
   private Integer mParentHeight;
   private String mTextAlignVertical;
   private Integer mParentGravity;
   private int mParentLineCount;
   private int mCurrentLine;
   private float mCalculatedHeight;
+  private int mMaximumLineHeight = 0;
+  private int mOtherSpanLineHeight;
 
-  ReactAlignSpan(String textAlignVertical) {
+  ReactAlignSpan(String textAlignVertical, Float lineHeight) {
     mTextAlignVertical = textAlignVertical;
+    mLineHeight = lineHeight;
   }
 
   private double convertTextAlignToStep(String textAlign) {
@@ -87,16 +92,30 @@ public class ReactAlignSpan extends SuperscriptSpan implements ReactSpan {
     if (numberOfSteps < 0) {
       additionalLines = lineHeight * (mParentLineCount - mCurrentLine - 1) * -1;
     }
-    ds.baselineShift -= margin * numberOfSteps + additionalLines;
+
+    Rect bounds = new Rect();
+    ds.getTextBounds("Top", 0, 2, bounds);
+    // inline image over-riding lineHeight
+    if (mOtherSpanLineHeight > mLineHeight) {
+      ds.baselineShift -= mOtherSpanLineHeight - ds.getTextSize();
+    } else {
+      ds.baselineShift -= mLineHeight / 2 - ds.getTextSize() / 2;
+    }
   }
 
   public void updateSpan(
-      Integer height, int gravity, int lineCount, float calculatedHeight, int currentLine) {
+      Integer height,
+      int gravity,
+      int lineCount,
+      float calculatedHeight,
+      int currentLine,
+      int otherSpanLineHeight) {
     mParentHeight = height;
     mParentGravity = gravity;
     mParentLineCount = lineCount;
     mCalculatedHeight = calculatedHeight;
     mCurrentLine = currentLine;
+    mOtherSpanLineHeight = otherSpanLineHeight;
   }
 
   @Override

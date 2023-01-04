@@ -211,17 +211,17 @@ class TextExample extends React.Component<{...}> {
     return (
       <RNTesterPage title="<Text>">
         <RNTesterBlock title="Dynamic Font Size Adjustment">
-          <View style={{height: 250}}>
+          <View>
             <Text
               textTransform="uppercase"
               style={{
-                flex: 1,
-                textAlignVertical: 'center',
+                textAlignVertical: 'bottom',
                 backgroundColor: 'yellow',
               }}>
-              A parent text line more in the text a line more in the text a line
+              A parent text line more in the text a line
               <Text
                 style={{
+                  lineHeight: 100,
                   textAlignVertical: 'top',
                   backgroundColor: 'green',
                 }}>
@@ -232,9 +232,9 @@ class TextExample extends React.Component<{...}> {
                 style={{
                   textAlignVertical: 'center',
                   backgroundColor: 'blue',
-                  color: 'white',
+                  color: 'red',
                 }}>
-                Bottom
+                Center
               </Text>
               more in the text a line more in the text line more in the
               <Text
