@@ -27,7 +27,7 @@
 - Introduce `useAnimatedValue` hook to make it easier working with `Animated.Value`s in function components. ([e22217fe8b](https://github.com/facebook/react-native/commit/e22217fe8b9455e32695f88ca835e11442b0a937) by [@fabriziocucci](https://github.com/fabriziocucci))
 - Highlight elements on hover while mouse down for React DevTools element inspection. ([94429fb037](https://github.com/facebook/react-native/commit/94429fb037322652b6796ac2c40cef451795205e))
 - Implement method bindings for gap/row-gap/column-gap ([803a2978e5](https://github.com/facebook/react-native/commit/803a2978e5c0a33c6bb57b402a67218571382fbb) by [@NickGerleman](https://github.com/NickGerleman))
-- Implement gap/row-gap/column-gap (within the C ABI) ([1373a7057b](https://github.com/facebook/react-native/commit/1373a7057b9d66830868832a9684ad80ae5d9d45) by [@NickGerleman](https://github.com/NickGerleman))
+- Implement gap/row-gap/column-gap (within the C ABI) ([1373a7057b](https://github.com/facebook/react-native/commit/1373a7057b9d66830868832a9684ad80ae5d9d45) by [@NickGerleman](https://github.com/NickGerleman) and [@jacobp100](https://github.com/jacobp100))
 - Add destructuredArrayIgnorePattern to eslint config ([0c5ef573fe](https://github.com/facebook/react-native/commit/0c5ef573fed31698ff8906675ddfc12a35829723) by [@fwcd](https://github.com/fwcd))
 - Add aria-modal prop to basic component ([f353119113](https://github.com/facebook/react-native/commit/f353119113d6fc85491765ba1e90ac83cb00fd61) by [@dakshbhardwaj](https://github.com/dakshbhardwaj))
 - Add support for ImageSource and ImageRequest in the State. ([d7c41361dd](https://github.com/facebook/react-native/commit/d7c41361dd87930044473434aba6e63b63811bdb) by [@cipolleschi](https://github.com/cipolleschi))
