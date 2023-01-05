@@ -26,7 +26,6 @@ public class FabricComponents {
     sComponentNames.put("View", "RCTView");
     sComponentNames.put("Image", "RCTImageView");
     sComponentNames.put("ScrollView", "RCTScrollView");
-    sComponentNames.put("Slider", "RCTSlider");
     sComponentNames.put("ModalHostView", "RCTModalHostView");
     sComponentNames.put("Paragraph", "RCTText");
     sComponentNames.put("Text", "RCText");

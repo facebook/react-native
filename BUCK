@@ -563,7 +563,6 @@ rn_apple_xplat_cxx_library(
     exported_deps = [
         react_native_xplat_target("react/renderer/animations:animations"),
         react_native_xplat_target("react/renderer/components/scrollview:scrollview"),
-        react_native_xplat_target("react/renderer/components/slider:slider"),
         react_native_xplat_target("react/renderer/components/safeareaview:safeareaview"),
         react_native_xplat_target("react/renderer/components/modal:modal"),
         react_native_xplat_target("react/renderer/components/unimplementedview:unimplementedview"),

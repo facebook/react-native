@@ -46,7 +46,6 @@ import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
-import com.facebook.react.views.slider.ReactSliderManager;
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 import com.facebook.react.views.switchview.ReactSwitchManager;
 import com.facebook.react.views.text.ReactRawTextManager;
@@ -158,7 +157,6 @@ public class MainReactPackage extends TurboReactPackage {
     viewManagers.add(new ReactHorizontalScrollContainerViewManager());
     viewManagers.add(new ReactProgressBarViewManager());
     viewManagers.add(new ReactScrollViewManager());
-    viewManagers.add(new ReactSliderManager());
     viewManagers.add(new ReactSwitchManager());
     viewManagers.add(new SwipeRefreshLayoutManager());
 
