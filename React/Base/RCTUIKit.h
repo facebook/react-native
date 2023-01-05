@@ -321,6 +321,11 @@ NS_INLINE NSEdgeInsets UIEdgeInsetsMake(CGFloat top, CGFloat left, CGFloat botto
 // UIImage
 @compatibility_alias UIImage NSImage;
 
+typedef NS_ENUM(NSInteger, UIImageRenderingMode) {
+    UIImageRenderingModeAlwaysOriginal,
+    UIImageRenderingModeAlwaysTemplate,
+};
+
 #ifdef __cplusplus
 extern "C"
 #endif

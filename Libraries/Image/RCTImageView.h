@@ -6,14 +6,6 @@
  */
 
 #import <React/RCTUIKit.h> // TODO(macOS GH#774)
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
-#import <UIKit/UIKit.h>
-#else // [TODO(macOS GH#774)
-typedef NS_ENUM(NSInteger, UIImageRenderingMode) {
-    UIImageRenderingModeAlwaysOriginal,
-    UIImageRenderingModeAlwaysTemplate,
-};
-#endif // ]TODO(macOS GH#774)
 #import <React/RCTView.h>
 #import <React/RCTResizeMode.h>
 
