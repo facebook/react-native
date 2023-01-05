@@ -52,6 +52,44 @@ describe('parseHermesStack', () => {
     `);
   });
 
+  test('internal bytecode location', () => {
+    expect(
+      parseHermesStack(
+        [
+          'TypeError: undefined is not a function',
+          '    at internal (address at InternalBytecode.js:1:9)',
+          '    at notInternal (address at /js/InternalBytecode.js:10:1234)',
+        ].join('\n'),
+      ),
+    ).toMatchInlineSnapshot(`
+      Object {
+        "entries": Array [
+          Object {
+            "functionName": "internal",
+            "location": Object {
+              "line1Based": 1,
+              "sourceUrl": "InternalBytecode.js",
+              "type": "INTERNAL_BYTECODE",
+              "virtualOffset0Based": 9,
+            },
+            "type": "FRAME",
+          },
+          Object {
+            "functionName": "notInternal",
+            "location": Object {
+              "line1Based": 10,
+              "sourceUrl": "/js/InternalBytecode.js",
+              "type": "BYTECODE",
+              "virtualOffset0Based": 1234,
+            },
+            "type": "FRAME",
+          },
+        ],
+        "message": "TypeError: undefined is not a function",
+      }
+    `);
+  });
+
   test('source location', () => {
     expect(
       parseHermesStack(
