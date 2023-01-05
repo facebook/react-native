@@ -10,8 +10,6 @@ package com.facebook.react.views.text;
 import android.graphics.Rect;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
-import android.view.Gravity;
-import com.facebook.common.logging.FLog;
 
 /** ratio 0 for center ratio 0.4 for top ratio */
 public class ReactAlignSpan extends MetricAffectingSpan implements ReactSpan {
@@ -36,78 +34,29 @@ public class ReactAlignSpan extends MetricAffectingSpan implements ReactSpan {
     mCurrentText = currentText;
   }
 
-  private double convertTextAlignToStep(String textAlign) {
-    switch (textAlign) {
-      case "top-child":
-        return 1;
-      case "center-child":
-        return 0.5;
-      case "bottom-child":
-        return 0;
-    }
-    FLog.w(
-        TAG,
-        "unable to convert textAlign: "
-            + textAlign
-            + " to Integer (step) in ReactTopAlignSpan method convertTextAlignToStep.");
-    // improve this
-    return -1;
-  }
-
-  private double convertGravityToStep(Integer gravity) {
-    if (gravity.equals(Gravity.TOP) || gravity.equals(Gravity.TOP | Gravity.START)) {
-      return 1;
-    } else if (gravity.equals(Gravity.CENTER_VERTICAL)
-        || gravity.equals(Gravity.CENTER_VERTICAL | Gravity.START)) {
-      return 0.5;
-    } else if (gravity.equals(Gravity.BOTTOM) || gravity.equals(Gravity.BOTTOM | Gravity.START)) {
-      return 0;
-    }
-    // update it
-    FLog.w(
-        TAG,
-        "unable to convert gravity: "
-            + gravity
-            + " to Integer (step) in ReactTopAlignSpan method convertTextAlignToStep.");
-    // improve this
-    return -1;
-  }
-
   @Override
   public void updateDrawState(TextPaint ds) {
-    if (mTextAlignVertical == null
-        || mParentHeight == null
-        || mParentGravity == null
-        || mCalculatedHeight == 0.0f
-        || mParentLineCount == 0.0f) {
-      return;
-    }
-    double convertedTextAlignVertical = convertTextAlignToStep(mTextAlignVertical);
-    double convertedParentTextAlignVertical = convertGravityToStep(mParentGravity);
-    if (convertedTextAlignVertical == -1 || convertedParentTextAlignVertical == -1) {
-      return;
-    }
-    double numberOfSteps = convertedTextAlignVertical - convertedParentTextAlignVertical;
-    if (numberOfSteps == 0) {
+    if (mTextAlignVertical == null) {
       return;
     }
 
     Rect bounds = new Rect();
     ds.getTextBounds(mCurrentText, 0, mCurrentText.length(), bounds);
-
-    if (mImageLineHeight != -1 && (mImageLineHeight * 2) > mHighestLineHeight) {
-      // an inline image over-rides the default lineHeight
-      // we retrieve the inline image height and use it to align the text
-      ds.baselineShift -= mImageLineHeight;
-      ds.baselineShift -= bounds.top - ds.getFontMetrics().ascent - ds.getTextSize();
-
-    } else if (mHighestLineHeight != -1) {
-      // the span with the highest lineHeight over-rides sets the height for all rows
-      ds.baselineShift -= mHighestLineHeight / 2 - ds.getTextSize() / 2;
-    } else {
-      // if lineHeight is not set, align the text using the font
-      // top and ascent https://stackoverflow.com/a/27631737/7295772
-      ds.baselineShift -= bounds.top - ds.getFontMetrics().ascent;
+    if (mTextAlignVertical == "top-child") {
+      if (mHighestLineHeight != -1) {
+        // the span with the highest lineHeight over-rides sets the height for all rows
+        ds.baselineShift -= mHighestLineHeight / 2 - ds.getTextSize() / 2;
+      } else {
+        // if lineHeight is not set, align the text using the font
+        // top and ascent https://stackoverflow.com/a/27631737/7295772
+        ds.baselineShift -= bounds.top - ds.getFontMetrics().ascent;
+      }
+    }
+    if (mTextAlignVertical == "center-child") {
+      //
+    }
+    if (mTextAlignVertical == "bottom-child") {
+      //
     }
   }
 

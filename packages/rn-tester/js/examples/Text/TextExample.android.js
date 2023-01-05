@@ -206,11 +206,11 @@ class AdjustingFontSize extends React.Component<
   }
 }
 
-class TextExample extends React.Component<{...}> {
+class NestedTextVerticalAlign extends React.Component<{...}> {
   render(): React.Node {
     return (
-      <RNTesterPage title="<Text>">
-        <RNTesterBlock title="Dynamic Font Size Adjustment">
+      <>
+        <RNTesterBlock title="top">
           <View>
             <Text
               textTransform="uppercase"
@@ -218,42 +218,141 @@ class TextExample extends React.Component<{...}> {
                 textAlignVertical: 'bottom',
                 backgroundColor: 'yellow',
               }}>
-              A parent text line more in the text a line
+              parent
               <Text
                 style={{
                   textAlignVertical: 'top',
                   backgroundColor: 'green',
+                  color: 'white',
                 }}>
-                Top
+                This span is aligned top
+              </Text>
+              <Text
+                style={{
+                  textAlignVertical: 'top',
+                  backgroundColor: 'blue',
+                  color: 'white',
+                }}>
+                span no lineHeight (top)
+              </Text>
+            </Text>
+            <Text>Without lineHeight text is correctly aligned.</Text>
+          </View>
+        </RNTesterBlock>
+        <RNTesterBlock title="inline image and top">
+          <View>
+            <Text
+              textTransform="uppercase"
+              style={{
+                textAlignVertical: 'bottom',
+                backgroundColor: 'yellow',
+              }}>
+              <Text
+                style={{
+                  lineHeight: 50,
+                  backgroundColor: 'green',
+                  textAlignVertical: 'top',
+                  color: 'white',
+                }}>
+                Span aligned top
               </Text>
               <Image
                 source={{uri: 'https://via.placeholder.com/100'}}
                 style={{
-                  width: 100,
-                  height: 100,
+                  width: 30,
+                  height: 30,
                 }}
               />
-              more in the text a line more in the text line more the text a line
-              <Text
-                style={{
-                  lineHeight: 110,
-                  textAlignVertical: 'top',
-                  backgroundColor: 'blue',
-                  color: 'red',
-                }}>
-                Center
-              </Text>
-              more in the text a line more in the text line more in the
-              <Text
-                style={{
-                  textAlignVertical: 'top',
-                  backgroundColor: 'red',
-                }}>
-                Bottom
-              </Text>
+            </Text>
+            <Text>
+              The span above is correctly aligned to the top, but this requires
+              some change to TextInlineViewPlaceholderSpan (nested Image API)
+              which breaks nested Text.
             </Text>
           </View>
         </RNTesterBlock>
+        <RNTesterBlock title="lineHeight and top">
+          <View>
+            <Text
+              textTransform="uppercase"
+              style={{
+                textAlignVertical: 'top',
+                backgroundColor: 'yellow',
+              }}>
+              parent
+              <Text
+                style={{
+                  textAlignVertical: 'top',
+                  backgroundColor: 'green',
+                  color: 'white',
+                }}>
+                This span is aligned top
+              </Text>
+              <Text
+                style={{
+                  textAlignVertical: 'top',
+                  lineHeight: 100,
+                  backgroundColor: 'red',
+                }}>
+                span lineHeight 150 (top)
+              </Text>
+              <Text
+                style={{
+                  textAlignVertical: 'top',
+                  backgroundColor: 'blue',
+                  color: 'white',
+                }}>
+                span no lineHeight (top)
+              </Text>
+            </Text>
+            <Text>
+              Text in the spans is correctly aligned to the top of the line
+              (like html), but parent text uses Gravity to align text. It should
+              be removed in the future.
+            </Text>
+          </View>
+        </RNTesterBlock>
+        <RNTesterBlock title="inline image">
+          <View>
+            <Text
+              textTransform="uppercase"
+              style={{
+                height: 150,
+                textAlignVertical: 'top',
+                backgroundColor: 'yellow',
+              }}>
+              parent Text aligns top with a {'\n'}
+              <Text
+                style={{
+                  textAlignVertical: 'top',
+                  backgroundColor: 'green',
+                  color: 'white',
+                }}>
+                span aligned top
+              </Text>
+              <Image
+                source={{uri: 'https://via.placeholder.com/100'}}
+                style={{
+                  width: 70,
+                  height: 70,
+                }}
+              />
+            </Text>
+            <Text>
+              A portion of the text is displayed under the Image. Fixes for
+              inline images are part of an upcoming pr.
+            </Text>
+          </View>
+        </RNTesterBlock>
+      </>
+    );
+  }
+}
+
+class TextExample extends React.Component<{...}> {
+  render(): React.Node {
+    return (
+      <RNTesterPage title="<Text>">
         <RNTesterBlock title="Font Size Adjustment with Dynamic Layout">
           <TextAdjustsDynamicLayoutExample />
         </RNTesterBlock>
@@ -1026,6 +1125,12 @@ exports.documentationURL = 'https://reactnative.dev/docs/text';
 exports.category = 'Basic';
 exports.description = 'Base component for rendering styled text.';
 exports.examples = [
+  {
+    title: 'Nested Text Vertical align',
+    render: function (): React.Element<typeof TextExample> {
+      return <NestedTextVerticalAlign />;
+    },
+  },
   {
     title: 'Basic text',
     render: function (): React.Element<typeof TextExample> {
