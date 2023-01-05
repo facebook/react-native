@@ -111,9 +111,11 @@ class MapBuffer {
 
   MapBuffer(MapBuffer const &buffer) = delete;
 
-  MapBuffer &operator=(MapBuffer other) = delete;
+  MapBuffer &operator=(const MapBuffer &other) = delete;
 
   MapBuffer(MapBuffer &&buffer) = default;
+
+  MapBuffer &operator=(MapBuffer &&other) = default;
 
   int32_t getInt(MapBuffer::Key key) const;
 
@@ -136,7 +138,7 @@ class MapBuffer {
 
  private:
   // Buffer and its size
-  std::vector<uint8_t> const bytes_;
+  std::vector<uint8_t> bytes_;
 
   // amount of items in the MapBuffer
   uint16_t count_ = 0;
