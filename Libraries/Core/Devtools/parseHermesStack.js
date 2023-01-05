@@ -10,46 +10,46 @@
 
 'use strict';
 
-type HermesStackLocationNative = {|
-  +type: 'NATIVE',
-|};
+type HermesStackLocationNative = $ReadOnly<{
+  type: 'NATIVE',
+}>;
 
-type HermesStackLocationSource = {|
-  +type: 'SOURCE',
-  +sourceUrl: string,
-  +line1Based: number,
-  +column1Based: number,
-|};
+type HermesStackLocationSource = $ReadOnly<{
+  type: 'SOURCE',
+  sourceUrl: string,
+  line1Based: number,
+  column1Based: number,
+}>;
 
-type HermesStackLocationBytecode = {|
-  +type: 'BYTECODE',
-  +sourceUrl: string,
-  +line1Based: number,
-  +virtualOffset0Based: number,
-|};
+type HermesStackLocationBytecode = $ReadOnly<{
+  type: 'BYTECODE',
+  sourceUrl: string,
+  line1Based: number,
+  virtualOffset0Based: number,
+}>;
 
 type HermesStackLocation =
   | HermesStackLocationNative
   | HermesStackLocationSource
   | HermesStackLocationBytecode;
 
-type HermesStackEntryFrame = {|
-  +type: 'FRAME',
-  +location: HermesStackLocation,
-  +functionName: string,
-|};
+type HermesStackEntryFrame = $ReadOnly<{
+  type: 'FRAME',
+  location: HermesStackLocation,
+  functionName: string,
+}>;
 
-type HermesStackEntrySkipped = {|
-  +type: 'SKIPPED',
-  +count: number,
-|};
+type HermesStackEntrySkipped = $ReadOnly<{
+  type: 'SKIPPED',
+  count: number,
+}>;
 
 type HermesStackEntry = HermesStackEntryFrame | HermesStackEntrySkipped;
 
-export type HermesParsedStack = {|
-  +message: string,
-  +entries: $ReadOnlyArray<HermesStackEntry>,
-|};
+export type HermesParsedStack = $ReadOnly<{
+  message: string,
+  entries: $ReadOnlyArray<HermesStackEntry>,
+}>;
 
 // Capturing groups:
 // 1. function name
