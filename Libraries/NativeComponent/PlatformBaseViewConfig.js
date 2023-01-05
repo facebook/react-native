@@ -322,6 +322,34 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
           onGestureHandlerStateChange: DynamicallyInjectedByGestureHandler({
             registrationName: 'onGestureHandlerStateChange',
           }),
+          // [macOS
+          ...(Platform.OS === 'macos' && {
+            topDoubleClick: {
+              registrationName: 'onDoubleClick',
+            },
+            topDragEnter: {
+              registrationName: 'onDragEnter',
+            },
+            topDragLeave: {
+              registrationName: 'onDragLeave',
+            },
+            topDrop: {
+              registrationName: 'onDrop',
+            },
+            topKeyUp: {
+              registrationName: 'onKeyUp',
+            },
+            topKeyDown: {
+              registrationName: 'onKeyDown',
+            },
+            topMouseEnter: {
+              registrationName: 'onMouseEnter',
+            },
+            topMouseLeave: {
+              registrationName: 'onMouseLeave',
+            },
+          }),
+          // macOS]
         },
         validAttributes: {
           // View Props
@@ -333,6 +361,7 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
           accessibilityViewIsModal: true,
           accessibilityElementsHidden: true,
           accessibilityIgnoresInvertColors: true,
+          apple_fontSmoothing: true, // TODO(OSS Candidate ISS#2710739)
           testID: true,
           backgroundColor: {process: require('../StyleSheet/processColor')},
           backfaceVisibility: true,
@@ -446,6 +475,31 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
           direction: true,
 
           style: ReactNativeStyleAttributes,
+
+          // [macOS
+          ...(Platform.OS === 'macos' && {
+            acceptsFirstMouse: true,
+            accessibilityTraits: true,
+            cursor: true,
+            draggedTypes: true,
+            enableFocusRing: true,
+            nextKeyViewTag: true,
+            onBlur: true,
+            onClick: true,
+            onDoubleClick: true,
+            onDragEnter: true,
+            onDragLeave: true,
+            onDrop: true,
+            onFocus: true,
+            onKeyDown: true,
+            onKeyUp: true,
+            onMouseEnter: true,
+            onMouseLeave: true,
+            tooltip: true,
+            validKeysDown: true,
+            validKeysUp: true,
+          }),
+          // macOS]
         },
       };
 
