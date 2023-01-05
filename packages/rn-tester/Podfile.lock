@@ -372,7 +372,6 @@ PODS:
     - React-Fabric/components/root (= 1000.0.0)
     - React-Fabric/components/safeareaview (= 1000.0.0)
     - React-Fabric/components/scrollview (= 1000.0.0)
-    - React-Fabric/components/slider (= 1000.0.0)
     - React-Fabric/components/text (= 1000.0.0)
     - React-Fabric/components/textinput (= 1000.0.0)
     - React-Fabric/components/unimplementedview (= 1000.0.0)
@@ -438,14 +437,6 @@ PODS:
     - React-jsiexecutor (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-Fabric/components/scrollview (1000.0.0):
-    - RCT-Folly/Fabric (= 2021.07.22.00)
-    - RCTRequired (= 1000.0.0)
-    - RCTTypeSafety (= 1000.0.0)
-    - React-graphics (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-jsiexecutor (= 1000.0.0)
-    - ReactCommon/turbomodule/core (= 1000.0.0)
-  - React-Fabric/components/slider (1000.0.0):
     - RCT-Folly/Fabric (= 2021.07.22.00)
     - RCTRequired (= 1000.0.0)
     - RCTTypeSafety (= 1000.0.0)
@@ -944,7 +935,7 @@ SPEC CHECKSUMS:
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: 1b25fd843452b19b888d47a6022bc0623ede0f38
+  hermes-engine: 41b1b184a76a464385ebd97d798f6ee2468ebbae
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
@@ -956,7 +947,7 @@ SPEC CHECKSUMS:
   React-Core: 719bec4b41c93b1affb1e2c3a43956ec482ecb9f
   React-CoreModules: feaa45c54c58e1420981f6dd544c8b3d01200caa
   React-cxxreact: 97903bdac0fb53409663fd312e2183ae1dd730e5
-  React-Fabric: 4d08ce0b0f15513b2724ae1000c2aaedf73ebc32
+  React-Fabric: 62b9929a7345f941d8833630f37d9440b2dda438
   React-graphics: cb8a85648695c60f33a00d732b985f734d1470d8
   React-hermes: e35ea664b36773a2ce84c583febf1396080e59f7
   React-jsi: e4c75a1cf727c8761908ac2eeb1084e47ba88a26
@@ -977,7 +968,7 @@ SPEC CHECKSUMS:
   React-RCTTest: 81ebfa8c2e1b0b482effe12485e6486dc0ff70d7
   React-RCTText: 4e5ae05b778a0ed2b22b012af025da5e1a1c4e54
   React-RCTVibration: ecfd04c1886a9c9a4e31a466c0fbcf6b36e92fde
-  React-rncore: 08566b41339706758229f407c8907b2f7987f058
+  React-rncore: 7fff654903b760e6fa14bb0141c92bf0861534f0
   React-runtimeexecutor: c7b2cd6babf6cc50340398bfbb7a9da13c93093f
   ReactCommon: a11d5523be510a2d75e50e435de607297072172a
   ScreenshotManager: 37152a3841a53f2de5c0013c58835b8738894553
