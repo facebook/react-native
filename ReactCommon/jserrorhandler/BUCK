@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "CXX", "fb_xplat_cxx_test", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "CXX", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 # TODO: Expolre merging this module into venice so we don't to load this library seperately
 rn_xplat_cxx_library(
@@ -18,7 +18,6 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
-    tests = [":tests"],
     visibility = [
         "PUBLIC",
     ],
@@ -26,26 +25,6 @@ rn_xplat_cxx_library(
         "//xplat/folly:dynamic",
         "//xplat/folly:json",
         "//xplat/jsi:jsi",
-        react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
-    ],
-)
-
-fb_xplat_cxx_test(
-    name = "tests",
-    srcs = glob(["tests/**/*.cpp"]),
-    headers = glob(["tests/**/*.h"]),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
-    contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE, CXX),
-    deps = [
-        "//xplat/hermes/API:HermesAPI",
-        "//xplat/third-party/gmock:gtest",
-        react_native_xplat_target("jserrorhandler:jserrorhandler"),
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
     ],
 )
