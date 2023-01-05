@@ -221,16 +221,23 @@ class TextExample extends React.Component<{...}> {
               A parent text line more in the text a line
               <Text
                 style={{
-                  lineHeight: 100,
                   textAlignVertical: 'top',
                   backgroundColor: 'green',
                 }}>
                 Top
               </Text>
+              <Image
+                source={{uri: 'https://via.placeholder.com/100'}}
+                style={{
+                  width: 100,
+                  height: 100,
+                }}
+              />
               more in the text a line more in the text line more the text a line
               <Text
                 style={{
-                  textAlignVertical: 'center',
+                  lineHeight: 110,
+                  textAlignVertical: 'top',
                   backgroundColor: 'blue',
                   color: 'red',
                 }}>
@@ -239,7 +246,7 @@ class TextExample extends React.Component<{...}> {
               more in the text a line more in the text line more in the
               <Text
                 style={{
-                  textAlignVertical: 'bottom',
+                  textAlignVertical: 'top',
                   backgroundColor: 'red',
                 }}>
                 Bottom

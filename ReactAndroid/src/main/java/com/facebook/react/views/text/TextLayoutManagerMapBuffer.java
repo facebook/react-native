@@ -144,12 +144,19 @@ public class TextLayoutManagerMapBuffer {
             && (textAttributes.mVerticalAlign.equals("top-child")
                 || textAttributes.mVerticalAlign.equals("bottom-child")
                 || textAttributes.mVerticalAlign.equals("center-child"))) {
+          Float effectiveLineHeight =
+              Double.isNaN(textAttributes.getEffectiveLineHeight())
+                  ? -1
+                  : textAttributes.getEffectiveLineHeight();
+          String currentText = String.valueOf(sb.subSequence(start, end));
           ops.add(
               new SetSpanOperation(
                   start,
                   end,
                   new ReactAlignSpan(
-                      textAttributes.mVerticalAlign, textAttributes.getEffectiveLineHeight())));
+                      textAttributes.mVerticalAlign,
+                      textAttributes.getEffectiveLineHeight(),
+                      currentText)));
         }
         if (textAttributes.mIsAccessibilityLink) {
           ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));

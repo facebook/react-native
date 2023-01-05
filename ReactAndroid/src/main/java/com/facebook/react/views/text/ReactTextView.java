@@ -201,6 +201,23 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         imageLineHeights.put(line, height);
       }
     }
+    // loop over each CustomLineHeightSpan
+    // use getHeight to retrieve height of that line
+    // save it and later retrieve it
+    Integer highestLineHeight = -1;
+    if (getText() instanceof Spanned) {
+      CustomLineHeightSpan[] spans = text.getSpans(0, text.length(), CustomLineHeightSpan.class);
+      if (layout != null) {
+        if (spans.length != 0) {
+          for (CustomLineHeightSpan span : spans) {
+            if (highestLineHeight == 0f || span.getLineHeight() > highestLineHeight) {
+              highestLineHeight = span.getLineHeight();
+            }
+          }
+        }
+      }
+    }
+
     if (getText() instanceof Spanned) {
       ReactAlignSpan[] spans = text.getSpans(0, text.length(), ReactAlignSpan.class);
       if (layout != null) {
@@ -210,7 +227,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
           for (ReactAlignSpan span : spans) {
             int start = text.getSpanStart(span);
             int currentLine = layout.getLineForOffset(start);
-            int highestLineHeight =
+            Integer calculatedHeight = layout.getLineBottom(currentLine - 1);
+            Integer imageLineHeight =
                 imageLineHeights != null && imageLineHeights.get(currentLine) != null
                     ? imageLineHeights.get(currentLine)
                     : -1;
@@ -220,6 +238,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
                 lineCount,
                 layout.getHeight(),
                 currentLine,
+                imageLineHeight,
                 highestLineHeight);
           }
         }
