@@ -132,6 +132,8 @@ executors:
     macos:
       xcode: *xcode_version
     resource_class: macos.x86.medium.gen2
+    environment:
+      - BUILD_FROM_SOURCE: true
 
 # -------------------------
 #        COMMANDS
@@ -1142,6 +1144,7 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_VERSION_FILE: "sdks/.hermesversion"
+      - BUILD_FROM_SOURCE: true
     steps:
       - run:
           name: Install dependencies
