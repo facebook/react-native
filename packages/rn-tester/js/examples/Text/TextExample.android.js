@@ -24,6 +24,7 @@ const {
   StyleSheet,
   Text,
   View,
+  Button,
 } = require('react-native');
 
 class Entity extends React.Component<{|children: React.Node|}> {
@@ -207,54 +208,152 @@ class AdjustingFontSize extends React.Component<
 }
 
 class NestedTextVerticalAlign extends React.Component<{...}> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      verticalAlignTop: false,
+      verticalAlignCenter: false,
+      fontSize: 12,
+    };
+  }
+
+  changeVerticalAlign = () => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        verticalAlignCenter: false,
+        verticalAlignTop: !prevState.verticalAlignTop,
+      };
+    });
+  };
+
+  increaseFont = () => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        fontSize: prevState.fontSize + 5,
+      };
+    });
+  };
+
+  decreaseFont = () => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        fontSize: prevState.fontSize - 5,
+      };
+    });
+  };
+
   render(): React.Node {
+    const {verticalAlignTop, verticalAlignCenter, fontSize} = this.state;
+    let textAlignVertical;
+    if (verticalAlignCenter) {
+      textAlignVertical = 'center';
+    } else {
+      textAlignVertical = verticalAlignTop ? 'top' : 'bottom';
+    }
     return (
       <>
-        <RNTesterBlock title="top">
+        <Text>
+          vertical align is set to{' '}
+          <Text style={{backgroundColor: 'red'}}>{textAlignVertical}</Text>
+        </Text>
+        <Button
+          onPress={() => this.changeVerticalAlign()}
+          title="Set vertical align top or bottom"
+        />
+        <Button
+          onPress={() => this.setState({verticalAlignCenter: true})}
+          title="set vertical align CENTER"
+        />
+        <Button onPress={() => this.increaseFont()} title="increase font" />
+        <Button onPress={() => this.decreaseFont()} title="decrease font" />
+        <RNTesterBlock title={`without lineHeight ${textAlignVertical}`}>
           <View>
             <Text
-              textTransform="uppercase"
               style={{
                 textAlignVertical: 'bottom',
                 backgroundColor: 'yellow',
               }}>
-              parent
               <Text
                 style={{
-                  textAlignVertical: 'top',
+                  fontSize,
+                  textAlignVertical,
                   backgroundColor: 'green',
                   color: 'white',
                 }}>
-                This span is aligned top
+                This span is aligned {textAlignVertical}
               </Text>
               <Text
                 style={{
-                  textAlignVertical: 'top',
+                  textAlignVertical,
                   backgroundColor: 'blue',
                   color: 'white',
                 }}>
-                span no lineHeight (top)
+                span no lineHeight ({textAlignVertical})
               </Text>
             </Text>
             <Text>Without lineHeight text is correctly aligned.</Text>
           </View>
         </RNTesterBlock>
-        <RNTesterBlock title="inline image and top">
+        <RNTesterBlock title="lineHeight and verticalAlign">
           <View>
             <Text
               textTransform="uppercase"
               style={{
-                textAlignVertical: 'bottom',
+                textAlignVertical,
+                backgroundColor: 'yellow',
+              }}>
+              parent
+              <Text
+                style={{
+                  textAlignVertical,
+                  backgroundColor: 'green',
+                  color: 'white',
+                }}>
+                This span is aligned {textAlignVertical}
+              </Text>
+              <Text
+                style={{
+                  textAlignVertical,
+                  lineHeight: 100,
+                  backgroundColor: 'red',
+                }}>
+                span lineHeight 150 ({textAlignVertical})
+              </Text>
+              <Text
+                style={{
+                  textAlignVertical,
+                  backgroundColor: 'blue',
+                  color: 'white',
+                }}>
+                span no lineHeight ({textAlignVertical})
+              </Text>
+            </Text>
+            <Text>
+              Text in the spans is correctly aligned to the {textAlignVertical}{' '}
+              of the line (like html), but parent text uses Gravity to align
+              text. It should be removed in the future.
+            </Text>
+          </View>
+        </RNTesterBlock>
+        <RNTesterBlock title={`inline image and ${textAlignVertical}`}>
+          <View>
+            <Text
+              textTransform="uppercase"
+              style={{
+                textAlignVertical,
                 backgroundColor: 'yellow',
               }}>
               <Text
                 style={{
                   lineHeight: 50,
                   backgroundColor: 'green',
-                  textAlignVertical: 'top',
+                  textAlignVertical,
                   color: 'white',
                 }}>
-                Span aligned top
+                Span aligned {textAlignVertical}
               </Text>
               <Image
                 source={{uri: 'https://via.placeholder.com/100'}}
@@ -265,50 +364,9 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
               />
             </Text>
             <Text>
-              The span above is correctly aligned to the top, but this requires
-              some change to TextInlineViewPlaceholderSpan (nested Image API)
-              which breaks nested Text.
-            </Text>
-          </View>
-        </RNTesterBlock>
-        <RNTesterBlock title="lineHeight and top">
-          <View>
-            <Text
-              textTransform="uppercase"
-              style={{
-                textAlignVertical: 'top',
-                backgroundColor: 'yellow',
-              }}>
-              parent
-              <Text
-                style={{
-                  textAlignVertical: 'top',
-                  backgroundColor: 'green',
-                  color: 'white',
-                }}>
-                This span is aligned top
-              </Text>
-              <Text
-                style={{
-                  textAlignVertical: 'top',
-                  lineHeight: 100,
-                  backgroundColor: 'red',
-                }}>
-                span lineHeight 150 (top)
-              </Text>
-              <Text
-                style={{
-                  textAlignVertical: 'top',
-                  backgroundColor: 'blue',
-                  color: 'white',
-                }}>
-                span no lineHeight (top)
-              </Text>
-            </Text>
-            <Text>
-              Text in the spans is correctly aligned to the top of the line
-              (like html), but parent text uses Gravity to align text. It should
-              be removed in the future.
+              The span above is correctly aligned to the {textAlignVertical},
+              but this requires some change to TextInlineViewPlaceholderSpan
+              (nested Image API) which breaks nested Text.
             </Text>
           </View>
         </RNTesterBlock>
@@ -318,17 +376,17 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
               textTransform="uppercase"
               style={{
                 height: 150,
-                textAlignVertical: 'top',
+                textAlignVertical,
                 backgroundColor: 'yellow',
               }}>
-              parent Text aligns top with a {'\n'}
+              parent Text aligns {textAlignVertical} with a {'\n'}
               <Text
                 style={{
-                  textAlignVertical: 'top',
+                  textAlignVertical,
                   backgroundColor: 'green',
                   color: 'white',
                 }}>
-                span aligned top
+                span aligned {textAlignVertical}
               </Text>
               <Image
                 source={{uri: 'https://via.placeholder.com/100'}}
