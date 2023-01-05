@@ -56,7 +56,14 @@ public class ReactAlignSpan extends MetricAffectingSpan implements ReactSpan {
       //
     }
     if (mTextAlignVertical == "bottom-child") {
-      //
+      if (mHighestLineHeight != -1) {
+        // the span with the highest lineHeight over-rides sets the height for all rows
+        ds.baselineShift += mHighestLineHeight / 2 - ds.getTextSize();
+      } else {
+        // if lineHeight is not set, align the text using the font
+        // top and ascent https://stackoverflow.com/a/27631737/7295772
+        ds.baselineShift += bounds.top - ds.getFontMetrics().ascent;
+      }
     }
   }
 

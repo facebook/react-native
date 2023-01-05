@@ -255,49 +255,19 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
     }
     return (
       <>
-        <Text>
-          vertical align is set to{' '}
-          <Text style={{backgroundColor: 'red'}}>{textAlignVertical}</Text>
-        </Text>
-        <Button
-          onPress={() => this.changeVerticalAlign()}
-          title="Set vertical align top or bottom"
-        />
-        <Button
-          onPress={() => this.setState({verticalAlignCenter: true})}
-          title="set vertical align CENTER"
-        />
-        <Button onPress={() => this.increaseFont()} title="increase font" />
-        <Button onPress={() => this.decreaseFont()} title="decrease font" />
-        <RNTesterBlock title={`without lineHeight ${textAlignVertical}`}>
-          <View>
-            <Text
-              style={{
-                textAlignVertical: 'bottom',
-                backgroundColor: 'yellow',
-              }}>
-              <Text
-                style={{
-                  fontSize,
-                  textAlignVertical,
-                  backgroundColor: 'green',
-                  color: 'white',
-                }}>
-                This span is aligned {textAlignVertical}
-              </Text>
-              <Text
-                style={{
-                  textAlignVertical,
-                  backgroundColor: 'blue',
-                  color: 'white',
-                }}>
-                span no lineHeight ({textAlignVertical})
-              </Text>
-            </Text>
-            <Text>Without lineHeight text is correctly aligned.</Text>
-          </View>
-        </RNTesterBlock>
         <RNTesterBlock title="lineHeight and verticalAlign">
+          <Text>
+            vertical align is set to{' '}
+            <Text style={{backgroundColor: 'red'}}>{textAlignVertical}</Text>
+          </Text>
+          <Button
+            onPress={() => this.changeVerticalAlign()}
+            title="Set vertical align top or bottom"
+          />
+          <Button
+            onPress={() => this.setState({verticalAlignCenter: true})}
+            title="set vertical align CENTER"
+          />
           <View>
             <Text
               textTransform="uppercase"
@@ -338,6 +308,54 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
             </Text>
           </View>
         </RNTesterBlock>
+        <RNTesterBlock title={`without lineHeight ${textAlignVertical}`}>
+          <Text>
+            vertical align is set to{' '}
+            <Text style={{backgroundColor: 'red'}}>{textAlignVertical}</Text>
+          </Text>
+          <Button
+            onPress={() => this.changeVerticalAlign()}
+            title="Set vertical align top or bottom"
+          />
+          <Button
+            onPress={() => this.setState({verticalAlignCenter: true})}
+            title="set vertical align CENTER"
+          />
+          <Button onPress={() => this.increaseFont()} title="increase font" />
+          <View>
+            <Text
+              style={{
+                textAlignVertical: 'bottom',
+                backgroundColor: 'yellow',
+              }}>
+              <Text
+                style={{
+                  fontSize,
+                  textAlignVertical,
+                  backgroundColor: 'green',
+                  color: 'white',
+                }}>
+                This span is aligned {textAlignVertical}
+              </Text>
+              <Text
+                style={{
+                  textAlignVertical,
+                  backgroundColor: 'blue',
+                  color: 'white',
+                }}>
+                span with smaller font can not align
+              </Text>
+            </Text>
+            <Text>
+              Without lineHeight prop, the green text is correctly aligned, but
+              does not support ReactAbsoluteSizeSpan (nested Text with different
+              font size, blue text). First span correctly aligns to the top, but
+              the second one does not. The lineHeight is inherited from bigger
+              font and the positioning is done based on the fontMetrics, which
+              are not related to lineHeight in the second blue text.
+            </Text>
+          </View>
+        </RNTesterBlock>
         <RNTesterBlock title={`inline image and ${textAlignVertical}`}>
           <View>
             <Text
@@ -366,7 +384,7 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
             <Text>
               The span above is correctly aligned to the {textAlignVertical},
               but this requires some change to TextInlineViewPlaceholderSpan
-              (nested Image API) which breaks nested Text.
+              (nested Image API) which breaks nested Text
             </Text>
           </View>
         </RNTesterBlock>
