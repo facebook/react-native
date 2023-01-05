@@ -17,42 +17,13 @@ version = package['version']
 
 # sdks/.hermesversion
 hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
-isInCI = ENV['CI'] === 'true'
+build_from_source = ENV['BUILD_FROM_SOURCE'] === 'true'
 
-source = {}
 git = "https://github.com/facebook/hermes.git"
 
-isInMain = version.include?('1000.0.0')
-isNightly = version.start_with?('0.0.0-')
+abort_if_invalid_tarball_provided!
 
-if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
-  if !File.exist?(ENV['HERMES_ENGINE_TARBALL_PATH'])
-    abort "[Hermes] HERMES_ENGINE_TARBALL_PATH is set, but points to a non-existing file: \"#{ENV['HERMES_ENGINE_TARBALL_PATH']}\"\nIf you don't want to use tarball, run `unset HERMES_ENGINE_TARBALL_PATH`"
-  end
-end
-
-if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
-  Pod::UI.puts "[Hermes] Using pre-built Hermes binaries from local path: #{ENV['HERMES_ENGINE_TARBALL_PATH']}".yellow if Object.const_defined?("Pod::UI")
-  source[:http] = "file://#{ENV['HERMES_ENGINE_TARBALL_PATH']}"
-elsif isInMain
-  Pod::UI.puts '[Hermes] Installing hermes-engine may take slightly longer, building Hermes compiler from source...'.yellow if Object.const_defined?("Pod::UI")
-  source[:git] = git
-  source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
-elsif isNightly
-  Pod::UI.puts '[Hermes] Nightly version, download pre-built for Hermes'.yellow if Object.const_defined?("Pod::UI")
-  destination_path = download_nightly_hermes(react_native_path, version)
-  # set tarball as hermes engine
-  source[:http] = "file://#{destination_path}"
-elsif File.exists?(hermestag_file) && isInCI
-  Pod::UI.puts '[Hermes] Detected that you are on a React Native release branch, building Hermes from source but fetched from tag...'.yellow if Object.const_defined?("Pod::UI")
-  hermestag = File.read(hermestag_file).strip
-  source[:git] = git
-  source[:tag] = hermestag
-else
-  # Sample url from Maven:
-  # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.71.0/react-native-artifacts-0.71.0-hermes-ios-debug.tar.gz
-  source[:http] = "https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
-end
+source = compute_hermes_source(build_from_source, hermestag_file, git, version, build_type, react_native_path)
 
 Pod::Spec.new do |spec|
   spec.name        = "hermes-engine"
