@@ -267,7 +267,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     UIManagerModule uiManager =
         Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class));
 
-    FLog.w("React::" + TAG, "onLayout " + " layout.getHeight(): " + (layout.getHeight()));
     if (layout == null) {
       // Text layout is calculated during pre-draw phase, so in some cases it can be empty during
       // layout phase, which usually happens before drawing.
