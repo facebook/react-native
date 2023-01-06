@@ -228,7 +228,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 #else // [TODO(macOS GH#774)
   NSEvent *nativeTouch = _nativeTouches[touchIndex];
   CGPoint location = nativeTouch.locationInWindow;
-  CGPoint rootViewLocation = CGPointMake(location.x, CGRectGetHeight(self.view.window.frame) - location.y);
+  RCTAssert(_cachedRootView, @"We were unable to find a root view for the touch");
+  CGPoint rootViewLocation = [_cachedRootView.window.contentView convertPoint:location toView:_cachedRootView];
   NSView *touchView = _touchViews[touchIndex];
   CGPoint touchViewLocation = [touchView convertPoint:location fromView:nil];
 #endif // ]TODO(macOS GH#774)
