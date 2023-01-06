@@ -11,6 +11,7 @@
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
 #include <glog/logging.h>
+#include <react/config/ReactNativeConfig.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/core/LayoutMetrics.h>
@@ -376,13 +377,19 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     YGStyle::ValueRepr &result) {
+  // For bug compatibility, pass "auto" as YGValueUndefined
+  static bool treatAutoAsUndefined =
+      context.contextContainer
+          .at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig")
+          ->getBool("react_fabric:treat_auto_as_undefined");
+
   if (value.hasType<Float>()) {
     result = yogaStyleValueFromFloat((Float)value);
     return;
   } else if (value.hasType<std::string>()) {
     const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
-      result = YGValueUndefined;
+      result = treatAutoAsUndefined ? YGValueUndefined : YGValueAuto;
       return;
     } else {
       if (stringValue.back() == '%') {
