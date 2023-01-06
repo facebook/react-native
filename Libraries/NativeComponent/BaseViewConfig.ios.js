@@ -221,6 +221,10 @@ const validAttributesForNonEventProps = {
   borderBottomRightRadius: true,
   borderBottomStartRadius: true,
   borderBottomEndRadius: true,
+  borderEndEndRadius: true,
+  borderEndStartRadius: true,
+  borderStartEndRadius: true,
+  borderStartStartRadius: true,
   display: true,
   zIndex: true,
 

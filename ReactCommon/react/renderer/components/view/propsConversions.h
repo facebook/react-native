@@ -401,6 +401,38 @@ static inline CascadedRectangleCorners<T> convertRawProp(
       defaultValue.bottomEnd,
       prefix,
       suffix);
+  result.endEnd = convertRawProp(
+      context,
+      rawProps,
+      "EndEnd",
+      sourceValue.endEnd,
+      defaultValue.endEnd,
+      prefix,
+      suffix);
+  result.endStart = convertRawProp(
+      context,
+      rawProps,
+      "EndStart",
+      sourceValue.endStart,
+      defaultValue.endStart,
+      prefix,
+      suffix);
+  result.startEnd = convertRawProp(
+      context,
+      rawProps,
+      "StartEnd",
+      sourceValue.startEnd,
+      defaultValue.startEnd,
+      prefix,
+      suffix);
+  result.startStart = convertRawProp(
+      context,
+      rawProps,
+      "StartStart",
+      sourceValue.startStart,
+      defaultValue.startStart,
+      prefix,
+      suffix);
 
   result.all = convertRawProp(
       context, rawProps, "", sourceValue.all, defaultValue.all, prefix, suffix);

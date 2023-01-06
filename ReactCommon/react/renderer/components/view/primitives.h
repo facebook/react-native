@@ -160,12 +160,21 @@ struct CascadedRectangleCorners {
   OptionalT bottomStart{};
   OptionalT bottomEnd{};
   OptionalT all{};
+  OptionalT endEnd{};
+  OptionalT endStart{};
+  OptionalT startEnd{};
+  OptionalT startStart{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
-    const auto topLeading = isRTL ? topEnd : topStart;
-    const auto topTrailing = isRTL ? topStart : topEnd;
-    const auto bottomLeading = isRTL ? bottomEnd : bottomStart;
-    const auto bottomTrailing = isRTL ? bottomStart : bottomEnd;
+    const auto logicalTopStart = topStart ? topStart : startStart;
+    const auto logicalTopEnd = topEnd ? topEnd : startEnd;
+    const auto logicalBottomStart = bottomStart ? bottomStart : endStart;
+    const auto logicalBottomEnd = bottomEnd ? bottomEnd : endEnd;
+
+    const auto topLeading = isRTL ? logicalTopEnd : logicalTopStart;
+    const auto topTrailing = isRTL ? logicalTopStart : logicalTopEnd;
+    const auto bottomLeading = isRTL ? logicalBottomEnd : logicalBottomStart;
+    const auto bottomTrailing = isRTL ? logicalBottomStart : logicalBottomEnd;
 
     return {
         /* .topLeft = */ topLeft.value_or(
@@ -189,7 +198,11 @@ struct CascadedRectangleCorners {
                this->topEnd,
                this->bottomStart,
                this->bottomEnd,
-               this->all) ==
+               this->all,
+               this->endEnd,
+               this->endStart,
+               this->startEnd,
+               this->startStart) ==
         std::tie(
                rhs.topLeft,
                rhs.topRight,
@@ -199,7 +212,11 @@ struct CascadedRectangleCorners {
                rhs.topEnd,
                rhs.bottomStart,
                rhs.bottomEnd,
-               rhs.all);
+               rhs.all,
+               rhs.endEnd,
+               rhs.endStart,
+               rhs.startEnd,
+               rhs.startStart);
   }
 
   bool operator!=(const CascadedRectangleCorners<T> &rhs) const {

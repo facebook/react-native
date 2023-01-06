@@ -71,7 +71,15 @@
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                                \
       struct, bottomEnd, prefix "BottomEnd" suffix, rawValue)            \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                                \
-      struct, all, prefix "" suffix, rawValue)
+      struct, all, prefix "" suffix, rawValue)                           \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                                \
+      struct, endEnd, prefix "EndEnd" suffix, rawValue)                  \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                                \
+      struct, endStart, prefix "EndStart" suffix, rawValue)              \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                                \
+      struct, startEnd, prefix "StartEnd" suffix, rawValue)              \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                                \
+      struct, startStart, prefix "StartStart" suffix, rawValue)
 
 #define SET_CASCADED_RECTANGLE_EDGES(struct, prefix, suffix, rawValue) \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
