@@ -26,15 +26,7 @@ const parser = new TypeScriptParser();
 function parseModuleFixture(filename: string): SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
-  return buildSchema(
-    contents,
-    'path/NativeSampleTurboModule.ts',
-    wrapComponentSchema,
-    buildComponentSchema,
-    buildModuleSchema,
-    Visitor,
-    parser,
-  );
+  return parseString(contents, 'path/NativeSampleTurboModule.ts');
 }
 
 function parseString(contents: string, filename: ?string): SchemaType {
