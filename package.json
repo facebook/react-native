@@ -144,7 +144,7 @@
     "hermes-eslint": "0.8.0",
     "react": "18.2.0",
     "react-test-renderer": "18.2.0",
-    "@babel/core": "^7.14.0",
+    "@babel/core": "^7.20.0",
     "@babel/eslint-parser": "^7.18.2",
     "@babel/generator": "^7.14.0",
     "@babel/plugin-transform-regenerator": "^7.0.0",
