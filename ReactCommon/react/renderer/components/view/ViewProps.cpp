@@ -265,7 +265,8 @@ ViewProps::ViewProps(
                     {}))
 
 #endif
-          {};
+{
+}
 
 #define VIEW_EVENT_CASE(eventType)                      \
   case CONSTEXPR_RAW_PROPS_KEY_HASH("on" #eventType): { \

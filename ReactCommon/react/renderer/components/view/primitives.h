@@ -19,7 +19,7 @@
 namespace facebook {
 namespace react {
 
-enum class PointerEventsMode { Auto, None, BoxNone, BoxOnly };
+enum class PointerEventsMode : uint8_t { Auto, None, BoxNone, BoxOnly };
 
 struct ViewEvents {
   std::bitset<32> bits{};
@@ -79,11 +79,11 @@ inline static bool operator!=(ViewEvents const &lhs, ViewEvents const &rhs) {
   return lhs.bits != rhs.bits;
 }
 
-enum class BackfaceVisibility { Auto, Visible, Hidden };
+enum class BackfaceVisibility : uint8_t { Auto, Visible, Hidden };
 
-enum class BorderCurve { Circular, Continuous };
+enum class BorderCurve : uint8_t { Circular, Continuous };
 
-enum class BorderStyle { Solid, Dotted, Dashed };
+enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
 
 template <typename T>
 struct CascadedRectangleEdges {
@@ -249,15 +249,15 @@ struct BorderMetrics {
 #ifdef ANDROID
 
 struct NativeDrawable {
-  enum class Kind {
+  enum class Kind : uint8_t {
     Ripple,
     ThemeAttr,
   };
 
   struct Ripple {
     std::optional<int32_t> color{};
-    bool borderless{false};
     std::optional<Float> rippleRadius{};
+    bool borderless{false};
 
     bool operator==(const Ripple &rhs) const {
       return std::tie(this->color, this->borderless, this->rippleRadius) ==
@@ -265,9 +265,9 @@ struct NativeDrawable {
     }
   };
 
-  Kind kind;
   std::string themeAttr;
   Ripple ripple;
+  Kind kind;
 
   bool operator==(const NativeDrawable &rhs) const {
     if (this->kind != rhs.kind)
