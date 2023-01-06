@@ -22,6 +22,7 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     {"ScrollView", RCTScrollViewCls},
     {"PullToRefreshView", RCTPullToRefreshViewCls},
     {"ActivityIndicatorView", RCTActivityIndicatorViewCls},
+    {"Slider", RCTSliderCls},
     {"Switch", RCTSwitchCls},
     {"UnimplementedNativeView", RCTUnimplementedNativeViewCls},
     {"Paragraph", RCTParagraphCls},
