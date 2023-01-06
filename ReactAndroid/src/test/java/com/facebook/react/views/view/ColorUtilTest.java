@@ -44,4 +44,13 @@ public class ColorUtilTest {
     assertEquals(PixelFormat.OPAQUE, ColorUtil.getOpacityFromColor(0xFF123456));
     assertEquals(PixelFormat.OPAQUE, ColorUtil.getOpacityFromColor(0xFFFFFFFF));
   }
+
+  @Test
+  public void testNormalize() {
+    assertEquals(0x800B1621, ColorUtil.normalize(11, 22, 33, 0.5));
+    assertEquals(0x00000000, ColorUtil.normalize(0, 0, 0, 0));
+    assertEquals(0xFFFFFFFF, ColorUtil.normalize(255, 255, 255, 1));
+    assertEquals(0xFF00FFFF, ColorUtil.normalize(-1, 256, 255, 1.1));
+    assertEquals(0x000001FF, ColorUtil.normalize(0.4, 0.5, 255.4, -1));
+  }
 }

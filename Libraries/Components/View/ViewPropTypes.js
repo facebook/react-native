@@ -20,7 +20,7 @@ import type {
   ScrollEvent, // TODO(macOS GH#774)
   KeyEvent, // TODO(macOS GH#774)
 } from '../../Types/CoreEventTypes';
-import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
@@ -597,7 +597,7 @@ export type ViewProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/view#hitslop
    */
-  hitSlop?: ?EdgeInsetsProp,
+  hitSlop?: ?EdgeInsetsOrSizeProp,
 
   /**
    * Controls whether the `View` can be the target of touch events.

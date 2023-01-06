@@ -517,7 +517,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
   std::thread t1([this, &didRunSynchronousTask, &didRunSubsequentTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
         [this, &didRunSynchronousTask, &didRunSubsequentTask](
-            jsi::Runtime &rt) {
+            jsi::Runtime &runtime) {
           didRunSynchronousTask = true;
 
           auto callback = createHostFunctionFromLambda(
@@ -529,6 +529,8 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
 
           runtimeScheduler_->scheduleTask(
               SchedulerPriority::ImmediatePriority, std::move(callback));
+
+          runtimeScheduler_->callImmediates(runtime);
         });
   });
 
@@ -553,7 +555,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
   std::thread t1([this, &didRunSynchronousTask, &didRunSubsequentTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
         [this, &didRunSynchronousTask, &didRunSubsequentTask](
-            jsi::Runtime &rt) {
+            jsi::Runtime &runtime) {
           didRunSynchronousTask = true;
 
           auto callback = createHostFunctionFromLambda(
@@ -565,6 +567,9 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
 
           runtimeScheduler_->scheduleTask(
               SchedulerPriority::LowPriority, std::move(callback));
+          runtimeScheduler_->callImmediates(runtime);
+
+          EXPECT_FALSE(didRunSubsequentTask);
         });
   });
 

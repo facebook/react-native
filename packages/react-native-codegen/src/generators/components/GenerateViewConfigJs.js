@@ -130,9 +130,8 @@ export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL
 `.trim();
 };
 
-// If static view configs are enabled, get whether the native component exists
-// in the app binary using hasViewManagerConfig() instead of getViewManagerConfig().
-// Old getViewManagerConfig() checks for the existance of the native Paper view manager.
+// Check whether the native component exists in the app binary.
+// Old getViewManagerConfig() checks for the existance of the native Paper view manager. Not available in Bridgeless.
 // New hasViewManagerConfig() queries Fabric’s native component registry directly.
 const DeprecatedComponentNameCheckTemplate = ({
   componentName,
@@ -142,8 +141,7 @@ const DeprecatedComponentNameCheckTemplate = ({
   paperComponentNameDeprecated: string,
 }) =>
   `
-const staticViewConfigsEnabled = global.__fbStaticViewConfig === true;
-if (staticViewConfigsEnabled) {
+if (global.__nativeComponentRegistry__hasComponent) {
   if (UIManager.hasViewManagerConfig('${componentName}')) {
     nativeComponentName = '${componentName}';
   } else if (UIManager.hasViewManagerConfig('${paperComponentNameDeprecated}')) {
