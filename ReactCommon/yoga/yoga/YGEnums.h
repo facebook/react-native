@@ -56,7 +56,9 @@ YG_ENUM_SEQ_DECL(
 
 YG_ENUM_SEQ_DECL(
     YGExperimentalFeature,
-    YGExperimentalFeatureWebFlexBasis)
+    YGExperimentalFeatureWebFlexBasis,
+    YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge,
+    YGExperimentalFeatureFixAbsoluteTrailingColumnMargin)
 
 YG_ENUM_SEQ_DECL(
     YGFlexDirection,
