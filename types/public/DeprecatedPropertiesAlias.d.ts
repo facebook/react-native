@@ -26,7 +26,6 @@ import {
   InputAccessoryViewProps,
   ActivityIndicatorProps,
   ActivityIndicatorIOSProps,
-  DatePickerIOSProps,
   DrawerLayoutAndroidProps,
   ProgressBarAndroidProps,
   RefreshControlProps,
@@ -115,9 +114,6 @@ export type ActivityIndicatorProperties = ActivityIndicatorProps;
 
 /** @deprecated Use ActivityIndicatorIOSProps */
 export type ActivityIndicatorIOSProperties = ActivityIndicatorIOSProps;
-
-/** @deprecated Use DatePickerIOSProps */
-export type DatePickerIOSProperties = DatePickerIOSProps;
 
 /** @deprecated Use DrawerLayoutAndroidProps */
 export type DrawerLayoutAndroidProperties = DrawerLayoutAndroidProps;

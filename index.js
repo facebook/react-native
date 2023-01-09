@@ -14,7 +14,6 @@
 import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
 import typeof Button from './Libraries/Components/Button';
-import typeof DatePickerIOS from './Libraries/Components/DatePicker/DatePickerIOS';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof FlatList from './Libraries/Lists/FlatList';
 import typeof Image from './Libraries/Image/Image';
@@ -113,16 +112,6 @@ module.exports = {
   },
   get Button(): Button {
     return require('./Libraries/Components/Button');
-  },
-  // $FlowFixMe[value-as-type]
-  get DatePickerIOS(): DatePickerIOS {
-    warnOnce(
-      'DatePickerIOS-merged',
-      'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-datetimepicker/datetimepicker',
-    );
-    return require('./Libraries/Components/DatePicker/DatePickerIOS');
   },
   // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
@@ -772,6 +761,21 @@ if (__DEV__) {
         'ProgressViewIOS has been removed from react-native core. ' +
           "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
           'See https://github.com/react-native-progress-view/progress-view',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access DatePickerIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access DatePickerIOS. */
+  Object.defineProperty(module.exports, 'DatePickerIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'DatePickerIOS has been removed from react-native core. ' +
+          "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+          'See https://github.com/react-native-datetimepicker/datetimepicker',
       );
     },
   });
