@@ -154,10 +154,10 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.create_xcode_env_if_missing
+    def self.create_xcode_env_if_missing(file_manager: File)
         relative_path = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
-        file_path = File.join(relative_path, '.xcode.env')
-        if File.exist?(file_path)
+        file_path = file_manager.join(relative_path, '.xcode.env')
+        if file_manager.exist?(file_path)
             return
         end
 

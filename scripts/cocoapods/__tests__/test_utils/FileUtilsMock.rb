@@ -35,6 +35,6 @@ module FileUtils
     def self.rm_rf(path)
         FileUtilsStorage.push_rmrf_path(path)
         FileUtilsStorage.increase_rmrfi_invocation_count
-        Dir.remove_mocked_paths(path)
+        DirMock.remove_mocked_paths(path)
     end
 end
