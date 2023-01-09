@@ -1427,7 +1427,7 @@ jobs:
       - run_yarn
       - add_ssh_keys:
           fingerprints:
-            - "1c:98:e0:3a:52:79:95:29:12:cd:b4:87:5b:41:e2:bb"
+            - "1f:c7:61:c4:e2:ff:77:e3:cc:ca:a7:34:c2:79:e3:3c"
       - brew_install:
           package: cmake
       - run:
