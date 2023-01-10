@@ -15,6 +15,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 //
 // functionally equivalent types
 //
@@ -65,7 +67,7 @@ UIKIT_STATIC_INLINE CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path)
 
 #define RCTPlatformWindow UIWindow
 
-UIKIT_STATIC_INLINE RCTPlatformView *RCTUIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, UIEvent *event)
+UIKIT_STATIC_INLINE RCTPlatformView *RCTUIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, __unused UIEvent *__nullable event)
 {
   return [view hitTest:point withEvent:event];
 }
@@ -116,9 +118,13 @@ UIKIT_STATIC_INLINE CGFloat UIFontLineHeight(UIFont *font)
   return [font lineHeight];
 }
 
+NS_ASSUME_NONNULL_END
+
 #else // TARGET_OS_OSX [
 
 #import <AppKit/AppKit.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 //
 // semantically equivalent constants
@@ -372,7 +378,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 
 @property (nonatomic, getter=isUserInteractionEnabled) BOOL userInteractionEnabled;
 
-- (NSView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event;
+- (NSView *)hitTest:(CGPoint)point withEvent:(UIEvent *_Nullable)event;
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event;
 
 - (void)insertSubview:(NSView *)view atIndex:(NSInteger)index;
@@ -389,7 +395,6 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 // An override of an undocumented API that controls the layer's masksToBounds property
 @property (nonatomic) BOOL clipsToBounds;
 @property (nonatomic, copy) NSColor *backgroundColor;
-@property (nonatomic, readwrite, getter=isOpaque) BOOL opaque;
 @property (nonatomic) CGAffineTransform transform;
 
 /**
@@ -437,7 +442,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 @end // ]TODO(macOS GH#774)
 
 
-NS_INLINE RCTPlatformView *RCTUIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, __unused UIEvent *event)
+NS_INLINE RCTPlatformView *RCTUIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, __unused UIEvent *__nullable event)
 {
   return [view hitTest:point];
 }
@@ -471,6 +476,8 @@ NS_INLINE CGRect CGRectValue(NSValue *value)
   return rect;
 }
 
+NS_ASSUME_NONNULL_END
+
 #endif // ] TARGET_OS_OSX
 
 //
@@ -483,7 +490,7 @@ NS_INLINE CGRect CGRectValue(NSValue *value)
 typedef UISlider RCTUISlider;
 #else
 @interface RCTUISlider : NSSlider
-
+NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL pressed;
 @property (nonatomic, assign) float value;
 @property (nonatomic, assign) float minimumValue;
@@ -492,14 +499,14 @@ typedef UISlider RCTUISlider;
 @property (nonatomic, strong) NSColor *maximumTrackTintColor;
 
 - (void)setValue:(float)value animated:(BOOL)animated;
-
+NS_ASSUME_NONNULL_END
 @end
 #endif // ]TODO(macOS GH#774)
 
 // RCTUILabel
 
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
-#define RCTUILabel UILabel
+typedef UILabel RCTUILabel;
 #else
 @interface RCTUILabel : NSTextField
 @end
@@ -511,21 +518,22 @@ typedef UISlider RCTUISlider;
 typedef UISwitch RCTUISwitch;
 #else
 @interface RCTUISwitch : NSSwitch
-
+NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, getter=isOn) BOOL on;
 
 - (void)setOn:(BOOL)on animated:(BOOL)animated;
 
+NS_ASSUME_NONNULL_END
 @end
 #endif // ]TODO(macOS GH#774)
 
 // RCTUIActivityIndicatorView
 
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
-#define RCTUIActivityIndicatorView UIActivityIndicatorView
+typedef UIActivityIndicatorView RCTUIActivityIndicatorView;
 #else
 @interface RCTUIActivityIndicatorView : NSProgressIndicator
-
+NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) UIActivityIndicatorViewStyle activityIndicatorViewStyle;
 @property (nonatomic, assign) BOOL hidesWhenStopped;
 @property (nullable, readwrite, nonatomic, strong) RCTUIColor *color;
@@ -533,6 +541,7 @@ typedef UISwitch RCTUISwitch;
 
 - (void)startAnimating;
 - (void)stopAnimating;
-
+NS_ASSUME_NONNULL_END
 @end
+
 #endif // ]TODO(macOS GH#774)

@@ -9,6 +9,8 @@
 
 #import <React/RCTComponent.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
 @protocol RCTSliderDelegate;
 #endif
@@ -50,3 +52,5 @@
 - (void)slider:(RCTSlider *)slider didPress:(BOOL)press;
 @end
 #endif // ]TODO(macOS GH#774)
+
+NS_ASSUME_NONNULL_END

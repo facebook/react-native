@@ -111,7 +111,7 @@ RCT_EXPORT_MODULE()
   RCTExecuteOnMainQueue(^{
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"UIManager invalidate", nil);
     for (NSNumber *rootViewTag in self->_rootViewTags) {
-      RCTUIView *rootView = self->_viewRegistry[rootViewTag]; // TODO(macOS ISS#3536887)
+		RCTPlatformView *rootView = self->_viewRegistry[rootViewTag]; // TODO(macOS ISS#3536887)
       if ([rootView conformsToProtocol:@protocol(RCTInvalidating)]) {
         [(id<RCTInvalidating>)rootView invalidate];
       }
@@ -455,12 +455,12 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
                            forTag:view.reactTag];
 }
 
-- (RCTUIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag
+- (RCTPlatformView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag
 {
   if (!nativeID || !rootTag) {
     return nil;
   }
-  RCTUIView *view; // TODO(macOS ISS#3536887)
+  RCTPlatformView *view; // TODO(macOS ISS#3536887)
   @synchronized(self) {
     view = [_nativeIDRegistry objectForKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
   }
@@ -1101,7 +1101,7 @@ RCT_EXPORT_METHOD(updateView
 {
   RCTAssertMainQueue();
   RCTComponentData *componentData = _componentDataByName[viewName];
-  RCTUIView *view = _viewRegistry[reactTag]; // TODO(macOS ISS#3536887)
+  RCTPlatformView *view = _viewRegistry[reactTag]; // TODO(macOS ISS#3536887)
   [componentData setProps:props forView:view];
 }
 

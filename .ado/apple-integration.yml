@@ -50,7 +50,7 @@ jobs:
           set -eo pipefail
           cat package.json |
             jq '.devDependencies["react"] = $(react_version)' |
-            jq '.devDependencies["react-native"] = "^0.64"' |
+            jq '.devDependencies["react-native"] = "^0.68"' |
             jq '.devDependencies["react-native-macos"] = "../react-native-macos-$(package_version).tgz"' |
             jq 'del(.devDependencies["@react-native-community/cli"])' |
             jq 'del(.devDependencies["@react-native-community/cli-platform-android"])' |

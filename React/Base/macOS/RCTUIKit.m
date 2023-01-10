@@ -207,7 +207,6 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *bezierPath)
 @private
   NSColor *_backgroundColor;
   BOOL _clipsToBounds;
-  BOOL _opaque;
   BOOL _userInteractionEnabled;
 }
 
@@ -285,11 +284,6 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
 - (BOOL)isFlipped
 {
   return YES;
-}
-
-- (BOOL)isOpaque
-{
-  return _opaque;
 }
 
 - (CGFloat)alpha

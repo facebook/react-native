@@ -134,7 +134,7 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
  * @param nativeID the id reference to native component relative to root view.
  * @param rootTag the react tag of root view hierarchy from which to find the view.
  */
-- (RCTUIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag; // TODO(macOS ISS#3536887)
+- (RCTPlatformView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag; // TODO(macOS ISS#3536887)
 
 /**
  * Register a view that is tagged with nativeID as its nativeID prop

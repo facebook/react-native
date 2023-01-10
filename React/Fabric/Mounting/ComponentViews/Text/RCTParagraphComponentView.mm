@@ -43,9 +43,9 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const ParagraphProps>();
     _props = defaultProps;
 
-    self.opaque = NO;
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
     self.contentMode = UIViewContentModeRedraw;
+    self.opaque = NO;
 #endif // TODO(macOS GH#774)
   }
 

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTTextView : RCTUIView // TODO(macOS ISS#3536887)
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher; // TODO(OSS Candidate ISS#2710739)
+- (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher; // TODO(OSS Candidate ISS#2710739)
 
 @property (nonatomic, assign) BOOL selectable;
 

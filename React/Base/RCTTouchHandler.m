@@ -40,7 +40,7 @@
   NSMutableArray<NSMutableDictionary *> *_reactTouches;
   NSMutableArray<RCTPlatformView *> *_touchViews; // TODO(macOS GH#774)
 
-  __weak RCTUIView *_cachedRootView; // TODO(macOS GH#774)
+  __weak RCTPlatformView *_cachedRootView; // TODO(macOS GH#774)
 
   uint16_t _coalescingKey;
 #if TARGET_OS_OSX// [TODO(macOS GH#774)
@@ -363,7 +363,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
  */
 - (void)_cacheRootView
 {
-  RCTUIView *rootView = self.view; // TODO(macOS ISS#3536887)
+  RCTPlatformView *rootView = self.view; // TODO(macOS ISS#3536887)
   while (rootView.superview && ![rootView isReactRootView] && ![rootView isKindOfClass:[RCTSurfaceView class]]) {
     rootView = rootView.superview;
   }
