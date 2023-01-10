@@ -16,16 +16,10 @@ public class ReactAlignSpan extends MetricAffectingSpan implements ReactSpan {
   private static final String TAG = "ReactAlignSpan";
   private final String mCurrentText;
   private double mLineHeight = -1;
-  private Integer mParentHeight;
   private String mTextAlignVertical;
-  private Integer mParentGravity;
-  private int mParentLineCount;
-  private int mCurrentLine;
-  private float mCalculatedHeight;
   private int mMaximumLineHeight = 0;
   private int mOtherSpanLineHeight;
   private int mCurrentLineHeight;
-  private int mImageLineHeight;
   private int mHighestLineHeight = -1;
 
   ReactAlignSpan(String textAlignVertical, Float lineHeight, String currentText) {
@@ -61,7 +55,7 @@ public class ReactAlignSpan extends MetricAffectingSpan implements ReactSpan {
     if (mTextAlignVertical == "bottom-child") {
       if (mHighestLineHeight != -1) {
         // the span with the highest lineHeight over-rides sets the height for all rows
-        ds.baselineShift += mHighestLineHeight / 2 - ds.getTextSize();
+        ds.baselineShift += mHighestLineHeight / 2 - ds.getTextSize() / 2;
       } else {
         // works only with single line
         // if lineHeight is not set, align the text using the font metrics
@@ -72,20 +66,7 @@ public class ReactAlignSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   // review types (float or int)
-  public void updateSpan(
-      Integer height,
-      int gravity,
-      int lineCount,
-      float calculatedHeight,
-      int currentLine,
-      int imageLineHeight,
-      int highestLineHeight) {
-    mParentHeight = height;
-    mParentGravity = gravity;
-    mParentLineCount = lineCount;
-    mCalculatedHeight = calculatedHeight;
-    mCurrentLine = currentLine;
-    mImageLineHeight = imageLineHeight;
+  public void updateSpan(int highestLineHeight) {
     mHighestLineHeight = highestLineHeight;
   }
 
