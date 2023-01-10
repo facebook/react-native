@@ -329,7 +329,7 @@ jobs:
       - run:
           name: "Run Tests: JavaScript Tests"
           command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
-      # [macOS] Github#949 Disable this failing test
+      # TODO(macOS GH#949): Disable this failing test
       # - run_e2e:
       #     platform: js
 
@@ -388,8 +388,6 @@ jobs:
           steps:
             - brew_install:
                 package: watchman
-            - brew_install:
-                package: node@16
             - run:
                 name: "Brew: Tap wix/brew"
                 command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
@@ -594,23 +592,6 @@ jobs:
           command: cd template/android/ && ./gradlew assembleDebug
 
   # -------------------------
-<<<<<<< HEAD
-  #    JOBS: Test Docker
-  # -------------------------
-  test_docker:
-    machine: true
-    steps:
-      - checkout
-      - run:
-          name: Build Docker container for Android RNTester App
-          command: |
-            source ~/.bashrc
-            nvm i node
-            npm i -g yarn
-            echo y | npx envinfo@latest
-            yarn run docker-setup-android
-            yarn run docker-build-android
-=======
   #    JOBS: Test Android RNTester
   # -------------------------
   test_android_rntester:
@@ -626,7 +607,6 @@ jobs:
       - run:
           name: Assemble RNTester
           command: ./gradlew :packages:rn-tester:android:app:assembleDebug
->>>>>>> 49f3f47b1e9b840e4374d46b105604f4d2c22dd5
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -949,8 +929,7 @@ workflows:
           run_disabled_tests: false
           filters:
             branches:
-              # [macOS] disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
-              ignore: /.*/
+              ignore: gh-pages
       - test_android_template:
           requires:
             - build_npm_package
@@ -960,8 +939,7 @@ workflows:
       - test_android_rntester:
           filters:
             branches:
-              # [macOS] disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
-              ignore: /.*/
+              ignore: gh-pages
       - test_ios_template:
           requires:
             - build_npm_package
@@ -1003,25 +981,16 @@ workflows:
       #     use_hermes: true
       #     use_frameworks: true
       #     run_unit_tests: true
-      # [macOS] Github#949 Disable this failing test
-      # - test_js:
-      #     name: test_js_prev_lts
-      #     executor: nodeprevlts
-      #     filters:
-      #     branches:
-      #       ignore: gh-pages
-      - test_docker:
+      - test_js:
+          name: test_js_prev_lts
+          executor: nodeprevlts
           filters:
             branches:
-              # [macOS] disable this test which is redundant to Azure Devops test and in the fork it fails because of Microsoft's V8 upgrade to Android
-              ignore: /.*/
+              ignore: gh-pages
       - test_windows:
           filters:
             branches:
-              # [macOS disable this test which requires a CCI plan.
-              # ignore: gh-pages
-              ignore: /.*/
-              # macOS]
+              ignore: gh-pages
           run_disabled_tests: false
 
   # This workflow should only be triggered by release script
@@ -1071,11 +1040,10 @@ workflows:
 
       # Gather coverage
       - js_coverage:
-          # [macOS disable this test, it fails in the fork due to not being set up for coveralls
           filters:
             branches:
-              ignore: /.*/
-          # macOS]
+              ignore: gh-pages
+
   nightly:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     triggers:
@@ -1083,11 +1051,11 @@ workflows:
           cron: "0 20 * * *"
           filters:
             branches:
-              # [macOS disable this release.  We never want to release anything from this fork via CCI.
+              # [TODO(macOS GH#774): disable this release.  We never want to release anything from this fork via CCI.
               ignore: /.*/
               # only:
               #   - main
-              # macOS]
+              # ]TODO(macOS GH#774)
     jobs:
       - nightly_job
 
