@@ -63,8 +63,6 @@ defineFeature(feature, (test) => {
         alertBoxShouldHaveText(then);
 
         clickOkButton(when);
-
-        // buttonHeaderShouldBeDisplayed(then);
     });
 
     test('Submit Button', ({ given, when, then }) => {
@@ -84,7 +82,5 @@ defineFeature(feature, (test) => {
         alertBoxShouldHaveText(then);
 
         clickOkButton(when);
-
-        // buttonHeaderShouldBeDisplayed(then);
     });
 });
