@@ -321,4 +321,7 @@ export default class AnimatedColor extends AnimatedWithChildren {
       g: this.g.__getNativeTag(),
       b: this.b.__getNativeTag(),
       a: this.a.__getNativeTag(),
+      nativeColor: this.nativeColor,
+    };
   }
+}
