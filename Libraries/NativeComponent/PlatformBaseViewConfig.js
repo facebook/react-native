@@ -500,7 +500,6 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
 
           style: ReactNativeStyleAttributes,
 
-<<<<<<< HEAD
           // [macOS
           ...(Platform.OS === 'macos' && {
             acceptsFirstMouse: true,
@@ -509,23 +508,11 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
             draggedTypes: true,
             enableFocusRing: true,
             nextKeyViewTag: true,
-            onBlur: true,
-            onClick: true,
-            onDoubleClick: true,
-            onDragEnter: true,
-            onDragLeave: true,
-            onDrop: true,
-            onFocus: true,
-            onKeyDown: true,
-            onKeyUp: true,
-            onMouseEnter: true,
-            onMouseLeave: true,
             tooltip: true,
             validKeysDown: true,
             validKeysUp: true,
           }),
           // macOS]
-=======
           ...ConditionallyIgnoredEventHandlers({
             onLayout: true,
             onMagicTap: true,
@@ -553,8 +540,23 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
             onTouchMove: true,
             onTouchEnd: true,
             onTouchCancel: true,
+
+            // [macOS
+            ...(Platform.OS === 'macos' && {
+              onBlur: true,
+              onClick: true,
+              onDoubleClick: true,
+              onDragEnter: true,
+              onDragLeave: true,
+              onDrop: true,
+              onFocus: true,
+              onKeyDown: true,
+              onKeyUp: true,
+              onMouseEnter: true,
+              onMouseLeave: true,
+            }),
+            // macOS]
           }),
->>>>>>> 49f3f47b1e9b840e4374d46b105604f4d2c22dd5
         },
       };
 

@@ -21,8 +21,6 @@ export function DynamicallyInjectedByGestureHandler<T: {...}>(object: T): T {
   return object;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * On iOS, ViewManager event declarations generate {eventName}: true entries
  * in ViewConfig valueAttributes. These entries aren't generated for Android.
@@ -39,7 +37,7 @@ export function ConditionallyIgnoredEventHandlers<T: {[name: string]: true}>(
   value: T,
 ): T | void {
   if (
-    Platform.OS === 'ios' &&
+    (Platform.OS === 'ios' || Platform.OS === 'macos') &&
     !(global.RN$ViewConfigEventValidAttributesDisabled === true)
   ) {
     return value;
@@ -47,7 +45,6 @@ export function ConditionallyIgnoredEventHandlers<T: {[name: string]: true}>(
   return undefined;
 }
 
->>>>>>> 49f3f47b1e9b840e4374d46b105604f4d2c22dd5
 export function isIgnored(value: mixed): boolean {
   if (typeof value === 'object' && value != null) {
     return ignoredViewConfigProps.has(value);
