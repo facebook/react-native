@@ -8,6 +8,7 @@
 package com.facebook.react.devsupport.interfaces;
 
 import android.app.Activity;
+import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
@@ -50,6 +51,8 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   boolean getDevSupportEnabled();
 
   DeveloperSettings getDevSettings();
+
+  RedBoxHandler getRedBoxHandler();
 
   void onNewReactContextCreated(ReactContext reactContext);
 
@@ -97,7 +100,11 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   @Nullable
   ErrorType getLastErrorType();
 
+  int getLastErrorCookie();
+
   void registerErrorCustomizer(ErrorCustomizer errorCustomizer);
+
+  Pair<String, StackFrame[]> processErrorCustomizers(Pair<String, StackFrame[]> errorInfo);
 
   /**
    * The PackagerLocationCustomizer allows you to have a dynamic packager location that is

@@ -11,7 +11,10 @@
 import {Platform} from 'react-native';
 import type {PartialViewConfig} from '../Renderer/shims/ReactNativeTypes';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
-import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
+import {
+  DynamicallyInjectedByGestureHandler,
+  ConditionallyIgnoredEventHandlers,
+} from './ViewConfigIgnore';
 
 type PartialViewConfigWithoutName = $Rest<
   PartialViewConfig,
@@ -35,13 +38,13 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
             registrationName: 'onAccessibilityAction',
           },
           topPointerEnter: {
-            registrationName: 'pointerenter',
+            registrationName: 'onPointerEnter',
           },
           topPointerLeave: {
-            registrationName: 'pointerleave',
+            registrationName: 'onPointerLeave',
           },
           topPointerMove: {
-            registrationName: 'pointermove',
+            registrationName: 'onPointerMove',
           },
           onGestureHandlerEvent: DynamicallyInjectedByGestureHandler({
             registrationName: 'onGestureHandlerEvent',
@@ -216,9 +219,31 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
           position: true,
           onLayout: true,
 
-          pointerenter: true,
-          pointerleave: true,
-          pointermove: true,
+          // Pointer events
+          onPointerEnter: true,
+          onPointerLeave: true,
+          onPointerMove: true,
+
+          // PanResponder handlers
+          onMoveShouldSetResponder: true,
+          onMoveShouldSetResponderCapture: true,
+          onStartShouldSetResponder: true,
+          onStartShouldSetResponderCapture: true,
+          onResponderGrant: true,
+          onResponderReject: true,
+          onResponderStart: true,
+          onResponderEnd: true,
+          onResponderRelease: true,
+          onResponderMove: true,
+          onResponderTerminate: true,
+          onResponderTerminationRequest: true,
+          onShouldBlockNativeResponder: true,
+
+          // Touch events
+          onTouchStart: true,
+          onTouchMove: true,
+          onTouchEnd: true,
+          onTouchCancel: true,
 
           style: ReactNativeStyleAttributes,
         },
@@ -361,8 +386,7 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
           accessibilityViewIsModal: true,
           accessibilityElementsHidden: true,
           accessibilityIgnoresInvertColors: true,
-          apple_fontSmoothing: true, // TODO(OSS Candidate ISS#2710739)
-          testID: true,
+          apple_fontSmoothing: true, // [macOS]
           backgroundColor: {process: require('../StyleSheet/processColor')},
           backfaceVisibility: true,
           opacity: true,
@@ -476,6 +500,7 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
 
           style: ReactNativeStyleAttributes,
 
+<<<<<<< HEAD
           // [macOS
           ...(Platform.OS === 'macos' && {
             acceptsFirstMouse: true,
@@ -500,6 +525,36 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
             validKeysUp: true,
           }),
           // macOS]
+=======
+          ...ConditionallyIgnoredEventHandlers({
+            onLayout: true,
+            onMagicTap: true,
+            onAccessibilityAction: true,
+            onAccessibilityEscape: true,
+            onAccessibilityTap: true,
+
+            // PanResponder handlers
+            onMoveShouldSetResponder: true,
+            onMoveShouldSetResponderCapture: true,
+            onStartShouldSetResponder: true,
+            onStartShouldSetResponderCapture: true,
+            onResponderGrant: true,
+            onResponderReject: true,
+            onResponderStart: true,
+            onResponderEnd: true,
+            onResponderRelease: true,
+            onResponderMove: true,
+            onResponderTerminate: true,
+            onResponderTerminationRequest: true,
+            onShouldBlockNativeResponder: true,
+
+            // Touch events
+            onTouchStart: true,
+            onTouchMove: true,
+            onTouchEnd: true,
+            onTouchCancel: true,
+          }),
+>>>>>>> 49f3f47b1e9b840e4374d46b105604f4d2c22dd5
         },
       };
 

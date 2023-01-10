@@ -97,17 +97,22 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^27.0.1",
+<<<<<<< HEAD
     "@react-native-community/cli": "^7.0.3",
     "@react-native-community/cli-platform-android": "^7.0.1",
     "@react-native-community/cli-platform-ios": "^7.0.1",
     "@react-native-community/cli-tools": "^7.0.1",
+=======
+    "@react-native-community/cli": "^7.0.1",
+    "@react-native-community/cli-platform-android": "^7.0.1",
+    "@react-native-community/cli-platform-ios": "^7.0.1",
+>>>>>>> 49f3f47b1e9b840e4374d46b105604f4d2c22dd5
     "@react-native/assets": "1.0.0",
     "@react-native/normalize-color": "2.0.0",
     "@react-native/polyfills": "2.0.0",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
-    "deprecated-react-native-prop-types": "^2.3.0",
     "event-target-shim": "^5.0.1",
     "hermes-engine": "~0.11.0",
     "invariant": "^2.2.4",
@@ -119,7 +124,11 @@
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "react-devtools-core": "^4.23.0",
+<<<<<<< HEAD
     "react-native-gradle-plugin": "^0.0.6",
+=======
+    "react-native-gradle-plugin": "^0.0.4",
+>>>>>>> 49f3f47b1e9b840e4374d46b105604f4d2c22dd5
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "16.14.1",
     "regenerator-runtime": "^0.13.2",
@@ -131,6 +140,7 @@
     "react-native-codegen": "^0.0.17"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "flow-bin": "^0.170.0",
     "react": "17.0.2",
     "@babel/core": "^7.14.0",
@@ -186,6 +196,10 @@
     "micromatch": "Version 3.x.x depends on decode-uri-component 0.2.0, which has a DoS vulnerability",
     "readable-stream": "Eliminates dependency on outdated string_decoder component",
     "shell-quote": "Versions prior to 1.7.3 have an RCE vulnerability. Should be removable once we upgrade CLI tools to ^8.0.0 with RN 0.69."
+=======
+    "flow-bin": "^0.171.0",
+    "react": "17.0.2"
+>>>>>>> 49f3f47b1e9b840e4374d46b105604f4d2c22dd5
   },
   "codegenConfig": {
     "libraries": [

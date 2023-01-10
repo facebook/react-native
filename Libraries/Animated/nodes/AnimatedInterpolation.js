@@ -23,14 +23,14 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
-export type InterpolationConfigType = {
+export type InterpolationConfigType = $ReadOnly<{
   inputRange: $ReadOnlyArray<number>,
   outputRange: $ReadOnlyArray<number> | $ReadOnlyArray<string>,
   easing?: (input: number) => number,
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
   extrapolateRight?: ExtrapolateType,
-};
+}>;
 
 const linear = (t: number) => t;
 

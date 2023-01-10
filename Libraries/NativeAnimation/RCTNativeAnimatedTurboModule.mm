@@ -102,6 +102,14 @@ RCT_EXPORT_METHOD(createAnimatedNode:(double)tag
   }];
 }
 
+RCT_EXPORT_METHOD(updateAnimatedNodeConfig:(double)tag
+                  config:(NSDictionary<NSString *, id> *)config)
+{
+  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager updateAnimatedNodeConfig:[NSNumber numberWithDouble:tag] config:config];
+  }];
+}
+
 RCT_EXPORT_METHOD(connectAnimatedNodes:(double)parentTag
                   childTag:(double)childTag)
 {

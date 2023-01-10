@@ -18,7 +18,7 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
-import com.facebook.react.devsupport.RedBoxHandler;
+import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.List;
 

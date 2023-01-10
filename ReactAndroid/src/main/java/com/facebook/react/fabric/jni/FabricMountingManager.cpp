@@ -545,11 +545,7 @@ void FabricMountingManager::executeMount(
           mountItem.newChildShadowView.eventEmitter;
       auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      if (enableEventEmitterRawPointer_) {
-        cEventEmitter->eventEmitterPointer = eventEmitter.get();
-      } else {
-        cEventEmitter->eventEmitter = eventEmitter;
-      }
+      cEventEmitter->eventEmitter = eventEmitter;
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = isLayoutable;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
@@ -729,11 +725,7 @@ void FabricMountingManager::executeMount(
       // Do not hold a reference to javaEventEmitter from the C++ side.
       auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      if (enableEventEmitterRawPointer_) {
-        cEventEmitter->eventEmitterPointer = eventEmitter.get();
-      } else {
-        cEventEmitter->eventEmitter = eventEmitter;
-      }
+      cEventEmitter->eventEmitter = eventEmitter;
 
       (*objBufferArray)[objBufferPosition++] = javaEventEmitter.get();
     }
@@ -830,11 +822,7 @@ void FabricMountingManager::preallocateShadowView(
     if (eventEmitter != nullptr) {
       javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      if (enableEventEmitterRawPointer_) {
-        cEventEmitter->eventEmitterPointer = eventEmitter.get();
-      } else {
-        cEventEmitter->eventEmitter = eventEmitter;
-      }
+      cEventEmitter->eventEmitter = eventEmitter;
     }
   }
 
@@ -947,8 +935,6 @@ FabricMountingManager::FabricMountingManager(
     : javaUIManager_(javaUIManager) {
   enableEarlyEventEmitterUpdate_ =
       config->getBool("react_fabric:enable_early_event_emitter_update");
-  enableEventEmitterRawPointer_ =
-      config->getBool("react_fabric:enable_event_emitter_wrapper_raw_pointer");
   disablePreallocateViews_ =
       config->getBool("react_fabric:disabled_view_preallocation_android");
   disableRevisionCheckForPreallocation_ =

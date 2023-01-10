@@ -125,24 +125,7 @@ ViewProps::ViewProps(
           "onLayout",
           sourceProps.onLayout,
           {})),
-      pointerEnter(convertRawProp(
-          context,
-          rawProps,
-          "pointerenter",
-          sourceProps.pointerEnter,
-          {})),
-      pointerLeave(convertRawProp(
-          context,
-          rawProps,
-          "pointerleave",
-          sourceProps.pointerLeave,
-          {})),
-      pointerMove(convertRawProp(
-          context,
-          rawProps,
-          "pointermove",
-          sourceProps.pointerMove,
-          {})),
+      events(convertRawProp(context, rawProps, sourceProps.events, {})),
       collapsable(convertRawProp(
           context,
           rawProps,

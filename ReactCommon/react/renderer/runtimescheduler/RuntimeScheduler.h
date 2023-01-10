@@ -97,15 +97,14 @@ class RuntimeScheduler final {
   RuntimeSchedulerTimePoint now() const noexcept;
 
   /*
-   * Immediate is a task that is expired and should have been already executed
-   * or has priority set to Immediate. Designed to be called in the event
-   * pipeline after an event is dispatched to React. React may schedule events
-   * with immediate priority which need to be handled before the next event is
-   * sent to React.
+   * Expired task is a task that should have been already executed. Designed to
+   * be called in the event pipeline after an event is dispatched to React.
+   * React may schedule events with immediate priority which need to be handled
+   * before the next event is sent to React.
    *
    * Thread synchronization must be enforced externally.
    */
-  void callImmediates(jsi::Runtime &runtime);
+  void callExpiredTasks(jsi::Runtime &runtime);
 
  private:
   mutable std::priority_queue<
@@ -116,7 +115,6 @@ class RuntimeScheduler final {
 
   RuntimeExecutor const runtimeExecutor_;
   mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
-  mutable std::atomic_bool shouldYield_{false};
 
   /*
    * Counter indicating how many access to the runtime have been requested.
@@ -144,6 +142,15 @@ class RuntimeScheduler final {
    * scheduled.
    */
   mutable std::atomic_bool isWorkLoopScheduled_{false};
+
+  /*
+   * Flag indicating if yielding is enabled.
+   *
+   * If set to true and Concurrent Mode is enabled on the surface,
+   * React Native will ask React to yield in case any work has been scheduled.
+   * Default value is false
+   */
+  bool enableYielding_{false};
 
   /*
    * This flag is set while performing work, to prevent re-entrancy.

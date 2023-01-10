@@ -29,6 +29,7 @@ type Notification = {|
   +repeatInterval?: ?string,
   +applicationIconBadgeNumber?: ?number,
   +isSilent?: ?boolean,
+  +soundName?: ?string,
 |};
 
 export interface Spec extends TurboModule {

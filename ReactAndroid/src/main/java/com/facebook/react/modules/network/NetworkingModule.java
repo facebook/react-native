@@ -30,6 +30,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
@@ -376,7 +377,9 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     }
 
     RequestBody requestBody;
-    if (data == null || method.toLowerCase().equals("get") || method.toLowerCase().equals("head")) {
+    if (data == null
+        || method.toLowerCase(Locale.ROOT).equals("get")
+        || method.toLowerCase(Locale.ROOT).equals("head")) {
       requestBody = RequestBodyUtil.getEmptyBody(method);
     } else if (handler != null) {
       requestBody = handler.toRequestBody(data, contentType);

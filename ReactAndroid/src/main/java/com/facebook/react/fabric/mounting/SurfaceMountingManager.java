@@ -548,7 +548,8 @@ public class SurfaceMountingManager {
     // generated.
     // This represents a perf issue only, not a correctness issue. In the future we need to
     // refactor View preallocation to correct the currently incorrect assumptions.
-    if (getNullableViewState(reactTag) != null) {
+    ViewState viewState = getNullableViewState(reactTag);
+    if (viewState != null && viewState.mView != null) {
       return;
     }
 

@@ -80,7 +80,8 @@ class MapBuffer {
     uint32_t bufferSize; // Amount of bytes used to store the map in memory
   };
 
-  struct __attribute__((__packed__)) Bucket {
+#pragma pack(push, 1)
+  struct Bucket {
     Key key;
     uint16_t type;
     uint64_t data;
@@ -88,6 +89,7 @@ class MapBuffer {
     Bucket(Key key, uint16_t type, uint64_t data)
         : key(key), type(type), data(data) {}
   };
+#pragma pack(pop)
 
   static_assert(sizeof(Header) == 8, "MapBuffer header size is incorrect.");
   static_assert(sizeof(Bucket) == 12, "MapBuffer bucket size is incorrect.");
@@ -124,7 +126,7 @@ class MapBuffer {
   // TODO T83483191: review this declaration
   MapBuffer getMapBuffer(MapBuffer::Key key) const;
 
-  uint32_t size() const;
+  size_t size() const;
 
   uint8_t const *data() const;
 
@@ -140,7 +142,7 @@ class MapBuffer {
   // returns the relative offset of the first byte of dynamic data
   int32_t getDynamicDataOffset() const;
 
-  uint32_t getKeyBucket(MapBuffer::Key key) const;
+  int32_t getKeyBucket(MapBuffer::Key key) const;
 
   friend ReadableMapBuffer;
 };

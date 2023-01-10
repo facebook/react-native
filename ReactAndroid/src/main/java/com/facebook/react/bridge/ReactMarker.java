@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridge;
 
+import android.os.SystemClock;
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.List;
@@ -91,7 +92,7 @@ public class ReactMarker {
   @DoNotStrip
   public static void logFabricMarker(
       ReactMarkerConstants name, @Nullable String tag, int instanceKey) {
-    logFabricMarker(name, tag, instanceKey, -1);
+    logFabricMarker(name, tag, instanceKey, SystemClock.uptimeMillis());
   }
 
   @DoNotStrip

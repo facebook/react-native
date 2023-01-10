@@ -130,7 +130,7 @@ import java.util.Queue;
     } else if ("value".equals(type)) {
       node = new ValueAnimatedNode(config);
     } else if ("color".equals(type)) {
-      node = new ColorAnimatedNode(config, this);
+      node = new ColorAnimatedNode(config, this, mReactApplicationContext);
     } else if ("props".equals(type)) {
       node = new PropsAnimatedNode(config, this);
     } else if ("interpolation".equals(type)) {
@@ -157,6 +157,21 @@ import java.util.Queue;
     node.mTag = tag;
     mAnimatedNodes.put(tag, node);
     mUpdatedNodes.put(tag, node);
+  }
+
+  @UiThread
+  public void updateAnimatedNodeConfig(int tag, ReadableMap config) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null) {
+      throw new JSApplicationIllegalArgumentException(
+          "updateAnimatedNode: Animated node [" + tag + "] does not exist");
+    }
+
+    if (node instanceof AnimatedNodeWithUpdateableConfig) {
+      stopAnimationsForNode(node);
+      ((AnimatedNodeWithUpdateableConfig) node).onUpdateConfig(config);
+      mUpdatedNodes.put(tag, node);
+    }
   }
 
   @UiThread

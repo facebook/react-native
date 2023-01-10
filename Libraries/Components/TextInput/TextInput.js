@@ -1499,9 +1499,6 @@ const ExportedForwardRef: React.AbstractComponent<
   );
 });
 
-ExportedForwardRef.propTypes =
-  require('deprecated-react-native-prop-types').TextInputPropTypes;
-
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
   currentlyFocusedInput: TextInputState.currentlyFocusedInput,

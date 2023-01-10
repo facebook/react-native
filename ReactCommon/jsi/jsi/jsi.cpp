@@ -30,6 +30,8 @@ std::string kindToString(const Value& v, Runtime* rt = nullptr) {
     return "a number";
   } else if (v.isString()) {
     return "a string";
+  } else if (v.isSymbol()) {
+    return "a symbol";
   } else {
     assert(v.isObject() && "Expecting object.");
     return rt != nullptr && v.getObject(*rt).isFunction(*rt) ? "a function"

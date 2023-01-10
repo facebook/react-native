@@ -12,6 +12,7 @@ import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps} from './ImageProps';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
+import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {
   ColorValue,
@@ -125,6 +126,14 @@ const ImageViewViewConfig =
           tintColor: {
             process: require('../StyleSheet/processColor'),
           },
+          ...ConditionallyIgnoredEventHandlers({
+            onLoadStart: true,
+            onLoad: true,
+            onLoadEnd: true,
+            onProgress: true,
+            onError: true,
+            onPartialLoad: true,
+          }),
         },
       };
 

@@ -1112,14 +1112,18 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   };
 }
 
-- (RCTBorderColors)borderColors
+- (RCTBorderColors)borderColorsWithTraitCollection:(UITraitCollection *)traitCollection
 {
   const BOOL isRTL = _reactLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
+
+  UIColor *directionAwareBorderLeftColor = nil;
+  UIColor *directionAwareBorderRightColor = nil;
 
   if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
     RCTUIColor *borderStartColor = _borderStartColor ?: _borderLeftColor; // macOS RCTUIColor
     RCTUIColor *borderEndColor = _borderEndColor ?: _borderRightColor; // macOS RCTUIColor
 
+<<<<<<< HEAD
     RCTUIColor *directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor; // macOS RCTUIColor
     RCTUIColor *directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor; // macOS RCTUIColor
 
@@ -1133,12 +1137,36 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
 
   RCTUIColor *directionAwareBorderLeftColor = isRTL ? _borderEndColor : _borderStartColor; // macOS RCTUIColor
   RCTUIColor *directionAwareBorderRightColor = isRTL ? _borderStartColor : _borderEndColor; // macOS RCTUIColor
+=======
+    directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor;
+    directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor;
+  } else {
+    directionAwareBorderLeftColor = (isRTL ? _borderEndColor : _borderStartColor) ?: _borderLeftColor;
+    directionAwareBorderRightColor = (isRTL ? _borderStartColor : _borderEndColor) ?: _borderRightColor;
+  }
+
+  UIColor *borderColor = _borderColor;
+  UIColor *borderTopColor = _borderTopColor;
+  UIColor *borderBottomColor = _borderBottomColor;
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+  if (@available(iOS 13.0, *)) {
+    borderColor = [borderColor resolvedColorWithTraitCollection:self.traitCollection];
+    borderTopColor = [borderTopColor resolvedColorWithTraitCollection:self.traitCollection];
+    directionAwareBorderLeftColor =
+        [directionAwareBorderLeftColor resolvedColorWithTraitCollection:self.traitCollection];
+    borderBottomColor = [borderBottomColor resolvedColorWithTraitCollection:self.traitCollection];
+    directionAwareBorderRightColor =
+        [directionAwareBorderRightColor resolvedColorWithTraitCollection:self.traitCollection];
+  }
+#endif
+>>>>>>> 49f3f47b1e9b840e4374d46b105604f4d2c22dd5
 
   return (RCTBorderColors){
-    (_borderTopColor ?: _borderColor).CGColor,
-    (directionAwareBorderLeftColor ?: _borderLeftColor ?: _borderColor).CGColor,
-    (_borderBottomColor ?: _borderColor).CGColor,
-    (directionAwareBorderRightColor ?: _borderRightColor ?: _borderColor).CGColor,
+      (borderTopColor ?: borderColor).CGColor,
+      (directionAwareBorderLeftColor ?: borderColor).CGColor,
+      (borderBottomColor ?: borderColor).CGColor,
+      (directionAwareBorderRightColor ?: borderColor).CGColor,
   };
 }
 
@@ -1169,7 +1197,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
 
   const RCTCornerRadii cornerRadii = [self cornerRadii];
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
-  const RCTBorderColors borderColors = [self borderColors];
+  const RCTBorderColors borderColors = [self borderColorsWithTraitCollection:self.traitCollection];
 
   BOOL useIOSBorderRendering = RCTCornerRadiiAreEqual(cornerRadii) && RCTBorderInsetsAreEqual(borderInsets) &&
       RCTBorderColorsAreEqual(borderColors) && _borderStyle == RCTBorderStyleSolid &&

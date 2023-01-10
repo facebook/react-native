@@ -9,6 +9,7 @@
  */
 
 import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+import {ConditionallyIgnoredEventHandlers} from '../../NativeComponent/ViewConfigIgnore';
 
 type PartialViewConfigWithoutName = $Rest<
   PartialViewConfig,
@@ -149,6 +150,15 @@ const RCTTextInputViewConfig = {
     clearTextOnFocus: true,
     showSoftInputOnFocus: true,
     autoFocus: true,
+    ...ConditionallyIgnoredEventHandlers({
+      onChange: true,
+      onSelectionChange: true,
+      onContentSizeChange: true,
+      onScroll: true,
+      onChangeSync: true,
+      onKeyPressSync: true,
+      onTextInput: true,
+    }),
   },
 };
 

@@ -5,13 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.devsupport;
+package com.facebook.react.devsupport.interfaces;
 
 import android.content.Context;
 import android.text.SpannedString;
 import androidx.annotation.Nullable;
-import com.facebook.react.devsupport.interfaces.ErrorType;
-import com.facebook.react.devsupport.interfaces.StackFrame;
 
 /**
  * Interface used by {@link BridgeDevSupportManager} to allow interception on any redboxes during
