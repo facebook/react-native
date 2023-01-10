@@ -26,7 +26,7 @@ const buttonHeaderShouldBeDisplayed = (then) => {
                 expect(await buttonComponentScreen.checkButtonsScreenIsDisplayed()).toBeTruthy();
                 break;
             // here you can add more similar assertions
-            default: throw new Error(`Wrong parameter provided. There is no such case as: ${headerScreenName}`)
+            default: throw new Error(`Wrong parameter provided. There is no such case as: ${headerScreenName}`);
         }
     });
 };
@@ -58,7 +58,7 @@ defineFeature(feature, (test) => {
         //method which is used only once in whole feature
         when(/^User clicks on the Cancel Application button$/, async () => {
             await buttonComponentScreen.clickCancelApplication();
-        })
+        });
 
         alertBoxShouldHaveText(then);
 
@@ -79,7 +79,7 @@ defineFeature(feature, (test) => {
 
         when(/^User clicks on the Submit Application button$/, async () => {
             await buttonComponentScreen.clickCancelApplication();
-        })
+        });
 
         alertBoxShouldHaveText(then);
 
