@@ -15,7 +15,7 @@
 
 using namespace facebook::react;
 
-@implementation RCTUIView (ComponentViewProtocol) // TODO(macOS GH#774)
+@implementation RCTUIView (ComponentViewProtocol) // [macOS]
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
@@ -28,7 +28,7 @@ using namespace facebook::react;
   return {};
 }
 
-- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // TODO(macOS GH#774)
+- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // [macOS]
 {
   RCTAssert(
       childComponentView.superview == nil,
@@ -40,7 +40,7 @@ using namespace facebook::react;
   [self insertSubview:childComponentView atIndex:index];
 }
 
-- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // TODO(macOS GH#774)
+- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // [macOS]
 {
   RCTAssert(
       childComponentView.superview == self,
@@ -156,14 +156,14 @@ using namespace facebook::react;
   return nil;
 }
 
-- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTUIView *)clipView // TODO(macOS GH#774)
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTUIView *)clipView // [macOS]
 {
   clipRect = [clipView convertRect:clipRect toView:self];
 
   // Normal views don't support unmounting, so all
   // this does is forward message to our subviews,
   // in case any of those do support it
-  for (RCTUIView *subview in self.subviews) { // TODO(macOS GH#774)
+  for (RCTUIView *subview in self.subviews) { // [macOS]
     [subview updateClippedSubviewsWithClipRect:clipRect relativeToView:self];
   }
 }

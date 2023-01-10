@@ -5,17 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTConvert.h>
 #import <React/RCTEventEmitter.h>
 
 @interface RCTConvert (UIStatusBar)
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 + (UIStatusBarStyle)UIStatusBarStyle:(id)json;
 + (UIStatusBarAnimation)UIStatusBarAnimation:(id)json;
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 @end
 

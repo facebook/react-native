@@ -5,24 +5,24 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTTextUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTTextUIKit.h> // [macOS]
 
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - RCTBackedTextFieldDelegateAdapter (for UITextField)
 
-@protocol RCTBackedTextInputViewProtocol; // TODO(OSS Candidate ISS#2710739)
-@protocol RCTBackedTextInputDelegate; // TODO(OSS Candidate ISS#2710739)
+@protocol RCTBackedTextInputViewProtocol; // [macOS]
+@protocol RCTBackedTextInputDelegate; // [macOS]
 
 @interface RCTBackedTextFieldDelegateAdapter : NSObject
 
 - (instancetype)initWithTextField:(UITextField<RCTBackedTextInputViewProtocol> *)backedTextInputView;
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange;
-#else // [TODO(macOS GH#774)
+#else // [macOS
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(NSRange)textRange;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 - (void)selectedTextRangeWasSet;
 
 @end
@@ -33,11 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTextView:(UITextView<RCTBackedTextInputViewProtocol> *)backedTextInputView;
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange;
-#else // [TODO(macOS GH#774)
+#else // [macOS
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(NSRange)textRange;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @end
 

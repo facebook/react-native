@@ -19,7 +19,7 @@ RCT_EXPORT_MODULE()
   return NO;
 }
 
-- (RCTUIView *)view // TODO(macOS GH#774)
+- (RCTUIView *)view // [macOS]
 {
   return [[RCTInputAccessoryView alloc] initWithBridge:self.bridge];
 }

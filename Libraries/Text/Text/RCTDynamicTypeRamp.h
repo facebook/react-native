@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(macOS GH#774)
+// [macOS]
 
 #import <Foundation/Foundation.h>
 
@@ -32,9 +32,9 @@ typedef NS_ENUM(NSInteger, RCTDynamicTypeRamp) {
 
 @end
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 /// Generates a `UIFontMetrics` instance representing a particular Dynamic Type ramp.
 UIFontMetrics * _Nonnull RCTUIFontMetricsForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp);
 /// The "reference" size for a particular font scale ramp, equal to a text element's size under default text size settings.
 CGFloat RCTBaseSizeForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp);
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]

@@ -23,9 +23,9 @@
   BOOL _ignoringUpdates;
   NSUserDefaults *_defaults;
   
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
   BOOL _isListeningForUpdates;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 @synthesize moduleRegistry = _moduleRegistry;
@@ -47,12 +47,12 @@ RCT_EXPORT_MODULE()
   if ((self = [super init])) {
     _defaults = defaults;
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(userDefaultsDidChange:)
                                                  name:NSUserDefaultsDidChangeNotification
                                                object:_defaults];
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
   }
   return self;
 }
@@ -117,7 +117,7 @@ RCT_EXPORT_METHOD(deleteValues:(NSArray<NSString *> *)keys)
   _ignoringUpdates = NO;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 /**
  * Enable or disable monitoring of changes to NSUserDefaults
  */
@@ -140,7 +140,7 @@ RCT_EXPORT_METHOD(setIsMonitoringEnabled:(BOOL)isEnabled)
     }
   }
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
 {

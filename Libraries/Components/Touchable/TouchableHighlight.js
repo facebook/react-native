@@ -283,8 +283,8 @@ class TouchableHighlight extends React.Component<Props, State> {
     const {
       onBlur,
       onFocus,
-      onMouseEnter, // [TODO(macOS GH#774)
-      onMouseLeave, // ]TODO(macOS GH#774)
+      onMouseEnter, // [macOS]
+      onMouseLeave, // [macOS]
       ...eventHandlersWithoutBlurAndFocus
     } = this.state.pressability.getEventHandlers();
 
@@ -324,7 +324,7 @@ class TouchableHighlight extends React.Component<Props, State> {
         nextFocusUp={this.props.nextFocusUp}
         nativeID={this.props.nativeID}
         testID={this.props.testID}
-        // [TODO(macOS GH#774)
+        // [macOS
         acceptsFirstMouse={
           this.props.acceptsFirstMouse !== false && !this.props.disabled
         }
@@ -343,7 +343,7 @@ class TouchableHighlight extends React.Component<Props, State> {
         onFocus={this.props.onFocus}
         onBlur={this.props.onBlur}
         draggedTypes={this.props.draggedTypes}
-        // ]TODO(macOS/win GH#774)
+        // macOS]
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
         {React.cloneElement(child, {

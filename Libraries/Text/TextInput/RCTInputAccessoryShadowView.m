@@ -14,9 +14,9 @@
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:subview atIndex:atIndex];
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   subview.width = (YGValue) { RCTScreenSize().width, YGUnitPoint };
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 }
 
 @end

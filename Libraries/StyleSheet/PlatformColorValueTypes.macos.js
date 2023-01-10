@@ -7,7 +7,9 @@
  * @format
  * @flow strict-local
  */
-// [TODO(macOS GH#774)
+
+// [macOS]
+
 'use strict';
 
 import type {ColorValue} from './StyleSheet';
@@ -138,4 +140,3 @@ export const processColorObject = (
   }
   return color;
 };
-// ]TODO(macOS GH#774)

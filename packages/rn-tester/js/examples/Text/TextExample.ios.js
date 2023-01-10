@@ -520,7 +520,7 @@ exports.category = 'Basic';
 exports.description = 'Base component for rendering styled text.';
 exports.displayName = 'TextExample';
 exports.examples = [
-  // [TODO(OSS Candidate ISS#2710739)
+  // [macOS
   {
     title: 'Apple Font Smoothing',
     render: function (): React.Node {
@@ -556,7 +556,7 @@ exports.examples = [
       );
     },
   },
-  // ]TODO(OSS Candidate ISS#2710739)
+  // macOS]
   {
     title: 'Wrap',
     render: function (): React.Node {
@@ -714,7 +714,7 @@ exports.examples = [
       );
     },
   },
-  // [TODO(macOS GH#774)
+  // [macOS
   {
     title: 'Focusable',
     render: function (): React.Node {
@@ -753,7 +753,7 @@ exports.examples = [
       );
     },
   },
-  // [TODO(macOS GH#774)
+  // [macOS
   {
     title: 'Text Decoration',
     render: function (): React.Node {
@@ -1304,7 +1304,7 @@ exports.examples = [
       );
     },
   },
-  // [TODO(macOS GH#774)
+  // [macOS
   {
     title: 'Cursor',
     render: function (): React.Node {
@@ -1332,5 +1332,5 @@ exports.examples = [
       );
     },
   },
-  // ]TODO(macOS GH#774)
+  // [macOS]
 ];

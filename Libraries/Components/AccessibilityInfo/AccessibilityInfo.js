@@ -36,7 +36,7 @@ type AccessibilityEventDefinitionsIOS = {
 type AccessibilityEventDefinitions = {
   ...AccessibilityEventDefinitionsAndroid,
   ...AccessibilityEventDefinitionsIOS,
-  highContrastChanged: [boolean], // TODO(macOS GH#774) - highContrastChanged is used on macOS
+  highContrastChanged: [boolean], // [macOS] highContrastChanged is used on macOS
   change: [boolean], // screenReaderChanged
   reduceMotionChanged: [boolean],
   screenReaderChanged: [boolean],
@@ -60,7 +60,7 @@ const EventNames: Map<
       ['boldTextChanged', 'boldTextChanged'],
       ['change', 'screenReaderChanged'],
       ['grayscaleChanged', 'grayscaleChanged'],
-      ['highContrastChanged', 'highContrastChanged'], // TODO(macOS GH#774)
+      ['highContrastChanged', 'highContrastChanged'], // [macOS]
       ['invertColorsChanged', 'invertColorsChanged'],
       ['reduceMotionChanged', 'reduceMotionChanged'],
       ['reduceTransparencyChanged', 'reduceTransparencyChanged'],
@@ -86,7 +86,7 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo#isBoldTextEnabled
    */
   isBoldTextEnabled(): Promise<boolean> {
-    // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
+    // [macOS rework logic to return Promise.resolve(false) on macOS
     if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerApple != null) {
@@ -101,7 +101,7 @@ const AccessibilityInfo = {
     } else {
       return Promise.resolve(false);
     }
-    // ]TODO(macOS GH#774)
+    // macOS]
   },
 
   /**
@@ -113,7 +113,7 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo#isGrayscaleEnabled
    */
   isGrayscaleEnabled(): Promise<boolean> {
-    // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
+    // [macOS rework logic to return Promise.resolve(false) on macOS
     if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerApple != null) {
@@ -128,13 +128,13 @@ const AccessibilityInfo = {
     } else {
       return Promise.resolve(false);
     }
-    // ]TODO(macOS GH#774)
+    // macOS]
   },
 
   /**
    * macOS only
    */
-  // [TODO(macOS GH#774)
+  // [macOS
   isHighContrastEnabled: function (): Promise<boolean> {
     if (Platform.OS === 'macos') {
       return new Promise((resolve, reject) => {
@@ -151,7 +151,7 @@ const AccessibilityInfo = {
       return Promise.resolve(false);
     }
   },
-  // ]TODO(macOS GH#774)
+  // macOS]
 
   /**
    * Query whether inverted colors are currently enabled.
@@ -162,7 +162,7 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo#isInvertColorsEnabled
    */
   isInvertColorsEnabled(): Promise<boolean> {
-    // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
+    // [macOS rework logic to return Promise.resolve(false) on macOS
     if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerApple != null) {
@@ -177,7 +177,7 @@ const AccessibilityInfo = {
     } else {
       return Promise.resolve(false);
     }
-    // ]TODO(macOS GH#774)
+    // macOS]
   },
 
   /**
@@ -218,7 +218,7 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo#isReduceTransparencyEnabled
    */
   isReduceTransparencyEnabled(): Promise<boolean> {
-    // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
+    // [macOS rework logic to return Promise.resolve(false) on macOS
     if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerApple != null) {
@@ -233,7 +233,7 @@ const AccessibilityInfo = {
     } else {
       return Promise.resolve(false);
     }
-    // ]TODO(macOS GH#774)
+    // macOS]
   },
 
   /**
@@ -386,7 +386,7 @@ const AccessibilityInfo = {
     if (Platform.OS === 'android') {
       NativeAccessibilityInfoAndroid?.announceForAccessibility(announcement);
     } else {
-      // [TODO(GH#774) NativeAccessibilityManagerIOS -> NativeAccessibilityManagerApple
+      // [macOS NativeAccessibilityManagerIOS -> NativeAccessibilityManagerApple
       if (
         NativeAccessibilityManagerApple?.announceForAccessibilityWithOptions
       ) {
@@ -397,7 +397,7 @@ const AccessibilityInfo = {
       } else {
         NativeAccessibilityManagerApple?.announceForAccessibility(announcement);
       }
-      // ]TODO(macOS GH#774)
+      // macOS]
     }
   },
 

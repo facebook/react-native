@@ -27,13 +27,13 @@ import type {
   LayoutEvent,
   MouseEvent,
   PressEvent,
-  // [TODO(macOS GH#774)
+  // [macOS
   FocusEvent,
   BlurEvent,
   KeyEvent,
-  // ]TODO(macOS GH#774)
+  // macOS]
 } from '../../Types/CoreEventTypes';
-import type {DraggedTypesType} from '../View/DraggedType'; // TODO(macOS GH#774)
+import type {DraggedTypesType} from '../View/DraggedType'; // [macOS]
 import View from '../View/View';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
@@ -139,7 +139,7 @@ type Props = $ReadOnly<{|
    */
   onPressOut?: ?(event: PressEvent) => mixed,
 
-  // [TODO(macOS GH#774)
+  // [macOS
   /**
    * Called after the element is focused.
    */
@@ -171,7 +171,7 @@ type Props = $ReadOnly<{|
    * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
    */
   validKeysUp?: ?Array<string>,
-  // ]TODO(macOS GH#774)
+  // macOS]
 
   /**
    * Either view styles or a function that receives a boolean reflecting whether
@@ -204,7 +204,7 @@ type Props = $ReadOnly<{|
    */
   unstable_pressDelay?: ?number,
 
-  // [TODO(macOS GH#774)
+  // [macOS
   acceptsFirstMouse?: ?boolean,
   enableFocusRing?: ?boolean,
   tooltip?: ?string,
@@ -212,7 +212,7 @@ type Props = $ReadOnly<{|
   onDragLeave?: (event: MouseEvent) => void,
   onDrop?: (event: MouseEvent) => void,
   draggedTypes?: ?DraggedTypesType,
-  // ]TODO(macOS GH#774)
+  // macOS]
 |}>;
 
 /**
@@ -221,8 +221,8 @@ type Props = $ReadOnly<{|
  */
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
-    acceptsFirstMouse, // [TODO(macOS GH#774)
-    enableFocusRing, // ]TODO(macOS GH#774)
+    acceptsFirstMouse, // [macOS]
+    enableFocusRing, // [macOS]
     accessible,
     android_disableSound,
     android_ripple,
@@ -240,12 +240,12 @@ function Pressable(props: Props, forwardedRef): React.Node {
     onPress,
     onPressIn,
     onPressOut,
-    // [TODO(macOS GH#774)
+    // [macOS
     onFocus,
     onBlur,
     onKeyDown,
     onKeyUp,
-    // ]TODO(macOS GH#774)
+    // macOS]
     pressRetentionOffset,
     style,
     testOnly_pressed,
@@ -268,10 +268,10 @@ function Pressable(props: Props, forwardedRef): React.Node {
   const restPropsWithDefaults: React.ElementConfig<typeof View> = {
     ...restProps,
     ...android_rippleConfig?.viewProps,
-    acceptsFirstMouse: acceptsFirstMouse !== false && !disabled, // [TODO(macOS GH#774)
+    acceptsFirstMouse: acceptsFirstMouse !== false && !disabled, // [macOS
     enableFocusRing: enableFocusRing !== false && !disabled,
     accessible: accessible !== false,
-    focusable: focusable !== false && !disabled, // ]TODO(macOS GH#774)
+    focusable: focusable !== false && !disabled, // macOS]
     accessibilityState,
     hitSlop,
   };
@@ -310,12 +310,12 @@ function Pressable(props: Props, forwardedRef): React.Node {
           onPressOut(event);
         }
       },
-      // [TODO(macOS GH#774)
+      // [macOS
       onFocus,
       onBlur,
       onKeyDown,
       onKeyUp,
-      // ]TODO(macOS GH#774)
+      // macOS]
     }),
     [
       android_disableSound,
@@ -332,12 +332,12 @@ function Pressable(props: Props, forwardedRef): React.Node {
       onPress,
       onPressIn,
       onPressOut,
-      // [TODO(macOS GH#774)
+      // [macOS
       onFocus,
       onBlur,
       onKeyDown,
       onKeyUp,
-      // ]TODO(macOS GH#774)
+      // macOS]
       pressRetentionOffset,
       setPressed,
       unstable_pressDelay,

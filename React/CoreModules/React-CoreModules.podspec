@@ -26,14 +26,14 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "11.0", :osx => "10.15" } # TODO(macOS GH#774)
+  s.platforms              = { :ios => "11.0", :osx => "10.15" } # [macOS]
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "**/*.{c,m,mm,cpp}"
-  # [TODO(macOS GH#774)
+  # [macOS
                              "**/MacOS/*"
   s.osx.exclude_files     =  "{RCTFPSGraph,RCTPerfMonitor,RCTPlatform}.*"
-  # ]TODO(macOS GH#774)
+  # macOS]
   s.header_dir             = "CoreModules"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",

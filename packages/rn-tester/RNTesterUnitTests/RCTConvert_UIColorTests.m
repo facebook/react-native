@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(macOS ISS#3536887)
+// [macOS]
 
 #import <XCTest/XCTest.h>
 

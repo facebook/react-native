@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(OSS Candidate ISS#2710739)
+// [macOS]
 
 #import "RCTBridge+Cxx.h"
 #import "RCTBridge+Private.h"

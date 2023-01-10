@@ -7,7 +7,7 @@
 
 #import "RCTSlider.h"
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 #import <Quartz/Quartz.h>
 
 @protocol RCTSliderCellDelegate <NSObject>
@@ -109,19 +109,19 @@
 
 @end
 
-#endif
+#endif // macOS]
 
 
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX // [macOS
 @interface RCTSlider () <RCTSliderCellDelegate>
 @end
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @implementation RCTSlider {
   float _unclippedValue;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 
 - (instancetype)initWithFrame:(NSRect)frameRect
 {
@@ -201,40 +201,40 @@
 	}
 }
 
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 - (void)setValue:(float)value
 {
   _unclippedValue = value;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   super.value = value;
-#else // [TODO(macOS GH#774)
+#else // [macOS
   self.floatValue = value;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (void)setMinimumValue:(float)minimumValue
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   super.minimumValue = minimumValue;
   super.value = _unclippedValue;
-#else // [TODO(macOS GH#774)
+#else // [macOS
   _minimumValue = minimumValue;
   self.minValue = minimumValue;
   self.floatValue = _unclippedValue;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (void)setMaximumValue:(float)maximumValue
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   super.maximumValue = maximumValue;
   super.value = _unclippedValue;
-#else // [TODO(macOS GH#774)
+#else // [macOS
   _maximumValue = maximumValue;
   self.maxValue = maximumValue;
   self.floatValue = _unclippedValue;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (void)setTrackImage:(UIImage *)trackImage
@@ -242,89 +242,89 @@
   if (trackImage != _trackImage) {
     _trackImage = trackImage;
     CGFloat width = trackImage.size.width / 2;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, width, 0, width}
                                                             resizingMode:UIImageResizingModeStretch];
     UIImage *maximumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, width, 0, width}
                                                             resizingMode:UIImageResizingModeStretch];
     [self setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
     [self setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
-#else // [TODO(macOS GH#774)
+#else // [macOS
     trackImage.capInsets = NSEdgeInsetsMake(0, width-0.5, 0, width-0.5);
     trackImage.resizingMode = NSImageResizingModeStretch;
     ((RCTSliderCell*)self.cell).minimumValueImage = trackImage;
     ((RCTSliderCell*)self.cell).maximumValueImage = trackImage;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   }
 }
 
 - (void)setMinimumTrackImage:(UIImage *)minimumTrackImage
 {
   _trackImage = nil;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   minimumTrackImage =
       [minimumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){0, minimumTrackImage.size.width, 0, 0}
                                         resizingMode:UIImageResizingModeStretch];
   [self setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   minimumTrackImage.capInsets = NSEdgeInsetsMake(0, minimumTrackImage.size.width-0.5, 0, 0);
   minimumTrackImage.resizingMode = NSImageResizingModeStretch;
   ((RCTSliderCell*)self.cell).minimumValueImage = minimumTrackImage;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (UIImage *)minimumTrackImage
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   return [self thumbImageForState:UIControlStateNormal];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   return ((RCTSliderCell*)self.cell).minimumValueImage;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (void)setMaximumTrackImage:(UIImage *)maximumTrackImage
 {
   _trackImage = nil;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   maximumTrackImage =
       [maximumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){0, 0, 0, maximumTrackImage.size.width}
                                         resizingMode:UIImageResizingModeStretch];
   [self setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   maximumTrackImage.capInsets = NSEdgeInsetsMake(0, 0, 0, maximumTrackImage.size.width-0.5);
   maximumTrackImage.resizingMode = NSImageResizingModeStretch;
   ((RCTSliderCell*)self.cell).maximumValueImage = maximumTrackImage;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (UIImage *)maximumTrackImage
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   return [self thumbImageForState:UIControlStateNormal];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   return ((RCTSliderCell*)self.cell).maximumValueImage;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (void)setThumbImage:(UIImage *)thumbImage
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   [self setThumbImage:thumbImage forState:UIControlStateNormal];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   ((RCTSliderCell*)self.cell).knobImage = thumbImage;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (UIImage *)thumbImage
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   return [self thumbImageForState:UIControlStateNormal];
-#else  // [TODO(macOS GH#774)
+#else  // [macOS
   return ((RCTSliderCell*)self.cell).knobImage;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774) - accessibility on macOS is on the NSCell rather than the NSControl
+#if !TARGET_OS_OSX // [macOS] accessibility on macOS is on the NSCell rather than the NSControl
 - (void)accessibilityIncrement
 {
   [super accessibilityIncrement];
@@ -344,6 +344,6 @@
     });
   }
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 @end

@@ -27,14 +27,14 @@ Pod::Spec.new do |s|
   s.documentation_url      = "https://reactnative.dev/docs/linking"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "11.0", :osx => "10.15" } # TODO(macOS GH#214)
+  s.platforms              = { :ios => "11.0", :osx => "10.15" } # [macOS]
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "*.{m,mm}"
-# [TODO(macOS GH#774)
+# [macOS
   s.osx.exclude_files      = "RCTLinkingManager.mm"
   s.osx.source_files       = "macos/RCTLinkingManager.mm"
-# ]TODO(macOS GH#774)
+# macOS]
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTLinking"
   s.pod_target_xcconfig    = {

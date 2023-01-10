@@ -5,19 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTDefines.h>
 
 #if RCT_DEV
 
-@interface RCTFPSGraph : RCTPlatformView // TODO(macOS GH#774)
+@interface RCTFPSGraph : RCTPlatformView // [macOS]
 
 @property (nonatomic, assign, readonly) NSUInteger FPS;
 @property (nonatomic, assign, readonly) NSUInteger maxFPS;
 @property (nonatomic, assign, readonly) NSUInteger minFPS;
 
-- (instancetype)initWithFrame:(CGRect)frame color:(RCTUIColor *)color NS_DESIGNATED_INITIALIZER; // TODO(macOS GH#774)
+- (instancetype)initWithFrame:(CGRect)frame color:(RCTUIColor *)color NS_DESIGNATED_INITIALIZER; // [macOS]
 
 - (void)onTick:(NSTimeInterval)timestamp;
 

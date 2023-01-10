@@ -491,7 +491,7 @@ if (Platform.OS === 'ios') {
 }
 exports.examples = examples;
 
-// TODO [(macOS GH#774)
+// [macOS
 if (Platform.OS === 'macos') {
   examples.push({
     title: '<ScrollView> (inverted = true/false)\n',
@@ -531,7 +531,7 @@ const InvertedContentExample = () => {
     </>
   );
 };
-// ]TODO(macOS GH#774)
+// macOS]
 
 const AndroidScrollBarOptions = () => {
   const [persistentScrollBar, setPersistentScrollBar] = useState(false);

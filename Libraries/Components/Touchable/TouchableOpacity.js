@@ -38,7 +38,7 @@ type Props = $ReadOnly<{|
 
   hostRef?: ?React.Ref<typeof Animated.View>,
 
-  // [ TODO(macOS GH#774)
+  // [macOS
   /*
    * Array of keys to receive key down events for
    * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
@@ -50,7 +50,7 @@ type Props = $ReadOnly<{|
    * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
    */
   validKeysUp?: ?Array<string>,
-  // TODO(macOS GH#774) ]
+  // macOS]
 |}>;
 
 type State = $ReadOnly<{|
@@ -238,8 +238,8 @@ class TouchableOpacity extends React.Component<Props, State> {
     const {
       onBlur,
       onFocus,
-      onMouseEnter, // [TODO(macOS/win GH#774)
-      onMouseLeave, // ]TODO(macOS/win GH#774)
+      onMouseEnter, // [macOS]
+      onMouseLeave, // [macOS]
       ...eventHandlersWithoutBlurAndFocus
     } = this.state.pressability.getEventHandlers();
 
@@ -276,7 +276,7 @@ class TouchableOpacity extends React.Component<Props, State> {
         nextFocusUp={this.props.nextFocusUp}
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
         hitSlop={this.props.hitSlop}
-        // [TODO(macOS GH#774)
+        // [macOS
         acceptsFirstMouse={
           this.props.acceptsFirstMouse !== false && !this.props.disabled
         }
@@ -295,7 +295,7 @@ class TouchableOpacity extends React.Component<Props, State> {
         onFocus={this.props.onFocus}
         onBlur={this.props.onBlur}
         draggedTypes={this.props.draggedTypes}
-        // ]TODO(macOS/win GH#774)
+        // macOS]
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
         {this.props.children}

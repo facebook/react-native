@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
-#import "RCTTextUIKit.h" // TODO(macOS GH#774)
+#import "RCTTextUIKit.h" // [macOS]
 
 #import <React/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTBackedTextInputDelegate.h>
@@ -25,27 +25,27 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id<RCTBackedTextInputDelegate> textInputDelegate;
 
 @property (nonatomic, assign) BOOL contextMenuHidden;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
-#else // [TODO(macOS GH#774)
+#else // [macOS
 @property (nonatomic, assign) BOOL textWasPasted;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 @property (nonatomic, copy, nullable) NSString *placeholder;
-@property (nonatomic, strong, nullable) RCTUIColor *placeholderColor; // TODO(OSS Candidate ISS#2710739)
+@property (nonatomic, strong, nullable) RCTUIColor *placeholderColor; // [macOS]
 
 @property (nonatomic, assign) CGFloat preferredMaxLayoutWidth;
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 // The `clearButtonMode` property actually is not supported yet;
 // it's declared here only to conform to the interface.
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 @property (nonatomic, assign) BOOL caretHidden;
 
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic, strong, nullable) RCTUIColor *selectionColor; // TODO(OSS Candidate ISS#2710739)
 @property (nonatomic, assign) UIEdgeInsets textContainerInsets;
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 - (NSSize)sizeThatFits:(NSSize)size;
 - (void)setReadablePasteBoardTypes:(NSArray<NSPasteboardType> *)readablePasteboardTypes;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @end
 

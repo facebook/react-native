@@ -26,12 +26,12 @@ import type {
   KeyEvent,
   LayoutEvent,
   PressEvent,
-  MouseEvent, // TODO(macOS GH#774)
+  MouseEvent, // [macOS]
 } from '../../Types/CoreEventTypes';
 
-// [TODO(macOS GH#774)
+// [macOS
 import type {DraggedTypesType} from '../View/DraggedType';
-// ]TODO(macOS GH#774)
+// macOS]
 import View from '../../Components/View/View';
 import * as React from 'react';
 
@@ -68,7 +68,7 @@ type Props = $ReadOnly<{|
   onPress?: ?(event: PressEvent) => mixed,
   onPressIn?: ?(event: PressEvent) => mixed,
   onPressOut?: ?(event: PressEvent) => mixed,
-  // [TODO(macOS GH#774)
+  // [macOS
   acceptsFirstMouse?: ?boolean,
   enableFocusRing?: ?boolean,
   tooltip?: ?string,
@@ -78,7 +78,7 @@ type Props = $ReadOnly<{|
   onDragLeave?: (event: MouseEvent) => void,
   onDrop?: (event: MouseEvent) => void,
   draggedTypes?: ?DraggedTypesType,
-  // ]TODO(macOS GH#774)
+  // macOS]
   pressRetentionOffset?: ?EdgeInsetsProp,
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
@@ -110,13 +110,13 @@ const PASSTHROUGH_PROPS = [
   'validKeysDown',
   'validKeysUp',
   'onLayout',
-  'onMouseEnter', // [TODO(macOS GH#774)
+  'onMouseEnter', // [macOS
   'onMouseLeave',
   'onDragEnter',
   'onDragLeave',
   'onDrop',
   'draggedTypes',
-  'tooltip', // ]TODO(macOS GH#774)
+  'tooltip', // macOS]
   'testID',
 ];
 
@@ -141,8 +141,8 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
     const {
       onBlur,
       onFocus,
-      onMouseEnter, // [TODO(macOS/win GH#774)
-      onMouseLeave, // ]TODO(macOS/win GH#774)
+      onMouseEnter, // [macOS]
+      onMouseLeave, // [macOS]
       ...eventHandlersWithoutBlurAndFocus
     } = this.state.pressability.getEventHandlers();
 
@@ -158,12 +158,12 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
           : this.props.accessibilityState,
       focusable:
         this.props.focusable !== false && this.props.onPress !== undefined,
-      // [TODO(macOS GH#774)
+      // [macOS
       acceptsFirstMouse:
         this.props.acceptsFirstMouse !== false && !this.props.disabled,
       enableFocusRing:
         this.props.enableFocusRing !== false && !this.props.disabled,
-      // ]TODO(macOS GH#774)
+      // macOS]
     };
     for (const prop of PASSTHROUGH_PROPS) {
       if (this.props[prop] !== undefined) {

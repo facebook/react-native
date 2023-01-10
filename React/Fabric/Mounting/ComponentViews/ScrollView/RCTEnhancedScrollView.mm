@@ -11,20 +11,20 @@
 #import <React/RCTAutoInsetsProtocol.h>
 
 @interface RCTEnhancedScrollView () <
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     UIScrollViewDelegate
-#else // [TODO(macOS GH#774)
+#else // [macOS
     RCTScrollableProtocol, RCTAutoInsetsProtocol
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 >
 @end
 
 @implementation RCTEnhancedScrollView {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   __weak id<UIScrollViewDelegate> _publicDelegate;
-#else // [TODO(macOS GH#774)
+#else// [macOS
   __weak id<RCTScrollableProtocol, RCTAutoInsetsProtocol> _publicDelegate;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   BOOL _isSetContentOffsetDisabled;
 }
 
@@ -42,7 +42,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     // We set the default behavior to "never" so that iOS
     // doesn't do weird things to UIScrollView insets automatically
     // and keeps it as an opt-in behavior.
@@ -58,7 +58,7 @@
       [weakSelf setPrivateDelegate:delegate];
     }];
     [_delegateSplitter addDelegate:self];
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
   }
 
   return self;
@@ -102,8 +102,8 @@
       RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
-- (BOOL)touchesShouldCancelInContentView:(RCTUIView *)view // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
+- (BOOL)touchesShouldCancelInContentView:(RCTUIView *)view // [macOS]
 {
   if ([_overridingDelegate respondsToSelector:@selector(touchesShouldCancelInContentView:)]) {
     return [_overridingDelegate touchesShouldCancelInContentView:view];
@@ -143,13 +143,13 @@
   }
 }
 
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillEndDragging:(RCTUIScrollView *)scrollView
                      withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint *)targetContentOffset // TODO(macOS GH#774)
+              targetContentOffset:(inout CGPoint *)targetContentOffset // [macOS]
 {
   if (self.snapToOffsets && self.snapToOffsets.count > 0) {
     // An alternative to enablePaging and snapToInterval which allows setting custom
@@ -276,7 +276,7 @@
 
 #pragma mark -
 
-- (BOOL)isHorizontal:(RCTUIScrollView *)scrollView // TODO(macOS GH#774)
+- (BOOL)isHorizontal:(RCTUIScrollView *)scrollView // [macOS]
 {
   return scrollView.contentSize.width > self.frame.size.width;
 }

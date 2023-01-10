@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(macOS GH#774)
+// [macOS]
 
 #import <React/RCTDynamicTypeRamp.h>
 
@@ -27,7 +27,7 @@ RCT_ENUM_CONVERTER(RCTDynamicTypeRamp, (@{
 
 @end
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 UIFontMetrics *RCTUIFontMetricsForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp) {
   static NSDictionary<NSNumber *, UIFontTextStyle> *mapping;
   static dispatch_once_t onceToken;
@@ -74,4 +74,4 @@ CGFloat RCTBaseSizeForDynamicTypeRamp(RCTDynamicTypeRamp dynamicTypeRamp) {
   NSNumber *baseSize = mapping[@(dynamicTypeRamp)] ?: @17; // Default to body size if we don't recognize the specified ramp
   return CGFLOAT_IS_DOUBLE ? [baseSize doubleValue] : [baseSize floatValue];
 }
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]

@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(macOS GH#774)
+// [macOS]
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h>
 
 #import <React/RCTAssert.h>
 
@@ -202,7 +202,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *bezierPath)
 // UIView
 
 
-@implementation RCTUIView // TODO(macOS ISS#3536887)
+@implementation RCTUIView
 {
 @private
   NSColor *_backgroundColor;
@@ -428,7 +428,7 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
 
 // RCTUIScrollView
 
-@implementation RCTUIScrollView // TODO(macOS ISS#3536887)
+@implementation RCTUIScrollView
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -586,19 +586,19 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
 
 // RCTUISlider
 
-@implementation RCTUISlider {} // [TODO(macOS GH#774)
+@implementation RCTUISlider {}
 
 - (void)setValue:(float)value animated:(__unused BOOL)animated
 {
   self.animator.floatValue = value;
 }
 
-@end  // ]TODO(macOS GH#774)
+@end
 
 
 // RCTUILabel
 
-@implementation RCTUILabel {} // [TODO(macOS GH#774)
+@implementation RCTUILabel {}
 
 - (instancetype)initWithFrame:(NSRect)frameRect
 {
@@ -613,7 +613,7 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
   return self;
 }
 
-@end // ]TODO(macOS GH#774)
+@end
 
 @implementation RCTUISwitch
 

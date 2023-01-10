@@ -13,9 +13,9 @@
 
 RCT_EXPORT_MODULE(RCTRawText)
 
-- (RCTUIView *)view // TODO(macOS ISS#3536887)
+- (RCTUIView *)view // [macOS]
 {
-  return [RCTUIView new]; // TODO(macOS ISS#3536887)
+  return [RCTUIView new]; // [macOS]
 }
 
 - (RCTShadowView *)shadowView

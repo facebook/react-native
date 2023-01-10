@@ -21,7 +21,7 @@ end
 def pods(options = {})
   project 'RNTesterPods.xcodeproj'
 
-  # [TODO(macOS GH#774) - don't enable Fabric on RNTester by default until it works on macOS
+  # [macOS don't enable Fabric on RNTester by default until it works on macOS
   fabric_enabled = false
 
   # To use fabric: set the environment variable `USE_FABRIC` to 1, like below
@@ -33,20 +33,20 @@ def pods(options = {})
     puts "Building RNTester with Fabric enabled."
     fabric_enabled = true
   end
-  # ]TODO(macOS GH#774)
+  # macOS]
 
-  # TODO(macOS GH#774) - uncomment once Fabric works on macOS
+  # [macOS] uncomment once Fabric works on macOS
   # puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
   # fabric_enabled = true
 
   prefix_path = "../.."
 
-  # [TODO(macOS GH#774) - don't enable Fabric on RNTester by default until it works on macOS
+  # [macOS don't enable Fabric on RNTester by default until it works on macOS
   # if ENV['USE_CODEGEN_DISCOVERY'] == '1'
   #   # Custom fabric component is only supported when using codegen discovery.
   #   pod 'MyNativeView', :path => "NativeComponentExample"
   # end
-  # ]TODO(macOS GH#774)
+  # macOS]
 
   use_react_native!(
     path: prefix_path,
@@ -60,8 +60,8 @@ def pods(options = {})
   # Additional Pods which aren't included in the default Podfile
   pod 'React-RCTPushNotification', :path => "#{prefix_path}/Libraries/PushNotificationIOS"
   pod 'Yoga', :path => "#{prefix_path}/ReactCommon/yoga", :modular_headers => true
-  pod 'React-TurboModuleCxx-WinRTPort', :path => "#{prefix_path}/ReactTurboModuleCxx" # TODO(macOS GH#774)
-  pod 'React-TurboModuleCxx-RNW', :podspec => "#{prefix_path}/ReactTurboModuleCxx/React-TurboModuleCxx-RNW.podspec" # TODO(macOS GH#774)
+  pod 'React-TurboModuleCxx-WinRTPort', :path => "#{prefix_path}/ReactTurboModuleCxx" # [macOS]
+  pod 'React-TurboModuleCxx-RNW', :podspec => "#{prefix_path}/ReactTurboModuleCxx/React-TurboModuleCxx-RNW.podspec" # [macOS]
   # Additional Pods which are classed as unstable
 
   # RNTester native modules and components

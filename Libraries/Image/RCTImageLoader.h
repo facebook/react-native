@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTBridge.h>
 #import <React/RCTDefines.h>
@@ -23,7 +23,7 @@
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
                               loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(RCTModuleRegistry *))getLoaders
                              decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(RCTModuleRegistry *))getDecoders;
-- (NSInteger)activeTasks; // TODO(OSS Candidate ISS#2710739)
+- (NSInteger)activeTasks; // [macOS]
 @end
 
 /**

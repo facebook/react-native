@@ -55,26 +55,26 @@ RCT_EXPORT_METHOD(show)
       }
 
       if (strongSelf->_bridgelessSurfacePresenter) {
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
         strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:RCTKeyWindow().frame
                                                 surfacePresenter:strongSelf->_bridgelessSurfacePresenter];
-#else
-        strongSelf->_view = [[RCTLogBoxView alloc] initWithSurfacePresenter:strongSelf->_bridgelessSurfacePresenter]; // TODO(macOS GH#774)
-#endif // ]TODO(macOS GH#774)
+#else // [macOS
+        strongSelf->_view = [[RCTLogBoxView alloc] initWithSurfacePresenter:strongSelf->_bridgelessSurfacePresenter];
+#endif // macOS]
       } else if (strongSelf->_bridge && strongSelf->_bridge.valid) {
         if (strongSelf->_bridge.surfacePresenter) {
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)          
+#if !TARGET_OS_OSX // [macOS]       
           strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:RCTKeyWindow().frame
                                                   surfacePresenter:strongSelf->_bridge.surfacePresenter];
-#else // TODO(macOS GH#774)
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithSurfacePresenter:strongSelf->_bridge.surfacePresenter]; // TODO(macOS GH#774)
-#endif // ]TODO(macOS GH#774)
+#else // [macOS
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithSurfacePresenter:strongSelf->_bridge.surfacePresenter];
+#endif // macOS]
         } else {
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)                   
+#if !TARGET_OS_OSX // [macOS]               
           strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow() bridge:strongSelf->_bridge];
-#else // TODO(macOS GH#774)
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithBridge:self->_bridge]; // TODO(macOS GH#774)
-#endif // ]TODO(macOS GH#774)
+#else // [macOS
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithBridge:self->_bridge];
+#endif // macOS]
         }
       }
 

@@ -34,7 +34,7 @@ const UIView = {
   collapsable: true,
   needsOffscreenAlphaCompositing: true,
   style: ReactNativeStyleAttributes,
-  // [TODO(macOS GH#774)
+  // [macOS
   acceptsFirstMouse: true,
   enableFocusRing: true,
   focusable: true,
@@ -49,7 +49,7 @@ const UIView = {
   validKeysUp: true,
   draggedTypes: true,
   nextKeyViewTag: true,
-  // ]TODO(macOS GH#774)
+  // macOS]
 };
 
 const RCTView = {

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #include <react/renderer/textlayoutmanager/RCTFontProperties.h>
 #include <react/renderer/textlayoutmanager/RCTFontUtils.h>
@@ -71,24 +71,24 @@ inline static NSUnderlineStyle RCTNSUnderlineStyleFromTextDecorationStyle(TextDe
   }
 }
 
-inline static RCTUIColor *RCTUIColorFromSharedColor(const SharedColor &sharedColor) // TODO(macOS GH#774)
+inline static RCTUIColor *RCTUIColorFromSharedColor(const SharedColor &sharedColor) // [macOS]
 {
   if (!sharedColor) {
     return nil;
   }
 
   if (*facebook::react::clearColor() == *sharedColor) {
-    return [RCTUIColor clearColor]; // TODO(macOS GH#774)
+    return [RCTUIColor clearColor]; // [macOS]
   }
 
   if (*facebook::react::blackColor() == *sharedColor) {
-    return [RCTUIColor blackColor]; // TODO(macOS GH#774)
+    return [RCTUIColor blackColor]; // [macOS]
   }
 
   if (*facebook::react::whiteColor() == *sharedColor) {
-    return [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+    return [RCTUIColor whiteColor]; // [macOS]
   }
 
   auto components = facebook::react::colorComponentsFromColor(sharedColor);
-  return [RCTUIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha]; // TODO(macOS GH#774)
+  return [RCTUIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha]; // [macOS]
 }

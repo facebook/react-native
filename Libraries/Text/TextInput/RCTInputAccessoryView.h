@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 @class RCTBridge;
 @class RCTInputAccessoryViewContent;
 
-@interface RCTInputAccessoryView : RCTUIView // TODO(macOS ISS#3536887)
+@interface RCTInputAccessoryView : RCTUIView // [macOS]
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 

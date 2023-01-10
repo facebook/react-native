@@ -329,7 +329,7 @@ jobs:
       - run:
           name: "Run Tests: JavaScript Tests"
           command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
-      # TODO(macOS GH#949): Disable this failing test
+      # [macOS] Github#949 Disable this failing test
       # - run_e2e:
       #     platform: js
 
@@ -904,12 +904,12 @@ workflows:
           run_disabled_tests: false
           filters:
             branches:
-              # TODO(macOS GH#774): disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
+              # [macOS] disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
               ignore: /.*/
       - test_android_template:
           filters:
             branches:
-              # TODO(macOS GH#774): disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
+              # [macOS] disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
               ignore: /.*/
       - test_ios_template:
           requires:
@@ -941,7 +941,7 @@ workflows:
       #     use_hermes: true
       #     use_frameworks: true
       #     run_unit_tests: true
-      # TODO(macOS GH#949): Disable this failing test
+      # [macOS] Github#949 Disable this failing test
       # - test_js:
       #     name: test_js_prev_lts
       #     executor: nodeprevlts
@@ -951,15 +951,15 @@ workflows:
       - test_docker:
           filters:
             branches:
-              # TODO(macOS GH#774): disable this test which is redundant to Azure Devops test and in the fork it fails because of Microsoft's V8 upgrade to Android
+              # [macOS] disable this test which is redundant to Azure Devops test and in the fork it fails because of Microsoft's V8 upgrade to Android
               ignore: /.*/
       - test_windows:
           filters:
             branches:
-              # [TODO(macOS GH#774): disable this test which requires a CCI plan.
+              # [macOS disable this test which requires a CCI plan.
               # ignore: gh-pages
               ignore: /.*/
-              # ]TODO(macOS GH#774)
+              # macOS]
           run_disabled_tests: false
 
   # This workflow should only be triggered by release script
@@ -1009,11 +1009,11 @@ workflows:
 
       # Gather coverage
       - js_coverage:
-          # [TODO(macOS GH#774): disable this test, it fails in the fork due to not being set up for coveralls
+          # [macOS disable this test, it fails in the fork due to not being set up for coveralls
           filters:
             branches:
               ignore: /.*/
-          # ]TODO(macOS GH#774)
+          # macOS]
   nightly:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     triggers:
@@ -1021,11 +1021,11 @@ workflows:
           cron: "0 20 * * *"
           filters:
             branches:
-              # [TODO(macOS GH#774): disable this release.  We never want to release anything from this fork via CCI.
+              # [macOS disable this release.  We never want to release anything from this fork via CCI.
               ignore: /.*/
               # only:
               #   - main
-              # ]TODO(macOS GH#774)
+              # macOS]
     jobs:
       - nightly_job
 

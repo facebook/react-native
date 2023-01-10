@@ -25,7 +25,7 @@ let argv = yargs
   .option('v', {
     alias: 'to-version',
     type: 'string',
-    // TODO(macOS GH#774): Extra options used during RNM's publish pipelines
+    // [macOS Extra options used during RNM's publish pipelines
   })
   .option('p', {
     alias: 'rnmpublish',
@@ -43,11 +43,11 @@ let argv = yargs
     default: false,
   })
   .option('S', {
-    // [TODO(macOS GH#1148): Remove this option once version bumping scripts have been refactored
+    // [macOS Remove this option once version bumping scripts have been refactored
     alias: 'skip-update-ruby',
     type: 'boolean',
-    default: false, // ]TODO(macOS GH#1148)
-    // ]TODO(macOS GH#774)
+    default: false, // macOS]
+    // macOS]
   }).argv;
 
 const autogenerateVersionNumber = argv.autogenerateVersionNumber;
@@ -58,19 +58,19 @@ let version = argv.toVersion;
 
 if (!version) {
   if (nightlyBuild && autogenerateVersionNumber) {
-    // [TODO(macOS GH#774): Some of our calls to set-rn-version.js still depend on an automatically generated version number
+    // [macOS Some of our calls to set-rn-version.js still depend on an automatically generated version number
     const currentCommit = exec('git rev-parse HEAD', {
       silent: true,
     }).stdout.trim();
     version = `0.0.0-${currentCommit.slice(0, 9)}`;
-    // ]TODO(macOS GH#774)
+    // macOS]
   } else {
     echo('You must specify a version using -v');
     exit(1);
   }
 }
 
-// [TODO(macOS GH#774)
+// [macOS
 let branch;
 if (!nightlyBuild) {
   // Check we are in release branch, e.g. 0.33-stable
@@ -168,7 +168,7 @@ fs.writeFileSync(
 let packageJson = JSON.parse(cat('package.json'));
 packageJson.version = version;
 
-// [TODO(macOS GH#774): We do this separately in a non-destructive way as part of our publish steps
+// [macOS We do this separately in a non-destructive way as part of our publish steps
 // delete packageJson.workspaces;
 // delete packageJson.private;
 
@@ -184,7 +184,7 @@ packageJson.version = version;
 //   ...packageJson.dependencies,
 //   'react-native-codegen': repoConfigJson.dependencies['react-native-codegen'],
 // };
-// TODO(macOS GH#774)]
+// macOS]
 
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
@@ -204,7 +204,7 @@ if (
 // Change react-native version in the template's package.json
 exec(`node scripts/set-rn-template-version.js ${version}`);
 
-// [TODO(macOS GH#774)
+// [macOS
 if (updatePodfileLock) {
   echo('Updating RNTester Podfile.lock...');
   if (exec('source scripts/update_podfile_lock.sh && update_pods').code) {
@@ -213,11 +213,11 @@ if (updatePodfileLock) {
     exit(1);
   }
 }
-// ]TODO(macOS GH#774)
+// macOS]
 
 // Make sure to update ruby version
 if (!argv.skipUpdateRuby && exec('scripts/update-ruby.sh').code) {
-  // TODO(macOS GH#1148)
+  // [macOS]
   echo('Failed to update Ruby version');
   exit(1);
 }

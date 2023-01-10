@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTComponentViewProtocol.h>
 
@@ -14,13 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Default implementation of RCTComponentViewProtocol.
  */
-@interface RCTUIView (ComponentViewProtocol) <RCTComponentViewProtocol> // TODO(macOS GH#774)
+@interface RCTUIView (ComponentViewProtocol) <RCTComponentViewProtocol> // [macOS]
 
 + (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders;
 
-- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index; // TODO(macOS GH#774)
+- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index; // [macOS]
 
-- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index; // TODO(macOS GH#774)
+- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index; // [macOS]
 
 - (void)updateProps:(facebook::react::Props::Shared const &)props
            oldProps:(facebook::react::Props::Shared const &)oldProps;
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)props;
 - (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 
-- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTUIView *)clipView; // TODO(macOS GH#774)
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTUIView *)clipView; // [macOS]
 
 @end
 

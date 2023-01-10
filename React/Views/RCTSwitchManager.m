@@ -16,15 +16,15 @@
 
 RCT_EXPORT_MODULE()
 
-- (RCTPlatformView *)view // TODO(macOS GH#774)
+- (RCTPlatformView *)view // [macOS]
 {
   RCTSwitch *switcher = [RCTSwitch new];
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   [switcher addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   [switcher setTarget:self];
   [switcher setAction:@selector(onChange:)];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   return switcher;
 }
 
@@ -40,8 +40,8 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
-    RCTUIView *view = viewRegistry[viewTag]; // TODO(macOS ISS#3536887)
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
+    RCTUIView *view = viewRegistry[viewTag]; // [macOS]
 
     if ([view isKindOfClass:[RCTSwitch class]]) {
       [(RCTSwitch *)view setOn:value animated:NO];
@@ -51,11 +51,11 @@ RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
   }];
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(onTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(thumbTintColor, UIColor);
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 RCT_REMAP_VIEW_PROPERTY(value, on, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock);
 RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSwitch)

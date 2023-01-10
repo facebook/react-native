@@ -106,7 +106,7 @@ def use_react_native! (options={})
     pod 'React-RCTFabric', :path => "#{prefix}/React"
     pod 'RCT-Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
   else
-    # TODO(macOS GH#774) - Even without Fabric, we still need to build react-native-codegen
+    # [macOS] Even without Fabric, we still need to build react-native-codegen
     build_codegen!(prefix)
   end
 
@@ -357,7 +357,7 @@ def get_react_codegen_spec(options={})
     'header_mappings_dir' => './',
     'platforms' => {
       'ios' => '11.0',
-      'osx' => '10.15', # TODO(macOS GH#774)
+      'osx' => '10.15', # [macOS]
     },
     'source_files' => "**/*.{h,mm,cpp}",
     'pod_target_xcconfig' => { "HEADER_SEARCH_PATHS" =>

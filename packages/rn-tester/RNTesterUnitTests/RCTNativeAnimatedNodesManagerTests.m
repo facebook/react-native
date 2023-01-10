@@ -10,13 +10,13 @@
 #import "OCMock/OCMock.h"
 
 #import <React/RCTNativeAnimatedNodesManager.h>
-#import <React/RCTPlatformDisplayLink.h> // TODO(macOS GH#774)
+#import <React/RCTPlatformDisplayLink.h> // [macOS]
 #import <React/RCTUIManager.h>
 #import <React/RCTValueAnimatedNode.h>
 
 static const NSTimeInterval FRAME_LENGTH = 1.0 / 60.0;
 
-@interface RCTFakeDisplayLink : RCTPlatformDisplayLink // TODO(macOS GH#774)
+@interface RCTFakeDisplayLink : RCTPlatformDisplayLink // [macOS]
 
 @end
 

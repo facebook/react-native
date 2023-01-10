@@ -10,7 +10,7 @@
 
 const Batchinator = require('../Interaction/Batchinator');
 const FillRateHelper = require('./FillRateHelper');
-const Platform = require('../Utilities/Platform'); // TODO(macOS GH#774)
+const Platform = require('../Utilities/Platform'); // [macOS]
 const ReactNative = require('../Renderer/shims/ReactNative');
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 const ScrollView = require('../Components/ScrollView/ScrollView');
@@ -35,7 +35,7 @@ import type {
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
-import type {KeyEvent} from '../Types/CoreEventTypes'; // TODO(macOS GH#774)
+import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
 import {
   VirtualizedListCellContextProvider,
   VirtualizedListContext,
@@ -56,7 +56,7 @@ export type Separators = {
 export type RenderItemProps<ItemT> = {
   item: ItemT,
   index: number,
-  isSelected: ?boolean, // TODO(macOS GH#774)
+  isSelected: ?boolean, // [macOS]
   separators: Separators,
   ...
 };
@@ -75,11 +75,11 @@ type ViewabilityHelperCallbackTuple = {
   ...
 };
 
-// [TODO(macOS GH#774)
+// [macOS
 export type SelectedRowIndexPathType = {
   sectionIndex: number,
   rowIndex: number,
-}; // ]TODO(macOS GH#774)
+}; // macOS]
 
 type RequiredProps = {|
   /**
@@ -109,7 +109,7 @@ type OptionalProps = {|
    * this for debugging purposes. Defaults to false.
    */
   disableVirtualization?: ?boolean,
-  // [TODO(macOS GH#774)
+  // [macOS
   /**
    * Allows you to 'select' a row using arrow keys. The selected row will have the prop `isSelected`
    * passed in as true to it's renderItem / ListItemComponent. You can also imperatively select a row
@@ -126,7 +126,7 @@ type OptionalProps = {|
    * @platform macos
    */
   enableSelectionOnKeyPress?: ?boolean,
-  // ]TODO(macOS GH#774)
+  // macOS]
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -157,12 +157,12 @@ type OptionalProps = {|
    * `getItemLayout` to be implemented.
    */
   initialScrollIndex?: ?number,
-  // [TODO(macOS GH#774)
+  // [macOS
   /**
    * The initially selected row, if `enableSelectionOnKeyPress` is set.
    */
   initialSelectedIndex?: ?number,
-  // ]TODO(macOS GH#774)
+  // macOS]
   /**
    * Reverses the direction of scroll. Uses scale transforms of -1.
    */
@@ -280,16 +280,16 @@ type OptionalProps = {|
     previousSelection: number,
     newSelection: number,
     item: ?Item,
-  }) => void, // TODO(macOS GH#774)
+  }) => void, // [macOS]
   /**
    * If provided, called when 'Enter' key is pressed on an item.
    *
    * @platform macos
    */
-  onSelectionEntered?: ?(item: ?Item) => void, // TODO(macOS GH#774)
+  onSelectionEntered?: ?(item: ?Item) => void, // [macOS]
 
-  sectionIndex?: number, // TODO(macOS GH#774)
-  rowIndex?: number, // TODO(macOS GH#774)
+  sectionIndex?: number, // [macOS]
+  rowIndex?: number, // [macOS]
 
   /**
    * Called when the viewability of rows changes, as defined by the
@@ -365,7 +365,7 @@ let _keylessItemComponentName: string = '';
 type State = {
   first: number,
   last: number,
-  selectedRowIndex: number, // TODO(macOS GH#774)
+  selectedRowIndex: number, // [macOS]
   ...
 };
 
@@ -593,7 +593,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
-  // [TODO(macOS GH#774)
+  // [macOS
   ensureItemAtIndexIsVisible(rowIndex: number) {
     const frame = this._getFrameMetricsApprox(rowIndex);
     const visTop = this._scrollMetrics.offset;
@@ -614,7 +614,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   selectRowAtIndex(rowIndex: number) {
     this._selectRowAtIndex(rowIndex);
   }
-  // ]TODO(macOS GH#774)
+  // macOS]
 
   recordInteraction() {
     this._nestedChildLists.forEach(childList => {
@@ -800,7 +800,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           (this.props.initialScrollIndex || 0) +
             initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
-      selectedRowIndex: this.props.initialSelectedIndex ?? -1, // TODO(macOS GH#774)
+      selectedRowIndex: this.props.initialSelectedIndex ?? -1, // [macOS]
     };
 
     if (this._isNestedWithSameOrientation()) {
@@ -862,10 +862,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         Math.min(prevState.first, getItemCount(data) - 1 - maxToRenderPerBatch),
       ),
       last: Math.max(0, Math.min(prevState.last, getItemCount(data) - 1)),
+      // [macOS
       selectedRowIndex: Math.max(
         -1, // Used to indicate no row is selected
         Math.min(prevState.selectedRowIndex, getItemCount(data)),
-      ), // TODO(macOS GH#774)
+      ), // macOS]
     };
   }
 
@@ -906,13 +907,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           index={ii}
           inversionStyle={inversionStyle}
           item={item}
-          // [TODO(macOS GH#774)
+          // [macOS
           isSelected={
             this.props.enableSelectionOnKeyPress &&
             this.state.selectedRowIndex === ii
               ? true
               : false
-          } // TODO(macOS GH#774)]
+          } // macOS]
           key={key}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
@@ -981,7 +982,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     // macOS natively supports inverted lists, thus not needing an inversion style
     const inversionStyle =
-      this.props.inverted && Platform.OS !== 'macos' // TODO(macOS GH#774)
+      this.props.inverted && Platform.OS !== 'macos' // [macOS]
         ? horizontalOrDefault(this.props.horizontal)
           ? styles.horizontallyInverted
           : styles.verticallyInverted
@@ -1329,7 +1330,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _defaultRenderScrollComponent = props => {
-    // [TODO(macOS GH#774)
+    // [macOS
     const preferredScrollerStyleDidChangeHandler =
       this.props.onPreferredScrollerStyleDidChange;
     const invertedDidChange = this.props.onInvertedDidChange;
@@ -1351,7 +1352,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       validKeysDown: _validKeysDown,
       onKeyDown: this._handleKeyDown,
     };
-    // ]TODO(macOS GH#774)
+    // macOS]
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
       // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
@@ -1366,12 +1367,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return (
         // $FlowFixMe[prop-missing] Invalid prop usage
         <ScrollView
-          // [TODO(macOS GH#774)
+          // [macOS
           {...(props.enableSelectionOnKeyPress && keyboardNavigationProps)}
           onInvertedDidChange={invertedDidChange}
           onPreferredScrollerStyleDidChange={
             preferredScrollerStyleDidChangeHandler
-          } // TODO(macOS GH#774)]
+          } // macOS]
           {...props}
           refreshControl={
             props.refreshControl == null ? (
@@ -1390,12 +1391,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return (
         // $FlowFixMe Invalid prop usage
         <ScrollView
-          // [TODO(macOS GH#774)
+          // [macOS
           {...(props.enableSelectionOnKeyPress && keyboardNavigationProps)}
           onInvertedDidChange={invertedDidChange}
           onPreferredScrollerStyleDidChange={
             preferredScrollerStyleDidChangeHandler
-          } // TODO(macOS GH#774)]
+          } // macOS]
           {...props}
         />
       );
@@ -1545,7 +1546,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._headerLength = this._selectLength(e.nativeEvent.layout);
   };
 
-  // [TODO(macOS GH#774)
+  // [macOS
   _selectRowAtIndex = rowIndex => {
     const prevIndex = this.state.selectedRowIndex;
     const newIndex = rowIndex;
@@ -1619,7 +1620,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
     }
   };
-  // ]TODO(macOS GH#774)
+  // macOS]
 
   _renderDebugOverlay() {
     const normalize =
@@ -2102,7 +2103,7 @@ type CellRendererProps = {
   horizontal: ?boolean,
   index: number,
   inversionStyle: ViewStyleProp,
-  isSelected: ?boolean, // TODO(macOS GH#774)
+  isSelected: ?boolean, // [macOS]
   item: Item,
   // This is extracted by ScrollViewStickyHeader
   onLayout: (event: Object) => void,
@@ -2197,7 +2198,7 @@ class CellRenderer extends React.Component<
     ListItemComponent,
     item,
     index,
-    isSelected, // TODO(macOS GH#774)
+    isSelected, // [macOS]
   ) {
     if (renderItem && ListItemComponent) {
       console.warn(
@@ -2225,7 +2226,7 @@ class CellRenderer extends React.Component<
       return renderItem({
         item,
         index,
-        isSelected, // TODO(macOS GH#774)
+        isSelected, // [macOS]
         separators: this._separators,
       });
     }
@@ -2245,7 +2246,7 @@ class CellRenderer extends React.Component<
       item,
       index,
       inversionStyle,
-      isSelected, // TODO(macOS GH#774)
+      isSelected, // [macOS]
       parentProps,
     } = this.props;
     const {renderItem, getItemLayout, ListItemComponent} = parentProps;
@@ -2254,7 +2255,7 @@ class CellRenderer extends React.Component<
       ListItemComponent,
       item,
       index,
-      isSelected, // TODO(macOS GH#774)
+      isSelected, // [macOS]
     );
 
     const onLayout =
@@ -2293,7 +2294,6 @@ class CellRenderer extends React.Component<
         {itemSeparator}
       </CellRendererComponent>
     );
-    // TODO(macOS GH#774)]
 
     return (
       <VirtualizedListCellContextProvider cellKey={this.props.cellKey}>

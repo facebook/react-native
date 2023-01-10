@@ -8,7 +8,7 @@
 #import "RCTActivityIndicatorViewComponentView.h"
 
 #import <React/RCTConversions.h>
-#import <React/RCTActivityIndicatorView.h> // TODO(macOS GH#774)
+#import <React/RCTActivityIndicatorView.h> // [macOS]
 
 #import <react/renderer/components/rncore/ComponentDescriptors.h>
 #import <react/renderer/components/rncore/EventEmitters.h>
@@ -29,7 +29,7 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 }
 
 @implementation RCTActivityIndicatorViewComponentView {
-  RCTUIActivityIndicatorView *_activityIndicatorView; // TODO(macOS GH#774)
+  RCTUIActivityIndicatorView *_activityIndicatorView; // [macOS]
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -45,7 +45,7 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
     static const auto defaultProps = std::make_shared<const ActivityIndicatorViewProps>();
     _props = defaultProps;
 
-    _activityIndicatorView = [[RCTUIActivityIndicatorView alloc] initWithFrame:self.bounds]; // TODO(macOS GH#774)
+    _activityIndicatorView = [[RCTUIActivityIndicatorView alloc] initWithFrame:self.bounds]; // [macOS]
     _activityIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     if (defaultProps->animating) {

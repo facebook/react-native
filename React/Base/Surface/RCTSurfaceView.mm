@@ -31,12 +31,12 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
   return self;
 }
 
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX // [macOS
 - (BOOL)isFlipped
 {
   return YES;
 }
-#endif
+#endif // macOS]
 
 #pragma mark - Internal Interface
 

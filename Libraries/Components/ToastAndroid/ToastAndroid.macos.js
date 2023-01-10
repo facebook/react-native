@@ -8,7 +8,7 @@
  * @noflow
  */
 
-// TODO(macOS GH#774)
+// [macOS]
 
 const ToastAndroid = require('./ToastAndroid.ios');
 module.exports = ToastAndroid;

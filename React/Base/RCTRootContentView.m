@@ -8,7 +8,7 @@
 #import "RCTRootContentView.h"
 
 #import "RCTBridge.h"
-#import "RCTDeviceInfo.h" // TODO(macOS GH#774)
+#import "RCTDeviceInfo.h" // [macOS]
 #import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
 #import "RCTRootViewInternal.h"
@@ -17,11 +17,11 @@
 #import "UIView+React.h"
 
 @implementation RCTRootContentView
-{ // [TODO(macOS GH#774)
+{ // [macOS
 #if TARGET_OS_OSX
   BOOL _subscribedToWindowNotifications;
 #endif
-} // ]TODO(macOS GH#774)
+} // macOS]
 
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
@@ -35,10 +35,10 @@
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
     [_touchHandler attachToView:self];
     [_bridge.uiManager registerRootView:self];
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
     self.postsFrameChangedNotifications = YES;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sendFrameChangedEvent:) name:NSViewFrameDidChangeNotification object:self];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   }
   return self;
 }
@@ -46,7 +46,7 @@
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (nonnull NSCoder *)aDecoder)
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -85,7 +85,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (nonnull NSCoder *)aDecoder)
 #pragma clang diagnostic pop
 }
 
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 - (void)layoutSubviews
 {
@@ -93,7 +93,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (nonnull NSCoder *)aDecoder)
   [self updateAvailableSize];
 }
 
-- (void)insertReactSubview:(RCTUIView *)subview atIndex:(NSInteger)atIndex // TODO(macOS ISS#3536887)
+- (void)insertReactSubview:(RCTUIView *)subview atIndex:(NSInteger)atIndex // [macOS]
 {
   [super insertReactSubview:subview atIndex:atIndex];
   [_bridge.performanceLogger markStopForTag:RCTPLTTI];
@@ -132,10 +132,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (nonnull NSCoder *)aDecoder)
   [_bridge.uiManager setAvailableSize:self.availableSize forRootView:self];
 }
 
-- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // TODO(macOS ISS#3536887)
+- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // [macOS]
 {
   // The root content view itself should never receive touches
-  RCTPlatformView *hitView = [super hitTest:point withEvent:event]; // TODO(macOS ISS#3536887)
+  RCTPlatformView *hitView = [super hitTest:point withEvent:event]; // [macOS]
   if (_passThroughTouches && hitView == self) {
     return nil;
   }

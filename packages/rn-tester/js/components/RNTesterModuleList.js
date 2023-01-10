@@ -38,7 +38,7 @@ const ExampleModuleRow = ({
   const onAndroid = !platform || platform === 'android';
   const rightAddOn = (
     <TouchableHighlight
-      focusable={false} // TODO(macOS GH#774)
+      focusable={false} // [macOS]
       style={styles.imageViewStyle}
       onPress={() =>
         toggleBookmark({
@@ -152,8 +152,8 @@ const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
               extraData={filteredSections}
               renderItem={renderListItem}
               keyboardShouldPersistTaps="handled"
-              focusable={true} // TODO(macOS GH#774)
-              enableSelectionOnKeyPress={true} // TODO(macOS GH#774)
+              focusable={true} // [macOS]
+              enableSelectionOnKeyPress={true} // [macOS]
               automaticallyAdjustContentInsets={false}
               keyboardDismissMode="on-drag"
               renderSectionHeader={renderSectionHeader}
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     ...Platform.select({
-      // [TODO(macOS GH#774)
+      // [macOS
       macos: {
         backgroundColor: {
           semantic: 'unemphasizedSelectedContentBackgroundColor',
@@ -186,11 +186,11 @@ const styles = StyleSheet.create({
         color: PlatformColor('secondaryLabelColor'),
       },
       default: {
-        // ]TODO(macOS GH#774)
+        // macOS]
         backgroundColor: '#eeeeee',
         color: 'black',
-      }, // [TODO(macOS GH#774)
-    }), // ]TODO(macOS GH#774)
+      }, // [macOS
+    }), // macOS]
     padding: 5,
     fontWeight: '500',
     fontSize: 11,

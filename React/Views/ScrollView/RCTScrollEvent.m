@@ -16,7 +16,7 @@
   CGFloat _scrollViewZoomScale;
   NSDictionary *_userData;
   uint16_t _coalescingKey;
-  NSDictionary *_body; // TODO(OSS Candidate ISS#2710739)
+  NSDictionary *_body; // [macOS]
 }
 
 @synthesize viewTag = _viewTag;
@@ -44,7 +44,7 @@
     _scrollViewZoomScale = scrollViewZoomScale;
     _userData = userData;
     _coalescingKey = coalescingKey;
-    _body = [self body]; // TODO(OSS Candidate ISS#2710739)
+    _body = [self body]; // [macOS]
   }
   return self;
 }
@@ -109,7 +109,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   // Previously this called [self body], which in turn calls view-related methods.
   // Because the arguments method is called from a background thread, we now return
   // the cached metrics from _body to avoid calling main-thread-specific methods.
-  return @[ self.viewTag, RCTNormalizeInputEventName(self.eventName), _body ]; // TODO(OSS Candidate ISS#2710739)
+  return @[ self.viewTag, RCTNormalizeInputEventName(self.eventName), _body ]; // [macOS]
 }
 
 @end

@@ -8,11 +8,11 @@
  * @format
  */
 
-const Platform = require('../Utilities/Platform'); // TODO(macOS GH#774)
+const Platform = require('../Utilities/Platform'); // [macOS]
 import invariant from 'invariant';
 import type {ViewToken} from './ViewabilityHelper';
-import type {SelectedRowIndexPathType} from './VirtualizedList'; // TODO(macOS GH#774)
-import type {KeyEvent} from '../Types/CoreEventTypes'; // TODO(macOS GH#774)
+import type {SelectedRowIndexPathType} from './VirtualizedList'; // [macOS]
+import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import {View, VirtualizedList} from 'react-native';
 import * as React from 'react';
@@ -33,7 +33,7 @@ export type SectionBase<SectionItemT> = {
   renderItem?: ?(info: {
     item: SectionItemT,
     index: number,
-    // isSelected?: boolean, // TODO(macOS GH#774)
+    // isSelected?: boolean, // [macOS]
     section: SectionBase<SectionItemT>,
     separators: {
       highlight: () => void,
@@ -53,19 +53,21 @@ type RequiredProps<SectionT: SectionBase<any>> = {|
 |};
 
 type OptionalProps<SectionT: SectionBase<any>> = {|
+  // [macOS
   /**
    * Handles key down events and updates selection based on the key event
    *
    * @platform macos
    */
-  enableSelectionOnKeyPress?: ?boolean, // TODO(macOS GH#774)
+  enableSelectionOnKeyPress?: ?boolean,
+  // macOS]
   /**
    * Default renderer for every item in every section.
    */
   renderItem?: (info: {
     item: Item,
     index: number,
-    isSelected?: boolean, // TODO(macOS GH#774)
+    isSelected?: boolean, // [macOS]
     section: SectionT,
     separators: {
       highlight: () => void,
@@ -114,13 +116,13 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
     previousSelection: Object,
     newSelection: Object,
     item: ?Item,
-  }) => void, // TODO(macOS GH#774)
+  }) => void, // [macOS]
   /**
    * If provided, called when 'Enter' key is pressed on an item.
    *
    * @platform macos
    */
-  onSelectionEntered?: ?(item: ?Item) => void, // TODO(macOS GH#774)
+  onSelectionEntered?: ?(item: ?Item) => void, // [macOS]
 |};
 
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
@@ -145,7 +147,7 @@ export type ScrollToLocationParamsType = {|
   viewPosition?: number,
 |};
 
-// TODO(macOS GH#774)
+// [macOS]
 type State = {
   selectedRowIndexPath: SelectedRowIndexPathType,
   ...
@@ -187,7 +189,7 @@ class VirtualizedSectionList<
     return this._listRef;
   }
 
-  // TODO(macOS GH#774)
+  // [macOS]
   constructor(props: Props<SectionT>, context: Object) {
     super(props, context);
     this.state = {
@@ -242,13 +244,13 @@ class VirtualizedSectionList<
             ? this._onViewableItemsChanged
             : undefined
         }
-        {...this.state.selectedRowIndexPath} // TODO(macOS GH#774)
+        {...this.state.selectedRowIndexPath} // [macOS]
         ref={this._captureRef}
       />
     );
   }
 
-  // [TODO(macOS GH#774)
+  // [macOS
   _selectRowAboveIndexPath = rowIndexPath => {
     let sectionIndex = rowIndexPath.sectionIndex;
     if (sectionIndex >= this.props.sections.length) {
@@ -355,7 +357,7 @@ class VirtualizedSectionList<
         }
       }
     }
-  }; // ]TODO(macOS GH#774)
+  }; // macOS]
 
   _getItem(
     props: Props<SectionT>,
@@ -487,7 +489,7 @@ class VirtualizedSectionList<
     }
   };
 
-  // [TODO(macOS GH#774)
+  // [macOS
   _isItemSelected = (item: Item): boolean => {
     let isSelected = false;
     if (this.state.selectedRowIndexPath) {
@@ -503,7 +505,7 @@ class VirtualizedSectionList<
     }
     return isSelected;
   };
-  // ]TODO(macOS GH#774)
+  // macOS]
 
   _renderItem =
     (listItemCount: number) =>
@@ -538,7 +540,7 @@ class VirtualizedSectionList<
             }
             cellKey={info.key}
             index={infoIndex}
-            isSelected={this._isItemSelected(item)} // TODO(macOS GH#774)
+            isSelected={this._isItemSelected(item)} // [macOS]
             item={item}
             leadingItem={info.leadingItem}
             leadingSection={info.leadingSection}
@@ -636,7 +638,7 @@ type ItemWithSeparatorProps = $ReadOnly<{|
   cellKey: string,
   index: number,
   item: Item,
-  isSelected: boolean, // TODO(macOS GH#774)
+  isSelected: boolean, // [macOS]
   setSelfHighlightCallback: (
     cellKey: string,
     updateFn: ?(boolean) => void,
@@ -664,7 +666,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
     setSelfUpdatePropsCallback,
     updatePropsFor,
     item,
-    isSelected, // TODO(macOS GH#774)
+    isSelected, // [macOS]
     index,
     section,
     inverted,
@@ -739,7 +741,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   const element = props.renderItem({
     item,
     index,
-    isSelected, // TODO(macOS GH#774)
+    isSelected, // [macOS]
     section,
     separators,
   });

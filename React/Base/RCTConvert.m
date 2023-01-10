@@ -356,7 +356,7 @@ RCT_ENUM_CONVERTER(
     RCTTextDecorationLineTypeNone,
     integerValue)
 
-// [TODO(OSS Candidate ISS#2710739)
+// [macOS
 RCT_ENUM_CONVERTER(
     RCTFontSmoothing,
     (@{
@@ -367,7 +367,7 @@ RCT_ENUM_CONVERTER(
     }),
     RCTFontSmoothingAuto,
     integerValue)
-// ]TODO(OSS Candidate ISS#2710739)
+// macOS]
 
 RCT_ENUM_CONVERTER(
     NSWritingDirection,
@@ -379,7 +379,7 @@ RCT_ENUM_CONVERTER(
     NSWritingDirectionNatural,
     integerValue)
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 RCT_ENUM_CONVERTER(
     UITextAutocapitalizationType,
     (@{
@@ -521,7 +521,7 @@ RCT_ENUM_CONVERTER(
     }),
     UIBarStyleDefault,
     integerValue)
-#else // [TODO(macOS GH#774)
+#else // [macOS
 RCT_MULTI_ENUM_CONVERTER(NSTextCheckingTypes, (@{
   @"ortography": @(NSTextCheckingTypeOrthography),
   @"spelling": @(NSTextCheckingTypeSpelling),
@@ -537,7 +537,7 @@ RCT_MULTI_ENUM_CONVERTER(NSTextCheckingTypes, (@{
   @"phoneNumber": @(NSTextCheckingTypePhoneNumber),
   @"transitInformation": @(NSTextCheckingTypeTransitInformation),
 }), NSTextCheckingTypeOrthography, unsignedLongLongValue)
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 static void convertCGStruct(const char *type, NSArray *fields, CGFloat *result, id json)
 {
@@ -646,88 +646,7 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
   static NSDictionary<NSString *, NSDictionary *> *colorMap = nil;
   if (colorMap == nil) {
     NSMutableDictionary<NSString *, NSDictionary *> *map = [@{
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-      // https://developer.apple.com/documentation/appkit/nscolor/ui_element_colors
-      // Label Colors
-      @"labelColor": @{}, // 10_10
-      @"secondaryLabelColor": @{}, // 10_10
-      @"tertiaryLabelColor": @{}, // 10_10
-      @"quaternaryLabelColor": @{}, // 10_10
-      // Text Colors
-      @"textColor": @{},
-      @"placeholderTextColor": @{}, // 10_10
-      @"selectedTextColor": @{},
-      @"textBackgroundColor": @{},
-      @"selectedTextBackgroundColor": @{},
-      @"keyboardFocusIndicatorColor": @{},
-      @"unemphasizedSelectedTextColor": @{ // 10_14
-        RCTFallback: @"selectedTextColor"
-      },
-      @"unemphasizedSelectedTextBackgroundColor": @{ // 10_14
-        RCTFallback: @"textBackgroundColor"
-      },
-      // Content Colors
-      @"linkColor": @{}, // 10_10
-      @"separatorColor": @{ // 10_14: Replacement for +controlHighlightColor, +controlLightHighlightColor, +controlShadowColor, +controlDarkShadowColor
-        RCTFallback: @"gridColor"
-      },
-      @"selectedContentBackgroundColor": @{ // 10_14: Alias for +alternateSelectedControlColor
-        RCTFallback: @"alternateSelectedControlColor"
-      },
-      @"unemphasizedSelectedContentBackgroundColor": @{ // 10_14: Alias for +secondarySelectedControlColor
-        RCTFallback: @"secondarySelectedControlColor"
-      },
-      // Menu Colors
-      @"selectedMenuItemTextColor": @{},
-      // Table Colors
-      @"gridColor": @{},
-      @"headerTextColor": @{},
-      @"alternatingEvenContentBackgroundColor": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
-        RCTSelector: @"alternatingContentBackgroundColors",
-        RCTIndex: @0,
-        RCTFallback: @"controlAlternatingRowBackgroundColors"
-      },
-      @"alternatingOddContentBackgroundColor": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
-        RCTSelector: @"alternatingContentBackgroundColors",
-        RCTIndex: @1,
-        RCTFallback: @"controlAlternatingRowBackgroundColors"
-      },
-      // Control Colors
-      @"controlAccentColor": @{ // 10_14
-        RCTFallback: @"controlColor"
-      },
-      @"controlColor": @{},
-      @"controlBackgroundColor": @{},
-      @"controlTextColor": @{},
-      @"disabledControlTextColor": @{},
-      @"selectedControlColor": @{},
-      @"selectedControlTextColor": @{},
-      @"alternateSelectedControlTextColor": @{},
-      @"scrubberTexturedBackgroundColor": @{}, // 10_12_2
-      // Window Colors
-      @"windowBackgroundColor": @{},
-      @"windowFrameTextColor": @{},
-      @"underPageBackgroundColor": @{}, // 10_8
-      // Highlights and Shadows
-      @"findHighlightColor": @{ // 10_13
-        RCTFallback: @"highlightColor"
-      },
-      @"highlightColor": @{},
-      @"shadowColor": @{},
-      // https://developer.apple.com/documentation/appkit/nscolor/standard_colors
-      // Standard Colors
-      @"systemBlueColor": @{},   // 10_10
-      @"systemBrownColor": @{},  // 10_10
-      @"systemGrayColor": @{},   // 10_10
-      @"systemGreenColor": @{},  // 10_10
-      @"systemOrangeColor": @{}, // 10_10
-      @"systemPinkColor": @{},   // 10_10
-      @"systemPurpleColor": @{}, // 10_10
-      @"systemRedColor": @{},    // 10_10
-      @"systemYellowColor": @{}, // 10_10
-      // Transparent Color
-      @"clearColor" : @{},
-#else // ]TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
       // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
       // Label Colors
       @"labelColor" : @{
@@ -857,7 +776,88 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
         // iOS 13.0
         RCTFallbackARGB : @(0x00000000)
       },
-#endif // TODO(macOS GH#774)
+#else // [macOS
+      // https://developer.apple.com/documentation/appkit/nscolor/ui_element_colors
+      // Label Colors
+      @"labelColor": @{}, // 10_10
+      @"secondaryLabelColor": @{}, // 10_10
+      @"tertiaryLabelColor": @{}, // 10_10
+      @"quaternaryLabelColor": @{}, // 10_10
+      // Text Colors
+      @"textColor": @{},
+      @"placeholderTextColor": @{}, // 10_10
+      @"selectedTextColor": @{},
+      @"textBackgroundColor": @{},
+      @"selectedTextBackgroundColor": @{},
+      @"keyboardFocusIndicatorColor": @{},
+      @"unemphasizedSelectedTextColor": @{ // 10_14
+        RCTFallback: @"selectedTextColor"
+      },
+      @"unemphasizedSelectedTextBackgroundColor": @{ // 10_14
+        RCTFallback: @"textBackgroundColor"
+      },
+      // Content Colors
+      @"linkColor": @{}, // 10_10
+      @"separatorColor": @{ // 10_14: Replacement for +controlHighlightColor, +controlLightHighlightColor, +controlShadowColor, +controlDarkShadowColor
+        RCTFallback: @"gridColor"
+      },
+      @"selectedContentBackgroundColor": @{ // 10_14: Alias for +alternateSelectedControlColor
+        RCTFallback: @"alternateSelectedControlColor"
+      },
+      @"unemphasizedSelectedContentBackgroundColor": @{ // 10_14: Alias for +secondarySelectedControlColor
+        RCTFallback: @"secondarySelectedControlColor"
+      },
+      // Menu Colors
+      @"selectedMenuItemTextColor": @{},
+      // Table Colors
+      @"gridColor": @{},
+      @"headerTextColor": @{},
+      @"alternatingEvenContentBackgroundColor": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
+        RCTSelector: @"alternatingContentBackgroundColors",
+        RCTIndex: @0,
+        RCTFallback: @"controlAlternatingRowBackgroundColors"
+      },
+      @"alternatingOddContentBackgroundColor": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
+        RCTSelector: @"alternatingContentBackgroundColors",
+        RCTIndex: @1,
+        RCTFallback: @"controlAlternatingRowBackgroundColors"
+      },
+      // Control Colors
+      @"controlAccentColor": @{ // 10_14
+        RCTFallback: @"controlColor"
+      },
+      @"controlColor": @{},
+      @"controlBackgroundColor": @{},
+      @"controlTextColor": @{},
+      @"disabledControlTextColor": @{},
+      @"selectedControlColor": @{},
+      @"selectedControlTextColor": @{},
+      @"alternateSelectedControlTextColor": @{},
+      @"scrubberTexturedBackgroundColor": @{}, // 10_12_2
+      // Window Colors
+      @"windowBackgroundColor": @{},
+      @"windowFrameTextColor": @{},
+      @"underPageBackgroundColor": @{}, // 10_8
+      // Highlights and Shadows
+      @"findHighlightColor": @{ // 10_13
+        RCTFallback: @"highlightColor"
+      },
+      @"highlightColor": @{},
+      @"shadowColor": @{},
+      // https://developer.apple.com/documentation/appkit/nscolor/standard_colors
+      // Standard Colors
+      @"systemBlueColor": @{},   // 10_10
+      @"systemBrownColor": @{},  // 10_10
+      @"systemGrayColor": @{},   // 10_10
+      @"systemGreenColor": @{},  // 10_10
+      @"systemOrangeColor": @{}, // 10_10
+      @"systemPinkColor": @{},   // 10_10
+      @"systemPurpleColor": @{}, // 10_10
+      @"systemRedColor": @{},    // 10_10
+      @"systemYellowColor": @{}, // 10_10
+      // Transparent Color
+      @"clearColor" : @{},
+#endif // macOS]
     } mutableCopy];
     // The color names are the Objective-C UIColor selector names,
     // but Swift selector names are valid as well, so make aliases.
@@ -897,7 +897,7 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
   return colorMap;
 }
 
-// [TODO(macOS GH#774)
+// [macOS
 /** Returns a UIColor based on a semantic color name.
  *  Returns nil if the semantic color name is invalid.
  */
@@ -939,7 +939,7 @@ static RCTUIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
   }
   return color;
 }
-// ]TODO(macOS GH#774)
+// macOS]
 
 /** Returns an alphabetically sorted comma separated list of the valid semantic color names
  */
@@ -958,14 +958,14 @@ static NSString *RCTSemanticColorNames()
   return names;
 }
 
-// [TODO(macOS GH#774)
+// [macOS
 + (RCTUIColor *)NSColor:(id)json
 {
   return [RCTConvert UIColor:json];
 }
-// ]TODO(macOS GH#774)
+// macOS]
 
-// [TODO(macOS GH#750)
+// [macOS
 #if TARGET_OS_OSX
 static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectString) {
     NSColor *colorWithEffect = color;
@@ -985,9 +985,9 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
     return colorWithEffect;
 }
 #endif //TARGET_OS_OSX
-// ]TODO(macOS GH#750)
+// macOS]
 
-+ (RCTUIColor *)UIColor:(id)json // TODO(macOS GH#750)
++ (RCTUIColor *)UIColor:(id)json // [macOS]
 {
   if (!json) {
     return nil;
@@ -995,7 +995,7 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
   if ([json isKindOfClass:[NSArray class]]) {
     NSArray *components = [self NSNumberArray:json];
     CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
-    return [RCTUIColor colorWithRed:[self CGFloat:components[0]] // TODO(macOS GH#750)
+    return [RCTUIColor colorWithRed:[self CGFloat:components[0]] // [macOS]
                               green:[self CGFloat:components[1]]
                                blue:[self CGFloat:components[2]]
                               alpha:alpha];
@@ -1005,7 +1005,7 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
     CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
     CGFloat b = (argb & 0xFF) / 255.0;
-    return [RCTUIColor colorWithRed:r green:g blue:b alpha:a]; // TODO(macOS GH#750)
+    return [RCTUIColor colorWithRed:r green:g blue:b alpha:a]; // [macOS]
 
   } else if ([json isKindOfClass:[NSDictionary class]]) {
     NSDictionary *dictionary = json;
@@ -1013,7 +1013,7 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
     if ((value = [dictionary objectForKey:@"semantic"])) {
       if ([value isKindOfClass:[NSString class]]) {
         NSString *semanticName = value;
-        RCTUIColor *color = [RCTUIColor colorNamed:semanticName]; // TODO(macOS GH#750)
+        RCTUIColor *color = [RCTUIColor colorNamed:semanticName]; // [macOS]
         if (color != nil) {
           return color;
         }
@@ -1026,7 +1026,7 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
         return color;
       } else if ([value isKindOfClass:[NSArray class]]) {
         for (id name in value) {
-          RCTUIColor *color = [RCTUIColor colorNamed:name]; // TODO(macOS GH#750)
+          RCTUIColor *color = [RCTUIColor colorNamed:name]; // [macOS]
           if (color != nil) {
             return color;
           }
@@ -1049,37 +1049,13 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
       id light = [appearances objectForKey:@"light"];
       RCTUIColor *lightColor = [RCTConvert UIColor:light];
       id dark = [appearances objectForKey:@"dark"];
-      RCTUIColor *darkColor = [RCTConvert UIColor:dark]; // TODO(macOS GH#750)
+      RCTUIColor *darkColor = [RCTConvert UIColor:dark]; // [macOS]
       id highContrastLight = [appearances objectForKey:@"highContrastLight"];
-      RCTUIColor *highContrastLightColor = [RCTConvert UIColor:highContrastLight]; // TODO(macOS GH#750)
+      RCTUIColor *highContrastLightColor = [RCTConvert UIColor:highContrastLight]; // [macOS]
       id highContrastDark = [appearances objectForKey:@"highContrastDark"];
-      RCTUIColor *highContrastDarkColor = [RCTConvert UIColor:highContrastDark]; // TODO(macOS GH#750)
+      RCTUIColor *highContrastDarkColor = [RCTConvert UIColor:highContrastDark]; // [macOS]
       if (lightColor != nil && darkColor != nil) {
-#if TARGET_OS_OSX
-        NSColor *color = [NSColor colorWithName:nil dynamicProvider:^NSColor * _Nonnull(NSAppearance * _Nonnull appearance) {
-          NSMutableArray<NSAppearanceName> *appearances = [NSMutableArray arrayWithArray:@[NSAppearanceNameAqua,NSAppearanceNameDarkAqua]];
-          if (highContrastLightColor != nil) {
-            [appearances addObject:NSAppearanceNameAccessibilityHighContrastAqua];
-          }
-          if (highContrastDarkColor != nil) {
-            [appearances addObject:NSAppearanceNameAccessibilityHighContrastDarkAqua];
-          }
-          NSAppearanceName bestMatchingAppearance = [appearance bestMatchFromAppearancesWithNames:appearances];
-          if (bestMatchingAppearance == NSAppearanceNameAqua) {
-            return lightColor;
-          } else if (bestMatchingAppearance == NSAppearanceNameDarkAqua) {
-            return darkColor;
-          } else if (bestMatchingAppearance == NSAppearanceNameAccessibilityHighContrastAqua) {
-            return highContrastLightColor;
-          } else if (bestMatchingAppearance == NSAppearanceNameAccessibilityHighContrastDarkAqua) {
-            return highContrastDarkColor;
-          } else {
-            RCTLogConvertError(json, @"an NSColorColor. Could not resolve current appearance. Defaulting to light.");
-            return lightColor;
-          }
-        }];
-        return color;
-#else
+#if !TARGET_OS_OSX // [macOS]
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         if (@available(iOS 13.0, *)) {
           UIColor *color = [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(
@@ -1105,14 +1081,36 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         }
 #endif
-#endif
-// [TODO(macOS GH#774)
+#else // [macOS
+        NSColor *color = [NSColor colorWithName:nil dynamicProvider:^NSColor * _Nonnull(NSAppearance * _Nonnull appearance) {
+          NSMutableArray<NSAppearanceName> *appearances = [NSMutableArray arrayWithArray:@[NSAppearanceNameAqua,NSAppearanceNameDarkAqua]];
+          if (highContrastLightColor != nil) {
+            [appearances addObject:NSAppearanceNameAccessibilityHighContrastAqua];
+          }
+          if (highContrastDarkColor != nil) {
+            [appearances addObject:NSAppearanceNameAccessibilityHighContrastDarkAqua];
+          }
+          NSAppearanceName bestMatchingAppearance = [appearance bestMatchFromAppearancesWithNames:appearances];
+          if (bestMatchingAppearance == NSAppearanceNameAqua) {
+            return lightColor;
+          } else if (bestMatchingAppearance == NSAppearanceNameDarkAqua) {
+            return darkColor;
+          } else if (bestMatchingAppearance == NSAppearanceNameAccessibilityHighContrastAqua) {
+            return highContrastLightColor;
+          } else if (bestMatchingAppearance == NSAppearanceNameAccessibilityHighContrastDarkAqua) {
+            return highContrastDarkColor;
+          } else {
+            RCTLogConvertError(json, @"an NSColorColor. Could not resolve current appearance. Defaulting to light.");
+            return lightColor;
+          }
+        }];
+        return color;
+#endif // macOS]
       } else {
-        RCTLogConvertError(json, @"a UIColor. Expected a dynamic appearance aware color.");
+        RCTLogConvertError(json, @"a UIColor. Expected an apple dynamic appearance aware color."); // [macOS]
         return nil;
       }
-// [TODO(macOS GH#750)
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX // [macOS
     } else if((value = [dictionary objectForKey:@"colorWithSystemEffect"])) {
         NSDictionary *colorWithSystemEffect = value;
         id base = [colorWithSystemEffect objectForKey:@"baseColor"];
@@ -1125,13 +1123,11 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
                 json, @"a UIColor.  Expected a color with a system effect string, but got something else");
             return nil;
         }
-#endif //TARGET_OS_OSX
-// ]TODO(macOS GH#750)
+#endif // macOS]
     } else {
-      RCTLogConvertError(json, @"a UIColor. Expected a semantic color, dynamic appearance aware color, or color with system effect"); //TODO(macOS GH#750)
+      RCTLogConvertError(json, @"a UIColor. Expected an apple semantic color, dynamic appearance aware color, or color with system effect"); // [macOS]
       return nil;
     }
-// ]TODO(macOS GH#774)
   } else {
     RCTLogConvertError(json, @"a UIColor. Did you forget to call processColor() on the JS side?");
     return nil;
@@ -1191,7 +1187,7 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
 
 RCT_ARRAY_CONVERTER(NSURL)
 RCT_ARRAY_CONVERTER(RCTFileURL)
-RCT_ARRAY_CONVERTER(RCTUIColor) // TODO(OSS Candidate ISS#2710739)
+RCT_ARRAY_CONVERTER(RCTUIColor) // [macOS]
 
 /**
  * This macro is used for creating converter functions for directly
@@ -1224,7 +1220,7 @@ RCT_JSON_ARRAY_CONVERTER(NSNumber)
   return colors;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 + (NSArray<NSPasteboardType> *)NSPasteboardType:(id)json
 {
   NSString *type = [self NSString:json];
@@ -1255,7 +1251,7 @@ RCT_JSON_ARRAY_CONVERTER(NSNumber)
   }
   return @[];
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 static id RCTConvertPropertyListValue(id json)
 {
@@ -1409,21 +1405,21 @@ RCT_ENUM_CONVERTER(
 RCT_ENUM_CONVERTER(
     RCTAnimationType,
     (@{
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
       @"spring" : @(RCTAnimationTypeSpring),
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
       @"linear" : @(RCTAnimationTypeLinear),
       @"easeIn" : @(RCTAnimationTypeEaseIn),
       @"easeOut" : @(RCTAnimationTypeEaseOut),
       @"easeInEaseOut" : @(RCTAnimationTypeEaseInEaseOut),
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
       @"keyboard" : @(RCTAnimationTypeKeyboard),
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
     }),
     RCTAnimationTypeEaseInEaseOut,
     integerValue)
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 + (NSString*)accessibilityRoleFromTrait:(NSString*)trait
 {
   static NSDictionary<NSString *, NSString *> *traitOrRoleToAccessibilityRole;
@@ -1489,7 +1485,7 @@ RCT_ENUM_CONVERTER(
   }
   return NSAccessibilityUnknownRole;
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @end
 
@@ -1543,29 +1539,29 @@ RCT_ENUM_CONVERTER(
       RCTLogConvertError(json, @"an image. File not found.");
     }
   } else if ([scheme isEqualToString:@"data"]) {
-    image = UIImageWithData([NSData dataWithContentsOfURL:URL]); // TODO(macOS GH#774)
+    image = UIImageWithData([NSData dataWithContentsOfURL:URL]); // [macOS]
   } else if ([scheme isEqualToString:@"http"] && imageSource.packagerAsset) {
-    image = UIImageWithData([NSData dataWithContentsOfURL:URL]); // TODO(macOS GH#774)
+    image = UIImageWithData([NSData dataWithContentsOfURL:URL]); // [macOS]
   } else {
     RCTLogConvertError(json, @"an image. Only local files or data URIs are supported.");
     return nil;
   }
 
-  CGImageRef imageRef = UIImageGetCGImageRef(image); // TODO(macOS GH#774)
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+  CGImageRef imageRef = UIImageGetCGImageRef(image); // [macOS]
+#if !TARGET_OS_OSX // [macOS]
   CGFloat scale = imageSource.scale;
   if (!scale && imageSource.size.width) {
     // If no scale provided, set scale to image width / source width
-    scale = CGImageGetWidth(imageRef) / imageSource.size.width; // TODO(macOS GH#774)
+    scale = CGImageGetWidth(imageRef) / imageSource.size.width; // [macOS]
   }
   if (scale) {
     image = [UIImage imageWithCGImage:imageRef scale:scale orientation:image.imageOrientation];
   }
-#else // [TODO(macOS GH#774)
+#else // [macOS
   if (!CGSizeEqualToSize(image.size, imageSource.size)) {
     image = [[NSImage alloc] initWithCGImage:imageRef size:imageSource.size];
   }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
   if (!CGSizeEqualToSize(imageSource.size, CGSizeZero) && !CGSizeEqualToSize(imageSource.size, image.size)) {
     RCTLogError(
@@ -1580,7 +1576,7 @@ RCT_ENUM_CONVERTER(
 
 + (CGImageRef)CGImage:(id)json
 {
-  return UIImageGetCGImageRef([self UIImage:json]); // TODO(macOS GH#774)
+  return UIImageGetCGImageRef([self UIImage:json]); // [macOS]
 }
 
 @end

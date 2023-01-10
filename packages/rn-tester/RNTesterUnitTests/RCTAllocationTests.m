@@ -161,7 +161,7 @@ RCT_EXPORT_METHOD(test
 - (void)testContentViewIsInvalidated
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:nil launchOptions:nil];
-  __weak RCTUIView *rootContentView; // TODO(macOS ISS#3536887)
+  __weak RCTUIView *rootContentView; // [macOS]
   @autoreleasepool {
     RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"" initialProperties:nil];
     RCT_RUN_RUNLOOP_WHILE(!(rootContentView = [rootView valueForKey:@"contentView"]))

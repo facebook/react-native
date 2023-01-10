@@ -106,7 +106,7 @@ RCT_EXPORT_METHOD(verifySnapshot : (RCTResponseSenderBlock)callback)
 
   [_bridge.uiManager addUIBlock:^(
                          RCTUIManager *uiManager,
-                         NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+                         NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
     NSString *testName = NSStringFromSelector(self->_testSelector);
     if (!self->_snapshotCounter) {
       self->_snapshotCounter = [NSMutableDictionary new];
@@ -163,7 +163,7 @@ RCT_EXPORT_METHOD(markTestPassed : (BOOL)success)
   [_bridge.uiManager
       addUIBlock:^(
           __unused RCTUIManager *uiManager,
-          __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+          __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
         self->_status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
       }];
 }

@@ -5,26 +5,26 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTBorderStyle.h>
 #import <React/RCTComponent.h>
-#import <React/RCTEventDispatcherProtocol.h> // TODO(OSS Candidate ISS#2710739)
+#import <React/RCTEventDispatcherProtocol.h> // [macOS]
 #import <React/RCTPointerEvents.h>
 
-#if TARGET_OS_OSX // TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 #import <React/RCTCursor.h>
-#endif // TODO(macOS GH#774)
+#endif // macOS]
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 @protocol RCTAutoInsetsProtocol;
 
-@interface RCTView : RCTUIView // TODO(macOS ISS#3536887)
+@interface RCTView : RCTUIView // [macOS]
 
-// [TODO(OSS Candidate ISS#2710739)
+// [macOS
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher;
 
 - (BOOL)becomeFirstResponder;
@@ -34,16 +34,16 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 - (NSDictionary*)dataTransferInfoFromPasteboard:(NSPasteboard*)pasteboard;
 - (BOOL)handleKeyboardEvent:(NSEvent *)event;
 #endif
-// ]TODO(OSS Candidate ISS#2710739)
+// macOS]
 
 /**
  * Accessibility event handlers
  */
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityAction;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 @property (nonatomic, copy) RCTDirectEventBlock onMagicTap;
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityEscape;
 
 /**
@@ -51,8 +51,8 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
  */
 @property (nonatomic, assign) RCTPointerEvents pointerEvents;
 
-+ (void)autoAdjustInsetsForView:(RCTUIView<RCTAutoInsetsProtocol> *)parentView // TODO(macOS ISS#3536887)
-                 withScrollView:(RCTUIScrollView *)scrollView // TODO(macOS ISS#3536887) and TODO(macOS ISS#3536887)
++ (void)autoAdjustInsetsForView:(RCTUIView<RCTAutoInsetsProtocol> *)parentView // [macOS]
+                 withScrollView:(RCTUIScrollView *)scrollView // [macOS]
                    updateOffset:(BOOL)updateOffset;
 
 /**
@@ -124,7 +124,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 /**
  * macOS Properties
  */
@@ -151,7 +151,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, assign) CGFloat shadowOpacity;
 @property (nonatomic, assign) CGFloat shadowRadius;
 @property (nonatomic, assign) CGSize shadowOffset;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 /**
  * Common Focus Properties

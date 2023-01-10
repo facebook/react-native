@@ -25,51 +25,52 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'UI',
     supportsTVOS: true,
   },
-  // [TODO(OSS Candidate ISS#2710739)
+  // [macOS
   {
     key: 'DarkModeExample',
     module: require('../examples/DarkModeExample/DarkModeExample'),
-  }, // ]TODO(OSS Candidate ISS#2710739)
-  // [TODO(macOS GH#774)
+  }, // macOS]
+  // [macOS
   {
     key: 'DatePickerMacOSExample',
     module: require('../examples/DatePicker/DatePickerMacOSExample'),
-  }, // ]TODO(macOS GH#774)
+  }, // macOS]
   {
     key: 'FlatListExampleIndex',
     module: require('../examples/FlatList/FlatListExampleIndex').default,
     category: 'ListView',
     supportsTVOS: true,
   },
-  // [TODO(OSS Candidate ISS#2710739)
+  // [macOS
   {
     key: 'FocusEvents',
     module: require('../examples/FocusEventsExample/FocusEventsExample'),
-  }, // ]TODO(OSS Candidate ISS#2710739)
-  // [TODO(macOS GH #1412)
+  },
+  // [macOS Github#1412
   {
     key: 'FocusOnMount',
     module: require('../examples/FocusOnMount/FocusOnMount'),
-  }, // ]TODO(macOS GH #1412)
+  },
+  // macOS]
   {
     key: 'KeyboardEvents',
     module: require('../examples/KeyboardEventsExample/KeyboardEventsExample'),
-  }, // ]TODO(OSS Candidate ISS#2710739)
+  },
   {
     key: 'Key-View Accessibility Looping',
     module: require('../examples/KeyViewLoopExample/KeyViewLoopExample'),
-  }, // ]TODO(OSS Candidate GH#768)
+  },
   {
     key: 'AccessibilityShowMenu',
     module: require('../examples/AccessibilityShowMenu/AccessibilityShowMenu'),
-  }, // ]TODO(OSS Candidate ISS#2710739)
+  }, // macOS]
   {
     key: 'ImageExample',
     module: require('../examples/Image/ImageExample'),
     skipTest: {
-      // [TODO(OSS Candidate ISS#2710739)
+      // [macOS
       ios: 'Reason: -[NSURLResponse allHeaderFields]: unrecognized selector exception. Occurs upstream also.',
-    }, // ]TODO(OSS Candidate ISS#2710739)
+    }, // macOS]
     category: 'Basic',
     supportsTVOS: true,
   },
@@ -136,8 +137,7 @@ const Components: Array<RNTesterModuleInfo> = [
   },
   {
     key: 'ScrollViewIndicatorInsetsExample',
-    /* $FlowFixMe TODO(macOS GH#774): allow macOS to share iOS test */
-    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample.ios'),
+    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample'),
   },
   {
     key: 'SectionListIndex',
@@ -164,14 +164,12 @@ const Components: Array<RNTesterModuleInfo> = [
   },
   {
     key: 'TextExample',
-    /* $FlowFixMe TODO(macOS GH#774): allow macOS to share iOS test */
     module: require('../examples/Text/TextExample.ios'),
     category: 'Basic',
     supportsTVOS: true,
   },
   {
     key: 'TextInputExample',
-    /* $FlowFixMe TODO(macOS GH#774): allow macOS to share iOS test */
     module: require('../examples/TextInput/TextInputExample.ios'),
     category: 'Basic',
     supportsTVOS: true,
@@ -196,14 +194,14 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     supportsTVOS: true,
   },
-  /* [TODO(macOS GH#774) - NewArchitectureExample depends on Fabric, which we don't have on macOS yet
+  /* [macOS NewArchitectureExample depends on Fabric, which we don't have on macOS yet
   {
     key: 'NewArchitectureExample',
     category: 'UI',
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
     supportsTVOS: false,
   },
-  ]TODO(macOS GH#774) */
+  macOS] */
 ];
 
 const APIs: Array<RNTesterModuleInfo> = [
@@ -327,11 +325,11 @@ const APIs: Array<RNTesterModuleInfo> = [
   {
     key: 'RCTRootViewIOSExample',
     module: require('../examples/RCTRootView/RCTRootViewIOSExample'),
-    // [TODO(OSS Candidate ISS#2710739)
+    // [macOS
     skipTest: {
       default:
         'Reason: requires native components and is convered by RCTRootViewIntegrationTests',
-    }, // ]TODO(OSS Candidate ISS#2710739)
+    }, // macOS]
     supportsTVOS: true,
   },
   {
@@ -357,19 +355,19 @@ const APIs: Array<RNTesterModuleInfo> = [
   {
     key: 'TransformExample',
     module: require('../examples/Transform/TransformExample'),
-    // [TODO(OSS Candidate ISS#2710739)
+    // [macOS
     skipTest: {
       default: 'Reason: Stack overflow in jsi, upstream issue.',
-    }, // ]TODO(OSS Candidate ISS#2710739)
+    }, // macOS]
     supportsTVOS: true,
   },
   {
     key: 'TurboModuleExample',
     module: require('../examples/TurboModule/TurboModuleExample'),
-    // [TODO(OSS Candidate ISS#2710739)
+    // [macOS
     skipTest: {
       default: 'Reason: requires TurboModule to be configured in host app.',
-    }, // ]TODO(OSS Candidate ISS#2710739)
+    }, // macOS]
     supportsTVOS: false,
   },
   {

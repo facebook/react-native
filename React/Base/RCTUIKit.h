@@ -1,11 +1,11 @@
-/**
- * Copyright (c) 2015-present, Facebook, Inc.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(macOS GH#774)
+// [macOS]
 
 #include <TargetConditionals.h>
 
@@ -62,8 +62,8 @@ UIKIT_STATIC_INLINE CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path)
 
 // UIView
 #define RCTPlatformView         UIView
-#define RCTUIView UIView // TODO(macOS ISS#3536887)
-#define RCTUIScrollView UIScrollView // TODO(macOS ISS#3536887)
+#define RCTUIView UIView
+#define RCTUIScrollView UIScrollView
 
 #define RCTPlatformWindow UIWindow
 
@@ -370,7 +370,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 
 #define RCTPlatformWindow NSWindow
 
-@interface RCTUIView : NSView // TODO(macOS ISS#3536887)
+@interface RCTUIView : NSView
 
 @property (nonatomic, readonly) BOOL canBecomeFirstResponder;
 - (BOOL)becomeFirstResponder;
@@ -417,7 +417,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 
 // UIScrollView
 
-@interface RCTUIScrollView : NSScrollView // TODO(macOS ISS#3536887)
+@interface RCTUIScrollView : NSScrollView
 
 // UIScrollView properties missing in NSScrollView
 @property (nonatomic, assign) CGPoint contentOffset;
@@ -435,11 +435,11 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 
 @end
 
-@interface RCTClipView : NSClipView // [TODO(macOS GH#774)
+@interface RCTClipView : NSClipView
 
 @property (nonatomic, assign) BOOL constrainScrolling;
 
-@end // ]TODO(macOS GH#774)
+@end
 
 
 NS_INLINE RCTPlatformView *RCTUIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, __unused UIEvent *__nullable event)
@@ -486,7 +486,7 @@ NS_ASSUME_NONNULL_END
 
 // RCTUISlider
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX
 typedef UISlider RCTUISlider;
 #else
 @interface RCTUISlider : NSSlider
@@ -501,20 +501,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setValue:(float)value animated:(BOOL)animated;
 NS_ASSUME_NONNULL_END
 @end
-#endif // ]TODO(macOS GH#774)
+#endif
 
 // RCTUILabel
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX
 typedef UILabel RCTUILabel;
 #else
 @interface RCTUILabel : NSTextField
 @end
-#endif // ]TODO(macOS GH#774)
+#endif
 
 // RCTUISwitch
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX
 typedef UISwitch RCTUISwitch;
 #else
 @interface RCTUISwitch : NSSwitch
@@ -525,11 +525,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 @end
-#endif // ]TODO(macOS GH#774)
+#endif
 
 // RCTUIActivityIndicatorView
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX
 typedef UIActivityIndicatorView RCTUIActivityIndicatorView;
 #else
 @interface RCTUIActivityIndicatorView : NSProgressIndicator
@@ -544,4 +544,4 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 @end
 
-#endif // ]TODO(macOS GH#774)
+#endif

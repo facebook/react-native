@@ -12,7 +12,7 @@
 #import "RCTDatePicker.h"
 #import "UIView+React.h"
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 @implementation RCTConvert (UIDatePicker)
 
 RCT_ENUM_CONVERTER(
@@ -25,7 +25,7 @@ RCT_ENUM_CONVERTER(
     }),
     UIDatePickerModeTime,
     integerValue)
-#else // [TODO(macOS GH#774)
+#else // [macOS
 @implementation RCTConvert (NSDatePicker)
 RCT_ENUM_CONVERTER(NSDatePickerMode, (@{
   @"single": @(NSSingleDateMode),
@@ -36,7 +36,7 @@ RCT_ENUM_CONVERTER(NSDatePickerStyle, (@{
   @"clock-calendar": @(NSClockAndCalendarDatePickerStyle),
   @"textfield": @(NSTextFieldDatePickerStyle)
 }), NSTextFieldAndStepperDatePickerStyle, unsignedIntegerValue)
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability-new"
@@ -59,12 +59,12 @@ RCT_ENUM_CONVERTER(
 
 RCT_EXPORT_MODULE()
 
-- (RCTPlatformView *)view // TODO(macOS GH#774)
+- (RCTPlatformView *)view // [macOS]
 {
   return [RCTDatePicker new];
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(date, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(locale, NSLocale)
 RCT_EXPORT_VIEW_PROPERTY(minimumDate, NSDate)
@@ -73,7 +73,7 @@ RCT_EXPORT_VIEW_PROPERTY(minuteInterval, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, UIDatePickerMode)
 RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
-#else // [TODO(macOS GH#774)
+#else // [macOS
 RCT_REMAP_VIEW_PROPERTY(date, dateValue, NSDate)
 RCT_REMAP_VIEW_PROPERTY(minimumDate, minDate, NSDate)
 RCT_REMAP_VIEW_PROPERTY(maximumDate, maxDate, NSDate)
@@ -81,30 +81,30 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, NSDatePickerMode)
 RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 RCT_REMAP_VIEW_PROPERTY(pickerStyle, datePickerStyle, NSDatePickerStyle)
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *)date)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS GH#774)
-    RCTPlatformView *view = viewRegistry[viewTag]; // TODO(macOS GH#774)
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
+    RCTPlatformView *view = viewRegistry[viewTag]; // [macOS]
 
     if ([view isKindOfClass:[RCTDatePicker class]]) {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
       [(RCTDatePicker *)view setDate:date];
-#else // [TODO(macOS GH#774)
+#else // [macOS
       [(RCTDatePicker *)view setDateValue:date];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
     } else {
       // This component is used in Fabric through LegacyInteropLayer.
       // `RCTDatePicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
       // `viewTag` passed as parameter to this method is tag of the `RCTLegacyViewManagerInteropComponentView`.
-      RCTPlatformView *subview = [uiManager viewForReactTag:viewTag].subviews.firstObject; // TODO(macOS GH#774)
+      RCTPlatformView *subview = [uiManager viewForReactTag:viewTag].subviews.firstObject; // [macOS]
       if ([subview isKindOfClass:[RCTDatePicker class]]) {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
         [(RCTDatePicker *)subview setDate:date];
-#else // [TODO(macOS GH#774)
+#else // [macOS
         [(RCTDatePicker *)subview setDateValue:date];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
       } else {
         RCTLogError(@"view type must be RCTDatePicker");
       }

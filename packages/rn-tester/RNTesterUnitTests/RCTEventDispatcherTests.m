@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#3536887)
+#import <React/RCTUIKit.h> // [macOS]
 #import <XCTest/XCTest.h>
 
 #import "OCMock/OCMock.h"

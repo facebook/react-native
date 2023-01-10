@@ -88,10 +88,7 @@ function focusTextInput(textField: ?ComponentRef) {
 
   if (currentlyFocusedInputRef !== textField && textField != null) {
     focusInput(textField);
-    if (
-      Platform.OS === 'ios' ||
-      Platform.OS === 'macos' /* TODO(macOS GH#774) */
-    ) {
+    if (Platform.OS === 'ios' || Platform.OS === 'macos' /* [macOS] */) {
       // This isn't necessarily a single line text input
       // But commands don't actually care as long as the thing being passed in
       // actually has a command with that name. So this should work with single
@@ -122,10 +119,7 @@ function blurTextInput(textField: ?ComponentRef) {
 
   if (currentlyFocusedInputRef === textField && textField != null) {
     blurInput(textField);
-    if (
-      Platform.OS === 'ios' ||
-      Platform.OS === 'macos' /* TODO(macOS GH#774) */
-    ) {
+    if (Platform.OS === 'ios' || Platform.OS === 'macos' /* [macOS] */) {
       // This isn't necessarily a single line text input
       // But commands don't actually care as long as the thing being passed in
       // actually has a command with that name. So this should work with single

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(OSS Candidate ISS#2710739)
+// [macOS]
 
 #import <React/RCTBridge.h>
 #import <cxxreact/Instance.h>

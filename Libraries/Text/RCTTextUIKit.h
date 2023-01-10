@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+ // [macOS]
+
 #include <TargetConditionals.h>
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>

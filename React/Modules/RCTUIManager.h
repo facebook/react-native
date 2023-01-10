@@ -9,7 +9,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTInvalidating.h>
 #import <React/RCTRootView.h>
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 #import <React/RCTViewManager.h>
 
 /**
@@ -18,7 +18,7 @@
  */
 RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification;
 
-void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)); // TODO(macOS GH#774)
+void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)); // [macOS]
 
 @class RCTLayoutAnimationGroup;
 @class RCTUIManagerObserverCoordinator;
@@ -37,7 +37,7 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
 /**
  * Register a root view with the RCTUIManager.
  */
-- (void)registerRootView:(RCTUIView *)rootView; // TODO(macOS ISS#3536887)
+- (void)registerRootView:(RCTUIView *)rootView; // [macOS]
 
 /**
  * Gets the view name associated with a reactTag.
@@ -47,7 +47,7 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
 /**
  * Gets the view associated with a reactTag.
  */
-- (RCTPlatformView *)viewForReactTag:(NSNumber *)reactTag; // TODO(macOS GH#774)
+- (RCTPlatformView *)viewForReactTag:(NSNumber *)reactTag; // [macOS]
 
 /**
  * Gets the shadow view associated with a reactTag.
@@ -61,7 +61,7 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
  * this value does not affect root node size style properties.
  * Can be considered as something similar to `setSize:forView:` but applicable only for root view.
  */
-- (void)setAvailableSize:(CGSize)availableSize forRootView:(RCTUIView *)rootView; // TODO(macOS ISS#3536887)
+- (void)setAvailableSize:(CGSize)availableSize forRootView:(RCTUIView *)rootView; // [macOS]
 
 /**
  * Sets local data for a shadow view corresponded with given view.
@@ -72,20 +72,20 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
  * the shadow view.
  * Please respect one-directional data flow of React.
  */
-- (void)setLocalData:(NSObject *)localData forView:(RCTUIView *)view; // TODO(macOS ISS#3536887)
+- (void)setLocalData:(NSObject *)localData forView:(RCTUIView *)view; // [macOS]
 
 /**
  * Set the size of a view. This might be in response to a screen rotation
  * or some other layout event outside of the React-managed view hierarchy.
  */
-- (void)setSize:(CGSize)size forView:(RCTPlatformView *)view; // TODO(macOS GH#774)
+- (void)setSize:(CGSize)size forView:(RCTPlatformView *)view; // [macOS]
 
 /**
  * Set the natural size of a view, which is used when no explicit size is set.
  * Use `UIViewNoIntrinsicMetric` to ignore a dimension.
  * The `size` must NOT include padding and border.
  */
-- (void)setIntrinsicContentSize:(CGSize)intrinsicContentSize forView:(RCTPlatformView *)view; // TODO(macOS GH#774)
+- (void)setIntrinsicContentSize:(CGSize)intrinsicContentSize forView:(RCTPlatformView *)view; // [macOS]
 
 /**
  * Sets up layout animation which will perform on next layout pass.
@@ -124,7 +124,7 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
  * @param completion the completion block that will hand over the rootView, if any.
  *
  */
-- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(RCTPlatformView *view))completion; // TODO(macOS GH#774)
+- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(RCTPlatformView *view))completion; // [macOS]
 
 /**
  * Finds a view that is tagged with nativeID as its nativeID prop
@@ -134,7 +134,7 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
  * @param nativeID the id reference to native component relative to root view.
  * @param rootTag the react tag of root view hierarchy from which to find the view.
  */
-- (RCTPlatformView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag; // TODO(macOS ISS#3536887)
+- (RCTPlatformView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag; // [macOS]
 
 /**
  * Register a view that is tagged with nativeID as its nativeID prop
@@ -142,12 +142,12 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
  * @param nativeID the id reference to native component relative to root view.
  * @param view the view that is tagged with nativeID as its nativeID prop.
  */
-- (void)setNativeID:(NSString *)nativeID forView:(RCTUIView *)view; // TODO(macOS GH#774)
+- (void)setNativeID:(NSString *)nativeID forView:(RCTUIView *)view; // [macOS]
 
 /**
  * The view that is currently first responder, according to the JS context.
  */
-+ (RCTPlatformView *)JSResponder; // TODO(macOS GH#774)
++ (RCTPlatformView *)JSResponder; // [macOS]
 
 /**
  * In some cases we might want to trigger layout from native side.

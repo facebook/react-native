@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 @interface RCTDatePicker : UIDatePicker
-#else // [TODO(macOS GH#774)
+#else // [macOS
 @interface RCTDatePicker : NSDatePicker
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @end

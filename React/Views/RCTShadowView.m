@@ -49,11 +49,11 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     yogaConfig = YGConfigNew();
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     float pixelsInPoint = RCTScreenScale();
-#else
-    float pixelsInPoint = 1; // TODO(ISS#1656079): Use 1x alignment for macOS until we can use backing resolution
-#endif // ]TODO(macOS GH#774)
+#else // [macOS
+    float pixelsInPoint = 1; // Use 1x alignment for macOS until we can use backing resolution
+#endif // macOS]
     YGConfigSetPointScaleFactor(yogaConfig, pixelsInPoint);
     YGConfigSetUseLegacyStretchBehaviour(yogaConfig, true);
   });
@@ -210,10 +210,10 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     YGNodeSetContext(_yogaNode, (__bridge void *)self);
     YGNodeSetPrintFunc(_yogaNode, RCTPrint);
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
     // RCTUIManager will fix the scale if we're on a Retina display
     _scale = 1.0;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   }
   return self;
 }
@@ -393,7 +393,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   return self.reactTag;
 }
 
-#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
+#if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
   NSString *description = super.description;
@@ -404,7 +404,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
                               NSStringFromCGRect(self.layoutMetrics.frame)];
   return description;
 }
-#endif // TODO(macOS GH#774)
+#endif // macOS]
 
 - (void)addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
 {

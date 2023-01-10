@@ -142,7 +142,7 @@ const RCTTextInputViewConfig = {
     autoCapitalize: true,
     keyboardAppearance: true,
     passwordRules: true,
-    grammarCheck: true, // TODO(macOS GH#774)
+    grammarCheck: true, // [macOS]
     spellCheck: true,
     selectTextOnFocus: true,
     text: true,

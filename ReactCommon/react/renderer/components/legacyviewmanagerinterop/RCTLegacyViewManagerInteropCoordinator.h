@@ -6,7 +6,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 #include <folly/dynamic.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,13 +20,13 @@ typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
 
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData bridge:(RCTBridge *)bridge;
 
-- (RCTUIView *)createPaperViewWithTag:(NSInteger)tag; // TODO(macOS GH#774)
+- (RCTUIView *)createPaperViewWithTag:(NSInteger)tag; // [macOS]
 
 - (void)addObserveForTag:(NSInteger)tag usingBlock:(InterceptorBlock)block;
 
 - (void)removeObserveForTag:(NSInteger)tag;
 
-- (void)setProps:(folly::dynamic const &)props forView:(RCTUIView *)view; // TODO(macOS GH#774)
+- (void)setProps:(folly::dynamic const &)props forView:(RCTUIView *)view; // [macOS]
 
 - (NSString *)componentViewName;
 

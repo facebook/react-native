@@ -98,12 +98,12 @@ function PressableFeedbackEvents() {
           testID="pressable_feedback_events_button"
           accessibilityLabel="pressable feedback events"
           accessibilityRole="button"
-          // [TODO(macOS GH#774)
+          // [macOS
           onHoverIn={() => appendEvent('hoverIn')}
           onHoverOut={() => appendEvent('hoverOut')}
           onFocus={() => appendEvent('focus')}
           onBlur={() => appendEvent('blur')}
-          // ]TODO(macOS GH#774)
+          // macOS]
           onPress={() => appendEvent('press')}
           onPressIn={() => appendEvent('pressIn')}
           onPressOut={() => appendEvent('pressOut')}

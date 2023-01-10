@@ -133,12 +133,12 @@ type Props = $ReadOnly<{|
    */
   testID?: ?string,
 
-  // [ TODO(macOS GH#774)
+  // [macOS
   /**
    * Specifies the tooltip.
    */
   tooltip?: ?string,
-  // TODO(macOS GH#774) ]
+  // macOS ]
 
   /**
     Indicates to accessibility services that UI Component is in a specific State.
@@ -276,7 +276,7 @@ const SliderWithRef: React.AbstractComponent<
 > = React.forwardRef(Slider);
 
 let styles;
-if (Platform.OS === 'ios' || Platform.OS === 'macos' /* TODO(macOS GH#774) */) {
+if (Platform.OS === 'ios' || Platform.OS === 'macos' /* [macOS] */) {
   styles = StyleSheet.create({
     slider: {
       height: 40,

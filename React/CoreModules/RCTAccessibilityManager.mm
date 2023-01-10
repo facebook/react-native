@@ -17,7 +17,7 @@
 
 #import "CoreModulesPlugins.h"
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 
 NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification =
     @"RCTAccessibilityManagerDidUpdateMultiplierNotification";
@@ -404,4 +404,4 @@ Class RCTAccessibilityManagerCls(void)
 {
   return RCTAccessibilityManager.class;
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]

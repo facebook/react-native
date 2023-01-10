@@ -62,7 +62,7 @@
 #endif
 #endif
 
-#import <React/RCTTextAttributes.h> // TODO(OSS Candidate ISS#2710739)
+#import <React/RCTTextAttributes.h> // [macOS]
 #import <ReactCommon/RCTTurboModuleManager.h>
 
 #import "RNTesterTurboModuleProvider.h"
@@ -86,11 +86,11 @@
 
   _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 
-  // [TODO(OSS Candidate ISS#2710739)
+  // [macOS
   // Optionally set the global `fontSmoothing` setting.
   // If not explicitly set, the default is subpixel-antialiased
   [RCTTextAttributes setFontSmoothingDefault:RCTFontSmoothingSubpixelAntialiased];
-  // ]TODO(OSS Candidate ISS#2710739)
+  // macOS]
 
   // Appetizer.io params check
   NSDictionary *initProps = @{};

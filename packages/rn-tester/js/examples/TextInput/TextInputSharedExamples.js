@@ -604,13 +604,11 @@ module.exports = ([
     title: 'fontFamily, fontWeight and fontStyle',
     render: function (): React.Node {
       const fontFamilyA =
-        Platform.OS === 'ios' ||
-        Platform.OS === 'macos' /* TODO(macOS GH#774) */
+        Platform.OS === 'ios' || Platform.OS === 'macos' /* [macOS] */
           ? 'Cochin'
           : 'sans-serif';
       const fontFamilyB =
-        Platform.OS === 'ios' ||
-        Platform.OS === 'macos' /* TODO(macOS GH#774) */
+        Platform.OS === 'ios' || Platform.OS === 'macos' /* [macOS] */
           ? 'Courier'
           : 'serif';
 

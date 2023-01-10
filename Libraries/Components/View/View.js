@@ -13,7 +13,6 @@ import type {ViewProps} from './ViewPropTypes';
 import ViewNativeComponent from './ViewNativeComponent';
 import TextAncestor from '../../Text/TextAncestor';
 import * as React from 'react';
-import invariant from 'invariant'; // TODO(macOS GH#774)
 
 export type Props = ViewProps;
 

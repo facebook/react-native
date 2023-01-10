@@ -6,31 +6,31 @@
  */
 
 #import <React/RCTBackedTextInputDelegateAdapter.h>
-#import "RCTBackedTextInputViewProtocol.h" // TODO(OSS Candidate ISS#2710739)
-#import "RCTBackedTextInputDelegate.h" // TODO(OSS Candidate ISS#2710739)
-#import "../RCTTextUIKit.h" // TODO(macOS GH#774)
+#import "RCTBackedTextInputViewProtocol.h" // [macOS
+#import "RCTBackedTextInputDelegate.h"
+#import "../RCTTextUIKit.h" // macOS]
 
 #pragma mark - RCTBackedTextFieldDelegateAdapter (for UITextField)
 
 static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingContext;
 
 @interface RCTBackedTextFieldDelegateAdapter ()
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 <UITextFieldDelegate>
-#else
+#else // [macOS
 <RCTUITextFieldDelegate>
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @end
 
 @implementation RCTBackedTextFieldDelegateAdapter {
   __weak UITextField<RCTBackedTextInputViewProtocol> *_backedTextInputView;
   BOOL _textDidChangeIsComing;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   UITextRange *_previousSelectedTextRange;
-#else // [TODO(macOS GH#774)
+#else // [macOS
   NSRange _previousSelectedTextRange;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (instancetype)initWithTextField:(UITextField<RCTBackedTextInputViewProtocol> *)backedTextInputView
@@ -39,10 +39,10 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     _backedTextInputView = backedTextInputView;
     backedTextInputView.delegate = self;
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     [_backedTextInputView addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
     [_backedTextInputView addTarget:self action:@selector(textFieldDidEndEditingOnExit) forControlEvents:UIControlEventEditingDidEndOnExit];
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
   }
 
   return self;
@@ -50,10 +50,10 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)dealloc
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   [_backedTextInputView removeTarget:self action:nil forControlEvents:UIControlEventEditingChanged];
   [_backedTextInputView removeTarget:self action:nil forControlEvents:UIControlEventEditingDidEndOnExit];
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 }
 
 #pragma mark - UITextFieldDelegate
@@ -103,7 +103,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [attributedString replaceCharactersInRange:range withString:newText];
   [_backedTextInputView setAttributedText:[attributedString copy]];
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   // Setting selection to the end of the replaced text.
   UITextPosition *position =
     [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
@@ -111,7 +111,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                               notifyDelegate:YES];
 
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
   [self textFieldDidChange];
 
   return NO;
@@ -150,11 +150,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 #pragma mark - Public Interface
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange
-#else // [TODO(macOS GH#774)
+#else // [macOS
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(NSRange)textRange
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 {
   _previousSelectedTextRange = textRange;
 }
@@ -168,15 +168,15 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textFieldProbablyDidChangeSelection
 {
-  if (RCTTextSelectionEqual([_backedTextInputView selectedTextRange], _previousSelectedTextRange)) { // TODO(macOS GH#774)
+  if (RCTTextSelectionEqual([_backedTextInputView selectedTextRange], _previousSelectedTextRange)) { // [macOS]
     return;
   }
 
-  _previousSelectedTextRange = [_backedTextInputView selectedTextRange]; // TODO(OSS Candidate ISS#2710739) setter not defined for mac
+  _previousSelectedTextRange = [_backedTextInputView selectedTextRange]; // [macOS] setter not defined for mac
   [_backedTextInputView.textInputDelegate textInputDidChangeSelection];
 }
 
-#if TARGET_OS_OSX // TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 
 #pragma mark - NSTextFieldDelegate
 
@@ -250,7 +250,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 {
   [self selectedTextRangeWasSet];
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @end
 
@@ -260,18 +260,18 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 @end
 
 @implementation RCTBackedTextViewDelegateAdapter {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   __weak UITextView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
-#else // TODO(macOS GH#774)
+#else // [macOS
   __unsafe_unretained UITextView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   BOOL _textDidChangeIsComing;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   UITextRange *_previousSelectedTextRange;
-#else // [TODO(macOS GH#774)
+#else // [macOS
   NSRange _previousSelectedTextRange;
   NSUndoManager *_undoManager;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (instancetype)initWithTextView:(UITextView<RCTBackedTextInputViewProtocol> *)backedTextInputView
@@ -315,7 +315,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (BOOL)textView:(__unused UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   // Custom implementation of `textInputShouldReturn` and `textInputDidReturn` pair for `UITextView`.
   if (!_backedTextInputView.textWasPasted && [text isEqualToString:@"\n"]) {
     if ([_backedTextInputView.textInputDelegate textInputShouldReturn]) {
@@ -324,7 +324,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
       return NO;
     }
   }
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 
   NSString *newText =
     [_backedTextInputView.textInputDelegate textInputShouldChangeText:text inRange:range];
@@ -342,14 +342,14 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [attributedString replaceCharactersInRange:range withString:newText];
   [_backedTextInputView setAttributedText:[attributedString copy]];
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   // Setting selection to the end of the replaced text.
   UITextPosition *position =
     [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                         offset:(range.location + newText.length)];
   [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                               notifyDelegate:YES];
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
   [self textViewDidChange:_backedTextInputView];
 
@@ -362,7 +362,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [_backedTextInputView.textInputDelegate textInputDidChange];
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 
 - (void)textViewDidChangeSelection:(__unused UITextView *)textView
 {
@@ -378,9 +378,9 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   }
 }
 
-#endif // [TODO(macOS GH#774)
+#endif // [macOS]
 
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX // [macOS
 
 #pragma mark - NSTextViewDelegate
 
@@ -445,15 +445,15 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   return _undoManager;
 }
 
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 #pragma mark - Public Interface
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange
-#else // [TODO(macOS GH#774)
+#else // [macOS
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(NSRange)textRange
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 {
   _previousSelectedTextRange = textRange;
 }
@@ -462,11 +462,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textViewProbablyDidChangeSelection
 {
-  if (RCTTextSelectionEqual([_backedTextInputView selectedTextRange], _previousSelectedTextRange)) { // TODO(macOS GH#774)
+  if (RCTTextSelectionEqual([_backedTextInputView selectedTextRange], _previousSelectedTextRange)) { // [macOS]
     return;
   }
 
-  _previousSelectedTextRange = [_backedTextInputView selectedTextRange]; // TODO(OSS Candidate ISS#2710739) setter not defined for mac
+  _previousSelectedTextRange = [_backedTextInputView selectedTextRange]; // [macOS]
   [_backedTextInputView.textInputDelegate textInputDidChangeSelection];
 }
 

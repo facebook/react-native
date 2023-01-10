@@ -76,12 +76,12 @@ static NSString *RCTGetStorageDirectory()
   static NSString *storageDirectory = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     // iOS to use Caches folder.
     // Don't use NSDocumentsDirectory otherwise the RCTAsyncLocalStorage_V1 will appear in apps that
     // expose the User's Documents folder such as Microsoft Office apps.
     storageDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-#else // [TODO(macOS GH#774)
+#else // [macOS
     // Apps on macos may not be sandboxed and using NSDocumentsDirectory with NSSearchPathForDirectoriesInDomains
     // will return the User's Document folder which is not what we want. Instead, we will query NSFileManager for
     // NSApplicationSupportDirectory which returns the correct URL path based on whether the app is sandboxed or not
@@ -98,8 +98,7 @@ static NSString *RCTGetStorageDirectory()
     } else {
       RCTLogError(@"Unable to access storage directory for RCTAsyncLocalStorage. %@", [error description]);
     }
-// ]TODO(macOS GH#774)
-#endif
+#endif // macOS]
     storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
   });
   return storageDirectory;
@@ -162,7 +161,7 @@ static NSCache *RCTGetCache()
   dispatch_once(&onceToken, ^{
     cache = [NSCache new];
     cache.totalCostLimit = 2 * 1024 * 1024; // 2MB
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS
     // Clear cache in the event of a memory warning
     [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification
                                                       object:nil
@@ -170,7 +169,7 @@ static NSCache *RCTGetCache()
                                                   usingBlock:^(__unused NSNotification *note) {
                                                     [cache removeAllObjects];
                                                   }];
-#endif // TODO(macOS GH#774)
+#endif // macOS]
   });
   return cache;
 }

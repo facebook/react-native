@@ -8,7 +8,7 @@
  * @format
  */
 
-// TODO(macOS GH#774)
+// [macOS]
 
 'use strict';
 

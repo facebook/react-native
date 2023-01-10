@@ -10,7 +10,7 @@
 #if RCT_DEV
 
 #import <React/RCTLog.h>
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTDefines.h>
 #import <React/RCTInspectorPackagerConnection.h>
@@ -42,12 +42,12 @@ static NSString *getServerHost(NSURL *bundleURL)
 
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name]
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   NSString *escapedDeviceName = @"";
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier]
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@",
@@ -110,21 +110,21 @@ static void sendEventToAllConnections(NSString *event)
   }
 
   NSString *key = [inspectorURL absoluteString];
-  // [TODO(macOS GH#774) - safety check to avoid a crash
+  // [macOS safety check to avoid a crash
   if (key == nil) {
     RCTLogError(@"failed to get inspector URL");
     return nil;
   }
-  // ]TODO(macOS GH#774)
+  // macOS]
   RCTInspectorPackagerConnection *connection = socketConnections[key];
   if (!connection || !connection.isConnected) {
     connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
-    // [TODO(macOS GH#774) - safety check to avoid a crash
+    // [macOS safety check to avoid a crash
     if (connection == nil) {
       RCTLogError(@"failed to initialize RCTInspectorPackagerConnection");
       return nil;
     }
-    // ]TODO(macOS GH#774)
+    // macOS]
     socketConnections[key] = connection;
     [connection connect];
   }

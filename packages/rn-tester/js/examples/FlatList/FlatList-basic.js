@@ -63,11 +63,11 @@ type State = {|
   fadingEdgeLength: number,
   onPressDisabled: boolean,
   textSelectable: boolean,
-  // [TODO(macOS GH#774)
+  // [macOS
   enableSelectionOnKeyPress: boolean,
   focusable: boolean,
   enableFocusRing: boolean,
-  // ]TODO(macOS GH#774)
+  // macOS]
 |};
 
 class FlatListExample extends React.PureComponent<Props, State> {
@@ -85,11 +85,11 @@ class FlatListExample extends React.PureComponent<Props, State> {
     fadingEdgeLength: 0,
     onPressDisabled: false,
     textSelectable: true,
-    //  [TODO(macOS GH#774)
+    //  [macOS
     enableSelectionOnKeyPress: false,
     focusable: true,
     enableFocusRing: true,
-    //  ]TODO(macOS GH#774)
+    //  macOS]
   };
 
   _onChangeFilterText = filterText => {
@@ -192,7 +192,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
                 this.state.useFlatListItemComponent,
                 this._setBooleanValue('useFlatListItemComponent'),
               )}
-              {/* [TODO(macOS GH#774)  */}
+              {/* [macOS  */}
               {Platform.OS === 'macos' &&
                 renderSmallSwitchOption(
                   'Keyboard Navigation',
@@ -211,7 +211,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
                   this.state.enableFocusRing,
                   this._setBooleanValue('enableFocusRing'),
                 )}
-              {/* TODO(macOS GH#774)] */}
+              {/* macOS] */}
               {Platform.OS === 'android' && (
                 <View>
                   <TextInput
@@ -231,12 +231,12 @@ class FlatListExample extends React.PureComponent<Props, State> {
           </View>
           <SeparatorComponent />
           <Animated.FlatList
-            // [TODO(macOS GH#774)
+            // [macOS
             enableSelectionOnKeyPress={this.state.enableSelectionOnKeyPress}
             initialSelectedIndex={0}
             focusable={this.state.focusable}
             enableFocusRing={this.state.enableFocusRing}
-            // ]TODO(macOS GH#774)
+            // macOS]
             fadingEdgeLength={this.state.fadingEdgeLength}
             ItemSeparatorComponent={ItemSeparatorComponent}
             ListHeaderComponent={<HeaderComponent />}
@@ -313,7 +313,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
        * This comment suppresses an error found when Flow v0.111 was deployed.
        * To see the error, delete this comment and run Flow. */
       [flatListPropKey]: props => {
-        const {item, separators, isSelected} = props; // TODO(macOS GH#774)
+        const {item, separators, isSelected} = props; // [macOS]
         return (
           <ItemComponent
             item={item}
@@ -323,7 +323,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
             onShowUnderlay={separators.highlight}
             onHideUnderlay={separators.unhighlight}
             textSelectable={this.state.textSelectable}
-            isSelected={isSelected} // TODO(macOS GH#774)
+            isSelected={isSelected} // [macOS]
           />
         );
       },
@@ -354,10 +354,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
   _pressItem = (key: string) => {
     this._listRef && this._listRef.recordInteraction();
     const index = Number(key);
-    // [TODO(macOS GH#774)
+    // [macOS
     if (this.state.enableSelectionOnKeyPress) {
       this._listRef && this._listRef.selectRowAtIndex(index);
-    } // ]TODO(macOS GH#774)
+    } // macOS]
     const itemState = pressItem(this.state.data[index]);
     this.setState(state => ({
       ...state,

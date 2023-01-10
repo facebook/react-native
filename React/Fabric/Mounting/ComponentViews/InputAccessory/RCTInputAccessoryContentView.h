@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
-@interface RCTInputAccessoryContentView : RCTUIView // TODO(macOS GH#774)
+@interface RCTInputAccessoryContentView : RCTUIView // [macOS]
 
 @end

@@ -100,7 +100,7 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHostPor
   components.scheme = scheme;
   components.port = serverPort ? @(serverPort.integerValue) : @(kRCTBundleURLProviderDefaultPort);
   components.path = @"/message";
-  components.queryItems = @[ [NSURLQueryItem queryItemWithName:@"role" value:kRCTPlatformName] ]; // TODO(macOS GH#774)
+  components.queryItems = @[ [NSURLQueryItem queryItemWithName:@"role" value:kRCTPlatformName] ]; // [macOS]
   static dispatch_queue_t queue;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{

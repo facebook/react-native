@@ -30,26 +30,26 @@ RCT_ENUM_CONVERTER(
 
 RCT_EXPORT_MODULE()
 
-- (RCTPlatformView *)view // TODO(macOS GH#774)
+- (RCTPlatformView *)view // [macOS]
 {
   return [RCTActivityIndicatorView new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(hidesWhenStopped, BOOL)
-RCT_CUSTOM_VIEW_PROPERTY(size, UIActivityIndicatorViewStyle, RCTActivityIndicatorView) // TODO(macOS GH#774)
+RCT_CUSTOM_VIEW_PROPERTY(size, UIActivityIndicatorViewStyle, RCTActivityIndicatorView) // [macOS]
 {
   /*
     Setting activityIndicatorViewStyle overrides the color, so restore the original color
     after setting the indicator style.
   */
-  RCTUIColor *oldColor = view.color; // TODO(macOS GH#774)
+  RCTUIColor *oldColor = view.color; // [macOS]
   view.activityIndicatorViewStyle =
       json ? [RCTConvert UIActivityIndicatorViewStyle:json] : defaultView.activityIndicatorViewStyle;
   view.color = oldColor;
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, RCTActivityIndicatorView) // TODO(macOS GH#774)
+RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, RCTActivityIndicatorView) // [macOS]
 {
   BOOL animating = json ? [RCTConvert BOOL:json] : [defaultView isAnimating];
   if (animating != [view isAnimating]) {

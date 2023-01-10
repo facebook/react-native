@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#3536887)
+#import <React/RCTUIKit.h> // [macOS]
 #import <XCTest/XCTest.h>
 
 #import <RCTTest/RCTTestRunner.h>
@@ -72,9 +72,9 @@ RCT_TEST(SimpleSnapshotTest)
 RCT_TEST(SyncMethodTest)
 RCT_TEST(PromiseTest)
 RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Requires a WebSocket test server, see scripts/objc-test.sh
-#if !TARGET_OS_OSX // ios specific
+#if !TARGET_OS_OSX // [macOS] iOS specific
 RCT_TEST(AccessibilityManagerTest)
-#endif
+#endif // [macOS]
 RCT_TEST(GlobalEvalWithSourceUrlTest)
 
 @end

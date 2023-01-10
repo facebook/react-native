@@ -22,11 +22,11 @@
 // - The compile-time #ifdef's can't be used because an app compiled for iOS8 can still run on iOS9
 
 static BOOL isStreamTaskSupported() {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   return [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){9,0,0}];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   return [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){10,11,0}];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 @implementation RCTMultipartDataTask {
@@ -116,7 +116,7 @@ static BOOL isStreamTaskSupported() {
   [_data appendData:data];
 }
 
-#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic push // [macOS]
 #pragma clang diagnostic ignored "-Wunguarded-availability"
 - (void)URLSession:(__unused NSURLSession *)session
                dataTask:(__unused NSURLSessionDataTask *)dataTask
@@ -126,7 +126,7 @@ static BOOL isStreamTaskSupported() {
   [streamTask captureStreams];
 }
 
-#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic push // [macOS]
 #pragma clang diagnostic ignored "-Wunguarded-availability"
 - (void)URLSession:(__unused NSURLSession *)session
               streamTask:(__unused NSURLSessionStreamTask *)streamTask

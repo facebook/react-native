@@ -49,11 +49,11 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   for (UIAlertController *alertController in _alertControllers) {
     [alertController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
   }
-#else // [TODO(macOS GH#774)
+#else // [macOS
   for (NSAlert *alert in _alertControllers) {
     if (alert.window.sheetParent) {
       [alert.window.sheetParent endSheet:alert.window];
@@ -61,7 +61,7 @@ RCT_EXPORT_MODULE()
       [alert.window close];
     }
   }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 /**
@@ -87,22 +87,22 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
       [RCTConvert NSDictionaryArray:RCTConvertOptionalVecToArray(args.buttons(), ^id(id<NSObject> element) {
                     return element;
                   })];
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   NSString *defaultValue = [RCTConvert NSString:args.defaultValue()];
   NSString *cancelButtonKey = [RCTConvert NSString:args.cancelButtonKey()];
   NSString *destructiveButtonKey = [RCTConvert NSString:args.destructiveButtonKey()];
   UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args.keyboardType()];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   BOOL critical = args.critical().value_or(NO);
   BOOL modal = args.modal().value_or(NO);
   NSArray<NSDictionary *> *defaultInputs = [RCTConvert NSDictionaryArray:RCTConvertOptionalVecToArray(args.defaultInputs(), ^id(id<NSObject> element) { return element; })];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
   if (!title && !message) {
     RCTLogError(@"Must specify either an alert title, or message, or both");
     return;
   }
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   if (buttons.count == 0) {
     if (type == RCTAlertViewStyleDefault) {
       buttons = @[ @{@"0" : RCTUIKitLocalizedString(@"OK")} ];
@@ -204,7 +204,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   dispatch_async(dispatch_get_main_queue(), ^{
     [alertController show:YES completion:nil];
   });
-#else // [TODO(macOS GH#774)
+#else // [macOS
   
   NSAlert *alert = [NSAlert new];
   if (title.length > 0) {
@@ -296,7 +296,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   } else {
     [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:callbacksHandlers];
   }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

@@ -13,10 +13,10 @@
 
 @implementation RCTMultilineTextInputView
 {
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
   RCTUIScrollView *_scrollView;
   RCTClipView *_clipView;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   RCTUITextView *_backedTextInputView;
 }
 
@@ -28,9 +28,9 @@
 
     _backedTextInputView = [[RCTUITextView alloc] initWithFrame:self.bounds];
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-#if TARGET_OS_OSX // TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
     self.hideVerticalScrollIndicator = NO;
-    _scrollView = [[RCTUIScrollView alloc] initWithFrame:self.bounds]; // TODO(macOS ISS#3536887)
+    _scrollView = [[RCTUIScrollView alloc] initWithFrame:self.bounds];
     _scrollView.backgroundColor = [RCTUIColor clearColor];
     _scrollView.drawsBackground = NO;
     _scrollView.borderType = NSNoBorder;
@@ -46,12 +46,12 @@
     _backedTextInputView.horizontallyResizable = YES;
     _backedTextInputView.textContainer.containerSize = NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX);
     _backedTextInputView.textContainer.widthTracksTextView = YES;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
     _backedTextInputView.textInputDelegate = self;
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     [self addSubview:_backedTextInputView];
-#else // [TODO(macOS GH#774)
+#else // [macOS
     _scrollView.documentView = _backedTextInputView;
     _scrollView.contentView.postsBoundsChangedNotifications = YES;
     // Enable focus ring by default
@@ -63,25 +63,25 @@
                                              selector:@selector(boundDidChange:)
                                                  name:NSViewBoundsDidChangeNotification
                                                object:_scrollView.contentView];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   }
 
   return self;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 - (id<RCTBackedTextInputViewProtocol>)backedTextInputView
 {
   return _backedTextInputView;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
 {
   [super setReactPaddingInsets:reactPaddingInsets];
@@ -155,11 +155,11 @@
   [_scrollView setHasVerticalScroller:[self shouldShowVerticalScrollbar]];
 }
 
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView // TODO(macOS ISS#3536887)
+- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView // [macOS]
 {
   RCTDirectEventBlock onScroll = self.onScroll;
   if (onScroll) {
@@ -192,7 +192,7 @@
   }
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 
 #pragma mark - Notification handling
 
@@ -208,6 +208,6 @@
   return _backedTextInputView.acceptsFirstResponder;
 }
 
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @end

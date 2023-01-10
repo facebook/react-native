@@ -16,7 +16,7 @@ export interface Spec extends TurboModule {
     +HEIGHT: number,
     +DEFAULT_BACKGROUND_COLOR: number,
   |};
-  +setColor: (color: number, animated: boolean) => void; // TODO(macOS GH#774)
+  +setColor: (color: number, animated: boolean) => void; // [macOS]
   +setTranslucent: (translucent: boolean) => void;
 
   /**

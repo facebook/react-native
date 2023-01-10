@@ -1,4 +1,4 @@
-# TODO(macOS GH#774) - disable this test
+# [macOS] disable this test
 
 # name: Test Docker Android Image
 # # This workflow is triggered on commits to main and pull requests.

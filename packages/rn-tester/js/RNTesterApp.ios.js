@@ -8,7 +8,7 @@
  * @flow
  */
 
-import {AppRegistry, NativeModules, Platform, View} from 'react-native'; // TODO(OSS Candidate ISS#2710739): everything but AppRegistry
+import {AppRegistry, NativeModules, Platform, View} from 'react-native'; // [macOS] everything but AppRegistry
 import React from 'react';
 
 import SnapshotViewIOS from './examples/Snapshot/SnapshotViewIOS.ios';
@@ -17,7 +17,7 @@ import RNTesterList from './utils/RNTesterList';
 import RNTesterApp from './RNTesterAppShared';
 import type {RNTesterModuleInfo} from './types/RNTesterTypes';
 
-const {TestModule} = NativeModules; // TODO(OSS Candidate ISS#2710739)
+const {TestModule} = NativeModules; // [macOS]
 
 AppRegistry.registerComponent('SetPropertiesExampleApp', () =>
   require('./examples/SetPropertiesExample/SetPropertiesExampleApp'),
@@ -51,7 +51,7 @@ RNTesterList.Components.concat(RNTesterList.APIs).forEach(
       );
     }
 
-    // [TODO(OSS Candidate ISS#2710739)
+    // [macOS
     class LoadPageTest extends React.Component<{}> {
       componentDidMount() {
         requestAnimationFrame(() => {
@@ -68,11 +68,11 @@ RNTesterList.Components.concat(RNTesterList.APIs).forEach(
       'LoadPageTest_' + Example.key,
       () => LoadPageTest,
     );
-    // ]TODO(OSS Candidate ISS#2710739)
+    // macOS]
   },
 );
 
-// [TODO(OSS Candidate ISS#2710739)
+// [macOS
 class EnumerateExamplePages extends React.Component<{}> {
   render() {
     RNTesterList.Components.concat(RNTesterList.APIs).forEach(
@@ -98,6 +98,6 @@ AppRegistry.registerComponent(
   'EnumerateExamplePages',
   () => EnumerateExamplePages,
 );
-// ]TODO(OSS Candidate ISS#2710739)
+// macOS]
 
 module.exports = RNTesterApp;

@@ -13,24 +13,24 @@
  */
 @interface RCTEventEmitter : NSObject <RCTBridgeModule, RCTInvalidating>
 
-@property (nonatomic, weak) RCTBridge * _Nullable bridge; // TODO(macOS GH#774)
-@property (nonatomic, weak) RCTModuleRegistry * _Nullable moduleRegistry; // TODO(macOS GH#774)
-@property (nonatomic, weak) RCTViewRegistry * _Nullable viewRegistry_DEPRECATED; // TODO(macOS GH#774)
+@property (nonatomic, weak) RCTBridge * _Nullable bridge; // [macOS]
+@property (nonatomic, weak) RCTModuleRegistry * _Nullable moduleRegistry; // [macOS]
+@property (nonatomic, weak) RCTViewRegistry * _Nullable viewRegistry_DEPRECATED; // [macOS]
 
-- (instancetype _Nullable)initWithDisabledObservation; // TODO(macOS GH#774)
+- (instancetype _Nullable)initWithDisabledObservation; // [macOS]
 
 /**
  * Override this method to return an array of supported event names. Attempting
  * to observe or send an event that isn't included in this list will result in
  * an error.
  */
-- (NSArray<NSString *> *_Nullable)supportedEvents; // TODO(macOS GH#774)
+- (NSArray<NSString *> *_Nullable)supportedEvents; // [macOS]
 
 /**
  * Send an event that does not relate to a specific view, e.g. a navigation
  * or data update notification.
  */
-- (void)sendEventWithName:(NSString *_Nullable)name body:(id _Nullable )body; // TODO(macOS GH#774)
+- (void)sendEventWithName:(NSString *_Nullable)name body:(id _Nullable )body; // [macOS]
 
 /**
  * These methods will be called when the first observer is added and when the
@@ -42,7 +42,7 @@
 
 - (void)invalidate NS_REQUIRES_SUPER;
 
-- (void)addListener:(NSString *_Nullable)eventName; // TODO(macOS GH#774)
+- (void)addListener:(NSString *_Nullable)eventName; // [macOS]
 - (void)removeListeners:(double)count;
 
 @end

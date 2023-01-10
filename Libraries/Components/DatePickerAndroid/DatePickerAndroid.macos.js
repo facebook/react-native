@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-// TODO(macOS GH#774)
+// [macOS]
 
 /* $FlowFixMe allow macOS to share iOS file */
 const DatePickerAndroid = require('./DatePickerAndroid.ios');

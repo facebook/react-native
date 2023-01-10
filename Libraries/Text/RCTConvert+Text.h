@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 typedef enum UITextAutocorrectionType : NSInteger {
     UITextAutocorrectionTypeDefault,
     UITextAutocorrectionTypeNo,
@@ -23,7 +23,7 @@ typedef enum UITextSpellCheckingType : NSInteger {
     UITextSpellCheckingTypeNo,
     UITextSpellCheckingTypeYes,
 } UITextSpellCheckingType;
-#endif // ]TODO(macOS GH#774)]
+#endif // macOS]
 
 @interface RCTConvert (Text)
 

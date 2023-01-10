@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTPlatformDisplayLink.h" // TODO(macOS GH#774)
+#import "RCTPlatformDisplayLink.h" // [macOS]
 
 #import "RCTFrameUpdate.h"
 
@@ -15,7 +15,7 @@
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
-- (instancetype)initWithDisplayLink:(RCTPlatformDisplayLink *)displayLink // TODO(macOS GH#774)
+- (instancetype)initWithDisplayLink:(RCTPlatformDisplayLink *)displayLink // [macOS]
 {
   if ((self = [super init])) {
     _timestamp = displayLink.timestamp;

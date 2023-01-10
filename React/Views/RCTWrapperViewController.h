@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 @class RCTWrapperViewController;
 
 @interface RCTWrapperViewController : UIViewController
 
-- (instancetype)initWithContentView:(RCTUIView *)contentView NS_DESIGNATED_INITIALIZER; // TODO(macOS GH#774)
+- (instancetype)initWithContentView:(RCTUIView *)contentView NS_DESIGNATED_INITIALIZER; // [macOS]
 
 @end

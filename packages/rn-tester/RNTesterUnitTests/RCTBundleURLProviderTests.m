@@ -29,7 +29,7 @@ static NSURL *localhostBundleURL()
               stringWithFormat:
                   @"http://localhost:8081/%@.bundle?platform=%@&dev=true&minify=false&modulesOnly=false&runModule=true&runtimeBytecodeVersion=%u&app=com.apple.dt.xctest.tool",
                   testFile,
-                  kRCTPlatformName, // TODO(macOS GH#774)
+                  kRCTPlatformName, // [macOS]
                   HERMES_BYTECODE_VERSION]];
 #else
   return [NSURL
@@ -38,7 +38,7 @@ static NSURL *localhostBundleURL()
               stringWithFormat:
                   @"http://localhost:8081/%@.bundle?platform=%@&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
                   testFile,
-                  kRCTPlatformName]]; // TODO(macOS GH#774)
+                  kRCTPlatformName]]; // [macOS]
 #endif
 }
 
@@ -51,7 +51,7 @@ static NSURL *ipBundleURL()
               stringWithFormat:
                   @"http://192.168.1.1:8081/%@.bundle?platform=%@&dev=true&minify=false&modulesOnly=false&runModule=true&runtimeBytecodeVersion=%u&app=com.apple.dt.xctest.tool",
                   testFile,
-                  kRCTPlatformName, // TODO(macOS GH#774)
+                  kRCTPlatformName, // [macOS]
                   HERMES_BYTECODE_VERSION]];
 #else
   return [NSURL
@@ -60,7 +60,7 @@ static NSURL *ipBundleURL()
               stringWithFormat:
                   @"http://192.168.1.1:8081/%@.bundle?platform=%@&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
                   testFile,
-                  kRCTPlatformName]]; // TODO(macOS GH#774)
+                  kRCTPlatformName]]; // [macOS]
 #endif
 }
 

@@ -736,7 +736,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
           />
         </RNTesterBlock>
 
-        {/* TODO(macOS GH#774) - This doesn't work, see https://github.com/facebook/react-native/issues/32616
+        {/* [macOS This doesn't work, see https://github.com/facebook/react-native/issues/32616
           <RNTesterBlock title="Text with custom accessibility actions">
             <Text
               accessible={true}
@@ -757,7 +757,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
               Text
             </Text>
           </RNTesterBlock>
-        */}
+        macOS] */}
       </View>
     );
   }
@@ -1123,7 +1123,7 @@ class EnabledExample extends React.Component<
 class DisplayOptionsStatusExample extends React.Component<{}> {
   render(): React.Node {
     const isAndroid = Platform.OS === 'android';
-    const isMacOS = Platform.OS === 'macos'; // TODO(macOS GH#774)
+    const isMacOS = Platform.OS === 'macos'; // [macOS]
     return (
       <View>
         <DisplayOptionStatusExample
@@ -1149,13 +1149,13 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
               notification={'grayscaleChanged'}
             />
             {
-              isMacOS ? ( // [TODO(maCOS GH#774)
+              isMacOS ? ( // [macOS
                 <DisplayOptionStatusExample
                   optionName={'High Contrast'}
                   optionChecker={AccessibilityInfo.isHighContrastEnabled}
                   notification={'highContrastChanged'}
                 />
-              ) : null /* ]TODO(maCOS GH#774) */
+              ) : null /* macOS] */
             }
             <DisplayOptionStatusExample
               optionName={'Invert Colors'}

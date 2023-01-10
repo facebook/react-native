@@ -29,7 +29,7 @@
 #import <React/RCTRedBox.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
-#import <React/RCTBundleURLProvider.h> // TODO(macOS GH#774)
+#import <React/RCTBundleURLProvider.h> // [macOS]
 #import <cxxreact/CxxNativeModule.h>
 #import <cxxreact/Instance.h>
 #import <cxxreact/JSBundleType.h>
@@ -305,12 +305,12 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _jsMessageThread;
 }
 
-// [TODO(OSS Candidate ISS#2710739)
+// [macOS
 - (std::weak_ptr<Instance>)reactInstance
 {
   return _reactInstance;
 }
-// ]TODO(OSS Candidate ISS#2710739)
+// macOS]
 
 - (BOOL)isInspectable
 {
@@ -352,21 +352,21 @@ struct RCTInstanceCallback : public InstanceCallback {
 
     [RCTBridge setCurrentBridge:self];
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMemoryWarning)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification
                                                object:nil];
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
   }
   return self;
 }
 
 - (void)dealloc
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 }
 
 + (void)runRunLoop
@@ -546,13 +546,13 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
       onProgress:^(RCTLoadingProgress *progressData) {
 #if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
-        // [TODO(OSS Candidate ISS#2710739)
+        // [macOS
         // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
         if ([weakSelf isValid]) {
           id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView"
                                                         lazilyLoadIfNecessary:YES];
           [loadingView updateProgress:progressData];
-        } // ]TODO(OSS Candidate ISS#2710739)
+        } // macOS]
 #endif
       }];
 

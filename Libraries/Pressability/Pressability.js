@@ -621,7 +621,7 @@ export default class Pressability {
             },
           };
 
-    // [TODO(macOS GH#774)
+    // [macOS
     const keyboardEventHandlers = {
       onKeyDown: (event: KeyEvent): void => {
         const {onKeyDown} = this._config;
@@ -636,13 +636,13 @@ export default class Pressability {
         }
       },
     };
-    // ]TODO(macOS GH#774)
+    // macOS]
 
     return {
       ...focusEventHandlers,
       ...responderEventHandlers,
       ...mouseEventHandlers,
-      ...keyboardEventHandlers, // [TODO(macOS GH#774)]
+      ...keyboardEventHandlers, // [macOS]
     };
   }
 

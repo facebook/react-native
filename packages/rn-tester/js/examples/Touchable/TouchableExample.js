@@ -473,7 +473,7 @@ function CustomRippleRadius() {
   );
 }
 
-// [TODO(macOS GH#774)
+// [macOS
 class TouchableHover extends React.Component<{}, $FlowFixMeState> {
   state = {
     hoverOver: false,
@@ -580,7 +580,7 @@ class TouchableMouseEvents extends React.Component<{}, $FlowFixMeState> {
     this.setState({eventLog});
   };
 }
-// ]TODO(macOS GH#774)
+// macOS]
 
 const remoteImage = {
   uri: 'https://www.facebook.com/favicon.ico',
@@ -894,7 +894,7 @@ exports.examples = [
     },
   },
   {
-    // [TODO(macOS GH#774)
+    // [macOS
     title: 'Touchable Hover',
     description: ('<Touchable*> components reacts to mouse events ' +
       'onMouseEnter and onMouseLeave': string),
@@ -910,5 +910,5 @@ exports.examples = [
       return <TouchableMouseEvents />;
     },
     platform: 'macos',
-  }, // ]TODO(macOS GH#774)
+  }, // macOS]
 ];

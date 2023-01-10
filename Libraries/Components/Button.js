@@ -19,8 +19,8 @@ import TouchableNativeFeedback from './Touchable/TouchableNativeFeedback';
 import TouchableOpacity from './Touchable/TouchableOpacity';
 import View from './View/View';
 import invariant from 'invariant';
-import type {KeyEvent} from '../Types/CoreEventTypes'; // TODO(OSS Candidate ISS#2710739)
-import type {FocusEvent, BlurEvent} from './TextInput/TextInput'; // TODO(OSS Candidate ISS#2710739)
+import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
+import type {FocusEvent, BlurEvent} from './TextInput/TextInput'; // [macOS]
 
 import type {
   AccessibilityState,
@@ -129,13 +129,13 @@ type ButtonProps = $ReadOnly<{|
    */
   accessibilityLabel?: ?string,
 
-  // TODO(OSS Candidate ISS#2710739)
+  // [macOS]
   /**
    * Custom accessibility role -- otherwise we use button
    */
   accessibilityRole?: ?AccessibilityRole,
 
-  // TODO(OSS Candidate ISS#2710739)
+  // [macOS]
   /**
    * Accessibility action handlers
    */
@@ -153,7 +153,7 @@ type ButtonProps = $ReadOnly<{|
    */
   testID?: ?string,
 
-  // [TODO(OSS Candidate ISS#2710739)
+  // [macOS
   /**
    * Handler to be called when the button receives key focus
    */
@@ -190,7 +190,7 @@ type ButtonProps = $ReadOnly<{|
    * Specifies the Tooltip for the view
    */
   tooltip?: string,
-  // ]TODO(OSS Candidate ISS#2710739)
+  // macOS]
 
   /**
    * Accessibility props.
@@ -328,26 +328,23 @@ class Button extends React.Component<ButtonProps> {
       nextFocusRight,
       nextFocusUp,
       testID,
-      onFocus, // TODO(OSS Candidate ISS#2710739)
-      onBlur, // TODO(OSS Candidate ISS#2710739)
-      onKeyDown, // TODO(OSS Candidate ISS#2710739)
-      onKeyUp, // TODO(OSS Candidate ISS#2710739)
-      validKeysDown, // TODO(OSS Candidate ISS#2710739)
-      validKeysUp, // TODO(OSS Candidate ISS#2710739)
+      onFocus, // [macOS
+      onBlur,
+      onKeyDown,
+      onKeyUp,
+      validKeysDown,
+      validKeysUp, // macOS]
       tooltip,
       accessible,
       accessibilityActions,
       accessibilityHint,
-      accessibilityRole, // TODO(OSS Candidate ISS#2710739)
+      accessibilityRole, // [macOS]
       onAccessibilityAction,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
     if (color) {
-      if (
-        Platform.OS === 'ios' ||
-        Platform.OS === 'macos' /* TODO(macOS GH#774) */
-      ) {
+      if (Platform.OS === 'ios' || Platform.OS === 'macos' /* [macOS] */) {
         textStyles.push({color: color});
       } else {
         buttonStyles.push({backgroundColor: color});
@@ -385,7 +382,7 @@ class Button extends React.Component<ButtonProps> {
         onAccessibilityAction={onAccessibilityAction}
         accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}
-        accessibilityRole={accessibilityRole || 'button'} // TODO(OSS Candidate ISS#2710739)
+        accessibilityRole={accessibilityRole || 'button'} // [macOS]
         accessibilityState={accessibilityState}
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}
@@ -396,8 +393,8 @@ class Button extends React.Component<ButtonProps> {
         testID={testID}
         disabled={disabled}
         onPress={onPress}
-        onFocus={onFocus} // TODO(OSS Candidate ISS#2710739)
-        onBlur={onBlur} // TODO(OSS Candidate ISS#2710739)
+        onFocus={onFocus} // [macOS]
+        onBlur={onBlur} // [macOS]
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
         validKeysDown={validKeysDown}
@@ -423,7 +420,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#2196F3',
       borderRadius: 2,
     },
-    macos: {}, // TODO(macOS GH#774)
+    macos: {}, // [macOS]
   }),
   text: {
     textAlign: 'center',
@@ -439,10 +436,10 @@ const styles = StyleSheet.create({
         fontWeight: '500',
       },
       macos: {
-        // [TODO(macOS GH#774)
+        // [macOS
         color: '#007AFF',
         fontSize: 18,
-      }, // ]TODO(macOS GH#774)
+      }, // macOS]
     }),
   },
   buttonDisabled: Platform.select({
@@ -451,16 +448,17 @@ const styles = StyleSheet.create({
       elevation: 0,
       backgroundColor: '#dfdfdf',
     },
-    macos: {}, // TODO(macOS GH#774)
+    macos: {}, // [macOS]
   }),
   textDisabled: Platform.select({
     ios: {
       color: '#cdcdcd',
     },
+    // [macOS
     macos: {
-      // [TODO(macOS GH#774)
       color: '#cdcdcd',
-    }, // ]TODO(macOS GH#774)
+    },
+    // macOS]
     android: {
       color: '#a1a1a1',
     },

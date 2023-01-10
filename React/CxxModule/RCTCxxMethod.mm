@@ -131,11 +131,11 @@ using namespace facebook::react;
   }
 }
 
-#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
+#if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@: %p; name = %s>", [self class], self, self.JSMethodName];
 }
-#endif // TODO(macOS GH#774)
+#endif // macOS]
 
 @end

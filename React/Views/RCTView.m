@@ -11,22 +11,22 @@
 
 #import "RCTAutoInsetsProtocol.h"
 #import "RCTBorderDrawing.h"
-#import "RCTFocusChangeEvent.h" // TODO(OSS Candidate ISS#2710739)
+#import "RCTFocusChangeEvent.h" // [macOS]
 #import "RCTI18nUtil.h"
 #import "RCTLog.h"
-#import "RCTRootContentView.h" // TODO(macOS GH#774)
+#import "RCTRootContentView.h" // [macOS]
 #import "RCTViewUtils.h"
 #import "UIView+React.h"
 #import "RCTViewKeyboardEvent.h"
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 #import "RCTTextView.h"
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
-@implementation RCTPlatformView (RCTViewUnmounting) // TODO(macOS GH#774)
+@implementation RCTPlatformView (RCTViewUnmounting) // [macOS]
 
 - (void)react_remountAllSubviews
 {
@@ -34,18 +34,18 @@ UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
   // this does is forward message to our subviews,
   // in case any of those do support it
 
-  for (RCTUIView *subview in self.subviews) { // TODO(macOS ISS#3536887)
+  for (RCTUIView *subview in self.subviews) { // [macOS]
     [subview react_remountAllSubviews];
   }
 }
 
-- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTPlatformView *)clipView // TODO(macOS GH#774)
+- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTPlatformView *)clipView // [macOS]
 {
   // Even though we don't support subview unmounting
   // we do support clipsToBounds, so if that's enabled
   // we'll update the clipping
 
-  if (RCTUIViewSetClipsToBounds(self) && self.subviews.count > 0) { // TODO(macOS GH#774) and TODO(macOS ISS#3536887)
+  if (RCTUIViewSetClipsToBounds(self) && self.subviews.count > 0) { // [macOS]
     clipRect = [clipView convertRect:clipRect toView:self];
     clipRect = CGRectIntersection(clipRect, self.bounds);
     clipView = self;
@@ -55,19 +55,19 @@ UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
   // this does is forward message to our subviews,
   // in case any of those do support it
 
-  for (RCTUIView *subview in self.subviews) { // TODO(macOS ISS#3536887)
+  for (RCTUIView *subview in self.subviews) { // [macOS]
     [subview react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
   }
 }
 
-- (RCTPlatformView *)react_findClipView // TODO(macOS GH#774)
+- (RCTPlatformView *)react_findClipView // [macOS]
 {
-  RCTPlatformView *testView = self; // TODO(macOS GH#774)
-  RCTPlatformView *clipView = nil; // TODO(macOS GH#774)
+  RCTPlatformView *testView = self; // [macOS]
+  RCTPlatformView *clipView = nil; // [macOS]
   CGRect clipRect = self.bounds;
   // We will only look for a clipping view up the view hierarchy until we hit the root view.
   while (testView) {
-    if (RCTUIViewSetClipsToBounds(testView)) { // TODO(macOS GH#774) and TODO(macOS ISS#3536887)
+    if (RCTUIViewSetClipsToBounds(testView)) { // [macOS]
       if (clipView) {
         CGRect testRect = [clipView convertRect:clipRect toView:testView];
         if (!CGRectContainsRect(testView.bounds, testRect)) {
@@ -84,22 +84,22 @@ UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
     }
     testView = testView.superview;
   }
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   return clipView ?: self.window;
-#else // [TODO(macOS GH#774)
+#else // [macOS
   return clipView ?: self.window.contentView;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 @end
 
-static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS ISS#3536887)
+static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // [macOS]
 {
   NSMutableString *str = [NSMutableString stringWithString:@""];
-  for (RCTUIView *subview in view.subviews) { // TODO(macOS ISS#3536887)
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+  for (RCTUIView *subview in view.subviews) { // [macOS]
+#if !TARGET_OS_OSX // [macOS]
     NSString *label = subview.accessibilityLabel;
-#else // [TODO(macOS GH#774)
+#else // [macOS
     NSString *label;
     if ([subview isKindOfClass:[RCTTextView class]]) {
       // on macOS VoiceOver a text element will always have its accessibilityValue read, but will only read it's accessibilityLabel if it's value is set.
@@ -108,7 +108,7 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
     } else {
       label = subview.accessibilityLabel;
     }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
     if (!label) {
       label = RCTRecursiveAccessibilityLabel(subview);
     }
@@ -123,17 +123,17 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
 }
 
 @implementation RCTView {
-  RCTUIColor *_backgroundColor; // TODO(OSS Candidate ISS#2710739)
-  id<RCTEventDispatcherProtocol> _eventDispatcher; // TODO(OSS Candidate ISS#2710739)
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+  RCTUIColor *_backgroundColor; // [macOS]
+  id<RCTEventDispatcherProtocol> _eventDispatcher; // [macOS]
+#if TARGET_OS_OSX // [macOS
   NSTrackingArea *_trackingArea;
   BOOL _hasMouseOver;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsNameMap;
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsLabelMap;
 }
 
-// [TODO(OSS Candidate ISS#2710739)
+// [macOS
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   if ((self = [self initWithFrame:CGRectZero])) {
@@ -141,7 +141,7 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
   }
   return self;
 }
-// ]TODO(OSS Candidate ISS#2710739)
+// macOS]
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -163,10 +163,10 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
     _borderBottomEndRadius = -1;
     _borderStyle = RCTBorderStyleSolid;
     _hitTestEdgeInsets = UIEdgeInsetsZero;
-#if TARGET_OS_OSX // TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
     _transform3D = CATransform3DIdentity;
     _shadowColor = nil;
-#endif // TODO(macOS GH#774)
+#endif // macOS]
 
     _backgroundColor = super.backgroundColor;
   }
@@ -183,21 +183,21 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     [self.layer setNeedsDisplay];
   }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
-#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
-#pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic push // [macOS]
+#pragma clang diagnostic ignored "-Wunguarded-availability" // [macOS]
     self.semanticContentAttribute = layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight
         ? UISemanticContentAttributeForceLeftToRight
         : UISemanticContentAttributeForceRightToLeft;
-#pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic pop // [macOS]
   }
-#else // [TODO(macOS GH#774)
+#else // [macOS
   self.userInterfaceLayoutDirection =
   layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
   NSUserInterfaceLayoutDirectionLeftToRight :
   NSUserInterfaceLayoutDirectionRightToLeft;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 #pragma mark - Hit Testing
@@ -206,14 +206,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 {
   _pointerEvents = pointerEvents;
   self.userInteractionEnabled = (pointerEvents != RCTPointerEventsNone);
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   if (pointerEvents == RCTPointerEventsBoxNone) {
     self.accessibilityViewIsModal = NO;
   }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 }
 
-- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // TODO(macOS GH#774)
+- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // [macOS]
 {
   BOOL canReceiveTouchEvents = ([self isUserInteractionEnabled] && ![self isHidden]);
   if (!canReceiveTouchEvents) {
@@ -222,12 +222,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 
   // `hitSubview` is the topmost subview which was hit. The hit point can
   // be outside the bounds of `view` (e.g., if -clipsToBounds is NO).
-  RCTPlatformView *hitSubview = nil; // TODO(macOS GH#774)
+  RCTPlatformView *hitSubview = nil; // [macOS]
   BOOL isPointInside = [self pointInside:point withEvent:event];
   BOOL needsHitSubview = !(_pointerEvents == RCTPointerEventsNone || _pointerEvents == RCTPointerEventsBoxOnly);
   if (needsHitSubview && (![self clipsToBounds] || isPointInside)) {
     // Take z-index into account when calculating the touch target.
-    NSArray<RCTPlatformView *> *sortedSubviews = [self reactZIndexSortedSubviews]; // TODO(macOS ISS#3536887)
+    NSArray<RCTPlatformView *> *sortedSubviews = [self reactZIndexSortedSubviews]; // [macOS]
 
     // The default behaviour of UIKit is that if a view does not contain a point,
     // then no subviews will be returned from hit testing, even if they contain
@@ -235,25 +235,25 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     // the strict containment policy (i.e., UIKit guarantees that every ancestor
     // of the hit view will return YES from -pointInside:withEvent:). See:
     //  - https://developer.apple.com/library/ios/qa/qa2013/qa1812.html
-    for (RCTUIView *subview in [sortedSubviews reverseObjectEnumerator]) { // TODO(macOS ISS#3536887)
-      CGPoint pointForHitTest = CGPointZero; // [TODO(macOS GH#774)
-#if TARGET_OS_OSX
+    for (RCTUIView *subview in [sortedSubviews reverseObjectEnumerator]) { // [macOS]
+      CGPoint pointForHitTest = CGPointZero; // [macOS
+#if !TARGET_OS_OSX // [macOS]
+      pointForHitTest = [subview convertPoint:point fromView:self];
+#else // [macOS
       if ([subview isKindOfClass:[RCTView class]]) {
         pointForHitTest = [subview convertPoint:point fromView:self];
       } else {
         pointForHitTest = point;
       }
-#else
-      pointForHitTest = [subview convertPoint:point fromView:self];
-#endif
-      hitSubview = RCTUIViewHitTestWithEvent(subview, pointForHitTest, event); // ]TODO(macOS GH#774) and TODO(macOS ISS#3536887)
+#endif // macOS]
+      hitSubview = RCTUIViewHitTestWithEvent(subview, pointForHitTest, event); // macOS]
       if (hitSubview != nil) {
         break;
       }
     }
   }
 
-  RCTPlatformView *hitView = (isPointInside ? self : nil); // TODO(macOS GH#774)
+  RCTPlatformView *hitView = (isPointInside ? self : nil); // [macOS]
 
   switch (_pointerEvents) {
     case RCTPointerEventsNone:
@@ -287,11 +287,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   if (label) {
     return label;
   }
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
   // calling super.accessibilityLabel above on macOS causes the return value of this accessor to be ignored by VoiceOver.
   // Calling the super's setAccessibilityLabel with nil ensures that the return value of this accessor is used by VoiceOver.
   [super setAccessibilityLabel:nil];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   return RCTRecursiveAccessibilityLabel(self);
 }
 
@@ -334,7 +334,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   return YES;
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (NSString *)accessibilityValue
 {
   static dispatch_once_t onceToken;
@@ -391,7 +391,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     }
   }
   NSMutableArray *valueComponents = [NSMutableArray new];
-  NSString *roleDescription = self.accessibilityRoleInternal ? rolesAndStatesDescription[self.accessibilityRoleInternal] : nil; // TODO(OSS Candidate ISS#2710739): renamed prop so it doesn't conflict with -[NSAccessibility accessibilityRole].
+  NSString *roleDescription = self.accessibilityRoleInternal ? rolesAndStatesDescription[self.accessibilityRoleInternal] : nil; // [macOS] renamed prop so it doesn't conflict with -[NSAccessibility accessibilityRole].
   if (roleDescription) {
     [valueComponents addObject:roleDescription];
   }
@@ -438,7 +438,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   }
   return nil;
 }
-#else // [TODO(macOS GH#774)
+#else // [macOS
 - (id)accessibilityValue {
   id accessibilityValue = nil;
   NSAccessibilityRole role = [self accessibilityRole];
@@ -517,12 +517,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     if (_onAccessibilityAction != nil && accessibilityActionsNameMap[@"decrement"]) {
       isAllowed = YES;
     }
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
   } else if (selector == @selector(accessibilityPerformShowMenu)) {
     if (_onAccessibilityAction != nil && accessibilityActionsNameMap[@"showMenu"]) {
       isAllowed = YES;
     }
-#endif // ]TODO(macOS GH#774)
   } else {
     isAllowed = YES;
   }
@@ -599,9 +597,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   return accessibilityMaxValue;
 }
 
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
-- (RCTPlatformView *)reactAccessibilityElement // TODO(macOS GH#774)
+- (RCTPlatformView *)reactAccessibilityElement // [macOS]
 {
   return self;
 }
@@ -624,34 +622,34 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   return NO;
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (BOOL)accessibilityActivate
-#else // [TODO(macOS GH#774)
+#else // [macOS
 - (BOOL)accessibilityPerformPress
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 {
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
   if ([self isAccessibilityEnabled] == NO) {
     return NO;
   }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   if ([self performAccessibilityAction:@"activate"]) {
     return YES;
   } else if (_onAccessibilityTap) {
     _onAccessibilityTap(nil);
     return YES;
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
   } else if (_onClick != nil) {
     // macOS is not simulating a click if there is no onAccessibilityAction like it does on iOS, so we simulate it here.
     _onClick(nil);
     return YES;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   } else {
     return NO;
   }
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (BOOL)accessibilityPerformMagicTap
 {
   if ([self performAccessibilityAction:@"magicTap"]) {
@@ -663,7 +661,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     return NO;
   }
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 - (BOOL)accessibilityPerformEscape
 {
@@ -677,46 +675,46 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   }
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)accessibilityIncrement
 {
   [self performAccessibilityAction:@"increment"];
 }
-#else // [TODO(macOS GH#774)
+#else // [macOS
 - (BOOL)accessibilityPerformIncrement
 {
   return [self performAccessibilityAction:@"increment"];
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)accessibilityDecrement
 {
   [self performAccessibilityAction:@"decrement"];
 }
-#else // [TODO(macOS GH#774)
+#else // [macOS
 - (BOOL)accessibilityPerformDecrement
 {
   return [self performAccessibilityAction:@"decrement"];
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
-#if TARGET_OS_OSX // TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 - (BOOL)accessibilityPerformShowMenu
 {
   return [self performAccessibilityAction:@"showMenu"];
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
-#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
+#if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
-  // TODO(macOS GH#774): we shouldn't make assumptions on what super's description is. Just append additional content.
+  // [macOS] we shouldn't make assumptions on what super's description is. Just append additional content.
   return [[super description] stringByAppendingFormat:@" reactTag: %@; frame = %@; layer = %@", self.reactTag, NSStringFromCGRect(self.frame), self.layer];
 }
-#endif // TODO(macOS GH#774)
+#endif // macOS]
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 - (void)setShadowColor:(NSColor *)shadowColor
 {
     if (_shadowColor != shadowColor)
@@ -780,7 +778,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
                                                object:[[self enclosingScrollView] contentView]];
   }
 
-  [self reactViewDidMoveToWindow]; // TODO(macOS GH#1412)
+  [self reactViewDidMoveToWindow]; // [macOS] Github#1412
 
   [super viewDidMoveToWindow];
 }
@@ -823,19 +821,19 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     }
   }
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 #pragma mark - Statics for dealing with layoutGuides
 
-+ (void)autoAdjustInsetsForView:(RCTUIView<RCTAutoInsetsProtocol> *)parentView // TODO(macOS ISS#3536887)
-                 withScrollView:(RCTUIScrollView *)scrollView // TODO(macOS ISS#3536887)
++ (void)autoAdjustInsetsForView:(RCTUIView<RCTAutoInsetsProtocol> *)parentView // [macOS]
+                 withScrollView:(RCTUIScrollView *)scrollView // [macOS]
                    updateOffset:(BOOL)updateOffset
 {
   UIEdgeInsets baseInset = parentView.contentInset;
   CGFloat previousInsetTop = scrollView.contentInset.top;
   CGPoint contentOffset = scrollView.contentOffset;
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   if (parentView.automaticallyAdjustContentInsets) {
     UIEdgeInsets autoInset = RCTContentInsets(parentView);
     baseInset.top += autoInset.top;
@@ -843,7 +841,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     baseInset.left += autoInset.left;
     baseInset.right += autoInset.right;
   }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
   scrollView.contentInset = baseInset;
   scrollView.scrollIndicatorInsets = baseInset;
 
@@ -865,7 +863,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 - (void)react_remountAllSubviews
 {
   if (_removeClippedSubviews) {
-    for (RCTUIView *view in self.reactSubviews) { // TODO(macOS ISS#3536887)
+    for (RCTUIView *view in self.reactSubviews) { // [macOS]
       if (view.superview != self) {
         [self addSubview:view];
         [view react_remountAllSubviews];
@@ -877,7 +875,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   }
 }
 
-- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTPlatformView *)clipView // TODO(macOS GH#774)
+- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTPlatformView *)clipView // [macOS]
 {
   // TODO (#5906496): for scrollviews (the primary use-case) we could
   // optimize this by only doing a range check along the scroll axis,
@@ -904,7 +902,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   clipView = self;
 
   // Mount / unmount views
-  for (RCTUIView *view in self.reactSubviews) { // TODO(macOS ISS#3536887)
+  for (RCTUIView *view in self.reactSubviews) { // [macOS]
     if (!CGSizeEqualToSize(CGRectIntersection(clipRect, view.frame).size, CGSizeZero)) {
       // View is at least partially visible, so remount it if unmounted
       [self addSubview:view];
@@ -945,7 +943,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 - (void)updateClippedSubviews
 {
   // Find a suitable view to use for clipping
-  RCTPlatformView *clipView = [self react_findClipView]; // TODO(macOS GH#774)
+  RCTPlatformView *clipView = [self react_findClipView]; // [macOS]
   if (clipView) {
     [self react_updateClippedSubviewsWithClipRect:clipView.bounds relativeToView:clipView];
   }
@@ -965,7 +963,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   }
 }
 
-// [TODO(OSS Candidate ISS#2710739)
+// [macOS
 - (BOOL)becomeFirstResponder
 {
   if (![super becomeFirstResponder]) {
@@ -990,7 +988,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   return YES;
 }
 
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // [macOS]
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
@@ -1002,18 +1000,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   }
 #endif
 }
-#endif // !TARGET_OS_OSX
-
-// ]TODO(OSS Candidate ISS#2710739)
+#endif // [macOS]
 
 #pragma mark - Borders
 
-- (RCTUIColor *)backgroundColor // TODO(OSS Candidate ISS#2710739) RCTUIColor
+- (RCTUIColor *)backgroundColor // [macOS] RCTUIColor
 {
   return _backgroundColor;
 }
 
-- (void)setBackgroundColor:(RCTUIColor *)backgroundColor // TODO(OSS Candidate ISS#2710739) RCTUIColor
+- (void)setBackgroundColor:(RCTUIColor *)backgroundColor // macOS RCTUIColor
 {
   if ([_backgroundColor isEqual:backgroundColor]) {
     return;
@@ -1121,11 +1117,11 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   const BOOL isRTL = _reactLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
 
   if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
-    RCTUIColor *borderStartColor = _borderStartColor ?: _borderLeftColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
-    RCTUIColor *borderEndColor = _borderEndColor ?: _borderRightColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
+    RCTUIColor *borderStartColor = _borderStartColor ?: _borderLeftColor; // macOS RCTUIColor
+    RCTUIColor *borderEndColor = _borderEndColor ?: _borderRightColor; // macOS RCTUIColor
 
-    RCTUIColor *directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
-    RCTUIColor *directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
+    RCTUIColor *directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor; // macOS RCTUIColor
+    RCTUIColor *directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor; // macOS RCTUIColor
 
     return (RCTBorderColors){
         (_borderTopColor ?: _borderColor).CGColor,
@@ -1135,8 +1131,8 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     };
   }
 
-  RCTUIColor *directionAwareBorderLeftColor = isRTL ? _borderEndColor : _borderStartColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
-  RCTUIColor *directionAwareBorderRightColor = isRTL ? _borderStartColor : _borderEndColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
+  RCTUIColor *directionAwareBorderLeftColor = isRTL ? _borderEndColor : _borderStartColor; // macOS RCTUIColor
+  RCTUIColor *directionAwareBorderRightColor = isRTL ? _borderStartColor : _borderEndColor; // macOS RCTUIColor
 
   return (RCTBorderColors){
     (_borderTopColor ?: _borderColor).CGColor,
@@ -1166,10 +1162,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
 
   RCTUpdateShadowPathForView(self);
   
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
   // clipsToBounds is stubbed out on macOS because it's not part of NSView
   layer.masksToBounds = self.clipsToBounds;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
   const RCTCornerRadii cornerRadii = [self cornerRadii];
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
@@ -1199,7 +1195,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   backgroundColor = _backgroundColor.CGColor;
 #endif
 
-#if TARGET_OS_OSX // [TODO(macOS GH#1035)
+#if TARGET_OS_OSX // [macOS
   CATransform3D transform = [self transform3D];
   CGPoint anchorPoint = [layer anchorPoint];
   if (CGPointEqualToPoint(anchorPoint, CGPointZero) && !CATransform3DEqualToTransform(transform, CATransform3DIdentity)) {
@@ -1211,7 +1207,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     [layer setAllowsEdgeAntialiasing:!(transform.m34 == 0.0f)];
   }
   [layer setTransform:transform];
-#endif // ]TODO(macOS GH#1035)
+#endif // macOS]
   if (useIOSBorderRendering) {
     layer.cornerRadius = cornerRadii.topLeft;
     layer.borderColor = borderColors.left;
@@ -1223,7 +1219,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     return;
   }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
   CGFloat scaleFactor = self.window.backingScaleFactor;
   if (scaleFactor == 0.0 && RCTRunningInTestEnvironment()) {
     // When running in the test environment the view is not on screen.
@@ -1234,10 +1230,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
 #else
   // On iOS setting the scaleFactor to 0.0 will default to the device's native scale factor.
   CGFloat scaleFactor = 0.0;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
   UIImage *image = RCTGetBorderImage(
-      _borderStyle, layer.bounds.size, cornerRadii, borderInsets, borderColors, backgroundColor, self.clipsToBounds, scaleFactor); // TODO(OSS Candidate ISS#2710739)
+      _borderStyle, layer.bounds.size, cornerRadii, borderInsets, borderColors, backgroundColor, self.clipsToBounds, scaleFactor); // [macOS]
 
   layer.backgroundColor = NULL;
 
@@ -1254,13 +1250,13 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
         insets.left / size.width, insets.top / size.height, (CGFloat)1.0 / size.width, (CGFloat)1.0 / size.height);
   });
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   layer.contents = (id)image.CGImage;
   layer.contentsScale = image.scale;
-#else // [TODO(macOS GH#774)
+#else // [macOS
   layer.contents = [image layerContentsForContentsScale:scaleFactor];
   layer.contentsScale = scaleFactor;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   layer.needsDisplayOnBoundsChange = YES;
   layer.magnificationFilter = kCAFilterNearest;
 
@@ -1330,7 +1326,7 @@ static void RCTUpdateShadowPathForView(RCTView *view)
 
 #pragma mark Border Color
 
-// TODO(OSS Candidate ISS#2710739) RCTUIColor
+// macOS RCTUIColor
 #define setBorderColor(side)                       \
   -(void)setBorder##side##Color : (RCTUIColor *)color \
   {                                                \
@@ -1389,9 +1385,10 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 
   setBorderStyle()
 
-#pragma mark Focus ring // [TODO(macOS GH#774)
+#if TARGET_OS_OSX  // [macOS
 
-#if TARGET_OS_OSX
+#pragma mark Focus ring
+
 - (CGRect)focusRingMaskBounds
 {
   return self.bounds;
@@ -1409,11 +1406,9 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     CGPathRelease(path);
   }
 }
-#endif
 
 #pragma mark - macOS Event Handler
 
-#if TARGET_OS_OSX
 - (void)resetCursorRects
 {
   [self discardCursorRects];
@@ -1657,11 +1652,9 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
                  additionalData:[self dataTransferInfoFromPasteboard:sender.draggingPasteboard]];
   return YES;
 }
-#endif // ]TODO(macOS GH#774)
 
 #pragma mark - Keyboard Events
 
-#if TARGET_OS_OSX
 - (RCTViewKeyboardEvent*)keyboardEvent:(NSEvent*)event {
   BOOL keyDown = event.type == NSEventTypeKeyDown;
   NSArray<NSString *> *validKeys = keyDown ? self.validKeysDown : self.validKeysUp;
@@ -1697,6 +1690,6 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     [super keyUp:event];
   }
 }
-#endif // TARGET_OS_OSX
+#endif // macOS]
 
 @end

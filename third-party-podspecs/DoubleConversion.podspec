@@ -21,6 +21,6 @@ Pod::Spec.new do |spec|
   spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/DoubleConversion\"" }
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "11.0", :osx => "10.15" } # TODO(macOS GH#214)
+  spec.platforms = { :ios => "11.0", :osx => "10.15" } # [macOS]
 
 end

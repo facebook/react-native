@@ -7,7 +7,7 @@
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTDevLoadingViewProtocol.h>
-// TODO(OSS Candidate ISS#2710739)
+// [macOS]
 // Remove #import <UIKit/UIKit.h>
 
 @interface RCTDevLoadingView : NSObject <RCTDevLoadingViewProtocol, RCTBridgeModule>

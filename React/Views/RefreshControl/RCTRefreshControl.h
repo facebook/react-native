@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTComponent.h>
 #import <React/RCTScrollableProtocol.h>
@@ -14,6 +14,6 @@
 
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) RCTDirectEventBlock onRefresh;
-@property (nonatomic, weak) RCTUIScrollView *scrollView; // TODO(macOS GH#774)
+@property (nonatomic, weak) RCTUIScrollView *scrollView; // [macOS]
 
 @end

@@ -19,28 +19,28 @@ Pod::Spec.new do |s|
   s.description     = "ScreenshotManager"
   s.homepage        = "https://github.com/facebook/react-native.git"
   s.license         = "MIT"
-  s.platforms       = { :ios => "11.0", :osx => "10.15", :tvos => "11.0" } # TODO(macOS GH#774)
+  s.platforms       = { :ios => "11.0", :osx => "10.15", :tvos => "11.0" } # [macOS]
   s.compiler_flags  = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.author          = "Facebook, Inc. and its affiliates"
   s.source          = { :git => "https://github.com/facebook/react-native.git", :tag => "#{s.version}" }
 
   s.source_files    = "**/*.{h,m,mm,swift}"
-# [TODO(macOS GH#774)
+# [macOS
   s.ios.exclude_files = "ScreenshotMacOS.{h,mm}"
   s.osx.exclude_files = "Screenshot.{h,m}"
-# ]TODO(macOS GH#774)
+# macOS]
   s.requires_arc    = true
 
   s.dependency "React"
   s.dependency "RCT-Folly", folly_version
 
-# [TODO(macOS GH#774)
+# [macOS
   s.osx.dependency "React-TurboModuleCxx-RNW"
   s.osx.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
                                 "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                }
-# ]TODO(macOS GH#774)
+# macOS]
 
   # s.dependency "..."
 

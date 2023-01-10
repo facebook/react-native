@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTGenericDelegateSplitter.h>
 #import <React/RCTViewComponentView.h>
@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol RCTEnhancedScrollViewOverridingDelegate <NSObject>
 
-- (BOOL)touchesShouldCancelInContentView:(RCTUIView *)view; // TODO(macOS GH#774)
+- (BOOL)touchesShouldCancelInContentView:(RCTUIView *)view; // [macOS]
 
 @end
 
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
  * `UIScrollView` subclass which has some improvements and tweaks
  * which are not directly related to React Native.
  */
-@interface RCTEnhancedScrollView : RCTUIScrollView // TODO(macOS GH#774)
+@interface RCTEnhancedScrollView : RCTUIScrollView // [macOS]
 
 /*
  * Returns a delegate splitter that can be used to create as many `UIScrollView` delegates as needed.

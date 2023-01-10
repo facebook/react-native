@@ -30,7 +30,7 @@ type LinkingEventDefinitions = {
 class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   constructor() {
     super(
-      Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS GH#774
+      Platform.OS === 'ios' || Platform.OS === 'macos' // [macOS]
         ? nullthrows(NativeLinkingManager)
         : undefined,
     );

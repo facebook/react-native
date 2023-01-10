@@ -26,7 +26,7 @@ This repository is a working fork of **facebook/react-native** that adds support
 [new-app]: https://reactnative.dev/docs/getting-started
 [existing]: https://reactnative.dev/docs/integration-with-existing-apps
 
-You can read more about the macOS implementation in our website - [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/)
+You can read more about the macOS implementation in our website - [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/). You can read about how we manage this fork in our [docs](docs/) folder.
 
 ## Requirements
 

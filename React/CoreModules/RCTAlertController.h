@@ -5,17 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-@interface RCTAlertController : NSViewController
-#else
+#if !TARGET_OS_OSX // [macOS]
 @interface RCTAlertController : UIAlertController
-#endif // ]TODO(macOS GH#774)
+#else // [macOS
+@interface RCTAlertController : NSViewController
+#endif // macOS]
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)show:(BOOL)animated completion:(void (^)(void))completion;
 - (void)hide;
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 
 @end

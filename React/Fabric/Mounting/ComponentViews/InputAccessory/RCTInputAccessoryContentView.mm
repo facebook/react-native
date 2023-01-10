@@ -8,7 +8,7 @@
 #import "RCTInputAccessoryContentView.h"
 
 @implementation RCTInputAccessoryContentView {
-  RCTUIView *_safeAreaContainer; // TODO(macOS GH#774)
+  RCTUIView *_safeAreaContainer; // [macOS]
   NSLayoutConstraint *_heightConstraint;
 }
 
@@ -17,7 +17,7 @@
   if (self = [super init]) {
     self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 
-    _safeAreaContainer = [RCTUIView new]; // TODO(macOS GH#774)
+    _safeAreaContainer = [RCTUIView new]; // [macOS]
     _safeAreaContainer.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_safeAreaContainer];
 
@@ -40,7 +40,7 @@
   return CGSizeZero;
 }
 
-- (void)insertSubview:(RCTUIView *)view atIndex:(NSInteger)index // TODO(macOS GH#774)
+- (void)insertSubview:(RCTUIView *)view atIndex:(NSInteger)index // [macOS]
 {
   [_safeAreaContainer insertSubview:view atIndex:index];
 }

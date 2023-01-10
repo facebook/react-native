@@ -5,22 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTComponent.h>
 #import <yoga/YGEnums.h>
 
 @class RCTShadowView;
 
-@interface RCTPlatformView (React) <RCTComponent> // TODO(macOS GH#774)
+@interface RCTPlatformView (React) <RCTComponent> // [macOS]
 
 /**
  * RCTComponent interface.
  */
-- (NSArray<RCTPlatformView *> *)reactSubviews NS_REQUIRES_SUPER; // TODO(macOS GH#774)
-- (RCTPlatformView *)reactSuperview NS_REQUIRES_SUPER; // TODO(macOS GH#774)
-- (void)insertReactSubview:(RCTPlatformView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER; // TODO(macOS GH#774)
-- (void)removeReactSubview:(RCTPlatformView *)subview NS_REQUIRES_SUPER; // TODO(macOS GH#774)
+- (NSArray<RCTPlatformView *> *)reactSubviews NS_REQUIRES_SUPER; // [macOS]
+- (RCTPlatformView *)reactSuperview NS_REQUIRES_SUPER; // [macOS]
+- (void)insertReactSubview:(RCTPlatformView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER; // [macOS]
+- (void)removeReactSubview:(RCTPlatformView *)subview NS_REQUIRES_SUPER; // [macOS]
 
 /**
  * The native id of the view, used to locate view from native codes
@@ -56,7 +56,7 @@
  * Subviews sorted by z-index. Note that this method doesn't do any caching (yet)
  * and sorts all the views each call.
  */
-- (NSArray<RCTPlatformView *> *)reactZIndexSortedSubviews; // TODO(macOS GH#774)
+- (NSArray<RCTPlatformView *> *)reactZIndexSortedSubviews; // [macOS]
 
 /**
  * Updates the subviews array based on the reactSubviews. Default behavior is
@@ -81,7 +81,7 @@
  */
 - (UIViewController *)reactViewController;
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 /**
  * This method attaches the specified controller as a child of the
  * the owning view controller of this view. Returns NO if no view
@@ -89,9 +89,9 @@
  * attached to the view hierarchy).
  */
 - (void)reactAddControllerToClosestParent:(UIViewController *)controller;
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
-- (void)reactViewDidMoveToWindow; // TODO(macOS GH#1412)
+- (void)reactViewDidMoveToWindow; // [macOS] Github #1412
 
 /**
  * Focus manipulation.
@@ -115,12 +115,12 @@
  * transparent in favour of some subview.
  * Defaults to `self`.
  */
-@property (nonatomic, readonly) RCTPlatformView *reactAccessibilityElement; // TODO(macOS GH#774)
+@property (nonatomic, readonly) RCTPlatformView *reactAccessibilityElement; // [macOS]
 
 /**
  * Accessibility properties
  */
-@property (nonatomic, copy) NSString *accessibilityRoleInternal; // TODO(OSS Candidate ISS#2710739): renamed so it doesn't conflict with -[NSAccessibility accessibilityRole].
+@property (nonatomic, copy) NSString *accessibilityRoleInternal; // [macOS] renamed so it doesn't conflict with -[NSAccessibility accessibilityRole].
 @property (nonatomic, copy) NSDictionary<NSString *, id> *accessibilityState;
 @property (nonatomic, copy) NSArray<NSDictionary *> *accessibilityActions;
 @property (nonatomic, copy) NSDictionary *accessibilityValueInternal;

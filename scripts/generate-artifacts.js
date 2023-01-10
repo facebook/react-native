@@ -185,7 +185,7 @@ function main(appRootDir, outputPath) {
         console.log(
           '\n\n[Codegen] >>>>> Building react-native-codegen package',
         );
-        // [TODO(macOS GH#774) - use execFileSync to help keep shell commands clean
+        // [macOS use execFileSync to help keep shell commands clean
         execFileSync('yarn', ['install'], {
           cwd: codegenCliPath,
           stdio: 'inherit',
@@ -194,7 +194,7 @@ function main(appRootDir, outputPath) {
           cwd: codegenCliPath,
           stdio: 'inherit',
         });
-        // ]TODO(macOS GH#774)
+        // [macOS]
       }
     } else if (fs.existsSync(CODEGEN_NPM_PATH)) {
       codegenCliPath = CODEGEN_NPM_PATH;
@@ -236,7 +236,7 @@ function main(appRootDir, outputPath) {
 
       console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
       // Generate one schema for the entire library...
-      // [TODO(macOS GH#774) - use execFileSync to help keep shell commands clean
+      // [macOS use execFileSync to help keep shell commands clean
       execFileSync('node', [
         path.join(
           codegenCliPath,
@@ -247,16 +247,16 @@ function main(appRootDir, outputPath) {
         ),
         pathToSchema,
         pathToJavaScriptSources,
-      ]); // ]TODO(macOS GH#774)
+      ]); // macOS]
       console.log(`[Codegen] Generated schema: ${pathToSchema}`);
 
       // ...then generate native code artifacts.
-      // [TODO(macOS GH#774) - use execFileSync to help keep shell commands clean
+      // [macOS use execFileSync to help keep shell commands clean
       const libraryTypeArg = library.config.type
         ? ['--libraryType', library.config.type]
-        : null; // ]TODO(macOS GH#774)
+        : null; // macOS]
       fs.mkdirSync(pathToTempOutputDir, {recursive: true});
-      // [TODO(macOS GH#774) - use execFileSync to help keep shell commands clean
+      // [macOS use execFileSync to help keep shell commands clean
       execFileSync('node', [
         path.join(RN_ROOT, 'scripts', 'generate-specs-cli.js'),
         '--platform',
@@ -268,16 +268,16 @@ function main(appRootDir, outputPath) {
         '--libraryName',
         library.config.name,
         ...libraryTypeArg,
-      ]); // ]TODO(macOS GH#774)
+      ]); // macOS]
 
       // Finally, copy artifacts to the final output directory.
       fs.mkdirSync(pathToOutputDirIOS, {recursive: true});
-      // [TODO(macOS GH#774) - use execFileSync to help keep shell commands clean
+      // [macOS use execFileSync to help keep shell commands clean
       execFileSync('cp', [
         '-R',
         path.join(pathToTempOutputDir, '/'),
         pathToOutputDirIOS,
-      ]); // ]TODO(macOS GH#774)
+      ]); // macOS]
       console.log(`[Codegen] Generated artifacts: ${pathToOutputDirIOS}`);
 
       // Filter the react native core library out.
@@ -299,7 +299,7 @@ function main(appRootDir, outputPath) {
 
       // Generate FabricComponentProvider.
       // Only for iOS at this moment.
-      // [TODO(macOS GH#774) - use execFileSync to help keep shell commands clean
+      // [macOS use execFileSync to help keep shell commands clean
       execFileSync('node', [
         path.join(RN_ROOT, 'scripts', 'generate-provider-cli.js'),
         '--platform',
@@ -308,7 +308,7 @@ function main(appRootDir, outputPath) {
         schemaListTmpPath,
         '--outputDir',
         iosOutputDir,
-      ]); // ]TODO(macOS GH#774)
+      ]); // macOS]
       console.log(`Generated provider in: ${iosOutputDir}`);
     }
   } catch (err) {

@@ -6,7 +6,7 @@
  *
  */
 
-// TODO(macOS ISS#3536887)
+// [macOS]
 
 #import <XCTest/XCTest.h>
 

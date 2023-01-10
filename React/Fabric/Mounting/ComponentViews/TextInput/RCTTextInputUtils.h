@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <optional>
 
@@ -15,10 +15,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 void RCTCopyBackedTextInput(
-    RCTUIView<RCTBackedTextInputViewProtocol> *fromTextInput,
-    RCTUIView<RCTBackedTextInputViewProtocol> *toTextInput); // TODO(macOS GH#774)
+    RCTUIView<RCTBackedTextInputViewProtocol> *fromTextInput, // [macOS]
+    RCTUIView<RCTBackedTextInputViewProtocol> *toTextInput); // [macOS]
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX  // [macOS]
 UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(std::optional<bool> autoCorrect);
 
 UITextAutocapitalizationType RCTUITextAutocapitalizationTypeFromAutocapitalizationType(
@@ -41,6 +41,6 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
 
 API_AVAILABLE(ios(12.0))
 UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(std::string const &passwordRules);
-#endif // ]TODO(macOS GH#774)
+#endif  // [macOS]
 
 NS_ASSUME_NONNULL_END

@@ -14,10 +14,10 @@
 //   limitations under the License.
 //
 
-#import <TargetConditionals.h> // [TODO(macOS GH#774)
-#if !TARGET_OS_OSX
+#import <TargetConditionals.h> // [macOS]
+#if !TARGET_OS_OSX // [macOS]
 #import <Endian.h>
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 #import <React/RCTSRWebSocket.h>
 
 #import <Availability.h>
@@ -530,29 +530,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)_connect
 {
   if (!_scheduledRunloops.count) {
-    // [TODO(macOS ISS#2323203): `scheduleInRunLoop:forMode:` takes in a non-null run loop parameter so let's be safe and verify that
+    // [macOS `scheduleInRunLoop:forMode:` takes in a non-null run loop parameter so let's be safe and verify that
     NSRunLoop *runLoop = [NSRunLoop RCTSR_networkRunLoop];
     if (runLoop != nil) {
       [self scheduleInRunLoop:runLoop forMode:NSDefaultRunLoopMode];
     } else {
       RCTSRLog(@"Failed connecting to RCTSR_networkRunLoop");
     }
-    // ]TODO(macOS ISS#2323203)
+    // macOS]
   }
 
-  // [TODO(macOS GH#774)
-  // We've seen a rare ASan crash where _inputStream seems to be invalid. This is just a safety check.
+  // [macOS We've seen a rare ASan crash where _inputStream seems to be invalid. This is just a safety check.
 #if DEBUG
   [self _validateStream:_outputStream name:@"_outputStream"];
   [self _validateStream:_inputStream name:@"_inputStream"];
 #endif
-  // ]TODO(macOS GH#774)
+  // macOS]
 
   [_outputStream open];
   [_inputStream open];
 }
 
-// [TODO(macOS GH#774)
+// [macOS
 #if DEBUG
 - (void)_validateStream:(NSStream *)stream name:(NSString *)name {
   NSStreamStatus status = stream.streamStatus;
@@ -565,7 +564,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 #endif
-// ]TODO(macOS GH#774)
+// macOS]
 
 - (void)scheduleInRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode
 {

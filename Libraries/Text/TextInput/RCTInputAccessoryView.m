@@ -16,7 +16,7 @@
 @interface RCTInputAccessoryView()
 
 // Overriding `inputAccessoryView` to `readwrite`.
-@property (nonatomic, readwrite, retain) RCTUIView *inputAccessoryView; // TODO(macOS GH#774)
+@property (nonatomic, readwrite, retain) RCTUIView *inputAccessoryView; // [macOS]
 
 @end
 
@@ -50,13 +50,13 @@
   }
 }
 
-- (void)insertReactSubview:(RCTUIView *)subview atIndex:(NSInteger)index  // TODO(macOS GH#774)
+- (void)insertReactSubview:(RCTUIView *)subview atIndex:(NSInteger)index  // [macOS]
 {
   [super insertReactSubview:subview atIndex:index];
   [_inputAccessoryView insertReactSubview:subview atIndex:index];
 }
 
-- (void)removeReactSubview:(RCTUIView *)subview // TODO(macOS GH#774)
+- (void)removeReactSubview:(RCTUIView *)subview // [macOS]
 {
   [super removeReactSubview:subview];
   [_inputAccessoryView removeReactSubview:subview];

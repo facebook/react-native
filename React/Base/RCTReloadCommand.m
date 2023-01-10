@@ -8,9 +8,9 @@
 #import "RCTReloadCommand.h"
 
 #import "RCTAssert.h"
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // [macOS]
 #import "RCTKeyCommands.h"
-#endif
+#endif // [macOS]
 #import "RCTUtils.h"
 
 static NSHashTable<id<RCTReloadListener>> *listeners;
@@ -30,7 +30,7 @@ void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener)
   if (!listeners) {
     listeners = [NSHashTable weakObjectsHashTable];
   }
-#if RCT_DEV && !TARGET_OS_OSX
+#if RCT_DEV && !TARGET_OS_OSX // [macOS]
   RCTAssertMainQueue(); // because registerKeyCommandWithInput: must be called on the main thread
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -40,7 +40,7 @@ void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener)
                                                             RCTTriggerReloadCommandListeners(@"Command + R");
                                                           }];
   });
-#endif
+#endif // [macOS]
   [listeners addObject:listener];
   [listenersLock unlock];
 }

@@ -13,10 +13,10 @@
 #import <React/RCTConstants.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTInitializing.h>
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
-#import "UIView+React.h" // TODO(macOS GH#774)
+#import "UIView+React.h" // [macOS]
 
 #import "CoreModulesPlugins.h"
 
@@ -26,10 +26,10 @@ using namespace facebook::react;
 @end
 
 @implementation RCTDeviceInfo {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   UIInterfaceOrientation _currentInterfaceOrientation;
   NSDictionary *_currentInterfaceDimensions;
-#endif
+#endif // [macOS]
 }
 
 @synthesize moduleRegistry = _moduleRegistry;
@@ -48,7 +48,7 @@ RCT_EXPORT_MODULE()
 
 - (void)initialize
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
@@ -72,13 +72,13 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceFrameDidChange)
                                                name:RCTUserInterfaceStyleDidChangeNotification
                                              object:nil];
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 }
 
 static BOOL RCTIsIPhoneX()
 {
   static BOOL isIPhoneX = NO;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   static dispatch_once_t onceToken;
 
   dispatch_once(&onceToken, ^{
@@ -98,19 +98,19 @@ static BOOL RCTIsIPhoneX()
         CGSizeEqualToSize(screenSize, iPhone12ProMaxScreenSize);
     ;
   });
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
   return isIPhoneX;
 }
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry)
-#else
+#else // [macOS
 NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 {
   RCTAssertMainQueue();
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   RCTDimensions dimensions;
   if (moduleRegistry) {
     dimensions = RCTGetDimensions(
@@ -118,9 +118,9 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
   } else {
     RCTAssert(false, @"ModuleRegistry must be set to properly init dimensions.");
   }
-#else // [TODO(macOS GH#774)
+#else // [macOS
   RCTDimensions dimensions = RCTGetDimensions(rootView);
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
   __typeof(dimensions.window) window = dimensions.window;
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
@@ -150,11 +150,11 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
   RCTModuleRegistry *moduleRegistry = _moduleRegistry;
   RCTUnsafeExecuteOnMainQueueSync(^{
     constants = @{
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
       @"Dimensions" : RCTExportedDimensions(moduleRegistry),
-#else // [TODO(macOS GH#774)
+#else // [macOS
       @"Dimensions": RCTExportedDimensions(nil),
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
       // Note:
       // This prop is deprecated and will be removed in a future release.
       // Please use this only for a quick and temporary solution.
@@ -174,16 +174,16 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
                                                                          body:RCTExportedDimensions(moduleRegistry)];
-#else // [TODO(macOS GH#774)
+#else // [macOS
                                                                          body:RCTExportedDimensions(nil)];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 #pragma clang diagnostic pop
   });
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 
 - (void)interfaceOrientationDidChange
 {
@@ -234,7 +234,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 
   _currentInterfaceDimensions = nextInterfaceDimensions;
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {

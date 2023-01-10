@@ -5,20 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 #import <React/RCTTextDecorationLineType.h>
-#import <React/RCTDynamicTypeRamp.h> // TODO(macOS GH#774)
-#import <React/RCTFontSmoothing.h> // TODO(macOS GH#774)
+#import <React/RCTDynamicTypeRamp.h> // [macOS]
+#import <React/RCTFontSmoothing.h> // [macOS]
 #import "RCTTextTransform.h"
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 #import <React/RCTCursor.h>
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const RCTTextAttributesIsHighlightedAttributeName;
-extern NSString *const RCTTextAttributesFontSmoothingAttributeName;  // TODO(OSS Candidate ISS#2710739)
+extern NSString *const RCTTextAttributesFontSmoothingAttributeName;  // [macOS]
 extern NSString *const RCTTextAttributesTagAttributeName;
 
 /**
@@ -29,8 +29,8 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @interface RCTTextAttributes : NSObject <NSCopying>
 
 // Color
-@property (nonatomic, strong, nullable) RCTUIColor *foregroundColor; // TODO(OSS Candidate ISS#2710739)
-@property (nonatomic, strong, nullable) RCTUIColor *backgroundColor; // TODO(OSS Candidate ISS#2710739)
+@property (nonatomic, strong, nullable) RCTUIColor *foregroundColor; // [macOS]
+@property (nonatomic, strong, nullable) RCTUIColor *backgroundColor; // [macOS]
 @property (nonatomic, assign) CGFloat opacity;
 // Font
 @property (nonatomic, copy, nullable) NSString *fontFamily;
@@ -41,31 +41,31 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, copy, nullable) NSString *fontStyle;
 @property (nonatomic, copy, nullable) NSArray<NSString *> *fontVariant;
 @property (nonatomic, assign) BOOL allowFontScaling;
-@property (nonatomic, assign) RCTDynamicTypeRamp dynamicTypeRamp; // TODO(macOS GH#774)
+@property (nonatomic, assign) RCTDynamicTypeRamp dynamicTypeRamp; // [macOS]
 @property (nonatomic, assign) CGFloat letterSpacing;
-@property (nonatomic, assign) RCTFontSmoothing fontSmoothing; // TODO(OSS Candidate ISS#2710739)
-@property (class, nonatomic, assign) RCTFontSmoothing fontSmoothingDefault; // TODO(OSS Candidate ISS#2710739)
+@property (nonatomic, assign) RCTFontSmoothing fontSmoothing; // [macOS]
+@property (class, nonatomic, assign) RCTFontSmoothing fontSmoothingDefault; // [macOS]
 // Paragraph Styles
 @property (nonatomic, assign) CGFloat lineHeight;
 @property (nonatomic, assign) NSTextAlignment alignment;
 @property (nonatomic, assign) NSWritingDirection baseWritingDirection;
 // Decoration
-@property (nonatomic, strong, nullable) RCTUIColor *textDecorationColor; // TODO(OSS Candidate ISS#2710739)
+@property (nonatomic, strong, nullable) RCTUIColor *textDecorationColor; // [macOS]
 @property (nonatomic, assign) NSUnderlineStyle textDecorationStyle;
 @property (nonatomic, assign) RCTTextDecorationLineType textDecorationLine;
 // Shadow
 @property (nonatomic, assign) CGSize textShadowOffset;
 @property (nonatomic, assign) CGFloat textShadowRadius;
-@property (nonatomic, strong, nullable) RCTUIColor *textShadowColor; // TODO(OSS Candidate ISS#2710739)
+@property (nonatomic, strong, nullable) RCTUIColor *textShadowColor; // [macOS]
 // Special
 @property (nonatomic, assign) BOOL isHighlighted;
 @property (nonatomic, strong, nullable) NSNumber *tag;
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection layoutDirection;
 @property (nonatomic, assign) RCTTextTransform textTransform;
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 @property (nonatomic, assign) RCTCursor cursor;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 #pragma mark - Inheritance
 
@@ -96,8 +96,8 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 /**
  * Foreground and background colors with opacity and right defaults.
  */
-- (RCTUIColor *)effectiveForegroundColor; // TODO(OSS Candidate ISS#2710739)
-- (RCTUIColor *)effectiveBackgroundColor; // TODO(OSS Candidate ISS#2710739)
+- (RCTUIColor *)effectiveForegroundColor; // [macOS]
+- (RCTUIColor *)effectiveBackgroundColor; // [macOS]
 
 /**
  * Text transformed per 'none', 'uppercase', 'lowercase', 'capitalize'

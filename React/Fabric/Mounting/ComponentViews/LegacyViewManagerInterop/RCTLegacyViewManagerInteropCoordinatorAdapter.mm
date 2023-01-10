@@ -28,7 +28,7 @@
   [_coordinator removeObserveForTag:_tag];
 }
 
-- (RCTUIView *)paperView // TODO(macOS GH#774)
+- (RCTUIView *)paperView // [macOS]
 {
   if (!_paperView) {
     _paperView = [_coordinator createPaperViewWithTag:_tag];

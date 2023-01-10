@@ -24,10 +24,10 @@ Pod::Spec.new do |s|
   s.documentation_url      = "https://reactnative.dev/docs/text"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "11.0", :osx => "10.15" } # TODO(macOS GH#214)
+  s.platforms              = { :ios => "11.0", :osx => "10.15" } # [macOS]
   s.source                 = source
   s.source_files           = "**/*.{h,m}"
-  s.ios.exclude_files      = "**/macOS/*" # TODO(macOS GH#774)
+  s.ios.exclude_files      = "**/macOS/*" # [macOS]
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTText"
 

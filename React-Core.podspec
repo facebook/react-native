@@ -41,7 +41,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "11.0", :osx => "10.15" } # TODO(macOS GH#774)
+  s.platforms              = { :ios => "11.0", :osx => "10.15" } # [macOS]
   s.source                 = source
   s.resource_bundle        = { "AccessibilityResources" => ["React/AccessibilityResources/*.lproj"]}
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
@@ -58,11 +58,11 @@ Pod::Spec.new do |s|
                                 "React/Fabric/**/*",
                                 "React/FBReactNativeSpec/**/*",
                                 "React/Tests/**/*",
-                                "React/CxxBridge/HermesExecutorFactory.*" # TODO(macOS GH#214)
+                                "React/CxxBridge/HermesExecutorFactory.*" # [macOS]
 
-    # [TODO(macOS GH#774)
+    # [macOS
     ss.ios.exclude_files      = "**/macOS/*",
-                                "React/Inspector/**/*" # TODO(macOS GH#214) don't exclude on macOS for hermes support
+                                "React/Inspector/**/*" # [macOS]: don't exclude on macOS for hermes support
     ss.osx.exclude_files      = "React/Modules/RCTRedBoxExtraDataViewController.{h,m}",
                                 "React/Modules/RCTAccessibilityManager.m",
                                 "React/Profiler/{RCTFPSGraph,RCTPerfMonitor}.*",
@@ -72,7 +72,7 @@ Pod::Spec.new do |s|
                                 "React/Views/{RCTModal*,RCTMasked*,RCTTV*,RCTWrapperViewController}.*",
                                 "React/Views/RefreshControl/*",
                                 "React/Views/SafeAreaView/*"
-    # ]TODO(macOS GH#774)
+    # macOS]
     ss.private_header_files   = "React/Cxx*/*.h"
   end
 

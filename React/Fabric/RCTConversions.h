@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <react/renderer/components/view/AccessibilityPrimitives.h>
 #import <react/renderer/components/view/primitives.h>
@@ -35,26 +35,26 @@ inline std::string RCTStringFromNSString(NSString *string)
   return std::string{string.UTF8String ?: ""};
 }
 
-inline RCTUIColor *_Nullable RCTUIColorFromSharedColor(facebook::react::SharedColor const &sharedColor) // TODO(macOS GH#774)
+inline RCTUIColor *_Nullable RCTUIColorFromSharedColor(facebook::react::SharedColor const &sharedColor) // [macOS]
 {
   if (!sharedColor) {
     return nil;
   }
 
   if (*facebook::react::clearColor() == *sharedColor) {
-    return [RCTUIColor clearColor]; // TODO(macOS GH#774)
+    return [RCTUIColor clearColor]; // [macOS]
   }
 
   if (*facebook::react::blackColor() == *sharedColor) {
-    return [RCTUIColor blackColor]; // TODO(macOS GH#774)
+    return [RCTUIColor blackColor]; // [macOS]
   }
 
   if (*facebook::react::whiteColor() == *sharedColor) {
-    return [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+    return [RCTUIColor whiteColor]; // [macOS]
   }
 
   auto components = facebook::react::colorComponentsFromColor(sharedColor);
-  return [RCTUIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha]; // TODO(macOS GH#774)
+  return [RCTUIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha]; // [macOS]
 }
 
 inline CF_RETURNS_RETAINED CGColorRef

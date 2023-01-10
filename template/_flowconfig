@@ -11,7 +11,7 @@ node_modules/react-native/Libraries/polyfills/.*
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
 
-; TODO(macOS GH#774): Ignore metro.config.js
+; [macOS Ignore metro.config.js
 <PROJECT_ROOT>/metro.config.js
 
 [untyped]

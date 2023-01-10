@@ -15,7 +15,7 @@ import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/A
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
 import typeof Button from './Libraries/Components/Button';
 import typeof DatePickerIOS from './Libraries/Components/DatePicker/DatePickerIOS';
-import typeof DatePickerMacOS from './Libraries/Components/DatePickerMacOS/DatePickerMacOS'; // TODO(macOS GH#774)
+import typeof DatePickerMacOS from './Libraries/Components/DatePickerMacOS/DatePickerMacOS'; // [macOS]
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof FlatList from './Libraries/Lists/FlatList';
 import typeof Image from './Libraries/Image/Image';
@@ -90,8 +90,8 @@ import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
 
 // Plugins
 import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
-import typeof {DynamicColorMacOS} from './Libraries/StyleSheet/PlatformColorValueTypesMacOS'; // TODO(macOS GH#774)
-import typeof {ColorWithSystemEffectMacOS} from './Libraries/StyleSheet/PlatformColorValueTypesMacOS'; // TODO(macOS GH#750)
+import typeof {DynamicColorMacOS} from './Libraries/StyleSheet/PlatformColorValueTypesMacOS'; // [macOS]
+import typeof {ColorWithSystemEffectMacOS} from './Libraries/StyleSheet/PlatformColorValueTypesMacOS'; // [macOS]
 import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
 import typeof Platform from './Libraries/Utilities/Platform';
 import typeof {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
@@ -129,7 +129,7 @@ module.exports = {
     );
     return require('./Libraries/Components/DatePicker/DatePickerIOS');
   },
-  // [TODO(macOS GH#774)
+  // [macOS
   // $FlowFixMe[value-as-type]
   get DatePickerMacOS(): DatePickerMacOS {
     warnOnce(
@@ -139,7 +139,7 @@ module.exports = {
         'See https://github.com/microsoft/react-native-macos/issues/389',
     );
     return require('./Libraries/Components/DatePickerMacOS/DatePickerMacOS');
-  }, // ]TODO(macOS GH#774)
+  }, // macOS]
   // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
@@ -444,16 +444,15 @@ module.exports = {
   get processColor(): processColor {
     return require('./Libraries/StyleSheet/processColor');
   },
-  // [TODO(macOS GH#774)
+  // [macOS
   get DynamicColorMacOS(): DynamicColorMacOS {
     return require('./Libraries/StyleSheet/PlatformColorValueTypesMacOS')
       .DynamicColorMacOS;
-  }, // [TODO(macOS GH#774)
-  // [TODO(macOS GH#750)
+  },
   get ColorWithSystemEffectMacOS(): ColorWithSystemEffectMacOS {
     return require('./Libraries/StyleSheet/PlatformColorValueTypesMacOS')
       .ColorWithSystemEffectMacOS;
-  }, // ]TODO(macOS GH#750)
+  }, // macOS]
   get requireNativeComponent(): <T>(
     uiViewClassName: string,
   ) => HostComponent<T> {
@@ -497,7 +496,7 @@ module.exports = {
     );
     return require('deprecated-react-native-prop-types').ViewPropTypes;
   },
-  // ]TODO(macOS GH#774)
+  // macOS]
 };
 
 if (__DEV__) {

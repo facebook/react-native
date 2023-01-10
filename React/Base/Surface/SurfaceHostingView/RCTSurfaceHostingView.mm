@@ -21,8 +21,8 @@
 @end
 
 @implementation RCTSurfaceHostingView {
-  RCTUIView *_Nullable _activityIndicatorView; // TODO(macOS GH#774)
-  RCTUIView *_Nullable _surfaceView; // TODO(macOS GH#774)
+  RCTUIView *_Nullable _activityIndicatorView; // [macOS]
+  RCTUIView *_Nullable _surfaceView; // [macOS]
   RCTSurfaceStage _stage;
 }
 
@@ -61,7 +61,7 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
     [self _updateViews];
 
     // For backward compatibility with RCTRootView, set a color here instead of transparent (OS default).
-    self.backgroundColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+    self.backgroundColor = [RCTUIColor whiteColor]; // [macOS]
   }
 
   return self;
@@ -81,11 +81,11 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 
   RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
       self.bounds.size, _sizeMeasureMode, &minimumSize, &maximumSize);
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   CGRect windowFrame = [self.window convertRect:self.frame fromView:self.superview];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   CGRect windowFrame = [self.window.contentView convertRect:self.frame toView:self.superview];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
   [_surface setMinimumSize:minimumSize maximumSize:maximumSize viewportOffset:windowFrame.origin];
 }
@@ -107,11 +107,11 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 {
   if (RCTSurfaceStageIsPreparing(_stage)) {
     if (_activityIndicatorView) {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
       return [_activityIndicatorView sizeThatFits:size];
-#else // [TODO(macOS GH#774)
+#else // [macOS
       return [_activityIndicatorView fittingSize];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
     }
 
     return CGSizeZero;
@@ -209,7 +209,7 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 
 #pragma mark - UITraitCollection updates
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
@@ -220,18 +220,18 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
                     RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey : self.traitCollection,
                   }];
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 #pragma mark - Private stuff
 
 - (void)_invalidateLayout
 {
   [self invalidateIntrinsicContentSize];
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   [self.superview setNeedsLayout];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   [self.superview setNeedsLayout:YES];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (void)_updateViews

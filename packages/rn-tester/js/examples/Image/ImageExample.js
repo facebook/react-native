@@ -14,7 +14,7 @@ const React = require('react');
 
 const {
   Image,
-  Platform, // TODO(OSS Candidate ISS#2710739)
+  Platform, // [macOS]
   StyleSheet,
   Text,
   View,
@@ -1055,7 +1055,7 @@ exports.examples = [
         />
       );
     },
-    platform: ['ios', 'macos'], // TODO(OSS Candidate ISS#2710739)
+    platform: ['ios', 'macos'], // [macOS]
   },
   {
     title: 'Base64 image',
@@ -1130,7 +1130,7 @@ exports.examples = [
         </View>
       );
     },
-    platform: ['ios', 'macos'], // TODO(OSS Candidate ISS#2710739)
+    platform: ['ios', 'macos'], // [macOS]
   },
   {
     title: 'Blur Radius',

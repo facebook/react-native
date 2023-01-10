@@ -39,7 +39,7 @@
   self.snapshotController.recordMode = recordMode;
 }
 
-- (BOOL)compareSnapshotOfView:(RCTUIView *)view // TODO(macOS GH#774)
+- (BOOL)compareSnapshotOfView:(RCTUIView *)view // [macOS]
      referenceImagesDirectory:(NSString *)referenceImagesDirectory
                    identifier:(NSString *)identifier
                         error:(NSError **)errorPtr

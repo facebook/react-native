@@ -35,7 +35,7 @@ NSString *RCTCurrentOverrideAppearancePreference()
   return sColorSchemeOverride;
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
@@ -68,7 +68,7 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
   // Default to light on older OS version - same behavior as Android.
   return RCTAppearanceColorSchemeLight;
 }
-#else // [TODO(macOS GH#774)
+#else // [macOS
 NSString *RCTColorSchemePreference(NSAppearance *appearance)
 {
   static NSDictionary *appearances;
@@ -91,7 +91,7 @@ NSString *RCTColorSchemePreference(NSAppearance *appearance)
   NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
   return appearances[appearanceName] ?: RCTAppearanceColorSchemeLight;
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @interface RCTAppearance () <NativeAppearanceSpec>
 @end
@@ -117,7 +117,7 @@ RCT_EXPORT_MODULE(Appearance)
   return std::make_shared<NativeAppearanceSpecJSI>(params);
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774): on macOS don't lazy init _currentColorScheme because [NSApp effectiveAppearance] cannot be executed on background thread.
+#if TARGET_OS_OSX // [macOS on macOS don't lazy init _currentColorScheme because [NSApp effectiveAppearance] cannot be executed on background thread.
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -125,19 +125,19 @@ RCT_EXPORT_MODULE(Appearance)
   }
   return self;
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   if (_currentColorScheme == nil) {
     _currentColorScheme = RCTColorSchemePreference(nil);
   }
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
   return _currentColorScheme;
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)appearanceChanged:(NSNotification *)notification
 {
   NSDictionary *userInfo = [notification userInfo];
@@ -146,7 +146,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
     traitCollection = userInfo[RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey];
   }
   NSString *newColorScheme = RCTColorSchemePreference(traitCollection);
-#else // [TODO(macOS GH#774)
+#else // [macOS
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change
@@ -157,7 +157,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
     return;
   }
   NSString *newColorScheme = RCTColorSchemePreference(nil);
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   if (![_currentColorScheme isEqualToString:newColorScheme]) {
     _currentColorScheme = newColorScheme;
     [self sendEventWithName:@"appearanceChanged" body:@{@"colorScheme" : newColorScheme}];
@@ -173,30 +173,30 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 
 - (void)startObserving
 {
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   if (@available(iOS 13.0, *)) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
                                                  name:RCTUserInterfaceStyleDidChangeNotification
                                                object:nil];
   }
-#else  
+#else  // [macOS
   [NSApp addObserver:self
           forKeyPath:@"effectiveAppearance"
              options:NSKeyValueObservingOptionNew
              context:nil];  
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (void)stopObserving
 {
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   if (@available(iOS 13.0, *)) {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
   }
-#else  
+#else // [macOS
   [NSApp removeObserver:self forKeyPath:@"effectiveAppearance" context:nil];  
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 @end

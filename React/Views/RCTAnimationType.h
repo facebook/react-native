@@ -8,14 +8,14 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, RCTAnimationType) {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   RCTAnimationTypeSpring = 0,
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
   RCTAnimationTypeLinear,
   RCTAnimationTypeEaseIn,
   RCTAnimationTypeEaseOut,
   RCTAnimationTypeEaseInEaseOut,
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   RCTAnimationTypeKeyboard,
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 };

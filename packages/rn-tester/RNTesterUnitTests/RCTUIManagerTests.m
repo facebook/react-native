@@ -21,7 +21,7 @@
                registry:(NSDictionary<NSNumber *, id<RCTComponent>> *)registry;
 
 @property (nonatomic, copy, readonly)
-    NSMutableDictionary<NSNumber *, RCTUIView *> *viewRegistry; // TODO(macOS ISS#3536887)
+    NSMutableDictionary<NSNumber *, RCTUIView *> *viewRegistry; // [macOS]
 
 @end
 
@@ -41,7 +41,7 @@
 
   // Register 20 views to use in the tests
   for (NSInteger i = 1; i <= 20; i++) {
-    RCTUIView *registeredView = [RCTUIView new]; // TODO(macOS ISS#3536887)
+    RCTUIView *registeredView = [RCTUIView new]; // [macOS]
     registeredView.reactTag = @(i);
     _uiManager.viewRegistry[@(i)] = registeredView;
   }
@@ -49,7 +49,7 @@
 
 - (void)testManagingChildrenToAddViews
 {
-  RCTUIView *containerView = _uiManager.viewRegistry[@20]; // TODO(macOS ISS#3536887)
+  RCTUIView *containerView = _uiManager.viewRegistry[@20]; // [macOS]
   NSMutableArray *addedViews = [NSMutableArray array];
 
   NSArray *tagsToAdd = @[ @1, @2, @3, @4, @5 ];
@@ -74,7 +74,7 @@
       @"Expect to have 5 react subviews after calling manage children \
                with 5 tags to add, instead have %lu",
       (unsigned long)[[containerView reactSubviews] count]);
-  for (RCTUIView *view in addedViews) { // TODO(macOS ISS#3536887)
+  for (RCTUIView *view in addedViews) { // [macOS]
     XCTAssertTrue(
         [view reactSuperview] == containerView, @"Expected to have manage children successfully add children");
     [view removeFromSuperview];
@@ -83,7 +83,7 @@
 
 - (void)testManagingChildrenToRemoveViews
 {
-  RCTUIView *containerView = _uiManager.viewRegistry[@20]; // TODO(macOS ISS#3536887)
+  RCTUIView *containerView = _uiManager.viewRegistry[@20]; // [macOS]
   NSMutableArray *removedViews = [NSMutableArray array];
 
   NSArray *removeAtIndices = @[ @0, @4, @8, @12, @16 ];
@@ -92,7 +92,7 @@
     [removedViews addObject:_uiManager.viewRegistry[reactTag]];
   }
   for (NSInteger i = 2; i < 20; i++) {
-    RCTUIView *view = _uiManager.viewRegistry[@(i)]; // TODO(macOS ISS#3536887)
+    RCTUIView *view = _uiManager.viewRegistry[@(i)]; // [macOS]
     [containerView insertReactSubview:view atIndex:containerView.reactSubviews.count];
   }
 
@@ -113,13 +113,13 @@
       @"Expect to have 13 react subviews after calling manage children\
                with 5 tags to remove and 18 prior children, instead have %zd",
       containerView.reactSubviews.count);
-  for (RCTUIView *view in removedViews) { // TODO(macOS ISS#3536887)
+  for (RCTUIView *view in removedViews) { // [macOS]
     XCTAssertTrue([view reactSuperview] == nil, @"Expected to have manage children successfully remove children");
     // After removing views are unregistered - we need to reregister
     _uiManager.viewRegistry[view.reactTag] = view;
   }
   for (NSInteger i = 2; i < 20; i++) {
-    RCTUIView *view = _uiManager.viewRegistry[@(i)]; // TODO(macOS ISS#3536887)
+    RCTUIView *view = _uiManager.viewRegistry[@(i)]; // [macOS]
     if (![removedViews containsObject:view]) {
       XCTAssertTrue(
           [view superview] == containerView,
@@ -140,7 +140,7 @@
 // [11,5,1,2,7,8,12,10]
 - (void)testManagingChildrenToAddRemoveAndMove
 {
-  RCTUIView *containerView = _uiManager.viewRegistry[@20]; // TODO(macOS ISS#3536887)
+  RCTUIView *containerView = _uiManager.viewRegistry[@20]; // [macOS]
 
   NSArray *removeAtIndices = @[ @2, @3, @5, @8 ];
   NSArray *addAtIndices = @[ @0, @6 ];
@@ -152,12 +152,12 @@
   NSMutableArray *viewsToRemove = [NSMutableArray array];
   for (NSUInteger i = 0; i < removeAtIndices.count; i++) {
     NSNumber *reactTagToRemove = @([removeAtIndices[i] integerValue] + 1);
-    RCTUIView *viewToRemove = _uiManager.viewRegistry[reactTagToRemove]; // TODO(macOS ISS#3536887)
+    RCTUIView *viewToRemove = _uiManager.viewRegistry[reactTagToRemove]; // [macOS]
     [viewsToRemove addObject:viewToRemove];
   }
 
   for (NSInteger i = 1; i < 11; i++) {
-    RCTUIView *view = _uiManager.viewRegistry[@(i)]; // TODO(macOS ISS#3536887)
+    RCTUIView *view = _uiManager.viewRegistry[@(i)]; // [macOS]
     [containerView insertReactSubview:view atIndex:containerView.reactSubviews.count];
   }
 
@@ -190,10 +190,10 @@
 
   // Clean up after ourselves
   for (NSInteger i = 1; i < 13; i++) {
-    RCTUIView *view = _uiManager.viewRegistry[@(i)]; // TODO(macOS ISS#3536887)
+    RCTUIView *view = _uiManager.viewRegistry[@(i)]; // [macOS]
     [view removeFromSuperview];
   }
-  for (RCTUIView *view in viewsToRemove) { // TODO(macOS ISS#3536887)
+  for (RCTUIView *view in viewsToRemove) { // [macOS]
     _uiManager.viewRegistry[view.reactTag] = view;
   }
 }

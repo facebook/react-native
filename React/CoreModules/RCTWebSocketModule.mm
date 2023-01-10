@@ -68,8 +68,8 @@ RCT_EXPORT_METHOD(connect
                   : (JS::NativeWebSocketModule::SpecConnectOptions &)options socketID
                   : (double)socketID)
 {
-  RCTAssertParam(URL); // TODO: GH#774, prevent crashes when URL is erroneously nil
-  if (URL != nil) { // TODO: GH#774, prevent crashes when URL is erroneously nil
+  RCTAssertParam(URL); // [macOS] prevent crashes when URL is erroneously nil
+  if (URL != nil) { // [macOS] prevent crashes when URL is erroneously nil
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
 
     // We load cookies from sharedHTTPCookieStorage (shared with XHR and
@@ -101,7 +101,7 @@ RCT_EXPORT_METHOD(connect
     }
     _sockets[@(socketID)] = webSocket;
     [webSocket open];
-  } // TODO: GH#774, prevent crashes when URL is erroneously nil
+  } // [macOS] prevent crashes when URL is erroneously nil
 }
 
 RCT_EXPORT_METHOD(send : (NSString *)message forSocketID : (double)socketID)

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#3536887)
+#import <React/RCTUIKit.h> // [macOS]
 #import <XCTest/XCTest.h>
 
 #import <RCTTest/RCTTestRunner.h>
@@ -20,14 +20,14 @@
 
 - (void)setUp
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#3536887)
+#if !TARGET_OS_OSX // [macOS]
   _runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp.ios", nil, nil);
   if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10) {
     _runner.testSuffix = [NSString stringWithFormat:@"-iOS%d", UIDevice.currentDevice.systemVersion.intValue];
   }
-#else // [TODO(macOS ISS#3536887)
+#else // [macOS
   _runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp.macos", nil, nil);
-#endif // ]TODO(macOS ISS#3536887)
+#endif // macOS]
 
   // ---------
   // WHEN SNAPSHOTS ARE FAILING LOCALLY

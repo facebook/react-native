@@ -29,11 +29,11 @@
   NSURL *scriptURL;
   if (getenv("CI_USE_PACKAGER")) {
     NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"];
-    if (bundlePrefix == nil) { // [TODO(macOS GH#774) There's a convoluted crash if the bundler prefix is null, meaning
+    if (bundlePrefix == nil) { // [macOS There's a convoluted crash if the bundler prefix is null, meaning
                                // the RN_BUNDLE_PREFIX wasn't set. New platforms won't have this set and don't need it
                                // to run, so default to a reasonable fallback.
       bundlePrefix = @"";
-    } // TODO(macOS GH#774)]
+    } // macOS]
     NSString *app = @"IntegrationTests/IntegrationTestsApp";
     scriptURL =
         [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
@@ -60,7 +60,7 @@
   RCTSetLogFunction(RCTDefaultLogFunction);
 }
 
-#define RCT_TEST_LOGGING_TIMEOUT dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 15) // TODO(OSS Candidate ISS#2710739)
+#define RCT_TEST_LOGGING_TIMEOUT dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 15) // [macOS]
 
 - (void)testLogging
 {
@@ -84,32 +84,32 @@
         }
       });
   // Wait for console log to signal the semaphore
-  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
+  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelInfo);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertEqualObjects(_lastLogMessage, @"Invoking console.log");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.warning" args:@[ @"Generating warning" ]];
-  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
+  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelWarning);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertEqualObjects(_lastLogMessage, @"Generating warning");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.invariant" args:@[ @"Invariant failed" ]];
-  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
+  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertTrue([_lastLogMessage containsString:@"Invariant Violation: Invariant failed"]);
 
   [_bridge enqueueJSCall:@"LoggingTestModule.logErrorToConsole" args:@[ @"Invoking console.error" ]];
-  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
+  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
 
   // For local bundles, we'll first get a warning about symbolication
   if ([_bridge.bundleURL isFileURL]) {
-    dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
+    dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
   }
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
@@ -117,11 +117,11 @@
   XCTAssertEqualObjects(_lastLogMessage, @"Invoking console.error");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.throwError" args:@[ @"Throwing an error" ]];
-  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
+  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
 
   // For local bundles, we'll first get a warning about symbolication
   if ([_bridge.bundleURL isFileURL]) {
-    dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
+    dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
   }
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);

@@ -12,7 +12,7 @@
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (CGRect)accessibilityFrame
 {
-  RCTUIView *container = (RCTUIView *)self.accessibilityContainer; // TODO(macOS GH#774)
+  RCTUIView *container = (RCTUIView *)self.accessibilityContainer; // [macOS]
   if (CGRectEqualToRect(_frame, CGRectZero)) {
     return UIAccessibilityConvertFrameToScreenCoordinates(container.bounds, container);
   } else {

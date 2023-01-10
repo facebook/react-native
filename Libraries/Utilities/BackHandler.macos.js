@@ -11,7 +11,7 @@
  * @format
  */
 
-// TODO(macOS GH#774)
+// [macOS]
 
 /* $FlowFixMe allow macOS to share iOS file */
 const BackHandler = require('./BackHandler.ios');

@@ -18,8 +18,8 @@ const {
   Text,
   TextInput,
   View,
-  Image, // TODO(macOS GH#774)
-  Platform, // TODO(macOS GH#774)
+  Image, // [macOS]
+  Platform, // [macOS]
   StyleSheet,
   Slider,
   Switch,
@@ -29,7 +29,7 @@ import type {
   KeyboardType,
   SettingChangeEvent,
   PasteEvent,
-} from 'react-native/Libraries/Components/TextInput/TextInput'; // [TODO(macOS GH#774)
+} from 'react-native/Libraries/Components/TextInput/TextInput'; // [macOS
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   },
 });
 
-// [TODO(macOS GH#774)
+// [macOS
 function AutoCorrectSpellCheckGrammarCheckCallbacks(): React.Node {
   const [enableAutoCorrect, setEnableAutoCorrect] = React.useState(false);
   const [enableSpellSpeck, setEnableSpellSpeck] = React.useState(false);
@@ -454,7 +454,7 @@ function OnPaste(): React.Node {
     </>
   );
 }
-// ]TODO(macOS GH#774)
+// [macOS]
 
 exports.displayName = (undefined: ?string);
 exports.title = 'TextInput';
@@ -742,14 +742,14 @@ exports.examples = ([
             multiline={true}
             style={styles.multiline}
           />
-          {/* [TODO(macOS GH#774) */}
+          {/* [macOS */}
           <TextInput
             placeholder="multiline text input with scroll disabled"
             multiline={true}
             scrollEnabled={false}
             style={styles.multiline}
           />
-          {/* [TODO(macOS GH#774) */}
+          {/* macOS] */}
           <TextInput
             placeholder="multiline text input with vertical scrollbar hidden"
             multiline={true}
@@ -965,7 +965,7 @@ exports.examples = ([
     },
   },
 ]: Array<RNTesterModuleExample>);
-// [TODO(macOS GH#774)
+// [macOS
 if (Platform.OS === 'macos') {
   exports.examples.push(
     {
@@ -1026,4 +1026,4 @@ if (Platform.OS === 'macos') {
     },
   );
 }
-// ]TODO(macOS GH#774)
+// [macOS]

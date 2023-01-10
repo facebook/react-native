@@ -329,12 +329,12 @@ RCT_EXPORT_METHOD(getValue:(double)nodeTag saveValueCallback:(RCTResponseSenderB
   _preOperations = [NSMutableArray new];
   _operations = [NSMutableArray new];
 
-  [uiManager prependUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+  [uiManager prependUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
     for (AnimatedOperation operation in preOperations) {
       operation(self->_nodesManager);
     }
   }];
-  [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+  [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
     for (AnimatedOperation operation in operations) {
       operation(self->_nodesManager);
     }

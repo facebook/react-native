@@ -11,7 +11,7 @@
 #import <React/RCTSurface.h>
 #import <React/RCTSurfaceHostingView.h>
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 
 @implementation RCTLogBoxView {
   RCTSurface *_surface;
@@ -91,7 +91,7 @@
 
 @end
 
-#else // [TODO(macOS GH#774)
+#else // [macOS
 
 @implementation RCTLogBoxView {
   RCTSurface *_surface;
@@ -139,7 +139,7 @@
   return self;
 }
 
-- (void)setHidden:(BOOL)hidden // [TODO(macOS GH#774)
+- (void)setHidden:(BOOL)hidden // [macOS
 {
   if (hidden) {
     if (NSApp.modalWindow == self) {
@@ -147,7 +147,7 @@
     }
     [self orderOut:nil];
   }
-} // ]TODO(macOS GH#774)
+} // macOS]
 
 - (void)show
 {
@@ -175,4 +175,4 @@
 
 @end
 
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]

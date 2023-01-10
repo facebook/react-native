@@ -22,7 +22,7 @@ const {
   Text,
   TextInput,
   View,
-  PlatformColor, // TODO(macOS GH#774)
+  PlatformColor, // [macOS]
 } = require('react-native');
 
 export type Item = {
@@ -59,16 +59,16 @@ class ItemComponent extends React.PureComponent<{
   onShowUnderlay?: () => void,
   onHideUnderlay?: () => void,
   textSelectable?: ?boolean,
-  isSelected?: ?Boolean, // TODO(macOS GH#774)
+  isSelected?: ?Boolean, // [macOS]
   ...
 }> {
   _onPress = () => {
     this.props.onPress(this.props.item.key);
   };
   render(): React.Node {
-    // [TODO(macOS GH#774)
+    // [macOS
     const {fixedHeight, horizontal, item, textSelectable, isSelected} =
-      this.props; // TODO(macOS GH#774)]
+      this.props; // macOS]
     const itemHash = Math.abs(hashCode(item.title));
     const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
     return (
@@ -82,11 +82,11 @@ class ItemComponent extends React.PureComponent<{
             styles.row,
             horizontal && {width: HORIZ_WIDTH},
             fixedHeight && {height: ITEM_HEIGHT},
-            isSelected && styles.selectedItem, // TODO(macOS GH#774)
+            isSelected && styles.selectedItem, // [macOS]
           ]}>
           {!item.noImage && <Image style={styles.thumb} source={imgSource} />}
           <Text
-            style={[styles.text, isSelected && styles.selectedItemText]} // TODO(macOS GH#774)
+            style={[styles.text, isSelected && styles.selectedItemText]} // [macOS]
             selectable={textSelectable}
             numberOfLines={horizontal || fixedHeight ? 3 : undefined}>
             {item.title} - {item.text}
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
   text: {
     flex: 1,
   },
-  // [TODO(macOS GH#774)
+  // [macOS
   selectedItem: {
     backgroundColor: Platform.select({
       macos: PlatformColor('selectedContentBackgroundColor'),
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
       default: 'white',
     }),
   },
-  // [TODO(macOS GH#774)]
+  // macOS]
 });
 
 module.exports = {

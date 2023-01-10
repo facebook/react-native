@@ -30,7 +30,7 @@ class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
     );
   }
 
-  // TODO(macOS GH#774): alert needs two string arguments, passing an error results in crashing
+  // [macOS] alert needs two string arguments, passing an error results in crashing
   takeScreenshot = () => {
     if (ScreenshotManager !== undefined && ScreenshotManager !== null) {
       ScreenshotManager.takeScreenshot('window', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options

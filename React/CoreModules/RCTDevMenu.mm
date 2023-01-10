@@ -12,9 +12,9 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTDevSettings.h>
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 #import <React/RCTKeyCommands.h>
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 #import <React/RCTLog.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
@@ -27,18 +27,18 @@
 
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 
-// [TODO(OSS Candidate ISS#2710739)
+// [macOS
 typedef void (*MotionEndedWithEventImpType)(id self, SEL selector, UIEventSubtype motion, UIEvent *event);
 static MotionEndedWithEventImpType RCTOriginalUIWindowMotionEndedWithEventImp = nil;
-// ]TODO(OSS Candidate ISS#2710739)
+// macOS]
 
 @implementation UIWindow (RCTDevMenu)
 
 - (void)RCT_motionEnded:(__unused UIEventSubtype)motion withEvent:(UIEvent *)event
 {
-  RCTOriginalUIWindowMotionEndedWithEventImp(self, @selector(motionEnded:withEvent:), motion, event); // TODO(OSS Candidate ISS#2710739)
+  RCTOriginalUIWindowMotionEndedWithEventImp(self, @selector(motionEnded:withEvent:), motion, event); // [macOS]
   if (event.subtype == UIEventSubtypeMotionShake) {
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTShowDevMenuNotification object:nil];
   }
@@ -46,7 +46,7 @@ static MotionEndedWithEventImpType RCTOriginalUIWindowMotionEndedWithEventImp = 
 
 @end
 
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 @implementation RCTDevMenuItem {
   RCTDevMenuItemTitleBlock _titleBlock;
@@ -95,20 +95,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 @end
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 
 typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 @interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, NativeDevMenuSpec>
 
 @end
 
 @implementation RCTDevMenu {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   UIAlertController *_actionSheet;
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
   NSMutableArray<RCTDevMenuItem *> *_extraMenuItems;
 }
 
@@ -121,10 +121,10 @@ RCT_EXPORT_MODULE()
 
 + (void)initialize
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   // We're swizzling here because it's poor form to override methods in a category,
-  RCTOriginalUIWindowMotionEndedWithEventImp = (MotionEndedWithEventImpType) RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), @selector(RCT_motionEnded:withEvent:)); // TODO(OSS Candidate ISS#2710739)
-#endif // TODO(macOS GH#774)
+  RCTOriginalUIWindowMotionEndedWithEventImp = (MotionEndedWithEventImpType) RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), @selector(RCT_motionEnded:withEvent:)); // [macOS]
+#endif // [macOS]
 }
 
 + (BOOL)requiresMainQueueSetup
@@ -180,11 +180,11 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   _presentedItems = nil;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   [_actionSheet dismissViewControllerAnimated:YES
                                    completion:^(void){
                                    }];
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 }
 
 - (void)showOnShake
@@ -200,7 +200,7 @@ RCT_EXPORT_MODULE()
   }
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)toggle
 {
   if (_actionSheet) {
@@ -217,7 +217,7 @@ RCT_EXPORT_MODULE()
 {
   return _actionSheet != nil;
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 - (void)addItem:(NSString *)title handler:(void (^)(void))handler
 {
@@ -299,7 +299,7 @@ RCT_EXPORT_MODULE()
                                       NSString *message = RCTTurboModuleEnabled()
                                           ? @"Debugging with Chrome is not supported when TurboModules are enabled."
                                           : @"Include the RCTWebSocket library to enable JavaScript debugging.";
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
                                       UIAlertController *alertController =
                                           [UIAlertController alertControllerWithTitle:@"Debugger Unavailable"
                                                                               message:message
@@ -316,14 +316,14 @@ RCT_EXPORT_MODULE()
                                       [RCTPresentedViewController() presentViewController:alertController
                                                                                  animated:YES
                                                                                completion:NULL];
-#else // [TODO(macOS GH#774)
+#else // [macOS
                                       NSAlert *alert = [NSAlert new];
                                       [alert setMessageText:@"Debugger Unavailable"];
                                       [alert setInformativeText:message];
                                       [alert addButtonWithTitle:@"OK"];
                                       [alert setAlertStyle:NSAlertStyleWarning];
                                       [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:nil];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
                                     }]];
     }
   }
@@ -353,7 +353,7 @@ RCT_EXPORT_MODULE()
                       return @"Configure Bundler";
                     }
                     handler:^{
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
                       UIAlertController *alertController = [UIAlertController
                           alertControllerWithTitle:@"Configure Bundler"
                                            message:@"Provide a custom bundler address, port, and entrypoint."
@@ -410,14 +410,14 @@ RCT_EXPORT_MODULE()
                                                                           return;
                                                                         }]];
                       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
-#else // [TODO(macOS GH#774)
+#else // [macOS
                       NSAlert *alert = [NSAlert new];
                       [alert setMessageText:@"Change packager location"];
                       [alert setInformativeText:@"Input packager IP, port and entrypoint"];
                       [alert addButtonWithTitle:@"Use bundled JS"];
                       [alert setAlertStyle:NSWarningAlertStyle];
                       [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:nil];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
                     }]];
 
   [items addObjectsFromArray:_extraMenuItems];
@@ -426,7 +426,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   if (_actionSheet || RCTRunningInAppExtension()) {
     return;
   }
@@ -459,17 +459,28 @@ RCT_EXPORT_METHOD(show)
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
 
-#else // [TODO(macOS GH#774)
+#else // [macOS
   NSMenu *menu = [self menu];
   NSWindow *window = [NSApp keyWindow];
   NSEvent *event = [NSEvent mouseEventWithType:NSLeftMouseUp location:CGPointMake(0, 0) modifierFlags:0 timestamp:NSTimeIntervalSince1970 windowNumber:[window windowNumber]  context:nil eventNumber:0 clickCount:0 pressure:0.1];
   [NSMenu popUpContextMenu:menu withEvent:event forView:[window contentView]];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
   [_callableJSModules invokeModule:@"RCTNativeAppEventEmitter" method:@"emit" withArgs:@[ @"RCTDevMenuShown" ]];
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
+- (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item
+{
+  return ^(__unused UIAlertAction *action) {
+    if (item) {
+      [item callHandler];
+    }
+
+    self->_actionSheet = nil;
+  };
+}
+#else // [macOS
 - (NSMenu *)menu
 {
   if ([_bridge.devSettings isSecondaryClickToShowDevMenuEnabled]) {
@@ -515,20 +526,7 @@ RCT_EXPORT_METHOD(show)
 {
   _bridge.devSettings.isSecondaryClickToShowDevMenuEnabled = secondaryClickToShow;
 }
-
-#else // ]TODO(macOS GH#774)
-
-- (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item
-{
-  return ^(__unused UIAlertAction *action) {
-    if (item) {
-      [item callHandler];
-    }
-
-    self->_actionSheet = nil;
-  };
-}
-#endif // TODO(macOS GH#774)
+#endif // macOS]
 
 #pragma mark - deprecated methods and properties
 

@@ -8,15 +8,15 @@
 #import <React/RCTConvert.h>
 #import <React/RCTViewManager.h>
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 @interface RCTConvert (UIDatePicker)
 
 + (UIDatePickerMode)UIDatePickerMode:(id)json;
-#else // [TODO(macOS GH#774)
+#else // [macOS
 @interface RCTConvert (NSDatePicker)
 + (NSDatePickerMode)NSDatePickerMode:(id)json;
 + (NSDatePickerStyle)NSDatePickerStyle:(id)json;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @end
 

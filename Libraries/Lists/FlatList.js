@@ -66,7 +66,7 @@ type OptionalProps<ItemT> = {|
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */
   columnWrapperStyle?: ViewStyleProp,
-  // [TODO(macOS GH#774)
+  // [macOS
   /**
    * Allows you to 'select' a row using arrow keys. The selected row will have the prop `isSelected`
    * passed in as true to it's renderItem / ListItemComponent. You can also imperatively select a row
@@ -83,7 +83,7 @@ type OptionalProps<ItemT> = {|
    * @platform macos
    */
   enableSelectionOnKeyPress?: ?boolean,
-  // ]TODO(macOS GH#774)
+  // macOS]
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -129,12 +129,12 @@ type OptionalProps<ItemT> = {|
    * `getItemLayout` to be implemented.
    */
   initialScrollIndex?: ?number,
-  // [TODO(macOS GH#774)
+  // [macOS
   /**
    * The initially selected row, if `enableSelectionOnKeyPress` is set.
    */
   initialSelectedIndex?: ?number,
-  // ]TODO(macOS GH#774)
+  // macOS]
   /**
    * Reverses the direction of scroll. Uses native inversion on macOS and scale transforms of -1 elsewhere
    */
@@ -393,7 +393,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
-  // [TODO(macOS GH#750)
+  // [macOS
   /**
    * Move selection to the specified index
    *
@@ -404,7 +404,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       this._listRef.selectRowAtIndex(index);
     }
   }
-  // ]TODO(macOS GH#750)
+  // macOS]
 
   /**
    * Provides a handle to the underlying scroll responder.
@@ -653,7 +653,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
                 const element = renderer({
                   item: it,
                   index: index * numColumns + kk,
-                  isSelected: info.isSelected, // TODO(macOS GH#774)
+                  isSelected: info.isSelected, // [macOS]
                   separators: info.separators,
                 });
                 return element != null ? (

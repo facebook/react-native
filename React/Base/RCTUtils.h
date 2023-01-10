@@ -9,7 +9,7 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTAssert.h>
 #import <React/RCTDefines.h>
@@ -50,22 +50,22 @@ RCT_EXTERN CGSize RCTScreenSize(void);
 RCT_EXTERN CGSize RCTViewportSize(void);
 
 // Round float coordinates to nearest whole screen pixel (not point)
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTCeilPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTFloorPixelValue(CGFloat value);
-#else // [TODO(macOS GH#774)
+#else // [macOS
 RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value, CGFloat scale);
 RCT_EXTERN CGFloat RCTCeilPixelValue(CGFloat value, CGFloat scale);
 RCT_EXTERN CGFloat RCTFloorPixelValue(CGFloat value, CGFloat scale);
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 // Convert a size in points to pixels, rounded up to the nearest integral size
 RCT_EXTERN CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale);
 
 // Method swizzling
-RCT_EXTERN IMP RCTSwapClassMethods(Class cls, SEL original, SEL replacement); // TODO(OSS Candidate ISS#2710739)
-RCT_EXTERN IMP RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement); // TODO(OSS Candidate ISS#2710739)
+RCT_EXTERN IMP RCTSwapClassMethods(Class cls, SEL original, SEL replacement); // [macOS]
+RCT_EXTERN IMP RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement); // [macOS]
 RCT_EXTERN void RCTSwapInstanceMethodWithBlock(Class cls, SEL original, id replacementBlock, SEL replacementSelector);
 
 // Module subclass support
@@ -87,15 +87,15 @@ RCT_EXTERN NSString *const RCTErrorUnspecified;
 // Returns YES if React is running in a test environment
 RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 // Returns YES if React is running in an iOS App Extension
 RCT_EXTERN BOOL RCTRunningInAppExtension(void);
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 
 // Returns the shared UIApplication instance, or nil if running in an App Extension
 RCT_EXTERN UIApplication *__nullable RCTSharedApplication(void);
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 // Returns the current main window, useful if you need to access the root view
 // or view controller
 RCT_EXTERN UIWindow *__nullable RCTKeyWindow(void);
@@ -106,7 +106,7 @@ RCT_EXTERN UIViewController *__nullable RCTPresentedViewController(void);
 
 // Does this device support force touch (aka 3D Touch)?
 RCT_EXTERN BOOL RCTForceTouchAvailable(void);
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 
 // Create an NSError in the RCTErrorDomain
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
@@ -172,10 +172,10 @@ RCT_EXTERN void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[_Nonnul
 // Converts a CGColor to a hex string
 RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 // Get standard localized string (if it exists)
 RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string);
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 // Get a human readable type string from an NSObject. For example NSString becomes string
 RCT_EXTERN NSString *RCTHumanReadableType(NSObject *obj);

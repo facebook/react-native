@@ -31,12 +31,12 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   if (self = [super init]) {
     _componentViewFactory = [RCTComponentViewFactory currentComponentViewFactory];
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleApplicationDidReceiveMemoryWarningNotification)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification
                                                object:nil];
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
       // Calling this a bit later, when the main thread is probably idle while JavaScript thread is busy.
@@ -118,7 +118,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   return iterator->second;
 }
 
-- (nullable RCTUIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(Tag)tag // TODO(macOS GH#774)
+- (nullable RCTUIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(Tag)tag // [macOS]
 {
   RCTAssertMainQueue();
   auto iterator = _registry.find(tag);

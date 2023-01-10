@@ -21,7 +21,7 @@
 
 using namespace facebook::react;
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 static UIInterfaceOrientationMask supportedOrientationsMask(ModalHostViewSupportedOrientationsMask mask)
 {
   UIInterfaceOrientationMask supportedOrientations = 0;
@@ -94,7 +94,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
       : ModalHostViewEventEmitter::OnOrientationChangeOrientation::Landscape;
   return {orientation};
 }
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 
 @interface RCTModalHostViewComponentView () <RCTFabricModalHostViewControllerDelegate>
 
@@ -106,10 +106,10 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL _shouldAnimatePresentation;
   BOOL _shouldPresent;
   BOOL _isPresented;
-  RCTUIView *_modalContentsSnapshot; // TODO(macOS GH#774)
+  RCTUIView *_modalContentsSnapshot; // [macOS]
 }
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -168,7 +168,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _isPresented = NO;
     // To animate dismissal of view controller, snapshot of
     // view hierarchy needs to be added to the UIViewController.
-    RCTUIView *snapshot = _modalContentsSnapshot; // TODO(macOS GH#774)
+    RCTUIView *snapshot = _modalContentsSnapshot; // [macOS]
     [self.viewController.view addSubview:snapshot];
 
     [self dismissViewController:self.viewController
@@ -272,16 +272,16 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   _state = std::static_pointer_cast<const ModalHostViewShadowNode::ConcreteState>(state);
 }
 
-- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // TODO(macOS GH#774)
+- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // [macOS]
 {
   [self.viewController.view insertSubview:childComponentView atIndex:index];
 }
 
-- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // TODO(macOS GH#774)
+- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index // [macOS]
 {
   [childComponentView removeFromSuperview];
 }
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 
 @end
 

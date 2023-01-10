@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
   value: {
     fontFamily:
-      Platform.OS === 'ios' || Platform.OS === 'macos' ? 'Menlo' : 'monospace', // TODO(macOS GH#774)
+      Platform.OS === 'ios' || Platform.OS === 'macos' ? 'Menlo' : 'monospace', // [macOS]
     fontSize: 12,
   },
   type: {

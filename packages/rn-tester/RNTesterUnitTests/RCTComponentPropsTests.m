@@ -27,7 +27,7 @@
 
 @end
 
-@interface RCTPropsTestView : RCTUIView // TODO(macOS ISS#3536887)
+@interface RCTPropsTestView : RCTUIView // [macOS]
 
 @property (nonatomic, assign) NSInteger integerProp;
 @property (nonatomic, strong) id objectProp;
@@ -46,7 +46,7 @@
 
 RCT_EXPORT_MODULE()
 
-- (RCTUIView *)view // TODO(macOS ISS#3536887)
+- (RCTUIView *)view // [macOS]
 {
   RCTPropsTestView *view = [RCTPropsTestView new];
   view.integerProp = 57;
@@ -107,7 +107,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
     [uiManager createView:@2 viewName:@"RCTPropsTestView" rootTag:self->_rootViewReactTag props:props];
     [uiManager addUIBlock:^(
                    __unused RCTUIManager *_uiManager,
-                   NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+                   NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
       view = (RCTPropsTestView *)viewRegistry[@2];
       XCTAssertEqual(view.integerProp, 58);
       XCTAssertEqualObjects(view.objectProp, @10);
@@ -132,7 +132,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
     [uiManager createView:@2 viewName:@"RCTPropsTestView" rootTag:self->_rootViewReactTag props:@{}];
     [uiManager addUIBlock:^(
                    __unused RCTUIManager *_uiManager,
-                   NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+                   NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
       view = (RCTPropsTestView *)viewRegistry[@2];
       XCTAssertEqual(view.layer.allowsGroupOpacity, TRUE);
       [initialExpectation fulfill];
@@ -140,7 +140,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
     [uiManager updateView:@2 viewName:@"RCTPropsTestView" props:@{@"needsOffscreenAlphaCompositing" : @NO}];
     [uiManager addUIBlock:^(
                    __unused RCTUIManager *_uiManager,
-                   NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+                   NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
       view = (RCTPropsTestView *)viewRegistry[@2];
       XCTAssertEqual(view.layer.allowsGroupOpacity, FALSE);
       [updateExpectation fulfill];
@@ -170,7 +170,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
     [uiManager updateView:@2 viewName:@"RCTPropsTestView" props:resetProps];
     [uiManager addUIBlock:^(
                    __unused RCTUIManager *_uiManager,
-                   NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+                   NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
       view = (RCTPropsTestView *)viewRegistry[@2];
       XCTAssertEqual(view.integerProp, 57);
       XCTAssertEqualObjects(view.objectProp, @9);
@@ -194,14 +194,14 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
     [uiManager createView:@2 viewName:@"RCTView" rootTag:self->_rootViewReactTag props:props];
     [uiManager addUIBlock:^(
                    __unused RCTUIManager *_uiManager,
-                   NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+                   NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
       view = (RCTView *)viewRegistry[@2];
       XCTAssertEqualObjects(view.backgroundColor, [RCTConvert UIColor:@0xffffffff]);
     }];
     [uiManager updateView:@2 viewName:@"RCTView" props:resetProps];
     [uiManager addUIBlock:^(
                    __unused RCTUIManager *_uiManager,
-                   __unused NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+                   __unused NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
       view = (RCTView *)viewRegistry[@2];
       XCTAssertNil(view.backgroundColor);
     }];

@@ -54,19 +54,19 @@ RCTCornerInsets RCTGetCornerInsets(RCTCornerRadii cornerRadii, UIEdgeInsets edge
 
 static UIEdgeInsets RCTRoundInsetsToPixel(
   UIEdgeInsets edgeInsets,
-  CGFloat scaleFactor // TODO(macOS GH#774)
+  CGFloat scaleFactor // [macOS]
 ) {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   edgeInsets.top = RCTRoundPixelValue(edgeInsets.top);
   edgeInsets.bottom = RCTRoundPixelValue(edgeInsets.bottom);
   edgeInsets.left = RCTRoundPixelValue(edgeInsets.left);
   edgeInsets.right = RCTRoundPixelValue(edgeInsets.right);
-#else // [TODO(macOS GH#774)
+#else // [macOS
   edgeInsets.top = RCTRoundPixelValue(edgeInsets.top, scaleFactor);
   edgeInsets.bottom = RCTRoundPixelValue(edgeInsets.bottom, scaleFactor);
   edgeInsets.left = RCTRoundPixelValue(edgeInsets.left, scaleFactor);
   edgeInsets.right = RCTRoundPixelValue(edgeInsets.right, scaleFactor);
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
     return edgeInsets;
 }
 
@@ -186,11 +186,11 @@ RCTUIGraphicsBeginImageContext(
   CGColorRef backgroundColor,
   BOOL hasCornerRadii,
   BOOL drawToEdge,
-  CGFloat scaleFactor // TODO(macOS GH#774)
+  CGFloat scaleFactor // [macOS]
 ) {
   const CGFloat alpha = CGColorGetAlpha(backgroundColor);
   const BOOL opaque = (drawToEdge || !hasCornerRadii) && alpha == 1.0;
-  UIGraphicsBeginImageContextWithOptions(size, opaque, scaleFactor); // TODO(macOS GH#774)
+  UIGraphicsBeginImageContextWithOptions(size, opaque, scaleFactor); // [macOS]
   return UIGraphicsGetCurrentContext();
 }
 
@@ -201,7 +201,7 @@ static UIImage *RCTGetSolidBorderImage(
     RCTBorderColors borderColors,
     CGColorRef backgroundColor,
     BOOL drawToEdge,
-    CGFloat scaleFactor // TODO(macOS GH#774)
+    CGFloat scaleFactor // [macOS]
 ) {
   const BOOL hasCornerRadii = RCTCornerRadiiAreAboveThreshold(cornerRadii);
   const RCTCornerInsets cornerInsets = RCTGetCornerInsets(cornerRadii, borderInsets);
@@ -209,7 +209,7 @@ static UIImage *RCTGetSolidBorderImage(
   // Incorrect render for borders that are not proportional to device pixel: borders get stretched and become
   // significantly bigger than expected.
   // Rdar: http://www.openradar.me/15959788
-  borderInsets = RCTRoundInsetsToPixel(borderInsets, scaleFactor); // TODO(macOS GH#774)
+  borderInsets = RCTRoundInsetsToPixel(borderInsets, scaleFactor); // [macOS]
 
   const BOOL makeStretchable =
       (borderInsets.left + cornerInsets.topLeft.width + borderInsets.right + cornerInsets.bottomRight.width <=
@@ -243,12 +243,12 @@ static UIImage *RCTGetSolidBorderImage(
     edgeInsets.top + 1 + edgeInsets.bottom
   } : viewSize;
 
-  // [TODO(OSS Candidate ISS#2710739): size must nonzero
+  // [macOS size must nonzero
   if (size.width <= 0 || size.height <= 0) {
     return nil;
-  } // ]TODO(OSS Candidate ISS#2710739)
+  } // macOS]
 
-  CGContextRef ctx = RCTUIGraphicsBeginImageContext(size, backgroundColor, hasCornerRadii, drawToEdge, scaleFactor); // TODO(macOS GH#774)
+  CGContextRef ctx = RCTUIGraphicsBeginImageContext(size, backgroundColor, hasCornerRadii, drawToEdge, scaleFactor); // [macOS]
   const CGRect rect = {.size = size};
   CGPathRef path = RCTPathCreateOuterOutline(drawToEdge, rect, cornerRadii);
 
@@ -408,11 +408,11 @@ static UIImage *RCTGetSolidBorderImage(
   UIGraphicsEndImageContext();
 
   if (makeStretchable) {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     image = [image resizableImageWithCapInsets:edgeInsets];
-#else // [TODO(macOS GH#774)
+#else // [macOS
     image.capInsets = edgeInsets;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   }
 
   return image;
@@ -486,7 +486,7 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
     RCTBorderColors borderColors,
     CGColorRef backgroundColor,
     BOOL drawToEdge,
-    CGFloat scaleFactor // TODO(macOS GH#774)
+    CGFloat scaleFactor // [macOS]
 ) {
   NSCParameterAssert(borderStyle == RCTBorderStyleDashed || borderStyle == RCTBorderStyleDotted);
 
@@ -500,13 +500,13 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
     return nil;
   }
 
-  // [TODO(OSS Candidate ISS#2710739): viewSize must nonzero
+  // [macOS viewSize must nonzero
   if (viewSize.width <= 0 || viewSize.height <= 0) {
     return nil;
-  } // ]TODO(OSS Candidate ISS#2710739)
+  } // macOS]
 
   const BOOL hasCornerRadii = RCTCornerRadiiAreAboveThreshold(cornerRadii);
-  CGContextRef ctx = RCTUIGraphicsBeginImageContext(viewSize, backgroundColor, hasCornerRadii, drawToEdge, scaleFactor); // TODO(macOS GH#774)
+  CGContextRef ctx = RCTUIGraphicsBeginImageContext(viewSize, backgroundColor, hasCornerRadii, drawToEdge, scaleFactor); // [macOS]
   const CGRect rect = {.size = viewSize};
 
   if (backgroundColor) {
@@ -530,7 +530,7 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
   CGContextSetLineWidth(ctx, lineWidth);
   CGContextSetLineDash(ctx, 0, dashLengths, sizeof(dashLengths) / sizeof(*dashLengths));
 
-  CGContextSetStrokeColorWithColor(ctx, [RCTUIColor yellowColor].CGColor); // TODO(OSS Candidate ISS#2710739)
+  CGContextSetStrokeColorWithColor(ctx, [RCTUIColor yellowColor].CGColor); // [macOS]
 
   CGContextAddPath(ctx, path);
   CGContextSetStrokeColorWithColor(ctx, borderColors.top);
@@ -552,15 +552,15 @@ UIImage *RCTGetBorderImage(
     RCTBorderColors borderColors,
     CGColorRef backgroundColor,
     BOOL drawToEdge,
-    CGFloat scaleFactor // TODO(macOS GH#774)
+    CGFloat scaleFactor // [macOS]
 ) {
   switch (borderStyle) {
     case RCTBorderStyleSolid:
-      return RCTGetSolidBorderImage(cornerRadii, viewSize, borderInsets, borderColors, backgroundColor, drawToEdge, scaleFactor); // TODO(macOS GH#774)
+      return RCTGetSolidBorderImage(cornerRadii, viewSize, borderInsets, borderColors, backgroundColor, drawToEdge, scaleFactor); // [macOS]
     case RCTBorderStyleDashed:
     case RCTBorderStyleDotted:
       return RCTGetDashedOrDottedBorderImage(
-          borderStyle, cornerRadii, viewSize, borderInsets, borderColors, backgroundColor, drawToEdge, scaleFactor); // TODO(macOS GH#774)
+          borderStyle, cornerRadii, viewSize, borderInsets, borderColors, backgroundColor, drawToEdge, scaleFactor); // [macOS]
     case RCTBorderStyleUnset:
       break;
   }

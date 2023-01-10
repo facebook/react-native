@@ -7,16 +7,16 @@
 
 #import <React/RCTImageBlurUtils.h>
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
-#import <React/RCTUtils.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
+#import <React/RCTUtils.h> // [macOS]
 
 UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
 {
-  CGImageRef imageRef = UIImageGetCGImageRef(inputImage); // [TODO(macOS GH#774)
-  CGFloat imageScale = UIImageGetScale(inputImage);
-#if !TARGET_OS_OSX // ]TODO(macOS GH#774)
+  CGImageRef imageRef = UIImageGetCGImageRef(inputImage); // [macOS]
+  CGFloat imageScale = UIImageGetScale(inputImage); // [macOS]
+#if !TARGET_OS_OSX // [macOS]
   UIImageOrientation imageOrientation = inputImage.imageOrientation;
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
   // Image must be nonzero size
   if (CGImageGetWidth(imageRef) * CGImageGetHeight(imageRef) == 0) {
@@ -28,13 +28,13 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
       CGImageGetBitsPerComponent(imageRef) != 8 ||
       !((CGImageGetBitmapInfo(imageRef) & kCGBitmapAlphaInfoMask))) {
     UIGraphicsBeginImageContextWithOptions(inputImage.size, NO, imageScale);
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 		[inputImage drawAtPoint:CGPointZero];
     imageRef = UIGraphicsGetImageFromCurrentImageContext().CGImage;
-#else // [TODO(macOS GH#774)
+#else // [macOS
     [inputImage drawAtPoint:CGPointZero fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
     imageRef = (CGImageRef)CFAutorelease(CGBitmapContextCreateImage(UIGraphicsGetCurrentContext()));
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
     UIGraphicsEndImageContext();
   }
 
@@ -95,11 +95,11 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
 
   //create image from context
   imageRef = CGBitmapContextCreateImage(ctx);
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   UIImage *outputImage = [UIImage imageWithCGImage:imageRef scale:imageScale orientation:imageOrientation];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   NSImage *outputImage = [[NSImage alloc] initWithCGImage:imageRef size:inputImage.size];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   CGImageRelease(imageRef);
   CGContextRelease(ctx);
   free(buffer1.data);

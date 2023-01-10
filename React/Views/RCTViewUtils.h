@@ -7,13 +7,13 @@
 
 #import <React/RCTDefines.h>
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 NS_ASSUME_NONNULL_BEGIN
 
 RCT_EXTERN_C_BEGIN
 
-UIEdgeInsets RCTContentInsets(RCTPlatformView *view); // TODO(macOS GH#774)
+UIEdgeInsets RCTContentInsets(RCTPlatformView *view); // [macOS]
 
 RCT_EXTERN_C_END
 

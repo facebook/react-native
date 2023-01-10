@@ -25,14 +25,14 @@ const ReloadInstructions: () => Node = Platform.select({
       reload your app's code.
     </Text>
   ),
-  // [TODO(macOS GH#774)
+  // [macOS
   macos: () => (
     <Text>
       Secondary click in this window and choose{' '}
       <Text style={styles.highlight}>Reload</Text> to reload your app's code.
     </Text>
   ),
-  // ]TODO(macOS GH#774)
+  // macOS]
   default: () => (
     <Text>
       Double tap <Text style={styles.highlight}>R</Text> on your keyboard to

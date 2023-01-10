@@ -78,7 +78,7 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
                                                        initialProperties:initialProperties];
   [surface start];
   if (self = [super initWithSurface:surface sizeMeasureMode:sizeMeasureMode]) {
-    self.backgroundColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+    self.backgroundColor = [RCTUIColor whiteColor]; // [macOS]
     // Nothing specific to do.
   }
 
@@ -138,7 +138,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   return super.surface.moduleName;
 }
 
-- (RCTUIView *)contentView // TODO(macOS GH#774)
+- (RCTUIView *)contentView // [macOS]
 {
   return self;
 }
@@ -168,14 +168,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [super.surface setProperties:appProperties];
 }
 
-- (RCTUIView *)loadingView // TODO(macOS GH#774)
+- (RCTUIView *)loadingView // [macOS]
 {
   return super.activityIndicatorViewFactory ? super.activityIndicatorViewFactory() : nil;
 }
 
-- (void)setLoadingView:(RCTUIView *)loadingView // TODO(macOS GH#774)
+- (void)setLoadingView:(RCTUIView *)loadingView // [macOS]
 {
-  super.activityIndicatorViewFactory = ^RCTUIView *(void) // TODO(macOS GH#774)
+  super.activityIndicatorViewFactory = ^RCTUIView *(void) // [macOS]
   {
     return loadingView;
   };

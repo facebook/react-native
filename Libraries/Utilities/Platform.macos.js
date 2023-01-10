@@ -8,7 +8,7 @@
  * @flow strict
  */
 
-// TODO(macOS GH#774) Copied from Platform.ios.js
+// [macOS] Copied from Platform.ios.js
 
 'use strict';
 

@@ -9,15 +9,15 @@
 
 #import <yoga/Yoga.h>
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 #import "RCTScrollContentLocalData.h"
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 #import "RCTUtils.h"
 
 @implementation RCTScrollContentShadowView
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 - (void)setLocalData:(RCTScrollContentLocalData *)localData
 {
   RCTAssert(
@@ -29,7 +29,7 @@
 
   [self didSetProps:@[@"marginEnd", @"marginBottom"]];
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 - (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics layoutContext:(RCTLayoutContext)layoutContext
 {

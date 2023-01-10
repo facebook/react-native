@@ -24,21 +24,21 @@ export type Buttons = Array<{
   style?: AlertButtonStyle,
   ...
 }>;
-// [TODO(macOS GH#774)
+// [macOS
 export type DefaultInputsArray = Array<{
   default?: string,
   placeholder?: string,
   style?: AlertButtonStyle,
 }>;
-// ]TODO(macOS GH#774)
+// macOS]
 
 type Options = {
   cancelable?: ?boolean,
   onDismiss?: ?() => void,
-  // [TODO(macOS GH#774)
+  // [macOS
   modal?: ?boolean,
   critical?: ?boolean,
-  // ]TODO(macOS GH#774)
+  // macOS]
   ...
 };
 
@@ -56,7 +56,7 @@ class Alert {
   ): void {
     if (Platform.OS === 'ios') {
       Alert.prompt(title, message, buttons, 'default');
-      // [TODO(macOS ISS#2323203)
+      // [macOS
     } else if (Platform.OS === 'macos') {
       Alert.promptMacOS(
         title,
@@ -67,7 +67,7 @@ class Alert {
         options?.modal,
         options?.critical,
       );
-      // ]TODO(macOS ISS#2323203)
+      // macOS]
     } else if (Platform.OS === 'android') {
       const NativeDialogManagerAndroid =
         require('../NativeModules/specs/NativeDialogManagerAndroid').default;
@@ -170,15 +170,15 @@ class Alert {
           cb && cb(value);
         },
       );
-      // [TODO(macOS GH#774)
+      // [macOS
     } else if (Platform.OS === 'macos') {
       const defaultInputs = [{default: defaultValue}];
       Alert.promptMacOS(title, message, callbackOrButtons, type, defaultInputs);
     }
-    // ]TODO(macOS GH#774)
+    // macOS]
   }
 
-  // [TODO(macOS GH#774)
+  // [macOS
   /**
    * Create and display a prompt to enter some text.
    * @static
@@ -266,7 +266,7 @@ class Alert {
       },
     );
   }
-  // ]TODO(macOS GH#774)
+  // macOS]
 }
 
 module.exports = Alert;

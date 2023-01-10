@@ -1,7 +1,7 @@
 [ignore]
 ; We fork some components by platform
 .*/*[.]android.js
-; TODO(macOS GH#774):
+; [macOS]
 .*/*[.]macos.js
 
 ; Ignore templates for 'react-native init'
@@ -13,7 +13,7 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-; TODO(macOS GH#774): Ignore metro.config.js
+; [macOS] Ignore metro.config.js
 <PROJECT_ROOT>/metro.config.js
 
 ; Flow doesn't support platforms

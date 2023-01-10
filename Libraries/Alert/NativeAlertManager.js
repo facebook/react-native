@@ -20,11 +20,11 @@ export type Args = {|
   cancelButtonKey?: string,
   destructiveButtonKey?: string,
   keyboardType?: string,
-  // [TODO(macOS GH#774)
+  // [macOS
   defaultInputs?: Array<Object>,
   modal?: ?boolean,
   critical?: ?boolean,
-  // ]TODO(macOS GH#774)
+  // macOS]
 |};
 
 export interface Spec extends TurboModule {

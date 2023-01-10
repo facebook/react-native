@@ -42,9 +42,7 @@
 
     _imageSource = imageSource;
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-    self = [super initWithData:data];
-#else // ]TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     // grab image at the first index
     UIImage *image = [self animatedImageFrameAtIndex:0];
     if (!image) {
@@ -53,7 +51,9 @@
     self = [super initWithCGImage:image.CGImage scale:MAX(scale, 1) orientation:image.imageOrientation];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
-#endif // TODO(macOS GH#774)
+#else // [macOS
+    self = [super initWithData:data];
+#endif // macOS]
   }
 
   return self;
@@ -151,11 +151,11 @@
   if (!imageRef) {
     return nil;
   }
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-  UIImage *image = [[NSImage alloc] initWithCGImage:imageRef size:CGSizeMake(CGImageGetWidth(imageRef), CGImageGetHeight(imageRef))];
-#else // ]TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:UIImageOrientationUp];
-#endif // TODO(macOS GH#774)
+#else // [macOS
+  UIImage *image = [[NSImage alloc] initWithCGImage:imageRef size:CGSizeMake(CGImageGetWidth(imageRef), CGImageGetHeight(imageRef))];
+#endif // macOS]
   CGImageRelease(imageRef);
   return image;
 }
@@ -175,9 +175,9 @@
     CFRelease(_imageSource);
     _imageSource = NULL;
   }
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 }
 
 @end

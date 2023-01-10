@@ -6,7 +6,7 @@
  */
 
 #import <React/RCTComponent.h>
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 /**
  * Protocol used to dispatch commands in `RCTRefreshControlManager.h`.

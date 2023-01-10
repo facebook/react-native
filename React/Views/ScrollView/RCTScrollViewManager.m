@@ -12,7 +12,7 @@
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 @implementation RCTConvert (UIScrollView)
 
 RCT_ENUM_CONVERTER(
@@ -49,36 +49,36 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 @end
-#endif // TODO(OSS Candidate ISS#2710739)
+#endif // [macOS]
 
 @implementation RCTScrollViewManager
 
 RCT_EXPORT_MODULE()
 
-- (RCTPlatformView *)view // TODO(macOS GH#774)
+- (RCTPlatformView *)view // [macOS]
 {
   return [[RCTScrollView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(alwaysBounceHorizontal, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(alwaysBounceVertical, BOOL)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(bounces, BOOL) // TODO(macOS GH#774)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(bouncesZoom, BOOL) // TODO(macOS GH#774)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(canCancelContentTouches, BOOL) // TODO(macOS GH#774)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(bounces, BOOL) // [macOS]
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(bouncesZoom, BOOL) // [macOS]
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(canCancelContentTouches, BOOL) // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(centerContent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maintainVisibleContentPosition, NSDictionary)
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(automaticallyAdjustKeyboardInsets, BOOL) // TODO(macOS GH#774)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(decelerationRate, CGFloat) // TODO(macOS GH#774)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(directionalLockEnabled, BOOL) // TODO(macOS GH#774)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(indicatorStyle, UIScrollViewIndicatorStyle) // TODO(macOS GH#774)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismissMode) // TODO(macOS GH#774)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(maximumZoomScale, CGFloat) // TODO(macOS GH#774)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(minimumZoomScale, CGFloat) // TODO(macOS GH#774)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(automaticallyAdjustKeyboardInsets, BOOL) // [macOS]
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(decelerationRate, CGFloat) // [macOS]
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(directionalLockEnabled, BOOL) // [macOS]
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(indicatorStyle, UIScrollViewIndicatorStyle) // [macOS]
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismissMode) // [macOS]
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(maximumZoomScale, CGFloat) // [macOS]
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(minimumZoomScale, CGFloat) // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(pagingEnabled, BOOL) // TODO(macOS GH#774)
-RCT_REMAP_NOT_OSX_VIEW_PROPERTY(pinchGestureEnabled, scrollView.pinchGestureEnabled, BOOL) // TODO(macOS GH#774)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(scrollsToTop, BOOL) // TODO(macOS GH#774)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(pagingEnabled, BOOL) // [macOS]
+RCT_REMAP_NOT_OSX_VIEW_PROPERTY(pinchGestureEnabled, scrollView.pinchGestureEnabled, BOOL) // [macOS]
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(scrollsToTop, BOOL) // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(scrollEventThrottle, NSTimeInterval)
@@ -99,15 +99,15 @@ RCT_EXPORT_VIEW_PROPERTY(onScrollToTop, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScrollEndDrag, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollBegin, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollEnd, RCTDirectEventBlock)
-RCT_EXPORT_OSX_VIEW_PROPERTY(onInvertedDidChange, RCTDirectEventBlock) // TODO(macOS GH#774)
-RCT_EXPORT_OSX_VIEW_PROPERTY(onPreferredScrollerStyleDidChange, RCTDirectEventBlock) // TODO(macOS GH#774)
+RCT_EXPORT_OSX_VIEW_PROPERTY(onInvertedDidChange, RCTDirectEventBlock) // [macOS]
+RCT_EXPORT_OSX_VIEW_PROPERTY(onPreferredScrollerStyleDidChange, RCTDirectEventBlock) // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(inverted, BOOL)
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustsScrollIndicatorInsets, BOOL)
 #endif
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(contentInsetAdjustmentBehavior, UIScrollViewContentInsetAdjustmentBehavior)
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 
 // overflow is used both in css-layout as well as by react-native. In css-layout
 // we always want to treat overflow as scroll but depending on what the overflow
@@ -142,8 +142,8 @@ RCT_EXPORT_METHOD(scrollTo
                   : (BOOL)animated)
 {
   [self.bridge.uiManager
-      addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
-        RCTUIView *view = viewRegistry[reactTag]; // TODO(macOS ISS#3536887)
+      addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
+        RCTUIView *view = viewRegistry[reactTag]; // [macOS]
         if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
           [(id<RCTScrollableProtocol>)view scrollToOffset:(CGPoint){x, y} animated:animated];
         } else {
@@ -159,8 +159,8 @@ RCT_EXPORT_METHOD(scrollTo
 RCT_EXPORT_METHOD(scrollToEnd : (nonnull NSNumber *)reactTag animated : (BOOL)animated)
 {
   [self.bridge.uiManager
-      addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
-        RCTUIView *view = viewRegistry[reactTag]; // TODO(macOS ISS#3536887)
+      addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
+        RCTUIView *view = viewRegistry[reactTag]; // [macOS]
         if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
           [(id<RCTScrollableProtocol>)view scrollToEnd:animated];
         } else {
@@ -176,8 +176,8 @@ RCT_EXPORT_METHOD(scrollToEnd : (nonnull NSNumber *)reactTag animated : (BOOL)an
 RCT_EXPORT_METHOD(zoomToRect : (nonnull NSNumber *)reactTag withRect : (CGRect)rect animated : (BOOL)animated)
 {
   [self.bridge.uiManager
-      addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
-        RCTUIView *view = viewRegistry[reactTag]; // TODO(macOS ISS#3536887)
+      addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
+        RCTUIView *view = viewRegistry[reactTag]; // [macOS]
         if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
           [(id<RCTScrollableProtocol>)view zoomToRect:rect animated:animated];
         } else {
@@ -200,7 +200,7 @@ RCT_EXPORT_METHOD(flashScrollIndicators : (nonnull NSNumber *)reactTag)
           return;
         }
 
-        [view flashScrollIndicators]; // TODO(macOS GH#774)
+        [view flashScrollIndicators]; // [macOS]
       }];
 }
 

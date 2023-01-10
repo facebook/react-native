@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTComponentViewProtocol.h>
 
@@ -21,7 +21,7 @@ class RCTComponentViewDescriptor final {
   /*
    * Associated (and owned) native view instance.
    */
-  __strong RCTUIView<RCTComponentViewProtocol> *view = nil; // TODO(macOS GH#774)
+  __strong RCTUIView<RCTComponentViewProtocol> *view = nil; // [macOS]
 
   /*
    * Indicates a requirement to call on the view methods from

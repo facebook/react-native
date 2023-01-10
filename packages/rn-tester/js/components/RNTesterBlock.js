@@ -11,7 +11,7 @@
 import * as React from 'react';
 import {RNTesterThemeContext} from './RNTesterTheme';
 import {PlatformColor, StyleSheet, Text, View} from 'react-native';
-import {Platform} from 'react-native'; // TODO(macOS GH#774)
+import {Platform} from 'react-native'; // [macOS]
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   descriptionText: {
     fontSize: 12,
     opacity: 0.5,
-    // [ TODO(macOS GH#774) Fix tester block description color in DarkMode
+    // [macOS Fix tester block description color in DarkMode
     ...Platform.select({
       macos: {
         color: PlatformColor('secondaryLabelColor'),
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         color: PlatformColor('secondaryLabelColor'),
       },
       default: undefined,
-    }), // TODO(macOS GH#774) ]
+    }), // macOS]
   },
   children: {
     marginHorizontal: 20,

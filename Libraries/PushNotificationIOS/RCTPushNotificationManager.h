@@ -11,23 +11,23 @@ extern NSString *const RCTRemoteNotificationReceived;
 
 @interface RCTPushNotificationManager : RCTEventEmitter
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 typedef void (^RCTRemoteNotificationCallback)(UIBackgroundFetchResult result);
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 #if !TARGET_OS_UIKITFORMAC
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 + (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler;
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification;
-#endif // [TODO(macOS GH#774)
-#if TARGET_OS_OSX
+#endif // [macOS]
+#if TARGET_OS_OSX // [macOS
 + (void)didReceiveUserNotification:(NSUserNotification *)notification;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 + (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 #endif
 

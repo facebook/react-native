@@ -144,12 +144,12 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
     if (defaultFontHandler) {
       NSString *fontWeightDescription = FontWeightDescriptionFromUIFontWeight(weight);
       font = defaultFontHandler(size, fontWeightDescription);
-#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
-#pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic push // [macOS]
+#pragma clang diagnostic ignored "-Wunguarded-availability" // [macOS]
     } else if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
       // Only supported on iOS8.2/macOS10.11 and above
       font = [UIFont systemFontOfSize:size weight:weight];
-#pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic pop // [macOS]
     } else {
       font = [UIFont systemFontOfSize:size weight:weight];
     }
@@ -178,15 +178,15 @@ static NSArray<NSString *> *fontNamesForFamilyName(NSString *familyName)
 
   auto names = [cache objectForKey:familyName];
   if (!names) {
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     names = [UIFont fontNamesForFamilyName:familyName] ?: [NSArray new];
-#else
+#else // [macOS
     NSMutableArray<NSString *> *fontNames = [NSMutableArray array];
     for (NSArray *fontSettings in [[NSFontManager sharedFontManager] availableMembersOfFontFamily:familyName]) {
       [fontNames addObject:fontSettings[0]];
     }
     names = fontNames;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
     [cache setObject:names forKey:familyName];
   }
   return names;
@@ -359,11 +359,11 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
     } else {
       // Not a valid font or family
       RCTLogError(@"Unrecognized font family '%@'", familyName);
-#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
-#pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic push // [macOS]
+#pragma clang diagnostic ignored "-Wunguarded-availability" // [macOS]
       if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
         font = [UIFont systemFontOfSize:fontSize weight:fontWeight];
-#pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic pop // [macOS]
       } else if (fontWeight > UIFontWeightRegular) {
         font = [UIFont boldSystemFontOfSize:fontSize];
       } else {

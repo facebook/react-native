@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "11.0", :osx => "10.15" } # TODO(macOS GH#214)
+  s.platforms              = { :ios => "11.0", :osx => "10.15" } # [macOS]
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "*.{m,mm}"
@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\""
                              }
-	s.ios.frameworks         = "MobileCoreServices" # TODO(macOS GH#214) - Restrict to iOS
+	s.ios.frameworks         = "MobileCoreServices" # [macOS] Restrict to iOS
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-Codegen", version

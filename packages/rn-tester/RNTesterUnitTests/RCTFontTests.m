@@ -27,16 +27,16 @@
 
 - (void)testWeight
 {
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // [macOS]
   // VSO#1878630: macOS: some RCTFontTests failing
 
-  // macOS: expected = .AppleSystemUIFontBold 14.00 pt., result = .AppleSystemUIFontEmphasized 14.00 pt.
+  // [macOS] expected = .AppleSystemUIFontBold 14.00 pt., result = .AppleSystemUIFontEmphasized 14.00 pt.
   {
     UIFont *expected = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
     UIFont *result = [RCTConvert UIFont:@{@"fontWeight" : @"bold"}];
     RCTAssertEqualFonts(expected, result);
   }
-#endif
+#endif // [macOS]
   {
     UIFont *expected = [UIFont systemFontOfSize:14 weight:UIFontWeightMedium];
     UIFont *result = [RCTConvert UIFont:@{@"fontWeight" : @"500"}];
@@ -86,8 +86,8 @@
 
 - (void)testStyle
 {
-#if !TARGET_OS_OSX
-  // macOS: expected = .SFNSText-Italic 14.00 pt., result = .AppleSystemUIFontItalic 14.00 pt.
+#if !TARGET_OS_OSX // [macOS]
+  // [macOS] expected = .SFNSText-Italic 14.00 pt., result = .AppleSystemUIFontItalic 14.00 pt.
   {
     UIFont *font = [UIFont systemFontOfSize:14];
     UIFontDescriptor *fontDescriptor = [font fontDescriptor];
@@ -98,7 +98,7 @@
     UIFont *result = [RCTConvert UIFont:@{@"fontStyle" : @"italic"}];
     RCTAssertEqualFonts(expected, result);
   }
-#endif
+#endif // [macOS]
   {
     UIFont *expected = [UIFont systemFontOfSize:14];
     UIFont *result = [RCTConvert UIFont:@{@"fontStyle" : @"normal"}];
@@ -108,8 +108,8 @@
 
 - (void)testStyleAndWeight
 {
-#if !TARGET_OS_OSX
-  // macOS: expected = .SFNSText-LightItalic 14.00 pt., result = .AppleSystemUIFontUltraLightItalic 14.00 pt.
+#if !TARGET_OS_OSX // [macOS]
+  // [macOS] expected = .SFNSText-LightItalic 14.00 pt., result = .AppleSystemUIFontUltraLightItalic 14.00 pt.
   {
     UIFont *font = [UIFont systemFontOfSize:14 weight:UIFontWeightUltraLight];
     UIFontDescriptor *fontDescriptor = [font fontDescriptor];
@@ -120,7 +120,7 @@
     UIFont *result = [RCTConvert UIFont:@{@"fontStyle" : @"italic", @"fontWeight" : @"100"}];
     RCTAssertEqualFonts(expected, result);
   }
-  // macOS: expected = .SFNSText-BoldItalic 14.00 pt., result = .AppleSystemUIFontEmphasizedItalic 14.00 pt.
+  // [macOS] expected = .SFNSText-BoldItalic 14.00 pt., result = .AppleSystemUIFontEmphasizedItalic 14.00 pt.
   {
     UIFont *font = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
     UIFontDescriptor *fontDescriptor = [font fontDescriptor];
@@ -131,7 +131,7 @@
     UIFont *result = [RCTConvert UIFont:@{@"fontStyle" : @"italic", @"fontWeight" : @"bold"}];
     RCTAssertEqualFonts(expected, result);
   }
-#endif
+#endif // [macOS]
 }
 
 - (void)testFamilyAndWeight
@@ -198,7 +198,7 @@
 
 - (void)testVariant
 {
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // [macOS]
   // expected = .AppleSystemUIFont 14.00 pt., result = .SFNSText 14.00 pt.
   {
     UIFont *expected = [UIFont monospacedDigitSystemFontOfSize:14 weight:UIFontWeightRegular];
@@ -218,7 +218,7 @@
     UIFont *result = [RCTConvert UIFont:@{@"fontVariant" : @[ @"tabular-nums", @"small-caps" ]}];
     RCTAssertEqualFonts(expected, result);
   }
-#endif
+#endif // [macOS]
 }
 
 - (void)testInvalidFont
@@ -228,14 +228,14 @@
     UIFont *result = [RCTConvert UIFont:@{@"fontFamily" : @"foobar"}];
     RCTAssertEqualFonts(expected, result);
   }
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // [macOS]
   // expected = .AppleSystemUIFontBold 14.00 pt., result = .AppleSystemUIFontDemi 14.00 pt.
   {
     UIFont *expected = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
     UIFont *result = [RCTConvert UIFont:@{@"fontFamily" : @"foobar", @"fontWeight" : @"bold"}];
     RCTAssertEqualFonts(expected, result);
   }
-#endif
+#endif // [macOS]
 }
 
 @end

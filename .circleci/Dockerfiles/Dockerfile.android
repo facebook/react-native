@@ -21,8 +21,8 @@
 # Patch it to use mcr for the base ubuntu image, build the community image locally
 # and then build this customized step on top of it.
 #
-# Disabeling this is okay because per (macOS GH#774) this test, which is redundant to Azure Devops test,
-# failsin the fork because of Microsoft's V8 upgrade to Android
+# Disabling this is okay because per (Github#774) this test, which is redundant to Azure Devops test,
+# fails in the fork because of Microsoft's V8 upgrade to Android
 #
 #FROM reactnativecommunity/react-native-android:5.2
 

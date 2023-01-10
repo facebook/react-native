@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 @protocol RCTBackedTextInputViewProtocol;
 
@@ -22,12 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)textInputShouldReturn; // May be called right before `textInputShouldEndEditing` if "Return" button was pressed.
 - (void)textInputDidReturn;
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 - (void)automaticSpellingCorrectionDidChange:(BOOL)enabled;
 - (void)continuousSpellCheckingDidChange:(BOOL)enabled;
 - (void)grammarCheckingDidChange:(BOOL)enabled;
 - (void)submitOnKeyDownIfNeeded:(NSEvent *)event;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 /*
  * Called before any change in the TextInput. The delegate has the opportunity to change the replacement string or reject the change completely.
@@ -40,8 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)textInputDidChangeSelection;
 
-- (BOOL)textInputShouldHandleDeleteBackward:(id<RCTBackedTextInputViewProtocol>)sender; // Return `YES` to have the deleteBackward event handled normally. Return `NO` to disallow it and handle it yourself. TODO(OSS Candidate ISS#2710739)
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+- (BOOL)textInputShouldHandleDeleteBackward:(id<RCTBackedTextInputViewProtocol>)sender; // Return `YES` to have the deleteBackward event handled normally. Return `NO` to disallow it and handle it yourself. // [macOS]
+#if TARGET_OS_OSX // [macOS
 - (BOOL)textInputShouldHandleDeleteForward:(id<RCTBackedTextInputViewProtocol>)sender; // Return `YES` to have the deleteForward event handled normally. Return `NO` to disallow it and handle it yourself.
 - (BOOL)textInputShouldHandleKeyEvent:(NSEvent *)event; // Return `YES` to have the key event handled normally. Return `NO` to disallow it and handle it yourself.
 - (BOOL)hasValidKeyDownOrValidKeyUp:(NSString *)key;
@@ -50,10 +50,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)textInputShouldHandleDragOperation:(id<NSDraggingInfo>)draggingInfo;
 - (void)textInputDidCancel;  // Handle `Escape` key press.
 - (BOOL)textInputShouldHandlePaste:(id<RCTBackedTextInputViewProtocol>)sender; // Return `YES` to have the paste event handled normally. Return `NO` to disallow it and handle it yourself.
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @optional
-- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView; // TODO(macOS GH#774)
+- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView; // [macOS]
 
 @end
 

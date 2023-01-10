@@ -376,14 +376,14 @@ type IOSProps = $ReadOnly<{|
    *
    * @platform macos
    */
-  horizontalLineScroll?: number, // TODO(macOS GH#774)
+  horizontalLineScroll?: number, // [macOS]
   /**
    * Experimental: specifies how much to adjust the content view by when using
    * the keyboard to scroll. This value adjusts the content's vertical offset.
    *
    * @platform macos
    */
-  verticalLineScroll?: number, // TODO(macOS GH#774)
+  verticalLineScroll?: number, // [macOS]
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -502,7 +502,7 @@ export type Props = $ReadOnly<{|
   /**
    * Reverses the direction of scroll. Uses native inversion on macOS and scale transforms of -1 elsewhere
    */
-  inverted?: ?boolean, // TODO(macOS GH#774)
+  inverted?: ?boolean, // [macOS]
   /**
    * Determines whether the keyboard gets dismissed in response to a drag.
    *
@@ -688,7 +688,7 @@ export type Props = $ReadOnly<{|
 |}>;
 
 type State = {|
-  contentKey: number, // TODO(macOS GH#774)
+  contentKey: number, // [macOS]
   layoutHeight: ?number,
 |};
 
@@ -774,7 +774,7 @@ class ScrollView extends React.Component<Props, State> {
   _subscriptionKeyboardDidHide: ?EventSubscription = null;
 
   state: State = {
-    contentKey: 1, // TODO(macOS GH#774)
+    contentKey: 1, // [macOS]
     layoutHeight: null,
   };
 
@@ -1058,10 +1058,10 @@ class ScrollView extends React.Component<Props, State> {
     animated?: boolean, // deprecated, put this inside the rect argument instead
   ) => {
     invariant(
-      // [TODO(macOS GH#774)
+      // [macOS
       Platform.OS === 'ios' || Platform.OS === 'macos',
       'zoomToRect is not implemented',
-    ); // TODO [(macOS GH#774)
+    ); // macOS]
     if ('animated' in rect) {
       this._animated = rect.animated;
       delete rect.animated;
@@ -1191,22 +1191,22 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  // [TODO(macOS GH#774)
+  // [macOS
   _handlePreferredScrollerStyleDidChange = (event: ScrollEvent) => {
     this.setState({contentKey: this.state.contentKey + 1});
-  }; // ]TODO(macOS GH#774)
+  }; // macOS]
 
-  // [TODO(macOS GH#774)
+  // [macOS
   _handleInvertedDidChange = () => {
     this.setState({contentKey: this.state.contentKey + 1});
-  }; // ]TODO(macOS GH#774)
+  }; // macOS]
 
   _handleScroll = (e: ScrollEvent) => {
     if (__DEV__) {
       if (
         this.props.onScroll &&
         this.props.scrollEventThrottle == null &&
-        (Platform.OS === 'ios' || Platform.OS === 'macos') // TODO(macOS GH#774)
+        (Platform.OS === 'ios' || Platform.OS === 'macos') // [macOS]
       ) {
         console.log(
           'You specified `onScroll` on a <ScrollView> but not ' +
@@ -1724,8 +1724,8 @@ class ScrollView extends React.Component<Props, State> {
             ? false
             : this.props.removeClippedSubviews
         }
-        key={this.state.contentKey} // TODO(macOS GH#774)
-        inverted={this.props.inverted} // TODO(macOS GH#774)
+        key={this.state.contentKey} // [macOS]
+        inverted={this.props.inverted} // [macOS]
         collapsable={false}>
         {children}
       </NativeDirectionalScrollContentView>
@@ -1753,9 +1753,9 @@ class ScrollView extends React.Component<Props, State> {
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
       onContentSizeChange: null,
-      onInvertedDidChange: this._handleInvertedDidChange, // TODO macOS GH#774
+      onInvertedDidChange: this._handleInvertedDidChange, // [macOS]
       onPreferredScrollerStyleDidChange:
-        this._handlePreferredScrollerStyleDidChange, // TODO(macOS GH#774)
+        this._handlePreferredScrollerStyleDidChange, // [macOS]
       onLayout: this._handleLayout,
       onMomentumScrollBegin: this._handleMomentumScrollBegin,
       onMomentumScrollEnd: this._handleMomentumScrollEnd,
@@ -1792,11 +1792,11 @@ class ScrollView extends React.Component<Props, State> {
           this.props.pagingEnabled === true &&
           this.props.snapToInterval == null &&
           this.props.snapToOffsets == null,
-        // [TODO(macOS GH#774)
+        // [macOS
         macos:
           this.props.pagingEnabled === true &&
           this.props.snapToInterval == null &&
-          this.props.snapToOffsets == null, // ]TODO(macOS GH#774)
+          this.props.snapToOffsets == null, // macOS]
         // on Android, pagingEnabled must be set to true to have snapToInterval / snapToOffsets work
         android:
           this.props.pagingEnabled === true ||

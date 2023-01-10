@@ -71,9 +71,9 @@ using namespace facebook::react;
   [_eventInterceptors removeObjectForKey:[NSNumber numberWithInteger:tag]];
 }
 
-- (RCTUIView *)createPaperViewWithTag:(NSInteger)tag; // TODO(macOS GH#774)
+- (RCTUIView *)createPaperViewWithTag:(NSInteger)tag; // [macOS]
 {
-  RCTUIView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL]; // TODO(macOS GH#774)
+  RCTUIView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL]; // [macOS]
   if ([_componentData.bridgelessViewManager conformsToProtocol:@protocol(RCTWeakViewHolder)]) {
     id<RCTWeakViewHolder> weakViewHolder = (id<RCTWeakViewHolder>)_componentData.bridgelessViewManager;
     if (!weakViewHolder.weakViews) {
@@ -84,7 +84,7 @@ using namespace facebook::react;
   return view;
 }
 
-- (void)setProps:(folly::dynamic const &)props forView:(RCTUIView *)view // TODO(macOS GH#774)
+- (void)setProps:(folly::dynamic const &)props forView:(RCTUIView *)view // [macOS]
 {
   if (props.isObject()) {
     NSDictionary<NSString *, id> *convertedProps = convertFollyDynamicToId(props);

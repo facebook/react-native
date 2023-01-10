@@ -30,7 +30,7 @@
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
-#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
+#if DEBUG // [macOS] description is a debug-only feature
 - (NSString *)description
 {
   NSString *superDescription = [super description];
@@ -45,7 +45,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
                                     NSStringFromUIEdgeInsets([self safeAreaInsetsIfSupportedAndEnabled]),
                                     NSStringFromUIEdgeInsets(_currentSafeAreaInsets)];
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 - (BOOL)isSupportedByOS
 {

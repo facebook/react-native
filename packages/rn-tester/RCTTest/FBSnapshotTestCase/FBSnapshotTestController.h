@@ -6,7 +6,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 typedef NS_ENUM(NSInteger, FBSnapshotTestControllerErrorCode) {
   FBSnapshotTestControllerErrorCodeUnknown,
@@ -59,7 +59,7 @@ extern NSString *const FBReferenceImageFilePathKey;
  etc).
  @returns YES if the comparison (or saving of the reference image) succeeded.
  */
-- (BOOL)compareSnapshotOfView:(RCTUIView *)view // TODO(macOS ISS#3536887)
+- (BOOL)compareSnapshotOfView:(RCTUIView *)view // [macOS]
                      selector:(SEL)selector
                    identifier:(NSString *)identifier
                         error:(NSError **)errorPtr;

@@ -11,13 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTMultilineTextInputView : RCTBaseTextInputView
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 
 @property (nonatomic, assign) BOOL scrollEnabled;
 
 - (void)setReadablePasteBoardTypes:(NSArray<NSPasteboardType> *)readablePasteboardTypes;
 @property (nonatomic, assign) BOOL hideVerticalScrollIndicator;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @end
 

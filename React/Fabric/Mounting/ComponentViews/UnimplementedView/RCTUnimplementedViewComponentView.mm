@@ -21,7 +21,7 @@
 using namespace facebook::react;
 
 @implementation RCTUnimplementedViewComponentView {
-  RCTUILabel *_label; // TODO(macOS GH#774)
+  RCTUILabel *_label; // [macOS]
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -30,26 +30,26 @@ using namespace facebook::react;
     static auto const defaultProps = std::make_shared<UnimplementedViewProps const>();
     _props = defaultProps;
 
-    _label = [[RCTUILabel alloc] initWithFrame:self.bounds]; // TODO(macOS GH#774)
-    _label.backgroundColor = [RCTUIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3]; // TODO(macOS GH#774)
+    _label = [[RCTUILabel alloc] initWithFrame:self.bounds]; // [macOS]
+    _label.backgroundColor = [RCTUIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3]; // [macOS]
     _label.lineBreakMode = NSLineBreakByCharWrapping;
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     _label.numberOfLines = 0;
     _label.textAlignment = NSTextAlignmentCenter;
-#else
+#else // [macOS
     _label.alignment = NSTextAlignmentCenter;
-#endif // ]TODO(macOS GH#774)
-    _label.textColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+#endif // macOS]
+    _label.textColor = [RCTUIColor whiteColor]; // [macOS]
     _label.allowsDefaultTighteningForTruncation = YES;
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     _label.adjustsFontSizeToFitWidth = YES;
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     self.contentView = _label;
-#else
+#else // [macOS
     [self.contentView addSubview:_label];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   }
 
   return self;

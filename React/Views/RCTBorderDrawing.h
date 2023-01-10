@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTBorderStyle.h>
 #import <React/RCTDefines.h>
@@ -66,4 +66,4 @@ RCT_EXTERN UIImage *RCTGetBorderImage(
     RCTBorderColors borderColors,
     CGColorRef backgroundColor,
     BOOL drawToEdge,
-    CGFloat scaleFactor); // TODO(macOS GH#774)
+    CGFloat scaleFactor); // [macOS]

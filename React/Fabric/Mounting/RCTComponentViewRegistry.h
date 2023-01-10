@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTComponentViewDescriptor.h>
 #import <React/RCTComponentViewFactory.h>
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Finds a native component view by given `tag`.
  * Returns `nil` if there is no registered component with the `tag`.
  */
-- (nullable RCTUIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(facebook::react::Tag)tag; // TODO(macOS GH#774)
+- (nullable RCTUIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(facebook::react::Tag)tag; // [macOS]
 
 /**
  * Creates a component view with a given type and puts it to the recycle pool.

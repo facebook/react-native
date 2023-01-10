@@ -47,7 +47,7 @@ export const NativeText: HostComponent<NativeTextProps> =
       onInlineViewLayout: true,
       dataDetectorType: true,
       android_hyphenationFrequency: true,
-      tooltip: true, // [TODO(macOS GH#774)]
+      tooltip: true, // [macOS]
     },
     directEventTypes: {
       topTextLayout: {

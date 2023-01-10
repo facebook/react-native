@@ -88,9 +88,9 @@ try {
   mv('_watchmanconfig', '.watchmanconfig');
   mv('_bundle', '.bundle');
 
-  // [TODO(macOS GH#774)
+  // [macOS
   process.env.REACT_NATIVE_RUNNING_E2E_TESTS = 'true';
-  // ]TODO(macOS GH#774)
+  // macOS]
 
   describe('Install React Native package');
   exec(`npm install ${REACT_NATIVE_PACKAGE}`);

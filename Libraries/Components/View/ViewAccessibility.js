@@ -44,7 +44,7 @@ export type AccessibilityRole =
   | 'timer'
   | 'list'
   | 'toolbar'
-  | 'menubutton'; // TODO(macOS GH#774)
+  | 'menubutton'; // [macOS]
 
 // the info associated with an accessibility action
 export type AccessibilityActionInfo = $ReadOnly<{

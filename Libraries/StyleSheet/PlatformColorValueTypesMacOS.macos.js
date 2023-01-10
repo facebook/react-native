@@ -7,7 +7,9 @@
  * @format
  * @flow strict-local
  */
-// [TODO(macOS GH#774)
+
+// [macOS]
+
 'use strict';
 
 import type {ColorValue} from './StyleSheet';
@@ -47,4 +49,3 @@ export const ColorWithSystemEffectMacOS = (
 ): ColorValue => {
   return ColorWithSystemEffectMacOSPrivate(color, effect);
 };
-// ]TODO(macOS GH#774)

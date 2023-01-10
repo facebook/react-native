@@ -5,22 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(macOS GH#774)
+// [macOS]
 
 #import <React/RCTComponent.h>
 #import <React/RCTUIKit.h>
 
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // [macOS]
 @interface RCTProgressView : UIProgressView
-#else
+#else // [macOS
 @interface RCTProgressView : NSProgressIndicator
-#endif
+#endif // macOS]
 
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX // [macOS
 @property (nonatomic, strong, nullable) RCTUIColor *progressTintColor;
 @property (nonatomic, strong, nullable) RCTUIColor *trackTintColor;
 @property(nonatomic, strong, nullable) UIImage *progressImage;
 @property(nonatomic, strong, nullable) UIImage *trackImage;
-#endif
+#endif // macOS]
 
 @end

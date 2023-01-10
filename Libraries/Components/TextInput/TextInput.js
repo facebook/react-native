@@ -48,10 +48,7 @@ if (Platform.OS === 'android') {
   AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
   AndroidTextInputCommands =
     require('./AndroidTextInputNativeComponent').Commands;
-} else if (
-  Platform.OS === 'ios' ||
-  Platform.OS === 'macos' /* TODO(macOS GH#774) */
-) {
+} else if (Platform.OS === 'ios' || Platform.OS === 'macos' /* [macOS] */) {
   RCTSinglelineTextInputView =
     require('./RCTSingelineTextInputNativeComponent').default;
   RCTSinglelineTextInputNativeCommands =
@@ -130,7 +127,7 @@ export type EditingEvent = SyntheticEvent<
   |}>,
 >;
 
-// macOS-only // [TODO(macOS GH#774)
+// [macOS macOS-only
 export type SettingChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     enabled: boolean,
@@ -155,7 +152,7 @@ export type PasteEvent = SyntheticEvent<
     |},
   |}>,
 >;
-// ]TODO(macOS GH#774)
+// macOS]
 
 type DataDetectorTypesType =
   // iOS+macOS
@@ -166,7 +163,7 @@ type DataDetectorTypesType =
   // iOS-only
   | 'none'
   | 'all'
-  // macOS-only // [TODO(macOS GH#774)
+  // [macOS macOS-only
   | 'ortography'
   | 'spelling'
   | 'grammar'
@@ -175,7 +172,7 @@ type DataDetectorTypesType =
   | 'replacement'
   | 'correction'
   | 'regularExpression'
-  | 'transitInformation'; // ]TODO(macOS GH#774)
+  | 'transitInformation'; // macOS]
 
 export type KeyboardType =
   // Cross Platform
@@ -330,7 +327,7 @@ type IOSProps = $ReadOnly<{|
    */
   scrollEnabled?: ?boolean,
 
-  // [TODO(macOS GH#774)
+  // [macOS
   /**
    * If `true`, hide vertical scrollbar on the underlying multiline scrollview
    * The default value is `false`.
@@ -343,7 +340,7 @@ type IOSProps = $ReadOnly<{|
    * @platform macos
    */
   grammarCheck?: ?boolean,
-  // ]TODO(macOS GH#774)
+  // macOS]
 
   /**
    * If `false`, disables spell-check style (i.e. red underlines).
@@ -360,7 +357,7 @@ type IOSProps = $ReadOnly<{|
   textContentType?: ?TextContentType,
 |}>;
 
-// [TODO(macOS GH#774)
+// [macOS
 export type SubmitKeyEvent = $ReadOnly<{|
   key: string,
   altKey?: ?boolean,
@@ -403,7 +400,7 @@ type MacOSProps = $ReadOnly<{|
    */
   submitKeyEvents?: ?$ReadOnlyArray<SubmitKeyEvent>,
 |}>;
-// ]TODO(macOS GH#774)
+// macOS]
 
 type AndroidProps = $ReadOnly<{|
   /**
@@ -564,13 +561,13 @@ type AndroidProps = $ReadOnly<{|
   underlineColorAndroid?: ?ColorValue,
 |}>;
 
-export type PasteType = 'fileUrl' | 'image' | 'string'; // TODO(macOS GH#774)
-export type PastedTypesType = PasteType | $ReadOnlyArray<PasteType>; // TODO(macOS GH#774)
+export type PasteType = 'fileUrl' | 'image' | 'string'; // [macOS]
+export type PastedTypesType = PasteType | $ReadOnlyArray<PasteType>; // [macOS]
 
 export type Props = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSProps,
-  ...MacOSProps, // TODO(macOS GH#774)
+  ...MacOSProps, // [macOS]
   ...AndroidProps,
 
   /**
@@ -720,7 +717,7 @@ export type Props = $ReadOnly<{|
    */
   onChangeText?: ?(text: string) => mixed,
 
-  // [TODO(macOS GH#774)
+  // [macOS
   /**
    * Callback that is called when the text input's autoCorrect setting changes.
    * This will be called with
@@ -750,7 +747,7 @@ export type Props = $ReadOnly<{|
    * @platform macos
    */
   onGrammarCheckChange?: ?(e: SettingChangeEvent) => mixed,
-  // ]TODO(macOS GH#774)
+  // macOS]
 
   /**
    * DANGER: this API is not stable and will change in the future.
@@ -924,11 +921,11 @@ export type Props = $ReadOnly<{|
    */
   style?: ?TextStyleProp,
 
-  // [ TODO(macOS GH#774)
+  // [macOS
   /*
    * Specifies the tooltip.
    */
-  tooltip?: ?string, // TODO(macOS GH#774) ]
+  tooltip?: ?string, // macOS ]
 
   /**
    * The value to show for the text input. `TextInput` is a controlled
@@ -1353,8 +1350,7 @@ function InternalTextInput(props: Props): React.Node {
       onPressIn: props.onPressIn,
       onPressOut: props.onPressOut,
       cancelable:
-        Platform.OS === 'ios' ||
-        Platform.OS === 'macos' /* TODO(macOS GH#774) */
+        Platform.OS === 'ios' || Platform.OS === 'macos' /* [macOS] */
           ? !props.rejectResponderTermination
           : null,
     }),
@@ -1409,8 +1405,8 @@ function InternalTextInput(props: Props): React.Node {
         onChangeSync={useOnChangeSync === true ? _onChangeSync : null}
         onContentSizeChange={props.onContentSizeChange}
         onFocus={_onFocus}
-        onKeyDown={props.onKeyDown} // TODO(macOS GH#774)
-        onKeyUp={props.onKeyUp} // TODO(macOS GH#774)
+        onKeyDown={props.onKeyDown} // [macOS]
+        onKeyUp={props.onKeyUp} // [macOS]
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}

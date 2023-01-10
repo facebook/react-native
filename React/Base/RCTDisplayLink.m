@@ -9,23 +9,23 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTPlatformDisplayLink.h" // TODO(macOS GH#774)
+#import "RCTPlatformDisplayLink.h" // [macOS]
 #import "RCTAssert.h"
 #import "RCTBridgeModule.h"
 #import "RCTFrameUpdate.h"
 #import "RCTModuleData.h"
 #import "RCTProfile.h"
 
-#if TARGET_OS_OSX // TODO(macOS, https://github.com/microsoft/react-native-macos/issues/533)
+#if TARGET_OS_OSX // [macOS Github#533
 // To compile in Xcode 12 beta 4 on macOS, we need to explicitly pull in the framework to get the definition for CACurrentMediaTime()
 #import <Quartz/Quartz.h>
-#endif // TODO(macOS, https://github.com/microsoft/react-native-macos/issues/533)
+#endif // macOS]
 
 #define RCTAssertRunLoop() \
   RCTAssert(_runLoop == [NSRunLoop currentRunLoop], @"This method must be called on the CADisplayLink run loop")
 
 @implementation RCTDisplayLink {
-  RCTPlatformDisplayLink *_jsDisplayLink; // TODO(macOS GH#774)
+  RCTPlatformDisplayLink *_jsDisplayLink; // [macOS]
   NSMutableSet<RCTModuleData *> *_frameUpdateObservers;
   NSRunLoop *_runLoop;
 }
@@ -34,7 +34,7 @@
 {
   if ((self = [super init])) {
     _frameUpdateObservers = [NSMutableSet new];
-    _jsDisplayLink = [RCTPlatformDisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)]; // TODO(macOS GH#774)
+    _jsDisplayLink = [RCTPlatformDisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)]; // [macOS]
   }
 
   return self;
@@ -100,14 +100,14 @@
 
 - (void)invalidate
 {
-  // [TODO: GH#858
+  // [macOS
   // ensure observer callbacks do not hold a reference to weak self via pauseCallback
   for (RCTModuleData *moduleData in _frameUpdateObservers) {
     id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
     [observer setPauseCallback:nil];
   }
   [_frameUpdateObservers removeAllObjects];	// just to be explicit
-  // TODO: GH#858]
+  // macOS]
 
   [_jsDisplayLink invalidate];
 }
@@ -121,7 +121,7 @@
   }
 }
 
-- (void)_jsThreadUpdate:(RCTPlatformDisplayLink *)displayLink // TODO(macOS GH#774)
+- (void)_jsThreadUpdate:(RCTPlatformDisplayLink *)displayLink // [macOS]
 {
   RCTAssertRunLoop();
 

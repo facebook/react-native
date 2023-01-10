@@ -7,7 +7,7 @@
 
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
-#import "RCTDevSettings.h" // TODO(OSS Candidate ISS#2710739)
+#import "RCTDevSettings.h" // [macOS]
 
 #import <objc/runtime.h>
 

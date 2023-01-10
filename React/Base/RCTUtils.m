@@ -13,7 +13,7 @@
 #import <objc/runtime.h>
 #import <zlib.h>
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <CommonCrypto/CommonCrypto.h>
 
@@ -298,7 +298,7 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
   }
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 static dispatch_once_t onceTokenScreenScale;
 static CGFloat screenScale;
 
@@ -358,9 +358,9 @@ CGSize RCTScreenSize()
 
   return size;
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 CGSize RCTViewportSize()
 {
   UIWindow *window = RCTKeyWindow();
@@ -384,7 +384,7 @@ CGFloat RCTFloorPixelValue(CGFloat value)
   CGFloat scale = RCTScreenScale();
   return floor(value * scale) / scale;
 }
-#else // [TODO(macOS GH#774)
+#else // [macOS
 CGFloat RCTRoundPixelValue(CGFloat value, CGFloat scale)
 {
   return round(value * scale) / scale;
@@ -399,7 +399,7 @@ CGFloat RCTFloorPixelValue(CGFloat value, CGFloat scale)
 {
   return floor(value * scale) / scale;
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
 {
@@ -409,7 +409,7 @@ CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
   };
 }
 
-IMP RCTSwapClassMethods(Class cls, SEL original, SEL replacement) // TODO(OSS Candidate ISS#2710739)
+IMP RCTSwapClassMethods(Class cls, SEL original, SEL replacement) // [macOS]
 {
   Method originalMethod = class_getClassMethod(cls, original);
   IMP originalImplementation = method_getImplementation(originalMethod);
@@ -425,10 +425,10 @@ IMP RCTSwapClassMethods(Class cls, SEL original, SEL replacement) // TODO(OSS Ca
     method_exchangeImplementations(originalMethod, replacementMethod);
   }
   
-  return originalImplementation; // TODO(OSS Candidate ISS#2710739)
+  return originalImplementation; // [macOS]
 }
 
-IMP RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement) // TODO(OSS Candidate ISS#2710739)
+IMP RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement) // [macOS]
 {
   Method originalMethod = class_getInstanceMethod(cls, original);
   IMP originalImplementation = method_getImplementation(originalMethod);
@@ -444,7 +444,7 @@ IMP RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement) // TODO(OSS
     method_exchangeImplementations(originalMethod, replacementMethod);
   }
   
-  return originalImplementation; // TODO(OSS Candidate ISS#2710739)
+  return originalImplementation; // [macOS]
 }
 
 void RCTSwapInstanceMethodWithBlock(Class cls, SEL original, id replacementBlock, SEL replacementSelector)
@@ -554,26 +554,26 @@ BOOL RCTRunningInTestEnvironment(void)
   return isTestEnvironment;
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 BOOL RCTRunningInAppExtension(void)
 {
   return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 UIApplication *__nullable RCTSharedApplication(void)
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   if (RCTRunningInAppExtension()) {
     return nil;
   }
   return [[UIApplication class] performSelector:@selector(sharedApplication)];
-#else // [TODO(macOS GH#774)
+#else // [macOS
   return NSApp;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 UIWindow *__nullable RCTKeyWindow(void)
 {
   if (RCTRunningInAppExtension()) {
@@ -617,7 +617,7 @@ BOOL RCTForceTouchAvailable(void)
   return forceSupported &&
       (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 NSError *RCTErrorWithMessage(NSString *message)
 {
@@ -831,7 +831,7 @@ UIImage *__nullable RCTImageFromLocalBundleAssetURL(NSURL *imageURL)
   return RCTImageFromLocalAssetURL(bundleImageUrl);
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 static NSCache<NSURL *, UIImage *> *RCTLocalImageCache()
 {
   static NSCache *imageCache;
@@ -842,19 +842,19 @@ static NSCache<NSURL *, UIImage *> *RCTLocalImageCache()
   });
   return imageCache;
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 {
   NSString *imageName = RCTBundlePathForURL(imageURL);
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
   NSURL *bundleImageURL = nil;
 
   UIImage *cachedImage = [RCTLocalImageCache() objectForKey:imageURL];
   if (cachedImage) {
     return cachedImage;
   }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
   NSBundle *bundle = nil;
   NSArray *imagePathComponents = [imageName pathComponents];
@@ -863,7 +863,7 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
     NSString *bundlePath = [imagePathComponents firstObject];
     bundle = bundleForPath([bundlePath stringByDeletingPathExtension]);
     imageName = [imageName substringFromIndex:(bundlePath.length + 1)];
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
     // Bundle structure under macOS uses Contents/Resources structure unlike iOS to store the assets.
     // If the image asset is placed under a sub-directory inside of Resources folder, then first
     // get the URL path to the image and then use this URL to load the image.
@@ -875,21 +875,21 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
     NSString *imageExtension = [imageName pathExtension];
     NSString *imageNameWithoutExt = [[imageName lastPathComponent] stringByDeletingPathExtension];
     bundleImageURL = [bundle URLForResource:imageNameWithoutExt withExtension:imageExtension subdirectory:subDirectory];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
   imageName = [imageName stringByDeletingPathExtension];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
   UIImage *image = nil;
   if (imageName) {
     if (bundle) {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
       image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
-#else // [TODO(macOS GH#774)
+#else // [macOS
       image = (bundleImageURL == nil) ? [bundle imageForResource:imageName] : [[NSImage alloc] initWithContentsOfURL:bundleImageURL];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
     } else {
       image = [UIImage imageNamed:imageName];
     }
@@ -903,14 +903,14 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
       if (filePath.pathExtension.length == 0) {
         filePath = [filePath stringByAppendingPathExtension:@"png"];
       }
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
       image = [UIImage imageWithContentsOfFile:filePath];
-#else // [TODO(macOS GH#774)
+#else // [macOS
       // macOS keeps file handles in open state for lifetime of image if "initWithContentsOfFile:" is used with path inside app bundle
       // Workaround is to load file in data and then convert data to image
       NSData *data = [NSData dataWithContentsOfFile:filePath];
       image = [[NSImage alloc] initWithData:data];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
     }
   }
 
@@ -923,11 +923,11 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
                                                            error:nil];
     for (NSURL *frameworkURL in possibleFrameworks) {
       bundle = [NSBundle bundleWithURL:frameworkURL];
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
       image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
-#else // [TODO(macOS GH#774)
+#else // [macOS
       image = [bundle imageForResource:imageName];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
       if (image) {
         RCTLogWarn(@"Image %@ not found in mainBundle, but found in %@", imageName, bundle);
         break;
@@ -935,11 +935,11 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
     }
   }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
   if (image) {
     [RCTLocalImageCache() setObject:image forKey:imageURL];
   }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
   return image;
 }
@@ -1045,14 +1045,14 @@ NSString *RCTColorToHexString(CGColorRef color)
   }
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 // (https://github.com/0xced/XCDFormInputAccessoryView/blob/master/XCDFormInputAccessoryView/XCDFormInputAccessoryView.m#L10-L14)
 NSString *RCTUIKitLocalizedString(NSString *string)
 {
   NSBundle *UIKitBundle = [NSBundle bundleForClass:[UIApplication class]];
   return UIKitBundle ? [UIKitBundle localizedStringForKey:string value:string table:nil] : string;
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 NSString *RCTHumanReadableType(NSObject *obj)
 {

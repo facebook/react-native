@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(macOS GH#774)
-
 package com.facebook.react.devsupport.interfaces;
 
 public interface BundleLoadCallback {

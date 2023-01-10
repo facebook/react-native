@@ -142,7 +142,7 @@ class PromptOptions extends React.Component<Props, State> {
   }
 }
 
-// [TODO(macOS GH#774)
+// [macOS
 const PromptPresentation = () => {
   return (
     <View>
@@ -214,7 +214,7 @@ const PromptStyle = () => {
     </View>
   );
 };
-// ]TODO(macOS GH#774)
+// [macOS]
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
 
 exports.framework = 'React';
 exports.title = 'Alerts';
-exports.description = 'iOS / macOS alerts and action sheets'; // TODO(macOS GH#774)
+exports.description = 'iOS / macOS alerts and action sheets'; // [macOS]
 exports.documentationURL = 'https://reactnative.dev/docs/alert';
 exports.examples = ([
   ...SharedAlertExamples,
@@ -279,7 +279,7 @@ exports.examples = ([
       );
     },
   },
-  // [TODO(macOS GH#774)
+  // [macOS
   {
     title: 'Prompt Presentation',
     platform: 'macos',
@@ -294,5 +294,5 @@ exports.examples = ([
       return <PromptStyle />;
     },
   },
-  // ]TODO(macOS GH#774)
+  // [macOS]
 ]: Array<RNTesterModuleExample>);

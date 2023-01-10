@@ -6,7 +6,7 @@
  *
  */
 
-// TODO(OSS Candidate ISS#2710739)
+// [macOS]
 
 #import <React/RCTUIKit.h>
 #import <XCTest/XCTest.h>

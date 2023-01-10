@@ -6,7 +6,7 @@
  */
 
 #import <React/RCTSurfaceStage.h>
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 NS_ASSUME_NONNULL_BEGIN
 

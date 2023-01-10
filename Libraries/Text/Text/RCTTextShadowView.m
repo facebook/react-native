@@ -99,16 +99,16 @@
    }
   ];
 
-  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
     RCTTextView *textView = (RCTTextView *)viewRegistry[tag];
     if (!textView) {
       return;
     }
 
-    NSMutableArray<RCTUIView *> *descendantViews = // TODO(macOS ISS#3536887)
+    NSMutableArray<RCTUIView *> *descendantViews = // [macOS]
       [NSMutableArray arrayWithCapacity:descendantViewTags.count];
     [descendantViewTags enumerateObjectsUsingBlock:^(NSNumber *_Nonnull descendantViewTag, NSUInteger index, BOOL *_Nonnull stop) {
-      RCTUIView *descendantView = viewRegistry[descendantViewTag]; // TODO(macOS ISS#3536887)
+      RCTUIView *descendantView = viewRegistry[descendantViewTag]; // [macOS]
       if (!descendantView) {
         return;
       }
@@ -158,11 +158,11 @@
         return;
       }
 
-      if (maximumLineHeight <= UIFontLineHeight(font)) { // TODO(macOS GH#774)
+      if (maximumLineHeight <= UIFontLineHeight(font)) { // [macOS]
         return;
       }
 
-      CGFloat baseLineOffset = maximumLineHeight / 2.0 - UIFontLineHeight(font) / 2.0; // TODO(macOS GH#774)
+      CGFloat baseLineOffset = maximumLineHeight / 2.0 - UIFontLineHeight(font) / 2.0; // [macOS]
 
       [attributedText addAttribute:NSBaselineOffsetAttributeName
                              value:@(baseLineOffset)
@@ -211,7 +211,7 @@
 - (NSTextStorage *)textStorageAndLayoutManagerThatFitsSize:(CGSize)size
                                         exclusiveOwnership:(BOOL)exclusiveOwnership
 {
-  NSValue *key = NSValueWithCGSize(size); // TODO(macOS GH#774)
+  NSValue *key = NSValueWithCGSize(size); // [macOS]
   NSTextStorage *cachedTextStorage = [_cachedTextStorages objectForKey:key];
 
   if (cachedTextStorage) {
@@ -303,21 +303,21 @@
       UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
 
       CGRect frame = {{
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
         RCTRoundPixelValue(glyphRect.origin.x),
         RCTRoundPixelValue(glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender)
-#else // [TODO(macOS GH#774)
+#else // [macOS
         RCTRoundPixelValue(glyphRect.origin.x, [self scale]),
         RCTRoundPixelValue(glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender, [self scale])
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
       }, {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
         RCTRoundPixelValue(attachmentSize.width),
         RCTRoundPixelValue(attachmentSize.height)
-#else // [TODO(macOS GH#774)
+#else // [macOS
         RCTRoundPixelValue(attachmentSize.width, [self scale]),
         RCTRoundPixelValue(attachmentSize.height, [self scale])
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
       }};
       
       NSRange truncatedGlyphRange = [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:range.location];
@@ -416,13 +416,13 @@ static YGSize RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMod
   }
 
   size = (CGSize){
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     MIN(RCTCeilPixelValue(size.width), maximumSize.width),
     MIN(RCTCeilPixelValue(size.height), maximumSize.height)
-#else // [TODO(macOS GH#774)
+#else // [macOS
     MIN(RCTCeilPixelValue(size.width, shadowTextView.scale), maximumSize.width),
     MIN(RCTCeilPixelValue(size.height, shadowTextView.scale), maximumSize.height)
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
   };
 
   // Adding epsilon value illuminates problems with converting values from

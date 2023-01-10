@@ -8,10 +8,10 @@
 #import <React/RCTAnimatedImage.h>
 #import <React/RCTDefines.h>
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-@interface RCTUIImageViewAnimated : NSImageView
-#else // ]TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 @interface RCTUIImageViewAnimated : UIImageView
-#endif  // TODO(macOS GH#774)
+#else // [macOS
+@interface RCTUIImageViewAnimated : NSImageView
+#endif  // macOS]
 
 @end

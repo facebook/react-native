@@ -7,19 +7,19 @@
 
 #import "RCTActivityIndicatorView.h"
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 #import <CoreImage/CIFilter.h>
 #import <CoreImage/CIVector.h>
 
 @interface RCTActivityIndicatorView ()
 @property (nonatomic, readwrite, getter=isAnimating) BOOL animating;
 @end
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @implementation RCTActivityIndicatorView {
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
@@ -111,7 +111,7 @@
   return !self.displayedWhenStopped;
 }
 
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 - (void)setHidden:(BOOL)hidden
 {

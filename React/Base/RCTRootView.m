@@ -15,8 +15,8 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTConstants.h"
-#import "RCTDevSettings.h" // TODO(OSS Candidate ISS#2710739)
-// TODO(OSS Candidate ISS#2710739): remove #import "RCTKeyCommands.h"
+#import "RCTDevSettings.h" // [macOS]
+// [macOS] remove #import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
@@ -29,9 +29,9 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
-#if __has_include("RCTDevMenu.h") // [TODO(OSS Candidate ISS#2710739)
+#if __has_include("RCTDevMenu.h") // [macOS
 #import "RCTDevMenu.h"
-#endif // ]TODO(OSS Candidate ISS#2710739)
+#endif // macOS]
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
@@ -173,9 +173,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   [super layoutSubviews];
   _contentView.frame = self.bounds;
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   _loadingView.center = (CGPoint){CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds)};
-#else // [TODO(macOS GH#774)
+#else // [macOS
   NSRect bounds = self.bounds;
   NSSize loadingViewSize = _loadingView.frame.size;
   CGFloat scale = self.window.backingScaleFactor;
@@ -185,7 +185,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     RCTRoundPixelValue(bounds.origin.x + ((bounds.size.width - loadingViewSize.width) / 2), scale),
     RCTRoundPixelValue(bounds.origin.y + ((bounds.size.height - loadingViewSize.height) / 2), scale)
   );
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (void)setMinimumSize:(CGSize)minimumSize
@@ -212,14 +212,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (BOOL)canBecomeFirstResponder
 {
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   return YES;
-#else
+#else // [macOS
   return NO; // commit 01aba7e8: Merged PR 94656: Enable keyboard accessibility and support for focus ring drawing for button, textfields etc
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
-- (void)setLoadingView:(RCTUIView *)loadingView // TODO(macOS ISS#3536887)
+- (void)setLoadingView:(RCTUIView *)loadingView // [macOS]
 {
   _loadingView = loadingView;
   if (!_contentView.contentHasAppeared) {
@@ -243,7 +243,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
           dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_loadingViewFadeDelay * NSEC_PER_SEC)),
           dispatch_get_main_queue(),
           ^{
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
             [UIView transitionWithView:self
                 duration:self->_loadingViewFadeDuration
                 options:UIViewAnimationOptionTransitionCrossDissolve
@@ -253,7 +253,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
                 completion:^(__unused BOOL finished) {
                   [self->_loadingView removeFromSuperview];
                 }];
-#elif TARGET_OS_OSX // [TODO(macOS GH#774)
+#else // [macOS
                        [NSAnimationContext runAnimationGroup:^(__unused NSAnimationContext *context) {
                          self->_loadingView.animator.alphaValue = 0.0;
                        } completionHandler:^{
@@ -261,7 +261,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
                          self->_loadingView.hidden = YES;
                          self->_loadingView.alphaValue = 1.0;
                        }];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
                      });
     } else {
       _loadingView.hidden = YES;
@@ -350,10 +350,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   _contentView.sizeFlexibility = _sizeFlexibility;
 }
 
-- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // TODO(macOS GH#774)
+- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // [macOS]
 {
   // The root view itself should never receive touches
-  RCTPlatformView *hitView = [super hitTest:point withEvent:event]; // TODO(macOS GH#774)
+  RCTPlatformView *hitView = [super hitTest:point withEvent:event]; // [macOS]
   if (self.passThroughTouches && hitView == self) {
     return nil;
   }
@@ -386,11 +386,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   _intrinsicContentSize = intrinsicContentSize;
 
   [self invalidateIntrinsicContentSize];
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   [self.superview setNeedsLayout];
-#else // [TODO(macOS GH#774)
+#else // [macOS
 	[self.superview setNeedsLayout:YES];
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
   // Don't notify the delegate if the content remains invisible or its size has not changed
   if (bothSizesHaveAZeroDimension || sizesAreEqual) {
@@ -398,11 +398,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   }
 
   [self invalidateIntrinsicContentSize];
-  #if !TARGET_OS_OSX // TODO(macOS GH#774)
+  #if !TARGET_OS_OSX // [macOS]
 	[self.superview setNeedsLayout];
-  #else // [TODO(macOS GH#774)
+  #else // [macOS
 	  [self.superview setNeedsLayout:YES];
-  #endif // ]TODO(macOS GH#774)
+  #endif // macOS]
 
   [_delegate rootViewDidChangeIntrinsicSize:self];
 }
@@ -419,7 +419,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [self showLoadingView];
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
@@ -431,10 +431,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
                     RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey : self.traitCollection,
                   }];
 }
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 - (NSMenu *)menuForEvent:(NSEvent *)event
 {
   NSMenu *menu = nil;
@@ -449,7 +449,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   }
   return menu;
 }
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 - (void)dealloc
 {

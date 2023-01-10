@@ -966,7 +966,7 @@ class JSI_EXPORT Value {
             std::is_base_of<String, T>::value ||
             std::is_base_of<Object, T>::value,
         "Value cannot be implicitly move-constructed from this type");
-#ifndef __clang_analyzer__ // TODO(macOS GH#774) Disable [bugprone-move-forwarding-reference] when running clang static analysis
+#ifndef __clang_analyzer__ // [macOS] Disable [bugprone-move-forwarding-reference] when running clang static analysis
     new (&data_.pointer) T(std::move(other));
 #endif // __clang_analyzer__
   }

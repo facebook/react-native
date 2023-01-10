@@ -13,7 +13,7 @@
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 
-@implementation RCTPlatformView (React) // TODO(macOS GH#774)
+@implementation RCTPlatformView (React) // [macOS]
 
 - (NSNumber *)reactTag
 {
@@ -47,18 +47,18 @@
 
 - (BOOL)shouldAccessibilityIgnoresInvertColors
 {
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   return self.accessibilityIgnoresInvertColors;
-#else // TODO(macOS GH#774)
+#else // [macOS
   return NO;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (void)setShouldAccessibilityIgnoresInvertColors:(BOOL)shouldAccessibilityIgnoresInvertColors
 {
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   self.accessibilityIgnoresInvertColors = shouldAccessibilityIgnoresInvertColors;
-#endif // ]TODO(macOS GH#774)
+#endif // [macOS]
 }
 
 - (BOOL)isReactRootView
@@ -68,24 +68,24 @@
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {
-  RCTPlatformView *view = RCTUIViewHitTestWithEvent(self, point, nil); // TODO(macOS GH#774) and TODO(macOS ISS#3536887)
+  RCTPlatformView *view = RCTUIViewHitTestWithEvent(self, point, nil); // [macOS]
   while (view && !view.reactTag) {
     view = view.superview;
   }
   return view.reactTag;
 }
 
-- (NSArray<RCTPlatformView *> *)reactSubviews // TODO(macOS GH#774)
+- (NSArray<RCTPlatformView *> *)reactSubviews // [macOS]
 {
   return objc_getAssociatedObject(self, _cmd);
 }
 
-- (RCTPlatformView *)reactSuperview // TODO(macOS GH#774)
+- (RCTPlatformView *)reactSuperview // [macOS]
 {
   return self.superview;
 }
 
-- (void)insertReactSubview:(RCTPlatformView *)subview atIndex:(NSInteger)atIndex // TODO(macOS GH#774)
+- (void)insertReactSubview:(RCTPlatformView *)subview atIndex:(NSInteger)atIndex // [macOS]
 {
   // We access the associated object directly here in case someone overrides
   // the `reactSubviews` getter method and returns an immutable array.
@@ -97,7 +97,7 @@
   [subviews insertObject:subview atIndex:atIndex];
 }
 
-- (void)removeReactSubview:(RCTPlatformView *)subview // TODO(macOS GH#774)
+- (void)removeReactSubview:(RCTPlatformView *)subview // [macOS]
 {
   // We access the associated object directly here in case someone overrides
   // the `reactSubviews` getter method and returns an immutable array.
@@ -122,37 +122,37 @@
 
 - (UIUserInterfaceLayoutDirection)reactLayoutDirection
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   if ([self respondsToSelector:@selector(semanticContentAttribute)]) {
-#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
-#pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic push // [macOS]
+#pragma clang diagnostic ignored "-Wunguarded-availability" // [macOS]
     return [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute];
-#pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic pop // [macOS]
   } else {
     return [objc_getAssociatedObject(self, @selector(reactLayoutDirection)) integerValue];
   }
-#else // [TODO(macOS GH#774)
+#else // [macOS
 	return self.userInterfaceLayoutDirection;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (void)setReactLayoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
-#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
-#pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic push // [macOS]
+#pragma clang diagnostic ignored "-Wunguarded-availability" // [macOS]
     self.semanticContentAttribute = layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight
         ? UISemanticContentAttributeForceLeftToRight
         : UISemanticContentAttributeForceRightToLeft;
-#pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic pop // [macOS]
   } else {
     objc_setAssociatedObject(
         self, @selector(reactLayoutDirection), @(layoutDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   }
-#else // [TODO(macOS GH#774)
+#else // [macOS
 	self.userInterfaceLayoutDirection	= layoutDirection;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 #pragma mark - zIndex
@@ -167,17 +167,17 @@
   self.layer.zPosition = reactZIndex;
 }
 
-- (NSArray<RCTPlatformView *> *)reactZIndexSortedSubviews // TODO(macOS GH#774)
+- (NSArray<RCTPlatformView *> *)reactZIndexSortedSubviews // [macOS]
 {
   // Check if sorting is required - in most cases it won't be.
   BOOL sortingRequired = NO;
-  for (RCTUIView *subview in self.subviews) { // TODO(macOS ISS#3536887)
+  for (RCTUIView *subview in self.subviews) { // [macOS]
     if (subview.reactZIndex != 0) {
       sortingRequired = YES;
       break;
     }
   }
-  return sortingRequired ? [self.reactSubviews sortedArrayUsingComparator:^NSComparisonResult(RCTUIView *a, RCTUIView *b) { // TODO(macOS ISS#3536887)
+  return sortingRequired ? [self.reactSubviews sortedArrayUsingComparator:^NSComparisonResult(RCTUIView *a, RCTUIView *b) { // [macOS]
     if (a.reactZIndex > b.reactZIndex) {
       return NSOrderedDescending;
     } else {
@@ -191,7 +191,7 @@
 
 - (void)didUpdateReactSubviews
 {
-  for (RCTPlatformView *subview in self.reactSubviews) { // TODO(macOS GH#774)
+  for (RCTPlatformView *subview in self.reactSubviews) { // [macOS]
     [self addSubview:subview];
   }
 }
@@ -203,7 +203,7 @@
 
 - (void)reactSetFrame:(CGRect)frame
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   // These frames are in terms of anchorPoint = topLeft, but internally the
   // views are anchorPoint = center for easier scale and rotation animations.
   // Convert the frame so it works with anchorPoint = center.
@@ -224,7 +224,7 @@
 
   self.center = position;
   self.bounds = bounds;
-#else // [TODO(macOS GH#774)
+#else // [macOS
   // Avoid crashes due to nan coords
   if (isnan(frame.origin.x) || isnan(frame.origin.y) ||
       isnan(frame.size.width) || isnan(frame.size.height)) {
@@ -234,7 +234,7 @@
   }
 
 	self.frame = frame;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 }
 
 - (UIViewController *)reactViewController
@@ -249,7 +249,7 @@
   return nil;
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 - (void)reactAddControllerToClosestParent:(UIViewController *)controller
 {
   if (!controller.parentViewController) {
@@ -265,63 +265,63 @@
     return;
   }
 }
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
-// [TODO(macOS GH#1412)
+// [macOS Github#1412
 - (void)reactViewDidMoveToWindow
 {
 	[self reactFocusIfNeeded];
 }
-// TODO(macOS GH#1412)]
+// macOS]
 
 /**
  * Focus manipulation.
  */
-static __weak RCTPlatformView *_pendingFocusView; // TODO(macOS GH#1412)
+static __weak RCTPlatformView *_pendingFocusView; // [macOS]
 
 - (void)reactFocus
 {
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-	if (![[self window] makeFirstResponder:self]) {
-#else
+#if !TARGET_OS_OSX // [macOS]
 	if (![self becomeFirstResponder]) {
-#endif // TODO(macOS GH#774)]
-// [TODO(macOS GH#1412)
+#else // [macOS
+	if (![[self window] makeFirstResponder:self]) {
+#endif // macOS]
+// [macOS Github#1412
     _pendingFocusView = self;
   } else {
     _pendingFocusView = nil;
   }
-// TODO(macOS GH#1412)]
+// macOS]
 }
 
 - (void)reactFocusIfNeeded
 {
-	if ([self isEqual:_pendingFocusView]) { // TODO(macOS GH#1412)
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+	if ([self isEqual:_pendingFocusView]) { // [macOS]
+#if TARGET_OS_OSX // [macOS
 		if ([[self window] makeFirstResponder:self]) {
 #else
 		if ([self becomeFirstResponder]) {
-#endif // TODO(macOS GH#774)]
-			_pendingFocusView = nil; // TODO(macOS GH#1412)
+#endif // macOS]
+			_pendingFocusView = nil; // [macOS] Github#1412
 		}
 	}
 }
 
 - (void)reactBlur
 {
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
+  [self resignFirstResponder];
+#else // [macOS
   if (self == [[self window] firstResponder]) {
     [[self window] makeFirstResponder:[[self window] nextResponder]];
   }
-#else
-  [self resignFirstResponder];
-#endif // TODO(macOS GH#774)]
+#endif // macOS]
 
-// [TODO(macOS GH#1412)
+// [macOS Github#1412
   if ([self isEqual:_pendingFocusView]) {
     _pendingFocusView = nil;
   }
-// TODO(macOS GH#1412)]
+// macOS]
 }
 
 #pragma mark - Layout
@@ -356,7 +356,7 @@ static __weak RCTPlatformView *_pendingFocusView; // TODO(macOS GH#1412)
 
 #pragma mark - Accessibility
 
-- (RCTPlatformView *)reactAccessibilityElement // TODO(macOS GH#774)
+- (RCTPlatformView *)reactAccessibilityElement // [macOS]
 {
   return self;
 }
@@ -372,12 +372,12 @@ static __weak RCTPlatformView *_pendingFocusView; // TODO(macOS GH#1412)
       self, @selector(accessibilityActions), accessibilityActions, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (NSString *)accessibilityRoleInternal // TODO(OSS Candidate ISS#2710739): renamed so it doesn't conflict with -[NSAccessibility accessibilityRole].
+- (NSString *)accessibilityRoleInternal // [macOS] renamed so it doesn't conflict with -[NSAccessibility accessibilityRole].
 {
   return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setAccessibilityRoleInternal:(NSString *)accessibilityRole // TODO(OSS Candidate ISS#2710739): renamed so it doesn't conflict with -[NSAccessibility setAccessibilityRole].
+- (void)setAccessibilityRoleInternal:(NSString *)accessibilityRole // [macOS] renamed so it doesn't conflict with -[NSAccessibility setAccessibilityRole].
 {
   objc_setAssociatedObject(self, @selector(accessibilityRoleInternal), accessibilityRole, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -412,7 +412,7 @@ static __weak RCTPlatformView *_pendingFocusView; // TODO(macOS GH#1412)
   [string appendString:self.description];
   [string appendString:@"\n"];
 
-  for (RCTPlatformView *subview in self.subviews) { // TODO(macOS GH#774)
+  for (RCTPlatformView *subview in self.subviews) { // [macOS]
     [subview react_addRecursiveDescriptionToString:string atLevel:level + 1];
   }
 }

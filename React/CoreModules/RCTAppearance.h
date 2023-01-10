@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
@@ -13,11 +13,11 @@
 RCT_EXTERN void RCTEnableAppearancePreference(BOOL enabled);
 RCT_EXTERN void RCTOverrideAppearancePreference(NSString *const);
 RCT_EXTERN NSString *RCTCurrentOverrideAppearancePreference();
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 RCT_EXTERN NSString *RCTColorSchemePreference(UITraitCollection *traitCollection);
-#else // [TODO(macOS GH#774)
+#else // [macOS
 RCT_EXTERN NSString *RCTColorSchemePreference(NSAppearance *appearance);
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @interface RCTAppearance : RCTEventEmitter <RCTBridgeModule>
 @end

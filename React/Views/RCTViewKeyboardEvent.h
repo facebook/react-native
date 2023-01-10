@@ -8,10 +8,10 @@
 
 @interface RCTViewKeyboardEvent : RCTComponentEvent
 
-#if TARGET_OS_OSX // TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 + (NSDictionary *)bodyFromEvent:(NSEvent *)event;
 + (NSString *)keyFromEvent:(NSEvent *)event;
 + (instancetype)keyEventFromEvent:(NSEvent *)event reactTag:(NSNumber *)reactTag;
-#endif // TODO(macOS GH#774)
+#endif // macOS]
 
 @end

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #import <react/renderer/core/EventEmitter.h>
@@ -54,14 +54,14 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  * component view.
  * Receiver must add `childComponentView` as a subview.
  */
-- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index; // TODO(macOS GH#774)
+- (void)mountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index; // [macOS]
 
 /*
  * Called for unmounting (detaching) a child component view from `self`
  * component view.
  * Receiver must remove `childComponentView` as a subview.
  */
-- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index; // TODO(macOS GH#774)
+- (void)unmountChildComponentView:(RCTUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index; // [macOS]
 
 /*
  * Called for updating component's props.

@@ -236,5 +236,5 @@ export type TextProps = $ReadOnly<{|
    * Specifies whether focus ring should be drawn when the view has the first responder status.
    * Only works when `focusable={true}`
    */
-  enableFocusRing?: ?boolean, // TODO(macOS GH#774)
+  enableFocusRing?: ?boolean, // [macOS]
 |}>;

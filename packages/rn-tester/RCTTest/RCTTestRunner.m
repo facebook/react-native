@@ -9,9 +9,9 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
-#import <React/RCTBundleURLProvider.h> // TODO(macOS GH#774)
+#import <React/RCTBundleURLProvider.h> // [macOS]
 #import <React/RCTDevSettings.h>
-#import <React/RCTImageLoader.h> // TODO(OSS Candidate ISS#2710739)
+#import <React/RCTImageLoader.h> // [macOS]
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUIManager.h>
@@ -61,7 +61,7 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
   RCTAssertParam(app);
   RCTAssertParam(referenceDirectory);
 
-  // TODO(macOS GH#774): uncomment to record snapshot images
+  // [macOS] uncomment to record snapshot images
   //  referenceDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
   // Search for `_runner.recordMode = ` and change instances to YES
 
@@ -94,11 +94,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   if (getenv("CI_USE_PACKAGER") || _useBundler) {
     NSString *bundlePrefix =
-        [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"] ?: @""; // TODO(macOS GH#774)
+        [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"] ?: @""; // [macOS]
     return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@%@.bundle?platform=%@&dev=true",
                                                            bundlePrefix,
                                                            _appPath,
-                                                           kRCTPlatformName]]; // TODO(macOS GH#774)
+                                                           kRCTPlatformName]]; // [macOS]
   } else {
     return [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
   }
@@ -192,10 +192,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     [bridge.devSettings setIsDebuggingRemotely:_useJSDebugger];
     batchedBridge = [bridge batchedBridge];
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
     UIViewController *vc = RCTSharedApplication().delegate.window.rootViewController;
     vc.view = [UIView new];
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
     RCTTestModule *testModule = [bridge moduleForClass:[RCTTestModule class]];
     RCTAssert(_testController != nil, @"_testController should not be nil");
@@ -217,20 +217,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
       rootTag = rootView.reactTag;
       testModule.view = rootView;
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
       [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
       if (configurationBlock) {
         configurationBlock(rootView);
       }
 
-      RCTImageLoader *imageLoader = [bridge moduleForClass:[RCTImageLoader class]]; // TODO(OSS Candidate ISS#2710739)
+      RCTImageLoader *imageLoader = [bridge moduleForClass:[RCTImageLoader class]]; // [macOS]
 
       NSDate *date = [NSDate dateWithTimeIntervalSinceNow:kTestTimeoutSeconds];
       while (date.timeIntervalSinceNow > 0 &&
              (testModule.status == RCTTestStatusPending || [imageLoader activeTasks] > 0) &&
-             errors == nil) { // TODO(OSS Candidate ISS#2710739)
+             errors == nil) { // [macOS]
         [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
         [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
       }
@@ -251,7 +251,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
           }
         });
 
-#if RCT_DEV && !TARGET_OS_OSX // TODO(macOS GH#774)
+#if RCT_DEV && !TARGET_OS_OSX // [macOS]
     NSArray<UIView *> *nonLayoutSubviews = [vc.view.subviews
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
           return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];
@@ -263,14 +263,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     if (expectErrorBlock) {
       RCTAssert(expectErrorBlock(errors[0]), @"Expected an error but the first one was missing or did not match.");
     } else {
-      // [TODO(OSS Candidate ISS#2710739): xcpretty formats the test failure output to show only one line of the assert
+      // [macOS xcpretty formats the test failure output to show only one line of the assert
       // string followed by a snippet of source code including the assert statement and the lines just before and after.
       // Convert the `errors` array into a single line string delimited by \n so that CI logs contain meaningful
       // information.
       RCTAssert(
           errors == nil,
           @"RedBox errors: %@",
-          [[errors valueForKey:@"description"] componentsJoinedByString:@"\\n"]); // ]TODO(OSS Candidate ISS#2710739)
+          [[errors valueForKey:@"description"] componentsJoinedByString:@"\\n"]); // macOS]
       RCTAssert(
           testModule.status != RCTTestStatusPending, @"Test didn't finish within %0.f seconds", kTestTimeoutSeconds);
       RCTAssert(testModule.status == RCTTestStatusPassed, @"Test failed");
@@ -294,7 +294,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
   }
-  if (!expectErrorBlock) { // TODO(tomun): need this to pass -[RNTesterIntegrationTests testTheTester_ExpectError]
+  if (!expectErrorBlock) { // [macOS] need this to pass -[RNTesterIntegrationTests testTheTester_ExpectError]
     RCTAssert(errors == nil, @"RedBox errors during bridge invalidation: %@", errors);
   }
   RCTAssert(batchedBridge == nil, @"Bridge should be deallocated after the test");

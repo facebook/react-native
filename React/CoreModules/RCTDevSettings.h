@@ -29,12 +29,12 @@
  */
 - (id)settingForKey:(NSString *)key;
 
-// [TODO(macOS GH#774)
+// [macOS
 /**
  * Returns all keys that are overridden
  */
 - (NSArray<NSString *> *)overridenKeys;
-// ]TODO(macOS GH#774)
+// macOS]
 
 @end
 
@@ -68,13 +68,13 @@
  */
 @property (nonatomic, assign) BOOL isShakeToShowDevMenuEnabled;
 
-// [TODO(macOS GH#774)
+// [macOS
 /*
  * Whether secondary click will show RCTDevMenu. The menu is enabled by default if RCT_DEV=1, but
  * you may wish to disable it so that you can provide your own contextual menu.
  */
 @property (nonatomic, assign) BOOL isSecondaryClickToShowDevMenuEnabled;
-// ]TODO(macOS GH#774)
+// macOS]
 
 /**
  * Whether performance profiling is enabled.

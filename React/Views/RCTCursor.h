@@ -32,8 +32,8 @@ typedef NS_ENUM(NSInteger, RCTCursor) {
 @interface RCTConvert (RCTCursor)
 
 + (RCTCursor)RCTCursor:(id)json;
-#if TARGET_OS_OSX // TODO(macOS GH#774)
+#if TARGET_OS_OSX // [macOS
 + (NSCursor *)NSCursor:(RCTCursor)rctCursor;
-#endif // ]TODO(macOS GH#774)
+#endif // macOS]
 
 @end
