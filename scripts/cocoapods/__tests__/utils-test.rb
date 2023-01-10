@@ -19,11 +19,10 @@ class UtilsTests < Test::Unit::TestCase
     def setup
         @base_path = "~/app/ios"
         Pathname.pwd!(@base_path)
-        File.enable_testing_mode!
     end
 
     def teardown
-        File.reset()
+        FileMock.reset()
         Pod::UI.reset()
         Pathname.reset()
         Pod::Config.reset()
@@ -466,11 +465,11 @@ class UtilsTests < Test::Unit::TestCase
     # =================================== #
     def test_createXcodeEnvIfMissing_whenItIsPresent_doNothing
         # Arrange
-        File.mocked_existing_files("/.xcode.env")
+        FileMock.mocked_existing_files("/.xcode.env")
         # Act
-        ReactNativePodsUtils.create_xcode_env_if_missing
+        ReactNativePodsUtils.create_xcode_env_if_missing(file_manager: FileMock)
         # Assert
-        assert_equal(File.exist_invocation_params, ["/.xcode.env"])
+        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env"])
         assert_equal($collected_commands, [])
     end
 
@@ -478,9 +477,9 @@ class UtilsTests < Test::Unit::TestCase
         # Arrange
 
         # Act
-        ReactNativePodsUtils.create_xcode_env_if_missing
+        ReactNativePodsUtils.create_xcode_env_if_missing(file_manager: FileMock)
         # Assert
-        assert_equal(File.exist_invocation_params, ["/.xcode.env"])
+        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env"])
         assert_equal($collected_commands, ["echo 'export NODE_BINARY=$(command -v node)' > /.xcode.env"])
     end
 
