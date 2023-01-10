@@ -8,9 +8,9 @@
  */
 
 const path = require('path');
-const chalk = require('chalk');
-const {exec} = require('shelljs');
+const {spawnSync} = require('child_process');
 
+const {BUMP_COMMIT_MESSAGE} = require('./constants');
 const forEachPackage = require('./for-each-package');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
@@ -22,41 +22,77 @@ const findAndPublishAllBumpedPackages = () => {
   forEachPackage(
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
       if (packageManifest.private) {
-        console.log(
-          `\u23ED Skipping private package ${chalk.dim(packageManifest.name)}`,
-        );
+        console.log(`\u23ED Skipping private package ${packageManifest.name}`);
 
         return;
       }
 
-      const diff = exec(
-        `git log -p --format="" HEAD~1..HEAD ${packageRelativePathFromRoot}/package.json`,
-        {cwd: ROOT_LOCATION, silent: true},
-      ).stdout;
+      const {stdout: diff, stderr: commitDiffStderr} = spawnSync(
+        'git',
+        [
+          'log',
+          '-p',
+          '--format=""',
+          'HEAD~1..HEAD',
+          `${packageRelativePathFromRoot}/package.json`,
+        ],
+        {cwd: ROOT_LOCATION, shell: true, stdio: 'pipe', encoding: 'utf-8'},
+      );
+
+      if (commitDiffStderr) {
+        console.log(
+          `\u274c Failed to get latest committed changes for ${packageManifest.name}:`,
+        );
+        console.log(commitDiffStderr);
+
+        process.exit(1);
+      }
 
       const previousVersionPatternMatches = diff.match(
         /- {2}"version": "([0-9]+.[0-9]+.[0-9]+)"/,
       );
 
       if (!previousVersionPatternMatches) {
-        console.log(
-          `\uD83D\uDD0E No version bump for ${chalk.green(
-            packageManifest.name,
-          )}`,
-        );
+        console.log(`\uD83D\uDD0E No version bump for ${packageManifest.name}`);
 
         return;
+      }
+
+      const {stdout: commitMessage, stderr: commitMessageStderr} = spawnSync(
+        'git',
+        [
+          'log',
+          '-n',
+          '1',
+          '--format=format:%B',
+          `${packageRelativePathFromRoot}/package.json`,
+        ],
+        {cwd: ROOT_LOCATION, shell: true, stdio: 'pipe', encoding: 'utf-8'},
+      );
+
+      if (commitMessageStderr) {
+        console.log(
+          `\u274c Failed to get latest commit message for ${packageManifest.name}:`,
+        );
+        console.log(commitMessageStderr);
+
+        process.exit(1);
+      }
+
+      const hasSpecificCommitMessage =
+        commitMessage.startsWith(BUMP_COMMIT_MESSAGE);
+
+      if (!hasSpecificCommitMessage) {
+        throw new Error(
+          `Package ${packageManifest.name} was updated, but not through CI script`,
+        );
       }
 
       const [, previousVersion] = previousVersionPatternMatches;
       const nextVersion = packageManifest.version;
 
       console.log(
-        `\uD83D\uDCA1 ${chalk.yellow(
-          packageManifest.name,
-        )} was updated: ${chalk.red(previousVersion)} -> ${chalk.green(
-          nextVersion,
-        )}`,
+        `\uD83D\uDCA1 ${packageManifest.name} was updated: ${previousVersion} -> ${nextVersion}`,
       );
 
       if (!nextVersion.startsWith('0.')) {
@@ -67,24 +103,22 @@ const findAndPublishAllBumpedPackages = () => {
 
       const npmOTPFlag = NPM_CONFIG_OTP ? `--otp ${NPM_CONFIG_OTP}` : '';
 
-      const {code, stderr} = exec(`npm publish ${npmOTPFlag}`, {
+      const {stderr} = spawnSync('npm', ['publish', `${npmOTPFlag}`], {
         cwd: packageAbsolutePath,
-        silent: true,
+        shell: true,
+        stdio: 'pipe',
+        encoding: 'utf-8',
       });
-      if (code) {
+      if (stderr) {
         console.log(
-          chalk.red(
-            `\u274c Failed to publish version ${nextVersion} of ${packageManifest.name}. Stderr:`,
-          ),
+          `\u274c Failed to publish version ${nextVersion} of ${packageManifest.name}:`,
         );
         console.log(stderr);
 
         process.exit(1);
       } else {
         console.log(
-          `\u2705 Successfully published new version of ${chalk.green(
-            packageManifest.name,
-          )}`,
+          `\u2705 Successfully published new version of ${packageManifest.name}`,
         );
       }
     },
