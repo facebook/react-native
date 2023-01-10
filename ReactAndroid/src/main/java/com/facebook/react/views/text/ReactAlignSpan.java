@@ -26,7 +26,7 @@ public class ReactAlignSpan extends MetricAffectingSpan implements ReactSpan {
   private int mOtherSpanLineHeight;
   private int mCurrentLineHeight;
   private int mImageLineHeight;
-  private int mHighestLineHeight;
+  private int mHighestLineHeight = -1;
 
   ReactAlignSpan(String textAlignVertical, Float lineHeight, String currentText) {
     mTextAlignVertical = textAlignVertical;
@@ -47,22 +47,26 @@ public class ReactAlignSpan extends MetricAffectingSpan implements ReactSpan {
         // the span with the highest lineHeight over-rides sets the height for all rows
         ds.baselineShift -= mHighestLineHeight / 2 - ds.getTextSize() / 2;
       } else {
-        // if lineHeight is not set, align the text using the font
-        // top and ascent https://stackoverflow.com/a/27631737/7295772
-        ds.baselineShift -= bounds.top - ds.getFontMetrics().ascent;
+        // works only with single line
+        // if lineHeight is not set, align the text using the font metrics
+        // https://stackoverflow.com/a/27631737/7295772
+        // top      -------------  -26
+        // ascent   -------------  -30
+        // baseline __my Text____   0
+        // descent  _____________   8
+        // bottom   _____________   1
+        ds.baselineShift -= bounds.top + bounds.bottom - ds.ascent();
       }
-    }
-    if (mTextAlignVertical == "center-child") {
-      //
     }
     if (mTextAlignVertical == "bottom-child") {
       if (mHighestLineHeight != -1) {
         // the span with the highest lineHeight over-rides sets the height for all rows
         ds.baselineShift += mHighestLineHeight / 2 - ds.getTextSize();
       } else {
-        // if lineHeight is not set, align the text using the font
-        // top and ascent https://stackoverflow.com/a/27631737/7295772
-        ds.baselineShift += bounds.top - ds.getFontMetrics().ascent;
+        // works only with single line
+        // if lineHeight is not set, align the text using the font metrics
+        // https://stackoverflow.com/a/27631737/7295772
+        ds.baselineShift += ds.descent();
       }
     }
   }

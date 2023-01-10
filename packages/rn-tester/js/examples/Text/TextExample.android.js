@@ -325,25 +325,16 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
           <View>
             <Text
               style={{
-                textAlignVertical: 'bottom',
+                fontSize,
                 backgroundColor: 'yellow',
               }}>
               <Text
                 style={{
-                  fontSize,
                   textAlignVertical,
                   backgroundColor: 'green',
                   color: 'white',
                 }}>
-                This span is aligned {textAlignVertical}
-              </Text>
-              <Text
-                style={{
-                  textAlignVertical,
-                  backgroundColor: 'blue',
-                  color: 'white',
-                }}>
-                span with smaller font can not align
+                Custom font
               </Text>
             </Text>
             <Text>
@@ -353,70 +344,6 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
               the second one does not. The lineHeight is inherited from bigger
               font and the positioning is done based on the fontMetrics, which
               are not related to lineHeight in the second blue text.
-            </Text>
-          </View>
-        </RNTesterBlock>
-        <RNTesterBlock title={`inline image and ${textAlignVertical}`}>
-          <View>
-            <Text
-              textTransform="uppercase"
-              style={{
-                textAlignVertical,
-                backgroundColor: 'yellow',
-              }}>
-              <Text
-                style={{
-                  lineHeight: 50,
-                  backgroundColor: 'green',
-                  textAlignVertical,
-                  color: 'white',
-                }}>
-                Span aligned {textAlignVertical}
-              </Text>
-              <Image
-                source={{uri: 'https://via.placeholder.com/100'}}
-                style={{
-                  width: 30,
-                  height: 30,
-                }}
-              />
-            </Text>
-            <Text>
-              The span above is correctly aligned to the {textAlignVertical},
-              but this requires some change to TextInlineViewPlaceholderSpan
-              (nested Image API) which breaks nested Text
-            </Text>
-          </View>
-        </RNTesterBlock>
-        <RNTesterBlock title="inline image">
-          <View>
-            <Text
-              textTransform="uppercase"
-              style={{
-                height: 150,
-                textAlignVertical,
-                backgroundColor: 'yellow',
-              }}>
-              parent Text aligns {textAlignVertical} with a {'\n'}
-              <Text
-                style={{
-                  textAlignVertical,
-                  backgroundColor: 'green',
-                  color: 'white',
-                }}>
-                span aligned {textAlignVertical}
-              </Text>
-              <Image
-                source={{uri: 'https://via.placeholder.com/100'}}
-                style={{
-                  width: 70,
-                  height: 70,
-                }}
-              />
-            </Text>
-            <Text>
-              A portion of the text is displayed under the Image. Fixes for
-              inline images are part of an upcoming pr.
             </Text>
           </View>
         </RNTesterBlock>

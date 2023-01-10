@@ -131,7 +131,6 @@ public class ReactTextViewManager
             Integer calculatedHeight = layout.getLineBottom(currentLine - 1);
             span.updateSpan(
                 0, Gravity.TOP, lineCount, layout.getHeight(), currentLine, 0, highestLineHeight);
-            invalidate();
           }
         }
       }
