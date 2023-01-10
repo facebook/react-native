@@ -50,7 +50,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
       new ViewGroup.LayoutParams(0, 0);
-  private static final String TAG = "ReactTextView";
 
   private boolean mContainsImages;
   private final int mDefaultGravityHorizontal;

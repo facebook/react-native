@@ -42,7 +42,6 @@ public class TextInlineViewPlaceholderSpan extends ReplacementSpan implements Re
   public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
     // NOTE: This getSize code is copied from DynamicDrawableSpan and modified to not use a Drawable
 
-    /*
     if (fm != null) {
       fm.ascent = -mHeight;
       fm.descent = 0;
@@ -50,7 +49,6 @@ public class TextInlineViewPlaceholderSpan extends ReplacementSpan implements Re
       fm.top = fm.ascent;
       fm.bottom = 0;
     }
-    */
 
     return mWidth;
   }
