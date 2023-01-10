@@ -8,7 +8,9 @@
 package com.facebook.react.views.text;
 
 import android.content.Context;
+import android.text.Layout;
 import android.text.Spannable;
+import android.view.Gravity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.R;
@@ -100,6 +102,39 @@ public class ReactTextViewManager
           new ReactAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable));
       ReactAccessibilityDelegate.resetDelegate(
           view, view.isFocusable(), view.getImportantForAccessibility());
+    }
+    // loop over each CustomLineHeightSpan
+    // use getHeight to retrieve height of that line
+    // save it and later retrieve it
+    int highestLineHeight = -1;
+    CustomLineHeightSpan[] customLineHeightSpans =
+        spannable.getSpans(0, spannable.length(), CustomLineHeightSpan.class);
+    if (customLineHeightSpans.length > 0) {
+      Layout layout = view.getLayout();
+      if (layout != null) {
+        for (CustomLineHeightSpan span : customLineHeightSpans) {
+          // instance variable could cause issues when updating lineheight
+          if (highestLineHeight == 0f || span.getLineHeight() > highestLineHeight) {
+            highestLineHeight = span.getLineHeight();
+          }
+        }
+      }
+
+      ReactAlignSpan[] alignSpans = spannable.getSpans(0, spannable.length(), ReactAlignSpan.class);
+      if (layout != null) {
+        int lineCount = layout != null ? layout.getLineCount() : 1;
+        int lineHeight = layout != null ? layout.getHeight() : 0;
+        if (alignSpans.length != 0) {
+          for (ReactAlignSpan span : alignSpans) {
+            int start = spannable.getSpanStart(span);
+            int currentLine = layout.getLineForOffset(start);
+            Integer calculatedHeight = layout.getLineBottom(currentLine - 1);
+            span.updateSpan(
+                0, Gravity.TOP, lineCount, layout.getHeight(), currentLine, 0, highestLineHeight);
+            invalidate();
+          }
+        }
+      }
     }
   }
 

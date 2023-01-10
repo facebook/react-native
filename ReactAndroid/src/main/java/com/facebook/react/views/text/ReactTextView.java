@@ -45,7 +45,6 @@ import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 
 public class ReactTextView extends AppCompatTextView implements ReactCompoundView {
 
@@ -54,7 +53,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private static final String TAG = "ReactTextView";
 
   private boolean mContainsImages;
-  private boolean mContainsSpans;
   private final int mDefaultGravityHorizontal;
   private final int mDefaultGravityVertical;
   private int mTextAlign;
@@ -185,65 +183,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   protected void onLayout(
       boolean changed, int textViewLeft, int textViewTop, int textViewRight, int textViewBottom) {
     // TODO T62882314: Delete this method when Fabric is fully released in OSS
-    Spanned text = (Spanned) getText();
-    Layout layout = getLayout();
-    TextInlineViewPlaceholderSpan[] placeholders =
-        text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
-    HashMap<Integer, Integer> imageLineHeights = new HashMap<Integer, Integer>();
-    for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
-      int height = placeholder.getHeight();
-      int start = text.getSpanStart(placeholder);
-      int line = layout.getLineForOffset(start);
-      if (imageLineHeights.get(line) != null && imageLineHeights.get(line) > height) {
-        imageLineHeights.put(line, height);
-      }
-      if (imageLineHeights.get(line) == null) {
-        imageLineHeights.put(line, height);
-      }
-    }
-    // loop over each CustomLineHeightSpan
-    // use getHeight to retrieve height of that line
-    // save it and later retrieve it
-    Integer highestLineHeight = -1;
-    if (getText() instanceof Spanned) {
-      CustomLineHeightSpan[] spans = text.getSpans(0, text.length(), CustomLineHeightSpan.class);
-      if (layout != null) {
-        if (spans.length != 0) {
-          for (CustomLineHeightSpan span : spans) {
-            if (highestLineHeight == 0f || span.getLineHeight() > highestLineHeight) {
-              highestLineHeight = span.getLineHeight();
-            }
-          }
-        }
-      }
-    }
-
-    if (getText() instanceof Spanned) {
-      ReactAlignSpan[] spans = text.getSpans(0, text.length(), ReactAlignSpan.class);
-      if (layout != null) {
-        int lineCount = layout != null ? layout.getLineCount() : 1;
-        int lineHeight = layout != null ? layout.getHeight() : 0;
-        if (spans.length != 0) {
-          for (ReactAlignSpan span : spans) {
-            int start = text.getSpanStart(span);
-            int currentLine = layout.getLineForOffset(start);
-            Integer calculatedHeight = layout.getLineBottom(currentLine - 1);
-            Integer imageLineHeight =
-                imageLineHeights != null && imageLineHeights.get(currentLine) != null
-                    ? imageLineHeights.get(currentLine)
-                    : -1;
-            span.updateSpan(
-                getHeight(),
-                getGravity(),
-                lineCount,
-                layout.getHeight(),
-                currentLine,
-                imageLineHeight,
-                highestLineHeight);
-          }
-        }
-      }
-    }
     int reactTag = getId();
     if (!(getText() instanceof Spanned)
         || ViewUtil.getUIManagerType(reactTag) == UIManagerType.FABRIC) {
@@ -267,6 +206,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     UIManagerModule uiManager =
         Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class));
 
+    Spanned text = (Spanned) getText();
+    Layout layout = getLayout();
     if (layout == null) {
       // Text layout is calculated during pre-draw phase, so in some cases it can be empty during
       // layout phase, which usually happens before drawing.
@@ -278,6 +219,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       return;
     }
 
+    TextInlineViewPlaceholderSpan[] placeholders =
+        text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
     ArrayList inlineViewInfoArray =
         mNotifyOnInlineViewLayout ? new ArrayList(placeholders.length) : null;
     int textViewWidth = textViewRight - textViewLeft;
