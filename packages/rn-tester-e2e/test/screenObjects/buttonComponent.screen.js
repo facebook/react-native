@@ -40,7 +40,7 @@ class ButtonComponentScreen {
 
 
     async checkButtonsScreenIsDisplayed() {
-        return await Utils.getElementText(this.buttonScreenElement);
+        return await Utils.checkElementExistence(this.buttonScreenElement);
     }
 
     async clickSubmitApplication() {
