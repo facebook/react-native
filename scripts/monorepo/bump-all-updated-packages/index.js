@@ -11,6 +11,7 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 const path = require('path');
 const {echo, exec, exit} = require('shelljs');
+const yargs = require('yargs');
 
 const {BUMP_COMMIT_MESSAGE} = require('../constants');
 const forEachPackage = require('../for-each-package');
@@ -19,12 +20,36 @@ const bumpPackageVersion = require('./bump-package-version');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..', '..');
 
+const {
+  argv: {releaseBranchCutoff},
+} = yargs
+  .option('release-branch-cutoff', {
+    type: 'boolean',
+    describe: 'Should force bump minor version for each public package',
+  })
+  .strict();
+
 const buildExecutor =
   (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) =>
   async () => {
     const {name: packageName} = packageManifest;
     if (packageManifest.private) {
       echo(`\u23ED Skipping private package ${chalk.dim(packageName)}`);
+
+      return;
+    }
+
+    if (releaseBranchCutoff) {
+      const updatedVersion = bumpPackageVersion(
+        packageAbsolutePath,
+        packageManifest,
+        'minor',
+      );
+      echo(
+        `\u2705 Successfully bumped ${chalk.green(
+          packageName,
+        )} to ${chalk.green(updatedVersion)}`,
+      );
 
       return;
     }
