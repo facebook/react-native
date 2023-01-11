@@ -213,9 +213,20 @@ interface Bar {
   z: number
 };
 
-interface Foo {
+interface Base1 {
   bar1: Bar,
+}
+
+interface Base2 {
   bar2: Bar,
+}
+
+interface Base3 extends Base2 {
+  bar3: Bar,
+}
+
+interface Foo extends Base1, Base3 {
+  bar4: Bar,
 };
 
 export interface Spec extends TurboModule {

@@ -1539,6 +1539,22 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
                 'type': 'TypeAliasTypeAnnotation',
                 'name': 'Bar'
               }
+            },
+            {
+              'name': 'bar3',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar4',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
             }
           ]
         }
