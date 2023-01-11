@@ -90,8 +90,7 @@ function resolveTypeAnnotation(
         break;
       }
 
-      switch (resolvedTypeAnnotation.type)
-      {
+      switch (resolvedTypeAnnotation.type) {
         case 'TSTypeAliasDeclaration':
           node = resolvedTypeAnnotation.typeAnnotation;
           break;
@@ -99,7 +98,9 @@ function resolveTypeAnnotation(
           node = resolvedTypeAnnotation;
           break;
         default:
-          throw new Error(`GenericTypeAnnotation '${node.typeName.name}' must resolve to a TSTypeAliasDeclaration or a TSInterfaceDeclaration. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`);
+          throw new Error(
+            `GenericTypeAnnotation '${node.typeName.name}' must resolve to a TSTypeAliasDeclaration or a TSInterfaceDeclaration. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
+          );
       }
     } else {
       break;
