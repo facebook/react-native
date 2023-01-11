@@ -285,7 +285,7 @@ module.exports = {
     return require('./Libraries/Network/RCTNetworking').default;
   },
   get PanResponder(): PanResponder {
-    return require('./Libraries/Interaction/PanResponder');
+    return require('./Libraries/Interaction/PanResponder').default;
   },
   get PermissionsAndroid(): PermissionsAndroid {
     return require('./Libraries/PermissionsAndroid/PermissionsAndroid');
