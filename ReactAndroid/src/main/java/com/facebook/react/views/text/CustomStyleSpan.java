@@ -129,7 +129,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
           // baseline __my Text____   0
           // descent  _____________   8
           // bottom   _____________   1
-          paint.baselineShift -= bounds.bottom - paint.ascent() + bounds.top;
+          paint.baselineShift += paint.getFontMetrics().top - paint.getFontMetrics().ascent;
         }
       }
       if (textAlignVertical == "bottom-child") {
@@ -139,7 +139,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
         } else {
           // works only with single line and without fontSize
           // https://bit.ly/3W2eJKT
-          paint.baselineShift += paint.descent();
+          paint.baselineShift += paint.getFontMetrics().bottom - paint.descent();
         }
       }
     }
