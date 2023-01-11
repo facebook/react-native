@@ -1556,7 +1556,7 @@ jobs:
                 command: |
                   curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \
                     -H "Accept: application/vnd.github.v3+json" \
-                    -u "$PAT_USERNAME:$PAT_TOKEN" \
+                    -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
       # END: Stable releases
 
