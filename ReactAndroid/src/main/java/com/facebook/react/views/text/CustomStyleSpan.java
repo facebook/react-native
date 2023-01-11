@@ -120,14 +120,15 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
           // the span with the highest lineHeight sets the height for all rows
           paint.baselineShift -= highestLineHeight / 2 - paint.getTextSize() / 2;
         } else {
-          // works only with single line
+          // works only with single line and without fontSize
+          // https://bit.ly/3W2eJKT
           // if lineHeight is not set, align the text using the font metrics
           // https://stackoverflow.com/a/27631737/7295772
-          // top      -------------  -26          | +26   ^ -5
-          // ascent   -------------  -30  ^ -31   |       |
-          // baseline __my Text____   0   |       |       |
-          // descent  _____________   8   |       |
-          // bottom   _____________   1   |       V
+          // top      -------------  -26
+          // ascent   -------------  -30
+          // baseline __my Text____   0
+          // descent  _____________   8
+          // bottom   _____________   1
           paint.baselineShift -= bounds.bottom - paint.ascent() + bounds.top;
         }
       }
@@ -136,14 +137,8 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
           // the span with the highest lineHeight sets the height for all rows
           paint.baselineShift += highestLineHeight / 2 - paint.getTextSize() / 2;
         } else {
-          // works only with single line
-          // if lineHeight is not set, align the text using the font metrics
-          // https://stackoverflow.com/a/27631737/7295772
-          // top      -------------  -26
-          // ascent   -------------  -30
-          // baseline __my Text____   0   |
-          // descent  _____________   8   | +8
-          // bottom   _____________   1   V
+          // works only with single line and without fontSize
+          // https://bit.ly/3W2eJKT
           paint.baselineShift += paint.descent();
         }
       }
