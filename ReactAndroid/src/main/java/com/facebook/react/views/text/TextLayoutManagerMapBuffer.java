@@ -140,24 +140,6 @@ public class TextLayoutManagerMapBuffer {
                 sb.length(),
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
       } else if (end >= start) {
-        if (textAttributes.mVerticalAlign != null
-            && (textAttributes.mVerticalAlign.equals("top-child")
-                || textAttributes.mVerticalAlign.equals("bottom-child")
-                || textAttributes.mVerticalAlign.equals("center-child"))) {
-          Float effectiveLineHeight =
-              Double.isNaN(textAttributes.getEffectiveLineHeight())
-                  ? -1
-                  : textAttributes.getEffectiveLineHeight();
-          String currentText = String.valueOf(sb.subSequence(start, end));
-          ops.add(
-              new SetSpanOperation(
-                  start,
-                  end,
-                  new ReactAlignSpan(
-                      textAttributes.mVerticalAlign,
-                      textAttributes.getEffectiveLineHeight(),
-                      currentText)));
-        }
         if (textAttributes.mIsAccessibilityLink) {
           ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
         }
@@ -180,7 +162,9 @@ public class TextLayoutManagerMapBuffer {
             new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
         if (textAttributes.mFontStyle != UNSET
             || textAttributes.mFontWeight != UNSET
-            || textAttributes.mFontFamily != null) {
+            || textAttributes.mFontFamily != null
+            || textAttributes.mVerticalAlign != null) {
+          String currentText = String.valueOf(sb.subSequence(start, end));
           ops.add(
               new SetSpanOperation(
                   start,
@@ -190,7 +174,9 @@ public class TextLayoutManagerMapBuffer {
                       textAttributes.mFontWeight,
                       textAttributes.mFontFeatureSettings,
                       textAttributes.mFontFamily,
-                      context.getAssets())));
+                      context.getAssets(),
+                      textAttributes.mVerticalAlign,
+                      currentText)));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
           ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));

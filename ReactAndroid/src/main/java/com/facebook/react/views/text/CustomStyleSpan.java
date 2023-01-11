@@ -8,7 +8,7 @@
 package com.facebook.react.views.text;
 
 import android.content.res.AssetManager;
-import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
@@ -35,28 +35,53 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   private final int mWeight;
   private final @Nullable String mFeatureSettings;
   private final @Nullable String mFontFamily;
+  private final String mCurrentText;
+  private String mTextAlignVertical;
+  private int mHighestLineHeight;
 
   public CustomStyleSpan(
       int fontStyle,
       int fontWeight,
       @Nullable String fontFeatureSettings,
       @Nullable String fontFamily,
-      AssetManager assetManager) {
+      AssetManager assetManager,
+      @Nullable String textAlignVertical,
+      String currentText) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFeatureSettings = fontFeatureSettings;
     mFontFamily = fontFamily;
     mAssetManager = assetManager;
+    mTextAlignVertical = textAlignVertical;
+    mCurrentText = currentText;
   }
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(ds, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
+    apply(
+        ds,
+        mStyle,
+        mWeight,
+        mFeatureSettings,
+        mFontFamily,
+        mAssetManager,
+        mTextAlignVertical,
+        mCurrentText,
+        mHighestLineHeight);
   }
 
   @Override
   public void updateMeasureState(TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
+    apply(
+        paint,
+        mStyle,
+        mWeight,
+        mFeatureSettings,
+        mFontFamily,
+        mAssetManager,
+        mTextAlignVertical,
+        mCurrentText,
+        mHighestLineHeight);
   }
 
   public int getStyle() {
@@ -72,16 +97,55 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   private static void apply(
-      Paint paint,
+      TextPaint paint,
       int style,
       int weight,
       @Nullable String fontFeatureSettings,
       @Nullable String family,
-      AssetManager assetManager) {
+      AssetManager assetManager,
+      @Nullable String textAlignVertical,
+      String currentText,
+      int highestLineHeight) {
     Typeface typeface =
         ReactTypefaceUtils.applyStyles(paint.getTypeface(), style, weight, family, assetManager);
     paint.setFontFeatureSettings(fontFeatureSettings);
     paint.setTypeface(typeface);
     paint.setSubpixelText(true);
+
+    if (currentText != null) {
+      Rect bounds = new Rect();
+      paint.getTextBounds(currentText, 0, currentText.length(), bounds);
+      if (textAlignVertical == "top-child") {
+        if (highestLineHeight != 0) {
+          // the span with the highest lineHeight over-rides sets the height for all rows
+          paint.baselineShift -= highestLineHeight / 2 - paint.getTextSize() / 2;
+        } else {
+          // works only with single line
+          // if lineHeight is not set, align the text using the font metrics
+          // https://stackoverflow.com/a/27631737/7295772
+          // top      -------------  -26
+          // ascent   -------------  -30
+          // baseline __my Text____   0
+          // descent  _____________   8
+          // bottom   _____________   1
+          paint.baselineShift -= bounds.top + bounds.bottom - paint.ascent();
+        }
+      }
+      if (textAlignVertical == "bottom-child") {
+        if (highestLineHeight != 0) {
+          // the span with the highest lineHeight over-rides sets the height for all rows
+          paint.baselineShift += highestLineHeight / 2 - paint.getTextSize() / 2;
+        } else {
+          // works only with single line
+          // if lineHeight is not set, align the text using the font metrics
+          // https://stackoverflow.com/a/27631737/7295772
+          paint.baselineShift += paint.descent();
+        }
+      }
+    }
+  }
+
+  public void updateSpan(int highestLineHeight) {
+    mHighestLineHeight = highestLineHeight;
   }
 }

@@ -209,7 +209,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                     textShadowNode.mFontWeight,
                     textShadowNode.mFontFeatureSettings,
                     textShadowNode.mFontFamily,
-                    textShadowNode.getThemedContext().getAssets())));
+                    textShadowNode.getThemedContext().getAssets(), /* textAlignVertical not supported on Paper */ null, null)));
       }
       if (textShadowNode.mIsUnderlineTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));

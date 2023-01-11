@@ -105,16 +105,17 @@ public class ReactTextViewManager
     CustomLineHeightSpan[] customLineHeightSpans =
         spannable.getSpans(0, spannable.length(), CustomLineHeightSpan.class);
     if (customLineHeightSpans.length > 0) {
-      int highestLineHeight = -1;
+      int highestLineHeight = 0;
       for (CustomLineHeightSpan span : customLineHeightSpans) {
-        if (highestLineHeight == 0f || span.getLineHeight() > highestLineHeight) {
+        if (highestLineHeight == 0 || span.getLineHeight() > highestLineHeight) {
           highestLineHeight = span.getLineHeight();
         }
       }
 
-      ReactAlignSpan[] alignSpans = spannable.getSpans(0, spannable.length(), ReactAlignSpan.class);
-      if (alignSpans.length != 0) {
-        for (ReactAlignSpan span : alignSpans) {
+      CustomStyleSpan[] customStyleSpans =
+          spannable.getSpans(0, spannable.length(), CustomStyleSpan.class);
+      if (customStyleSpans.length != 0) {
+        for (CustomStyleSpan span : customStyleSpans) {
           span.updateSpan(highestLineHeight);
         }
       }
