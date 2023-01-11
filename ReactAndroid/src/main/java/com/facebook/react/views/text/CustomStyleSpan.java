@@ -117,28 +117,33 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       paint.getTextBounds(currentText, 0, currentText.length(), bounds);
       if (textAlignVertical == "top-child") {
         if (highestLineHeight != 0) {
-          // the span with the highest lineHeight over-rides sets the height for all rows
+          // the span with the highest lineHeight sets the height for all rows
           paint.baselineShift -= highestLineHeight / 2 - paint.getTextSize() / 2;
+        } else {
+          // works only with single line
+          // if lineHeight is not set, align the text using the font metrics
+          // https://stackoverflow.com/a/27631737/7295772
+          // top      -------------  -26          | +26   ^ -5
+          // ascent   -------------  -30  ^ -31   |       |
+          // baseline __my Text____   0   |       |       |
+          // descent  _____________   8   |       |
+          // bottom   _____________   1   |       V
+          paint.baselineShift -= bounds.bottom - paint.ascent() + bounds.top;
+        }
+      }
+      if (textAlignVertical == "bottom-child") {
+        if (highestLineHeight != 0) {
+          // the span with the highest lineHeight sets the height for all rows
+          paint.baselineShift += highestLineHeight / 2 - paint.getTextSize() / 2;
         } else {
           // works only with single line
           // if lineHeight is not set, align the text using the font metrics
           // https://stackoverflow.com/a/27631737/7295772
           // top      -------------  -26
           // ascent   -------------  -30
-          // baseline __my Text____   0
-          // descent  _____________   8
-          // bottom   _____________   1
-          paint.baselineShift -= bounds.top + bounds.bottom - paint.ascent();
-        }
-      }
-      if (textAlignVertical == "bottom-child") {
-        if (highestLineHeight != 0) {
-          // the span with the highest lineHeight over-rides sets the height for all rows
-          paint.baselineShift += highestLineHeight / 2 - paint.getTextSize() / 2;
-        } else {
-          // works only with single line
-          // if lineHeight is not set, align the text using the font metrics
-          // https://stackoverflow.com/a/27631737/7295772
+          // baseline __my Text____   0   |
+          // descent  _____________   8   | +8
+          // bottom   _____________   1   V
           paint.baselineShift += paint.descent();
         }
       }
