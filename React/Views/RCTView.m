@@ -1112,32 +1112,21 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   };
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (RCTBorderColors)borderColorsWithTraitCollection:(UITraitCollection *)traitCollection
+#else // [macOS
+- (RCTBorderColors)borderColors
+#endif // macOS]
 {
   const BOOL isRTL = _reactLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
 
-  UIColor *directionAwareBorderLeftColor = nil;
-  UIColor *directionAwareBorderRightColor = nil;
+  RCTUIColor *directionAwareBorderLeftColor = nil;
+  RCTUIColor *directionAwareBorderRightColor = nil;
 
   if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
     RCTUIColor *borderStartColor = _borderStartColor ?: _borderLeftColor; // macOS RCTUIColor
     RCTUIColor *borderEndColor = _borderEndColor ?: _borderRightColor; // macOS RCTUIColor
 
-<<<<<<< HEAD
-    RCTUIColor *directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor; // macOS RCTUIColor
-    RCTUIColor *directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor; // macOS RCTUIColor
-
-    return (RCTBorderColors){
-        (_borderTopColor ?: _borderColor).CGColor,
-        (directionAwareBorderLeftColor ?: _borderColor).CGColor,
-        (_borderBottomColor ?: _borderColor).CGColor,
-        (directionAwareBorderRightColor ?: _borderColor).CGColor,
-    };
-  }
-
-  RCTUIColor *directionAwareBorderLeftColor = isRTL ? _borderEndColor : _borderStartColor; // macOS RCTUIColor
-  RCTUIColor *directionAwareBorderRightColor = isRTL ? _borderStartColor : _borderEndColor; // macOS RCTUIColor
-=======
     directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor;
     directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor;
   } else {
@@ -1145,9 +1134,9 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     directionAwareBorderRightColor = (isRTL ? _borderStartColor : _borderEndColor) ?: _borderRightColor;
   }
 
-  UIColor *borderColor = _borderColor;
-  UIColor *borderTopColor = _borderTopColor;
-  UIColor *borderBottomColor = _borderBottomColor;
+  RCTUIColor *borderColor = _borderColor;
+  RCTUIColor *borderTopColor = _borderTopColor;
+  RCTUIColor *borderBottomColor = _borderBottomColor;
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
   if (@available(iOS 13.0, *)) {
@@ -1160,7 +1149,6 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
         [directionAwareBorderRightColor resolvedColorWithTraitCollection:self.traitCollection];
   }
 #endif
->>>>>>> 49f3f47b1e9b840e4374d46b105604f4d2c22dd5
 
   return (RCTBorderColors){
       (borderTopColor ?: borderColor).CGColor,
@@ -1197,8 +1185,11 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
 
   const RCTCornerRadii cornerRadii = [self cornerRadii];
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
+#if !TARGET_OS_OSX // [macOS]
   const RCTBorderColors borderColors = [self borderColorsWithTraitCollection:self.traitCollection];
-
+#else // [macOS
+  const RCTBorderColors borderColors = [self borderColors];
+#endif // macOS]
   BOOL useIOSBorderRendering = RCTCornerRadiiAreEqual(cornerRadii) && RCTBorderInsetsAreEqual(borderInsets) &&
       RCTBorderColorsAreEqual(borderColors) && _borderStyle == RCTBorderStyleSolid &&
 
