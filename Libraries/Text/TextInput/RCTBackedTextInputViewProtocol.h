@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 #if !TARGET_OS_OSX // [macOS]
 @protocol RCTBackedTextInputViewProtocol <UITextInput>
 #else // [macOS
-@protocol RCTBackedTextInputViewProtocol
+@protocol RCTBackedTextInputViewProtocol <NSTextInputClient>
 #endif // macOS]
 
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
@@ -76,7 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
 #endif // macOS]
 
 #if TARGET_OS_OSX // [macOS
-- (BOOL)hasMarkedText;
 // UITextInput method for OSX
 - (CGSize)sizeThatFits:(CGSize)size;
 #endif // macOS]

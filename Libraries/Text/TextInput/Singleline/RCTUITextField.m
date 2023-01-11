@@ -132,6 +132,12 @@
 {
   return ((NSTextView *)self.currentEditor).hasMarkedText;
 }
+
+- (NSArray<NSAttributedStringKey> *)validAttributesForMarkedText
+{
+	return ((NSTextView *)self.currentEditor).validAttributesForMarkedText;
+}
+
 #endif // macOS]
   
 #pragma mark - Accessibility

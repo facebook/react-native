@@ -662,20 +662,23 @@ using namespace facebook::react;
                      }
                    }];
 
-#if !TARGET_OS_OSX // [macOS]
   BOOL shouldFallbackToBareTextComparison =
       [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
+#if !TARGET_OS_OSX // [macOS]
       [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
       _backedTextInputView.markedTextRange || _backedTextInputView.isSecureTextEntry || fontHasBeenUpdatedBySystem;
-
+#else // [macOS
+    // There are multiple Korean input sources (2-Set, 3-Set, etc). Check substring instead instead
+    [[[self.backedTextInputView inputContext] selectedKeyboardInputSource] containsString:@"com.apple.inputmethod.Korean"] ||
+    [self.backedTextInputView hasMarkedText] ||
+    [self.backedTextInputView isKindOfClass:[NSSecureTextField class]] ||
+    fontHasBeenUpdatedBySystem;
+#endif // macOS]
   if (shouldFallbackToBareTextComparison) {
     return ([newText.string isEqualToString:oldText.string]);
   } else {
-#endif // [macOS]
     return ([newText isEqualToAttributedString:oldText]);
-#if !TARGET_OS_OSX // [macOS]
   }
-#endif // [macOS]
 }
 
 @end

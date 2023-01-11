@@ -129,10 +129,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
     [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
     self.backedTextInputView.markedTextRange ||
     self.backedTextInputView.isSecureTextEntry ||
-    fontHasBeenUpdatedBySystem;
 #else // [macOS
-    NO;
+    // There are multiple Korean input sources (2-Set, 3-Set, etc). Check substring instead instead
+    [[[self.backedTextInputView inputContext] selectedKeyboardInputSource] containsString:@"com.apple.inputmethod.Korean"] ||
+    [self.backedTextInputView hasMarkedText] ||
+    [self.backedTextInputView isKindOfClass:[NSSecureTextField class]] ||
 #endif // macOS]
+    fontHasBeenUpdatedBySystem;
 
   if (shouldFallbackToBareTextComparison) {
     return ([newText.string isEqualToString:oldText.string]);
@@ -156,12 +159,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
                                 range:NSMakeRange(0, attributedTextCopy.length)];
 
   textNeedsUpdate = ([self textOf:attributedTextCopy equals:backedTextInputViewTextCopy] == NO);
-#if TARGET_OS_OSX // [macOS
-  // If we are in a language that uses conversion (e.g. Japanese), ignore updates if we have unconverted text.
-  if ([self.backedTextInputView hasMarkedText]) {
-    textNeedsUpdate = NO;
-  }
-#endif // macOS]
 
   if (eventLag == 0 && textNeedsUpdate) {
 #if !TARGET_OS_OSX // [macOS]

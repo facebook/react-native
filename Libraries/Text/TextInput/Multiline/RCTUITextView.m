@@ -270,43 +270,14 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
 
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
-<<<<<<< HEAD
-  // Using `setAttributedString:` while user is typing breaks some internal mechanics
-  // when entering complex input languages such as Chinese, Korean or Japanese.
-  // see: https://github.com/facebook/react-native/issues/19339
-
-  // We try to avoid calling this method as much as we can.
-  // If the text has changed, there is nothing we can do.
 #if !TARGET_OS_OSX // [macOS]
-  if (![super.attributedText.string isEqualToString:attributedText.string]) {
-    [super setAttributedText:attributedText];
-  } else {
-  // But if the text is preserved, we just copying the attributes from the source string.
-    if (![super.attributedText isEqualToAttributedString:attributedText]) {
-      [self copyTextAttributesFrom:attributedText];
-    }
-  }
-#else // [macOS
-  if (![self.textStorage isEqualTo:attributedText.string]) {
-    // Break undo coalescing when the text is changed by JS (e.g. autocomplete).
-    [self breakUndoCoalescing];
-
-    if (attributedText != nil) {
-      [self.textStorage setAttributedString:attributedText];
-    } else {
-      // Avoid Exception thrown while executing UI block: *** -[NSBigMutableString replaceCharactersInRange:withString:]: nil argument
-      [self.textStorage setAttributedString:[NSAttributedString new]];
-    }
-  } else {
-    // But if the text is preserved, we just copy the attributes from the source string.
-    if (![self.textStorage isEqualToAttributedString:attributedText]) {
-      [self copyTextAttributesFrom:attributedText];
-    }
-  }
-#endif // macOS]
-=======
   [super setAttributedText:attributedText];
->>>>>>> 49f3f47b1e9b840e4374d46b105604f4d2c22dd5
+#else // [macOS
+  // Break undo coalescing when the text is changed by JS (e.g. autocomplete).
+  [self breakUndoCoalescing];
+  // Avoid Exception thrown while executing UI block: *** -[NSBigMutableString replaceCharactersInRange:withString:]: nil argument
+  [self.textStorage setAttributedString:attributedText ?: [NSAttributedString new]];
+#endif // macOS]
   [self textDidChange];
 }
 
