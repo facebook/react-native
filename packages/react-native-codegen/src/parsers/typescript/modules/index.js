@@ -186,7 +186,11 @@ function translateTypeAnnotation(
     case 'TSInterfaceDeclaration': {
       const objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
-        properties: flattenProperties([typeAnnotation], types)
+        // $FlowFixMe[missing-type-arg]
+        properties: (flattenProperties(
+          [typeAnnotation],
+          types,
+        ): $ReadOnlyArray<$FlowFixMe>)
           .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
             property => {
               return tryParse(() => {
