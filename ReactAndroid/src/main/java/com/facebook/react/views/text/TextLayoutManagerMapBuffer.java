@@ -163,8 +163,7 @@ public class TextLayoutManagerMapBuffer {
         if (textAttributes.mFontStyle != UNSET
             || textAttributes.mFontWeight != UNSET
             || textAttributes.mFontFamily != null
-            || textAttributes.mVerticalAlign != null) {
-          String currentText = String.valueOf(sb.subSequence(start, end));
+            || textAttributes.mTextAlignVertical != null) {
           ops.add(
               new SetSpanOperation(
                   start,
@@ -175,8 +174,7 @@ public class TextLayoutManagerMapBuffer {
                       textAttributes.mFontFeatureSettings,
                       textAttributes.mFontFamily,
                       context.getAssets(),
-                      textAttributes.mVerticalAlign,
-                      currentText)));
+                      textAttributes.mTextAlignVertical)));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
           ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));

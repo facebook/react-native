@@ -156,7 +156,7 @@ public class TextLayoutManager {
                       textAttributes.mFontWeight,
                       textAttributes.mFontFeatureSettings,
                       textAttributes.mFontFamily,
-                      context.getAssets(), /* textAlignVertical not supported on Paper */ null, null)));
+                      context.getAssets(), /* textAlignVertical not supported on Paper */ null)));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
           ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));

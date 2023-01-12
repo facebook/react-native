@@ -100,7 +100,7 @@ public class TextAttributeProps {
   protected boolean mIsUnderlineTextDecorationSet = false;
   protected boolean mIsLineThroughTextDecorationSet = false;
   protected boolean mIncludeFontPadding = true;
-  protected String mVerticalAlign;
+  protected String mTextAlignVertical;
 
   protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
@@ -616,11 +616,11 @@ public class TextAttributeProps {
 
   private void setTextAlignVertical(@Nullable String alignVertical) {
     if (alignVertical.equals("top")) {
-      mVerticalAlign = "top-child";
+      mTextAlignVertical = "top-child";
     } else if (alignVertical.equals("center")) {
-      mVerticalAlign = "center-child";
+      mTextAlignVertical = "center-child";
     } else if (alignVertical.equals("bottom")) {
-      mVerticalAlign = "bottom-child";
+      mTextAlignVertical = "bottom-child";
     }
   }
 

@@ -8,7 +8,6 @@
 package com.facebook.react.views.text;
 
 import android.content.res.AssetManager;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
@@ -35,7 +34,6 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   private final int mWeight;
   private final @Nullable String mFeatureSettings;
   private final @Nullable String mFontFamily;
-  private final String mCurrentText;
   private String mTextAlignVertical;
   private int mHighestLineHeight;
 
@@ -45,15 +43,13 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       @Nullable String fontFeatureSettings,
       @Nullable String fontFamily,
       AssetManager assetManager,
-      @Nullable String textAlignVertical,
-      String currentText) {
+      @Nullable String textAlignVertical) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFeatureSettings = fontFeatureSettings;
     mFontFamily = fontFamily;
     mAssetManager = assetManager;
     mTextAlignVertical = textAlignVertical;
-    mCurrentText = currentText;
   }
 
   @Override
@@ -66,21 +62,19 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
         mFontFamily,
         mAssetManager,
         mTextAlignVertical,
-        mCurrentText,
         mHighestLineHeight);
   }
 
   @Override
-  public void updateMeasureState(TextPaint paint) {
+  public void updateMeasureState(TextPaint tp) {
     apply(
-        paint,
+        tp,
         mStyle,
         mWeight,
         mFeatureSettings,
         mFontFamily,
         mAssetManager,
         mTextAlignVertical,
-        mCurrentText,
         mHighestLineHeight);
   }
 
@@ -97,51 +91,28 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   private static void apply(
-      TextPaint paint,
+      TextPaint tp,
       int style,
       int weight,
       @Nullable String fontFeatureSettings,
       @Nullable String family,
       AssetManager assetManager,
       @Nullable String textAlignVertical,
-      String currentText,
       int highestLineHeight) {
     Typeface typeface =
-        ReactTypefaceUtils.applyStyles(paint.getTypeface(), style, weight, family, assetManager);
-    paint.setFontFeatureSettings(fontFeatureSettings);
-    paint.setTypeface(typeface);
-    paint.setSubpixelText(true);
+        ReactTypefaceUtils.applyStyles(tp.getTypeface(), style, weight, family, assetManager);
+    tp.setFontFeatureSettings(fontFeatureSettings);
+    tp.setTypeface(typeface);
+    tp.setSubpixelText(true);
 
-    if (currentText != null) {
-      Rect bounds = new Rect();
-      paint.getTextBounds(currentText, 0, currentText.length(), bounds);
-      if (textAlignVertical == "top-child") {
-        if (highestLineHeight != 0) {
-          // the span with the highest lineHeight sets the height for all rows
-          paint.baselineShift -= highestLineHeight / 2 - paint.getTextSize() / 2;
-        } else {
-          // works only with single line and without fontSize
-          // https://bit.ly/3W2eJKT
-          // if lineHeight is not set, align the text using the font metrics
-          // https://stackoverflow.com/a/27631737/7295772
-          // top      -------------  -26
-          // ascent   -------------  -30
-          // baseline __my Text____   0
-          // descent  _____________   8
-          // bottom   _____________   1
-          paint.baselineShift += paint.getFontMetrics().top - paint.getFontMetrics().ascent;
-        }
-      }
-      if (textAlignVertical == "bottom-child") {
-        if (highestLineHeight != 0) {
-          // the span with the highest lineHeight sets the height for all rows
-          paint.baselineShift += highestLineHeight / 2 - paint.getTextSize() / 2;
-        } else {
-          // works only with single line and without fontSize
-          // https://bit.ly/3W2eJKT
-          paint.baselineShift += paint.getFontMetrics().bottom - paint.descent();
-        }
-      }
+    // works only when lineHeight is defined with a prop
+    // other use cases will be added in separate PRs
+    // the span with the highest lineHeight sets the height for all rows
+    if (textAlignVertical == "top-child" && highestLineHeight != 0) {
+      tp.baselineShift -= highestLineHeight / 2 - tp.getTextSize() / 2;
+    }
+    if (textAlignVertical == "bottom-child" && highestLineHeight != 0) {
+      tp.baselineShift += highestLineHeight / 2 - tp.getTextSize() / 2;
     }
   }
 

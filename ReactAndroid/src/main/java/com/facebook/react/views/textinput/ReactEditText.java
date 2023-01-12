@@ -722,7 +722,7 @@ public class ReactEditText extends AppCompatEditText
                   mFontWeight,
                   null, // TODO: do we need to support FontFeatureSettings / fontVariant?
                   mFontFamily,
-                  getReactContext(ReactEditText.this).getAssets(), /* textAlignVertical not supported on TextInput */ null, null)));
+                  getReactContext(ReactEditText.this).getAssets(), /* textAlignVertical not supported on TextInput */ null)));
     }
     if (!Float.isNaN(mTextAttributes.getEffectiveLineHeight())) {
       ops.add(
