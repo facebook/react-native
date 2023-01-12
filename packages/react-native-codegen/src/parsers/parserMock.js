@@ -10,10 +10,18 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType} from '../CodegenSchema.js';
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
+import type {
+  UnionTypeAnnotationMemberType,
+  SchemaType,
+  NamedShape,
+  Nullable,
+  NativeModuleParamTypeAnnotation,
+} from '../CodegenSchema';
 
+// $FlowFixMe[untyped-import] there's no flowtype flow-parser
+const flowParser = require('flow-parser');
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('./errors');
@@ -21,21 +29,20 @@ const {
 export class MockedParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
 
-  getKeyName(propertyOrIndex: $FlowFixMe, hasteModuleName: string): string {
-    switch (propertyOrIndex.type) {
-      case 'ObjectTypeProperty':
-        return propertyOrIndex.key.name;
-      case 'ObjectTypeIndexer':
-        // flow index name is optional
-        return propertyOrIndex.id?.name ?? 'key';
-      default:
-        throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-          hasteModuleName,
-          propertyOrIndex,
-          propertyOrIndex.type,
-          this.language(),
-        );
+  isProperty(property: $FlowFixMe): boolean {
+    return property.type === 'ObjectTypeProperty';
+  }
+
+  getKeyName(property: $FlowFixMe, hasteModuleName: string): string {
+    if (!this.isProperty(property)) {
+      throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+        hasteModuleName,
+        property,
+        property.type,
+        this.language(),
+      );
     }
+    return property.key.name;
   }
 
   getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
@@ -64,5 +71,55 @@ export class MockedParser implements Parser {
     membersTypes: $FlowFixMe[],
   ): UnionTypeAnnotationMemberType[] {
     return [];
+  }
+
+  parseFile(filename: string): SchemaType {
+    return {
+      modules: {
+        StringPropNativeComponentView: {
+          type: 'Component',
+          components: {
+            StringPropNativeComponentView: {
+              extendsProps: [],
+              events: [],
+              props: [],
+              commands: [],
+            },
+          },
+        },
+      },
+    };
+  }
+
+  getAst(contents: string): $FlowFixMe {
+    return flowParser.parse(contents, {
+      enums: true,
+    });
+  }
+
+  getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<$FlowFixMe> {
+    return functionTypeAnnotation.params;
+  }
+
+  getFunctionNameFromParameter(
+    parameter: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
+  ): $FlowFixMe {
+    return parameter.name;
+  }
+
+  getParameterName(parameter: $FlowFixMe): string {
+    return parameter.name.name;
+  }
+
+  getParameterTypeAnnotation(parameter: $FlowFixMe): $FlowFixMe {
+    return parameter.typeAnnotation;
+  }
+
+  getFunctionTypeAnnotationReturnType(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $FlowFixMe {
+    return functionTypeAnnotation.returnType;
   }
 }

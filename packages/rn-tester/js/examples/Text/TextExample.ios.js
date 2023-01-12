@@ -453,7 +453,7 @@ class TextRenderInfoExample extends React.Component<
                 this.setState({textMetrics: lines[lines.length - 1]});
               }
             }}>
-            {new Array(this.state.numberOfTextBlocks)
+            {new Array<string>(this.state.numberOfTextBlocks)
               .fill('A tiny block of text.')
               .join(' ')}
           </Text>

@@ -23,6 +23,7 @@ const {
   throwIfModuleTypeIsUnsupported,
   throwIfUntypedModule,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+  throwIfArrayElementTypeAnnotationIsUnsupported,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -90,28 +91,24 @@ describe('throwIfMoreThanOneModuleRegistryCalls', () => {
       {name: 'callExpression1'},
       {name: 'callExpression2'},
     ];
-    const parserType = 'Flow';
 
     expect(() => {
       throwIfMoreThanOneModuleRegistryCalls(
         nativeModuleName,
         callExpressions,
         callExpressions.length,
-        parserType,
       );
     }).toThrow(MoreThanOneModuleRegistryCallsParserError);
   });
   it("don't throw error if single module registry call", () => {
     const nativeModuleName = 'moduleName';
     const callExpressions = [{name: 'callExpression1'}];
-    const parserType = 'TypeScript';
 
     expect(() => {
       throwIfMoreThanOneModuleRegistryCalls(
         nativeModuleName,
         callExpressions,
         callExpressions.length,
-        parserType,
       );
     }).not.toThrow(MoreThanOneModuleRegistryCallsParserError);
   });
@@ -122,13 +119,11 @@ describe('throwIfUnusedModuleInterfaceParserError', () => {
     const nativeModuleName = 'moduleName';
     const callExpressions: Array<$FlowFixMe> = [];
     const spec = {name: 'Spec'};
-    const parserType = 'Flow';
     expect(() => {
       throwIfUnusedModuleInterfaceParserError(
         nativeModuleName,
         spec,
         callExpressions,
-        parserType,
       );
     }).toThrow(UnusedModuleInterfaceParserError);
   });
@@ -137,13 +132,11 @@ describe('throwIfUnusedModuleInterfaceParserError', () => {
     const nativeModuleName = 'moduleName';
     const callExpressions = [{name: 'callExpression1'}];
     const spec = {name: 'Spec'};
-    const parserType = 'TypeScript';
     expect(() => {
       throwIfUnusedModuleInterfaceParserError(
         nativeModuleName,
         spec,
         callExpressions,
-        parserType,
       );
     }).not.toThrow(UnusedModuleInterfaceParserError);
   });
@@ -155,14 +148,12 @@ describe('throwErrorIfWrongNumberOfCallExpressionArgs', () => {
     const flowCallExpression: {argument: Array<$FlowFixMe>} = {argument: []};
     const methodName = 'methodName';
     const numberOfCallExpressionArgs = flowCallExpression.argument.length;
-    const language = 'Flow';
     expect(() => {
       throwIfWrongNumberOfCallExpressionArgs(
         nativeModuleName,
         flowCallExpression,
         methodName,
         numberOfCallExpressionArgs,
-        language,
       );
     }).toThrow(IncorrectModuleRegistryCallArityParserError);
   });
@@ -172,14 +163,12 @@ describe('throwErrorIfWrongNumberOfCallExpressionArgs', () => {
     const flowCallExpression = {argument: ['argument']};
     const methodName = 'methodName';
     const numberOfCallExpressionArgs = flowCallExpression.argument.length;
-    const language = 'Flow';
     expect(() => {
       throwIfWrongNumberOfCallExpressionArgs(
         nativeModuleName,
         flowCallExpression,
         methodName,
         numberOfCallExpressionArgs,
-        language,
       );
     }).not.toThrow(IncorrectModuleRegistryCallArityParserError);
   });
@@ -190,8 +179,7 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
       returnType: '',
     },
     nativeModuleName = 'moduleName',
-    invalidReturnType = 'FunctionTypeAnnotation',
-    language = 'Flow';
+    invalidReturnType = 'FunctionTypeAnnotation';
 
   it('do not throw error if cxxOnly is true', () => {
     const cxxOnly = true,
@@ -202,7 +190,6 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
         nativeModuleName,
         returnTypeAnnotation,
         invalidReturnType,
-        language,
         cxxOnly,
         returnType,
       );
@@ -218,7 +205,6 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
         nativeModuleName,
         returnTypeAnnotation,
         invalidReturnType,
-        language,
         cxxOnly,
         returnType,
       );
@@ -234,7 +220,6 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
         nativeModuleName,
         returnTypeAnnotation,
         invalidReturnType,
-        language,
         cxxOnly,
         returnType,
       );
@@ -484,7 +469,6 @@ describe('throwIfUntypedModule', () => {
 
   it('should throw error if module does not have a type', () => {
     const typeArguments = null;
-    const language = 'Flow';
     expect(() =>
       throwIfUntypedModule(
         typeArguments,
@@ -492,7 +476,6 @@ describe('throwIfUntypedModule', () => {
         callExpressions,
         methodName,
         moduleName,
-        language,
       ),
     ).toThrowError(UntypedModuleRegistryCallParserError);
   });
@@ -503,7 +486,6 @@ describe('throwIfUntypedModule', () => {
       params: [],
     };
 
-    const language = 'TypeScript';
     expect(() =>
       throwIfUntypedModule(
         typeArguments,
@@ -511,7 +493,6 @@ describe('throwIfUntypedModule', () => {
         callExpressions,
         methodName,
         moduleName,
-        language,
       ),
     ).not.toThrowError(UntypedModuleRegistryCallParserError);
   });
@@ -635,5 +616,56 @@ describe('throwIfUnsupportedFunctionParamTypeAnnotationParserError', () => {
         paramTypeAnnotationType,
       );
     }).toThrow(UnsupportedFunctionParamTypeAnnotationParserError);
+  });
+});
+
+describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
+  const {
+    UnsupportedArrayElementTypeAnnotationParserError,
+  } = require('../errors.js');
+  const moduleName = 'moduleName';
+
+  it('throws the error if it is the type is void type annotation', () => {
+    expect(() => {
+      throwIfArrayElementTypeAnnotationIsUnsupported(
+        moduleName,
+        undefined,
+        'Array',
+        'VoidTypeAnnotation',
+      );
+    }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
+  });
+
+  it('throws the error if it is the type is promise type annotation', () => {
+    expect(() => {
+      throwIfArrayElementTypeAnnotationIsUnsupported(
+        moduleName,
+        undefined,
+        'Array',
+        'PromiseTypeAnnotation',
+      );
+    }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
+  });
+
+  it('throws the error if it is the type is function type annotation', () => {
+    expect(() => {
+      throwIfArrayElementTypeAnnotationIsUnsupported(
+        moduleName,
+        undefined,
+        'Array',
+        'FunctionTypeAnnotation',
+      );
+    }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
+  });
+
+  it('does not throw the error if the type is NativeModuleTypeAnnotation', () => {
+    expect(() => {
+      throwIfArrayElementTypeAnnotationIsUnsupported(
+        moduleName,
+        undefined,
+        'Array',
+        'StringTypeAnnotation',
+      );
+    }).not.toThrow(UnsupportedArrayElementTypeAnnotationParserError);
   });
 });

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -17,7 +17,6 @@ const {parseTopLevelType} = require('./parseTopLevelType');
 /**
  * TODO(T108222691): Use flow-types for @babel/parser
  */
-
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
     switch (node.type) {

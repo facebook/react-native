@@ -57,4 +57,4 @@ function processColor(color?: ?(number | ColorValue)): ?ProcessedColorValue {
   return normalizedColor;
 }
 
-module.exports = processColor;
+export default processColor;

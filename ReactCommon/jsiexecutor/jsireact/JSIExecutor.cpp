@@ -495,20 +495,21 @@ Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
 
   /**
    * Note:
-   * In RCTNativeModule, folly::none is returned from callSerializableNativeHook
-   * when executing a NativeModule method fails. Therefore, it's safe to not
-   * terminate the syncMethodCall when folly::none is returned.
+   * In RCTNativeModule, std::nullopt is returned from
+   * callSerializableNativeHook when executing a NativeModule method fails.
+   * Therefore, it's safe to not terminate the syncMethodCall when std::nullopt
+   * is returned.
    *
-   * TODO: In JavaNativeModule, folly::none is returned when the synchronous
+   * TODO: In JavaNativeModule, std::nullopt is returned when the synchronous
    * NativeModule method has the void return type. Change this to return
-   * folly::dynamic(nullptr) instead, so that folly::none is reserved for
+   * folly::dynamic(nullptr) instead, so that std::nullopt is reserved for
    * exceptional scenarios.
    *
-   * TODO: Investigate CxxModule infra to see if folly::none is used for
+   * TODO: Investigate CxxModule infra to see if std::nullopt is used for
    * returns in exceptional scenarios.
    **/
 
-  if (!result.hasValue()) {
+  if (!result.has_value()) {
     return Value::undefined();
   }
 
@@ -564,7 +565,7 @@ void bindNativeLogger(Runtime &runtime, Logger logger) {
           }));
 }
 
-void bindNativePerformanceNow(Runtime &runtime, PerformanceNow performanceNow) {
+void bindNativePerformanceNow(Runtime &runtime) {
   runtime.global().setProperty(
       runtime,
       "nativePerformanceNow",
@@ -572,11 +573,10 @@ void bindNativePerformanceNow(Runtime &runtime, PerformanceNow performanceNow) {
           runtime,
           PropNameID::forAscii(runtime, "nativePerformanceNow"),
           0,
-          [performanceNow = std::move(performanceNow)](
-              jsi::Runtime &runtime,
-              const jsi::Value &,
-              const jsi::Value *args,
-              size_t count) { return Value(performanceNow()); }));
+          [](jsi::Runtime &runtime,
+             const jsi::Value &,
+             const jsi::Value *args,
+             size_t count) { return Value(JSExecutor::performanceNow()); }));
 }
 
 } // namespace react

@@ -255,7 +255,7 @@ class LayoutUpdateExample extends React.Component<
     height: 100,
   };
 
-  timeout = null;
+  timeout: TimeoutID | null = null;
 
   componentWillUnmount() {
     this._clearTimeout();

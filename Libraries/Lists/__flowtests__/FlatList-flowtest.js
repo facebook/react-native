@@ -93,6 +93,7 @@ module.exports = {
       <FlatList
         // $FlowExpectedError - bad title type number, should be string
         renderItem={(info: {item: {title: number}}) => <span />}
+        // $FlowExpectedError - bad title type number, should be string
         data={data}
       />,
       // EverythingIsFine

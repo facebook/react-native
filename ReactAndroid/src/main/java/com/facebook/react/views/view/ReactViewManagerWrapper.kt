@@ -10,10 +10,10 @@ package com.facebook.react.views.view
 import android.view.View
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.touch.JSResponderHandler
+import com.facebook.react.uimanager.IViewGroupManager
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
-import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManager
 
 interface ReactViewManagerWrapper {
@@ -41,7 +41,7 @@ interface ReactViewManagerWrapper {
 
   fun getName(): String
 
-  val viewGroupManager: ViewGroupManager<*>
+  val viewGroupManager: IViewGroupManager<*>
 
   class DefaultViewManager(private val viewManager: ViewManager<View, *>) :
       ReactViewManagerWrapper {
@@ -64,7 +64,7 @@ interface ReactViewManagerWrapper {
     }
 
     override fun receiveCommand(root: View, commandId: Int, args: ReadableArray?) {
-      viewManager.receiveCommand(root, commandId, args)
+      @Suppress("DEPRECATION") viewManager.receiveCommand(root, commandId, args)
     }
 
     override fun setPadding(view: View, left: Int, top: Int, right: Int, bottom: Int) {
@@ -84,7 +84,7 @@ interface ReactViewManagerWrapper {
 
     override fun getName(): String = viewManager.name
 
-    override val viewGroupManager: ViewGroupManager<*>
-      get() = viewManager as ViewGroupManager<*>
+    override val viewGroupManager: IViewGroupManager<*>
+      get() = viewManager as IViewGroupManager<*>
   }
 }

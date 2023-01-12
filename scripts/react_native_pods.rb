@@ -51,6 +51,7 @@ end
 # - flipper_configuration: The configuration to use for flipper.
 # - app_path: path to the React Native app. Required by the New Architecture.
 # - config_file_dir: directory of the `package.json` file, required by the New Architecture.
+# - ios_folder: the folder where the iOS code base lives. For a template app, it is `ios`, the default. For RNTester, it is `.`.
 def use_react_native! (
   path: "../node_modules/react-native",
   fabric_enabled: false,
@@ -59,9 +60,15 @@ def use_react_native! (
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
-  config_file_dir: '')
+  config_file_dir: '',
+  ios_folder: 'ios'
+)
 
-  CodegenUtils.clean_up_build_folder(app_path, $CODEGEN_OUTPUT_DIR)
+  # Current target definition is provided by Cocoapods and it refers to the target
+  # that has invoked the `use_react_native!` function.
+  ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
+
+  CodegenUtils.clean_up_build_folder(app_path, ios_folder, $CODEGEN_OUTPUT_DIR)
 
   # We are relying on this flag also in third parties libraries to proper install dependencies.
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
@@ -100,7 +107,7 @@ def use_react_native! (
   else
     setup_jsc!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
   end
-  pod 'React-jsidynamic', :path => "#{prefix}/ReactCommon/jsi"
+
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
 
@@ -200,13 +207,6 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
 
   if ReactNativePodsUtils.has_pod(installer, 'Flipper')
     flipper_post_install(installer)
-  end
-
-  if ReactNativePodsUtils.has_pod(installer, 'hermes-engine') && ENV['HERMES_BUILD_FROM_SOURCE'] == "1"
-    add_copy_hermes_framework_script_phase(installer, react_native_path)
-  else
-    remove_copy_hermes_framework_script_phase(installer, react_native_path)
-    remove_hermesc_build_dir(react_native_path)
   end
 
   ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)

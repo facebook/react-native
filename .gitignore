@@ -64,7 +64,8 @@ buck-out
 .gradle
 local.properties
 *.iml
-/android/
+/android/*
+!/android/README.md
 
 # Node
 node_modules
@@ -81,6 +82,12 @@ package-lock.json
 
 /coverage
 /third-party
+
+# Test Reports
+/reports
+
+# Stack Dumps generated when programs crash (Ex. bash.exe.stackdump on Win)
+*.stackdump
 
 # Root dir shouldn't have Xcode project
 /*.xcodeproj
@@ -110,7 +117,7 @@ package-lock.json
 !/packages/rn-tester/Pods/__offline_mirrors_hermes__
 !/packages/rn-tester/Pods/__offline_mirrors_jsc__
 
-# react-native-codegen
+# @react-native/codegen
 /React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
 /packages/react-native-codegen/tmp/
@@ -122,7 +129,6 @@ package-lock.json
 /sdks/download
 /sdks/hermes
 /sdks/hermesc
-/sdks/hermes-engine/build_host_hermesc
 
 # Visual studio
 .vscode

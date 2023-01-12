@@ -7,12 +7,14 @@
 
 package com.facebook.react.views.slider;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /** Event emitted by a ReactSliderManager when user changes slider position. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactSliderEvent extends Event<ReactSliderEvent> {
 
   public static final String EVENT_NAME = "topValueChange";

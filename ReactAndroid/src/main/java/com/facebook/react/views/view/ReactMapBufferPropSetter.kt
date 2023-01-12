@@ -97,6 +97,10 @@ object ReactMapBufferPropSetter {
   private const val CORNER_BOTTOM_END = 6
   private const val CORNER_BOTTOM_START = 7
   private const val CORNER_ALL = 8
+  private const val CORNER_END_END = 9
+  private const val CORNER_END_START = 10
+  private const val CORNER_START_END = 11
+  private const val CORNER_START_START = 12
 
   private const val NATIVE_DRAWABLE_KIND = 0
   private const val NATIVE_DRAWABLE_ATTRIBUTE = 1
@@ -255,11 +259,9 @@ object ReactMapBufferPropSetter {
     for (entry in mapBuffer) {
       val map = JavaOnlyMap()
       val action = entry.mapBufferValue
-      if (action != null) {
-        map.putString("name", action.getString(ACCESSIBILITY_ACTION_NAME))
-        if (action.contains(ACCESSIBILITY_ACTION_LABEL)) {
-          map.putString("label", action.getString(ACCESSIBILITY_ACTION_LABEL))
-        }
+      map.putString("name", action.getString(ACCESSIBILITY_ACTION_NAME))
+      if (action.contains(ACCESSIBILITY_ACTION_LABEL)) {
+        map.putString("label", action.getString(ACCESSIBILITY_ACTION_LABEL))
       }
       actions.add(map)
     }
@@ -367,6 +369,10 @@ object ReactMapBufferPropSetter {
             CORNER_TOP_END -> 6
             CORNER_BOTTOM_START -> 7
             CORNER_BOTTOM_END -> 8
+            CORNER_END_END -> 9
+            CORNER_END_START -> 10
+            CORNER_START_END -> 11
+            CORNER_START_START -> 12
             else -> throw IllegalArgumentException("Unknown key for border style: $key")
           }
       val borderRadius = entry.doubleValue

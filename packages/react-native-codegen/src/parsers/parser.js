@@ -10,7 +10,13 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType} from '../CodegenSchema.js';
+import type {
+  UnionTypeAnnotationMemberType,
+  SchemaType,
+  NamedShape,
+  Nullable,
+  NativeModuleParamTypeAnnotation,
+} from '../CodegenSchema';
 import type {ParserType} from './errors';
 
 /**
@@ -24,13 +30,17 @@ export interface Parser {
   typeParameterInstantiation: string;
 
   /**
-   * Given a property or an index declaration, it returns the key name.
-   * @parameter propertyOrIndex: an object containing a property or an index declaration.
+   * Given a declaration, it returns true if it is a property
+   */
+  isProperty(property: $FlowFixMe): boolean;
+  /**
+   * Given a property declaration, it returns the key name.
+   * @parameter property: an object containing a property declaration.
    * @parameter hasteModuleName: a string with the native module name.
    * @returns: the key name.
-   * @throws if propertyOrIndex does not contain a property or an index declaration.
+   * @throws if property does not contain a property declaration.
    */
-  getKeyName(propertyOrIndex: $FlowFixMe, hasteModuleName: string): string;
+  getKeyName(property: $FlowFixMe, hasteModuleName: string): string;
   /**
    * Given a type declaration, it possibly returns the name of the Enum type.
    * @parameter maybeEnumDeclaration: an object possibly containing an Enum declaration.
@@ -67,4 +77,58 @@ export interface Parser {
   remapUnionTypeAnnotationMemberNames(
     types: $FlowFixMe,
   ): UnionTypeAnnotationMemberType[];
+  /**
+   * Given the content of a file and options, it returns an AST.
+   * @parameter contents: the content of the file.
+   * @returns: the AST of the file (given in program property for typescript).
+   */
+  parseFile(filename: string): SchemaType;
+
+  /**
+   * Given the content of a file, it returns an AST.
+   * @parameter contents: the content of the file.
+   * @returns: the AST of the file.
+   */
+  getAst(contents: string): $FlowFixMe;
+
+  /**
+   * Given a FunctionTypeAnnotation, it returns an array of its parameters.
+   * @parameter functionTypeAnnotation: a FunctionTypeAnnotation
+   * @returns: the parameters of the FunctionTypeAnnotation.
+   */
+  getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<$FlowFixMe>;
+
+  /**
+   * Given a parameter, it returns the function name of the parameter.
+   * @parameter parameter: a parameter of a FunctionTypeAnnotation.
+   * @returns: the function name of the parameter.
+   */
+  getFunctionNameFromParameter(
+    parameter: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
+  ): $FlowFixMe;
+
+  /**
+   * Given a parameter, it returns its name.
+   * @parameter parameter: a parameter of a FunctionTypeAnnotation.
+   * @returns: the name of the parameter.
+   */
+  getParameterName(parameter: $FlowFixMe): string;
+
+  /**
+   * Given a parameter, it returns its typeAnnotation.
+   * @parameter parameter: a parameter of a FunctionTypeAnnotation.
+   * @returns: the typeAnnotation of the parameter.
+   */
+  getParameterTypeAnnotation(param: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a FunctionTypeAnnotation, it returns its returnType.
+   * @parameter functionTypeAnnotation: a FunctionTypeAnnotation
+   * @returns: the returnType of the FunctionTypeAnnotation.
+   */
+  getFunctionTypeAnnotationReturnType(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $FlowFixMe;
 }

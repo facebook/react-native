@@ -20,7 +20,6 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/core/propsConversions.h>
-#include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/conversions.h>
 #include <cmath>
 
@@ -718,7 +717,7 @@ inline void fromRawValue(
     auto string = (std::string)value;
     if (string == "none") {
       result = AccessibilityRole::None;
-    } else if (string == "button") {
+    } else if (string == "button" || string == "togglebutton") {
       result = AccessibilityRole::Button;
     } else if (string == "link") {
       result = AccessibilityRole::Link;

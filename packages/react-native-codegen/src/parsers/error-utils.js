@@ -27,7 +27,8 @@ const {
   UnsupportedModulePropertyParserError,
   MoreThanOneModuleInterfaceParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
-} = require('./errors.js');
+  UnsupportedArrayElementTypeAnnotationParserError,
+} = require('./errors');
 
 function throwIfModuleInterfaceIsMisnamed(
   nativeModuleName: string,
@@ -62,14 +63,12 @@ function throwIfMoreThanOneModuleRegistryCalls(
   hasteModuleName: string,
   callExpressions: $FlowFixMe,
   callExpressionsLength: number,
-  language: ParserType,
 ) {
   if (callExpressions.length > 1) {
     throw new MoreThanOneModuleRegistryCallsParserError(
       hasteModuleName,
       callExpressions,
       callExpressionsLength,
-      language,
     );
   }
 }
@@ -78,14 +77,9 @@ function throwIfUnusedModuleInterfaceParserError(
   nativeModuleName: string,
   moduleSpec: $FlowFixMe,
   callExpressions: $FlowFixMe,
-  language: ParserType,
 ) {
   if (callExpressions.length === 0) {
-    throw new UnusedModuleInterfaceParserError(
-      nativeModuleName,
-      moduleSpec,
-      language,
-    );
+    throw new UnusedModuleInterfaceParserError(nativeModuleName, moduleSpec);
   }
 }
 
@@ -94,7 +88,6 @@ function throwIfWrongNumberOfCallExpressionArgs(
   flowCallExpression: $FlowFixMe,
   methodName: string,
   numberOfCallExpressionArgs: number,
-  language: ParserType,
 ) {
   if (numberOfCallExpressionArgs !== 1) {
     throw new IncorrectModuleRegistryCallArityParserError(
@@ -102,7 +95,6 @@ function throwIfWrongNumberOfCallExpressionArgs(
       flowCallExpression,
       methodName,
       numberOfCallExpressionArgs,
-      language,
     );
   }
 }
@@ -120,7 +112,6 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
       typeArguments,
       methodName,
       moduleName,
-      parser.language(),
     );
   }
 
@@ -133,7 +124,6 @@ function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
   nativeModuleName: string,
   returnTypeAnnotation: $FlowFixMe,
   invalidReturnType: string,
-  language: ParserType,
   cxxOnly: boolean,
   returnType: string,
 ) {
@@ -142,7 +132,6 @@ function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
       nativeModuleName,
       returnTypeAnnotation.returnType,
       'FunctionTypeAnnotation',
-      language,
     );
   }
 }
@@ -152,16 +141,14 @@ function throwIfUntypedModule(
   hasteModuleName: string,
   callExpression: $FlowFixMe,
   methodName: string,
-  $moduleName: string,
-  language: ParserType,
+  moduleName: string,
 ) {
   if (typeArguments == null) {
     throw new UntypedModuleRegistryCallParserError(
       hasteModuleName,
       callExpression,
       methodName,
-      $moduleName,
-      language,
+      moduleName,
     );
   }
 }
@@ -207,7 +194,6 @@ function throwIfPropertyValueTypeIsUnsupported(
   propertyValue: $FlowFixMe,
   propertyKey: string,
   type: string,
-  language: ParserType,
 ) {
   const invalidPropertyValueType =
     UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap[type];
@@ -217,7 +203,6 @@ function throwIfPropertyValueTypeIsUnsupported(
     propertyValue,
     propertyKey,
     invalidPropertyValueType,
-    language,
   );
 }
 
@@ -250,6 +235,31 @@ function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
   );
 }
 
+function throwIfArrayElementTypeAnnotationIsUnsupported(
+  hasteModuleName: string,
+  flowElementType: $FlowFixMe,
+  flowArrayType: 'Array' | '$ReadOnlyArray' | 'ReadonlyArray',
+  type: string,
+) {
+  const TypeMap = {
+    FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+    VoidTypeAnnotation: 'void',
+    PromiseTypeAnnotation: 'Promise',
+    // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
+    // Right now they are partially treated as UnionTypeAnnotation
+    UnionTypeAnnotation: 'UnionTypeAnnotation',
+  };
+
+  if (type in TypeMap) {
+    throw new UnsupportedArrayElementTypeAnnotationParserError(
+      hasteModuleName,
+      flowElementType,
+      flowArrayType,
+      TypeMap[type],
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -263,4 +273,5 @@ module.exports = {
   throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+  throwIfArrayElementTypeAnnotationIsUnsupported,
 };

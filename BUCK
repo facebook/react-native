@@ -115,7 +115,7 @@ rn_apple_xplat_cxx_library(
         react_native_root_target("React/CoreModules:CoreModules"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
-        react_native_xplat_target("jsi:JSCRuntime"),
+        react_native_xplat_target("jsc:JSCRuntime"),
         react_native_xplat_target("jsiexecutor:jsiexecutor"),
         react_native_xplat_target("reactperflogger:reactperflogger"),
     ],
@@ -406,12 +406,6 @@ rn_apple_xplat_cxx_library(
         "-Wno-global-constructors",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    exported_linker_flags = [
-        "-weak_framework",
-        "UserNotifications",
-        "-weak_framework",
-        "WebKit",
-    ],
     exported_preprocessor_flags = rn_extra_build_flags(),
     fbobjc_enable_exceptions = True,
     frameworks = [
@@ -426,6 +420,7 @@ rn_apple_xplat_cxx_library(
         "$SDKROOT/System/Library/Frameworks/SystemConfiguration.framework",
         "$SDKROOT/System/Library/Frameworks/UIKit.framework",
         "$SDKROOT/System/Library/Frameworks/UserNotifications.framework",
+        "$SDKROOT/System/Library/Frameworks/WebKit.framework",
     ],
     labels = [
         "depslint_never_add",
@@ -597,6 +592,7 @@ rn_apple_library(
     autoglob = False,
     complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
+    disable_infer_precompiled_header = True,
     extension_api_only = True,
     frameworks = [
         "Foundation",
@@ -1481,5 +1477,7 @@ rn_apple_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         ":FBReactNativeSpecJSI",
+        react_native_xplat_target("react/renderer/core:core"),
+        react_native_xplat_target("cxxreact:bridge"),
     ],
 )

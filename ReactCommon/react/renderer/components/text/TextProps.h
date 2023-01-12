@@ -12,7 +12,6 @@
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
-#include <react/renderer/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {

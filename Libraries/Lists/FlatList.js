@@ -334,6 +334,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   scrollToItem(params: {
     animated?: ?boolean,
     item: ItemT,
+    viewOffset?: number,
     viewPosition?: number,
     ...
   }) {

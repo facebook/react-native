@@ -13,7 +13,7 @@ const React = require('react');
 
 let nativeTag = 1;
 
-module.exports = viewName => {
+export default viewName => {
   const Component = class extends React.Component {
     _nativeTag = nativeTag++;
 

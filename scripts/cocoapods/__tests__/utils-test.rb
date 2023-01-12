@@ -13,16 +13,16 @@ require_relative "./test_utils/SysctlCheckerMock.rb"
 require_relative "./test_utils/FileMock.rb"
 require_relative "./test_utils/systemUtils.rb"
 require_relative "./test_utils/PathnameMock.rb"
+require_relative "./test_utils/TargetDefinitionMock.rb"
 
 class UtilsTests < Test::Unit::TestCase
     def setup
         @base_path = "~/app/ios"
         Pathname.pwd!(@base_path)
-        File.enable_testing_mode!
     end
 
     def teardown
-        File.reset()
+        FileMock.reset()
         Pod::UI.reset()
         Pathname.reset()
         Pod::Config.reset()
@@ -30,6 +30,7 @@ class UtilsTests < Test::Unit::TestCase
         Environment.reset()
         ENV['RCT_NEW_ARCH_ENABLED'] = '0'
         ENV['USE_HERMES'] = '1'
+        ENV['USE_FRAMEWORKS'] = nil
         system_reset_commands
     end
 
@@ -464,11 +465,11 @@ class UtilsTests < Test::Unit::TestCase
     # =================================== #
     def test_createXcodeEnvIfMissing_whenItIsPresent_doNothing
         # Arrange
-        File.mocked_existing_files("/.xcode.env")
+        FileMock.mocked_existing_files("/.xcode.env")
         # Act
-        ReactNativePodsUtils.create_xcode_env_if_missing
+        ReactNativePodsUtils.create_xcode_env_if_missing(file_manager: FileMock)
         # Assert
-        assert_equal(File.exist_invocation_params, ["/.xcode.env"])
+        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env"])
         assert_equal($collected_commands, [])
     end
 
@@ -476,10 +477,61 @@ class UtilsTests < Test::Unit::TestCase
         # Arrange
 
         # Act
-        ReactNativePodsUtils.create_xcode_env_if_missing
+        ReactNativePodsUtils.create_xcode_env_if_missing(file_manager: FileMock)
         # Assert
-        assert_equal(File.exist_invocation_params, ["/.xcode.env"])
+        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env"])
         assert_equal($collected_commands, ["echo 'export NODE_BINARY=$(command -v node)' > /.xcode.env"])
+    end
+
+    # ============================ #
+    # Test - Detect Use Frameworks #
+    # ============================ #
+    def test_detectUseFrameworks_whenEnvAlreadySet_DoesNothing
+        # Arrange
+        ENV['USE_FRAMEWORKS'] = 'static'
+        target_definition = TargetDefinitionMock.new('something')
+
+        # Act
+        ReactNativePodsUtils.detect_use_frameworks(target_definition)
+
+        # Assert
+        assert_equal(Pod::UI.collected_messages, [])
+    end
+
+    def test_detectUseFrameworks_whenEnvNotSetAndNotUsed_setEnvVarToNil
+        # Arrange
+        target_definition = TargetDefinitionMock.new('static library')
+
+        # Act
+        ReactNativePodsUtils.detect_use_frameworks(target_definition)
+
+        # Assert
+        assert_equal(Pod::UI.collected_messages, ["Framework build type is static library"])
+        assert_nil(ENV['USE_FRAMEWORKS'])
+    end
+
+    def test_detectUseFrameworks_whenEnvNotSetAndStaticFrameworks_setEnvVarToStatic
+        # Arrange
+        target_definition = TargetDefinitionMock.new('static framework')
+
+        # Act
+        ReactNativePodsUtils.detect_use_frameworks(target_definition)
+
+        # Assert
+        assert_equal(Pod::UI.collected_messages, ["Framework build type is static framework"])
+        assert_equal(ENV['USE_FRAMEWORKS'], 'static')
+    end
+
+    def test_detectUseFrameworks_whenEnvNotSetAndDynamicFrameworks_setEnvVarToDynamic
+        # Arrange
+        target_definition = TargetDefinitionMock.new('dynamic framework')
+
+        # Act
+        ReactNativePodsUtils.detect_use_frameworks(target_definition)
+
+        # Assert
+        assert_equal(Pod::UI.collected_messages, ["Framework build type is dynamic framework"])
+        assert_equal(ENV['USE_FRAMEWORKS'], 'dynamic')
     end
 end
 

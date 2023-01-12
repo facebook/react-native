@@ -102,7 +102,9 @@ import java.util.Map;
         ((StyleAnimatedNode) node).collectViewUpdates(mPropMap);
       } else if (node instanceof ValueAnimatedNode) {
         Object animatedObject = ((ValueAnimatedNode) node).getAnimatedObject();
-        if (animatedObject instanceof String) {
+        if (animatedObject instanceof Integer) {
+          mPropMap.putInt(entry.getKey(), (Integer) animatedObject);
+        } else if (animatedObject instanceof String) {
           mPropMap.putString(entry.getKey(), (String) animatedObject);
         } else {
           mPropMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());

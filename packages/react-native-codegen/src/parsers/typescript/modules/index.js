@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -13,31 +13,27 @@
 import type {
   NamedShape,
   NativeModuleAliasMap,
-  NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleTypeAnnotation,
   NativeModuleSchema,
   Nullable,
-} from '../../../CodegenSchema.js';
+} from '../../../CodegenSchema';
 
+import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
-const {nullGuard} = require('../../parsers-utils');
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
-const {resolveTypeAnnotation, getTypes} = require('../utils.js');
+const {resolveTypeAnnotation, getTypes} = require('../utils');
 
 const {
-  unwrapNullable,
-  wrapNullable,
-  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   parseObjectProperty,
-  emitUnionTypeAnnotation,
   translateDefault,
   buildPropertySchema,
 } = require('../../parsers-commons');
 
 const {
+  emitArrayType,
   emitBoolean,
   emitDouble,
   emitFloat,
@@ -50,16 +46,17 @@ const {
   emitVoid,
   emitString,
   emitStringish,
-  emitMixedTypeAnnotation,
+  emitMixed,
+  emitUnion,
   typeAliasResolution,
+  translateArrayTypeAnnotation,
 } = require('../../parsers-primitives');
 
 const {
-  UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
-} = require('../../errors.js');
+} = require('../../errors');
 
 const {
   throwIfUntypedModule,
@@ -72,101 +69,7 @@ const {
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
 } = require('../../error-utils');
 
-const {TypeScriptParser} = require('../parser');
-
 const language = 'TypeScript';
-const parser = new TypeScriptParser();
-
-function translateArrayTypeAnnotation(
-  hasteModuleName: string,
-  types: TypeDeclarationMap,
-  aliasMap: {...NativeModuleAliasMap},
-  cxxOnly: boolean,
-  tsArrayType: 'Array' | 'ReadonlyArray',
-  tsElementType: $FlowFixMe,
-  nullable: boolean,
-): Nullable<NativeModuleTypeAnnotation> {
-  try {
-    /**
-     * TODO(T72031674): Migrate all our NativeModule specs to not use
-     * invalid Array ElementTypes. Then, make the elementType a required
-     * parameter.
-     */
-    const [elementType, isElementTypeNullable] = unwrapNullable(
-      translateTypeAnnotation(
-        hasteModuleName,
-        tsElementType,
-        types,
-        aliasMap,
-        /**
-         * TODO(T72031674): Ensure that all ParsingErrors that are thrown
-         * while parsing the array element don't get captured and collected.
-         * Why? If we detect any parsing error while parsing the element,
-         * we should default it to null down the line, here. This is
-         * the correct behaviour until we migrate all our NativeModule specs
-         * to be parseable.
-         */
-        nullGuard,
-        cxxOnly,
-      ),
-    );
-
-    if (elementType.type === 'VoidTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        'void',
-        language,
-      );
-    }
-
-    if (elementType.type === 'PromiseTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        'Promise',
-        language,
-      );
-    }
-
-    if (elementType.type === 'FunctionTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        'FunctionTypeAnnotation',
-        language,
-      );
-    }
-
-    // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
-    // Right now they are partially treated as UnionTypeAnnotation
-    if (elementType.type === 'UnionTypeAnnotation') {
-      throw new UnsupportedArrayElementTypeAnnotationParserError(
-        hasteModuleName,
-        tsElementType,
-        tsArrayType,
-        'UnionTypeAnnotation',
-        language,
-      );
-    }
-
-    const finalTypeAnnotation: NativeModuleArrayTypeAnnotation<
-      Nullable<NativeModuleBaseTypeAnnotation>,
-    > = {
-      type: 'ArrayTypeAnnotation',
-      elementType: wrapNullable(isElementTypeNullable, elementType),
-    };
-
-    return wrapNullable(nullable, finalTypeAnnotation);
-  } catch (ex) {
-    return wrapNullable(nullable, {
-      type: 'ArrayTypeAnnotation',
-    });
-  }
-}
 
 function translateTypeAnnotation(
   hasteModuleName: string,
@@ -178,6 +81,7 @@ function translateTypeAnnotation(
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
+  parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeAliasResolutionStatus} =
     resolveTypeAnnotation(typeScriptTypeAnnotation, types);
@@ -192,6 +96,8 @@ function translateTypeAnnotation(
         'Array',
         typeAnnotation.elementType,
         nullable,
+        translateTypeAnnotation,
+        parser,
       );
     }
     case 'TSTypeOperator': {
@@ -207,6 +113,8 @@ function translateTypeAnnotation(
           'ReadonlyArray',
           typeAnnotation.typeAnnotation.elementType,
           nullable,
+          translateTypeAnnotation,
+          parser,
         );
       } else {
         throw new UnsupportedGenericParserError(
@@ -222,24 +130,29 @@ function translateTypeAnnotation(
           return emitRootTag(nullable);
         }
         case 'Promise': {
-          return emitPromise(hasteModuleName, typeAnnotation, parser, nullable);
-        }
-        case 'Array':
-        case 'ReadonlyArray': {
-          assertGenericTypeAnnotationHasExactlyOneTypeParameter(
+          return emitPromise(
             hasteModuleName,
             typeAnnotation,
             parser,
+            nullable,
+            types,
+            aliasMap,
+            tryParse,
+            cxxOnly,
+            translateTypeAnnotation,
           );
-
-          return translateArrayTypeAnnotation(
+        }
+        case 'Array':
+        case 'ReadonlyArray': {
+          return emitArrayType(
             hasteModuleName,
+            typeAnnotation,
+            parser,
             types,
             aliasMap,
             cxxOnly,
-            typeAnnotation.type,
-            typeAnnotation.typeParameters.params[0],
             nullable,
+            translateTypeAnnotation,
           );
         }
         case 'Stringish': {
@@ -270,6 +183,29 @@ function translateTypeAnnotation(
       }
     }
     case 'TSTypeLiteral': {
+      // if there is TSIndexSignature, then it is a dictionary
+      if (typeAnnotation.members) {
+        const indexSignatures = typeAnnotation.members.filter(
+          member => member.type === 'TSIndexSignature',
+        );
+        if (indexSignatures.length > 0) {
+          // check the property type to prevent developers from using unsupported types
+          // the return value from `translateTypeAnnotation` is unused
+          const propertyType = indexSignatures[0].typeAnnotation;
+          translateTypeAnnotation(
+            hasteModuleName,
+            propertyType,
+            types,
+            aliasMap,
+            tryParse,
+            cxxOnly,
+            parser,
+          );
+          // no need to do further checking
+          return emitObject(nullable);
+        }
+      }
+
       const objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         // $FlowFixMe[missing-type-arg]
@@ -323,20 +259,15 @@ function translateTypeAnnotation(
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
-        language,
-      );
-    }
-    case 'TSUnionType': {
-      return emitUnionTypeAnnotation(
-        nullable,
-        hasteModuleName,
-        typeAnnotation,
         parser,
       );
     }
+    case 'TSUnionType': {
+      return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
+    }
     case 'TSUnknownKeyword': {
       if (cxxOnly) {
-        return emitMixedTypeAnnotation(nullable);
+        return emitMixed(nullable);
       }
       // Fallthrough
     }
@@ -353,7 +284,7 @@ function translateTypeAnnotation(
 function isModuleInterface(node: $FlowFixMe) {
   return (
     node.type === 'TSInterfaceDeclaration' &&
-    node.extends.length === 1 &&
+    node.extends?.length === 1 &&
     node.extends[0].type === 'TSExpressionWithTypeArguments' &&
     node.extends[0].expression.name === 'TurboModule'
   );
@@ -366,6 +297,7 @@ function buildModuleSchema(
    */
   ast: $FlowFixMe,
   tryParse: ParserErrorCapturer,
+  parser: Parser,
 ): NativeModuleSchema {
   const types = getTypes(ast);
   const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(
@@ -389,8 +321,8 @@ function buildModuleSchema(
 
   throwIfModuleInterfaceIsMisnamed(hasteModuleName, moduleSpec.id, language);
 
-  // Parse Module Names
-  const moduleName = tryParse((): string => {
+  // Parse Module Name
+  const moduleName = ((): string => {
     const callExpressions = [];
     visit(ast, {
       CallExpression(node) {
@@ -404,14 +336,12 @@ function buildModuleSchema(
       hasteModuleName,
       moduleSpec,
       callExpressions,
-      language,
     );
 
     throwIfMoreThanOneModuleRegistryCalls(
       hasteModuleName,
       callExpressions,
       callExpressions.length,
-      language,
     );
 
     const [callExpression] = callExpressions;
@@ -423,7 +353,6 @@ function buildModuleSchema(
       callExpression,
       methodName,
       callExpression.arguments.length,
-      language,
     );
 
     if (callExpression.arguments[0].type !== 'StringLiteral') {
@@ -433,7 +362,6 @@ function buildModuleSchema(
         callExpression.arguments[0],
         methodName,
         type,
-        language,
       );
     }
 
@@ -445,7 +373,6 @@ function buildModuleSchema(
       callExpression,
       methodName,
       $moduleName,
-      language,
     );
 
     throwIfIncorrectModuleRegistryCallTypeParameterParserError(
@@ -457,9 +384,7 @@ function buildModuleSchema(
     );
 
     return $moduleName;
-  });
-
-  const moduleNames = moduleName == null ? [] : [moduleName];
+  })();
 
   // Some module names use platform suffix to indicate platform-exclusive modules.
   // Eventually this should be made explicit in the Flow type itself.
@@ -467,7 +392,7 @@ function buildModuleSchema(
   // Note: this shape is consistent with ComponentSchema.
   const {cxxOnly, excludedPlatforms} = verifyPlatforms(
     hasteModuleName,
-    moduleNames,
+    moduleName,
   );
 
   // $FlowFixMe[missing-type-arg]
@@ -492,9 +417,9 @@ function buildModuleSchema(
           aliasMap,
           tryParse,
           cxxOnly,
-          language,
           resolveTypeAnnotation,
           translateTypeAnnotation,
+          parser,
         ),
       }));
     })
@@ -507,7 +432,7 @@ function buildModuleSchema(
           spec: {
             properties: [...moduleSchema.spec.properties, propertyShape],
           },
-          moduleNames: moduleSchema.moduleNames,
+          moduleName: moduleSchema.moduleName,
           excludedPlatforms: moduleSchema.excludedPlatforms,
         };
       },
@@ -515,7 +440,7 @@ function buildModuleSchema(
         type: 'NativeModule',
         aliases: {},
         spec: {properties: []},
-        moduleNames: moduleNames,
+        moduleName: moduleName,
         excludedPlatforms:
           excludedPlatforms.length !== 0 ? [...excludedPlatforms] : undefined,
       },

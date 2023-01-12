@@ -43,15 +43,11 @@ const {
   publishAndroidArtifactsToMaven,
 } = require('./release-utils');
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
 const yargs = require('yargs');
 
 const buildTag = process.env.CIRCLE_TAG;
 const otp = process.env.NPM_CONFIG_OTP;
-const tmpPublishingFolder = fs.mkdtempSync(
-  path.join(os.tmpdir(), 'rn-publish-'),
-);
 
 const argv = yargs
   .option('n', {
@@ -65,18 +61,21 @@ const argv = yargs
     default: false,
   })
   .option('r', {
-    alias: 'release', // useless but needed for CI
+    alias: 'release',
     type: 'boolean',
     default: false,
   })
   .strict().argv;
 const nightlyBuild = argv.nightly;
 const dryRunBuild = argv.dryRun;
+const releaseBuild = argv.release;
 const isCommitly = nightlyBuild || dryRunBuild;
 
-if (!argv.help) {
-  echo(`The temp publishing folder is ${tmpPublishingFolder}`);
-}
+const buildType = releaseBuild
+  ? 'release'
+  : nightlyBuild
+  ? 'nightly'
+  : 'dry-run';
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
 const currentCommit = getCurrentCommit();
@@ -97,7 +96,7 @@ let version,
   minor,
   prerelease = null;
 try {
-  ({version, major, minor, prerelease} = parseVersion(rawVersion));
+  ({version, major, minor, prerelease} = parseVersion(rawVersion, buildType));
 } catch (e) {
   echo(e.message);
   exit(1);
@@ -122,14 +121,16 @@ if (dryRunBuild) {
 // For stable, pre-release releases, we rely on CircleCI job `prepare_package_for_release` to handle this
 if (isCommitly) {
   if (
-    exec(`node scripts/set-rn-version.js --to-version ${releaseVersion}`).code
+    exec(
+      `node scripts/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
+    ).code
   ) {
     echo(`Failed to set version number to ${releaseVersion}`);
     exit(1);
   }
 }
 
-generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
+generateAndroidArtifacts(releaseVersion);
 
 // Write version number to the build folder
 const releaseVersionFile = path.join('build', '.version');

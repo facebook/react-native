@@ -13,8 +13,7 @@
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/ShadowView.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Abstract class for Scheduler's delegate.
@@ -56,5 +55,4 @@ class SchedulerDelegate {
   virtual ~SchedulerDelegate() noexcept = default;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

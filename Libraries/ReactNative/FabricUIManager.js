@@ -58,6 +58,7 @@ export type Spec = {|
     errorCallback: (error: Object) => void,
   ) => void,
   +sendAccessibilityEvent: (node: Node, eventType: string) => void,
+  +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node,
 |};
 
 const FabricUIManager: ?Spec = global.nativeFabricUIManager;

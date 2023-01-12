@@ -187,7 +187,7 @@ const createMockPressEvent = (
   }
 
   const nativeEvent = {
-    changedTouches: [],
+    changedTouches: ([]: Array<PressEvent['nativeEvent']>),
     force: 1,
     identifier: 42,
     locationX: pageX,
@@ -196,7 +196,7 @@ const createMockPressEvent = (
     pageY,
     target: 42,
     timestamp: 1075881600000,
-    touches: [],
+    touches: ([]: Array<PressEvent['nativeEvent']>),
   };
 
   nativeEvent.changedTouches.push(nativeEvent);

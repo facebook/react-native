@@ -57,7 +57,6 @@ const View: React.AbstractComponent<
       nativeID,
       pointerEvents,
       role,
-      style,
       tabIndex,
       ...otherProps
     }: ViewProps,
@@ -66,23 +65,43 @@ const View: React.AbstractComponent<
     const _accessibilityLabelledBy =
       ariaLabelledBy?.split(/\s*,\s*/g) ?? accessibilityLabelledBy;
 
-    const _accessibilityState = {
-      busy: ariaBusy ?? accessibilityState?.busy,
-      checked: ariaChecked ?? accessibilityState?.checked,
-      disabled: ariaDisabled ?? accessibilityState?.disabled,
-      expanded: ariaExpanded ?? accessibilityState?.expanded,
-      selected: ariaSelected ?? accessibilityState?.selected,
-    };
+    let _accessibilityState;
+    if (
+      accessibilityState != null ||
+      ariaBusy != null ||
+      ariaChecked != null ||
+      ariaDisabled != null ||
+      ariaExpanded != null ||
+      ariaSelected != null
+    ) {
+      _accessibilityState = {
+        busy: ariaBusy ?? accessibilityState?.busy,
+        checked: ariaChecked ?? accessibilityState?.checked,
+        disabled: ariaDisabled ?? accessibilityState?.disabled,
+        expanded: ariaExpanded ?? accessibilityState?.expanded,
+        selected: ariaSelected ?? accessibilityState?.selected,
+      };
+    }
+    let _accessibilityValue;
+    if (
+      accessibilityValue != null ||
+      ariaValueMax != null ||
+      ariaValueMin != null ||
+      ariaValueNow != null ||
+      ariaValueText != null
+    ) {
+      _accessibilityValue = {
+        max: ariaValueMax ?? accessibilityValue?.max,
+        min: ariaValueMin ?? accessibilityValue?.min,
+        now: ariaValueNow ?? accessibilityValue?.now,
+        text: ariaValueText ?? accessibilityValue?.text,
+      };
+    }
 
-    const _accessibilityValue = {
-      max: ariaValueMax ?? accessibilityValue?.max,
-      min: ariaValueMin ?? accessibilityValue?.min,
-      now: ariaValueNow ?? accessibilityValue?.now,
-      text: ariaValueText ?? accessibilityValue?.text,
-    };
+    // $FlowFixMe[underconstrained-implicit-instantiation]
+    let style = flattenStyle(otherProps.style);
 
-    const flattenedStyle = flattenStyle(style);
-    const newPointerEvents = flattenedStyle?.pointerEvents || pointerEvents;
+    const newPointerEvents = style?.pointerEvents || pointerEvents;
 
     return (
       <TextAncestor.Provider value={false}>

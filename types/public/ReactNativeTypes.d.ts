@@ -86,9 +86,11 @@ export interface NativeMethods {
    * _Can also be called with a relativeNativeNodeHandle but is deprecated._
    */
   measureLayout(
-    relativeToNativeComponentRef: HostComponent<unknown> | number,
+    relativeToNativeComponentRef:
+      | React.ElementRef<HostComponent<unknown>>
+      | number,
     onSuccess: MeasureLayoutOnSuccessCallback,
-    onFail: () => void /* currently unused */,
+    onFail?: () => void,
   ): void;
 
   /**

@@ -70,7 +70,7 @@ class Sealable {
 
   /*
    * Seals the object. This operation is irreversible;
-   * the object cannot be "unsealed" after being sealing.
+   * the object cannot be "unsealed" after being sealed.
    */
   void seal() const;
 

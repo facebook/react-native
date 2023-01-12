@@ -15,6 +15,7 @@
 #include <jsi/jsi.h>
 #include <functional>
 #include <mutex>
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -127,18 +128,17 @@ class JSIExecutor : public JSExecutor {
   JSIScopedTimeoutInvoker scopedTimeoutInvoker_;
   RuntimeInstaller runtimeInstaller_;
 
-  folly::Optional<jsi::Function> callFunctionReturnFlushedQueue_;
-  folly::Optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
-  folly::Optional<jsi::Function> flushedQueue_;
+  std::optional<jsi::Function> callFunctionReturnFlushedQueue_;
+  std::optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
+  std::optional<jsi::Function> flushedQueue_;
 };
 
 using Logger =
     std::function<void(const std::string &message, unsigned int logLevel)>;
 void bindNativeLogger(jsi::Runtime &runtime, Logger logger);
 
-using PerformanceNow = std::function<double()>;
-void bindNativePerformanceNow(
-    jsi::Runtime &runtime,
-    PerformanceNow performanceNow);
+void bindNativePerformanceNow(jsi::Runtime &runtime);
+
+double performanceNow();
 } // namespace react
 } // namespace facebook

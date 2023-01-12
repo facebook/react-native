@@ -16,7 +16,7 @@ rn_xplat_cxx_library(
     deps = [
         FBJNI_TARGET,
         react_native_target("jni/react/jni:jni"),
-        react_native_xplat_target("jsi:JSCRuntime"),
+        react_native_xplat_target("jsc:JSCRuntime"),
         react_native_xplat_target("jsiexecutor:jsiexecutor"),
     ],
 )

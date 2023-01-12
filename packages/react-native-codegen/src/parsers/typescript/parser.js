@@ -10,9 +10,26 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema.js';
+import type {
+  UnionTypeAnnotationMemberType,
+  SchemaType,
+  NamedShape,
+  Nullable,
+  NativeModuleParamTypeAnnotation,
+} from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
+
+// $FlowFixMe[untyped-import] Use flow-types for @babel/parser
+const babelParser = require('@babel/parser');
+
+const {buildSchema} = require('../parsers-commons');
+const {Visitor} = require('./Visitor');
+const {buildComponentSchema} = require('./components');
+const {wrapComponentSchema} = require('./components/schema');
+const {buildModuleSchema} = require('./modules');
+
+const fs = require('fs');
 
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
@@ -21,20 +38,20 @@ const {
 class TypeScriptParser implements Parser {
   typeParameterInstantiation: string = 'TSTypeParameterInstantiation';
 
-  getKeyName(propertyOrIndex: $FlowFixMe, hasteModuleName: string): string {
-    switch (propertyOrIndex.type) {
-      case 'TSPropertySignature':
-        return propertyOrIndex.key.name;
-      case 'TSIndexSignature':
-        return propertyOrIndex.parameters[0].name;
-      default:
-        throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-          hasteModuleName,
-          propertyOrIndex,
-          propertyOrIndex.type,
-          this.language(),
-        );
+  isProperty(property: $FlowFixMe): boolean {
+    return property.type === 'TSPropertySignature';
+  }
+
+  getKeyName(property: $FlowFixMe, hasteModuleName: string): string {
+    if (!this.isProperty(property)) {
+      throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+        hasteModuleName,
+        property,
+        property.type,
+        this.language(),
+      );
     }
+    return property.key.name;
   }
 
   getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
@@ -80,6 +97,53 @@ class TypeScriptParser implements Parser {
     };
 
     return [...new Set(membersTypes.map(remapLiteral))];
+  }
+
+  parseFile(filename: string): SchemaType {
+    const contents = fs.readFileSync(filename, 'utf8');
+
+    return buildSchema(
+      contents,
+      filename,
+      wrapComponentSchema,
+      buildComponentSchema,
+      buildModuleSchema,
+      Visitor,
+      this,
+    );
+  }
+
+  getAst(contents: string): $FlowFixMe {
+    return babelParser.parse(contents, {
+      sourceType: 'module',
+      plugins: ['typescript'],
+    }).program;
+  }
+
+  getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<$FlowFixMe> {
+    return functionTypeAnnotation.parameters;
+  }
+
+  getFunctionNameFromParameter(
+    parameter: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
+  ): $FlowFixMe {
+    return parameter.typeAnnotation;
+  }
+
+  getParameterName(parameter: $FlowFixMe): string {
+    return parameter.name;
+  }
+
+  getParameterTypeAnnotation(parameter: $FlowFixMe): $FlowFixMe {
+    return parameter.typeAnnotation.typeAnnotation;
+  }
+
+  getFunctionTypeAnnotationReturnType(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $FlowFixMe {
+    return functionTypeAnnotation.typeAnnotation.typeAnnotation;
   }
 }
 module.exports = {

@@ -21,8 +21,27 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 class LongStreamingStats {
-  private Queue<Long> minHeap = new PriorityQueue<>(Comparator.naturalOrder());
-  private Queue<Long> maxHeap = new PriorityQueue<>(Comparator.reverseOrder());
+  // TODO(T138627466): Calculate median value with better algorithm after Android API 24.
+  private Queue<Long> minHeap =
+      new PriorityQueue<>(
+          11,
+          new Comparator<Long>() {
+            @Override
+            public int compare(Long first, Long second) {
+              // Natural order
+              return Long.compare(first, second);
+            }
+          });
+  private Queue<Long> maxHeap =
+      new PriorityQueue<>(
+          11,
+          new Comparator<Long>() {
+            @Override
+            public int compare(Long first, Long second) {
+              // Reversed order
+              return Long.compare(second, first);
+            }
+          });
   private double streamingAverage = 0.0;
   private int len = 0;
   private long max = 0;

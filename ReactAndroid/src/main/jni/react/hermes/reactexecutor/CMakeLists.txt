@@ -8,29 +8,21 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 file(GLOB_RECURSE hermes_executor_SRC CONFIGURE_DEPENDS *.cpp)
 
-if(${CMAKE_BUILD_TYPE} MATCHES Debug)
-        set(HERMES_TARGET_SUFFIX debug)
-else()
-        set(HERMES_TARGET_SUFFIX release)
-endif()
-
-set(HERMES_TARGET_NAME hermes-executor-${HERMES_TARGET_SUFFIX})
-
-add_library(
-        ${HERMES_TARGET_NAME}
+add_library(hermes_executor
         SHARED
         ${hermes_executor_SRC}
 )
 target_compile_options(
-        ${HERMES_TARGET_NAME}
+        hermes_executor
         PRIVATE
         $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
+        -std=c++17
         -fexceptions
 )
-target_include_directories(${HERMES_TARGET_NAME} PRIVATE .)
+target_include_directories(hermes_executor PRIVATE .)
 target_link_libraries(
-        ${HERMES_TARGET_NAME}
-        hermes-executor-common
+        hermes_executor
+        hermes_executor_common
         jsireact
         fb
         fbjni

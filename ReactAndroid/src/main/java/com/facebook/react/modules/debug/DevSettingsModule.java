@@ -20,10 +20,8 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
-@ReactModule(name = DevSettingsModule.NAME)
+@ReactModule(name = NativeDevSettingsSpec.NAME)
 public class DevSettingsModule extends NativeDevSettingsSpec {
-
-  public static final String NAME = "DevSettings";
 
   private final DevSupportManager mDevSupportManager;
 
@@ -32,11 +30,6 @@ public class DevSettingsModule extends NativeDevSettingsSpec {
     super(reactContext);
 
     mDevSupportManager = devSupportManager;
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

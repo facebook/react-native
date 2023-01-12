@@ -128,6 +128,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderBottomRightRadius = -1;
     _borderBottomStartRadius = -1;
     _borderBottomEndRadius = -1;
+    _borderEndEndRadius = -1;
+    _borderEndStartRadius = -1;
+    _borderStartEndRadius = -1;
+    _borderStartStartRadius = -1;
     _borderCurve = RCTBorderCurveCircular;
     _borderStyle = RCTBorderStyleSolid;
     _hitTestEdgeInsets = UIEdgeInsetsZero;
@@ -667,11 +671,16 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   CGFloat bottomLeftRadius;
   CGFloat bottomRightRadius;
 
+  const CGFloat logicalTopStartRadius = RCTDefaultIfNegativeTo(_borderStartStartRadius, _borderTopStartRadius);
+  const CGFloat logicalTopEndRadius = RCTDefaultIfNegativeTo(_borderStartEndRadius, _borderTopEndRadius);
+  const CGFloat logicalBottomStartRadius = RCTDefaultIfNegativeTo(_borderEndStartRadius, _borderBottomStartRadius);
+  const CGFloat logicalBottomEndRadius = RCTDefaultIfNegativeTo(_borderEndEndRadius, _borderBottomEndRadius);
+
   if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
-    const CGFloat topStartRadius = RCTDefaultIfNegativeTo(_borderTopLeftRadius, _borderTopStartRadius);
-    const CGFloat topEndRadius = RCTDefaultIfNegativeTo(_borderTopRightRadius, _borderTopEndRadius);
-    const CGFloat bottomStartRadius = RCTDefaultIfNegativeTo(_borderBottomLeftRadius, _borderBottomStartRadius);
-    const CGFloat bottomEndRadius = RCTDefaultIfNegativeTo(_borderBottomRightRadius, _borderBottomEndRadius);
+    const CGFloat topStartRadius = RCTDefaultIfNegativeTo(_borderTopLeftRadius, logicalTopStartRadius);
+    const CGFloat topEndRadius = RCTDefaultIfNegativeTo(_borderTopRightRadius, logicalTopEndRadius);
+    const CGFloat bottomStartRadius = RCTDefaultIfNegativeTo(_borderBottomLeftRadius, logicalBottomStartRadius);
+    const CGFloat bottomEndRadius = RCTDefaultIfNegativeTo(_borderBottomRightRadius, logicalBottomEndRadius);
 
     const CGFloat directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
     const CGFloat directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
@@ -683,10 +692,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     bottomLeftRadius = RCTDefaultIfNegativeTo(radius, directionAwareBottomLeftRadius);
     bottomRightRadius = RCTDefaultIfNegativeTo(radius, directionAwareBottomRightRadius);
   } else {
-    const CGFloat directionAwareTopLeftRadius = isRTL ? _borderTopEndRadius : _borderTopStartRadius;
-    const CGFloat directionAwareTopRightRadius = isRTL ? _borderTopStartRadius : _borderTopEndRadius;
-    const CGFloat directionAwareBottomLeftRadius = isRTL ? _borderBottomEndRadius : _borderBottomStartRadius;
-    const CGFloat directionAwareBottomRightRadius = isRTL ? _borderBottomStartRadius : _borderBottomEndRadius;
+    const CGFloat directionAwareTopLeftRadius = isRTL ? logicalTopEndRadius : logicalTopStartRadius;
+    const CGFloat directionAwareTopRightRadius = isRTL ? logicalTopStartRadius : logicalTopEndRadius;
+    const CGFloat directionAwareBottomLeftRadius = isRTL ? logicalBottomEndRadius : logicalBottomStartRadius;
+    const CGFloat directionAwareBottomRightRadius = isRTL ? logicalBottomStartRadius : logicalBottomEndRadius;
 
     topLeftRadius =
         RCTDefaultIfNegativeTo(radius, RCTDefaultIfNegativeTo(_borderTopLeftRadius, directionAwareTopLeftRadius));
@@ -946,7 +955,8 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 
                 setBorderRadius() setBorderRadius(TopLeft) setBorderRadius(TopRight) setBorderRadius(TopStart)
                     setBorderRadius(TopEnd) setBorderRadius(BottomLeft) setBorderRadius(BottomRight)
-                        setBorderRadius(BottomStart) setBorderRadius(BottomEnd)
+                        setBorderRadius(BottomStart) setBorderRadius(BottomEnd) setBorderRadius(EndEnd)
+                            setBorderRadius(EndStart) setBorderRadius(StartEnd) setBorderRadius(StartStart)
 
 #pragma mark - Border Curve
 
@@ -960,7 +970,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     [self.layer setNeedsDisplay];                       \
   }
 
-                            setBorderCurve()
+                                setBorderCurve()
 
 #pragma mark - Border Style
 
@@ -974,6 +984,6 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     [self.layer setNeedsDisplay];                       \
   }
 
-                                setBorderStyle()
+                                    setBorderStyle()
 
-                                    @end
+                                        @end

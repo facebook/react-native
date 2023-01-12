@@ -103,7 +103,7 @@ function reportException(
   }
 
   if (__DEV__) {
-    const LogBox = require('../LogBox/LogBox');
+    const LogBox = require('../LogBox/LogBox').default;
     LogBox.addException({
       ...data,
       isComponentError: !!e.isComponentError,

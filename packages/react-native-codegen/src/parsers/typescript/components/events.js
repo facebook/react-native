@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -107,7 +107,11 @@ function findEventArgumentsAndType(
   types: TypeDeclarationMap,
   bubblingType: void | 'direct' | 'bubble',
   paperName: ?$FlowFixMe,
-) {
+): {
+  argumentProps: ?$ReadOnlyArray<$FlowFixMe>,
+  paperTopLevelNameDeprecated: ?$FlowFixMe,
+  bubblingType: ?'direct' | 'bubble',
+} {
   if (typeAnnotation.type === 'TSInterfaceDeclaration') {
     return {
       argumentProps: flattenProperties([typeAnnotation], types),

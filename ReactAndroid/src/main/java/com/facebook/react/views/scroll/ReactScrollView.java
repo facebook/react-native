@@ -33,9 +33,11 @@ import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
@@ -100,6 +102,7 @@ public class ReactScrollView extends ScrollView
   private int mSnapToAlignment = SNAP_ALIGNMENT_DISABLED;
   private @Nullable View mContentView;
   private ReactViewBackgroundManager mReactBackgroundManager;
+  private @Nullable ReadableMap mCurrentContentOffset = null;
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
@@ -1000,6 +1003,23 @@ public class ReactScrollView extends ScrollView
   public void onChildViewRemoved(View parent, View child) {
     mContentView.removeOnLayoutChangeListener(this);
     mContentView = null;
+  }
+
+  public void setContentOffset(ReadableMap value) {
+    // When contentOffset={{x:0,y:0}} with lazy load items, setContentOffset
+    // is repeatedly called, causing an unexpected scroll to top behavior.
+    // Avoid updating contentOffset if the value has not changed.
+    if (mCurrentContentOffset == null || !mCurrentContentOffset.equals(value)) {
+      mCurrentContentOffset = value;
+
+      if (value != null) {
+        double x = value.hasKey("x") ? value.getDouble("x") : 0;
+        double y = value.hasKey("y") ? value.getDouble("y") : 0;
+        scrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+      } else {
+        scrollTo(0, 0);
+      }
+    }
   }
 
   /**

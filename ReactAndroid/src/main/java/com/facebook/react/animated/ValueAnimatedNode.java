@@ -15,7 +15,6 @@ import com.facebook.react.bridge.ReadableMap;
  * library.
  */
 /*package*/ class ValueAnimatedNode extends AnimatedNode {
-  /*package*/ Object mAnimatedObject = null;
   /*package*/ double mValue = Double.NaN;
   /*package*/ double mOffset = 0;
   private @Nullable AnimatedNodeValueListener mValueListener;
@@ -37,7 +36,7 @@ import com.facebook.react.bridge.ReadableMap;
   }
 
   public Object getAnimatedObject() {
-    return mAnimatedObject;
+    return null;
   }
 
   public void flattenOffset() {

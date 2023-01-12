@@ -20,21 +20,14 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.util.ExceptionDataHelper;
 import com.facebook.react.util.JSStackTrace;
 
-@ReactModule(name = ExceptionsManagerModule.NAME)
+@ReactModule(name = NativeExceptionsManagerSpec.NAME)
 public class ExceptionsManagerModule extends NativeExceptionsManagerSpec {
-
-  public static final String NAME = "ExceptionsManager";
 
   private final DevSupportManager mDevSupportManager;
 
   public ExceptionsManagerModule(DevSupportManager devSupportManager) {
     super(null);
     mDevSupportManager = devSupportManager;
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

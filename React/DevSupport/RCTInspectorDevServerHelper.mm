@@ -7,7 +7,7 @@
 
 #import <React/RCTInspectorDevServerHelper.h>
 
-#if RCT_DEV
+#if RCT_DEV || RCT_REMOTE_PROFILE
 
 #import <React/RCTLog.h>
 #import <UIKit/UIKit.h>

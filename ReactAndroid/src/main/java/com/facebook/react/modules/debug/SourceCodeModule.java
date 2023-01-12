@@ -17,18 +17,11 @@ import java.util.Map;
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
-@ReactModule(name = SourceCodeModule.NAME)
+@ReactModule(name = NativeSourceCodeSpec.NAME)
 public class SourceCodeModule extends NativeSourceCodeSpec {
-
-  public static final String NAME = "SourceCode";
 
   public SourceCodeModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

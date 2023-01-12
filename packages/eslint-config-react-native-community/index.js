@@ -14,6 +14,9 @@ module.exports = {
 
   parserOptions: {
     sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
   },
 
   extends: ['plugin:prettier/recommended'],
@@ -23,7 +26,7 @@ module.exports = {
     'react',
     'react-hooks',
     'react-native',
-    '@react-native-community',
+    '@react-native',
     'jest',
   ],
 
@@ -45,6 +48,10 @@ module.exports = {
         'ft-flow/define-flow-type': 1,
         'ft-flow/use-flow-type': 1,
       },
+    },
+    {
+      files: ['*.jsx'],
+      parser: '@babel/eslint-parser',
     },
     {
       files: ['*.ts', '*.tsx'],

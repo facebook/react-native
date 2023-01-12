@@ -19,8 +19,7 @@
 const {exec, exit, pushd, popd, pwd, cd, cp} = require('shelljs');
 const yargs = require('yargs');
 const fs = require('fs');
-const path = require('path');
-const os = require('os');
+const {getBranchName} = require('./scm-utils');
 
 const {
   launchAndroidEmulator,
@@ -30,7 +29,6 @@ const {
 
 const {
   generateAndroidArtifacts,
-  saveFilesToRestore,
   generateiOSArtifacts,
 } = require('./release-utils');
 
@@ -145,15 +143,15 @@ if (argv.target === 'RNTester') {
   // create the local npm package to feed the CLI
 
   // base setup required (specular to publish-npm.js)
-  const tmpPublishingFolder = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'rn-publish-'),
-  );
-  console.info(`The temp publishing folder is ${tmpPublishingFolder}`);
-
-  saveFilesToRestore(tmpPublishingFolder);
 
   // we need to add the unique timestamp to avoid npm/yarn to use some local caches
   const baseVersion = require('../package.json').version;
+
+  const branchName = getBranchName();
+  const buildType =
+    branchName.endsWith('-stable') && baseVersion !== '1000.0.0'
+      ? 'release'
+      : 'dry-run';
 
   const dateIdentifier = new Date()
     .toISOString()
@@ -164,10 +162,12 @@ if (argv.target === 'RNTester') {
   const releaseVersion = `${baseVersion}-${dateIdentifier}`;
 
   // this is needed to generate the Android artifacts correctly
-  exec(`node scripts/set-rn-version.js --to-version ${releaseVersion}`).code;
+  exec(
+    `node scripts/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
+  ).code;
 
   // Generate native files for Android
-  generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
+  generateAndroidArtifacts(releaseVersion);
 
   // Setting up generating native iOS (will be done later)
   const repoRoot = pwd();
@@ -189,7 +189,7 @@ if (argv.target === 'RNTester') {
 
   // for this scenario, we only need to create the debug build
   // (env variable PRODUCTION defines that podspec side)
-  const buildType = 'Debug';
+  const buildTypeiOSArtifacts = 'Debug';
 
   // the android ones get set into /private/tmp/maven-local
   const localMavenPath = '/private/tmp/maven-local';
@@ -198,8 +198,7 @@ if (argv.target === 'RNTester') {
   const tarballOutputPath = generateiOSArtifacts(
     jsiFolder,
     hermesCoreSourceFolder,
-    buildType,
-    releaseVersion,
+    buildTypeiOSArtifacts,
     localMavenPath,
   );
 
@@ -241,9 +240,6 @@ if (argv.target === 'RNTester') {
     exec('yarn android');
   }
   popd();
-
-  // just cleaning up the temp folder, the rest is done by the test clean script
-  exec(`rm -rf ${tmpPublishingFolder}`);
 }
 
 exit(0);

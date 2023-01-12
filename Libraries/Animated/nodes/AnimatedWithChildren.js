@@ -70,7 +70,7 @@ export default class AnimatedWithChildren extends AnimatedNode {
     }
   }
 
-  __getChildren(): Array<AnimatedNode> {
+  __getChildren(): $ReadOnlyArray<AnimatedNode> {
     return this._children;
   }
 

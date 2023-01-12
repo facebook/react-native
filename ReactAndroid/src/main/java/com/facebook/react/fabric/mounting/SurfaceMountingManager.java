@@ -36,6 +36,7 @@ import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.uimanager.IViewGroupManager;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ReactRoot;
@@ -44,7 +45,6 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
@@ -267,6 +267,7 @@ public class SurfaceMountingManager {
    */
   @AnyThread
   public void stopSurface() {
+    FLog.e(TAG, "Stopping surface [" + mSurfaceId + "]");
     if (isStopped()) {
       return;
     }
@@ -309,6 +310,7 @@ public class SurfaceMountingManager {
             if (ReactFeatureFlags.enableViewRecycling) {
               mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
             }
+            FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
           }
         };
 
@@ -478,7 +480,7 @@ public class SurfaceMountingManager {
       logViewHierarchy(parentView, false);
     }
 
-    ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(parentViewState);
+    IViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(parentViewState);
 
     // Verify that the view we're about to remove has the same tag we expect
     View view = viewGroupManager.getChildAt(parentView, index);
@@ -639,7 +641,7 @@ public class SurfaceMountingManager {
       logViewHierarchy(parentView, false);
     }
 
-    ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(parentViewState);
+    IViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(parentViewState);
 
     // Verify that the view we're about to remove has the same tag we expect
     View view = viewGroupManager.getChildAt(parentView, index);
@@ -979,7 +981,7 @@ public class SurfaceMountingManager {
     }
 
     ViewState parentViewState = getViewState(parentTag);
-    ViewGroupManager<?> parentViewManager = null;
+    IViewGroupManager<?> parentViewManager = null;
     if (parentViewState.mViewManager != null) {
       parentViewManager = parentViewState.mViewManager.getViewGroupManager();
     }
@@ -1257,12 +1259,12 @@ public class SurfaceMountingManager {
   }
 
   @SuppressWarnings("unchecked") // prevents unchecked conversion warn of the <ViewGroup> type
-  private static @NonNull ViewGroupManager<ViewGroup> getViewGroupManager(
+  private static @NonNull IViewGroupManager<ViewGroup> getViewGroupManager(
       @NonNull ViewState viewState) {
     if (viewState.mViewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
     }
-    return (ViewGroupManager<ViewGroup>) viewState.mViewManager.getViewGroupManager();
+    return (IViewGroupManager<ViewGroup>) viewState.mViewManager.getViewGroupManager();
   }
 
   public void printSurfaceState() {

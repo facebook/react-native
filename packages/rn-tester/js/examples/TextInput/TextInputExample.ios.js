@@ -19,7 +19,6 @@ const {
   TextInput,
   View,
   StyleSheet,
-  Slider,
   Switch,
   Alert,
 } = require('react-native');
@@ -214,8 +213,8 @@ class AutogrowingTextInputExample extends React.Component<
     super(props);
 
     this.state = {
-      width: 100,
       multiline: true,
+      fullWidth: true,
       text: '',
       contentSize: {
         width: 0,
@@ -234,24 +233,23 @@ class AutogrowingTextInputExample extends React.Component<
     const {style, multiline, ...props} = this.props;
     return (
       <View>
-        <Text>Width:</Text>
-        <Slider
-          value={100}
-          minimumValue={0}
-          maximumValue={100}
-          step={10}
-          onValueChange={value => this.setState({width: value})}
+        <Text>Full width:</Text>
+        <Switch
+          value={this.state.fullWidth}
+          onValueChange={value => this.setState({fullWidth: value})}
         />
+
         <Text>Multiline:</Text>
         <Switch
           value={this.state.multiline}
           onValueChange={value => this.setState({multiline: value})}
         />
+
         <Text>TextInput:</Text>
         <TextInput
           value="prop"
           multiline={this.state.multiline}
-          style={[style, {width: this.state.width + '%'}]}
+          style={[style, {width: this.state.fullWidth ? '100%' : '50%'}]}
           onChangeText={value => this.setState({text: value})}
           onContentSizeChange={event =>
             this.setState({contentSize: event.nativeEvent.contentSize})

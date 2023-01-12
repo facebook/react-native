@@ -36,55 +36,26 @@ TurboModuleManager::TurboModuleManager(
     RuntimeExecutor runtimeExecutor,
     std::shared_ptr<CallInvoker> jsCallInvoker,
     std::shared_ptr<CallInvoker> nativeCallInvoker,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-    bool useGlobalCallbackCleanupScopeUsingRetainJSCallback,
-    bool useTurboModuleManagerCallbackCleanupScope)
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate)
     : javaPart_(jni::make_global(jThis)),
       runtimeExecutor_(runtimeExecutor),
       jsCallInvoker_(jsCallInvoker),
       nativeCallInvoker_(nativeCallInvoker),
       delegate_(jni::make_global(delegate)),
-      turboModuleCache_(std::make_shared<TurboModuleCache>()) {
-  if (useGlobalCallbackCleanupScopeUsingRetainJSCallback) {
-    longLivedObjectCollection_ = nullptr;
-    retainJSCallback_ = [](jsi::Function &&callback,
-                           jsi::Runtime &runtime,
-                           std::shared_ptr<CallInvoker> jsInvoker) {
-      return CallbackWrapper::createWeak(
-          std::move(callback), runtime, jsInvoker);
-    };
-  } else if (useTurboModuleManagerCallbackCleanupScope) {
-    longLivedObjectCollection_ = std::make_shared<LongLivedObjectCollection>();
-    retainJSCallback_ = [longLivedObjectCollection =
-                             longLivedObjectCollection_](
-                            jsi::Function &&callback,
-                            jsi::Runtime &runtime,
-                            std::shared_ptr<CallInvoker> jsInvoker) {
-      return CallbackWrapper::createWeak(
-          longLivedObjectCollection, std::move(callback), runtime, jsInvoker);
-    };
-  }
-}
+      turboModuleCache_(std::make_shared<TurboModuleCache>()) {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<jhybridobject> jThis,
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-    bool useGlobalCallbackCleanupScopeUsingRetainJSCallback,
-    bool useTurboModuleManagerCallbackCleanupScope) {
-  auto jsCallInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
-  auto nativeCallInvoker = nativeCallInvokerHolder->cthis()->getCallInvoker();
-
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate) {
   return makeCxxInstance(
       jThis,
       runtimeExecutor->cthis()->get(),
-      jsCallInvoker,
-      nativeCallInvoker,
-      delegate,
-      useGlobalCallbackCleanupScopeUsingRetainJSCallback,
-      useTurboModuleManagerCallbackCleanupScope);
+      jsCallInvokerHolder->cthis()->getCallInvoker(),
+      nativeCallInvokerHolder->cthis()->getCallInvoker(),
+      delegate);
 }
 
 void TurboModuleManager::registerNatives() {
@@ -106,8 +77,7 @@ void TurboModuleManager::installJSIBindings() {
          jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
          nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
          delegate_ = jni::make_weak(delegate_),
-         javaPart_ = jni::make_weak(javaPart_),
-         retainJSCallback = retainJSCallback_](
+         javaPart_ = jni::make_weak(javaPart_)](
             const std::string &name) -> std::shared_ptr<TurboModule> {
       auto turboModuleCache = turboModuleCache_.lock();
       auto jsCallInvoker = jsCallInvoker_.lock();
@@ -168,8 +138,7 @@ void TurboModuleManager::installJSIBindings() {
             .moduleName = name,
             .instance = moduleInstance,
             .jsInvoker = jsCallInvoker,
-            .nativeInvoker = nativeCallInvoker,
-            .retainJSCallback = retainJSCallback};
+            .nativeInvoker = nativeCallInvoker};
 
         auto turboModule = delegate->cthis()->getTurboModule(name, params);
         turboModuleCache->insert({name, turboModule});
@@ -183,10 +152,7 @@ void TurboModuleManager::installJSIBindings() {
     TurboModuleBindingMode bindingMode = static_cast<TurboModuleBindingMode>(
         getFeatureFlagValue("turboModuleBindingMode"));
     TurboModuleBinding::install(
-        runtime,
-        std::move(turboModuleProvider),
-        bindingMode,
-        longLivedObjectCollection_);
+        runtime, std::move(turboModuleProvider), bindingMode);
   });
 }
 

@@ -26,6 +26,7 @@ import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
@@ -189,6 +190,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
     editText.setReturnKeyType("done");
+    // Set defult layoutParams to avoid NullPointerException to be thrown by Android EditTextView
+    // when update props (PlaceHolder) is executed before the view is layout.
+    // This change should not affect layout for TextInput components because layout will be
+    // overriden on the first RN commit.
+    editText.setLayoutParams(
+        new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     return editText;
   }
 

@@ -225,7 +225,6 @@ static void RCTPerformMountInstructions(
   }
 
   RCTExecuteOnMainQueue(^{
-    RCTAssertMainQueue();
     [self synchronouslyDispatchCommandOnUIThread:reactTag commandName:commandName args:args];
   });
 }
@@ -241,7 +240,6 @@ static void RCTPerformMountInstructions(
   }
 
   RCTExecuteOnMainQueue(^{
-    RCTAssertMainQueue();
     [self synchronouslyDispatchAccessbilityEventOnUIThread:reactTag eventType:eventType];
   });
 }

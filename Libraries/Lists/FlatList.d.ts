@@ -20,48 +20,6 @@ import {View} from '../Components/View/View';
 
 export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
   /**
-   * Rendered in between each item, but not at the top or bottom
-   */
-  ItemSeparatorComponent?: React.ComponentType<any> | null | undefined;
-
-  /**
-   * Rendered when the list is empty.
-   */
-  ListEmptyComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Rendered at the very end of the list.
-   */
-  ListFooterComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Styling for internal View for ListFooterComponent
-   */
-  ListFooterComponentStyle?: StyleProp<ViewStyle> | undefined;
-
-  /**
-   * Rendered at the very beginning of the list.
-   */
-  ListHeaderComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Styling for internal View for ListHeaderComponent
-   */
-  ListHeaderComponentStyle?: StyleProp<ViewStyle> | undefined;
-
-  /**
    * Optional custom style for multi-item rows generated when numColumns > 1
    */
   columnWrapperStyle?: StyleProp<ViewStyle> | undefined;
@@ -147,19 +105,6 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
   numColumns?: number | undefined;
 
   /**
-   * Called once when the scroll position gets within onEndReachedThreshold of the rendered content.
-   */
-  onEndReached?: ((info: {distanceFromEnd: number}) => void) | null | undefined;
-
-  /**
-   * How far from the end (in units of visible length of the list) the bottom edge of the
-   * list must be from the end of the content to trigger the `onEndReached` callback.
-   * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
-   * within half the visible length of the list.
-   */
-  onEndReachedThreshold?: number | null | undefined;
-
-  /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality.
    * Make sure to also set the refreshing prop correctly.
    */
@@ -187,7 +132,7 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
    * _renderItem = ({item}) => (
    *   <TouchableOpacity onPress={() => this._onPress(item)}>
    *     <Text>{item.title}</Text>
-   *   <TouchableOpacity/>
+   *   </TouchableOpacity>
    * );
    * ...
    * <FlatList data={[{title: 'Title Text', key: 'item1'}]} renderItem={this._renderItem} />
@@ -248,6 +193,7 @@ export class FlatList<ItemT = any> extends React.Component<
   scrollToItem: (params: {
     animated?: boolean | null | undefined;
     item: ItemT;
+    viewOffset?: number | undefined;
     viewPosition?: number | undefined;
   }) => void;
 

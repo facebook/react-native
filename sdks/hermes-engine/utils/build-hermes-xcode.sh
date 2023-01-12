@@ -63,3 +63,10 @@ echo "Build Apple framework"
   --build "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}" \
   --target "install/strip" \
   -j "$(sysctl -n hw.ncpu)"
+
+echo "Copy Apple framework to destroot/Library/Frameworks"
+
+cp -pfR \
+  "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${PLATFORM_NAME}/hermes.framework" \
+  "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/ios"
+rm -rf "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${PLATFORM_NAME}"

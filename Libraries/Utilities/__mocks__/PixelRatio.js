@@ -22,4 +22,4 @@ const PixelRatio = {
   startDetecting: jest.fn(),
 };
 
-module.exports = PixelRatio;
+export default PixelRatio;
