@@ -57,6 +57,7 @@ class NativePerformanceObserver
       std::enable_shared_from_this<NativePerformanceObserver> {
  public:
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
+  ~NativePerformanceObserver();
 
   void startReporting(jsi::Runtime &rt, std::string entryType);
 

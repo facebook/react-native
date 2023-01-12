@@ -240,12 +240,16 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderBottomWidth?: number | undefined;
   borderColor?: ColorValue | undefined;
   borderEndColor?: ColorValue | undefined;
+  borderEndEndRadius?: number | undefined;
+  borderEndStartRadius?: number | undefined;
   borderLeftColor?: ColorValue | undefined;
   borderLeftWidth?: number | undefined;
   borderRadius?: number | undefined;
   borderRightColor?: ColorValue | undefined;
   borderRightWidth?: number | undefined;
   borderStartColor?: ColorValue | undefined;
+  borderStartEndRadius?: number | undefined;
+  borderStartStartRadius?: number | undefined;
   borderStyle?: 'solid' | 'dotted' | 'dashed' | undefined;
   borderTopColor?: ColorValue | undefined;
   borderTopEndRadius?: number | undefined;

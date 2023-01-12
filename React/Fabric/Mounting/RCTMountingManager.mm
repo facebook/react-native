@@ -229,20 +229,6 @@ static void RCTPerformMountInstructions(
   });
 }
 
-- (void)setNativeProps_DEPRECATED:(ReactTag)reactTag withProps:(Props::Shared)props
-{
-  if (RCTIsMainQueue()) {
-    UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
-    Props::Shared oldProps = [componentView props];
-    [componentView updateProps:props oldProps:oldProps];
-    [componentView finalizeUpdates:RNComponentViewUpdateMaskProps];
-    return;
-  }
-  RCTExecuteOnMainQueue(^{
-    [self setNativeProps_DEPRECATED:reactTag withProps:std::move(props)];
-  });
-}
-
 - (void)sendAccessibilityEvent:(ReactTag)reactTag eventType:(NSString *)eventType
 {
   if (RCTIsMainQueue()) {

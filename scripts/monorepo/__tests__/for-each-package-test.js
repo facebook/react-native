@@ -10,7 +10,7 @@
 const path = require('path');
 const {readdirSync, readFileSync} = require('fs');
 
-const forEachPackage = require('../monorepo/for-each-package');
+const forEachPackage = require('../for-each-package');
 
 jest.mock('fs', () => ({
   readdirSync: jest.fn(),
@@ -32,7 +32,7 @@ describe('forEachPackage', () => {
     forEachPackage(callback);
 
     expect(callback).toHaveBeenCalledWith(
-      path.join(__dirname, '..', '..', 'packages', mockedPackageName),
+      path.join(__dirname, '..', '..', '..', 'packages', mockedPackageName),
       path.join('packages', mockedPackageName),
       mockedParsedPackageManifest,
     );

@@ -10,7 +10,13 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType, SchemaType} from '../CodegenSchema';
+import type {
+  UnionTypeAnnotationMemberType,
+  SchemaType,
+  NamedShape,
+  Nullable,
+  NativeModuleParamTypeAnnotation,
+} from '../CodegenSchema';
 import type {ParserType} from './errors';
 
 /**
@@ -77,4 +83,52 @@ export interface Parser {
    * @returns: the AST of the file (given in program property for typescript).
    */
   parseFile(filename: string): SchemaType;
+
+  /**
+   * Given the content of a file, it returns an AST.
+   * @parameter contents: the content of the file.
+   * @returns: the AST of the file.
+   */
+  getAst(contents: string): $FlowFixMe;
+
+  /**
+   * Given a FunctionTypeAnnotation, it returns an array of its parameters.
+   * @parameter functionTypeAnnotation: a FunctionTypeAnnotation
+   * @returns: the parameters of the FunctionTypeAnnotation.
+   */
+  getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<$FlowFixMe>;
+
+  /**
+   * Given a parameter, it returns the function name of the parameter.
+   * @parameter parameter: a parameter of a FunctionTypeAnnotation.
+   * @returns: the function name of the parameter.
+   */
+  getFunctionNameFromParameter(
+    parameter: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
+  ): $FlowFixMe;
+
+  /**
+   * Given a parameter, it returns its name.
+   * @parameter parameter: a parameter of a FunctionTypeAnnotation.
+   * @returns: the name of the parameter.
+   */
+  getParameterName(parameter: $FlowFixMe): string;
+
+  /**
+   * Given a parameter, it returns its typeAnnotation.
+   * @parameter parameter: a parameter of a FunctionTypeAnnotation.
+   * @returns: the typeAnnotation of the parameter.
+   */
+  getParameterTypeAnnotation(param: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a FunctionTypeAnnotation, it returns its returnType.
+   * @parameter functionTypeAnnotation: a FunctionTypeAnnotation
+   * @returns: the returnType of the FunctionTypeAnnotation.
+   */
+  getFunctionTypeAnnotationReturnType(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $FlowFixMe;
 }

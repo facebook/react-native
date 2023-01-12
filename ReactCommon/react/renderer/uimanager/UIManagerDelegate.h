@@ -41,15 +41,6 @@ class UIManagerDelegate {
       folly::dynamic const &args) = 0;
 
   /*
-   * Called when UIManager wants directly manipulate view on the mounting layer.
-   * This is a backport of setNativeProps from the old architecture and will be
-   * removed in the future.
-   */
-  virtual void setNativeProps_DEPRECATED(
-      const ShadowNode::Shared &shadowNode,
-      Props::Shared props) = 0;
-
-  /*
    * Called when UIManager wants to dispatch some accessibility event
    * to the mounting layer. eventType is platform-specific and not all
    * platforms will necessarily implement the same set of events.

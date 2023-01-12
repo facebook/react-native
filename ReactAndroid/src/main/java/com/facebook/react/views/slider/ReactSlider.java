@@ -12,6 +12,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSeekBar;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Slider that behaves more like the iOS one, for consistency.
@@ -21,6 +22,7 @@ import androidx.appcompat.widget.AppCompatSeekBar;
  *
  * <p>Note that the slider is _not_ a controlled component (setValue isn't called during dragging).
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactSlider extends AppCompatSeekBar {
 
   /**

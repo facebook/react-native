@@ -176,7 +176,6 @@ class UnsupportedArrayElementTypeAnnotationParserError extends ParserError {
     arrayElementTypeAST: $FlowFixMe,
     arrayType: 'Array' | '$ReadOnlyArray' | 'ReadonlyArray',
     invalidArrayElementType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -216,7 +215,6 @@ class UnsupportedObjectPropertyValueTypeAnnotationParserError extends ParserErro
     propertyValueAST: $FlowFixMe,
     propertyName: string,
     invalidPropertyValueType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -231,11 +229,7 @@ class UnsupportedObjectPropertyValueTypeAnnotationParserError extends ParserErro
  */
 
 class UnnamedFunctionParamParserError extends ParserError {
-  constructor(
-    functionParam: $FlowFixMe,
-    nativeModuleName: string,
-    language: ParserType,
-  ) {
+  constructor(functionParam: $FlowFixMe, nativeModuleName: string) {
     super(
       nativeModuleName,
       functionParam,
@@ -264,7 +258,6 @@ class UnsupportedFunctionReturnTypeAnnotationParserError extends ParserError {
     nativeModuleName: string,
     flowReturnTypeAnnotation: $FlowFixMe,
     invalidReturnType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -283,7 +276,6 @@ class UnsupportedEnumDeclarationParserError extends ParserError {
     nativeModuleName: string,
     arrayElementTypeAST: $FlowFixMe,
     memberType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -302,7 +294,6 @@ class UnsupportedUnionTypeAnnotationParserError extends ParserError {
     nativeModuleName: string,
     arrayElementTypeAST: $FlowFixMe,
     types: UnionTypeAnnotationMemberType[],
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -319,11 +310,7 @@ class UnsupportedUnionTypeAnnotationParserError extends ParserError {
  */
 
 class UnusedModuleInterfaceParserError extends ParserError {
-  constructor(
-    nativeModuleName: string,
-    flowInterface: $FlowFixMe,
-    language: ParserType,
-  ) {
+  constructor(nativeModuleName: string, flowInterface: $FlowFixMe) {
     super(
       nativeModuleName,
       flowInterface,
@@ -337,7 +324,6 @@ class MoreThanOneModuleRegistryCallsParserError extends ParserError {
     nativeModuleName: string,
     flowCallExpressions: $FlowFixMe,
     numCalls: number,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -353,7 +339,6 @@ class UntypedModuleRegistryCallParserError extends ParserError {
     flowCallExpression: $FlowFixMe,
     methodName: string,
     moduleName: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -369,7 +354,6 @@ class IncorrectModuleRegistryCallTypeParameterParserError extends ParserError {
     flowTypeArguments: $FlowFixMe,
     methodName: string,
     moduleName: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -385,7 +369,6 @@ class IncorrectModuleRegistryCallArityParserError extends ParserError {
     flowCallExpression: $FlowFixMe,
     methodName: string,
     incorrectArity: number,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -401,7 +384,6 @@ class IncorrectModuleRegistryCallArgumentTypeParserError extends ParserError {
     flowArgument: $FlowFixMe,
     methodName: string,
     type: string,
-    language: ParserType,
   ) {
     const a = /[aeiouy]/.test(type.toLowerCase()) ? 'an' : 'a';
     super(

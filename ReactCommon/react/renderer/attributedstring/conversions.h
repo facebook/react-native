@@ -717,7 +717,7 @@ inline void fromRawValue(
     auto string = (std::string)value;
     if (string == "none") {
       result = AccessibilityRole::None;
-    } else if (string == "button") {
+    } else if (string == "button" || string == "togglebutton") {
       result = AccessibilityRole::Button;
     } else if (string == "link") {
       result = AccessibilityRole::Link;

@@ -127,7 +127,7 @@ export const Commands = {
 `;
 
 exports[`Babel plugin inline view configs can inline config for NotANativeComponent.js 1`] = `
-"const requireNativeComponent = require('requireNativeComponent');
+"import requireNativeComponent from 'requireNativeComponent';
 export default 'Not a view config';"
 `;
 

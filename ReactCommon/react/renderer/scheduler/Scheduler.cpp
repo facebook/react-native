@@ -326,17 +326,6 @@ void Scheduler::uiManagerDidDispatchCommand(
   }
 }
 
-void Scheduler::setNativeProps_DEPRECATED(
-    const ShadowNode::Shared &shadowNode,
-    Props::Shared props) {
-  SystraceSection s("Scheduler::setNativeProps_DEPRECATED");
-
-  if (delegate_ != nullptr) {
-    auto shadowView = ShadowView(*shadowNode);
-    delegate_->setNativeProps_DEPRECATED(shadowView, std::move(props));
-  }
-}
-
 void Scheduler::uiManagerDidSendAccessibilityEvent(
     const ShadowNode::Shared &shadowNode,
     std::string const &eventType) {

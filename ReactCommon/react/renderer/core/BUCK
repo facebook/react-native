@@ -59,6 +59,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/utils:utils"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("react/renderer/graphics:graphics"),
+        react_native_xplat_target("cxxreact:bridge"),
     ],
 )
 
@@ -84,6 +85,7 @@ fb_xplat_cxx_test(
         react_native_xplat_target("react/renderer/components/text:text"),
         react_native_xplat_target("react/renderer/element:element"),
         react_native_xplat_target("react/renderer/components/view:view"),
+        react_native_xplat_target("cxxreact:bridge"),
     ],
 )
 

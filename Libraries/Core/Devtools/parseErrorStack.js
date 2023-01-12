@@ -22,7 +22,7 @@ function convertHermesStack(stack: HermesParsedStack): Array<StackFrame> {
       continue;
     }
     const {location, functionName} = entry;
-    if (location.type === 'NATIVE') {
+    if (location.type === 'NATIVE' || location.type === 'INTERNAL_BYTECODE') {
       continue;
     }
     frames.push({

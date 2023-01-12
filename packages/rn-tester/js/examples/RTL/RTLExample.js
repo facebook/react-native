@@ -509,6 +509,35 @@ const BorderRadiiExample = withRTLState(({isRTL, setRTL}) => {
   );
 });
 
+const LogicalBorderRadiiExample = withRTLState(({isRTL, setRTL}) => {
+  return (
+    <View>
+      <Text style={styles.bold}>Styles</Text>
+      <Text>borderStartStartRadius: 10,</Text>
+      <Text>borderStartEndRadius: 20,</Text>
+      <Text>borderEndStartRadius: 30,</Text>
+      <Text>borderEndEndRadius: 40</Text>
+      <Text />
+      <Text style={styles.bold}>Demo: </Text>
+      <View style={directionStyle(isRTL)}>
+        <View
+          style={{
+            borderWidth: 10,
+            borderStartStartRadius: 10,
+            borderStartEndRadius: 20,
+            borderEndStartRadius: 30,
+            borderEndEndRadius: 40,
+            padding: 10,
+          }}>
+          <View>
+            <RTLToggler setRTL={setRTL} isRTL={isRTL} />
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+});
+
 const BorderExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
@@ -769,6 +798,12 @@ exports.examples = [
     title: 'Border Radii Start/End',
     render: function (): React.Element<any> {
       return <BorderRadiiExample />;
+    },
+  },
+  {
+    title: 'Logical Border Radii Start/End',
+    render: function (): React.Element<any> {
+      return <LogicalBorderRadiiExample />;
     },
   },
   {

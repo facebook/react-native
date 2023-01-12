@@ -7,13 +7,14 @@
  * @format
  */
 
-const {exec} = require('shelljs');
+const {spawnSync} = require('child_process');
 
-const forEachPackage = require('../monorepo/for-each-package');
-const findAndPublishAllBumpedPackages = require('../monorepo/find-and-publish-all-bumped-packages');
+const {BUMP_COMMIT_MESSAGE} = require('../constants');
+const forEachPackage = require('../for-each-package');
+const findAndPublishAllBumpedPackages = require('../find-and-publish-all-bumped-packages');
 
-jest.mock('shelljs', () => ({exec: jest.fn()}));
-jest.mock('../monorepo/for-each-package', () => jest.fn());
+jest.mock('child_process', () => ({spawnSync: jest.fn()}));
+jest.mock('../for-each-package', () => jest.fn());
 
 describe('findAndPublishAllBumpedPackages', () => {
   it('throws an error if updated version is not 0.x.y', () => {
@@ -24,8 +25,13 @@ describe('findAndPublishAllBumpedPackages', () => {
         version: mockedPackageNewVersion,
       });
     });
-    exec.mockImplementationOnce(() => ({
+
+    spawnSync.mockImplementationOnce(() => ({
       stdout: `-  "version": "0.72.0"\n+  "version": "${mockedPackageNewVersion}"\n`,
+    }));
+
+    spawnSync.mockImplementationOnce(() => ({
+      stdout: BUMP_COMMIT_MESSAGE,
     }));
 
     expect(() => findAndPublishAllBumpedPackages()).toThrow(

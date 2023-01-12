@@ -217,14 +217,14 @@ void EventPropsNativeComponentViewEventEmitter::onOrientationChange(OnOrientatio
   });
 }
 void EventPropsNativeComponentViewEventEmitter::onEnd(OnEnd event) const {
-  dispatchEvent(\\"end\\", [event=std::move(event)](jsi::Runtime &runtime) {
+  dispatchEvent(\\"end\\", [](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     
     return payload;
   });
 }
 void EventPropsNativeComponentViewEventEmitter::onEventBubblingWithPaperName(OnEventBubblingWithPaperName event) const {
-  dispatchEvent(\\"eventBubblingWithPaperName\\", [event=std::move(event)](jsi::Runtime &runtime) {
+  dispatchEvent(\\"eventBubblingWithPaperName\\", [](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     
     return payload;

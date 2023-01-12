@@ -34,9 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
                         commandName:(std::string const &)commandName
                                args:(folly::dynamic const &)args;
 
-- (void)setNativeProps_DEPRECATED:(facebook::react::ShadowView const &)shadowView
-                        withProps:(facebook::react::Props::Shared)props;
-
 - (void)schedulerDidSendAccessibilityEvent:(facebook::react::ShadowView const &)shadowView
                                  eventType:(std::string const &)eventType;
 

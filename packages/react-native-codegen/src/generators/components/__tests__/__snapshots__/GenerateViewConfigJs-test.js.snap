@@ -142,7 +142,7 @@ export const __INTERNAL_VIEW_CONFIG = {
 
   validAttributes: {
     tintColor: {
-      process: require('react-native/Libraries/StyleSheet/processColor'),
+      process: require('react-native/Libraries/StyleSheet/processColor').default,
     },
   },
 };
@@ -812,11 +812,11 @@ export const __INTERNAL_VIEW_CONFIG = {
     },
 
     color: {
-      process: require('react-native/Libraries/StyleSheet/processColor'),
+      process: require('react-native/Libraries/StyleSheet/processColor').default,
     },
 
     thumbTintColor: {
-      process: require('react-native/Libraries/StyleSheet/processColor'),
+      process: require('react-native/Libraries/StyleSheet/processColor').default,
     },
 
     point: {
