@@ -862,35 +862,6 @@ jobs:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
-      # Early exit in case of Release and WithFlipper. The two does not make sense together.
-      # Unfortunately, the `exclude` parameter of `matrix` does not work, so we have to do it manually.
-      - when:
-          condition:
-            and:
-              - equal: [ << parameters.flavor >>, "Release"]
-              - equal: [ << parameters.flipper >>, "WithFlipper" ]
-          steps:
-            - run:
-                command: circleci-agent step halt # this interrupts the job successfully.
-      # use_frameworks! does not works with Flipper enabled
-      - when:
-          condition:
-            and:
-              - equal: [ << parameters.use_frameworks >>, "StaticFrameworks"]
-              - equal: [ << parameters.flipper >>, "WithFlipper" ]
-          steps:
-            - run:
-                command: circleci-agent step halt # this interrupts the job successfully.
-      # use_frameworks! does not works with the New Architecture enabled
-      - when:
-          condition:
-            and:
-              - equal: [ << parameters.use_frameworks >>, "StaticFrameworks"]
-              - equal: [ << parameters.architecture >>, "NewArch" ]
-          steps:
-            - run:
-                command: circleci-agent step halt # this interrupts the job successfully.
-      # Valid configuration, we can continue
       - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
@@ -1656,6 +1627,87 @@ workflows:
               jsengine: ["Hermes", "JSC"]
               flipper: ["WithFlipper", "WithoutFlipper"]
               use_frameworks: [ "StaticLibraries", "StaticFrameworks" ] #TODO: make it works with DynamicFrameworks
+            exclude:
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticLibraries"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithoutFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticLibraries"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithoutFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "OldArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticLibraries"
+              - architecture: "OldArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "OldArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticLibraries"
+              - architecture: "OldArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithoutFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithoutFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "OldArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "OldArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
