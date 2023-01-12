@@ -8,11 +8,13 @@
 package com.facebook.react.views.slider;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 
 /** Event emitted when the user finishes dragging the slider. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactSlidingCompleteEvent extends Event<ReactSlidingCompleteEvent> {
 
   public static final String EVENT_NAME = "topSlidingComplete";

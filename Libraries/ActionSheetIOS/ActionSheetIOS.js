@@ -13,7 +13,7 @@ import type {ColorValue} from '../StyleSheet/StyleSheet';
 
 import RCTActionSheetManager from './NativeActionSheetManager';
 
-const processColor = require('../StyleSheet/processColor');
+import processColor from '../StyleSheet/processColor';
 const invariant = require('invariant');
 
 /**

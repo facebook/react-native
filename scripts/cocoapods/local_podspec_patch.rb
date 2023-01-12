@@ -7,19 +7,19 @@
 # This is necessary because local podspec dependencies must be otherwise manually updated.
 module LocalPodspecPatch
     # Returns local podspecs whose versions differ from the one in the `react-native` package.
-    def self.pods_to_update(react_native_path: "../node_modules/react-native")
-        @@local_podspecs = Dir.glob("#{react_native_path}/third-party-podspecs/*").map { |file| File.basename(file, ".podspec") }
+    def self.pods_to_update(react_native_path: "../node_modules/react-native", dir_manager: Dir, file_manager: File)
+        @@local_podspecs = dir_manager.glob("#{react_native_path}/third-party-podspecs/*").map { |file| file_manager.basename(file, ".podspec") }
         @@local_podspecs = @@local_podspecs.select do |podspec_name|
 
             # Read local podspec to determine the cached version
-            local_podspec_path = File.join(
-                Dir.pwd, "Pods/Local Podspecs/#{podspec_name}.podspec.json"
+            local_podspec_path = file_manager.join(
+                dir_manager.pwd, "Pods/Local Podspecs/#{podspec_name}.podspec.json"
             )
 
             # Local podspec cannot be outdated if it does not exist, yet
-            next unless File.exist?(local_podspec_path)
+            next unless file_manager.exist?(local_podspec_path)
 
-            local_podspec = File.read(local_podspec_path)
+            local_podspec = file_manager.read(local_podspec_path)
             local_podspec_json = JSON.parse(local_podspec)
             local_version = local_podspec_json["version"]
 

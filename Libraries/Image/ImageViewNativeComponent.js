@@ -71,7 +71,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           internal_analyticTag: true,
           resizeMode: true,
           tintColor: {
-            process: require('../StyleSheet/processColor'),
+            process: require('../StyleSheet/processColor').default,
           },
           borderBottomLeftRadius: true,
           borderTopLeftRadius: true,
@@ -82,10 +82,10 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           shouldNotifyLoadEvents: true,
           defaultSrc: true,
           overlayColor: {
-            process: require('../StyleSheet/processColor'),
+            process: require('../StyleSheet/processColor').default,
           },
           borderColor: {
-            process: require('../StyleSheet/processColor'),
+            process: require('../StyleSheet/processColor').default,
           },
           accessible: true,
           progressiveRenderingEnabled: true,
@@ -130,7 +130,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           resizeMode: true,
           source: true,
           tintColor: {
-            process: require('../StyleSheet/processColor'),
+            process: require('../StyleSheet/processColor').default,
           },
           ...ConditionallyIgnoredEventHandlers({
             onLoadStart: true,

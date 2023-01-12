@@ -31,8 +31,4 @@ folly::dynamic mergeDynamicProps(
   return result;
 }
 
-RawProps mergeRawProps(folly::dynamic const &source, RawProps const &patch) {
-  return {mergeDynamicProps((folly::dynamic)source, (folly::dynamic)patch)};
-}
-
 } // namespace facebook::react

@@ -215,6 +215,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                 ]
             ),
+            new PrefabPreprocessingEntry(
+                "jsinspector",
+                new Pair("../ReactCommon/jsinspector/", "jsinspector/"),
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -472,7 +476,8 @@ android {
                     "react_render_scheduler",
                     "react_render_mounting",
                     "hermes_executor",
-                    "jscexecutor"
+                    "jscexecutor",
+                    "jsinspector"
             }
         }
         ndk {
@@ -597,6 +602,9 @@ android {
         }
         jscexecutor {
             headers(new File(prefabHeadersDir, "jscexecutor").absolutePath)
+        }
+        jsinspector {
+            headers(new File(prefabHeadersDir, "jsinspector").absolutePath)
         }
     }
 

@@ -6,7 +6,6 @@
  */
 
 #include "NativePerformanceObserver.h"
-#include <glog/logging.h>
 #include "PerformanceEntryReporter.h"
 
 namespace facebook::react {
@@ -19,8 +18,6 @@ static PerformanceEntryType stringToPerformanceEntryType(
     return PerformanceEntryType::MEASURE;
   } else if (entryType == "event") {
     return PerformanceEntryType::EVENT;
-  } else if (entryType == "first-input") {
-    return PerformanceEntryType::FIRST_INPUT;
   } else {
     return PerformanceEntryType::UNDEFINED;
   }
@@ -28,7 +25,13 @@ static PerformanceEntryType stringToPerformanceEntryType(
 
 NativePerformanceObserver::NativePerformanceObserver(
     std::shared_ptr<CallInvoker> jsInvoker)
-    : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {}
+    : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {
+  setEventLogger(&PerformanceEntryReporter::getInstance());
+}
+
+NativePerformanceObserver::~NativePerformanceObserver() {
+  setEventLogger(nullptr);
+}
 
 void NativePerformanceObserver::startReporting(
     jsi::Runtime &rt,

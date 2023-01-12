@@ -3,9 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-class File
-
-    @@is_testing = false
+class FileMock < File
     @@exist_invocation_params = []
     @@mocked_existing_files = []
 
@@ -31,20 +29,11 @@ class File
     # To use this, invoke the `is_testing` method before starting your test.
     # Remember to invoke `reset` after the test.
     def self.exist?(path)
-        if !@@is_testing
-            return exists?(path)
-        end
-
         @@exist_invocation_params.push(path)
         return @@mocked_existing_files.include?(path)
     end
 
     def self.delete(path)
-        if !@@is_testing
-            delete(path)
-            return
-        end
-
         @@delete_invocation_count += 1
         @@deleted_files.push(path)
     end
@@ -68,15 +57,10 @@ class File
         @@mocked_existing_files = files
     end
 
-    # Turn on the mocking features of the File mock
-    def self.enable_testing_mode!()
-        @@is_testing = true
-    end
-
     def self.open(path, mode, &block)
         @@open_files_with_mode[path] = mode
         @@open_invocation_count += 1
-        file = File.new()
+        file = FileMock.new()
         @@open_files.push(file)
         yield(file)
     end
@@ -122,11 +106,8 @@ class File
         @@open_files_with_mode = {}
         @@open_invocation_count = 0
         @@mocked_existing_files = []
-        @@is_testing = false
         @@file_invocation_params = []
         @@exist_invocation_params = []
         @@files_to_read = {}
     end
-
-
 end

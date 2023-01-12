@@ -109,7 +109,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
       std::shared_ptr<RuntimeAdapter> adapter,
       InspectorObserver &observer,
       bool pauseOnFirstStatement);
-  ~Inspector();
+  ~Inspector() override;
 
   /**
    * disable turns off the inspector. All of the subsequent methods will not do

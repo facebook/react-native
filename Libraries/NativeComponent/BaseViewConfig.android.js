@@ -160,11 +160,11 @@ const directEventTypes = {
 
 const validAttributesForNonEventProps = {
   // @ReactProps from BaseViewManager
-  backgroundColor: {process: require('../StyleSheet/processColor')},
+  backgroundColor: {process: require('../StyleSheet/processColor').default},
   transform: true,
   opacity: true,
   elevation: true,
-  shadowColor: {process: require('../StyleSheet/processColor')},
+  shadowColor: {process: require('../StyleSheet/processColor').default},
   zIndex: true,
   renderToHardwareTextureAndroid: true,
   testID: true,

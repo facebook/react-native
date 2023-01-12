@@ -26,7 +26,6 @@ const {
   TouchableWithoutFeedback,
   Alert,
   StyleSheet,
-  Slider,
   Platform,
   Switch,
   ScrollView,
@@ -1157,38 +1156,6 @@ class AccessibilityActionsExample extends React.Component<{}> {
   }
 }
 
-function SliderAccessibilityExample(): React.Node {
-  return (
-    <View>
-      <RNTesterBlock
-        title="Disabled Slider via disabled"
-        description="Verify with TalkBack/VoiceOver announces Slider as disabled">
-        <Slider value={25} maximumValue={100} minimumValue={0} disabled />
-      </RNTesterBlock>
-      <RNTesterBlock
-        title="Disabled Slider via accessibilityState"
-        description="Verify with TalkBack/VoiceOver announces Slider as disabled">
-        <Slider
-          value={75}
-          maximumValue={100}
-          minimumValue={0}
-          accessibilityState={{disabled: true}}
-        />
-      </RNTesterBlock>
-      <RNTesterBlock
-        title="Selected Slider"
-        description="Verify with TalkBack/VoiceOver announces Slider as selected">
-        <Slider
-          value={75}
-          maximumValue={100}
-          minimumValue={0}
-          accessibilityState={{selected: true}}
-        />
-      </RNTesterBlock>
-    </View>
-  );
-}
-
 type FakeSliderExampleState = {
   current: number,
   textualValue: 'center' | 'left' | 'right',
@@ -1798,12 +1765,6 @@ exports.examples = [
     title: 'Accessibility action examples',
     render(): React.Element<typeof AccessibilityActionsExample> {
       return <AccessibilityActionsExample />;
-    },
-  },
-  {
-    title: 'Slider Accessibility Examples',
-    render(): React.Element<typeof SliderAccessibilityExample> {
-      return <SliderAccessibilityExample />;
     },
   },
   {

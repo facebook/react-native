@@ -71,6 +71,10 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, assign) CGFloat borderBottomRightRadius;
 @property (nonatomic, assign) CGFloat borderBottomStartRadius;
 @property (nonatomic, assign) CGFloat borderBottomEndRadius;
+@property (nonatomic, assign) CGFloat borderEndEndRadius;
+@property (nonatomic, assign) CGFloat borderEndStartRadius;
+@property (nonatomic, assign) CGFloat borderStartEndRadius;
+@property (nonatomic, assign) CGFloat borderStartStartRadius;
 
 /**
  * Border colors (actually retained).

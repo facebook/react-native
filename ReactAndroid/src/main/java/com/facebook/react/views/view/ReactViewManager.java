@@ -119,6 +119,10 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         ViewProps.BORDER_TOP_END_RADIUS,
         ViewProps.BORDER_BOTTOM_START_RADIUS,
         ViewProps.BORDER_BOTTOM_END_RADIUS,
+        ViewProps.BORDER_END_END_RADIUS,
+        ViewProps.BORDER_END_START_RADIUS,
+        ViewProps.BORDER_START_END_RADIUS,
+        ViewProps.BORDER_START_START_RADIUS,
       },
       defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {

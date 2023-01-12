@@ -13,6 +13,9 @@
 import type {
   UnionTypeAnnotationMemberType,
   SchemaType,
+  NamedShape,
+  Nullable,
+  NativeModuleParamTypeAnnotation,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
@@ -93,6 +96,32 @@ class TypeScriptParser implements Parser {
     const contents = fs.readFileSync(filename, 'utf8');
 
     return buildSchema(contents, filename, this);
+  }
+
+  getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<$FlowFixMe> {
+    return functionTypeAnnotation.parameters;
+  }
+
+  getFunctionNameFromParameter(
+    parameter: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
+  ): $FlowFixMe {
+    return parameter.typeAnnotation;
+  }
+
+  getParameterName(parameter: $FlowFixMe): string {
+    return parameter.name;
+  }
+
+  getParameterTypeAnnotation(parameter: $FlowFixMe): $FlowFixMe {
+    return parameter.typeAnnotation.typeAnnotation;
+  }
+
+  getFunctionTypeAnnotationReturnType(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $FlowFixMe {
+    return functionTypeAnnotation.typeAnnotation.typeAnnotation;
   }
 }
 module.exports = {

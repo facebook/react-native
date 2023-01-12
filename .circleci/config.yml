@@ -132,6 +132,8 @@ executors:
     macos:
       xcode: *xcode_version
     resource_class: macos.x86.medium.gen2
+    environment:
+      - BUILD_FROM_SOURCE: true
 
 # -------------------------
 #        COMMANDS
@@ -1142,6 +1144,7 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_VERSION_FILE: "sdks/.hermesversion"
+      - BUILD_FROM_SOURCE: true
     steps:
       - run:
           name: Install dependencies
@@ -1424,7 +1427,7 @@ jobs:
       - run_yarn
       - add_ssh_keys:
           fingerprints:
-            - "1c:98:e0:3a:52:79:95:29:12:cd:b4:87:5b:41:e2:bb"
+            - "1f:c7:61:c4:e2:ff:77:e3:cc:ca:a7:34:c2:79:e3:3c"
       - brew_install:
           package: cmake
       - run:
@@ -1492,10 +1495,6 @@ jobs:
               - equal: [ "nightly", << parameters.release_type >> ]
           steps:
             - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-            - run: |
-                git config --global user.email "react-native-bot@users.noreply.github.com"
-                git config --global user.name "npm Deployment Script"
-                echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
       # END: Stables and nightlies
 
       - run: node ./scripts/publish-npm.js --<< parameters.release_type >>
@@ -1557,7 +1556,7 @@ jobs:
                 command: |
                   curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \
                     -H "Accept: application/vnd.github.v3+json" \
-                    -u "$PAT_USERNAME:$PAT_TOKEN" \
+                    -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
       # END: Stable releases
 
@@ -1577,7 +1576,6 @@ jobs:
     executor: reactnativeandroid
     steps:
       - checkout
-      - run_yarn
       - run:
           name: Set NPM auth token
           command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc

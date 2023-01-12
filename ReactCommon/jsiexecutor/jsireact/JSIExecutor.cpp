@@ -565,7 +565,7 @@ void bindNativeLogger(Runtime &runtime, Logger logger) {
           }));
 }
 
-void bindNativePerformanceNow(Runtime &runtime, PerformanceNow performanceNow) {
+void bindNativePerformanceNow(Runtime &runtime) {
   runtime.global().setProperty(
       runtime,
       "nativePerformanceNow",
@@ -573,11 +573,10 @@ void bindNativePerformanceNow(Runtime &runtime, PerformanceNow performanceNow) {
           runtime,
           PropNameID::forAscii(runtime, "nativePerformanceNow"),
           0,
-          [performanceNow = std::move(performanceNow)](
-              jsi::Runtime &runtime,
-              const jsi::Value &,
-              const jsi::Value *args,
-              size_t count) { return Value(performanceNow()); }));
+          [](jsi::Runtime &runtime,
+             const jsi::Value &,
+             const jsi::Value *args,
+             size_t count) { return Value(JSExecutor::performanceNow()); }));
 }
 
 } // namespace react

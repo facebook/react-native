@@ -36,7 +36,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     resizeMode: true,
     src: true,
     tintColor: {
-      process: require('../StyleSheet/processColor'),
+      process: require('../StyleSheet/processColor').default,
     },
     headers: true,
   },

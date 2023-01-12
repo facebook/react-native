@@ -252,13 +252,18 @@ Error: ${e.message}`;
         closeEvent.code === 1005 ||
         closeEvent.code == null;
 
-      if (isNormalOrUnsetCloseReason) {
-        setHMRUnavailableReason('Disconnected from Metro.');
-      } else {
-        setHMRUnavailableReason(
-          `Disconnected from Metro (${closeEvent.code}: "${closeEvent.reason}").`,
-        );
-      }
+      setHMRUnavailableReason(
+        `${
+          isNormalOrUnsetCloseReason
+            ? 'Disconnected from Metro.'
+            : `Disconnected from Metro (${closeEvent.code}: "${closeEvent.reason}").`
+        }
+
+To reconnect:
+- Ensure that Metro is running and available on the same network
+- Reload this app (will trigger further help if Metro cannot be connected to)
+      `,
+      );
     });
 
     if (isEnabled) {

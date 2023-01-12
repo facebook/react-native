@@ -1477,5 +1477,7 @@ rn_apple_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         ":FBReactNativeSpecJSI",
+        react_native_xplat_target("react/renderer/core:core"),
+        react_native_xplat_target("cxxreact:bridge"),
     ],
 )

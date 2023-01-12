@@ -10,8 +10,8 @@
  */
 
 'use strict';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {ActivityIndicator as ActivityIndicatorType} from './ActivityIndicator.flow';
 
 import StyleSheet, {type ColorValue} from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
@@ -184,8 +184,10 @@ const ActivityIndicator = (
   ```
 */
 
-const ActivityIndicatorWithRef: ActivityIndicatorType =
-  React.forwardRef(ActivityIndicator);
+const ActivityIndicatorWithRef: React.AbstractComponent<
+  Props,
+  HostComponent<mixed>,
+> = React.forwardRef(ActivityIndicator);
 ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
 
 const styles = StyleSheet.create({
@@ -203,4 +205,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ActivityIndicatorWithRef;
+export default ActivityIndicatorWithRef;

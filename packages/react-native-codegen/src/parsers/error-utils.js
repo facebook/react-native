@@ -63,14 +63,12 @@ function throwIfMoreThanOneModuleRegistryCalls(
   hasteModuleName: string,
   callExpressions: $FlowFixMe,
   callExpressionsLength: number,
-  language: ParserType,
 ) {
   if (callExpressions.length > 1) {
     throw new MoreThanOneModuleRegistryCallsParserError(
       hasteModuleName,
       callExpressions,
       callExpressionsLength,
-      language,
     );
   }
 }
@@ -79,14 +77,9 @@ function throwIfUnusedModuleInterfaceParserError(
   nativeModuleName: string,
   moduleSpec: $FlowFixMe,
   callExpressions: $FlowFixMe,
-  language: ParserType,
 ) {
   if (callExpressions.length === 0) {
-    throw new UnusedModuleInterfaceParserError(
-      nativeModuleName,
-      moduleSpec,
-      language,
-    );
+    throw new UnusedModuleInterfaceParserError(nativeModuleName, moduleSpec);
   }
 }
 
@@ -95,7 +88,6 @@ function throwIfWrongNumberOfCallExpressionArgs(
   flowCallExpression: $FlowFixMe,
   methodName: string,
   numberOfCallExpressionArgs: number,
-  language: ParserType,
 ) {
   if (numberOfCallExpressionArgs !== 1) {
     throw new IncorrectModuleRegistryCallArityParserError(
@@ -103,7 +95,6 @@ function throwIfWrongNumberOfCallExpressionArgs(
       flowCallExpression,
       methodName,
       numberOfCallExpressionArgs,
-      language,
     );
   }
 }
@@ -121,7 +112,6 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
       typeArguments,
       methodName,
       moduleName,
-      parser.language(),
     );
   }
 
@@ -134,7 +124,6 @@ function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
   nativeModuleName: string,
   returnTypeAnnotation: $FlowFixMe,
   invalidReturnType: string,
-  language: ParserType,
   cxxOnly: boolean,
   returnType: string,
 ) {
@@ -143,7 +132,6 @@ function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
       nativeModuleName,
       returnTypeAnnotation.returnType,
       'FunctionTypeAnnotation',
-      language,
     );
   }
 }
@@ -154,7 +142,6 @@ function throwIfUntypedModule(
   callExpression: $FlowFixMe,
   methodName: string,
   moduleName: string,
-  language: ParserType,
 ) {
   if (typeArguments == null) {
     throw new UntypedModuleRegistryCallParserError(
@@ -162,7 +149,6 @@ function throwIfUntypedModule(
       callExpression,
       methodName,
       moduleName,
-      language,
     );
   }
 }
@@ -208,7 +194,6 @@ function throwIfPropertyValueTypeIsUnsupported(
   propertyValue: $FlowFixMe,
   propertyKey: string,
   type: string,
-  language: ParserType,
 ) {
   const invalidPropertyValueType =
     UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap[type];
@@ -218,7 +203,6 @@ function throwIfPropertyValueTypeIsUnsupported(
     propertyValue,
     propertyKey,
     invalidPropertyValueType,
-    language,
   );
 }
 
@@ -256,7 +240,6 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
   flowElementType: $FlowFixMe,
   flowArrayType: 'Array' | '$ReadOnlyArray' | 'ReadonlyArray',
   type: string,
-  language: ParserType,
 ) {
   const TypeMap = {
     FunctionTypeAnnotation: 'FunctionTypeAnnotation',
@@ -273,7 +256,6 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
       flowElementType,
       flowArrayType,
       TypeMap[type],
-      language,
     );
   }
 }

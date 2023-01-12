@@ -267,7 +267,6 @@ function emitUnion(
       hasteModuleName,
       typeAnnotation,
       unionTypes,
-      parser.language(),
     );
   }
 
@@ -319,7 +318,6 @@ function translateArrayTypeAnnotation(
       elementType,
       arrayType,
       _elementType.type,
-      parser.language(),
     );
 
     return wrapNullable(nullable, {

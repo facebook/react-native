@@ -65,7 +65,7 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return j.template
-            .expression`{ process: require('react-native/Libraries/StyleSheet/processColor') }`;
+            .expression`{ process: require('react-native/Libraries/StyleSheet/processColor').default }`;
         case 'ImageSourcePrimitive':
           return j.template
             .expression`{ process: require('react-native/Libraries/Image/resolveAssetSource') }`;

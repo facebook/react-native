@@ -12,47 +12,14 @@ import type {
   RawPerformanceEntry,
   RawPerformanceEntryType,
 } from './NativePerformanceObserver';
+import type {PerformanceEntryType} from './PerformanceEntry';
 
 import warnOnce from '../Utilities/warnOnce';
 import NativePerformanceObserver, {
   RawPerformanceEntryTypeValues,
 } from './NativePerformanceObserver';
-
-export type HighResTimeStamp = number;
-export type PerformanceEntryType = 'mark' | 'measure' | 'event' | 'first-input';
-
-export class PerformanceEntry {
-  name: string;
-  entryType: PerformanceEntryType;
-  startTime: HighResTimeStamp;
-  duration: HighResTimeStamp;
-
-  constructor(init: {
-    name: string,
-    entryType: PerformanceEntryType,
-    startTime: HighResTimeStamp,
-    duration: HighResTimeStamp,
-  }) {
-    this.name = init.name;
-    this.entryType = init.entryType;
-    this.startTime = init.startTime;
-    this.duration = init.duration;
-  }
-
-  toJSON(): {
-    name: string,
-    entryType: PerformanceEntryType,
-    startTime: HighResTimeStamp,
-    duration: HighResTimeStamp,
-  } {
-    return {
-      name: this.name,
-      entryType: this.entryType,
-      startTime: this.startTime,
-      duration: this.duration,
-    };
-  }
-}
+import {PerformanceEntry} from './PerformanceEntry';
+import {PerformanceEventTiming} from './PerformanceEventTiming';
 
 function rawToPerformanceEntryType(
   type: RawPerformanceEntryType,
@@ -64,8 +31,6 @@ function rawToPerformanceEntryType(
       return 'measure';
     case RawPerformanceEntryTypeValues.EVENT:
       return 'event';
-    case RawPerformanceEntryTypeValues.FIRST_INPUT:
-      return 'first-input';
     default:
       throw new TypeError(
         `unexpected performance entry type received: ${type}`,
@@ -74,12 +39,23 @@ function rawToPerformanceEntryType(
 }
 
 function rawToPerformanceEntry(entry: RawPerformanceEntry): PerformanceEntry {
-  return new PerformanceEntry({
-    name: entry.name,
-    entryType: rawToPerformanceEntryType(entry.entryType),
-    startTime: entry.startTime,
-    duration: entry.duration,
-  });
+  if (entry.entryType === RawPerformanceEntryTypeValues.EVENT) {
+    return new PerformanceEventTiming({
+      name: entry.name,
+      startTime: entry.startTime,
+      duration: entry.duration,
+      processingStart: entry.processingStart,
+      processingEnd: entry.processingEnd,
+      interactionId: entry.interactionId,
+    });
+  } else {
+    return new PerformanceEntry({
+      name: entry.name,
+      entryType: rawToPerformanceEntryType(entry.entryType),
+      startTime: entry.startTime,
+      duration: entry.duration,
+    });
+  }
 }
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
@@ -315,7 +291,7 @@ export default class PerformanceObserver {
   }
 
   static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
-    Object.freeze(['mark', 'measure', 'event', 'first-input']);
+    Object.freeze(['mark', 'measure', 'event']);
 }
 
 function union<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {
