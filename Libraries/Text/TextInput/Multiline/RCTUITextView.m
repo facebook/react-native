@@ -18,6 +18,7 @@
   UITextView *_detachedTextView;
   RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
+  CGSize _lastContentSize;
 }
 
 static UIFont *defaultPlaceholderFont()
@@ -233,6 +234,11 @@ static UIColor *defaultPlaceholderColor()
   CGFloat placeholderHeight = [_placeholderView sizeThatFits:textFrame.size].height;
   textFrame.size.height = MIN(placeholderHeight, textFrame.size.height);
   _placeholderView.frame = textFrame;
+
+  if (!CGSizeEqualToSize(_lastContentSize, self.contentSize)) {
+    _lastContentSize = self.contentSize;
+    [_textInputDelegate textInputDidLayoutSubviews];
+  }
 }
 
 - (CGSize)intrinsicContentSize

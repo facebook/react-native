@@ -41,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView;
 
+- (void)textInputDidLayoutSubviews;
+
 @end
 
 NS_ASSUME_NONNULL_END

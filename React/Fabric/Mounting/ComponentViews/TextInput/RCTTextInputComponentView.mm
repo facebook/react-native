@@ -395,6 +395,14 @@ using namespace facebook::react;
   }
 }
 
+- (void)textInputDidLayoutSubviews
+{
+  if (_eventEmitter) {
+    auto const &textInputEventEmitter = *std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter);
+    textInputEventEmitter.onContentSizeChange([self _textInputMetrics]);
+  }
+}
+
 - (void)textInputDidChangeSelection
 {
   if (_comingFromJS) {
