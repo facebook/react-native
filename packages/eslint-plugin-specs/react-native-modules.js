@@ -133,12 +133,11 @@ function rule(context) {
 
       const {buildModuleSchema, createParserErrorCapturer, parser} =
         requireModuleParser();
-      const flowParser = require('flow-parser');
 
       const [parsingErrors, tryParse] = createParserErrorCapturer();
 
       const sourceCode = context.getSourceCode().getText();
-      const ast = flowParser.parse(sourceCode, {enums: true});
+      const ast = parser.getAst(sourceCode);
 
       tryParse(() => {
         buildModuleSchema(hasteModuleName, ast, tryParse, parser);

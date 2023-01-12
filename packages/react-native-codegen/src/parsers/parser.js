@@ -85,6 +85,13 @@ export interface Parser {
   parseFile(filename: string): SchemaType;
 
   /**
+   * Given the content of a file, it returns an AST.
+   * @parameter contents: the content of the file.
+   * @returns: the AST of the file.
+   */
+  getAst(contents: string): $FlowFixMe;
+
+  /**
    * Given a FunctionTypeAnnotation, it returns an array of its parameters.
    * @parameter functionTypeAnnotation: a FunctionTypeAnnotation
    * @returns: the parameters of the FunctionTypeAnnotation.

@@ -27,6 +27,13 @@ import type {
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
 import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {ComponentSchemaBuilderConfig} from './flow/components/schema';
+
+const {
+  getConfigType,
+  extractNativeModuleName,
+  createParserErrorCapturer,
+} = require('./utils');
 
 const {
   throwIfPropertyValueTypeIsUnsupported,
@@ -365,6 +372,98 @@ function buildPropertySchema(
   };
 }
 
+function buildSchemaFromConfigType(
+  configType: 'module' | 'component' | 'none',
+  filename: ?string,
+  ast: $FlowFixMe,
+  wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
+  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildModuleSchema: (
+    hasteModuleName: string,
+    ast: $FlowFixMe,
+    tryParse: ParserErrorCapturer,
+    parser: Parser,
+  ) => NativeModuleSchema,
+  parser: Parser,
+): SchemaType {
+  switch (configType) {
+    case 'component': {
+      return wrapComponentSchema(buildComponentSchema(ast));
+    }
+    case 'module': {
+      if (filename === undefined || filename === null) {
+        throw new Error('Filepath expected while parasing a module');
+      }
+      const nativeModuleName = extractNativeModuleName(filename);
+
+      const [parsingErrors, tryParse] = createParserErrorCapturer();
+
+      const schema = tryParse(() =>
+        buildModuleSchema(nativeModuleName, ast, tryParse, parser),
+      );
+
+      if (parsingErrors.length > 0) {
+        /**
+         * TODO(T77968131): We have two options:
+         *  - Throw the first error, but indicate there are more then one errors.
+         *  - Display all errors, nicely formatted.
+         *
+         * For the time being, we're just throw the first error.
+         **/
+
+        throw parsingErrors[0];
+      }
+
+      invariant(
+        schema != null,
+        'When there are no parsing errors, the schema should not be null',
+      );
+
+      return wrapModuleSchema(schema, nativeModuleName);
+    }
+    default:
+      return {modules: {}};
+  }
+}
+
+function buildSchema(
+  contents: string,
+  filename: ?string,
+  wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
+  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildModuleSchema: (
+    hasteModuleName: string,
+    ast: $FlowFixMe,
+    tryParse: ParserErrorCapturer,
+    parser: Parser,
+  ) => NativeModuleSchema,
+  Visitor: ({isComponent: boolean, isModule: boolean}) => {
+    [type: string]: (node: $FlowFixMe) => void,
+  },
+  parser: Parser,
+): SchemaType {
+  // Early return for non-Spec JavaScript files
+  if (
+    !contents.includes('codegenNativeComponent') &&
+    !contents.includes('TurboModule')
+  ) {
+    return {modules: {}};
+  }
+
+  const ast = parser.getAst(contents);
+  const configType = getConfigType(ast, Visitor);
+
+  return buildSchemaFromConfigType(
+    configType,
+    filename,
+    ast,
+    wrapComponentSchema,
+    buildComponentSchema,
+    buildModuleSchema,
+    parser,
+  );
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -375,4 +474,6 @@ module.exports = {
   translateDefault,
   translateFunctionTypeAnnotation,
   buildPropertySchema,
+  buildSchemaFromConfigType,
+  buildSchema,
 };
