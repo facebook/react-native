@@ -14,7 +14,7 @@ Utils file with generic, simple actions and methods
 Runner file which combines feature file and steps file. Runner file imports steps file and declares step functions in the same order as in the feature file
 
 ## screenObjects 📱
-Screen object files based on Page Object Pattern. One file defines all neccessary elements to interact with. These elements are defined as screen class variables, they are used by the steps file
+Screen object files based on Page Object Pattern. One file defines all necessary elements to interact with. These elements are defined as screen class variables, they are used by the steps file
 
 # root files 📄
 ## e2e-config.js
@@ -27,4 +27,4 @@ Global jest config setup - such as timeout, test runner path
 Jest and wdio setup file
 
 ## package.json
-all external dependecies and project parameters
+all external dependencies and project parameters

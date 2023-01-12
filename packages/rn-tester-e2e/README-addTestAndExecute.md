@@ -4,7 +4,7 @@
 2. **OPTIONAL -** Create a screen object or extend the existing one (depends on the test scope) - `rn-tester-e2e/test/screenObjects` - map screen elements for iOS and Android
 3. **OPTIONAL -** Add another common step in `rn-tester-e2e/test/common_steps/common.steps.js`
 4. Create a runner file `(rn-tester-e2e/test/runners)` - import steps and screen objects from point 2 and 3. Create test scenarios
-5. Update `(rn-tester-e2e/e2e-config.js)` with proper cababilities of your emulator
+5. Update `(rn-tester-e2e/e2e-config.js)` with proper capabilities of your emulator
 
 # How to execute a test
 1. Open new Terminal -> navigate to the react-native path -> open Metro by typing 
