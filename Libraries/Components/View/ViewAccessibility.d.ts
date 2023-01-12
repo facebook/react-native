@@ -243,7 +243,8 @@ export type AccessibilityRole =
   | 'tablist'
   | 'timer'
   | 'list'
-  | 'toolbar';
+  | 'toolbar'
+  | 'grid';
 
 export interface AccessibilityPropsAndroid {
   /**
@@ -332,6 +333,7 @@ export type Role =
   | 'feed'
   | 'figure'
   | 'form'
+  | 'grid'
   | 'group'
   | 'heading'
   | 'img'
