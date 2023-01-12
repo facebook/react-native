@@ -22,6 +22,7 @@ import type {
 
 import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
+const {flattenProperties} = require('../components/componentsUtils');
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
 const {resolveTypeAnnotation, getTypes} = require('../utils');
@@ -181,6 +182,41 @@ function translateTypeAnnotation(
           );
         }
       }
+    }
+    case 'TSInterfaceDeclaration': {
+      const objectTypeAnnotation = {
+        type: 'ObjectTypeAnnotation',
+        // $FlowFixMe[missing-type-arg]
+        properties: (flattenProperties(
+          [typeAnnotation],
+          types,
+        ): $ReadOnlyArray<$FlowFixMe>)
+          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
+            property => {
+              return tryParse(() => {
+                return parseObjectProperty(
+                  property,
+                  hasteModuleName,
+                  types,
+                  aliasMap,
+                  tryParse,
+                  cxxOnly,
+                  nullable,
+                  translateTypeAnnotation,
+                  parser,
+                );
+              });
+            },
+          )
+          .filter(Boolean),
+      };
+
+      return typeAliasResolution(
+        typeAliasResolutionStatus,
+        objectTypeAnnotation,
+        aliasMap,
+        nullable,
+      );
     }
     case 'TSTypeLiteral': {
       // if there is TSIndexSignature, then it is a dictionary
