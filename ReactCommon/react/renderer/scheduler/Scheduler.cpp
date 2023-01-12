@@ -61,7 +61,7 @@ Scheduler::Scheduler(
       contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
           "RuntimeScheduler");
   auto runtimeScheduler =
-      (enableCallImmediates && weakRuntimeScheduler.hasValue())
+      (enableCallImmediates && weakRuntimeScheduler.has_value())
       ? weakRuntimeScheduler.value().lock()
       : nullptr;
 
