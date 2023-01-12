@@ -1,10 +1,16 @@
 # Changelog
 
-## v0.71.0-rc.5
+## v0.71.0
+
+Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/version-071).
+
+⚠️ *Git Bash users on Windows might experience "Unable to resolve" red boxes, because of an issue with Metro (silently fails without discovering any files). It will be fixed in 0.71.1 next week, in the meantime you can set `resolver.useWatchman: false` in `metro.config.js`.*
 
 ### Breaking Changes
 
-*Note well: while there are not direct breaking changes in existing code behavior, do read carefully the **Changed** and **Removed** sections.*
+- **Changes to Console Logging:** `LogBox.ignoreLog` no longer filters console logs. This means you will start seeing logs in the console that you have silenced in LogBox. See [this comment](https://github.com/facebook/react-native/pull/34476#issuecomment-1240667794) for more details.
+- **Removed AsyncStorage and MaskedViewIOS**: These components have been deprecated since version [0.59](https://github.com/facebook/react-native/blob/main/CHANGELOG.md#deprecated-8), so it’s time we remove them entirely. For alternatives, please check [React Native Directory](https://reactnative.directory/) for community packages that cover those use cases.
+- **JSCRuntime moved to react-jsc:** react-jsi is now split into react-jsc and react-jsi. If you use JSCRuntime, you will need to add react-jsc as a dependency ([facebook/react-native@6b129d8](https://github.com/facebook/react-native/commit/6b129d81ed8cab301775d2a04971e255df9290de)).
 
 ### Added
 
