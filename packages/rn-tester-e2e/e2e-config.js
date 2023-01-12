@@ -5,17 +5,17 @@ let capabilities;
 
 const android = {
   'platformName': 'Android',
-  'appium:platformVersion': '12.0',
-  'appium:deviceName': 'Pixel_3a_API_33_arm64-v8a',
+  'appium:platformVersion': '',
+  'appium:deviceName': '', 
   'appium:app': path.join(process.cwd(), '/apps/RNTester.apk'),
   'appium:automationName': 'uiautomator2',
-  // 'appium:newCommandTimeout': 240,
+  'appium:newCommandTimeout': 240,
 };
 
 const ios = {
   'platformName': 'iOS',
-  'appium:platformVersion': '15.2',
-  'appium:deviceName': 'iPhone 13',
+  'appium:platformVersion': '',
+  'appium:deviceName': '',
   //bundleId: 'org.reactjs.native.example.TestForE2E',
   'appium:automationName': 'XCUITest',
   'appium:app': path.join(process.cwd(), '/apps/RNTester.app'),
