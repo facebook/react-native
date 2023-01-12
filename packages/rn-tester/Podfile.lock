@@ -932,7 +932,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: d68947eddece25638eb0f642d1b957c90388afd1
-  FBReactNativeSpec: 0ded2dec004001d5888590a9c13df3e0c357a59f
+  FBReactNativeSpec: c530d2df977f98d0d72ce4440c074cb73bff6289
   Flipper: 26fc4b7382499f1281eb8cb921e5c3ad6de91fe0
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
@@ -944,7 +944,7 @@ SPEC CHECKSUMS:
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: 62aa33fe860de4c9fde92adea000ce2e56c70370
+  hermes-engine: b5817966bad2f5e14014102dbf97e26a17fe256e
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
@@ -958,7 +958,7 @@ SPEC CHECKSUMS:
   React-cxxreact: 97903bdac0fb53409663fd312e2183ae1dd730e5
   React-Fabric: 4d08ce0b0f15513b2724ae1000c2aaedf73ebc32
   React-graphics: cb8a85648695c60f33a00d732b985f734d1470d8
-  React-hermes: e35ea664b36773a2ce84c583febf1396080e59f7
+  React-hermes: 73a4f97e9cd712476f9b93ae4838a576279feb78
   React-jsi: e4c75a1cf727c8761908ac2eeb1084e47ba88a26
   React-jsiexecutor: dcc8c2b89b6e0b5abb9bbbfb6df86adf44e3e877
   React-jsinspector: 9b56a373a6797114e1d89a7dffa98ee98af67a8f

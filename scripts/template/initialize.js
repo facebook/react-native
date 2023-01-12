@@ -11,9 +11,8 @@
 
 const yargs = require('yargs');
 const {execSync, spawnSync} = require('child_process');
-const fs = require('fs');
-const path = require('path');
 
+const forEachPackage = require('../monorepo/for-each-package');
 const setupVerdaccio = require('../setup-verdaccio');
 
 const {argv} = yargs
@@ -43,41 +42,32 @@ const {reactNativeRootPath, templateName, templateConfigPath, directory} = argv;
 
 const VERDACCIO_CONFIG_PATH = `${reactNativeRootPath}/.circleci/verdaccio.yml`;
 
-function readPackageJSON(pathToPackage) {
-  return JSON.parse(fs.readFileSync(path.join(pathToPackage, 'package.json')));
-}
-
 function install() {
-  const yarnWorkspacesStdout = execSync('yarn --json workspaces info', {
-    cwd: reactNativeRootPath,
-    encoding: 'utf8',
-  });
-  const packages = JSON.parse(JSON.parse(yarnWorkspacesStdout).data);
-
   const VERDACCIO_PID = setupVerdaccio(
     reactNativeRootPath,
     VERDACCIO_CONFIG_PATH,
   );
   process.stdout.write('Bootstrapped Verdaccio \u2705\n');
 
-  process.stdout.write('Starting to publish all the packages...\n');
-  Object.entries(packages).forEach(([packageName, packageEntity]) => {
-    const packageRelativePath = packageEntity.location;
-    const packageAbsolutePath = `${reactNativeRootPath}/${packageRelativePath}`;
+  process.stdout.write('Starting to publish every package...\n');
+  forEachPackage(
+    (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
+      if (packageManifest.private) {
+        return;
+      }
 
-    const packageManifest = readPackageJSON(packageAbsolutePath);
-    if (packageManifest.private) {
-      return;
-    }
+      execSync('npm publish --registry http://localhost:4873 --access public', {
+        cwd: packageAbsolutePath,
+        stdio: [process.stdin, process.stdout, process.stderr],
+      });
 
-    execSync('npm publish --registry http://localhost:4873 --access public', {
-      cwd: `${reactNativeRootPath}/${packageEntity.location}`,
-      stdio: [process.stdin, process.stdout, process.stderr],
-    });
+      process.stdout.write(
+        `Published ${packageManifest.name} to proxy \u2705\n`,
+      );
+    },
+  );
 
-    process.stdout.write(`Published ${packageName} to proxy \u2705\n`);
-  });
-  process.stdout.write('Published all packages \u2705\n');
+  process.stdout.write('Published every package \u2705\n');
 
   execSync(
     `node cli.js init ${templateName} --directory ${directory} --template ${templateConfigPath} --verbose --skip-install`,

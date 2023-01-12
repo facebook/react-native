@@ -17,6 +17,10 @@ static PerformanceEntryType stringToPerformanceEntryType(
     return PerformanceEntryType::MARK;
   } else if (entryType == "measure") {
     return PerformanceEntryType::MEASURE;
+  } else if (entryType == "event") {
+    return PerformanceEntryType::EVENT;
+  } else if (entryType == "first-input") {
+    return PerformanceEntryType::FIRST_INPUT;
   } else {
     return PerformanceEntryType::UNDEFINED;
   }
@@ -40,14 +44,9 @@ void NativePerformanceObserver::stopReporting(
       stringToPerformanceEntryType(entryType));
 }
 
-std::vector<RawPerformanceEntry> NativePerformanceObserver::popPendingEntries(
+GetPendingEntriesResult NativePerformanceObserver::popPendingEntries(
     jsi::Runtime &rt) {
   return PerformanceEntryReporter::getInstance().popPendingEntries();
-}
-
-std::vector<RawPerformanceEntry> NativePerformanceObserver::getPendingEntries(
-    jsi::Runtime &rt) {
-  return PerformanceEntryReporter::getInstance().getPendingEntries();
 }
 
 void NativePerformanceObserver::setOnPerformanceEntryCallback(

@@ -10,9 +10,9 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType} from '../CodegenSchema.js';
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
+import type {UnionTypeAnnotationMemberType, SchemaType} from '../CodegenSchema';
 
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
@@ -63,5 +63,23 @@ export class MockedParser implements Parser {
     membersTypes: $FlowFixMe[],
   ): UnionTypeAnnotationMemberType[] {
     return [];
+  }
+
+  parseFile(filename: string): SchemaType {
+    return {
+      modules: {
+        StringPropNativeComponentView: {
+          type: 'Component',
+          components: {
+            StringPropNativeComponentView: {
+              extendsProps: [],
+              events: [],
+              props: [],
+              commands: [],
+            },
+          },
+        },
+      },
+    };
   }
 }

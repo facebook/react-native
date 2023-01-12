@@ -206,6 +206,7 @@ export class FlatList<ItemT = any> extends React.Component<
   scrollToItem: (params: {
     animated?: boolean | null | undefined;
     item: ItemT;
+    viewOffset?: number | undefined;
     viewPosition?: number | undefined;
   }) => void;
 

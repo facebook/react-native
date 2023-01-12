@@ -73,6 +73,9 @@ Pod::Spec.new do |spec|
                     "CLANG_CXX_LIBRARY" => "compiler-default"
                   }.merge!(build_type == :debug ? { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" } : {})
 
+  spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
+  spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
+
   if source[:http] then
 
     spec.subspec 'Pre-built' do |ss|
@@ -111,13 +114,10 @@ Pod::Spec.new do |spec|
     end
 
     spec.user_target_xcconfig = {
-      'FRAMEWORK_SEARCH_PATHS' => '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/iphoneos" ' +
-                                  '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/iphonesimulator" ' +
-                                  '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/macosx" ' +
-                                  '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/catalyst"',
-      'OTHER_LDFLAGS' => '-framework "hermes"',
       'HERMES_CLI_PATH' => "#{hermesc_path}/bin/hermesc"
     }
+
+    spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/create-dummy-hermes-xcframework.sh"
 
     CMAKE_BINARY = %x(command -v cmake | tr -d '\n')
     # NOTE: Script phases are sorted alphabetically inside Xcode project

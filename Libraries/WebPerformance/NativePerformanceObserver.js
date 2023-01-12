@@ -16,6 +16,8 @@ export const RawPerformanceEntryTypeValues = {
   UNDEFINED: 0,
   MARK: 1,
   MEASURE: 2,
+  EVENT: 3,
+  FIRST_INPUT: 4,
 };
 
 export type RawPerformanceEntryType = number;
@@ -31,13 +33,15 @@ export type RawPerformanceEntry = {|
   interactionId?: number,
 |};
 
+export type GetPendingEntriesResult = {|
+  entries: $ReadOnlyArray<RawPerformanceEntry>,
+  droppedEntriesCount: number,
+|};
+
 export interface Spec extends TurboModule {
   +startReporting: (entryType: string) => void;
   +stopReporting: (entryType: string) => void;
-  // TODO: This is unused and only kept for the compatibility check.
-  // Clean it up once the API is complete.
-  +getPendingEntries: () => $ReadOnlyArray<RawPerformanceEntry>;
-  +popPendingEntries?: () => $ReadOnlyArray<RawPerformanceEntry>;
+  +popPendingEntries: () => GetPendingEntriesResult;
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
 }
 

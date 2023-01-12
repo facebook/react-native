@@ -652,4 +652,90 @@ exports.examples = [
       return <FlexGapExample />;
     },
   },
+  {
+    title: 'Insets',
+    render(): React.Node {
+      return (
+        <View style={{rowGap: 10}}>
+          <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View
+              style={{
+                backgroundColor: '#527FE4',
+                padding: 5,
+                position: 'absolute',
+                inset: 10,
+              }}>
+              <Text style={{fontSize: 11}}>inset 10</Text>
+            </View>
+          </View>
+          <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View
+              style={{
+                backgroundColor: '#527FE4',
+                padding: 5,
+                position: 'absolute',
+                insetBlock: 5,
+              }}>
+              <Text style={{fontSize: 11}}>insetBlock 5</Text>
+            </View>
+          </View>
+          <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View
+              style={{
+                backgroundColor: '#527FE4',
+                padding: 5,
+                position: 'absolute',
+                insetBlockEnd: 5,
+              }}>
+              <Text style={{fontSize: 11}}>insetBlockEnd 5</Text>
+            </View>
+          </View>
+          <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View
+              style={{
+                backgroundColor: '#527FE4',
+                padding: 5,
+                position: 'absolute',
+                insetBlockStart: 5,
+              }}>
+              <Text style={{fontSize: 11}}>insetBlockStart 5</Text>
+            </View>
+          </View>
+          <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View
+              style={{
+                backgroundColor: '#527FE4',
+                padding: 5,
+                position: 'absolute',
+                insetInline: 5,
+              }}>
+              <Text style={{fontSize: 11}}>insetInline 5</Text>
+            </View>
+          </View>
+          <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View
+              style={{
+                backgroundColor: '#527FE4',
+                padding: 5,
+                position: 'absolute',
+                insetInlineEnd: 5,
+              }}>
+              <Text style={{fontSize: 11}}>insetInlineEnd 5</Text>
+            </View>
+          </View>
+          <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View
+              style={{
+                backgroundColor: '#527FE4',
+                padding: 5,
+                position: 'absolute',
+                insetInlineStart: 5,
+              }}>
+              <Text style={{fontSize: 11}}>insetInlineStart 5</Text>
+            </View>
+          </View>
+        </View>
+      );
+    },
+  },
 ];

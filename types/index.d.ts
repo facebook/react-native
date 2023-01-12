@@ -126,6 +126,7 @@ export * from '../Libraries/PushNotificationIOS/PushNotificationIOS';
 export * from '../Libraries/ReactNative/AppRegistry';
 export * from '../Libraries/ReactNative/I18nManager';
 export * from '../Libraries/ReactNative/RendererProxy';
+export * from '../Libraries/ReactNative/RootTag';
 export * from '../Libraries/ReactNative/UIManager';
 export * from '../Libraries/ReactNative/requireNativeComponent';
 export * from '../Libraries/Settings/Settings';

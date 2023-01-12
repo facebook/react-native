@@ -59,6 +59,13 @@ export interface FlexStyle {
   flexShrink?: number | undefined;
   flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;
   height?: number | string | undefined;
+  inset?: number | string | undefined;
+  insetBlock?: number | string | undefined;
+  insetBlockEnd?: number | string | undefined;
+  insetBlockStart?: number | string | undefined;
+  insetInline?: number | string | undefined;
+  insetInlineEnd?: number | string | undefined;
+  insetInlineStart?: number | string | undefined;
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
@@ -248,7 +255,6 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderTopWidth?: number | undefined;
   borderWidth?: number | undefined;
   opacity?: number | undefined;
-  testID?: string | undefined;
   /**
    * Sets the elevation of a view, using Android's underlying
    * [elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation).

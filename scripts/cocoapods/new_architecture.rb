@@ -76,12 +76,13 @@ class NewArchitectureHelper
         spec.compiler_flags = compiler_flags.empty? ? @@folly_compiler_flags : "#{compiler_flags} #{@@folly_compiler_flags}"
         current_config["HEADER_SEARCH_PATHS"] = current_headers.empty? ? boost_search_path : "#{current_headers} #{boost_search_path}"
         current_config["CLANG_CXX_LANGUAGE_STANDARD"] = @@cplusplus_version
-        spec.pod_target_xcconfig = current_config
+
 
         spec.dependency "React-Core"
         spec.dependency "RCT-Folly", '2021.07.22.00'
 
         if new_arch_enabled
+            current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags
             spec.dependency "React-RCTFabric" # This is for Fabric Component
             spec.dependency "React-Codegen"
 
@@ -90,6 +91,8 @@ class NewArchitectureHelper
             spec.dependency "ReactCommon/turbomodule/bridging"
             spec.dependency "ReactCommon/turbomodule/core"
         end
+
+        spec.pod_target_xcconfig = current_config
     end
 
     def self.folly_compiler_flags

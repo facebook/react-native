@@ -134,6 +134,19 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_YG_EDGES(border, "border", "Width");
 
     // Aliases
+    RAW_SET_PROP_SWITCH_CASE(inset, "inset", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        insetBlock, "insetBlock", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        insetBlockEnd, "insetBlockEnd", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        insetBlockStart, "insetBlockStart", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        insetInline, "insetInline", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        insetInlineEnd, "insetInlineEnd", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(
+        insetInlineStart, "insetInlineStart", CompactValue::ofUndefined());
     RAW_SET_PROP_SWITCH_CASE(
         marginInline, "marginInline", CompactValue::ofUndefined());
     RAW_SET_PROP_SWITCH_CASE(
@@ -245,6 +258,48 @@ void YogaStylableProps::convertRawPropAliases(
     const PropsParserContext &context,
     YogaStylableProps const &sourceProps,
     RawProps const &rawProps) {
+  inset = convertRawProp(
+      context,
+      rawProps,
+      "inset",
+      sourceProps.inset,
+      CompactValue::ofUndefined());
+  insetBlock = convertRawProp(
+      context,
+      rawProps,
+      "insetBlock",
+      sourceProps.insetBlock,
+      CompactValue::ofUndefined());
+  insetBlockEnd = convertRawProp(
+      context,
+      rawProps,
+      "insetBlockEnd",
+      sourceProps.insetBlockEnd,
+      CompactValue::ofUndefined());
+  insetBlockStart = convertRawProp(
+      context,
+      rawProps,
+      "insetBlockStart",
+      sourceProps.insetBlockStart,
+      CompactValue::ofUndefined());
+  insetInline = convertRawProp(
+      context,
+      rawProps,
+      "insetInline",
+      sourceProps.insetInline,
+      CompactValue::ofUndefined());
+  insetInlineEnd = convertRawProp(
+      context,
+      rawProps,
+      "insetInlineEnd",
+      sourceProps.insetInlineEnd,
+      CompactValue::ofUndefined());
+  insetInlineStart = convertRawProp(
+      context,
+      rawProps,
+      "insetInlineStart",
+      sourceProps.insetInlineStart,
+      CompactValue::ofUndefined());
   marginInline = convertRawProp(
       context,
       rawProps,

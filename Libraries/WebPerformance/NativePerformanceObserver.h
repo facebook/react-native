@@ -26,7 +26,7 @@ using RawPerformanceEntry = NativePerformanceObserverCxxBaseRawPerformanceEntry<
     // For "event" entries only:
     std::optional<double>,
     std::optional<double>,
-    std::optional<double>>;
+    std::optional<uint32_t>>;
 
 template <>
 struct Bridging<RawPerformanceEntry>
@@ -37,7 +37,18 @@ struct Bridging<RawPerformanceEntry>
           double,
           std::optional<double>,
           std::optional<double>,
-          std::optional<double>> {};
+          std::optional<uint32_t>> {};
+
+using GetPendingEntriesResult =
+    NativePerformanceObserverCxxBaseGetPendingEntriesResult<
+        std::vector<RawPerformanceEntry>,
+        uint32_t>;
+
+template <>
+struct Bridging<GetPendingEntriesResult>
+    : NativePerformanceObserverCxxBaseGetPendingEntriesResultBridging<
+          std::vector<RawPerformanceEntry>,
+          uint32_t> {};
 
 #pragma mark - implementation
 
@@ -51,8 +62,7 @@ class NativePerformanceObserver
 
   void stopReporting(jsi::Runtime &rt, std::string entryType);
 
-  std::vector<RawPerformanceEntry> popPendingEntries(jsi::Runtime &rt);
-  std::vector<RawPerformanceEntry> getPendingEntries(jsi::Runtime &rt);
+  GetPendingEntriesResult popPendingEntries(jsi::Runtime &rt);
 
   void setOnPerformanceEntryCallback(
       jsi::Runtime &rt,

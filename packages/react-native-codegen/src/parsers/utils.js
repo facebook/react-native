@@ -12,10 +12,11 @@
 
 import type {ComponentSchemaBuilderConfig} from './flow/components/schema';
 import type {NativeModuleSchema, SchemaType} from '../CodegenSchema';
+import type {Parser} from './parser';
+
 const {ParserError} = require('./errors');
 const {wrapModuleSchema} = require('./parsers-commons');
 
-const fs = require('fs');
 const path = require('path');
 const invariant = require('invariant');
 
@@ -95,15 +96,6 @@ function verifyPlatforms(
   };
 }
 
-function parseFile(
-  filename: string,
-  callback: (contents: string, filename: string) => SchemaType,
-): SchemaType {
-  const contents = fs.readFileSync(filename, 'utf8');
-
-  return callback(contents, filename);
-}
-
 // TODO(T108222691): Use flow-types for @babel/parser
 function visit(
   astNode: $FlowFixMe,
@@ -143,7 +135,9 @@ function buildSchemaFromConfigType(
     hasteModuleName: string,
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
+    parser: Parser,
   ) => NativeModuleSchema,
+  parser: Parser,
 ): SchemaType {
   switch (configType) {
     case 'component': {
@@ -158,7 +152,7 @@ function buildSchemaFromConfigType(
       const [parsingErrors, tryParse] = createParserErrorCapturer();
 
       const schema = tryParse(() =>
-        buildModuleSchema(nativeModuleName, ast, tryParse),
+        buildModuleSchema(nativeModuleName, ast, tryParse, parser),
       );
 
       if (parsingErrors.length > 0) {
@@ -259,7 +253,6 @@ module.exports = {
   extractNativeModuleName,
   createParserErrorCapturer,
   verifyPlatforms,
-  parseFile,
   visit,
   buildSchemaFromConfigType,
   isModuleRegistryCall,

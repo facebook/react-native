@@ -15,7 +15,6 @@
 #include <unordered_map>
 
 #include <folly/Executor.h>
-#include <folly/Optional.h>
 #include <folly/Unit.h>
 #include <folly/futures/Future.h>
 #include <hermes/DebuggerAPI.h>
@@ -23,6 +22,7 @@
 #include <hermes/inspector/AsyncPauseState.h>
 #include <hermes/inspector/Exceptions.h>
 #include <hermes/inspector/RuntimeAdapter.h>
+#include <optional>
 
 namespace facebook {
 namespace hermes {
@@ -164,7 +164,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
    */
   folly::Future<facebook::hermes::debugger::BreakpointInfo> setBreakpoint(
       facebook::hermes::debugger::SourceLocation loc,
-      folly::Optional<std::string> condition = folly::none);
+      std::optional<std::string> condition = std::nullopt);
 
   folly::Future<folly::Unit> removeBreakpoint(
       facebook::hermes::debugger::BreakpointID loc);
@@ -281,7 +281,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   void setBreakpointOnExecutor(
       debugger::SourceLocation loc,
-      folly::Optional<std::string> condition,
+      std::optional<std::string> condition,
       std::shared_ptr<
           folly::Promise<facebook::hermes::debugger::BreakpointInfo>> promise);
 
@@ -367,7 +367,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
 /// Helper function that guards user code execution in a try-catch block.
 template <typename C, typename... A>
-folly::Optional<UserCallbackException> runUserCallback(C &cb, A &&...arg) {
+std::optional<UserCallbackException> runUserCallback(C &cb, A &&...arg) {
   try {
     cb(std::forward<A>(arg)...);
   } catch (const std::exception &e) {

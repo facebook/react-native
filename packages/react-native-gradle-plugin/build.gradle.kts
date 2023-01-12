@@ -33,7 +33,7 @@ group = "com.facebook.react"
 
 dependencies {
   implementation(gradleApi())
-  implementation("com.android.tools.build:gradle:7.4.0-beta05")
+  implementation("com.android.tools.build:gradle:7.3.1")
   implementation("com.google.code.gson:gson:2.8.9")
   implementation("com.google.guava:guava:31.0.1-jre")
   implementation("com.squareup:javapoet:1.13.0")

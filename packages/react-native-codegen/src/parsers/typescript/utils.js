@@ -17,7 +17,6 @@ const {parseTopLevelType} = require('./parseTopLevelType');
 /**
  * TODO(T108222691): Use flow-types for @babel/parser
  */
-
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
     switch (node.type) {

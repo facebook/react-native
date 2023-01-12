@@ -97,7 +97,8 @@
     "test-e2e-local": "node ./scripts/test-e2e-local.js",
     "test-e2e-local-clean": "node ./scripts/test-e2e-local-clean.js",
     "test-ios": "./scripts/objc-test.sh test",
-    "test-typescript": "dtslint types"
+    "test-typescript": "dtslint types",
+    "test-typescript-offline": "dtslint --localTs node_modules/typescript/lib types"
   },
   "workspaces": [
     "packages/*",
@@ -118,7 +119,7 @@
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
-    "deprecated-react-native-prop-types": "^3.0.1",
+    "deprecated-react-native-prop-types": "^4.0.0",
     "event-target-shim": "^5.0.1",
     "invariant": "^2.2.4",
     "jest-environment-node": "^29.2.1",
@@ -142,7 +143,7 @@
     "ws": "^6.2.2"
   },
   "devDependencies": {
-    "flow-bin": "^0.195.1",
+    "flow-bin": "^0.196.3",
     "hermes-eslint": "0.8.0",
     "mock-fs": "^5.1.4",
     "react": "18.2.0",

@@ -152,6 +152,7 @@ function parseObjectProperty(
         aliasMap,
         tryParse,
         cxxOnly,
+        parser,
       ),
     );
 
@@ -262,32 +263,36 @@ function translateFunctionTypeAnnotation(
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   translateTypeAnnotation: $FlowFixMe,
-  language: ParserType,
+  parser: Parser,
 ): NativeModuleFunctionTypeAnnotation {
   type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
   const params: Array<Param> = [];
 
-  for (const param of getTypeAnnotationParameters(typeAnnotation, language)) {
+  for (const param of getTypeAnnotationParameters(
+    typeAnnotation,
+    parser.language(),
+  )) {
     const parsedParam = tryParse(() => {
-      if (getFunctionNameFromParameter(param, language) == null) {
+      if (getFunctionNameFromParameter(param, parser.language()) == null) {
         throw new UnnamedFunctionParamParserError(
           param,
           hasteModuleName,
-          language,
+          parser.language(),
         );
       }
 
-      const paramName = getParameterName(param, language);
+      const paramName = getParameterName(param, parser.language());
 
       const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
         unwrapNullable<$FlowFixMe>(
           translateTypeAnnotation(
             hasteModuleName,
-            getParameterTypeAnnotation(param, language),
+            getParameterTypeAnnotation(param, parser.language()),
             types,
             aliasMap,
             tryParse,
             cxxOnly,
+            parser,
           ),
         );
 
@@ -322,11 +327,12 @@ function translateFunctionTypeAnnotation(
     unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
         hasteModuleName,
-        getTypeAnnotationReturnType(typeAnnotation, language),
+        getTypeAnnotationReturnType(typeAnnotation, parser.language()),
         types,
         aliasMap,
         tryParse,
         cxxOnly,
+        parser,
       ),
     );
 
@@ -334,7 +340,7 @@ function translateFunctionTypeAnnotation(
     hasteModuleName,
     typeAnnotation,
     'FunctionTypeAnnotation',
-    language,
+    parser.language(),
     cxxOnly,
     returnTypeAnnotation.type,
   );
@@ -361,15 +367,15 @@ function buildPropertySchema(
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
-  language: ParserType,
   resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
+  parser: Parser,
 ): NativeModulePropertyShape {
   let nullable: boolean = false;
   let {key, value} = property;
   const methodName: string = key.name;
 
-  if (language === 'TypeScript') {
+  if (parser.language() === 'TypeScript') {
     value =
       property.type === 'TSMethodSignature'
         ? property
@@ -383,7 +389,7 @@ function buildPropertySchema(
     property.value,
     key.name,
     value.type,
-    language,
+    parser.language(),
   );
 
   return {
@@ -399,7 +405,7 @@ function buildPropertySchema(
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
-        language,
+        parser,
       ),
     ),
   };

@@ -290,24 +290,49 @@ const combinedStyle6: StyleProp<TextStyle | null> = StyleSheet.compose(
   null,
 );
 
-// The following use of the compose method is invalid:
-// @ts-expect-error
-const combinedStyle7 = StyleSheet.compose(composeImageStyle, composeTextStyle);
+const page = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: '#fff',
+  },
+  text: {
+    fontSize: 30,
+    color: '#000',
+  },
+});
 
-// @ts-expect-error
+const lists = StyleSheet.create({
+  listContainer: {
+    flex: 1,
+    backgroundColor: '#61dafb',
+  },
+  listItem: {
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+  },
+});
+
+const container = StyleSheet.compose(page.container, lists.listContainer);
+<View style={container} />;
+const text = StyleSheet.compose(page.text, lists.listItem);
+<Text style={text} />;
+
+// The following use of the compose method is invalid:
 const combinedStyle8: StyleProp<ImageStyle> = StyleSheet.compose(
+  // @ts-expect-error
   composeTextStyle,
   composeTextStyle,
 );
 
-// @ts-expect-error
 const combinedStyle9: StyleProp<ImageStyle> = StyleSheet.compose(
+  // @ts-expect-error
   [composeTextStyle],
   null,
 );
 
-// @ts-expect-error
 const combinedStyle10: StyleProp<ImageStyle> = StyleSheet.compose(
+  // @ts-expect-error
   Math.random() < 0.5 ? composeTextStyle : null,
   null,
 );

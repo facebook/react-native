@@ -306,14 +306,25 @@ class CodegenUtils
       return @@CLEANUP_DONE
     end
 
-    def self.clean_up_build_folder(app_path, codegen_dir)
+    def self.clean_up_build_folder(app_path, ios_folder, codegen_dir)
       return if CodegenUtils.cleanup_done()
       CodegenUtils.set_cleanup_done(true)
 
-      codegen_path = File.join(app_path, codegen_dir)
+      codegen_path = File.join(app_path, ios_folder, codegen_dir)
       return if !Dir.exist?(codegen_path)
 
       FileUtils.rm_rf(Dir.glob("#{codegen_path}/*"))
-      CodegenUtils.set_cleanup_done(true)
+      CodegenUtils.assert_codegen_folder_is_empty(app_path, ios_folder, codegen_dir)
+    end
+
+    # Need to split this function from the previous one to be able to test it properly.
+    def self.assert_codegen_folder_is_empty(app_path, ios_folder, codegen_dir)
+      # double check that the files have actually been deleted.
+      # Emit an error message if not.
+      codegen_path = File.join(app_path, ios_folder, codegen_dir)
+      if Dir.exist?(codegen_path) && Dir.glob("#{codegen_path}/*").length() != 0
+        Pod::UI.warn "Unable to remove the content of #{codegen_path} folder. Please run rm -rf #{codegen_path} and try again."
+        abort
+      end
     end
 end

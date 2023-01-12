@@ -2252,11 +2252,6 @@
     prompts "^2.4.0"
     semver "^6.3.0"
 
-"@react-native/normalize-color@*":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native/normalize-color/-/normalize-color-2.1.0.tgz#939b87a9849e81687d3640c5efa2a486ac266f91"
-  integrity sha512-Z1jQI2NpdFJCVgpY+8Dq/Bt3d+YUi1928Q+/CZm/oh66fzM0RUl54vvuXlPJKybH4pdCZey1eDTPaLHkMPNgWA==
-
 "@reactions/component@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@reactions/component/-/component-2.0.2.tgz#40f8c1c2c37baabe57a0c944edb9310dc1ec6642"
@@ -3594,12 +3589,12 @@ depd@~1.1.2:
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.2.tgz#9bcd52e14c097763e749b274c4346ed2e560b5a9"
   integrity sha1-m81S4UwJd2PnSbJ0xDRu0uVgtak=
 
-deprecated-react-native-prop-types@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/deprecated-react-native-prop-types/-/deprecated-react-native-prop-types-3.0.1.tgz#a275f84cd8519cd1665e8df3c99e9067d57a23ec"
-  integrity sha512-J0jCJcsk4hMlIb7xwOZKLfMpuJn6l8UtrPEzzQV5ewz5gvKNYakhBuq9h2rWX7YwHHJZFhU5W8ye7dB9oN8VcQ==
+deprecated-react-native-prop-types@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/deprecated-react-native-prop-types/-/deprecated-react-native-prop-types-4.0.0.tgz#544845e32f3220bc676f18c0b846d673399c45cb"
+  integrity sha512-q0kk77qFPC4adlnZH7cv9lfbHALeaTkl7wT1uNERc+e0Os3KcBKKy1rVliTE8sfey6TP6OPzoIXpr9OPidvvHw==
   dependencies:
-    "@react-native/normalize-color" "*"
+    "@react-native/normalize-colors" "*"
     invariant "*"
     prop-types "*"
 
@@ -4317,10 +4312,10 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.2.tgz#64bfed5cb68fe3ca78b3eb214ad97b63bedce561"
   integrity sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==
 
-flow-bin@^0.195.1:
-  version "0.195.1"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.195.1.tgz#5a1c18f12541b61301f12725b8d219cb6247b465"
-  integrity sha512-vWF6E5NoYyZbPq9Nw/pscBu9BDp65VOnTj54LuwV7aqlcrS+Pg1c3cndmN52P5rsp86lPUg0FGODUQ6FoQNkUw==
+flow-bin@^0.196.3:
+  version "0.196.3"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.196.3.tgz#b6df48986a2629f2c6a26fb79d73fc07c8056af0"
+  integrity sha512-pmvjlksi1CvkSnDHpcfhDFj/KC3hwSgE2OpzvugW57dfgqfHzqX1UfZIcScGWM5AmP/IeOsQCW383k3zIbEnrA==
 
 flow-parser@0.*, flow-parser@^0.185.0:
   version "0.185.0"
@@ -6067,10 +6062,10 @@ merge2@^1.3.0, merge2@^1.4.1:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
-metro-babel-register@0.73.3:
-  version "0.73.3"
-  resolved "https://registry.yarnpkg.com/metro-babel-register/-/metro-babel-register-0.73.3.tgz#fc5601bbe166efb59d063d8b330de062475c257b"
-  integrity sha512-uuNoggz/tr5FrG5lbzMHMO5wN0L3BZi/AYC/8oPTbiIJEavZ5ugVaePOoTU04c67KMGgNLIbJESZpLZn/ttN7A==
+metro-babel-register@0.73.5:
+  version "0.73.5"
+  resolved "https://registry.yarnpkg.com/metro-babel-register/-/metro-babel-register-0.73.5.tgz#1a7df21c5ed945b617246f5519c5315900ab29ec"
+  integrity sha512-zPTEkpfceLYYAcrGNKNpPnuVOo/DJRUmNYvGf3eB3tcvAnitPq+P+3EU+Q2uP02EdDVeIll6IZku5hT1zpJYdQ==
   dependencies:
     "@babel/core" "^7.14.0"
     "@babel/plugin-proposal-nullish-coalescing-operator" "^7.0.0"
@@ -6162,10 +6157,10 @@ metro-inspector-proxy@0.73.5:
     ws "^7.5.1"
     yargs "^17.5.1"
 
-metro-memory-fs@0.73.3:
-  version "0.73.3"
-  resolved "https://registry.yarnpkg.com/metro-memory-fs/-/metro-memory-fs-0.73.3.tgz#cd5feba53b77f35c31e530de763c856aa5685d13"
-  integrity sha512-uE/LLrf+LqsLUunWjSmrnHpdqaO1rTBAN/HExQ16TLwwAEovUF/UKS2CqTp4VEKGwfD/458c6YXL45xxLDOp3g==
+metro-memory-fs@0.73.5:
+  version "0.73.5"
+  resolved "https://registry.yarnpkg.com/metro-memory-fs/-/metro-memory-fs-0.73.5.tgz#3424fd46decbd001706b639f8a2b60273a6b3872"
+  integrity sha512-HSLoCkyOoLNO9q+bpJXrxW5ElvcAbNTPv84EaRZ/tA6CdxcQz7wGc2RioifwF4efVmAy0TRgPN9AaoYO4MhKxw==
 
 metro-minify-terser@0.73.5:
   version "0.73.5"

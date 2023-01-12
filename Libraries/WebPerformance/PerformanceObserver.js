@@ -19,7 +19,7 @@ import NativePerformanceObserver, {
 } from './NativePerformanceObserver';
 
 export type HighResTimeStamp = number;
-export type PerformanceEntryType = 'mark' | 'measure';
+export type PerformanceEntryType = 'mark' | 'measure' | 'event' | 'first-input';
 
 export class PerformanceEntry {
   name: string;
@@ -62,6 +62,10 @@ function rawToPerformanceEntryType(
       return 'mark';
     case RawPerformanceEntryTypeValues.MEASURE:
       return 'measure';
+    case RawPerformanceEntryTypeValues.EVENT:
+      return 'event';
+    case RawPerformanceEntryTypeValues.FIRST_INPUT:
+      return 'first-input';
     default:
       throw new TypeError(
         `unexpected performance entry type received: ${type}`,
@@ -112,6 +116,8 @@ export class PerformanceObserverEntryList {
 export type PerformanceObserverCallback = (
   list: PerformanceObserverEntryList,
   observer: PerformanceObserver,
+  // The number of buffered entries which got dropped from the buffer due to the buffer being full:
+  droppedEntryCount?: number,
 ) => void;
 
 export type PerformanceObserverInit =
@@ -137,7 +143,9 @@ const onPerformanceEntry = () => {
   if (!NativePerformanceObserver) {
     return;
   }
-  const rawEntries = NativePerformanceObserver.popPendingEntries?.() ?? [];
+  const entryResult = NativePerformanceObserver.popPendingEntries();
+  const rawEntries = entryResult?.entries ?? [];
+  const droppedEntriesCount = entryResult?.droppedEntriesCount;
   if (rawEntries.length === 0) {
     return;
   }
@@ -149,6 +157,7 @@ const onPerformanceEntry = () => {
     observerConfig.callback(
       new PerformanceObserverEntryList(entriesForObserver),
       observer,
+      droppedEntriesCount,
     );
   }
 };
@@ -306,7 +315,7 @@ export default class PerformanceObserver {
   }
 
   static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
-    Object.freeze(['mark', 'measure']);
+    Object.freeze(['mark', 'measure', 'event', 'first-input']);
 }
 
 function union<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {

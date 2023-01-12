@@ -210,6 +210,20 @@ function createStructs(
       const templateParameter = value.properties
         .map((v, i) => 'P' + i)
         .join(', ');
+      const paramemterConversion = value.properties
+        .map((v, i) => {
+          const translatedParam = translatePrimitiveJSTypeToCpp(
+            v.typeAnnotation,
+            false,
+            typeName =>
+              `Unsupported type for param "${v.name}". Found: ${typeName}`,
+            resolveAlias,
+          );
+          return `  static ${translatedParam} ${v.name}ToJs(jsi::Runtime &rt, P${i} value) {
+    return bridging::toJs(rt, value);
+  }`;
+        })
+        .join('\n');
       return `#pragma mark - ${structName}
 
 template <${templateParameterWithTypename}>
@@ -238,24 +252,29 @@ ${value.properties
     return result;
   }
 
+#ifdef DEBUG
+${paramemterConversion}
+#endif
+
   static jsi::Object toJs(
-      jsi::Runtime &rt,
-      const ${structName}<${templateParameter}> &value) {
-    auto result = facebook::jsi::Object(rt);
-${value.properties
-  .map((v, i) => {
-    if (v.optional) {
-      return `    if (value.${v.name}) {
-      result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value()));
-    }`;
-    } else {
-      return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}));`;
-    }
-  })
-  .join('\n')}
-    return result;
-  }
-};
+    jsi::Runtime &rt,
+    const ${structName}<${templateParameter}> &value,
+    const std::shared_ptr<CallInvoker> &jsInvoker) {
+      auto result = facebook::jsi::Object(rt);
+      ${value.properties
+        .map((v, i) => {
+          if (v.optional) {
+            return `    if (value.${v.name}) {
+            result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
+          }`;
+          } else {
+            return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}, jsInvoker));`;
+          }
+        })
+        .join('\n')}
+          return result;
+        }
+      };
 
 `;
     })

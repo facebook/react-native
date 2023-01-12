@@ -10,9 +10,16 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema.js';
+import type {
+  UnionTypeAnnotationMemberType,
+  SchemaType,
+} from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
+
+const {buildSchema} = require('./buildSchema');
+
+const fs = require('fs');
 
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
@@ -80,6 +87,12 @@ class TypeScriptParser implements Parser {
     };
 
     return [...new Set(membersTypes.map(remapLiteral))];
+  }
+
+  parseFile(filename: string): SchemaType {
+    const contents = fs.readFileSync(filename, 'utf8');
+
+    return buildSchema(contents, filename, this);
   }
 }
 module.exports = {
