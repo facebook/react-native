@@ -65,7 +65,11 @@ class ReactNativePodsUtils
 
         projects.each do |project|
             project.build_configurations.each do |config|
-                config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
+                if arm_value == 1 then
+                    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
+                else
+                    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64 " + excluded_archs_default
+                end
             end
 
             project.save()
