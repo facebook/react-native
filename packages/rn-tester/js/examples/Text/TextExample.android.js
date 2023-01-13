@@ -284,7 +284,7 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
                   backgroundColor: 'green',
                   color: 'white',
                 }}>
-                This span is not aligned
+                This span is aligned
               </Text>
               <Text
                 style={{

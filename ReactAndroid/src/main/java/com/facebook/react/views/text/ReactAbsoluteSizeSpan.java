@@ -29,24 +29,18 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
   }
 
   @Override
-  public void updateMeasureState(TextPaint tp) {
-    updateDrawState(tp);
-  }
-
-  @Override
   public void updateDrawState(TextPaint ds) {
     super.updateDrawState(ds);
-    // aligns text vertically in their lineHeight
+    // aligns text vertically in lineHeight
     if (ds.getTextSize() != 0 && mHighestLineHeight != 0) {
       if (mTextAlignVertical == "top-child") {
-        ds.baselineShift -= mHighestLineHeight / 2 - ds.getTextSize() / 2;
+        ds.baselineShift -= mHighestLineHeight / 2 - getSize() / 2;
       }
       if (mTextAlignVertical == "bottom-child") {
-        ds.baselineShift += mHighestLineHeight / 2 - ds.getTextSize() / 2;
+        ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2;
       }
     }
-    // if lineHeight is not set, align the text using the font metrics
-    // works only with single line
+    // align the text by font metrics
     // https://stackoverflow.com/a/27631737/7295772
     // top      -------------  -26
     // ascent   -------------  -30

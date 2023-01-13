@@ -114,7 +114,7 @@ public class ReactTextViewManager
 
       ReactAbsoluteSizeSpan[] absoluteSizeSpans =
           spannable.getSpans(0, spannable.length(), ReactAbsoluteSizeSpan.class);
-      if (absoluteSizeSpans.length != 0) {
+      if (absoluteSizeSpans.length != 0 && highestLineHeight != 0) {
         for (ReactAbsoluteSizeSpan span : absoluteSizeSpans) {
           span.updateSpan(highestLineHeight);
         }
