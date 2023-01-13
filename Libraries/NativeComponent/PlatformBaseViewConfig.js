@@ -376,6 +376,7 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
           }),
           // macOS]
         },
+        // $FlowFixMe: Flow doesn't like these nested spreads // [macOS]
         validAttributes: {
           // View Props
           accessible: true,
@@ -501,6 +502,7 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
           style: ReactNativeStyleAttributes,
 
           // [macOS
+          // $FlowFixMe: Flow doesn't like these nested spreads
           ...(Platform.OS === 'macos' && {
             acceptsFirstMouse: true,
             accessibilityTraits: true,
@@ -513,6 +515,7 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
             validKeysUp: true,
           }),
           // macOS]
+          // $FlowFixMe: Flow doesn't like these nested spreads // [macOS]
           ...ConditionallyIgnoredEventHandlers({
             onLayout: true,
             onMagicTap: true,
@@ -542,6 +545,7 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
             onTouchCancel: true,
 
             // [macOS
+            // $FlowFixMe: Flow doesn't like these nested spreads
             ...(Platform.OS === 'macos' && {
               onBlur: true,
               onClick: true,

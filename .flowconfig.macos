@@ -1,6 +1,5 @@
 [ignore]
-; [macOS]
-; We fork some components by platform
+; We fork some components by platform [macOS]
 .*/*[.]ios.js
 .*/*[.]android.js
 
@@ -13,7 +12,7 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-; [macOS Ignore metro.config.js
+; [macOS] Ignore metro.config.js
 <PROJECT_ROOT>/metro.config.js
 
 ; Flow doesn't support platforms
@@ -39,8 +38,11 @@ emoji=true
 
 exact_by_default=true
 
+format.bracket_spacing=false
+
 module.file_ext=.js
 module.file_ext=.json
+; [macOS]
 module.file_ext=.macos.js
 
 munge_underscores=true
@@ -55,19 +57,16 @@ suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
-experimental.abstract_locations=true
-
 [lints]
 sketchy-null-number=warn
 sketchy-null-mixed=warn
 sketchy-number=warn
 untyped-type-import=warn
 nonstrict-import=warn
-deprecated-type=warn
+deprecated-type=error
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
 signature-verification-failure=warn
-deprecated-utility=error
 
 [strict]
 deprecated-type
@@ -79,4 +78,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.170.0
+^0.171.0

@@ -595,7 +595,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   // [macOS
   ensureItemAtIndexIsVisible(rowIndex: number) {
-    const frame = this._getFrameMetricsApprox(rowIndex);
+    const frame = this.__getFrameMetricsApprox(rowIndex);
     const visTop = this._scrollMetrics.offset;
     const visLen = this._scrollMetrics.visibleLength;
     const visEnd = visTop + visLen;
