@@ -174,16 +174,6 @@ Pod::Spec.new do |s|
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
     end
 
-    ss.subspec "slider" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/slider/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/slider/tests/**/*",
-                                 "react/renderer/components/slider/platform/android"
-      sss.header_dir           = "react/renderer/components/slider"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
-    end
-
     ss.subspec "text" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
