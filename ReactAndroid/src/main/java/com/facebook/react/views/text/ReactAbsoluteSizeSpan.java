@@ -17,13 +17,13 @@ import androidx.annotation.Nullable;
 public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan {
   private static final String TAG = "ReactAbsoluteSizeSpan";
   private String mTextAlignVertical = "center-child";
+  private int mHighestLineHeight = 0;
 
   public ReactAbsoluteSizeSpan(int size) {
     super(size);
   }
 
-  public ReactAbsoluteSizeSpan(
-      int size, @Nullable String textAlignVertical) {
+  public ReactAbsoluteSizeSpan(int size, @Nullable String textAlignVertical) {
     super(size);
     mTextAlignVertical = textAlignVertical;
   }
@@ -36,6 +36,15 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
   @Override
   public void updateDrawState(TextPaint ds) {
     super.updateDrawState(ds);
+    // aligns text vertically in their lineHeight
+    if (ds.getTextSize() != 0 && mHighestLineHeight != 0) {
+      if (mTextAlignVertical == "top-child") {
+        ds.baselineShift -= mHighestLineHeight / 2 - ds.getTextSize() / 2;
+      }
+      if (mTextAlignVertical == "bottom-child") {
+        ds.baselineShift += mHighestLineHeight / 2 - ds.getTextSize() / 2;
+      }
+    }
     // if lineHeight is not set, align the text using the font metrics
     // works only with single line
     // https://stackoverflow.com/a/27631737/7295772
@@ -50,5 +59,9 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
     if (mTextAlignVertical == "bottom-child") {
       ds.baselineShift += ds.getFontMetrics().bottom - ds.descent();
     }
+  }
+
+  public void updateSpan(int highestLineHeight) {
+    mHighestLineHeight = highestLineHeight;
   }
 }

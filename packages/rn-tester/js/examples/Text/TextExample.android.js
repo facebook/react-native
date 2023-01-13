@@ -268,6 +268,7 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
             onPress={() => this.setState({verticalAlignCenter: true})}
             title="set vertical align CENTER"
           />
+          <Button onPress={() => this.increaseFont()} title="increase font" />
           <View>
             <Text
               textTransform="uppercase"
@@ -278,11 +279,12 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
               parent
               <Text
                 style={{
+                  fontSize,
                   textAlignVertical,
                   backgroundColor: 'green',
                   color: 'white',
                 }}>
-                This span is aligned {textAlignVertical}
+                This span is not aligned
               </Text>
               <Text
                 style={{

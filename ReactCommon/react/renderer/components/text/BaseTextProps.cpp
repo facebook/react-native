@@ -196,7 +196,7 @@ static TextAttributes convertRawProp(
       "backgroundColor",
       sourceTextAttributes.backgroundColor,
       defaultTextAttributes.backgroundColor);
-  
+
   textAttributes.textAlignVertical = convertRawProp(
                                                   context,
                                                   rawProps,

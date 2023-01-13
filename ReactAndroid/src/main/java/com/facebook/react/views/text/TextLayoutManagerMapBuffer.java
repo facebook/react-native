@@ -158,7 +158,6 @@ public class TextLayoutManagerMapBuffer {
               new SetSpanOperation(
                   start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
         }
-        String currentText = String.valueOf(sb.subSequence(start, end));
         ops.add(
             new SetSpanOperation(
                 start,
@@ -167,8 +166,7 @@ public class TextLayoutManagerMapBuffer {
                     textAttributes.mFontSize, textAttributes.mTextAlignVertical)));
         if (textAttributes.mFontStyle != UNSET
             || textAttributes.mFontWeight != UNSET
-            || textAttributes.mFontFamily != null
-            || textAttributes.mTextAlignVertical != null) {
+            || textAttributes.mFontFamily != null) {
           ops.add(
               new SetSpanOperation(
                   start,
@@ -178,8 +176,7 @@ public class TextLayoutManagerMapBuffer {
                       textAttributes.mFontWeight,
                       textAttributes.mFontFeatureSettings,
                       textAttributes.mFontFamily,
-                      context.getAssets(),
-                      textAttributes.mTextAlignVertical)));
+                      context.getAssets())));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
           ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));

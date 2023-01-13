@@ -112,10 +112,10 @@ public class ReactTextViewManager
         }
       }
 
-      CustomStyleSpan[] customStyleSpans =
-          spannable.getSpans(0, spannable.length(), CustomStyleSpan.class);
-      if (customStyleSpans.length != 0) {
-        for (CustomStyleSpan span : customStyleSpans) {
+      ReactAbsoluteSizeSpan[] absoluteSizeSpans =
+          spannable.getSpans(0, spannable.length(), ReactAbsoluteSizeSpan.class);
+      if (absoluteSizeSpans.length != 0) {
+        for (ReactAbsoluteSizeSpan span : absoluteSizeSpans) {
           span.updateSpan(highestLineHeight);
         }
       }

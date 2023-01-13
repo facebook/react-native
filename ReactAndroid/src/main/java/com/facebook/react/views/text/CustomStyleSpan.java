@@ -8,6 +8,7 @@
 package com.facebook.react.views.text;
 
 import android.content.res.AssetManager;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
@@ -34,8 +35,6 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   private final int mWeight;
   private final @Nullable String mFeatureSettings;
   private final @Nullable String mFontFamily;
-  private String mTextAlignVertical;
-  private int mHighestLineHeight;
 
   public CustomStyleSpan(
       int fontStyle,
@@ -50,41 +49,14 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     mAssetManager = assetManager;
   }
 
-  public CustomStyleSpan(
-      int fontStyle,
-      int fontWeight,
-      @Nullable String fontFeatureSettings,
-      @Nullable String fontFamily,
-      AssetManager assetManager,
-      @Nullable String textAlignVertical) {
-    this(fontStyle, fontWeight, fontFeatureSettings, fontFamily, assetManager);
-    mTextAlignVertical = textAlignVertical;
-  }
-
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(
-        ds,
-        mStyle,
-        mWeight,
-        mFeatureSettings,
-        mFontFamily,
-        mAssetManager,
-        mTextAlignVertical,
-        mHighestLineHeight);
+    apply(ds, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
   }
 
   @Override
-  public void updateMeasureState(TextPaint tp) {
-    apply(
-        tp,
-        mStyle,
-        mWeight,
-        mFeatureSettings,
-        mFontFamily,
-        mAssetManager,
-        mTextAlignVertical,
-        mHighestLineHeight);
+  public void updateMeasureState(TextPaint paint) {
+    apply(paint, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
   }
 
   public int getStyle() {
@@ -100,30 +72,16 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   private static void apply(
-      TextPaint tp,
+      Paint paint,
       int style,
       int weight,
       @Nullable String fontFeatureSettings,
       @Nullable String family,
-      AssetManager assetManager,
-      @Nullable String textAlignVertical,
-      int highestLineHeight) {
+      AssetManager assetManager) {
     Typeface typeface =
-        ReactTypefaceUtils.applyStyles(tp.getTypeface(), style, weight, family, assetManager);
-    tp.setFontFeatureSettings(fontFeatureSettings);
-    tp.setTypeface(typeface);
-    tp.setSubpixelText(true);
-
-    // aligns text vertically in their lineHeight
-    if (textAlignVertical == "top-child" && highestLineHeight != 0) {
-      tp.baselineShift -= highestLineHeight / 2 - tp.getTextSize() / 2;
-    }
-    if (textAlignVertical == "bottom-child" && highestLineHeight != 0) {
-      tp.baselineShift += highestLineHeight / 2 - tp.getTextSize() / 2;
-    }
-  }
-
-  public void updateSpan(int highestLineHeight) {
-    mHighestLineHeight = highestLineHeight;
+        ReactTypefaceUtils.applyStyles(paint.getTypeface(), style, weight, family, assetManager);
+    paint.setFontFeatureSettings(fontFeatureSettings);
+    paint.setTypeface(typeface);
+    paint.setSubpixelText(true);
   }
 }
