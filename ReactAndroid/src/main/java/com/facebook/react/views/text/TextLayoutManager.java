@@ -143,7 +143,7 @@ public class TextLayoutManager {
                   start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
         }
         ops.add(
-            new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize, null, null)));
+            new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
         if (textAttributes.mFontStyle != UNSET
             || textAttributes.mFontWeight != UNSET
             || textAttributes.mFontFamily != null) {
@@ -156,7 +156,7 @@ public class TextLayoutManager {
                       textAttributes.mFontWeight,
                       textAttributes.mFontFeatureSettings,
                       textAttributes.mFontFamily,
-                      context.getAssets(), /* textAlignVertical not supported on Paper */ null)));
+                      context.getAssets())));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
           ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));

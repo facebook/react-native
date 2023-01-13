@@ -164,7 +164,7 @@ public class TextLayoutManagerMapBuffer {
                 start,
                 end,
                 new ReactAbsoluteSizeSpan(
-                    textAttributes.mFontSize, textAttributes.mTextAlignVertical, currentText)));
+                    textAttributes.mFontSize, textAttributes.mTextAlignVertical)));
         if (textAttributes.mFontStyle != UNSET
             || textAttributes.mFontWeight != UNSET
             || textAttributes.mFontFamily != null

@@ -16,14 +16,16 @@ import androidx.annotation.Nullable;
  */
 public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan {
   private static final String TAG = "ReactAbsoluteSizeSpan";
-  private final String mText;
   private String mTextAlignVertical = "center-child";
 
+  public ReactAbsoluteSizeSpan(int size) {
+    super(size);
+  }
+
   public ReactAbsoluteSizeSpan(
-      int size, @Nullable String textAlignVertical, @Nullable String text) {
+      int size, @Nullable String textAlignVertical) {
     super(size);
     mTextAlignVertical = textAlignVertical;
-    mText = text;
   }
 
   @Override

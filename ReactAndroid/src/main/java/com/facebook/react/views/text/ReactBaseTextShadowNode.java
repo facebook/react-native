@@ -195,7 +195,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       // `Float.NaN`.
       parentTextAttributes == null
           || parentTextAttributes.getEffectiveFontSize() != effectiveFontSize) {
-        ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize, null, null)));
+        ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize)));
       }
       if (textShadowNode.mFontStyle != UNSET
           || textShadowNode.mFontWeight != UNSET
@@ -209,7 +209,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                     textShadowNode.mFontWeight,
                     textShadowNode.mFontFeatureSettings,
                     textShadowNode.mFontFamily,
-                    textShadowNode.getThemedContext().getAssets(), /* textAlignVertical not supported on Paper */ null)));
+                    textShadowNode.getThemedContext().getAssets())));
       }
       if (textShadowNode.mIsUnderlineTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));

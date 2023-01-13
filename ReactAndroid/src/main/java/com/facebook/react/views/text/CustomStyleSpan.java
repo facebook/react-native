@@ -42,13 +42,22 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       int fontWeight,
       @Nullable String fontFeatureSettings,
       @Nullable String fontFamily,
-      AssetManager assetManager,
-      @Nullable String textAlignVertical) {
+      AssetManager assetManager) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFeatureSettings = fontFeatureSettings;
     mFontFamily = fontFamily;
     mAssetManager = assetManager;
+  }
+
+  public CustomStyleSpan(
+      int fontStyle,
+      int fontWeight,
+      @Nullable String fontFeatureSettings,
+      @Nullable String fontFamily,
+      AssetManager assetManager,
+      @Nullable String textAlignVertical) {
+    this(fontStyle, fontWeight, fontFeatureSettings, fontFamily, assetManager);
     mTextAlignVertical = textAlignVertical;
   }
 
@@ -105,14 +114,12 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     tp.setTypeface(typeface);
     tp.setSubpixelText(true);
 
-    // works only when lineHeight is defined with a prop
-    // other use cases will be added in separate PRs
-    // the span with the highest lineHeight sets the height for all rows
+    // aligns text vertically in their lineHeight
     if (textAlignVertical == "top-child" && highestLineHeight != 0) {
-      // tp.baselineShift -= highestLineHeight / 2 - tp.getTextSize() / 2;
+      tp.baselineShift -= highestLineHeight / 2 - tp.getTextSize() / 2;
     }
     if (textAlignVertical == "bottom-child" && highestLineHeight != 0) {
-      // tp.baselineShift += highestLineHeight / 2 - tp.getTextSize() / 2;
+      tp.baselineShift += highestLineHeight / 2 - tp.getTextSize() / 2;
     }
   }
 

@@ -711,7 +711,7 @@ public class ReactEditText extends AppCompatEditText
     }
     ops.add(
         new TextLayoutManager.SetSpanOperation(
-            start, end, new ReactAbsoluteSizeSpan((int) mTextAttributes.getEffectiveFontSize(), null, null)));
+            start, end, new ReactAbsoluteSizeSpan((int) mTextAttributes.getEffectiveFontSize())));
     if (mFontStyle != UNSET || mFontWeight != UNSET || mFontFamily != null) {
       ops.add(
           new TextLayoutManager.SetSpanOperation(
@@ -722,7 +722,9 @@ public class ReactEditText extends AppCompatEditText
                   mFontWeight,
                   null, // TODO: do we need to support FontFeatureSettings / fontVariant?
                   mFontFamily,
-                  getReactContext(ReactEditText.this).getAssets(), /* textAlignVertical not supported on TextInput */ null)));
+                  getReactContext(ReactEditText.this)
+                      .getAssets(), /* textAlignVertical not supported on TextInput */
+                  null)));
     }
     if (!Float.isNaN(mTextAttributes.getEffectiveLineHeight())) {
       ops.add(

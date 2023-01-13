@@ -338,14 +338,6 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
                 CusToM FonTjJYy
               </Text>
             </Text>
-            <Text>
-              Without lineHeight prop, the green text is correctly aligned, but
-              does not support ReactAbsoluteSizeSpan (nested Text with different
-              font size, blue text). First span correctly aligns to the top, but
-              the second one does not. The lineHeight is inherited from bigger
-              font and the positioning is done based on the fontMetrics, which
-              are not related to lineHeight in the second blue text.
-            </Text>
           </View>
         </RNTesterBlock>
       </>
