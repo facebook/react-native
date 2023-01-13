@@ -46,7 +46,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
 }
 
 bool RuntimeScheduler::getShouldYield() const noexcept {
-  return shouldYield_;
+  return runtimeAccessRequests_ > 0;
 }
 
 bool RuntimeScheduler::getIsSynchronous() const noexcept {
@@ -65,13 +65,17 @@ RuntimeSchedulerTimePoint RuntimeScheduler::now() const noexcept {
   return now_();
 }
 
+void RuntimeScheduler::setEnableYielding(bool enableYielding) {
+  enableYielding_ = enableYielding;
+}
+
 void RuntimeScheduler::executeNowOnTheSameThread(
     std::function<void(jsi::Runtime &runtime)> callback) {
-  shouldYield_ = true;
+  runtimeAccessRequests_ += 1;
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
       runtimeExecutor_,
       [this, callback = std::move(callback)](jsi::Runtime &runtime) {
-        shouldYield_ = false;
+        runtimeAccessRequests_ -= 1;
         isSynchronous_ = true;
         callback(runtime);
         isSynchronous_ = false;
@@ -83,7 +87,7 @@ void RuntimeScheduler::executeNowOnTheSameThread(
   scheduleWorkLoopIfNecessary();
 }
 
-void RuntimeScheduler::callImmediates(jsi::Runtime &runtime) {
+void RuntimeScheduler::callExpiredTasks(jsi::Runtime &runtime) {
   auto previousPriority = currentPriority_;
   try {
     while (!taskQueue_.empty()) {

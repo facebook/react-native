@@ -190,7 +190,7 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
           @TargetApi(Build.VERSION_CODES.R)
           @Override
           public void run() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
               WindowInsetsController insetsController = activity.getWindow().getInsetsController();
               if ("dark-content".equals(style)) {
                 // dark-content means dark icons on a light status bar

@@ -10,7 +10,7 @@
 
 'use strict';
 
-import {type EventSubscription} from './EventSubscription';
+import type {EventSubscription} from './EventSubscription';
 import type EventSubscriptionVendor from './_EventSubscriptionVendor';
 
 /**

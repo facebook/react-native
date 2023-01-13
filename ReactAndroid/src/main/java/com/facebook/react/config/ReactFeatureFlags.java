@@ -101,7 +101,4 @@ public class ReactFeatureFlags {
 
   /** TODO: T103427072 Delete ReactFeatureFlags.enableNestedTextOnPressEventFix */
   public static boolean enableNestedTextOnPressEventFix = true;
-
-  /** TODO: T107492383 Delete this flag. Enables postprocessor for rounded corners for Image */
-  public static boolean enableRoundedCornerPostprocessing = false;
 }

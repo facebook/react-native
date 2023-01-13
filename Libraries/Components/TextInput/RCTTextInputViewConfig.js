@@ -9,6 +9,7 @@
  */
 
 import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+import {ConditionallyIgnoredEventHandlers} from '../../NativeComponent/ViewConfigIgnore';
 
 type PartialViewConfigWithoutName = $Rest<
   PartialViewConfig,
@@ -130,7 +131,6 @@ const RCTTextInputViewConfig = {
     blurOnSubmit: true,
     mostRecentEventCount: true,
     scrollEnabled: true,
-    hideVerticalScrollIndicator: true,
     selectionColor: {process: require('../../StyleSheet/processColor')},
     contextMenuHidden: true,
     secureTextEntry: true,
@@ -142,13 +142,35 @@ const RCTTextInputViewConfig = {
     autoCapitalize: true,
     keyboardAppearance: true,
     passwordRules: true,
-    grammarCheck: true, // [macOS]
     spellCheck: true,
     selectTextOnFocus: true,
     text: true,
     clearTextOnFocus: true,
     showSoftInputOnFocus: true,
     autoFocus: true,
+    // [macOS
+    clearTextOnSubmit: true,
+    grammarCheck: true,
+    hideVerticalScrollIndicator: true,
+    pastedTypes: true,
+    submitKeyEvents: true,
+    tooltip: true,
+    // macOS]
+    ...ConditionallyIgnoredEventHandlers({
+      onChange: true,
+      onSelectionChange: true,
+      onContentSizeChange: true,
+      onScroll: true,
+      onChangeSync: true,
+      onKeyPressSync: true,
+      onTextInput: true,
+      // [macOS
+      onPaste: true,
+      onAutoCorrectChange: true,
+      onSpellCheckChange: true,
+      onGrammarCheckChange: true,
+      // macOS]
+    }),
   },
 };
 

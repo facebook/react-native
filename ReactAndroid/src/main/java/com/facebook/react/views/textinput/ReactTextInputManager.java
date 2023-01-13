@@ -75,6 +75,7 @@ import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 
 /** Manages instances of TextInput. */
@@ -569,7 +570,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private static boolean shouldHideCursorForEmailTextInput() {
-    String manufacturer = Build.MANUFACTURER.toLowerCase();
+    String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.ROOT);
     return (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q && manufacturer.contains("xiaomi"));
   }
 

@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<10efd73d5435b5750183622476c68681>>
+ * @generated SignedSource<<5cd13a68c6b2a6d7a0ea84aff011af30>>
  */
 
 'use strict';
@@ -3888,7 +3888,34 @@ function dispatchEvent(target, topLevelType, nativeEvent) {
   }
 
   batchedUpdates(function() {
-    // Heritage plugin event system
+    // Emit event to the RawEventEmitter. This is an unused-by-default EventEmitter
+    // that can be used to instrument event performance monitoring (primarily - could be useful
+    // for other things too).
+    //
+    // NOTE: this merely emits events into the EventEmitter below.
+    // If *you* do not add listeners to the `RawEventEmitter`,
+    // then all of these emitted events will just blackhole and are no-ops.
+    // It is available (although not officially supported... yet) if you want to collect
+    // perf data on event latency in your application, and could also be useful for debugging
+    // low-level events issues.
+    //
+    // If you do not have any event perf monitoring and are extremely concerned about event perf,
+    // it is safe to disable these "emit" statements; it will prevent checking the size of
+    // an empty array twice and prevent two no-ops. Practically the overhead is so low that
+    // we don't think it's worth thinking about in prod; your perf issues probably lie elsewhere.
+    //
+    // We emit two events here: one for listeners to this specific event,
+    // and one for the catchall listener '*', for any listeners that want
+    // to be notified for all events.
+    // Note that extracted events are *not* emitted,
+    // only events that have a 1:1 mapping with a native event, at least for now.
+    var event = {
+      eventName: topLevelType,
+      nativeEvent: nativeEvent
+    };
+    ReactNativePrivateInterface.RawEventEmitter.emit(topLevelType, event);
+    ReactNativePrivateInterface.RawEventEmitter.emit("*", event); // Heritage plugin event system
+
     runExtractedPluginEventsInBatch(
       topLevelType,
       targetFiber,
@@ -4040,12 +4067,17 @@ function injectInternals(internals) {
   }
 
   try {
-    rendererID = hook.inject(
-      Object.assign({}, internals, {
+    if (enableSchedulingProfiler) {
+      // Conditionally inject these hooks only if Timeline profiler is supported by this build.
+      // This gives DevTools a way to feature detect that isn't tied to version number
+      // (since profiling and timeline are controlled by different feature flags).
+      internals = Object.assign({}, internals, {
         getLaneLabelMap: getLaneLabelMap,
         injectProfilingHooks: injectProfilingHooks
-      })
-    ); // We have successfully injected, so now it is safe to set up hooks.
+      });
+    }
+
+    rendererID = hook.inject(internals); // We have successfully injected, so now it is safe to set up hooks.
 
     injectedHook = hook;
   } catch (err) {
@@ -4179,16 +4211,18 @@ function injectProfilingHooks(profilingHooks) {
 }
 
 function getLaneLabelMap() {
-  var map = new Map();
-  var lane = 1;
+  {
+    var map = new Map();
+    var lane = 1;
 
-  for (var index = 0; index < TotalLanes; index++) {
-    var label = getLabelForLane(lane);
-    map.set(lane, label);
-    lane *= 2;
+    for (var index = 0; index < TotalLanes; index++) {
+      var label = getLabelForLane(lane);
+      map.set(lane, label);
+      lane *= 2;
+    }
+
+    return map;
   }
-
-  return map;
 }
 
 function markCommitStarted(lanes) {
@@ -6941,7 +6975,7 @@ function popProvider(context, providerFiber) {
     context._currentValue2 = currentValue;
   }
 }
-function scheduleWorkOnParentPath(parent, renderLanes) {
+function scheduleContextWorkOnParentPath(parent, renderLanes, propagationRoot) {
   // Update the child lanes of all the ancestors, including the alternates.
   var node = parent;
 
@@ -6959,13 +6993,22 @@ function scheduleWorkOnParentPath(parent, renderLanes) {
       !isSubsetOfLanes(alternate.childLanes, renderLanes)
     ) {
       alternate.childLanes = mergeLanes(alternate.childLanes, renderLanes);
-    } else {
-      // Neither alternate was updated, which means the rest of the
-      // ancestor path already has sufficient priority.
+    }
+
+    if (node === propagationRoot) {
       break;
     }
 
     node = node.return;
+  }
+
+  {
+    if (node !== propagationRoot) {
+      error(
+        "Expected to find the propagation root when scheduling context work. " +
+          "This error is likely caused by a bug in React. Please file an issue."
+      );
+    }
   }
 }
 function propagateContextChange(workInProgress, context, renderLanes) {
@@ -7031,7 +7074,11 @@ function propagateContextChange_eager(workInProgress, context, renderLanes) {
             alternate.lanes = mergeLanes(alternate.lanes, renderLanes);
           }
 
-          scheduleWorkOnParentPath(fiber.return, renderLanes); // Mark the updated lanes on the list, too.
+          scheduleContextWorkOnParentPath(
+            fiber.return,
+            renderLanes,
+            workInProgress
+          ); // Mark the updated lanes on the list, too.
 
           list.lanes = mergeLanes(list.lanes, renderLanes); // Since we already found a match, we can stop traversing the
           // dependency list.
@@ -8906,7 +8953,7 @@ function popTreeContext(workInProgress) {
   }
 }
 
-var isHydrating = false;
+var isHydrating = false; // Hydration errors that were thrown inside this boundary
 
 function enterHydrationState(fiber) {
   {
@@ -13866,7 +13913,7 @@ function throwException(
   // over and traverse parent path again, this time treating the exception
   // as an error.
 
-  renderDidError();
+  renderDidError(value);
   value = createCapturedValue(value, sourceFiber);
   var workInProgress = returnFiber;
 
@@ -16912,7 +16959,7 @@ function updateSuspenseFallbackChildren(
   return fallbackChildFragment;
 }
 
-function scheduleWorkOnFiber(fiber, renderLanes) {
+function scheduleSuspenseWorkOnFiber(fiber, renderLanes, propagationRoot) {
   fiber.lanes = mergeLanes(fiber.lanes, renderLanes);
   var alternate = fiber.alternate;
 
@@ -16920,7 +16967,7 @@ function scheduleWorkOnFiber(fiber, renderLanes) {
     alternate.lanes = mergeLanes(alternate.lanes, renderLanes);
   }
 
-  scheduleWorkOnParentPath(fiber.return, renderLanes);
+  scheduleContextWorkOnParentPath(fiber.return, renderLanes, propagationRoot);
 }
 
 function propagateSuspenseContextChange(
@@ -16938,7 +16985,7 @@ function propagateSuspenseContextChange(
       var state = node.memoizedState;
 
       if (state !== null) {
-        scheduleWorkOnFiber(node, renderLanes);
+        scheduleSuspenseWorkOnFiber(node, renderLanes, workInProgress);
       }
     } else if (node.tag === SuspenseListComponent) {
       // If the tail is hidden there might not be an Suspense boundaries
@@ -16946,7 +16993,7 @@ function propagateSuspenseContextChange(
       // list itself.
       // We don't have to traverse to the children of the list since
       // the list will propagate the change when it rerenders.
-      scheduleWorkOnFiber(node, renderLanes);
+      scheduleSuspenseWorkOnFiber(node, renderLanes, workInProgress);
     } else if (node.child !== null) {
       node.child.return = node;
       node = node.child;
@@ -18238,6 +18285,16 @@ function safelyDetachRef(current, nearestMountedAncestor) {
         reportUncaughtErrorInDEV(error);
         captureCommitPhaseError(current, nearestMountedAncestor, error);
       }
+
+      {
+        if (typeof retVal === "function") {
+          error(
+            "Unexpected return value from a callback ref in %s. " +
+              "A callback ref should not return a function.",
+            getComponentNameFromFiber(current)
+          );
+        }
+      }
     } else {
       ref.current = null;
     }
@@ -18945,6 +19002,16 @@ function commitAttachRef(finishedWork) {
         }
       } else {
         retVal = ref(instanceToUse);
+      }
+
+      {
+        if (typeof retVal === "function") {
+          error(
+            "Unexpected return value from a callback ref in %s. " +
+              "A callback ref should not return a function.",
+            getComponentNameFromFiber(finishedWork)
+          );
+        }
       }
     } else {
       {
@@ -20070,9 +20137,12 @@ var workInProgressRootSkippedLanes = NoLanes; // Lanes that were updated (in an 
 
 var workInProgressRootInterleavedUpdatedLanes = NoLanes; // Lanes that were updated during the render phase (*not* an interleaved event).
 
-var workInProgressRootRenderPhaseUpdatedLanes = NoLanes; // Lanes that were pinged (in an interleaved event) during this render.
+var workInProgressRootPingedLanes = NoLanes; // Errors that are thrown during the render phase.
 
-var workInProgressRootPingedLanes = NoLanes; // The most recent time we committed a fallback. This lets us ensure a train
+var workInProgressRootConcurrentErrors = null; // These are errors that we recovered from without surfacing them to the UI.
+// We will log them once the tree commits.
+
+var workInProgressRootRecoverableErrors = null; // The most recent time we committed a fallback. This lets us ensure a train
 // model where we don't commit new loading states in too quick succession.
 
 var globalMostRecentFallbackTime = 0;
@@ -20220,11 +20290,6 @@ function scheduleUpdateOnFiber(fiber, lane, eventTime) {
     // function), but there are some internal React features that use this as
     // an implementation detail, like selective hydration.
     warnAboutRenderPhaseUpdatesInDEV(fiber); // Track lanes that were updated during the render phase
-
-    workInProgressRootRenderPhaseUpdatedLanes = mergeLanes(
-      workInProgressRootRenderPhaseUpdatedLanes,
-      lane
-    );
   } else {
     // This is a normal update, scheduled from outside the render phase. For
     // example, during an input event.
@@ -20601,28 +20666,32 @@ function recoverFromConcurrentError(root, errorRetryLanes) {
     }
   }
 
-  var exitStatus;
-  var MAX_ERROR_RETRY_ATTEMPTS = 50;
+  var errorsFromFirstAttempt = workInProgressRootConcurrentErrors;
+  var exitStatus = renderRootSync(root, errorRetryLanes);
 
-  for (var i = 0; i < MAX_ERROR_RETRY_ATTEMPTS; i++) {
-    exitStatus = renderRootSync(root, errorRetryLanes);
-
-    if (
-      exitStatus === RootErrored &&
-      workInProgressRootRenderPhaseUpdatedLanes !== NoLanes
-    ) {
-      // There was a render phase update during this render. Some internal React
-      // implementation details may use this as a trick to schedule another
-      // render pass. To protect against an inifinite loop, eventually
-      // we'll give up.
-      continue;
+  if (exitStatus !== RootErrored) {
+    // Successfully finished rendering on retry
+    if (errorsFromFirstAttempt !== null) {
+      // The errors from the failed first attempt have been recovered. Add
+      // them to the collection of recoverable errors. We'll log them in the
+      // commit phase.
+      queueRecoverableErrors(errorsFromFirstAttempt);
     }
-
-    break;
   }
 
   executionContext = prevExecutionContext;
   return exitStatus;
+}
+
+function queueRecoverableErrors(errors) {
+  if (workInProgressRootConcurrentErrors === null) {
+    workInProgressRootRecoverableErrors = errors;
+  } else {
+    workInProgressRootConcurrentErrors = workInProgressRootConcurrentErrors.push.apply(
+      null,
+      errors
+    );
+  }
 }
 
 function finishConcurrentRender(root, exitStatus, lanes) {
@@ -20638,7 +20707,7 @@ function finishConcurrentRender(root, exitStatus, lanes) {
     case RootErrored: {
       // We should have already attempted to retry this tree. If we reached
       // this point, it errored again. Commit it.
-      commitRoot(root);
+      commitRoot(root, workInProgressRootRecoverableErrors);
       break;
     }
 
@@ -20678,14 +20747,14 @@ function finishConcurrentRender(root, exitStatus, lanes) {
           // immediately, wait for more data to arrive.
 
           root.timeoutHandle = scheduleTimeout(
-            commitRoot.bind(null, root),
+            commitRoot.bind(null, root, workInProgressRootRecoverableErrors),
             msUntilTimeout
           );
           break;
         }
       } // The work expired. Commit immediately.
 
-      commitRoot(root);
+      commitRoot(root, workInProgressRootRecoverableErrors);
       break;
     }
 
@@ -20716,20 +20785,20 @@ function finishConcurrentRender(root, exitStatus, lanes) {
           // Instead of committing the fallback immediately, wait for more data
           // to arrive.
           root.timeoutHandle = scheduleTimeout(
-            commitRoot.bind(null, root),
+            commitRoot.bind(null, root, workInProgressRootRecoverableErrors),
             _msUntilTimeout
           );
           break;
         }
       } // Commit the placeholder.
 
-      commitRoot(root);
+      commitRoot(root, workInProgressRootRecoverableErrors);
       break;
     }
 
     case RootCompleted: {
       // The work completed. Ready to commit.
-      commitRoot(root);
+      commitRoot(root, workInProgressRootRecoverableErrors);
       break;
     }
 
@@ -20860,7 +20929,7 @@ function performSyncWorkOnRoot(root) {
   var finishedWork = root.current.alternate;
   root.finishedWork = finishedWork;
   root.finishedLanes = lanes;
-  commitRoot(root); // Before exiting, make sure there's a callback scheduled for the next
+  commitRoot(root, workInProgressRootRecoverableErrors); // Before exiting, make sure there's a callback scheduled for the next
   // pending level.
 
   ensureRootIsScheduled(root, now());
@@ -20967,8 +21036,9 @@ function prepareFreshStack(root, lanes) {
   workInProgressRootFatalError = null;
   workInProgressRootSkippedLanes = NoLanes;
   workInProgressRootInterleavedUpdatedLanes = NoLanes;
-  workInProgressRootRenderPhaseUpdatedLanes = NoLanes;
   workInProgressRootPingedLanes = NoLanes;
+  workInProgressRootConcurrentErrors = null;
+  workInProgressRootRecoverableErrors = null;
   enqueueInterleavedUpdates();
 
   {
@@ -21121,9 +21191,15 @@ function renderDidSuspendDelayIfPossible() {
     markRootSuspended$1(workInProgressRoot, workInProgressRootRenderLanes);
   }
 }
-function renderDidError() {
+function renderDidError(error) {
   if (workInProgressRootExitStatus !== RootSuspendedWithDelay) {
     workInProgressRootExitStatus = RootErrored;
+  }
+
+  if (workInProgressRootConcurrentErrors === null) {
+    workInProgressRootConcurrentErrors = [error];
+  } else {
+    workInProgressRootConcurrentErrors.push(error);
   }
 } // Called during render to determine if anything has suspended.
 // Returns false if we're not sure.
@@ -21393,7 +21469,7 @@ function completeUnitOfWork(unitOfWork) {
   }
 }
 
-function commitRoot(root) {
+function commitRoot(root, recoverableErrors) {
   // TODO: This no longer makes any sense. We already wrap the mutation and
   // layout phases. Should be able to remove.
   var previousUpdateLanePriority = getCurrentUpdatePriority();
@@ -21402,7 +21478,7 @@ function commitRoot(root) {
   try {
     ReactCurrentBatchConfig$2.transition = 0;
     setCurrentUpdatePriority(DiscreteEventPriority);
-    commitRootImpl(root, previousUpdateLanePriority);
+    commitRootImpl(root, recoverableErrors, previousUpdateLanePriority);
   } finally {
     ReactCurrentBatchConfig$2.transition = prevTransition;
     setCurrentUpdatePriority(previousUpdateLanePriority);
@@ -21411,7 +21487,7 @@ function commitRoot(root) {
   return null;
 }
 
-function commitRootImpl(root, renderPriorityLevel) {
+function commitRootImpl(root, recoverableErrors, renderPriorityLevel) {
   do {
     // `flushPassiveEffects` will call `flushSyncUpdateQueue` at the end, which
     // means `flushPassiveEffects` will sometimes result in additional
@@ -21615,6 +21691,19 @@ function commitRootImpl(root, renderPriorityLevel) {
   // additional work on this root is scheduled.
 
   ensureRootIsScheduled(root, now());
+
+  if (recoverableErrors !== null) {
+    // There were errors during this render, but recovered from them without
+    // needing to surface it to the UI. We log them here.
+    for (var i = 0; i < recoverableErrors.length; i++) {
+      var recoverableError = recoverableErrors[i];
+      var onRecoverableError = root.onRecoverableError;
+
+      if (onRecoverableError !== null) {
+        onRecoverableError(recoverableError);
+      }
+    }
+  }
 
   if (hasUncaughtError) {
     hasUncaughtError = false;
@@ -23443,7 +23532,13 @@ function assignFiberPropertiesInDEV(target, source) {
   return target;
 }
 
-function FiberRootNode(containerInfo, tag, hydrate, identifierPrefix) {
+function FiberRootNode(
+  containerInfo,
+  tag,
+  hydrate,
+  identifierPrefix,
+  onRecoverableError
+) {
   this.tag = tag;
   this.containerInfo = containerInfo;
   this.pendingChildren = null;
@@ -23467,6 +23562,7 @@ function FiberRootNode(containerInfo, tag, hydrate, identifierPrefix) {
   this.entangledLanes = NoLanes;
   this.entanglements = createLaneMap(NoLanes);
   this.identifierPrefix = identifierPrefix;
+  this.onRecoverableError = onRecoverableError;
 
   {
     this.effectDuration = 0;
@@ -23501,10 +23597,20 @@ function createFiberRoot(
   hydrate,
   hydrationCallbacks,
   isStrictMode,
-  concurrentUpdatesByDefaultOverride,
-  identifierPrefix
+  concurrentUpdatesByDefaultOverride, // TODO: We have several of these arguments that are conceptually part of the
+  // host config, but because they are passed in at runtime, we have to thread
+  // them through the root constructor. Perhaps we should put them all into a
+  // single type, like a DynamicHostConfig that is defined by the renderer.
+  identifierPrefix,
+  onRecoverableError
 ) {
-  var root = new FiberRootNode(containerInfo, tag, hydrate, identifierPrefix);
+  var root = new FiberRootNode(
+    containerInfo,
+    tag,
+    hydrate,
+    identifierPrefix,
+    onRecoverableError
+  );
   // stateNode is any.
 
   var uninitializedFiber = createHostRootFiber(
@@ -23526,7 +23632,7 @@ function createFiberRoot(
   return root;
 }
 
-var ReactVersion = "18.0.0-rc.0-51947a14b-20220113";
+var ReactVersion = "18.0.0-rc.0-a3bde7974-20220208";
 
 function createPortal(
   children,
@@ -23654,7 +23760,8 @@ function createContainer(
   hydrationCallbacks,
   isStrictMode,
   concurrentUpdatesByDefaultOverride,
-  identifierPrefix
+  identifierPrefix,
+  onRecoverableError
 ) {
   return createFiberRoot(
     containerInfo,
@@ -23663,7 +23770,8 @@ function createContainer(
     hydrationCallbacks,
     isStrictMode,
     concurrentUpdatesByDefaultOverride,
-    identifierPrefix
+    identifierPrefix,
+    onRecoverableError
   );
 }
 function updateContainer(element, container, parentComponent, callback) {
@@ -24458,7 +24566,8 @@ function render(element, containerTag, callback, concurrentRoot) {
       null,
       false,
       null,
-      ""
+      "",
+      null
     );
     roots.set(containerTag, root);
   }

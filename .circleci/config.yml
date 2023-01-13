@@ -329,7 +329,7 @@ jobs:
       - run:
           name: "Run Tests: JavaScript Tests"
           command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
-      # [macOS] Github#949 Disable this failing test
+      # TODO(macOS GH#949): Disable this failing test
       # - run_e2e:
       #     platform: js
 
@@ -388,8 +388,6 @@ jobs:
           steps:
             - brew_install:
                 package: watchman
-            - brew_install:
-                package: node@16
             - run:
                 name: "Brew: Tap wix/brew"
                 command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
@@ -576,41 +574,39 @@ jobs:
     steps:
       - checkout
       - run_yarn
+      - attach_workspace:
+          at: .
 
       - run:
-          name: Setup the Android Template
+          name: Create Android template project
           command: |
+            REPO_ROOT=$(pwd)
+            PACKAGE=$(cat build/react-native-package-version)
+            PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             cd template
-            # We replace the "react-native" dependency version with file:.. so we use it from source.
-            sed -i 's/\"react-native\"\:.*/\"react-native\"\: \"file\:\.\.\"/g' package.json
+            npm add $PATH_TO_PACKAGE
             npm install
-            # react-native-community/cli is needed as the Android template is referencing a .gradle file inside it.
-            npm i @react-native-community/cli
-
-      - run:
-          name: Bundle the latest version of ReactAndroid
-          command: ./gradlew :ReactAndroid:publishReleasePublicationToNpmRepository
 
       - run:
           name: Build the template application
           command: cd template/android/ && ./gradlew assembleDebug
 
   # -------------------------
-  #    JOBS: Test Docker
+  #    JOBS: Test Android RNTester
   # -------------------------
-  test_docker:
-    machine: true
+  test_android_rntester:
+    executor: reactnativeandroid
     steps:
       - checkout
+      - run_yarn
+
       - run:
-          name: Build Docker container for Android RNTester App
-          command: |
-            source ~/.bashrc
-            nvm i node
-            npm i -g yarn
-            echo y | npx envinfo@latest
-            yarn run docker-setup-android
-            yarn run docker-build-android
+          name: Generate artifacts for Maven
+          command: ./gradlew :ReactAndroid:installArchives
+
+      - run:
+          name: Assemble RNTester
+          command: ./gradlew :packages:rn-tester:android:app:assembleDebug
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -643,6 +639,40 @@ jobs:
             xcodebuild build \
               -workspace ~/tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
               -scheme $PROJECT_NAME \
+              -sdk iphonesimulator
+
+  # -------------------------
+  #    JOBS: Test iOS RNTester
+  # -------------------------
+  test_ios_rntester:
+    executor: reactnativeios
+    parameters:
+      use_hermes:
+          type: boolean
+          default: false
+    steps:
+      - checkout
+      - run_yarn
+
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Set USE_HERMES=1
+                command: echo "export USE_HERMES=1" >> $BASH_ENV
+
+      - run:
+          name: Install CocoaPods dependencies
+          command: |
+            rm -rf packages/rn-tester/Pods
+            cd packages/rn-tester && bundle exec pod install
+
+      - run:
+          name: Build RNTester
+          command: |
+            xcodebuild build \
+              -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+              -scheme RNTester \
               -sdk iphonesimulator
 
   # -------------------------
@@ -890,11 +920,6 @@ workflows:
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
-          filters:
-            branches:
-              only:
-                - main
-                - /^pull\/.*$/
       - test_js:
           run_disabled_tests: false
           filters:
@@ -904,16 +929,31 @@ workflows:
           run_disabled_tests: false
           filters:
             branches:
-              # [macOS] disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
-              ignore: /.*/
+              ignore: gh-pages
       - test_android_template:
+          requires:
+            - build_npm_package
           filters:
             branches:
-              # [macOS] disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
-              ignore: /.*/
+              ignore: gh-pages
+      - test_android_rntester:
+          filters:
+            branches:
+              ignore: gh-pages
       - test_ios_template:
           requires:
             - build_npm_package
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_ios_rntester:
+          name: test_ios_rntester_hermes
+          use_hermes: true
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_ios_rntester:
+          name: test_ios_rntester_jsc
           filters:
             branches:
               ignore: gh-pages
@@ -941,25 +981,16 @@ workflows:
       #     use_hermes: true
       #     use_frameworks: true
       #     run_unit_tests: true
-      # [macOS] Github#949 Disable this failing test
-      # - test_js:
-      #     name: test_js_prev_lts
-      #     executor: nodeprevlts
-      #     filters:
-      #     branches:
-      #       ignore: gh-pages
-      - test_docker:
+      - test_js:
+          name: test_js_prev_lts
+          executor: nodeprevlts
           filters:
             branches:
-              # [macOS] disable this test which is redundant to Azure Devops test and in the fork it fails because of Microsoft's V8 upgrade to Android
-              ignore: /.*/
+              ignore: gh-pages
       - test_windows:
           filters:
             branches:
-              # [macOS disable this test which requires a CCI plan.
-              # ignore: gh-pages
-              ignore: /.*/
-              # macOS]
+              ignore: gh-pages
           run_disabled_tests: false
 
   # This workflow should only be triggered by release script
@@ -1009,11 +1040,10 @@ workflows:
 
       # Gather coverage
       - js_coverage:
-          # [macOS disable this test, it fails in the fork due to not being set up for coveralls
           filters:
             branches:
-              ignore: /.*/
-          # macOS]
+              ignore: gh-pages
+
   nightly:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     triggers:
@@ -1021,11 +1051,11 @@ workflows:
           cron: "0 20 * * *"
           filters:
             branches:
-              # [macOS disable this release.  We never want to release anything from this fork via CCI.
+              # [TODO(macOS GH#774): disable this release.  We never want to release anything from this fork via CCI.
               ignore: /.*/
               # only:
               #   - main
-              # macOS]
+              # ]TODO(macOS GH#774)
     jobs:
       - nightly_job
 

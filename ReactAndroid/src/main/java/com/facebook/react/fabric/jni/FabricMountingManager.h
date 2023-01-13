@@ -71,7 +71,6 @@ class FabricMountingManager {
   butter::map<SurfaceId, butter::set<Tag>> allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
 
-  bool enableEventEmitterRawPointer_{false};
   bool enableEarlyEventEmitterUpdate_{false};
   bool disablePreallocateViews_{false};
   bool disableRevisionCheckForPreallocation_{false};

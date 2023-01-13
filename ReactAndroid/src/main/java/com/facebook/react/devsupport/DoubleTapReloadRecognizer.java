@@ -14,7 +14,7 @@ import android.widget.EditText;
 
 /**
  * A class allows recognizing double key tap of "R", used to reload JS in {@link
- * AbstractReactActivity}, {@link RedBoxDialog} and {@link ReactActivity}.
+ * AbstractReactActivity}, {@link RedBoxDialogSurfaceDelegate} and {@link ReactActivity}.
  */
 public class DoubleTapReloadRecognizer {
   private boolean mDoRefresh = false;

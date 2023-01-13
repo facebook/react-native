@@ -235,7 +235,6 @@ const Slider = (
       }
     : null;
 
-  const onChangeEvent = onValueChangeEvent;
   const onSlidingCompleteEvent = onSlidingComplete
     ? (event: Event) => {
         onSlidingComplete(event.nativeEvent.value);
@@ -257,7 +256,6 @@ const Slider = (
       disabled={disabled}
       maximumValue={maximumValue}
       minimumValue={minimumValue}
-      onChange={onChangeEvent}
       onResponderTerminationRequest={() => false}
       onSlidingComplete={onSlidingCompleteEvent}
       onStartShouldSetResponder={() => true}

@@ -327,21 +327,6 @@ type IOSProps = $ReadOnly<{|
    */
   scrollEnabled?: ?boolean,
 
-  // [macOS
-  /**
-   * If `true`, hide vertical scrollbar on the underlying multiline scrollview
-   * The default value is `false`.
-   * @platform macos
-   */
-  hideVerticalScrollIndicator?: ?boolean,
-
-  /**
-   * If `false`, disables grammar-check.
-   * @platform macos
-   */
-  grammarCheck?: ?boolean,
-  // macOS]
-
   /**
    * If `false`, disables spell-check style (i.e. red underlines).
    * The default value is inherited from `autoCorrect`.
@@ -370,9 +355,25 @@ export type SubmitKeyEvent = $ReadOnly<{|
 type MacOSProps = $ReadOnly<{|
   /**
    * If `true`, clears the text field synchronously before `onSubmitEditing` is emitted.
+   *
    * @platform macos
    */
   clearTextOnSubmit?: ?boolean,
+
+  /**
+   * If `false`, disables grammar-check.
+   *
+   * @platform macos
+   */
+  grammarCheck?: ?boolean,
+
+  /**
+   * If `true`, hide vertical scrollbar on the underlying multiline scrollview
+   * The default value is `false`.
+   *
+   * @platform macos
+   */
+  hideVerticalScrollIndicator?: ?boolean,
 
   /**
    * Fired when a supported element is pasted
@@ -380,6 +381,36 @@ type MacOSProps = $ReadOnly<{|
    * @platform macos
    */
   onPaste?: (event: PasteEvent) => void,
+
+  /**
+   * Callback that is called when the text input's autoCorrect setting changes.
+   * This will be called with
+   * `{ nativeEvent: { enabled } }`.
+   * Does only work with 'multiline={true}'.
+   *
+   * @platform macos
+   */
+  onAutoCorrectChange?: ?(e: SettingChangeEvent) => mixed,
+
+  /**
+   * Callback that is called when the text input's spellCheck setting changes.
+   * This will be called with
+   * `{ nativeEvent: { enabled } }`.
+   * Does only work with 'multiline={true}'.
+   *
+   * @platform macos
+   */
+  onSpellCheckChange?: ?(e: SettingChangeEvent) => mixed,
+
+  /**
+   * Callback that is called when the text input's grammarCheck setting changes.
+   * This will be called with
+   * `{ nativeEvent: { enabled } }`.
+   * Does only work with 'multiline={true}'.
+   *
+   * @platform macos
+   */
+  onGrammarCheckChange?: ?(e: SettingChangeEvent) => mixed,
 
   /**
    * Enables Paste support for certain types of pasted types
@@ -399,6 +430,13 @@ type MacOSProps = $ReadOnly<{|
    * @platform macos
    */
   submitKeyEvents?: ?$ReadOnlyArray<SubmitKeyEvent>,
+
+  /**
+   * Specifies the tooltip.
+   *
+   * @platform macos
+   */
+  tooltip?: ?string,
 |}>;
 // macOS]
 
@@ -717,38 +755,6 @@ export type Props = $ReadOnly<{|
    */
   onChangeText?: ?(text: string) => mixed,
 
-  // [macOS
-  /**
-   * Callback that is called when the text input's autoCorrect setting changes.
-   * This will be called with
-   * `{ nativeEvent: { enabled } }`.
-   * Does only work with 'multiline={true}'.
-   *
-   * @platform macos
-   */
-  onAutoCorrectChange?: ?(e: SettingChangeEvent) => mixed,
-
-  /**
-   * Callback that is called when the text input's spellCheck setting changes.
-   * This will be called with
-   * `{ nativeEvent: { enabled } }`.
-   * Does only work with 'multiline={true}'.
-   *
-   * @platform macos
-   */
-  onSpellCheckChange?: ?(e: SettingChangeEvent) => mixed,
-
-  /**
-   * Callback that is called when the text input's grammarCheck setting changes.
-   * This will be called with
-   * `{ nativeEvent: { enabled } }`.
-   * Does only work with 'multiline={true}'.
-   *
-   * @platform macos
-   */
-  onGrammarCheckChange?: ?(e: SettingChangeEvent) => mixed,
-  // macOS]
-
   /**
    * DANGER: this API is not stable and will change in the future.
    *
@@ -920,12 +926,6 @@ export type Props = $ReadOnly<{|
    * [Styles](docs/style.html)
    */
   style?: ?TextStyleProp,
-
-  // [macOS
-  /*
-   * Specifies the tooltip.
-   */
-  tooltip?: ?string, // macOS ]
 
   /**
    * The value to show for the text input. `TextInput` is a controlled
@@ -1498,9 +1498,6 @@ const ExportedForwardRef: React.AbstractComponent<
     />
   );
 });
-
-ExportedForwardRef.propTypes =
-  require('deprecated-react-native-prop-types').TextInputPropTypes;
 
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {

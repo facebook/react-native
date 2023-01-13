@@ -10,9 +10,9 @@
 
 'use strict';
 
-import {
-  type EventSubscription,
-  type IEventEmitter,
+import type {
+  EventSubscription,
+  IEventEmitter,
 } from '../vendor/emitter/EventEmitter';
 import Platform from '../Utilities/Platform';
 import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';

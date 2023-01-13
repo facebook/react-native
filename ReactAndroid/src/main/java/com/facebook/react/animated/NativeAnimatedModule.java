@@ -461,6 +461,32 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   @Override
+  public void updateAnimatedNodeConfig(final double tagDouble, final ReadableMap config) {
+    final int tag = (int) tagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(
+          NAME,
+          "queue updateAnimatedNodeConfig: " + tag + " config: " + config.toHashMap().toString());
+    }
+
+    addOperation(
+        new UIThreadOperation() {
+          @Override
+          public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute updateAnimatedNodeConfig: "
+                      + tag
+                      + " config: "
+                      + config.toHashMap().toString());
+            }
+            animatedNodesManager.updateAnimatedNodeConfig(tag, config);
+          }
+        });
+  }
+
+  @Override
   public void startListeningToAnimatedNodeValue(final double tagDouble) {
     final int tag = (int) tagDouble;
     if (ANIMATED_MODULE_DEBUG) {

@@ -7,7 +7,6 @@
 
 #include "Binding.h"
 #include "AsyncEventBeat.h"
-#include "AsyncEventBeatV2.h"
 #include "EventEmitterWrapper.h"
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
@@ -60,9 +59,8 @@ Binding::getInspectorDataForInstance(
   }
 
   EventEmitterWrapper *cEventEmitter = cthis(eventEmitterWrapper);
-  InspectorData data = scheduler->getInspectorDataForInstance(
-      enableEventEmitterRawPointer_ ? *cEventEmitter->eventEmitterPointer
-                                    : *cEventEmitter->eventEmitter);
+  InspectorData data =
+      scheduler->getInspectorDataForInstance(*cEventEmitter->eventEmitter);
 
   folly::dynamic result = folly::dynamic::object;
   result["fileName"] = data.fileName;
@@ -266,13 +264,37 @@ void Binding::stopSurface(jint surfaceId) {
 }
 
 void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
+  auto const &surfaceHandler = surfaceHandlerBinding->getSurfaceHandler();
   auto scheduler = getScheduler();
-  scheduler->registerSurface(surfaceHandlerBinding->getSurfaceHandler());
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::registerSurface: scheduler disappeared";
+    return;
+  }
+  scheduler->registerSurface(surfaceHandler);
+
+  auto mountingManager =
+      verifyMountingManager("FabricUIManagerBinding::registerSurface");
+  if (!mountingManager) {
+    return;
+  }
+  mountingManager->onSurfaceStart(surfaceHandler.getSurfaceId());
 }
 
 void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
+  auto const &surfaceHandler = surfaceHandlerBinding->getSurfaceHandler();
   auto scheduler = getScheduler();
-  scheduler->unregisterSurface(surfaceHandlerBinding->getSurfaceHandler());
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::unregisterSurface: scheduler disappeared";
+    return;
+  }
+  scheduler->unregisterSurface(surfaceHandler);
+
+  auto mountingManager =
+      verifyMountingManager("FabricUIManagerBinding::unregisterSurface");
+  if (!mountingManager) {
+    return;
+  }
+  mountingManager->onSurfaceStop(surfaceHandler.getSurfaceId());
 }
 
 void Binding::setConstraints(
@@ -345,9 +367,6 @@ void Binding::installFabricUIManager(
   disableRevisionCheckForPreallocation_ =
       config->getBool("react_fabric:disable_revision_check_for_preallocation");
 
-  enableEventEmitterRawPointer_ =
-      config->getBool("react_fabric:enable_event_emitter_wrapper_raw_pointer");
-
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
                  << this << ").";
@@ -369,46 +388,34 @@ void Binding::installFabricUIManager(
   if (runtimeSchedulerHolder) {
     auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get().lock();
     if (runtimeScheduler) {
+      runtimeScheduler->setEnableYielding(config->getBool(
+          "react_native_new_architecture:runtimescheduler_enable_yielding_android"));
       runtimeExecutor =
           [runtimeScheduler](
               std::function<void(jsi::Runtime & runtime)> &&callback) {
             runtimeScheduler->scheduleWork(std::move(callback));
           };
+      contextContainer->insert(
+          "RuntimeScheduler",
+          std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
     }
   }
 
-  auto enableV2AsynchronousEventBeat =
-      config->getBool("react_fabric:enable_asynchronous_event_beat_v2_android");
-
   // TODO: T31905686 Create synchronous Event Beat
   EventBeat::Factory synchronousBeatFactory =
-      [eventBeatManager,
-       runtimeExecutor,
-       globalJavaUiManager,
-       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
+      [eventBeatManager, runtimeExecutor, globalJavaUiManager](
+          EventBeat::SharedOwnerBox const &ownerBox)
       -> std::unique_ptr<EventBeat> {
-    if (enableV2AsynchronousEventBeat) {
-      return std::make_unique<AsyncEventBeatV2>(
-          ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
-    } else {
-      return std::make_unique<AsyncEventBeat>(
-          ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
-    }
+    return std::make_unique<AsyncEventBeat>(
+        ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
   };
 
   EventBeat::Factory asynchronousBeatFactory =
-      [eventBeatManager,
-       runtimeExecutor,
-       globalJavaUiManager,
-       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
+      [eventBeatManager, runtimeExecutor, globalJavaUiManager](
+          EventBeat::SharedOwnerBox const &ownerBox)
       -> std::unique_ptr<EventBeat> {
-    if (enableV2AsynchronousEventBeat) {
-      return std::make_unique<AsyncEventBeatV2>(
-          ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
-    } else {
-      return std::make_unique<AsyncEventBeat>(
-          ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
-    }
+    return std::make_unique<AsyncEventBeat>(
+        ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
   };
 
   contextContainer->insert("ReactNativeConfig", config);

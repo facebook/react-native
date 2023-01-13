@@ -33,11 +33,11 @@ MapBuffer::MapBuffer(std::vector<uint8_t> data) : bytes_(std::move(data)) {
   }
 }
 
-uint32_t MapBuffer::getKeyBucket(Key key) const {
-  uint32_t lo = 0;
-  uint32_t hi = count_ - 1;
+int32_t MapBuffer::getKeyBucket(Key key) const {
+  int32_t lo = 0;
+  int32_t hi = count_ - 1;
   while (lo <= hi) {
-    uint32_t mid = (lo + hi) >> 1;
+    int32_t mid = (lo + hi) >> 1;
 
     Key midVal =
         *reinterpret_cast<Key const *>(bytes_.data() + bucketOffset(mid));
@@ -112,7 +112,7 @@ MapBuffer MapBuffer::getMapBuffer(Key key) const {
   return MapBuffer(std::move(value));
 }
 
-uint32_t MapBuffer::size() const {
+size_t MapBuffer::size() const {
   return bytes_.size();
 }
 

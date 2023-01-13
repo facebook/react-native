@@ -130,12 +130,12 @@ class AnimatedNode {
           if (data.tag !== this.__getNativeTag()) {
             return;
           }
-          this._onAnimatedValueUpdateReceived(data.value);
+          this.__onAnimatedValueUpdateReceived(data.value);
         },
       );
   }
 
-  _onAnimatedValueUpdateReceived(value: number) {
+  __onAnimatedValueUpdateReceived(value: number) {
     this.__callListeners(value);
   }
 

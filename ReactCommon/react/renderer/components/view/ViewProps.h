@@ -63,11 +63,7 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   EdgeInsets hitSlop{};
   bool onLayout{};
 
-  bool pointerEnter{};
-
-  bool pointerLeave{};
-
-  bool pointerMove{};
+  ViewEvents events{};
 
   bool collapsable{true};
 

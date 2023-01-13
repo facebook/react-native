@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import InteractionManager from '../Interaction/InteractionManager';
 import Platform from '../Utilities/Platform';

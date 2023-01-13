@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<522f29c54f207a4f7b5c33af07cf64d0>>
+// @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>
 
 #include "MessageTypes.h"
 
@@ -60,6 +60,7 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
        makeUnique<heapProfiler::StopTrackingHeapObjectsRequest>},
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
+      {"Runtime.callFunctionOn", makeUnique<runtime::CallFunctionOnRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
       {"Runtime.runIfWaitingForDebugger",
@@ -271,6 +272,21 @@ dynamic heapProfiler::SamplingHeapProfile::toDynamic() const {
 
   put(obj, "head", head);
   put(obj, "samples", samples);
+  return obj;
+}
+
+runtime::CallArgument::CallArgument(const dynamic &obj) {
+  assign(value, obj, "value");
+  assign(unserializableValue, obj, "unserializableValue");
+  assign(objectId, obj, "objectId");
+}
+
+dynamic runtime::CallArgument::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "value", value);
+  put(obj, "unserializableValue", unserializableValue);
+  put(obj, "objectId", objectId);
   return obj;
 }
 
@@ -931,6 +947,49 @@ void heapProfiler::TakeHeapSnapshotRequest::accept(
   handler.handle(*this);
 }
 
+runtime::CallFunctionOnRequest::CallFunctionOnRequest()
+    : Request("Runtime.callFunctionOn") {}
+
+runtime::CallFunctionOnRequest::CallFunctionOnRequest(const dynamic &obj)
+    : Request("Runtime.callFunctionOn") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(functionDeclaration, params, "functionDeclaration");
+  assign(objectId, params, "objectId");
+  assign(arguments, params, "arguments");
+  assign(silent, params, "silent");
+  assign(returnByValue, params, "returnByValue");
+  assign(userGesture, params, "userGesture");
+  assign(awaitPromise, params, "awaitPromise");
+  assign(executionContextId, params, "executionContextId");
+  assign(objectGroup, params, "objectGroup");
+}
+
+dynamic runtime::CallFunctionOnRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "functionDeclaration", functionDeclaration);
+  put(params, "objectId", objectId);
+  put(params, "arguments", arguments);
+  put(params, "silent", silent);
+  put(params, "returnByValue", returnByValue);
+  put(params, "userGesture", userGesture);
+  put(params, "awaitPromise", awaitPromise);
+  put(params, "executionContextId", executionContextId);
+  put(params, "objectGroup", objectGroup);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void runtime::CallFunctionOnRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 runtime::EvaluateRequest::EvaluateRequest() : Request("Runtime.evaluate") {}
 
 runtime::EvaluateRequest::EvaluateRequest(const dynamic &obj)
@@ -1180,6 +1239,25 @@ heapProfiler::StopSamplingResponse::StopSamplingResponse(const dynamic &obj) {
 dynamic heapProfiler::StopSamplingResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "profile", profile);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+runtime::CallFunctionOnResponse::CallFunctionOnResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(result, res, "result");
+  assign(exceptionDetails, res, "exceptionDetails");
+}
+
+dynamic runtime::CallFunctionOnResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "result", result);
+  put(res, "exceptionDetails", exceptionDetails);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);

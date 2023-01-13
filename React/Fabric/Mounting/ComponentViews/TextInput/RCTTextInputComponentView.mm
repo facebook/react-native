@@ -647,8 +647,9 @@ using namespace facebook::react;
   // the settings on a dictation.
   // Similarly, when the user is in the middle of inputting some text in Japanese/Chinese, there will be styling on the
   // text that we should disregard. See
-  // https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc for more info. If
-  // the user added an emoji, the system adds a font attribute for the emoji and stores the original font in
+  // https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc for more info.
+  // Also, updating the attributed text while inputting Korean language will break input mechanism.
+  // If the user added an emoji, the system adds a font attribute for the emoji and stores the original font in
   // NSOriginalFont. Lastly, when entering a password, etc., there will be additional styling on the field as the native
   // text view handles showing the last character for a split second.
   __block BOOL fontHasBeenUpdatedBySystem = false;
@@ -661,19 +662,23 @@ using namespace facebook::react;
                      }
                    }];
 
-#if !TARGET_OS_OSX // [macOS]
   BOOL shouldFallbackToBareTextComparison =
       [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
+#if !TARGET_OS_OSX // [macOS]
+      [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
       _backedTextInputView.markedTextRange || _backedTextInputView.isSecureTextEntry || fontHasBeenUpdatedBySystem;
-
+#else // [macOS
+    // There are multiple Korean input sources (2-Set, 3-Set, etc). Check substring instead instead
+    [[[self.backedTextInputView inputContext] selectedKeyboardInputSource] containsString:@"com.apple.inputmethod.Korean"] ||
+    [self.backedTextInputView hasMarkedText] ||
+    [self.backedTextInputView isKindOfClass:[NSSecureTextField class]] ||
+    fontHasBeenUpdatedBySystem;
+#endif // macOS]
   if (shouldFallbackToBareTextComparison) {
     return ([newText.string isEqualToString:oldText.string]);
   } else {
-#endif // [macOS]
     return ([newText isEqualToAttributedString:oldText]);
-#if !TARGET_OS_OSX // [macOS]
   }
-#endif // [macOS]
 }
 
 @end

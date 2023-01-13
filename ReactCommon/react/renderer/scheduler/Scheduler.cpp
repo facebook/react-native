@@ -78,7 +78,7 @@ Scheduler::Scheduler(
         },
         runtime);
     if (runtimeScheduler) {
-      runtimeScheduler->callImmediates(runtime);
+      runtimeScheduler->callExpiredTasks(runtime);
     }
   };
 
