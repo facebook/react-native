@@ -146,6 +146,10 @@ const RCTScrollViewViewConfig =
             onMomentumScrollBegin: true,
             onScrollToTop: true,
             onScroll: true,
+            // [macOS
+            onInvertedDidChange: true,
+            onPreferredScrollerStyleDidChange: true,
+            // macOS]
           }),
         },
       };

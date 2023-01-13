@@ -131,7 +131,6 @@ const RCTTextInputViewConfig = {
     blurOnSubmit: true,
     mostRecentEventCount: true,
     scrollEnabled: true,
-    hideVerticalScrollIndicator: true,
     selectionColor: {process: require('../../StyleSheet/processColor')},
     contextMenuHidden: true,
     secureTextEntry: true,
@@ -143,13 +142,20 @@ const RCTTextInputViewConfig = {
     autoCapitalize: true,
     keyboardAppearance: true,
     passwordRules: true,
-    grammarCheck: true, // [macOS]
     spellCheck: true,
     selectTextOnFocus: true,
     text: true,
     clearTextOnFocus: true,
     showSoftInputOnFocus: true,
     autoFocus: true,
+    // [macOS
+    clearTextOnSubmit: true,
+    grammarCheck: true,
+    hideVerticalScrollIndicator: true,
+    pastedTypes: true,
+    submitKeyEvents: true,
+    tooltip: true,
+    // macOS]
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,
       onSelectionChange: true,
@@ -158,6 +164,12 @@ const RCTTextInputViewConfig = {
       onChangeSync: true,
       onKeyPressSync: true,
       onTextInput: true,
+      // [macOS
+      onPaste: true,
+      onAutoCorrectChange: true,
+      onSpellCheckChange: true,
+      onGrammarCheckChange: true,
+      // macOS]
     }),
   },
 };

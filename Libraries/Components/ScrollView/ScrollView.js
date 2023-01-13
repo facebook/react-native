@@ -370,20 +370,6 @@ type IOSProps = $ReadOnly<{|
     | 'never'
     | 'always'
   ),
-  /**
-   * Experimental: specifies how much to adjust the content view by when using
-   * the keyboard to scroll. This value adjusts the content's horizontal offset.
-   *
-   * @platform macos
-   */
-  horizontalLineScroll?: number, // [macOS]
-  /**
-   * Experimental: specifies how much to adjust the content view by when using
-   * the keyboard to scroll. This value adjusts the content's vertical offset.
-   *
-   * @platform macos
-   */
-  verticalLineScroll?: number, // [macOS]
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -500,7 +486,7 @@ export type Props = $ReadOnly<{|
    */
   invertStickyHeaders?: ?boolean,
   /**
-   * Reverses the direction of scroll. Uses native inversion on macOS and scale transforms of -1 elsewhere
+   * Reverses the direction of scroll. Uses native inversion on macOS and scale transforms of -1 elsewhere // [macOS]
    */
   inverted?: ?boolean, // [macOS]
   /**
