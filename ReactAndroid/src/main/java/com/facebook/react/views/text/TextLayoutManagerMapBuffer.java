@@ -158,8 +158,13 @@ public class TextLayoutManagerMapBuffer {
               new SetSpanOperation(
                   start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
         }
+        String currentText = String.valueOf(sb.subSequence(start, end));
         ops.add(
-            new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
+            new SetSpanOperation(
+                start,
+                end,
+                new ReactAbsoluteSizeSpan(
+                    textAttributes.mFontSize, textAttributes.mTextAlignVertical, currentText)));
         if (textAttributes.mFontStyle != UNSET
             || textAttributes.mFontWeight != UNSET
             || textAttributes.mFontFamily != null

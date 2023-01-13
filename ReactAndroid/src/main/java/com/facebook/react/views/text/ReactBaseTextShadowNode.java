@@ -195,7 +195,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       // `Float.NaN`.
       parentTextAttributes == null
           || parentTextAttributes.getEffectiveFontSize() != effectiveFontSize) {
-        ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize)));
+        ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize, null, null)));
       }
       if (textShadowNode.mFontStyle != UNSET
           || textShadowNode.mFontWeight != UNSET

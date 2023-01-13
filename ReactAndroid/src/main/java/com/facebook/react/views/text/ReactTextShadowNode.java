@@ -95,7 +95,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               for (ReactAbsoluteSizeSpan span : sizeSpans) {
                 text.setSpan(
                     new ReactAbsoluteSizeSpan(
-                        (int) Math.max((span.getSize() * ratio), minimumFontSize)),
+                        (int) Math.max((span.getSize() * ratio), minimumFontSize), null, null),
                     text.getSpanStart(span),
                     text.getSpanEnd(span),
                     text.getSpanFlags(span));

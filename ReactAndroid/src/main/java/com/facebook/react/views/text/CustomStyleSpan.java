@@ -109,10 +109,10 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     // other use cases will be added in separate PRs
     // the span with the highest lineHeight sets the height for all rows
     if (textAlignVertical == "top-child" && highestLineHeight != 0) {
-      tp.baselineShift -= highestLineHeight / 2 - tp.getTextSize() / 2;
+      // tp.baselineShift -= highestLineHeight / 2 - tp.getTextSize() / 2;
     }
     if (textAlignVertical == "bottom-child" && highestLineHeight != 0) {
-      tp.baselineShift += highestLineHeight / 2 - tp.getTextSize() / 2;
+      // tp.baselineShift += highestLineHeight / 2 - tp.getTextSize() / 2;
     }
   }
 

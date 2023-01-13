@@ -143,7 +143,7 @@ public class TextLayoutManager {
                   start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
         }
         ops.add(
-            new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
+            new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize, null, null)));
         if (textAttributes.mFontStyle != UNSET
             || textAttributes.mFontWeight != UNSET
             || textAttributes.mFontFamily != null) {

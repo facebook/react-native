@@ -711,7 +711,7 @@ public class ReactEditText extends AppCompatEditText
     }
     ops.add(
         new TextLayoutManager.SetSpanOperation(
-            start, end, new ReactAbsoluteSizeSpan((int) mTextAttributes.getEffectiveFontSize())));
+            start, end, new ReactAbsoluteSizeSpan((int) mTextAttributes.getEffectiveFontSize(), null, null)));
     if (mFontStyle != UNSET || mFontWeight != UNSET || mFontFamily != null) {
       ops.add(
           new TextLayoutManager.SetSpanOperation(
