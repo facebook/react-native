@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import android.graphics.Rect;
 import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
 import androidx.annotation.Nullable;
@@ -43,15 +42,11 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
     // baseline __my Text____   0
     // descent  _____________   8
     // bottom   _____________   1
-    if (mText != null) {
-      Rect bounds = new Rect();
-      ds.getTextBounds(mText, 0, mText.length(), bounds);
-      if (mTextAlignVertical == "top-child") {
-        ds.baselineShift += ds.getFontMetrics().top - ds.ascent() - ds.descent();
-      }
-      if (mTextAlignVertical == "bottom-child") {
-        ds.baselineShift += ds.getFontMetrics().bottom - ds.descent();
-      }
+    if (mTextAlignVertical == "top-child") {
+      ds.baselineShift += ds.getFontMetrics().top - ds.ascent() - ds.descent();
+    }
+    if (mTextAlignVertical == "bottom-child") {
+      ds.baselineShift += ds.getFontMetrics().bottom - ds.descent();
     }
   }
 }

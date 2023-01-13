@@ -325,16 +325,17 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
           <View>
             <Text
               style={{
-                fontSize,
+                height: 300,
                 backgroundColor: 'yellow',
               }}>
               <Text
                 style={{
+                  fontSize,
                   textAlignVertical,
                   backgroundColor: 'green',
                   color: 'white',
                 }}>
-                Custom font
+                CusToM FonTjJYy
               </Text>
             </Text>
             <Text>
