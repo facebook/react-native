@@ -41,12 +41,10 @@ def pods(options = {})
 
   prefix_path = "../.."
 
-  # [macOS don't enable Fabric on RNTester by default until it works on macOS
-  # if ENV['USE_CODEGEN_DISCOVERY'] == '1'
-  #   # Custom fabric component is only supported when using codegen discovery.
-  #   pod 'MyNativeView', :path => "NativeComponentExample"
-  # end
-  # macOS]
+  if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+    # Custom fabric component is only supported when using codegen discovery.
+    pod 'MyNativeView', :path => "NativeComponentExample"
+  end
 
   use_react_native!(
     path: prefix_path,

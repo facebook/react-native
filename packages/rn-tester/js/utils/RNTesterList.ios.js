@@ -190,14 +190,12 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     supportsTVOS: true,
   },
-  /* [macOS NewArchitectureExample depends on Fabric, which we don't have on macOS yet
   {
     key: 'NewArchitectureExample',
     category: 'UI',
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
     supportsTVOS: false,
   },
-  macOS] */
 ];
 
 const APIs: Array<RNTesterModuleInfo> = [
