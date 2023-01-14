@@ -39,7 +39,6 @@ const ReactNativeViewViewConfigMacOS = {
     accessibilityTraits: true,
     draggedTypes: true,
     enableFocusRing: true,
-    nextKeyViewTag: true,
     onBlur: true,
     onClick: true,
     onDoubleClick: true,

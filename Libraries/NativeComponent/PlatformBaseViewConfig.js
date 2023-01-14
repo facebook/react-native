@@ -509,7 +509,6 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
             cursor: true,
             draggedTypes: true,
             enableFocusRing: true,
-            nextKeyViewTag: true,
             tooltip: true,
             validKeysDown: true,
             validKeysUp: true,

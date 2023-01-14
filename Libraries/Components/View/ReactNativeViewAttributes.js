@@ -48,7 +48,6 @@ const UIView = {
   validKeysDown: true,
   validKeysUp: true,
   draggedTypes: true,
-  nextKeyViewTag: true,
   // macOS]
 };
 

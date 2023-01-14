@@ -439,13 +439,6 @@ type MacOSViewProps = $ReadOnly<{|
   acceptsFirstMouse?: ?boolean,
 
   /**
-   * The react tag of the view that follows the current view in the key view loop.
-   *
-   * @platform macos
-   */
-  nextKeyViewTag?: ?number,
-
-  /**
    * Specifies whether focus ring should be drawn when the view has the first responder status.
    *
    * @platform macos

@@ -57,10 +57,6 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/KeyboardEventsExample/KeyboardEventsExample'),
   },
   {
-    key: 'Key-View Accessibility Looping',
-    module: require('../examples/KeyViewLoopExample/KeyViewLoopExample'),
-  },
-  {
     key: 'AccessibilityShowMenu',
     module: require('../examples/AccessibilityShowMenu/AccessibilityShowMenu'),
   }, // macOS]
