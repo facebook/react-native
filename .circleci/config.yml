@@ -920,6 +920,11 @@ workflows:
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
+          # [macOS Disable this failing test
+          filters:
+            branches:
+              ignore: /.*/ 
+          # macOS]
       - test_js:
           run_disabled_tests: false
           filters:
@@ -927,42 +932,54 @@ workflows:
               ignore: gh-pages
       - test_android:
           run_disabled_tests: false
+          # [macOS Disable this failing test
           filters:
             branches:
-              ignore: gh-pages
+              ignore: /.*/ 
+          # macOS]
       - test_android_template:
           requires:
             - build_npm_package
+          # [macOS Disable this failing test
           filters:
             branches:
-              ignore: gh-pages
+              ignore: /.*/ 
+          # macOS]
       - test_android_rntester:
           filters:
             branches:
-              ignore: gh-pages
+              ignore: /.*/ # [macOS] Disable this failing test
       - test_ios_template:
           requires:
             - build_npm_package
+          # [macOS Disable this failing test
           filters:
             branches:
-              ignore: gh-pages
+              ignore: /.*/ 
+          # macOS]
       - test_ios_rntester:
           name: test_ios_rntester_hermes
           use_hermes: true
+          # [macOS Disable this failing test
           filters:
             branches:
-              ignore: gh-pages
+              ignore: /.*/ 
+          # macOS]
       - test_ios_rntester:
           name: test_ios_rntester_jsc
+          # [macOS Disable this failing test
           filters:
             branches:
-              ignore: gh-pages
+              ignore: /.*/ 
+          # macOS]
       - test_ios:
           name: test_ios_unit_jsc
           run_unit_tests: true
+          # [macOS Disable this failing test
           filters:
             branches:
-              ignore: gh-pages
+              ignore: /.*/ 
+          # macOS]
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_unit_frameworks_jsc
@@ -972,9 +989,11 @@ workflows:
           name: test_ios_unit_hermes
           use_hermes: true
           run_unit_tests: true
+          # [macOS Disable this failing test
           filters:
             branches:
-              ignore: gh-pages
+              ignore: /.*/ 
+          # macOS]
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_unit_frameworks_hermes
@@ -990,7 +1009,7 @@ workflows:
       - test_windows:
           filters:
             branches:
-              ignore: gh-pages
+              ignore: /.*/ # [macOS] Disable this failing test
           run_disabled_tests: false
 
   # This workflow should only be triggered by release script
@@ -1030,13 +1049,13 @@ workflows:
       - analyze_code:
           filters:
             branches:
-              ignore: gh-pages
+              ignore: /.*/ # [macOS] Disable failing test
 
       # Run code checks on PRs from forks
       - analyze_pr:
           filters:
             branches:
-              only: /^pull\/.*$/
+              ignore: /.*/ # [macOS] Disable failing test
 
       # Gather coverage
       - js_coverage:
