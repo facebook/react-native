@@ -65,10 +65,6 @@ RuntimeSchedulerTimePoint RuntimeScheduler::now() const noexcept {
   return now_();
 }
 
-void RuntimeScheduler::setEnableYielding(bool enableYielding) {
-  enableYielding_ = enableYielding;
-}
-
 void RuntimeScheduler::executeNowOnTheSameThread(
     std::function<void(jsi::Runtime &runtime)> callback) {
   runtimeAccessRequests_ += 1;

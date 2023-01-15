@@ -144,15 +144,6 @@ class RuntimeScheduler final {
   mutable std::atomic_bool isWorkLoopScheduled_{false};
 
   /*
-   * Flag indicating if yielding is enabled.
-   *
-   * If set to true and Concurrent Mode is enabled on the surface,
-   * React Native will ask React to yield in case any work has been scheduled.
-   * Default value is false
-   */
-  bool enableYielding_{false};
-
-  /*
    * This flag is set while performing work, to prevent re-entrancy.
    */
   mutable std::atomic_bool isPerformingWork_{false};
