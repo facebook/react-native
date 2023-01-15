@@ -3,8 +3,7 @@ parameters:
   xcode_sdk: ''
   xcode_configuration: ''
   xcode_scheme: ''
-  xcode_actions_debug: ''
-  xcode_actions_release: ''
+  xcode_actions: ''
   xcode_destination: ''
   slice_name: ''
   xcode_version: ''
@@ -54,23 +53,13 @@ steps:
   - template: apple-xcode-build.yml
     parameters:
       xcode_sdk: ${{ parameters.xcode_sdk }}
-      xcode_configuration: Debug
+      xcode_configuration: ${{ parameters.xcode_configuration }}
       xcode_workspacePath: packages/rn-tester/RNTesterPods.xcworkspace
       xcode_scheme: ${{ parameters.xcode_scheme }}
-      xcode_actions: ${{ parameters.xcode_actions_debug }}
+      xcode_actions: ${{ parameters.xcode_actions }}
       xcode_useXcpretty: true
       xcode_destination: ${{ parameters.xcode_destination }}
       xcode_extraArgs: -retry-tests-on-failure -test-iterations 2
-
-  - template: apple-xcode-build.yml
-    parameters:
-      xcode_sdk: ${{ parameters.xcode_sdk }}
-      xcode_configuration: Release
-      xcode_workspacePath: packages/rn-tester/RNTesterPods.xcworkspace
-      xcode_scheme: ${{ parameters.xcode_scheme }}
-      xcode_actions: ${{ parameters.xcode_actions_release }}
-      xcode_useXcpretty: false
-      xcode_destination: ${{ parameters.xcode_destination }}
 
   - task: ShellScript@2
     displayName: 'Cleanup packager and WebSocket test server'
@@ -79,3 +68,4 @@ steps:
       disableAutoCwd: true
       cwd: ''
     condition: always()
+
