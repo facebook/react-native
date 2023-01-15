@@ -53,16 +53,18 @@ RCT_EXPORT_MODULE();
                                          moduleName:@"SetPropertiesExampleApp"
                                   initialProperties:@{@"color" : @"beige"}];
 
-#if !TARGET_OS_OSX // [macOS]
+    // [macOS Github#1642: Suppress analyzer error of nonlocalized string
+    NSString *buttonTitle = NSLocalizedString(@"Native Button", nil);
+#if !TARGET_OS_OSX
     _button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [_button setTitle:@"Native Button" forState:UIControlStateNormal];
+    [_button setTitle:buttonTitle /* [macOS] */ forState:UIControlStateNormal];
     [_button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_button setBackgroundColor:[UIColor grayColor]];
 
     [_button addTarget:self action:@selector(changeColor) forControlEvents:UIControlEventTouchUpInside];
-#else // [macOS
+#else
     _button = [NSButton new];
-    [_button setTitle:@"Native Button"];
+    [_button setTitle:buttonTitle];
     [_button setTarget:self];
     [_button setAction:@selector(changeColor)];
 #endif // macOS]
