@@ -8,9 +8,9 @@ parameters:
   xcode_destination: ''
   slice_name: ''
   xcode_version: ''
+  use_fabric: ''
 
 steps:
-  # Clean DerivedData
   - script: |
       rm -rf $(Build.Repository.LocalPath)/DerivedData
     displayName: 'Clean DerivedData'
@@ -34,6 +34,8 @@ steps:
       script: |
         cd packages/rn-tester
         pod install
+    env:
+      USE_FABRIC: $(use_fabric)
 
   - task: ShellScript@2
     displayName: 'Setup packager and WebSocket test server'

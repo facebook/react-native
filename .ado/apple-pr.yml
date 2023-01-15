@@ -16,8 +16,8 @@ pr:
       - '*.md'
 
 jobs:
-  - job: JavaScriptRNPR
-    displayName: JavaScript React Native PR
+  - job: JavaScriptPR
+    displayName: Build & Test JavaScript
     pool:
       vmImage: $(VmImageApple)
       demands: ['xcode', 'sh', 'npm']
@@ -27,24 +27,34 @@ jobs:
             slice_name: $(slice_name)
             xcode_version: $(xcode_version)
 
-  - job: AppleRNPR
-    displayName: Apple React Native PR
+  - job: ApplePR
+    displayName: Build & Test
     strategy:
       matrix:
-        ios:
+        'iOS Paper':
           packager_platform: 'ios'
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions_debug: 'build test'
           xcode_actions_release: 'build'
-        macos:
+          use_fabric: '0'
+        'iOS Fabric': 
+          packager_platform: 'ios'
+          xcode_sdk: iphonesimulator
+          xcode_scheme: 'RNTester'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_actions_debug: 'build test'
+          xcode_actions_release: 'build'
+          use_fabric: '1'
+        'macOS Paper':
           packager_platform: 'macos'
           xcode_sdk: macosx
           xcode_scheme: 'RNTester-macOS'
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions_debug: 'build test'
           xcode_actions_release: 'build'
+          use_fabric: '0'
     pool:
       vmImage: $(VmImageApple)
       demands: ['xcode', 'sh', 'npm']

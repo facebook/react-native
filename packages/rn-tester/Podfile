@@ -21,23 +21,13 @@ end
 def pods(options = {})
   project 'RNTesterPods.xcodeproj'
 
-  # [macOS don't enable Fabric on RNTester by default until it works on macOS
-  fabric_enabled = false
-
-  # To use fabric: set the environment variable `USE_FABRIC` to 1, like below
-  #   $ USE_FABRIC=1 bundle exec pod install
-  # or
-  #   $ export USE_FABRIC=1
-  #   $ bundle exec pod install
+  # [macOS Disable Fabric by default till macOS supports it
+  fabric_enabled = false 
   if ENV['USE_FABRIC'] == '1'
-    puts "Building RNTester with Fabric enabled."
     fabric_enabled = true
   end
   # macOS]
-
-  # [macOS] uncomment once Fabric works on macOS
-  # puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
-  # fabric_enabled = true
+  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
 
   prefix_path = "../.."
 
