@@ -165,7 +165,7 @@ if (argv.target === 'RNTester') {
   ).code;
 
   if (exitCode !== 0) {
-    console.error('Failed to set the RN version');
+    console.error(`Failed to set the RN version. Version ${releaseVersion} is not valid for ${buildType}`);
     process.exit(exitCode);
   }
 
