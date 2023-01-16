@@ -38,7 +38,11 @@ const VERSION_REGEX = /^v?((\d+)\.(\d+)\.(\d+)(?:-(.+))?)$/;
  *
  */
 function parseVersion(versionStr, buildType) {
-  validateBuildType(buildType);
+  try {
+    validateBuildType(buildType);
+  } catch (e) {
+    throw e;
+  }
 
   const match = extractMatchIfValid(versionStr);
   const [, version, major, minor, patch, prerelease] = match;
@@ -51,7 +55,11 @@ function parseVersion(versionStr, buildType) {
     prerelease,
   };
 
-  validateVersion(versionObject, buildType);
+  try {
+    validateVersion(versionObject, buildType);
+  } catch (e) {
+    throw e;
+  }
 
   return versionObject;
 }
