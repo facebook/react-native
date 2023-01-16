@@ -18,7 +18,8 @@ const VERSION_REGEX = /^v?((\d+)\.(\d+)\.(\d+)(?:-(.+))?)$/;
  * Some examples of valid versions are:
  * - stable: 0.68.1
  * - stable prerelease: 0.70.0-rc.0
- * - nightly: 0.0.0-20221116-2018-0bc4547fc | 0.0.0
+ * - e2e-test: X.Y.Z-20221116-2018
+ * - nightly: 0.0.0-20221116-2018-0bc4547fc
  * - dryrun: 1000.0.0
  *
  * Parameters:
@@ -133,7 +134,8 @@ function isStablePrerelease(version) {
     version.patch === '0' &&
     version.prerelease != null &&
     (version.prerelease.startsWith('rc.') ||
-      version.prerelease.startsWith('rc-'))
+      version.prerelease.startsWith('rc-') ||
+      version.prerelease.match(/^(\d{8})-(\d{4})$/))
   );
 }
 

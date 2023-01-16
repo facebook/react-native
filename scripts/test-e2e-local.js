@@ -147,11 +147,9 @@ if (argv.target === 'RNTester') {
   // we need to add the unique timestamp to avoid npm/yarn to use some local caches
   const baseVersion = require('../package.json').version;
 
-  const branchName = getBranchName();
-  const buildType =
-    branchName.endsWith('-stable') && baseVersion !== '1000.0.0'
-      ? 'release'
-      : 'dry-run';
+  // in local testing, 1000.0.0 mean we are on main, every other case means we are
+  // working on a release version
+  const buildType = baseVersion !== '1000.0.0' ? 'release' : 'dry-run';
 
   const dateIdentifier = new Date()
     .toISOString()
