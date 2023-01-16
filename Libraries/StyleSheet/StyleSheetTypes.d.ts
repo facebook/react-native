@@ -239,6 +239,7 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderBottomStartRadius?: number | undefined;
   borderBottomWidth?: number | undefined;
   borderColor?: ColorValue | undefined;
+  borderCurve?: 'circular' | 'continuous';
   borderEndColor?: ColorValue | undefined;
   borderEndEndRadius?: number | undefined;
   borderEndStartRadius?: number | undefined;
