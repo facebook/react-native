@@ -50,9 +50,10 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
                                                                contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 #endif
-
-  NSDictionary *initProps = [self prepareInitialProps];
-  UIView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
+  if(!self.initialProps) {
+    self.initialProps = [self prepareInitialProps];
+  }
+  UIView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:self.initialProps];
 
   if (@available(iOS 13.0, *)) {
     rootView.backgroundColor = [UIColor systemBackgroundColor];
