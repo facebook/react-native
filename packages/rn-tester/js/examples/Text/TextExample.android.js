@@ -272,7 +272,7 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
           </Text>
           <Button
             onPress={() => this.changeVerticalAlign()}
-            title="Set vertical align top or bottom"
+            title="change vertical align"
           />
           <Button
             onPress={() => this.setState({verticalAlignCenter: true})}
@@ -295,30 +295,25 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
                   backgroundColor: 'green',
                   color: 'white',
                 }}>
-                This span is aligned
+                span aligned {textAlignVertical}
               </Text>
               <Text
                 style={{
                   fontSize: 8,
-                  textAlignVertical,
+                  textAlignVertical: verticalAlignTop ? 'bottom' : 'top',
                   lineHeight: 100,
                   backgroundColor: 'red',
                 }}>
-                span lineHeight 150 ({textAlignVertical})
+                span aligned {verticalAlignTop ? 'bottom' : 'top'}
               </Text>
               <Text
                 style={{
-                  textAlignVertical,
+                  textAlignVertical: 'center',
                   backgroundColor: 'blue',
                   color: 'white',
                 }}>
-                span no lineHeight ({textAlignVertical})
+                span aligned center{' '}
               </Text>
-            </Text>
-            <Text>
-              Text in the spans is correctly aligned to the {textAlignVertical}{' '}
-              of the line (like html), but parent text uses Gravity to align
-              text. It should be removed in the future.
             </Text>
           </View>
         </RNTesterBlock>

@@ -59,7 +59,7 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
         ds.baselineShift -= mHighestLineHeight / 2 - getSize() / 2;
       }
       if (mTextAlignVertical == "bottom-child") {
-        ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2;
+        ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2 - ds.descent();
       }
     } else if (lineHeightNotBasedOnFontSize && mHighestFontSize != 0) {
       // align correctly text that has smaller font
@@ -71,7 +71,7 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
                 + (ds.getFontMetrics().top - ds.getFontMetrics().ascent);
       }
       if (mTextAlignVertical == "bottom-child") {
-        ds.baselineShift += mHighestLineHeight / 2 - mHighestFontSize / 2;
+        ds.baselineShift += mHighestLineHeight / 2 - mHighestFontSize / 2 - ds.descent();
       }
     }
   }
