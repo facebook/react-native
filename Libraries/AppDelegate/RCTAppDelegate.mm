@@ -50,10 +50,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
                                                                contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 #endif
-  if(!self.initialProps) {
-    self.initialProps = [self prepareInitialProps];
-  }
-  UIView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:self.initialProps];
+  NSDictionary *initProps = [self prepareInitialProps];
+  UIView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
 
   if (@available(iOS 13.0, *)) {
     rootView.backgroundColor = [UIColor systemBackgroundColor];
@@ -85,7 +83,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (NSDictionary *)prepareInitialProps
 {
-  NSMutableDictionary *initProps = [NSMutableDictionary new];
+  NSMutableDictionary *initProps = self.initialProps ? [self.initialProps mutableCopy] : [NSMutableDictionary new];
 
 #ifdef RCT_NEW_ARCH_ENABLED
   initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);
