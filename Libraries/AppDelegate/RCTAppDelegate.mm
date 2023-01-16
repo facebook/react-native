@@ -50,6 +50,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
                                                                contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 #endif
+
   NSDictionary *initProps = [self prepareInitialProps];
   UIView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
 
