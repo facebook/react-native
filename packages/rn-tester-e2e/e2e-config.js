@@ -6,7 +6,7 @@ let capabilities;
 const android = {
   'platformName': 'Android',
   'appium:platformVersion': '',
-  'appium:deviceName': '', 
+  'appium:deviceName': '',
   'appium:app': path.join(process.cwd(), '/apps/RNTester.apk'),
   'appium:automationName': 'uiautomator2',
   'appium:newCommandTimeout': 240,
