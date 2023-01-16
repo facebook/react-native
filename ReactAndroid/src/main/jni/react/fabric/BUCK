@@ -45,7 +45,6 @@ rn_xplat_cxx_library(
         "//xplat/js/react-native-github:generated_components-rncore",
         react_native_xplat_target("react/renderer/components/image:image"),
         react_native_xplat_target("react/renderer/components/modal:modal"),
-        react_native_xplat_target("react/renderer/components/slider:slider"),
         react_native_xplat_target("react/renderer/components/switch:androidswitch"),
         react_native_xplat_target("react/renderer/components/progressbar:androidprogressbar"),
         react_native_xplat_target("react/renderer/components/text:text"),
