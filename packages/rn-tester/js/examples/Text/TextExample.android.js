@@ -236,6 +236,12 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
     });
   };
 
+  resetFont = () => {
+    this.setState({
+      fontSize: 12,
+    });
+  };
+
   decreaseFont = () => {
     this.setState(prevState => {
       return {
@@ -260,6 +266,10 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
             vertical align is set to{' '}
             <Text style={{backgroundColor: 'red'}}>{textAlignVertical}</Text>
           </Text>
+          <Text>
+            fontSize is set to{' '}
+            <Text style={{backgroundColor: 'green'}}>{fontSize}</Text>
+          </Text>
           <Button
             onPress={() => this.changeVerticalAlign()}
             title="Set vertical align top or bottom"
@@ -269,6 +279,7 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
             title="set vertical align CENTER"
           />
           <Button onPress={() => this.increaseFont()} title="increase font" />
+          <Button onPress={() => this.resetFont()} title="reset font" />
           <View>
             <Text
               textTransform="uppercase"
@@ -288,6 +299,7 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
               </Text>
               <Text
                 style={{
+                  fontSize: 8,
                   textAlignVertical,
                   lineHeight: 100,
                   backgroundColor: 'red',

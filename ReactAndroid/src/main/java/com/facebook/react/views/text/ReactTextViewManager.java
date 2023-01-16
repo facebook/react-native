@@ -114,9 +114,19 @@ public class ReactTextViewManager
 
       ReactAbsoluteSizeSpan[] absoluteSizeSpans =
           spannable.getSpans(0, spannable.length(), ReactAbsoluteSizeSpan.class);
+
+      int highestFontSize = 0;
       if (absoluteSizeSpans.length != 0 && highestLineHeight != 0) {
         for (ReactAbsoluteSizeSpan span : absoluteSizeSpans) {
-          span.updateSpan(highestLineHeight);
+          if (highestFontSize == 0 || span.getSize() > highestFontSize) {
+            highestFontSize = span.getSize();
+          }
+        }
+      }
+
+      if (absoluteSizeSpans.length != 0 && (highestLineHeight != 0 || highestFontSize != 0)) {
+        for (ReactAbsoluteSizeSpan span : absoluteSizeSpans) {
+          span.updateSpan(highestLineHeight, highestFontSize);
         }
       }
     }

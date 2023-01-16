@@ -16,8 +16,10 @@ import androidx.annotation.Nullable;
  */
 public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan {
   private static final String TAG = "ReactAbsoluteSizeSpan";
+  private String mText = "";
   private String mTextAlignVertical = "center-child";
   private int mHighestLineHeight = 0;
+  private int mHighestFontSize = 0;
 
   public ReactAbsoluteSizeSpan(int size) {
     super(size);
@@ -28,34 +30,54 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
     mTextAlignVertical = textAlignVertical;
   }
 
+  public ReactAbsoluteSizeSpan(int size, @Nullable String textAlignVertical, String text) {
+    super(size);
+    mTextAlignVertical = textAlignVertical;
+    mText = text;
+  }
+
   @Override
   public void updateDrawState(TextPaint ds) {
     super.updateDrawState(ds);
-    // aligns text vertically in lineHeight
-    if (ds.getTextSize() != 0 && mHighestLineHeight != 0) {
+    if (mTextAlignVertical == "center-child") {
+      return;
+    }
+    boolean lineHeightNotBasedOnFontSize = ds.getTextSize() != 0 && mHighestLineHeight != 0;
+    if (!lineHeightNotBasedOnFontSize) {
+      // align the text by font metrics
+      // https://stackoverflow.com/a/27631737/7295772
+      if (mTextAlignVertical == "top-child") {
+        ds.baselineShift += ds.getFontMetrics().top - ds.ascent() - ds.descent();
+      }
+      if (mTextAlignVertical == "bottom-child") {
+        ds.baselineShift += ds.getFontMetrics().bottom - ds.descent();
+      }
+    }
+    if (lineHeightNotBasedOnFontSize && mHighestFontSize == getSize()) {
+      // aligns text vertically in the lineHeight
       if (mTextAlignVertical == "top-child") {
         ds.baselineShift -= mHighestLineHeight / 2 - getSize() / 2;
       }
       if (mTextAlignVertical == "bottom-child") {
         ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2;
       }
-    }
-    // align the text by font metrics
-    // https://stackoverflow.com/a/27631737/7295772
-    // top      -------------  -26
-    // ascent   -------------  -30
-    // baseline __my Text____   0
-    // descent  _____________   8
-    // bottom   _____________   1
-    if (mTextAlignVertical == "top-child") {
-      ds.baselineShift += ds.getFontMetrics().top - ds.ascent() - ds.descent();
-    }
-    if (mTextAlignVertical == "bottom-child") {
-      ds.baselineShift += ds.getFontMetrics().bottom - ds.descent();
+    } else if (lineHeightNotBasedOnFontSize && mHighestFontSize != 0) {
+      // align correctly text that has smaller font
+      if (mTextAlignVertical == "top-child") {
+        ds.baselineShift -=
+            mHighestLineHeight / 2
+                - mHighestFontSize / 2
+                + (mHighestFontSize - getSize())
+                + (ds.getFontMetrics().top - ds.getFontMetrics().ascent);
+      }
+      if (mTextAlignVertical == "bottom-child") {
+        ds.baselineShift += mHighestLineHeight / 2 - mHighestFontSize / 2;
+      }
     }
   }
 
-  public void updateSpan(int highestLineHeight) {
+  public void updateSpan(int highestLineHeight, int highestFontSize) {
     mHighestLineHeight = highestLineHeight;
+    mHighestFontSize = highestFontSize;
   }
 }
