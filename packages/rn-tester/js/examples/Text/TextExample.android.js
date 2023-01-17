@@ -36,14 +36,9 @@ class Entity extends React.Component<{|children: React.Node|}> {
   }
 }
 class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
-  state: {
-    fontSize: number,
-    fontWeight: 'bold' | 'normal',
-    anotherState: number,
-  } = {
+  state: {fontSize: number, fontWeight: 'bold' | 'normal'} = {
     fontWeight: 'bold',
     fontSize: 15,
-    anotherState: 1,
   };
 
   toggleWeight = () => {
