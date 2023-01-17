@@ -163,3 +163,22 @@ jobs:
               repo: context.repo.repo,
               labels: ['Needs: Author Feedback']
             })
+  unsupported-version:
+    runs-on: ubuntu-latest
+    if: "${{ contains(github.event.label.name, 'Type: Unsupported Version') }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `It looks like your issue or the example you provided uses an [unsupported version of React Native](https://github.com/reactwg/react-native-releases/blob/main/README.md#releases-support-policy). Due to the amount of issues we receive, we're currently accepting only new issues against one of the supported version. Please open your issue on [StackOverflow](https://stackoverflow.com/questions/tagged/react-native) to get further community support.`,
+            })
+            await github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['Needs: Author Feedback']
+            })
