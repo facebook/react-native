@@ -51,15 +51,6 @@ ViewProps::ViewProps(
                     "backgroundColor",
                     sourceProps.backgroundColor,
                     {})),
-  textAlignVertical(
-                  CoreFeatures::enablePropIteratorSetter
-                  ? sourceProps.textAlignVertical
-                  : convertRawProp(
-                                   context,
-                                   rawProps,
-                                   "textAlignVertical",
-                                   sourceProps.textAlignVertical,
-                                   {})),
       borderRadii(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.borderRadii
                                                  : convertRawProp(
@@ -304,7 +295,6 @@ void ViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(opacity, (Float)1.0);
     RAW_SET_PROP_SWITCH_CASE_BASIC(foregroundColor, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(backgroundColor, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(textAlignVertical, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowColor, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOffset, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOpacity, {});

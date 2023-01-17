@@ -100,7 +100,7 @@ public class TextAttributeProps {
   protected boolean mIsUnderlineTextDecorationSet = false;
   protected boolean mIsLineThroughTextDecorationSet = false;
   protected boolean mIncludeFontPadding = true;
-  protected String mTextAlignVertical;
+  protected String mTextAlignVertical = "center-child";
 
   protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;

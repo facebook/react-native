@@ -95,7 +95,8 @@ inline bool areTextAttributesEquivalentLayoutWise(
              lhs.fontVariant,
              lhs.allowFontScaling,
              lhs.dynamicTypeRamp,
-             lhs.alignment) ==
+             lhs.alignment,
+             lhs.textAlignVertical) ==
       std::tie(
              rhs.fontFamily,
              rhs.fontWeight,
@@ -103,7 +104,8 @@ inline bool areTextAttributesEquivalentLayoutWise(
              rhs.fontVariant,
              rhs.allowFontScaling,
              rhs.dynamicTypeRamp,
-             rhs.alignment) &&
+             rhs.alignment,
+             rhs.textAlignVertical) &&
       floatEquality(lhs.fontSize, rhs.fontSize) &&
       floatEquality(lhs.fontSizeMultiplier, rhs.fontSizeMultiplier) &&
       floatEquality(lhs.letterSpacing, rhs.letterSpacing) &&
@@ -126,7 +128,8 @@ inline size_t textAttributesHashLayoutWise(
       textAttributes.dynamicTypeRamp,
       textAttributes.letterSpacing,
       textAttributes.lineHeight,
-      textAttributes.alignment);
+      textAttributes.alignment,
+      textAttributes.textAlignVertical);
 }
 
 inline bool areAttributedStringFragmentsEquivalentLayoutWise(
