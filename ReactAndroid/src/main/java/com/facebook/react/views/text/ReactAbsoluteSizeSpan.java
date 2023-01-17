@@ -29,6 +29,10 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
     mTextAlignVertical = textAlignVertical;
   }
 
+  public String getTextAlignVertical() {
+    return mTextAlignVertical;
+  }
+
   @Override
   public void updateDrawState(TextPaint ds) {
     super.updateDrawState(ds);

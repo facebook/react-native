@@ -115,15 +115,21 @@ public class ReactTextViewManager
       }
 
       int highestFontSize = 0;
+      boolean textAlignVerticalSet = false;
       if (highestLineHeight != 0) {
         for (ReactAbsoluteSizeSpan span : absoluteSizeSpans) {
           if (highestFontSize == 0 || span.getSize() > highestFontSize) {
             highestFontSize = span.getSize();
           }
+          if (span.getTextAlignVertical() != "center-child") {
+            textAlignVerticalSet = true;
+          }
         }
 
-        for (ReactAbsoluteSizeSpan span : absoluteSizeSpans) {
-          span.updateSpan(highestLineHeight, highestFontSize);
+        if (textAlignVerticalSet) {
+          for (ReactAbsoluteSizeSpan span : absoluteSizeSpans) {
+            span.updateSpan(highestLineHeight, highestFontSize);
+          }
         }
       }
     }

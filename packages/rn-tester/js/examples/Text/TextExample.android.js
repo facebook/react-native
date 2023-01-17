@@ -218,7 +218,7 @@ type NestedTextVerticalAlignState = {
 };
 
 class NestedTextVerticalAlign extends React.Component<
-  {...},
+  NestedTextVerticalAlignProps,
   NestedTextVerticalAlignState,
 > {
   state: NestedTextVerticalAlignState = {
@@ -227,13 +227,6 @@ class NestedTextVerticalAlign extends React.Component<
   };
 
   _changeVerticalAlign = () => {
-    const callback: NestedTextVerticalAlignState => NestedTextVerticalAlignState =
-      prevState => {
-        return {
-          ...prevState,
-          textAlignVerticalIndex: prevState.textAlignVerticalIndex + 1,
-        };
-      };
     this.setState(prevState => {
       return {
         ...prevState,
