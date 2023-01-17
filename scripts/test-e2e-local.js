@@ -19,7 +19,6 @@
 const {exec, exit, pushd, popd, pwd, cd, cp} = require('shelljs');
 const yargs = require('yargs');
 const fs = require('fs');
-const {getBranchName} = require('./scm-utils');
 
 const {
   launchAndroidEmulator,
@@ -165,7 +164,9 @@ if (argv.target === 'RNTester') {
   ).code;
 
   if (exitCode !== 0) {
-    console.error(`Failed to set the RN version. Version ${releaseVersion} is not valid for ${buildType}`);
+    console.error(
+      `Failed to set the RN version. Version ${releaseVersion} is not valid for ${buildType}`,
+    );
     process.exit(exitCode);
   }
 
