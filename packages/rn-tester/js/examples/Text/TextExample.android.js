@@ -19,7 +19,6 @@ const TextInlineView = require('../../components/TextInlineView');
 import TextLegend from '../../components/TextLegend';
 
 const {
-  Image,
   LayoutAnimation,
   StyleSheet,
   Text,
@@ -207,14 +206,26 @@ class AdjustingFontSize extends React.Component<
   }
 }
 
-class NestedTextVerticalAlign extends React.Component<{...}> {
-  constructor(props) {
+type NestedTextVerticalAlignProps = $ReadOnly<{||}>;
+
+type NestedTextVerticalAlignState = {
+  verticalAlignTop: boolean,
+  verticalAlignCenter: boolean,
+  fontSize: number,
+};
+
+class NestedTextVerticalAlign extends React.Component<
+  NestedTextVerticalAlignProps,
+  NestedTextVerticalAlignState,
+> {
+  state: NestedTextVerticalAlignState = {
+    verticalAlignTop: false,
+    verticalAlignCenter: false,
+    fontSize: 12,
+  };
+
+  constructor(props: NestedTextVerticalAlignProps) {
     super(props);
-    this.state = {
-      verticalAlignTop: false,
-      verticalAlignCenter: false,
-      fontSize: 12,
-    };
   }
 
   changeVerticalAlign = () => {
@@ -282,7 +293,6 @@ class NestedTextVerticalAlign extends React.Component<{...}> {
           <Button onPress={() => this.resetFont()} title="reset font" />
           <View>
             <Text
-              textTransform="uppercase"
               style={{
                 textAlignVertical,
                 backgroundColor: 'yellow',
@@ -358,6 +368,9 @@ class TextExample extends React.Component<{...}> {
   render(): React.Node {
     return (
       <RNTesterPage title="<Text>">
+        <RNTesterBlock title="Dynamic Font Size Adjustment">
+          <AdjustingFontSize />
+        </RNTesterBlock>
         <RNTesterBlock title="Font Size Adjustment with Dynamic Layout">
           <TextAdjustsDynamicLayoutExample />
         </RNTesterBlock>
@@ -1132,7 +1145,7 @@ exports.description = 'Base component for rendering styled text.';
 exports.examples = [
   {
     title: 'Nested Text Vertical align',
-    render: function (): React.Element<typeof TextExample> {
+    render: function (): React.Element<typeof NestedTextVerticalAlign> {
       return <NestedTextVerticalAlign />;
     },
   },
