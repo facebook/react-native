@@ -1,27 +1,16 @@
+
 {
-    "name": "webdriverio-tests",
+    "name": "rn-tester-e2e",
     "version": "0.1.0",
-    "description": "",
     "private": true,
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
     "devDependencies": {
-        "@babel/core": "^7.19.6",
-        "@babel/eslint-parser": "^7.19.1",
-        "@babel/runtime": "^7.12.5",
-        "@react-native-community/eslint-config": "^2.0.0",
         "appium": "^2.0.0-beta.40",
         "appium-uiautomator2-driver": "^2.9.0",
         "appium-xcuitest-driver": "^4.12.2",
-        "babel-jest": "^26.6.3",
-        "eslint": "^7.32.0",
-        "jest": "^26.6.3",
-        "jest-cucumber": "^3.0.1",
-        "jest-html-reporter": "^3.7.0",
-        "metro-react-native-babel-preset": "^0.70.3",
-        "react-test-renderer": "18.0.0",
+        "eslint": "^8.19.0",
+        "jest": "^29.2.1",
         "webdriverio": "^7.25.4"
+        "jest-cucumber": "^3.0.1",
     },
     "scripts": {
         "test": "jest --runInBand",
@@ -29,6 +18,8 @@
         "ios": "E2E_DEVICE=\"ios\" npm run test"
     },
     "dependencies": {
+        "@babel/preset-env": "^7.20.0",
         "@types/jest": "^29.2.1"
     }
 }
+
