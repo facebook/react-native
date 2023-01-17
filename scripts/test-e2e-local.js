@@ -21,7 +21,6 @@ const yargs = require('yargs');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const {getBranchName} = require('./scm-utils');
 
 const {
   launchAndroidEmulator,
@@ -156,11 +155,9 @@ if (argv.target === 'RNTester') {
   // we need to add the unique timestamp to avoid npm/yarn to use some local caches
   const baseVersion = require('../package.json').version;
 
-  const branchName = getBranchName();
-  const buildType =
-    branchName.endsWith('-stable') && baseVersion !== '1000.0.0'
-      ? 'release'
-      : 'dry-run';
+  // in local testing, 1000.0.0 mean we are on main, every other case means we are
+  // working on a release version
+  const buildType = baseVersion !== '1000.0.0' ? 'release' : 'dry-run';
 
   const dateIdentifier = new Date()
     .toISOString()
@@ -171,9 +168,16 @@ if (argv.target === 'RNTester') {
   const releaseVersion = `${baseVersion}-${dateIdentifier}`;
 
   // this is needed to generate the Android artifacts correctly
-  exec(
+  const exitCode = exec(
     `node scripts/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
   ).code;
+
+  if (exitCode !== 0) {
+    console.error(
+      `Failed to set the RN version. Version ${releaseVersion} is not valid for ${buildType}`,
+    );
+    process.exit(exitCode);
+  }
 
   // Generate native files for Android
   generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
