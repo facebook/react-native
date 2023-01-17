@@ -49,7 +49,7 @@ describe('processAspectRatio', () => {
   });
 
   it('should not accept non number | string type', () => {
-    const invalidThings = [undefined, null];
+    const invalidThings = [undefined, null, () => {}, [1, 2, 3]];
     invalidThings.forEach(thing => {
       expect(processAspectRatio(thing)).toBe(undefined);
     });
