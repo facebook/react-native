@@ -614,7 +614,7 @@ public class TextAttributeProps {
     }
   }
 
-  private void setTextAlignVertical(@Nullable String alignVertical) {
+  private void setTextAlignVertical(String alignVertical) {
     if (alignVertical.equals("top")) {
       mTextAlignVertical = "top-child";
     } else if (alignVertical.equals("center")) {

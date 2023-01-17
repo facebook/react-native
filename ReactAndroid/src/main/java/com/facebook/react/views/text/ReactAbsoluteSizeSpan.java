@@ -9,7 +9,6 @@ package com.facebook.react.views.text;
 
 import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
-import androidx.annotation.Nullable;
 
 /*
  * Wraps {@link AbsoluteSizeSpan} as a {@link ReactSpan}.
@@ -24,7 +23,7 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
     super(size);
   }
 
-  public ReactAbsoluteSizeSpan(int size, @Nullable String textAlignVertical) {
+  public ReactAbsoluteSizeSpan(int size, String textAlignVertical) {
     this(size);
     mTextAlignVertical = textAlignVertical;
   }

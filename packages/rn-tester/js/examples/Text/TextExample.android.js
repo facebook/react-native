@@ -250,15 +250,6 @@ class NestedTextVerticalAlign extends React.Component<
     });
   };
 
-  _decreaseFont = () => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        fontSize: prevState.fontSize - 5,
-      };
-    });
-  };
-
   render(): React.Node {
     const {fontSize, textAlignVerticalIndex} = this.state;
     const textAlignVerticalOptions = ['center', 'top', 'bottom'];
