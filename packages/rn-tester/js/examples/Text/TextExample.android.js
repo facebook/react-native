@@ -36,9 +36,14 @@ class Entity extends React.Component<{|children: React.Node|}> {
   }
 }
 class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
-  state: {fontSize: number, fontWeight: 'bold' | 'normal'} = {
+  state: {
+    fontSize: number,
+    fontWeight: 'bold' | 'normal',
+    anotherState: number,
+  } = {
     fontWeight: 'bold',
     fontSize: 15,
+    anotherState: 1,
   };
 
   toggleWeight = () => {
@@ -206,39 +211,38 @@ class AdjustingFontSize extends React.Component<
   }
 }
 
-type NestedTextVerticalAlignProps = $ReadOnly<{||}>;
-
+type NestedTextVerticalAlignProps = {||};
 type NestedTextVerticalAlignState = {
-  verticalAlignTop: boolean,
-  verticalAlignCenter: boolean,
+  textAlignVerticalIndex: number,
   fontSize: number,
 };
 
 class NestedTextVerticalAlign extends React.Component<
-  NestedTextVerticalAlignProps,
+  {...},
   NestedTextVerticalAlignState,
 > {
   state: NestedTextVerticalAlignState = {
-    verticalAlignTop: false,
-    verticalAlignCenter: false,
+    textAlignVerticalIndex: 0,
     fontSize: 12,
   };
 
-  constructor(props: NestedTextVerticalAlignProps) {
-    super(props);
-  }
-
-  changeVerticalAlign = () => {
+  _changeVerticalAlign = () => {
+    const callback: NestedTextVerticalAlignState => NestedTextVerticalAlignState =
+      prevState => {
+        return {
+          ...prevState,
+          textAlignVerticalIndex: prevState.textAlignVerticalIndex + 1,
+        };
+      };
     this.setState(prevState => {
       return {
         ...prevState,
-        verticalAlignCenter: false,
-        verticalAlignTop: !prevState.verticalAlignTop,
+        textAlignVerticalIndex: prevState.textAlignVerticalIndex + 1,
       };
     });
   };
 
-  increaseFont = () => {
+  _increaseFont = () => {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -247,13 +251,13 @@ class NestedTextVerticalAlign extends React.Component<
     });
   };
 
-  resetFont = () => {
+  _resetFont = () => {
     this.setState({
       fontSize: 12,
     });
   };
 
-  decreaseFont = () => {
+  _decreaseFont = () => {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -263,13 +267,12 @@ class NestedTextVerticalAlign extends React.Component<
   };
 
   render(): React.Node {
-    const {verticalAlignTop, verticalAlignCenter, fontSize} = this.state;
-    let textAlignVertical;
-    if (verticalAlignCenter) {
-      textAlignVertical = 'center';
-    } else {
-      textAlignVertical = verticalAlignTop ? 'top' : 'bottom';
-    }
+    const {fontSize, textAlignVerticalIndex} = this.state;
+    const textAlignVerticalOptions = ['center', 'top', 'bottom'];
+    const textAlignVertical =
+      textAlignVerticalOptions[textAlignVerticalIndex % 3];
+    const textAlignVerticalOppositeSideIndex =
+      textAlignVerticalIndex === 0 ? 0 : textAlignVerticalIndex + 2;
     return (
       <>
         <RNTesterBlock title="lineHeight and verticalAlign">
@@ -282,15 +285,15 @@ class NestedTextVerticalAlign extends React.Component<
             <Text style={{backgroundColor: 'green'}}>{fontSize}</Text>
           </Text>
           <Button
-            onPress={() => this.changeVerticalAlign()}
+            onPress={this._changeVerticalAlign}
             title="change vertical align"
           />
           <Button
-            onPress={() => this.setState({verticalAlignCenter: true})}
+            onPress={() => this.setState({textAlignVerticalIndex: 0})}
             title="set vertical align CENTER"
           />
-          <Button onPress={() => this.increaseFont()} title="increase font" />
-          <Button onPress={() => this.resetFont()} title="reset font" />
+          <Button onPress={this._increaseFont} title="increase font" />
+          <Button onPress={this._resetFont} title="reset font" />
           <View>
             <Text
               style={{
@@ -310,11 +313,19 @@ class NestedTextVerticalAlign extends React.Component<
               <Text
                 style={{
                   fontSize: 8,
-                  textAlignVertical: verticalAlignTop ? 'bottom' : 'top',
+                  textAlignVertical:
+                    textAlignVerticalOptions[
+                      textAlignVerticalOppositeSideIndex % 3
+                    ],
                   lineHeight: 100,
                   backgroundColor: 'red',
                 }}>
-                span aligned {verticalAlignTop ? 'bottom' : 'top'}
+                span aligned
+                {
+                  textAlignVerticalOptions[
+                    textAlignVerticalOppositeSideIndex % 3
+                  ]
+                }
               </Text>
               <Text
                 style={{
@@ -333,14 +344,14 @@ class NestedTextVerticalAlign extends React.Component<
             <Text style={{backgroundColor: 'red'}}>{textAlignVertical}</Text>
           </Text>
           <Button
-            onPress={() => this.changeVerticalAlign()}
+            onPress={this._changeVerticalAlign}
             title="Set vertical align top or bottom"
           />
           <Button
-            onPress={() => this.setState({verticalAlignCenter: true})}
+            onPress={() => this.setState({textAlignVerticalIndex: 0})}
             title="set vertical align CENTER"
           />
-          <Button onPress={() => this.increaseFont()} title="increase font" />
+          <Button onPress={this._increaseFont} title="increase font" />
           <View>
             <Text
               style={{
