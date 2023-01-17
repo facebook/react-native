@@ -12,9 +12,12 @@
 
 const invariant = require('invariant');
 
-function processAspectRatio(aspectRatio: number | string): ?number {
+function processAspectRatio(aspectRatio?: number | string): ?number {
   if (typeof aspectRatio === 'number') {
     return aspectRatio;
+  }
+  if (typeof aspectRatio !== 'string') {
+    return;
   }
 
   const matches = aspectRatio.split('/').map(s => s.trim());

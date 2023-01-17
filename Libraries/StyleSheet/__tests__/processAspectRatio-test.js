@@ -47,4 +47,11 @@ describe('processAspectRatio', () => {
     expect(() => processAspectRatio('1 / 1 1')).toThrowErrorMatchingSnapshot();
     expect(() => processAspectRatio('auto 1/1')).toThrowErrorMatchingSnapshot();
   });
+
+  it('should not accept non number | string type', () => {
+    const invalidThings = [undefined, null];
+    invalidThings.forEach(thing => {
+      expect(processAspectRatio(thing)).toBe(undefined);
+    });
+  });
 });
