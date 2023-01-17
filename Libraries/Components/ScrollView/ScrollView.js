@@ -311,24 +311,6 @@ type IOSProps = $ReadOnly<{|
    */
   pinchGestureEnabled?: ?boolean,
   /**
-   * This controls how often the scroll event will be fired while scrolling
-   * (as a time interval in ms). A lower number yields better accuracy for code
-   * that is tracking the scroll position, but can lead to scroll performance
-   * problems due to the volume of information being send over the bridge.
-   *
-   * Values between 0 and 17ms indicate 60fps updates are needed and throttling
-   * will be disabled.
-   *
-   * If you do not need precise scroll position tracking, set this value higher
-   * to limit the information being sent across the bridge.
-   *
-   * The default value is zero, which results in the scroll event being sent only
-   * once each time the view is scrolled.
-   *
-   * @platform ios
-   */
-  scrollEventThrottle?: ?number,
-  /**
    * The amount by which the scroll view indicators are inset from the edges
    * of the scroll view. This should normally be set to the same value as
    * the `contentInset`. Defaults to `{0, 0, 0, 0}`.
@@ -569,7 +551,6 @@ export type Props = $ReadOnly<{|
    * Note: Vertical pagination is not supported on Android.
    */
   pagingEnabled?: ?boolean,
-
   /**
    * When false, the view cannot be scrolled via touch interaction.
    * The default value is true.
@@ -577,6 +558,22 @@ export type Props = $ReadOnly<{|
    * Note that the view can always be scrolled by calling `scrollTo`.
    */
   scrollEnabled?: ?boolean,
+  /**
+   * This controls how often the scroll event will be fired while scrolling
+   * (as a time interval in ms). A lower number yields better accuracy for code
+   * that is tracking the scroll position, but can lead to scroll performance
+   * problems due to the volume of information being send over the bridge.
+   *
+   * Values between 0 and 17ms indicate 60fps updates are needed and throttling
+   * will be disabled.
+   *
+   * If you do not need precise scroll position tracking, set this value higher
+   * to limit the information being sent across the bridge.
+   *
+   * The default value is zero, which results in the scroll event being sent only
+   * once each time the view is scrolled.
+   */
+  scrollEventThrottle?: ?number,
   /**
    * When true, shows a vertical scroll indicator.
    * The default value is true.

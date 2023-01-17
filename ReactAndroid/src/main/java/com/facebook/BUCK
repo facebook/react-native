@@ -2,7 +2,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_libra
 
 rn_android_library(
     name = "yoga",
-    srcs = glob(["yoga/*.java"]),
+    srcs = glob(["yoga/**/*.java"]),
     autoglob = False,
     language = "JAVA",
     visibility = ["PUBLIC"],

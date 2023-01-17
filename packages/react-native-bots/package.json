@@ -4,7 +4,7 @@
   "private": true,
   "devDependencies": {
     "@seadub/danger-plugin-eslint": "^3.0.2",
-    "danger": "^11.0.2",
+    "danger": "^11.2.1",
     "eslint": "^8.19.0",
     "lodash.includes": "^4.3.0",
     "minimatch": "^3.0.4"

@@ -54,6 +54,11 @@ class TextInputEventEmitter : public ViewEventEmitter {
       std::string const &name,
       TextInputMetrics const &textInputMetrics,
       EventPriority priority = EventPriority::AsynchronousBatched) const;
+
+  void dispatchTextInputContentSizeChangeEvent(
+      std::string const &name,
+      TextInputMetrics const &textInputMetrics,
+      EventPriority priority = EventPriority::AsynchronousBatched) const;
 };
 
 } // namespace react
