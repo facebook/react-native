@@ -362,6 +362,7 @@ describe('emitPromise', () => {
       /* aliasMap: {...NativeModuleAliasMap} */
       {},
       /* tryParse: ParserErrorCapturer */
+      // $FlowFixMe[missing-local-annot]
       function <T>(_: () => T) {
         return null;
       },
