@@ -115,7 +115,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:6.1
+      - image: reactnativecommunity/react-native-android:6.2
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
