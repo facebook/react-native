@@ -1,4 +1,9 @@
+<!-- !!!!FILLING OUT THIS TEMPLATE COMPLETELY AND WITH GOOD QUALITY IS MANDATORY!!!! -->
+
 <!-- Thanks for submitting a pull request! We appreciate you spending the time to work on these changes. Please provide enough information so that others can review your pull request. The three fields below are mandatory. -->
+
+# Upstream PR Link
+<!-- For the Expensify fork of React-Native, every PR should also be made to the upstream source of React-Native. Provide a link to that PR here. If there is no upstream PR, write a good and detailed explanation of why. -->
 
 ## Summary
 
