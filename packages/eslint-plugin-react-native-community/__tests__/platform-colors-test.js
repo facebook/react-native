@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
  * @format
+ * @oncall react_native
  */
 
 'use strict';
@@ -22,6 +22,7 @@ eslintTester.run('../platform-colors', rule, {
     "const color = PlatformColor('controlAccentColor', 'controlColor');",
     "const color = DynamicColorIOS({light: 'black', dark: 'white'});",
     "const color = DynamicColorIOS({light: PlatformColor('black'), dark: PlatformColor('white')});",
+    "const color = DynamicColorIOS({light: PlatformColor('black'), dark: PlatformColor('white'), highContrastLight: PlatformColor('black'), highContrastDark: PlatformColor('white')});",
   ],
   invalid: [
     {
@@ -38,11 +39,11 @@ eslintTester.run('../platform-colors', rule, {
     },
     {
       code: "const black = 'black'; const color = DynamicColorIOS({light: black, dark: 'white'});",
-      errors: [{message: rule.meta.messages.dynamicColorIOSLight}],
+      errors: [{message: rule.meta.messages.dynamicColorIOSValue}],
     },
     {
       code: "const white = 'white'; const color = DynamicColorIOS({light: 'black', dark: white});",
-      errors: [{message: rule.meta.messages.dynamicColorIOSDark}],
+      errors: [{message: rule.meta.messages.dynamicColorIOSValue}],
     },
   ],
 });

@@ -32,6 +32,17 @@ public class ReactFeatureFlags {
   public static volatile boolean enableFabricRenderer = false;
 
   /**
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
+   * the following flags: `useTurboModules` & `enableFabricRenderer`.
+   */
+  public static boolean enableBridgelessArchitecture = false;
+
+  /**
+   * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
+   */
+  public static volatile boolean enableBridgelessArchitectureSoftExceptions = false;
+
+  /**
    * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
    * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
    * is used.
@@ -64,41 +75,52 @@ public class ReactFeatureFlags {
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
-  public static boolean enableRuntimeScheduler = false;
-
-  public static boolean enableRuntimeSchedulerInTurboModule = false;
-
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 
-  private static boolean mapBufferSerializationEnabled = false;
+  /* Enables or disables MapBuffer use in Props infrastructure. */
+  public static boolean useMapBufferProps = false;
 
-  /** Enables or disables MapBuffer Serialization */
-  public static void setMapBufferSerializationEnabled(boolean enabled) {
-    mapBufferSerializationEnabled = enabled;
-  }
-
-  public static boolean isMapBufferSerializationEnabled() {
-    return mapBufferSerializationEnabled;
-  }
+  /** Enables or disables calculation of Transformed Frames */
+  public static boolean calculateTransformedFramesEnabled = false;
 
   /** Feature Flag to use overflowInset values provided by Yoga */
-  private static boolean useOverflowInset = false;
+  public static boolean useOverflowInset = false;
 
-  public static void setUseOverflowInset(boolean enabled) {
-    useOverflowInset = enabled;
-  }
+  public static boolean dispatchPointerEvents = false;
 
-  public static boolean doesUseOverflowInset() {
-    return useOverflowInset;
-  }
+  /** Feature Flag to enable the pending event queue in fabric before mounting views */
+  public static boolean enableFabricPendingEventQueue = false;
 
-  public static boolean enableLockFreeEventDispatcher = false;
+  /**
+   * Feature flag that controls how turbo modules are exposed to JS
+   *
+   * <ul>
+   *   <li>0 = as a HostObject
+   *   <li>1 = as a plain object, backed with a HostObject as prototype
+   *   <li>2 = as a plain object, with all methods eagerly configured
+   * </ul>
+   */
+  public static int turboModuleBindingMode = 0;
 
-  public static boolean enableAggressiveEventEmitterCleanup = false;
+  /**
+   * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
+   */
+  public static boolean enableViewRecycling = false;
 
-  public static boolean insertZReorderBarriersOnViewGroupChildren = true;
+  /**
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+   */
+  public static boolean enableCppPropsIteratorSetter = false;
 
-  /** TODO: T103427072 Delete ReactFeatureFlags.enableNestedTextOnPressEventFix */
-  public static boolean enableNestedTextOnPressEventFix = true;
+  /**
+   * Allow Differentiator.cpp and FabricMountingManager.cpp to generate a RemoveDeleteTree mega-op.
+   */
+  public static boolean enableRemoveDeleteTreeInstruction = false;
+
+  /** Temporary flag to allow execution of mount items up to 15ms earlier than normal. */
+  public static boolean enableEarlyScheduledMountItemExecution = false;
+
+  // TODO (T136375139): Remove this once finish testing
+  public static boolean enableAtomicRegisterSegment = false;
 }

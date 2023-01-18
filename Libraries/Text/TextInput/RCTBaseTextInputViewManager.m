@@ -13,8 +13,8 @@
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTUIManager.h>
-#import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
+#import <React/RCTUIManagerUtils.h>
 
 #import <React/RCTBaseTextInputShadowView.h>
 #import <React/RCTBaseTextInputView.h>
@@ -27,8 +27,7 @@
 
 @end
 
-@implementation RCTBaseTextInputViewManager
-{
+@implementation RCTBaseTextInputViewManager {
   NSHashTable<RCTBaseTextInputShadowView *> *_shadowViews;
 }
 
@@ -55,7 +54,7 @@ RCT_REMAP_NOT_OSX_VIEW_PROPERTY(caretHidden, backedTextInputView.caretHidden, BO
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UITextFieldViewMode) // [macOS]
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BOOL) // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(autoFocus, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(submitBehavior, NSString)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(keyboardType, backedTextInputView.keyboardType, UIKeyboardType) // [macOS]
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(showSoftInputOnFocus, BOOL) // [macOS]
@@ -94,16 +93,17 @@ RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(multiline, BOOL, RCTUIView) // [macOS]
 {
   // No op.
-  // This View Manager doesn't use this prop but it must be exposed here via ViewConfig to enable Fabric component use it.
+  // This View Manager doesn't use this prop but it must be exposed here via ViewConfig to enable Fabric component use
+  // it.
 }
 
 - (RCTShadowView *)shadowView
 {
   RCTBaseTextInputShadowView *shadowView = [[RCTBaseTextInputShadowView alloc] initWithBridge:self.bridge];
 #if !TARGET_OS_OSX // [macOS]
-  shadowView.textAttributes.fontSizeMultiplier = [[[self.bridge
-                                                    moduleForName:@"AccessibilityManager"
-                                                    lazilyLoadIfNecessary:YES] valueForKey:@"multiplier"] floatValue];
+  shadowView.textAttributes.fontSizeMultiplier =
+      [[[self.bridge moduleForName:@"AccessibilityManager"
+             lazilyLoadIfNecessary:YES] valueForKey:@"multiplier"] floatValue];
 #endif // [macOS]
   [_shadowViews addObject:shadowView];
   return shadowView;
@@ -122,7 +122,7 @@ RCT_CUSTOM_VIEW_PROPERTY(multiline, BOOL, RCTUIView) // [macOS]
                                            selector:@selector(handleDidUpdateMultiplierNotification)
                                                name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
                                              object:[bridge moduleForName:@"AccessibilityManager"
-                                                    lazilyLoadIfNecessary:YES]];
+                                                        lazilyLoadIfNecessary:YES]];
 #endif // [macOS]
 }
 
@@ -142,11 +142,12 @@ RCT_EXPORT_METHOD(blur : (nonnull NSNumber *)viewTag)
   }];
 }
 
-RCT_EXPORT_METHOD(setTextAndSelection : (nonnull NSNumber *)viewTag
-                 mostRecentEventCount : (NSInteger)mostRecentEventCount
-                                value : (NSString *)value
-                                start : (NSInteger)start
-                                  end : (NSInteger)end)
+RCT_EXPORT_METHOD(setTextAndSelection
+                  : (nonnull NSNumber *)viewTag mostRecentEventCount
+                  : (NSInteger)mostRecentEventCount value
+                  : (NSString *)value start
+                  : (NSInteger)start end
+                  : (NSInteger)end)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
     RCTBaseTextInputView *view = (RCTBaseTextInputView *)viewRegistry[viewTag];
@@ -155,7 +156,8 @@ RCT_EXPORT_METHOD(setTextAndSelection : (nonnull NSNumber *)viewTag
       return;
     }
     RCTExecuteOnUIManagerQueue(^{
-      RCTBaseTextInputShadowView *shadowView = (RCTBaseTextInputShadowView *)[self.bridge.uiManager shadowViewForReactTag:viewTag];
+      RCTBaseTextInputShadowView *shadowView =
+          (RCTBaseTextInputShadowView *)[self.bridge.uiManager shadowViewForReactTag:viewTag];
       if (value) {
         [shadowView setText:value];
       }
@@ -180,8 +182,8 @@ RCT_EXPORT_METHOD(setTextAndSelection : (nonnull NSNumber *)viewTag
 
 - (void)handleDidUpdateMultiplierNotification
 {
-  CGFloat fontSizeMultiplier = [[[self.bridge moduleForName:@"AccessibilityManager"]
-                                 valueForKey:@"multiplier"] floatValue];
+  CGFloat fontSizeMultiplier =
+      [[[self.bridge moduleForName:@"AccessibilityManager"] valueForKey:@"multiplier"] floatValue];
 
   NSHashTable<RCTBaseTextInputShadowView *> *shadowViews = _shadowViews;
   RCTExecuteOnUIManagerQueue(^{

@@ -2837,6 +2837,101 @@ TEST(ConnectionTests, heapSnapshotRemoteObject) {
   expectNotification<m::debugger::ResumedNotification>(conn);
 }
 
+TEST(ConnectionTests, testBasicProfilerOperation) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SamplingProfilerRAII spRegistration(asyncRuntime);
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  asyncRuntime.executeScriptAsync(R"(
+      while(!shouldStop());
+  )");
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // Start the sampling profiler. At this point it is not safe to manipulate the
+  // VM, so...
+  send<m::profiler::StartRequest>(conn, msgId++);
+
+  // Disable the debugger.
+  send<m::debugger::DisableRequest>(conn, msgId++);
+
+  // Keep the profiler running for a small amount of time to allow for some
+  // samples to be collected.
+  std::this_thread::sleep_for(500ms);
+
+  // Finally, re-enable the debugger in order to stop profiling.
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+
+  // Being re-attached to the VM, send the stop sampling profile request.
+  {
+    auto resp = send<m::profiler::StopRequest, m::profiler::StopResponse>(
+        conn, msgId++);
+
+    const m::profiler::Profile &profile = resp.profile;
+    EXPECT_GT(profile.nodes.size(), 0);
+    EXPECT_LT(profile.startTime, profile.endTime);
+    ASSERT_TRUE(profile.samples);
+    EXPECT_FALSE(profile.samples->empty());
+    ASSERT_TRUE(profile.timeDeltas);
+    EXPECT_EQ(profile.samples->size(), profile.timeDeltas->size());
+  }
+
+  asyncRuntime.stop();
+}
+
+TEST(ConnectionTests, testGlobalLexicalScopeNames) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+  asyncRuntime.executeScriptAsync(R"(
+    let globalLet = "let";
+    const globalConst = "const";
+    var globalVar = "var";
+
+    let func1 = () => {
+      let local1 = 111;
+      func2();
+    }
+
+    function func2() {
+      let func3 = () => {
+        let local3 = 333;
+        debugger;
+      }
+
+      let local2 = 222;
+      func3();
+    }
+
+    func1();
+  )");
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+  expectNotification<m::debugger::PausedNotification>(conn);
+
+  m::runtime::GlobalLexicalScopeNamesRequest req;
+  req.id = msgId;
+  req.executionContextId = 1;
+  conn.send(req.toJson());
+
+  auto resp =
+      expectResponse<m::runtime::GlobalLexicalScopeNamesResponse>(conn, msgId);
+  EXPECT_EQ(resp.id, msgId++);
+  std::sort(resp.names.begin(), resp.names.end());
+  std::vector<std::string> expectedNames{"func1", "globalConst", "globalLet"};
+  EXPECT_EQ(resp.names, expectedNames);
+
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
 } // namespace chrome
 } // namespace inspector
 } // namespace hermes

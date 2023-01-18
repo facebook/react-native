@@ -201,4 +201,6 @@ RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(
     NSString const *commandName,
     NSString const *argPos);
 
+RCT_EXTERN BOOL RCTIsAppActive(void);
+
 NS_ASSUME_NONNULL_END

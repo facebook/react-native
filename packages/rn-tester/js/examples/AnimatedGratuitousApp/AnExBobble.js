@@ -31,6 +31,7 @@ class AnExBobble extends React.Component<Object, any> {
   constructor(props: Object) {
     super(props);
     this.state = {};
+    // $FlowFixMe[prop-missing]
     this.state.bobbles = BOBBLE_SPOTS.map((_, i) => {
       return new Animated.ValueXY();
     });

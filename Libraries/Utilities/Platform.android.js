@@ -10,10 +10,10 @@
 
 import NativePlatformConstantsAndroid from './NativePlatformConstantsAndroid';
 
-export type PlatformSelectSpec<A, N, D> = {
-  android?: A,
-  native?: N,
-  default?: D,
+export type PlatformSelectSpec<T> = {
+  android?: T,
+  native?: T,
+  default?: T,
   ...
 };
 
@@ -22,6 +22,7 @@ const Platform = {
   OS: 'android',
   // $FlowFixMe[unsafe-getters-setters]
   get Version(): number {
+    // $FlowFixMe[object-this-reference]
     return this.constants.Version;
   },
   // $FlowFixMe[unsafe-getters-setters]
@@ -43,23 +44,28 @@ const Platform = {
     Brand: string,
     Manufacturer: string,
   |} {
+    // $FlowFixMe[object-this-reference]
     if (this.__constants == null) {
+      // $FlowFixMe[object-this-reference]
       this.__constants = NativePlatformConstantsAndroid.getConstants();
     }
+    // $FlowFixMe[object-this-reference]
     return this.__constants;
   },
   // $FlowFixMe[unsafe-getters-setters]
   get isTesting(): boolean {
     if (__DEV__) {
+      // $FlowFixMe[object-this-reference]
       return this.constants.isTesting;
     }
     return false;
   },
   // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean {
+    // $FlowFixMe[object-this-reference]
     return this.constants.uiMode === 'tv';
   },
-  select: <A, N, D>(spec: PlatformSelectSpec<A, N, D>): A | N | D =>
+  select: <T>(spec: PlatformSelectSpec<T>): T =>
     'android' in spec
       ? // $FlowFixMe[incompatible-return]
         spec.android

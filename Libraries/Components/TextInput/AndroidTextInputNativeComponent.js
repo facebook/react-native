@@ -8,7 +8,15 @@
  * @format
  */
 
-import type {ViewProps} from '../View/ViewPropTypes';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  ColorValue,
+  TextStyleProp,
+  ViewStyleProp,
+} from '../../StyleSheet/StyleSheet';
 import type {
   BubblingEventHandler,
   DirectEventHandler,
@@ -17,15 +25,11 @@ import type {
   Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {
-  TextStyleProp,
-  ViewStyleProp,
-  ColorValue,
-} from '../../StyleSheet/StyleSheet';
-import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
+
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 
 export type KeyboardType =
   // Cross Platform
@@ -62,6 +66,8 @@ export type ReturnKeyType =
   | 'join'
   | 'route'
   | 'yahoo';
+
+export type SubmitBehavior = 'submit' | 'blurAndSubmit' | 'newline';
 
 export type NativeProps = $ReadOnly<{|
   // This allows us to inherit everything from ViewProps except for style (see below)
@@ -517,8 +523,33 @@ export type NativeProps = $ReadOnly<{|
    * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
    * to `true` means that pressing return will blur the field and trigger the
    * `onSubmitEditing` event instead of inserting a newline into the field.
+   *
+   * @deprecated
+   * Note that `submitBehavior` now takes the place of `blurOnSubmit` and will
+   * override any behavior defined by `blurOnSubmit`.
+   * @see submitBehavior
    */
   blurOnSubmit?: ?boolean,
+
+  /**
+   * When the return key is pressed,
+   *
+   * For single line inputs:
+   *
+   * - `'newline`' defaults to `'blurAndSubmit'`
+   * - `undefined` defaults to `'blurAndSubmit'`
+   *
+   * For multiline inputs:
+   *
+   * - `'newline'` adds a newline
+   * - `undefined` defaults to `'newline'`
+   *
+   * For both single line and multiline inputs:
+   *
+   * - `'submit'` will only send a submit event and not blur the input
+   * - `'blurAndSubmit`' will both blur the input and send a submit event
+   */
+  submitBehavior?: ?SubmitBehavior,
 
   /**
    * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
@@ -593,123 +624,125 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
+export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
+  uiViewClassName: 'AndroidTextInput',
+  bubblingEventTypes: {
+    topBlur: {
+      phasedRegistrationNames: {
+        bubbled: 'onBlur',
+        captured: 'onBlurCapture',
+      },
+    },
+    topEndEditing: {
+      phasedRegistrationNames: {
+        bubbled: 'onEndEditing',
+        captured: 'onEndEditingCapture',
+      },
+    },
+    topFocus: {
+      phasedRegistrationNames: {
+        bubbled: 'onFocus',
+        captured: 'onFocusCapture',
+      },
+    },
+    topKeyPress: {
+      phasedRegistrationNames: {
+        bubbled: 'onKeyPress',
+        captured: 'onKeyPressCapture',
+      },
+    },
+    topSubmitEditing: {
+      phasedRegistrationNames: {
+        bubbled: 'onSubmitEditing',
+        captured: 'onSubmitEditingCapture',
+      },
+    },
+    topTextInput: {
+      phasedRegistrationNames: {
+        bubbled: 'onTextInput',
+        captured: 'onTextInputCapture',
+      },
+    },
+  },
+  directEventTypes: {
+    topScroll: {
+      registrationName: 'onScroll',
+    },
+  },
+  validAttributes: {
+    maxFontSizeMultiplier: true,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: true,
+    autoFocus: true,
+    placeholder: true,
+    inlineImagePadding: true,
+    contextMenuHidden: true,
+    textShadowColor: {process: require('../../StyleSheet/processColor')},
+    maxLength: true,
+    selectTextOnFocus: true,
+    textShadowRadius: true,
+    underlineColorAndroid: {
+      process: require('../../StyleSheet/processColor'),
+    },
+    textDecorationLine: true,
+    submitBehavior: true,
+    textAlignVertical: true,
+    fontStyle: true,
+    textShadowOffset: true,
+    selectionColor: {process: require('../../StyleSheet/processColor')},
+    selection: true,
+    placeholderTextColor: {process: require('../../StyleSheet/processColor')},
+    importantForAutofill: true,
+    lineHeight: true,
+    textTransform: true,
+    returnKeyType: true,
+    keyboardType: true,
+    multiline: true,
+    color: {process: require('../../StyleSheet/processColor')},
+    autoComplete: true,
+    numberOfLines: true,
+    letterSpacing: true,
+    returnKeyLabel: true,
+    fontSize: true,
+    onKeyPress: true,
+    cursorColor: {process: require('../../StyleSheet/processColor')},
+    text: true,
+    showSoftInputOnFocus: true,
+    textAlign: true,
+    autoCapitalize: true,
+    autoCorrect: true,
+    caretHidden: true,
+    secureTextEntry: true,
+    textBreakStrategy: true,
+    onScroll: true,
+    onContentSizeChange: true,
+    disableFullscreenUI: true,
+    includeFontPadding: true,
+    fontWeight: true,
+    fontFamily: true,
+    allowFontScaling: true,
+    onSelectionChange: true,
+    mostRecentEventCount: true,
+    inlineImageLeft: true,
+    editable: true,
+    fontVariant: true,
+    borderBottomRightRadius: true,
+    borderBottomColor: {process: require('../../StyleSheet/processColor')},
+    borderRadius: true,
+    borderRightColor: {process: require('../../StyleSheet/processColor')},
+    borderColor: {process: require('../../StyleSheet/processColor')},
+    borderTopRightRadius: true,
+    borderStyle: true,
+    borderBottomLeftRadius: true,
+    borderLeftColor: {process: require('../../StyleSheet/processColor')},
+    borderTopLeftRadius: true,
+    borderTopColor: {process: require('../../StyleSheet/processColor')},
+  },
+};
+
 let AndroidTextInputNativeComponent = NativeComponentRegistry.get<NativeProps>(
   'AndroidTextInput',
-  () => ({
-    uiViewClassName: 'AndroidTextInput',
-    bubblingEventTypes: {
-      topBlur: {
-        phasedRegistrationNames: {
-          bubbled: 'onBlur',
-          captured: 'onBlurCapture',
-        },
-      },
-      topEndEditing: {
-        phasedRegistrationNames: {
-          bubbled: 'onEndEditing',
-          captured: 'onEndEditingCapture',
-        },
-      },
-      topFocus: {
-        phasedRegistrationNames: {
-          bubbled: 'onFocus',
-          captured: 'onFocusCapture',
-        },
-      },
-      topKeyPress: {
-        phasedRegistrationNames: {
-          bubbled: 'onKeyPress',
-          captured: 'onKeyPressCapture',
-        },
-      },
-      topSubmitEditing: {
-        phasedRegistrationNames: {
-          bubbled: 'onSubmitEditing',
-          captured: 'onSubmitEditingCapture',
-        },
-      },
-      topTextInput: {
-        phasedRegistrationNames: {
-          bubbled: 'onTextInput',
-          captured: 'onTextInputCapture',
-        },
-      },
-    },
-    directEventTypes: {
-      topScroll: {
-        registrationName: 'onScroll',
-      },
-    },
-    validAttributes: {
-      maxFontSizeMultiplier: true,
-      adjustsFontSizeToFit: true,
-      minimumFontScale: true,
-      autoFocus: true,
-      placeholder: true,
-      inlineImagePadding: true,
-      contextMenuHidden: true,
-      textShadowColor: {process: require('../../StyleSheet/processColor')},
-      maxLength: true,
-      selectTextOnFocus: true,
-      textShadowRadius: true,
-      underlineColorAndroid: {
-        process: require('../../StyleSheet/processColor'),
-      },
-      textDecorationLine: true,
-      blurOnSubmit: true,
-      textAlignVertical: true,
-      fontStyle: true,
-      textShadowOffset: true,
-      selectionColor: {process: require('../../StyleSheet/processColor')},
-      selection: true,
-      placeholderTextColor: {process: require('../../StyleSheet/processColor')},
-      importantForAutofill: true,
-      lineHeight: true,
-      textTransform: true,
-      returnKeyType: true,
-      keyboardType: true,
-      multiline: true,
-      color: {process: require('../../StyleSheet/processColor')},
-      autoComplete: true,
-      numberOfLines: true,
-      letterSpacing: true,
-      returnKeyLabel: true,
-      fontSize: true,
-      onKeyPress: true,
-      cursorColor: {process: require('../../StyleSheet/processColor')},
-      text: true,
-      showSoftInputOnFocus: true,
-      textAlign: true,
-      autoCapitalize: true,
-      autoCorrect: true,
-      caretHidden: true,
-      secureTextEntry: true,
-      textBreakStrategy: true,
-      onScroll: true,
-      onContentSizeChange: true,
-      disableFullscreenUI: true,
-      includeFontPadding: true,
-      fontWeight: true,
-      fontFamily: true,
-      allowFontScaling: true,
-      onSelectionChange: true,
-      mostRecentEventCount: true,
-      inlineImageLeft: true,
-      editable: true,
-      fontVariant: true,
-      borderBottomRightRadius: true,
-      borderBottomColor: {process: require('../../StyleSheet/processColor')},
-      borderRadius: true,
-      borderRightColor: {process: require('../../StyleSheet/processColor')},
-      borderColor: {process: require('../../StyleSheet/processColor')},
-      borderTopRightRadius: true,
-      borderStyle: true,
-      borderBottomLeftRadius: true,
-      borderLeftColor: {process: require('../../StyleSheet/processColor')},
-      borderTopLeftRadius: true,
-      borderTopColor: {process: require('../../StyleSheet/processColor')},
-    },
-  }),
+  () => __INTERNAL_VIEW_CONFIG,
 );
 
 // flowlint-next-line unclear-type:off

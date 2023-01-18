@@ -19,6 +19,7 @@ import ComposeAnimationsWithEasingExample from './ComposeAnimationsWithEasingExa
 import TransformBounceExample from './TransformBounceExample';
 import ComposingExample from './ComposingExample';
 import TransformStylesExample from './TransformStylesExample';
+import ColorStylesExample from './ColorStylesExample';
 
 export default ({
   framework: 'React',
@@ -31,6 +32,7 @@ export default ({
   showIndividualExamples: true,
   examples: [
     TransformStylesExample,
+    ColorStylesExample,
     FadeInViewExample,
     ComposingExample,
     EasingExample,

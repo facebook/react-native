@@ -4,6 +4,7 @@ rn_robolectric_test(
     name = "modules",
     srcs = glob(["**/*.java"]),
     contacts = ["oncall+react_native@xmail.facebook.com"],
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],
@@ -36,7 +37,6 @@ rn_robolectric_test(
         react_native_target("java/com/facebook/react/modules/dialog:dialog"),
         react_native_target("java/com/facebook/react/modules/network:network"),
         react_native_target("java/com/facebook/react/modules/share:share"),
-        react_native_target("java/com/facebook/react/modules/storage:storage"),
         react_native_target("java/com/facebook/react/modules/systeminfo:systeminfo"),
         react_native_target("java/com/facebook/react/touch:touch"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),

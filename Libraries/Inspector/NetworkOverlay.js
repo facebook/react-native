@@ -10,15 +10,17 @@
 
 'use strict';
 
-const FlatList = require('../Lists/FlatList');
-const React = require('react');
+import type {RenderItemProps} from '../Lists/VirtualizedList';
+
 const ScrollView = require('../Components/ScrollView/ScrollView');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text');
 const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
 const View = require('../Components/View/View');
-const WebSocketInterceptor = require('../WebSocket/WebSocketInterceptor');
+const FlatList = require('../Lists/FlatList');
 const XHRInterceptor = require('../Network/XHRInterceptor');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Text = require('../Text/Text');
+const WebSocketInterceptor = require('../WebSocket/WebSocketInterceptor');
+const React = require('react');
 
 const LISTVIEW_CELL_HEIGHT = 15;
 
@@ -93,14 +95,18 @@ class NetworkOverlay extends React.Component<Props, State> {
   // scroll to the bottom as new network requests come in, or if the user has
   // intentionally scrolled away from the bottom - to instead flash the scroll bar
   // and keep the current position
-  _requestsListViewScrollMetrics = {
+  _requestsListViewScrollMetrics: {
+    contentLength: number,
+    offset: number,
+    visibleLength: number,
+  } = {
     offset: 0,
     visibleLength: 0,
     contentLength: 0,
   };
 
   // Map of `socketId` -> `index in `this.state.requests`.
-  _socketIdMap = {};
+  _socketIdMap: {[string]: number} = {};
   // Map of `xhr._index` -> `index in `this.state.requests`.
   _xhrIdMap: {[key: number]: number, ...} = {};
 
@@ -145,7 +151,7 @@ class NetworkOverlay extends React.Component<Props, State> {
       this.setState(({requests}) => {
         const networkRequestInfo = requests[xhrIndex];
         if (!networkRequestInfo.requestHeaders) {
-          networkRequestInfo.requestHeaders = {};
+          networkRequestInfo.requestHeaders = ({}: {[any]: any});
         }
         networkRequestInfo.requestHeaders[header] = value;
         return {requests};
@@ -326,7 +332,10 @@ class NetworkOverlay extends React.Component<Props, State> {
     WebSocketInterceptor.disableInterception();
   }
 
-  _renderItem = ({item, index}): React.Element<any> => {
+  _renderItem = ({
+    item,
+    index,
+  }: RenderItemProps<NetworkRequestInfo>): React.Element<any> => {
     const tableRowViewStyle = [
       styles.tableRow,
       index % 2 === 1 ? styles.tableRowOdd : styles.tableRowEven,
@@ -358,7 +367,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     );
   };
 
-  _renderItemDetail(id) {
+  _renderItemDetail(id: number): React.Node {
     const requestItem = this.state.requests[id];
     const details = Object.keys(requestItem).map(key => {
       if (key === 'id') {

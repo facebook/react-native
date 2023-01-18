@@ -42,7 +42,7 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   static jni::local_ref<jhybridobject> createWithContents(folly::dynamic &&map);
 
   static void mapException(const std::exception &ex);
-
+  static void mapException(std::exception_ptr ex);
   static void registerNatives();
 
   using HybridBase::HybridBase;

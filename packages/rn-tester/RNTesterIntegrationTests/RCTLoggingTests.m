@@ -11,6 +11,9 @@
 #import <React/RCTBridge.h>
 #import <React/RCTLog.h>
 
+// Time to wait for an expected log statement to show before failing the test
+const int64_t LOGGER_TIMEOUT = 10 * NSEC_PER_SEC;
+
 @interface RCTLoggingTests : XCTestCase
 
 @end
@@ -50,8 +53,8 @@
   XCTAssertFalse(_bridge.loading);
 
   _logSem = dispatch_semaphore_create(0);
-}
 
+<<<<<<< HEAD
 - (void)tearDown
 {
   [_bridge invalidate];
@@ -70,6 +73,26 @@
   // Spin native layer for 1.9 sec
   [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.9]];
   // Now set the log function to signal the semaphore
+||||||| 49f3f47b1e9
+- (void)tearDown
+{
+  [_bridge invalidate];
+  _bridge = nil;
+
+  RCTSetLogFunction(RCTDefaultLogFunction);
+}
+
+- (void)testLogging
+{
+  // First console log call will fire after 2.0 sec, to allow for any initial log messages
+  // that might come in (seeing this in tvOS)
+  [_bridge enqueueJSCall:@"LoggingTestModule.logToConsoleAfterWait" args:@[ @"Invoking console.log", @2000 ]];
+  // Spin native layer for 1.9 sec
+  [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.9]];
+  // Now set the log function to signal the semaphore
+=======
+  // Set the log function to signal the semaphore
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
   RCTSetLogFunction(
       ^(RCTLogLevel level,
         RCTLogSource source,
@@ -83,33 +106,98 @@
           dispatch_semaphore_signal(self->_logSem);
         }
       });
+<<<<<<< HEAD
   // Wait for console log to signal the semaphore
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
+||||||| 49f3f47b1e9
+  // Wait for console log to signal the semaphore
+  dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+=======
+}
+
+- (void)tearDown
+{
+  [_bridge invalidate];
+  _bridge = nil;
+
+  RCTSetLogFunction(RCTDefaultLogFunction);
+}
+
+- (void)testLogging
+{
+  intptr_t waitRet = 0;
+
+  // First queue the marker and spin until it happens to be logged.
+  // This is to ensure we skip all of the other messages, that were logged earlier.
+  NSString *const LogMarker = @"===LOG_MARKER===";
+  [_bridge enqueueJSCall:@"LoggingTestModule.logToConsole" args:@[ LogMarker ]];
+
+  do {
+    waitRet = dispatch_semaphore_wait(_logSem, dispatch_time(DISPATCH_TIME_NOW, LOGGER_TIMEOUT));
+    XCTAssertEqual(waitRet, 0, @"Timed out waiting for log marker");
+  } while (waitRet == 0 && ![_lastLogMessage isEqualToString:LogMarker]);
+
+  [_bridge enqueueJSCall:@"LoggingTestModule.logToConsole" args:@[ @"Invoking console.log" ]];
+  waitRet = dispatch_semaphore_wait(_logSem, dispatch_time(DISPATCH_TIME_NOW, LOGGER_TIMEOUT));
+  XCTAssertEqual(waitRet, 0, @"Timed out waiting for logToConsole");
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelInfo);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertEqualObjects(_lastLogMessage, @"Invoking console.log");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.warning" args:@[ @"Generating warning" ]];
+<<<<<<< HEAD
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
+||||||| 49f3f47b1e9
+  dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+=======
+  waitRet = dispatch_semaphore_wait(_logSem, dispatch_time(DISPATCH_TIME_NOW, LOGGER_TIMEOUT));
+  XCTAssertEqual(waitRet, 0, @"Timed out waiting for warning");
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelWarning);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertEqualObjects(_lastLogMessage, @"Generating warning");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.invariant" args:@[ @"Invariant failed" ]];
+<<<<<<< HEAD
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
+||||||| 49f3f47b1e9
+  dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+=======
+  waitRet = dispatch_semaphore_wait(_logSem, dispatch_time(DISPATCH_TIME_NOW, LOGGER_TIMEOUT));
+  XCTAssertEqual(waitRet, 0, @"Timed out waiting for invariant");
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertTrue([_lastLogMessage containsString:@"Invariant Violation: Invariant failed"]);
 
   [_bridge enqueueJSCall:@"LoggingTestModule.logErrorToConsole" args:@[ @"Invoking console.error" ]];
+<<<<<<< HEAD
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
+||||||| 49f3f47b1e9
+  dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+=======
+  waitRet = dispatch_semaphore_wait(_logSem, dispatch_time(DISPATCH_TIME_NOW, LOGGER_TIMEOUT));
+  XCTAssertEqual(waitRet, 0, @"Timed out waiting for logErrorToConsole");
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 
+<<<<<<< HEAD
   // For local bundles, we'll first get a warning about symbolication
   if ([_bridge.bundleURL isFileURL]) {
     dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
+||||||| 49f3f47b1e9
+  // For local bundles, we'll first get a warning about symbolication
+  if ([_bridge.bundleURL isFileURL]) {
+    dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+=======
+  // For local bundles, we may first get a warning about symbolication
+  if (![_lastLogMessage isEqualToString:@"Invoking console.error"]) {
+    waitRet = dispatch_semaphore_wait(_logSem, dispatch_time(DISPATCH_TIME_NOW, LOGGER_TIMEOUT));
+    XCTAssertEqual(waitRet, 0, @"Timed out waiting for logErrorToConsole #2");
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
   }
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
@@ -117,11 +205,29 @@
   XCTAssertEqualObjects(_lastLogMessage, @"Invoking console.error");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.throwError" args:@[ @"Throwing an error" ]];
+<<<<<<< HEAD
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
+||||||| 49f3f47b1e9
+  dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+=======
+  waitRet = dispatch_semaphore_wait(_logSem, dispatch_time(DISPATCH_TIME_NOW, LOGGER_TIMEOUT));
+  XCTAssertEqual(waitRet, 0, @"Timed out waiting for throwError");
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 
+<<<<<<< HEAD
   // For local bundles, we'll first get a warning about symbolication
   if ([_bridge.bundleURL isFileURL]) {
     dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // [macOS]
+||||||| 49f3f47b1e9
+  // For local bundles, we'll first get a warning about symbolication
+  if ([_bridge.bundleURL isFileURL]) {
+    dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+=======
+  // For local bundles, we may first get a warning about symbolication
+  if (![_lastLogMessage containsString:@"Error: Throwing an error"]) {
+    waitRet = dispatch_semaphore_wait(_logSem, dispatch_time(DISPATCH_TIME_NOW, LOGGER_TIMEOUT));
+    XCTAssertEqual(waitRet, 0, @"Timed out waiting for throwError #2");
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
   }
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);

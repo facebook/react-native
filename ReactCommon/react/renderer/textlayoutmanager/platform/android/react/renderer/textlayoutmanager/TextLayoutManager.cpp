@@ -9,18 +9,144 @@
 
 #include <limits>
 
+#include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/conversions.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
-#include <react/utils/LayoutManager.h>
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-TextLayoutManager::~TextLayoutManager() = default;
+Size measureAndroidComponent(
+    ContextContainer::Shared const &contextContainer,
+    Tag rootTag,
+    std::string const &componentName,
+    folly::dynamic localData,
+    folly::dynamic props,
+    folly::dynamic state,
+    float minWidth,
+    float maxWidth,
+    float minHeight,
+    float maxHeight,
+    jfloatArray attachmentPositions) {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
+
+  static auto measure =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jlong(
+              jint,
+              jstring,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloatArray)>("measure");
+
+  auto componentNameRef = make_jstring(componentName);
+  local_ref<ReadableNativeMap::javaobject> localDataRNM =
+      ReadableNativeMap::newObjectCxxArgs(std::move(localData));
+  local_ref<ReadableNativeMap::javaobject> propsRNM =
+      ReadableNativeMap::newObjectCxxArgs(std::move(props));
+  local_ref<ReadableNativeMap::javaobject> stateRNM =
+      ReadableNativeMap::newObjectCxxArgs(std::move(state));
+
+  local_ref<ReadableMap::javaobject> localDataRM =
+      make_local(reinterpret_cast<ReadableMap::javaobject>(localDataRNM.get()));
+  local_ref<ReadableMap::javaobject> propsRM =
+      make_local(reinterpret_cast<ReadableMap::javaobject>(propsRNM.get()));
+  local_ref<ReadableMap::javaobject> stateRM =
+      make_local(reinterpret_cast<ReadableMap::javaobject>(stateRNM.get()));
+
+  auto size = yogaMeassureToSize(measure(
+      fabricUIManager,
+      rootTag,
+      componentNameRef.get(),
+      localDataRM.get(),
+      propsRM.get(),
+      stateRM.get(),
+      minWidth,
+      maxWidth,
+      minHeight,
+      maxHeight,
+      attachmentPositions));
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentNameRef.reset();
+  localDataRM.reset();
+  localDataRNM.reset();
+  propsRM.reset();
+  propsRNM.reset();
+  stateRM.reset();
+  stateRNM.reset();
+
+  return size;
+}
+
+Size measureAndroidComponentMapBuffer(
+    const ContextContainer::Shared &contextContainer,
+    Tag rootTag,
+    std::string const &componentName,
+    MapBuffer localData,
+    MapBuffer props,
+    float minWidth,
+    float maxWidth,
+    float minHeight,
+    float maxHeight,
+    jfloatArray attachmentPositions) {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
+  auto componentNameRef = make_jstring(componentName);
+
+  static auto measure =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jlong(
+              jint,
+              jstring,
+              JReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloatArray)>("measureMapBuffer");
+
+  auto localDataMap =
+      JReadableMapBuffer::createWithContents(std::move(localData));
+  auto propsMap = JReadableMapBuffer::createWithContents(std::move(props));
+
+  auto size = yogaMeassureToSize(measure(
+      fabricUIManager,
+      rootTag,
+      componentNameRef.get(),
+      localDataMap.get(),
+      propsMap.get(),
+      nullptr,
+      minWidth,
+      maxWidth,
+      minHeight,
+      maxHeight,
+      attachmentPositions));
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentNameRef.reset();
+  localDataMap.reset();
+  propsMap.reset();
+  return size;
+}
+
+TextLayoutManager::TextLayoutManager(
+    const ContextContainer::Shared &contextContainer)
+    : contextContainer_(contextContainer),
+      measureCache_(kSimpleThreadSafeCacheSizeCap) {}
 
 void *TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;
@@ -34,19 +160,16 @@ TextMeasurement TextLayoutManager::measure(
 
   auto measurement = measureCache_.get(
       {attributedString, paragraphAttributes, layoutConstraints},
-      [&](TextMeasureCacheKey const &key) {
+      [&](TextMeasureCacheKey const & /*key*/) {
         auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-        if (telemetry) {
+        if (telemetry != nullptr) {
           telemetry->willMeasureText();
         }
 
-        auto measurement = mapBufferSerializationEnabled_
-            ? doMeasureMapBuffer(
-                  attributedString, paragraphAttributes, layoutConstraints)
-            : doMeasure(
-                  attributedString, paragraphAttributes, layoutConstraints);
+        auto measurement = doMeasureMapBuffer(
+            attributedString, paragraphAttributes, layoutConstraints);
 
-        if (telemetry) {
+        if (telemetry != nullptr) {
           telemetry->didMeasureText();
         }
 
@@ -73,7 +196,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
       contextContainer_,
       -1, // TODO: we should pass rootTag in
       "RCTText",
-      cacheIdMap,
+      std::move(cacheIdMap),
       toDynamic(paragraphAttributes),
       nullptr,
       minimumSize.width,
@@ -96,74 +219,20 @@ LinesMeasurements TextLayoutManager::measureLines(
     AttributedString const &attributedString,
     ParagraphAttributes const &paragraphAttributes,
     Size size) const {
-  if (mapBufferSerializationEnabled_) {
-    return measureLinesMapBuffer(attributedString, paragraphAttributes, size);
-  }
-
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
   static auto measureLines =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<NativeArray::javaobject(
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              jfloat,
-              jfloat)>("measureLines");
-
-  auto serializedAttributedString = toDynamic(attributedString);
-
-  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
-      ReadableNativeMap::newObjectCxxArgs(serializedAttributedString);
-  local_ref<ReadableNativeMap::javaobject> paragraphAttributesRNM =
-      ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes));
-
-  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
-      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
-  local_ref<ReadableMap::javaobject> paragraphAttributesRM = make_local(
-      reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
-
-  auto array = measureLines(
-      fabricUIManager,
-      attributedStringRM.get(),
-      paragraphAttributesRM.get(),
-      size.width,
-      size.height);
-
-  auto dynamicArray = cthis(array)->consume();
-  LinesMeasurements lineMeasurements;
-  lineMeasurements.reserve(dynamicArray.size());
-
-  for (auto const &data : dynamicArray) {
-    lineMeasurements.push_back(LineMeasurement(data));
-  }
-
-  // Explicitly release smart pointers to free up space faster in JNI tables
-  attributedStringRM.reset();
-  attributedStringRNM.reset();
-  paragraphAttributesRM.reset();
-  paragraphAttributesRNM.reset();
-
-  return lineMeasurements;
-}
-
-LinesMeasurements TextLayoutManager::measureLinesMapBuffer(
-    AttributedString const &attributedString,
-    ParagraphAttributes const &paragraphAttributes,
-    Size size) const {
-  const jni::global_ref<jobject> &fabricUIManager =
-      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-  static auto measureLines =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-          ->getMethod<NativeArray::javaobject(
-              ReadableMapBuffer::javaobject,
-              ReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
               jfloat,
               jfloat)>("measureLinesMapBuffer");
 
   auto attributedStringMB =
-      ReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
+      JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
   auto paragraphAttributesMB =
-      ReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+      JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
 
   auto array = measureLines(
       fabricUIManager,
@@ -224,7 +293,7 @@ TextMeasurement TextLayoutManager::doMeasure(
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {
-    folly::dynamic fragments = serializedAttributedString["fragments"];
+    folly::dynamic const &fragments = serializedAttributedString["fragments"];
     int attachmentIndex = 0;
     for (auto const &fragment : fragments) {
       auto isAttachment = fragment.find("isAttachment");
@@ -276,8 +345,8 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
       contextContainer_,
       -1, // TODO: we should pass rootTag in
       "RCTText",
-      attributedStringMap,
-      paragraphAttributesMap,
+      std::move(attributedStringMap),
+      std::move(paragraphAttributesMap),
       minimumSize.width,
       maximumSize.width,
       minimumSize.height,
@@ -314,5 +383,4 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
   return TextMeasurement{size, attachments};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

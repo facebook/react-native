@@ -1586,6 +1586,28 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
     registrationCache[eventName] = componentName; // [macOS]
   }
 
+  // Add capturing events (added as bubbling events but with the 'skipBubbling' flag)
+  for (NSString *eventName in viewConfig[@"capturingEvents"]) {
+    if (!bubblingEvents[eventName]) {
+      NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
+      bubblingEvents[eventName] = @{
+        @"phasedRegistrationNames" : @{
+          @"bubbled" : bubbleName,
+          @"captured" : [bubbleName stringByAppendingString:@"Capture"],
+          @"skipBubbling" : @YES
+        }
+      };
+    }
+    bubblingEventTypes[eventName] = bubblingEvents[eventName];
+    if (RCT_DEBUG && directEvents[eventName]) {
+      RCTLogError(
+          @"Component '%@' re-registered direct event '%@' as a "
+           "bubbling event",
+          componentData.name,
+          eventName);
+    }
+  }
+
   return moduleConstants;
 }
 
@@ -1700,6 +1722,8 @@ static RCTPlatformView *_jsResponder; // [macOS]
 
 + (RCTPlatformView *)JSResponder // [macOS]
 {
+  RCTErrorNewArchitectureValidation(
+      RCTNotAllowedInFabricWithoutLegacy, @"RCTUIManager", @"Please migrate this legacy surface to Fabric.");
   return _jsResponder;
 }
 

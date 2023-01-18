@@ -8,22 +8,14 @@
  * @format
  */
 
-import Platform from '../../Utilities/Platform';
-import * as React from 'react';
-import View from '../View/View';
-
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+import type {SafeAreaViewType} from './SafeAreaView.flow';
 
-type Props = $ReadOnly<{|
-  ...ViewProps,
-  emulateUnlessSupported?: boolean,
-|}>;
+import Platform from '../../Utilities/Platform';
+import View from '../View/View';
+import * as React from 'react';
 
-let exported: React.AbstractComponent<
-  Props,
-  React.ElementRef<HostComponent<mixed>>,
->;
+let exported: React.AbstractComponent<ViewProps, React.ElementRef<typeof View>>;
 
 /**
  * Renders nested content and automatically applies paddings reflect the portion
@@ -34,29 +26,10 @@ let exported: React.AbstractComponent<
  * limitation of the screen, such as rounded corners or camera notches (aka
  * sensor housing area on iPhone X).
  */
-if (Platform.OS !== 'ios') {
-  // [macOS]
-  exported = React.forwardRef<Props, React.ElementRef<HostComponent<mixed>>>(
-    function SafeAreaView(props, forwardedRef) {
-      const {emulateUnlessSupported, ...localProps} = props;
-      return <View {...localProps} ref={forwardedRef} />;
-    },
-  );
+if (Platform.OS !== 'ios') { // [macOS]
+  exported = View;
 } else {
-  const RCTSafeAreaViewNativeComponent =
-    require('./RCTSafeAreaViewNativeComponent').default;
-
-  exported = React.forwardRef<Props, React.ElementRef<HostComponent<mixed>>>(
-    function SafeAreaView(props, forwardedRef) {
-      return (
-        <RCTSafeAreaViewNativeComponent
-          emulateUnlessSupported={true}
-          {...props}
-          ref={forwardedRef}
-        />
-      );
-    },
-  );
+  exported = require('./RCTSafeAreaViewNativeComponent').default;
 }
 
-export default exported;
+export default (exported: SafeAreaViewType);

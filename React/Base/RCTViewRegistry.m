@@ -42,4 +42,28 @@
   return view;
 }
 
+- (void)addUIBlock:(RCTViewRegistryUIBlock)block
+{
+  if (!block) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  if (_bridge) {
+    [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf) {
+        block(strongSelf);
+      }
+    }];
+  } else {
+    RCTExecuteOnMainQueue(^{
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf) {
+        block(strongSelf);
+      }
+    });
+  }
+}
+
 @end

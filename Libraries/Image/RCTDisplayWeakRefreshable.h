@@ -6,6 +6,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
 
 #import <React/RCTPlatformDisplayLink.h> // [macOS]
 

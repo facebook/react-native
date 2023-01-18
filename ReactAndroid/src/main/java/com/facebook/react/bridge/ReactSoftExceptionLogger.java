@@ -41,6 +41,12 @@ public class ReactSoftExceptionLogger {
   }
 
   @DoNotStrip
+  public static void logSoftExceptionVerbose(final String category, final Throwable cause) {
+    logSoftException(
+        category + "|" + cause.getClass().getSimpleName() + ":" + cause.getMessage(), cause);
+  }
+
+  @DoNotStrip
   public static void logSoftException(final String category, final Throwable cause) {
     if (sListeners.size() > 0) {
       for (ReactSoftExceptionListener listener : sListeners) {

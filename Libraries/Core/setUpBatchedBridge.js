@@ -20,19 +20,22 @@ if (global.RN$Bridgeless === true && global.RN$registerCallableModule) {
       | $TEMPORARY$string<'GlobalPerformanceLogger'>
       | $TEMPORARY$string<'HMRClient'>
       | $TEMPORARY$string<'HeapCapture'>
-      | $TEMPORARY$string<'JSDevSupportModule'>
       | $TEMPORARY$string<'JSTimers'>
       | $TEMPORARY$string<'RCTDeviceEventEmitter'>
       | $TEMPORARY$string<'RCTLog'>
       | $TEMPORARY$string<'RCTNativeAppEventEmitter'>
       | $TEMPORARY$string<'SamplingProfiler'>
       | $TEMPORARY$string<'Systrace'>,
+    /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+     * Flow's LTI update could not be added via codemod */
     factory,
   ) => BatchedBridge.registerLazyCallableModule(moduleName, factory);
 }
 
 registerModule('Systrace', () => require('../Performance/Systrace'));
-registerModule('JSTimers', () => require('./Timers/JSTimers'));
+if (!(global.RN$Bridgeless === true)) {
+  registerModule('JSTimers', () => require('./Timers/JSTimers'));
+}
 registerModule('HeapCapture', () => require('../HeapCapture/HeapCapture'));
 registerModule('SamplingProfiler', () =>
   require('../Performance/SamplingProfiler'),
@@ -48,11 +51,8 @@ registerModule('RCTNativeAppEventEmitter', () =>
 registerModule('GlobalPerformanceLogger', () =>
   require('../Utilities/GlobalPerformanceLogger'),
 );
-registerModule('JSDevSupportModule', () =>
-  require('../Utilities/JSDevSupportModule'),
-);
 
-if (__DEV__ && !global.__RCTProfileIsProfiling) {
+if (__DEV__) {
   registerModule('HMRClient', () => require('../Utilities/HMRClient'));
 } else {
   registerModule('HMRClient', () => require('../Utilities/HMRClientProdShim'));

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow strict
  */
 
 'use strict';
@@ -21,6 +21,11 @@ type ExceptionDecorator = ExceptionData => ExceptionData;
 
 let userExceptionDecorator: ?ExceptionDecorator;
 let inUserExceptionDecorator = false;
+
+// This Symbol is used to decorate an ExtendedError with extra data in select usecases.
+// Note that data passed using this method should be strictly contained,
+// as data that's not serializable/too large may cause issues with passing the error to the native code.
+const decoratedExtraDataKey: symbol = Symbol('decoratedExtraDataKey');
 
 /**
  * Allows the app to add information to the exception report before it is sent
@@ -83,6 +88,8 @@ function reportException(
     id: currentExceptionID,
     isFatal,
     extraData: {
+      // $FlowFixMe[incompatible-use] we can't define a type with a Symbol-keyed field in flow
+      ...e[decoratedExtraDataKey],
       jsEngine: e.jsEngine,
       rawStack: e.stack,
     },
@@ -144,6 +151,8 @@ function handleException(e: mixed, isFatal: boolean) {
   }
 }
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function reactConsoleErrorHandler(...args) {
   // bubble up to any original handlers
   console._errorOriginal(...args);
@@ -233,6 +242,7 @@ function installConsoleErrorReporter() {
 }
 
 module.exports = {
+  decoratedExtraDataKey,
   handleException,
   installConsoleErrorReporter,
   SyntheticError,

@@ -12,6 +12,8 @@
 
 import type {RNTesterModuleInfo} from '../types/RNTesterTypes';
 
+import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
+
 const Components: Array<RNTesterModuleInfo> = [
   {
     key: 'ActivityIndicatorExample',
@@ -272,11 +274,20 @@ const APIs: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
   {
+<<<<<<< HEAD
     key: 'Focus Ring',
     module: require('../examples/FocusRing/FocusRingExample'),
     supportsTVOS: false,
   },
   {
+||||||| 49f3f47b1e9
+=======
+    key: 'Keyboard',
+    module: require('../examples/Keyboard/KeyboardExample').default,
+    supportsTVOS: true,
+  },
+  {
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
     key: 'LayoutAnimationExample',
     module: require('../examples/Layout/LayoutAnimationExample'),
     supportsTVOS: true,
@@ -380,6 +391,14 @@ const APIs: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
 ];
+
+if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {
+  APIs.push({
+    key: 'W3C PointerEvents',
+    category: 'Experimental',
+    module: require('../examples/Experimental/W3CPointerEventsExample').default,
+  });
+}
 
 const Modules: {...} = {};
 

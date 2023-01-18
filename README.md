@@ -20,13 +20,47 @@
 
 [React Native](https://reactnative.dev) is a framework developed by Facebook that enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and [React](https://reactjs.org/). The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere.
 
+- **Declarative.** React makes it painless to create interactive UIs. Declarative views make your code more predictable and easier to debug.
+- **Component-Based.** Build encapsulated components that manage their state, then compose them to make complex UIs.
+- **Developer Velocity.** See local changes in seconds. Changes to JavaScript code can be live reloaded without rebuilding the native app.
+- **Portability.** Reuse code across iOS, Android, and [other platforms][p].
+
+React Native is developed and supported by many companies and individual core contributors. Find out more in our [ecosystem overview][e].
+
+[r]: https://reactjs.org/
+[p]: https://reactnative.dev/docs/out-of-tree-platforms
+[e]: https://github.com/facebook/react-native/blob/HEAD/ECOSYSTEM.md
+
 This repository is a working fork of **facebook/react-native** that adds support for the official React Native for macOS implementation from Microsoft.
 
-[hello-world]: https://snack.expo.io/@hramos/hello,-world!
+You can read more about the macOS implementation in our website - [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/). You can read about how we manage this fork in our [docs](docs/) folder.
+
+## Contents
+
+- [Requirements](#-requirements)
+- [Building your first React Native app](#-building-your-first-react-native-app)
+- [Documentation](#-documentation)
+- [Upgrading](#-upgrading)
+- [How to Contribute](#-how-to-contribute)
+- [Code of Conduct](#code-of-conduct)
+- [License](#-license)
+
+
+## 📋 Requirements
+
+React Native apps may target iOS 12.4 and Android 5.0 (API 21) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.dev) can be used to work around this.
+
+## 🎉 Building your first React Native app
+
+Follow the [Getting Started guide](https://reactnative.dev/docs/getting-started). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
+
+- [Trying out React Native][hello-world]
+- [Creating a New Application][new-app]
+- [Adding React Native to an Existing Application][existing]
+
+[hello-world]: https://snack.expo.dev/@hramos/hello,-world!
 [new-app]: https://reactnative.dev/docs/getting-started
 [existing]: https://reactnative.dev/docs/integration-with-existing-apps
-
-You can read more about the macOS implementation in our website - [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/). You can read about how we manage this fork in our [docs](docs/) folder.
 
 ## Requirements
 

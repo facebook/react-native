@@ -8,6 +8,7 @@
 #import "RCTViewManager.h"
 
 #import "RCTAssert.h"
+#import "RCTBorderCurve.h"
 #import "RCTBorderStyle.h"
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
@@ -74,6 +75,7 @@ RCT_MULTI_ENUM_CONVERTER(
       @"timer" : @(UIAccessibilityTraitNone),
       @"toolbar" : @(UIAccessibilityTraitNone),
       @"list" : @(UIAccessibilityTraitNone),
+      @"grid" : @(UIAccessibilityTraitNone),
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
@@ -163,6 +165,7 @@ RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibili
 #else // [macOS
 RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibilityHelp, NSString)
 #endif // macOS]
+RCT_REMAP_VIEW_PROPERTY(accessibilityLanguage, reactAccessibilityElement.accessibilityLanguage, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityValue, reactAccessibilityElement.accessibilityValueInternal, NSDictionary)
 #if !TARGET_OS_OSX // [macOS]
 RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
@@ -350,6 +353,19 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
     view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(borderCurve, RCTBorderCurve, RCTView)
+{
+  if (@available(iOS 13.0, *)) {
+    switch ([RCTConvert RCTBorderCurve:json]) {
+      case RCTBorderCurveContinuous:
+        view.layer.cornerCurve = kCACornerCurveContinuous;
+        break;
+      case RCTBorderCurveCircular:
+        view.layer.cornerCurve = kCACornerCurveCircular;
+        break;
+    }
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderRadius:)]) {
@@ -358,7 +374,7 @@ RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
     view.layer.cornerRadius = json ? [RCTConvert CGFloat:json] : defaultView.layer.cornerRadius;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(borderColor, UIColor, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderColor:)]) {
     view.borderColor = json ? [RCTConvert UIColor:json] : defaultView.borderColor;
@@ -556,6 +572,9 @@ RCT_EXPORT_SHADOW_PROPERTY(alignSelf, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(alignContent, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(position, YGPositionType)
 RCT_EXPORT_SHADOW_PROPERTY(aspectRatio, float)
+RCT_EXPORT_SHADOW_PROPERTY(rowGap, float)
+RCT_EXPORT_SHADOW_PROPERTY(columnGap, float)
+RCT_EXPORT_SHADOW_PROPERTY(gap, float)
 
 RCT_EXPORT_SHADOW_PROPERTY(overflow, YGOverflow)
 RCT_EXPORT_SHADOW_PROPERTY(display, YGDisplay)
@@ -588,5 +607,15 @@ RCT_CUSTOM_VIEW_PROPERTY(onTouchStart, BOOL, RCTView) {}
 RCT_CUSTOM_VIEW_PROPERTY(onTouchMove, BOOL, RCTView) {}
 RCT_CUSTOM_VIEW_PROPERTY(onTouchEnd, BOOL, RCTView) {}
 RCT_CUSTOM_VIEW_PROPERTY(onTouchCancel, BOOL, RCTView) {}
+
+// Experimental/WIP Pointer Events (not yet ready for use)
+RCT_EXPORT_VIEW_PROPERTY(onPointerCancel, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerDown, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerMove, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerUp, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerEnter, RCTCapturingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerLeave, RCTCapturingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerOver, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerOut, RCTBubblingEventBlock)
 
 @end

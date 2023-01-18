@@ -6,27 +6,26 @@
  *
  * @flow
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
+const setAndForwardRef = require('../setAndForwardRef');
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
-const setAndForwardRef = require('../setAndForwardRef');
-
 describe('setAndForwardRef', () => {
-  let innerFuncCalled = false;
-  let outerFuncCalled = false;
+  let innerFuncCalled: ?boolean = false;
+  let outerFuncCalled: ?boolean = false;
 
   class ForwardedComponent extends React.Component<{||}> {
-    testFunc() {
+    testFunc(): any {
       innerFuncCalled = true;
       return true;
     }
 
-    render() {
+    render(): any {
       return null;
     }
   }
@@ -38,7 +37,7 @@ describe('setAndForwardRef', () => {
 
   class TestComponent extends React.Component<Props> {
     _nativeRef: ?React.ElementRef<typeof ForwardedComponent> = null;
-    _setNativeRef = setAndForwardRef({
+    _setNativeRef: (ref: React.ElementRef<any>) => void = setAndForwardRef({
       getForwardedRef: () => this.props.forwardedRef,
       setLocalRef: ref => {
         this._nativeRef = ref;
@@ -51,7 +50,7 @@ describe('setAndForwardRef', () => {
       }
     }
 
-    render() {
+    render(): React.Node {
       return <ForwardedComponent ref={this._setNativeRef} />;
     }
   }
@@ -111,7 +110,7 @@ describe('setAndForwardRef', () => {
         /* eslint-enable react/no-string-refs */
       }
 
-      render() {
+      render(): React.Node {
         /**
          * Can't directly pass the test component to `ReactTestRenderer.create`,
          * otherwise it will throw. See:

@@ -14,6 +14,20 @@ function capitalize(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function indent(nice: string, spaces: number): string {
+  return nice
+    .split('\n')
+    .map((line, index) => {
+      if (line.length === 0 || index === 0) {
+        return line;
+      }
+      const emptySpaces = new Array(spaces + 1).join(' ');
+      return emptySpaces + line;
+    })
+    .join('\n');
+}
+
 module.exports = {
   capitalize,
+  indent,
 };

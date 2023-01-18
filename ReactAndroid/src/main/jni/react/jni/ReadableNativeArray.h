@@ -31,9 +31,11 @@ class ReadableNativeArray
       "Lcom/facebook/react/bridge/ReadableNativeArray;";
 
   static void mapException(const std::exception &ex);
+  static void mapException(std::exception_ptr ex);
+  static void registerNatives();
+
   jni::local_ref<jni::JArrayClass<jobject>> importArray();
   jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
-  static void registerNatives();
 };
 
 } // namespace react

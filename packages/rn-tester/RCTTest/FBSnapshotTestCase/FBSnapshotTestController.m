@@ -249,11 +249,18 @@ typedef NS_ENUM(NSInteger, FBTestSnapshotFileNameType) {
   if (scale > 1.0) { // macOS]
     fileName = [fileName stringByAppendingFormat:@"@%.fx", scale];
   }
+<<<<<<< HEAD
 #if TARGET_OS_TV
   fileName = [fileName stringByAppendingString:@"_tvOS"];
 #elif TARGET_OS_OSX // [macOS]
   fileName = [fileName stringByAppendingString:@"_macOS"]; // [macOS]
 #endif
+||||||| 49f3f47b1e9
+#if TARGET_OS_TV
+  fileName = [fileName stringByAppendingString:@"_tvOS"];
+#endif
+=======
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
   fileName = [fileName stringByAppendingPathExtension:@"png"];
   return fileName;
 }
@@ -339,16 +346,25 @@ typedef NS_ENUM(NSInteger, FBTestSnapshotFileNameType) {
   NSAssert1(CGRectGetWidth(bounds), @"Zero width for view %@", view);
   NSAssert1(CGRectGetHeight(bounds), @"Zero height for view %@", view);
 
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // [macOS]
   UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0);
   CGContextRef context = UIGraphicsGetCurrentContext();
   NSAssert1(context, @"Could not generate context for view %@", view);
+||||||| 49f3f47b1e9
+  UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  NSAssert1(context, @"Could not generate context for view %@", view);
+=======
+  UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
+  UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:bounds.size
+                                                                                   format:rendererFormat];
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 
-  UIGraphicsPushContext(context);
-  CGContextSaveGState(context);
-  {
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
     BOOL success = [view drawViewHierarchyInRect:bounds afterScreenUpdates:YES];
     NSAssert1(success, @"Could not create snapshot for view %@", view);
+<<<<<<< HEAD
   }
   CGContextRestoreGState(context);
   UIGraphicsPopContext();
@@ -366,6 +382,18 @@ typedef NS_ENUM(NSInteger, FBTestSnapshotFileNameType) {
 #endif // macOS]
 
   return snapshot;
+||||||| 49f3f47b1e9
+  }
+  CGContextRestoreGState(context);
+  UIGraphicsPopContext();
+
+  UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+
+  return snapshot;
+=======
+  }];
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 }
 
 @end

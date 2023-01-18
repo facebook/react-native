@@ -25,6 +25,12 @@ class TextProps : public Props, public BaseTextProps {
       const TextProps &sourceProps,
       const RawProps &rawProps);
 
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE

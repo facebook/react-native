@@ -10,6 +10,7 @@ package com.facebook.react.bridge;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.TypedValue;
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 public class ColorPropConverter {
@@ -44,27 +45,9 @@ public class ColorPropConverter {
       }
 
       for (int i = 0; i < resourcePaths.size(); i++) {
-        String resourcePath = resourcePaths.getString(i);
-
-        if (resourcePath == null || resourcePath.isEmpty()) {
-          continue;
-        }
-
-        boolean isResource = resourcePath.startsWith(PREFIX_RESOURCE);
-        boolean isThemeAttribute = resourcePath.startsWith(PREFIX_ATTR);
-
-        resourcePath = resourcePath.substring(1);
-
-        try {
-          if (isResource) {
-            return resolveResource(context, resourcePath);
-          } else if (isThemeAttribute) {
-            return resolveThemeAttribute(context, resourcePath);
-          }
-        } catch (Resources.NotFoundException exception) {
-          // The resource could not be found so do nothing to allow the for loop to continue and
-          // try the next fallback resource in the array.  If none of the fallbacks are
-          // found then the exception immediately after the for loop will be thrown.
+        Integer result = resolveResourcePath(context, resourcePaths.getString(i));
+        if (result != null) {
+          return result;
         }
       }
 
@@ -76,6 +59,30 @@ public class ColorPropConverter {
 
     throw new JSApplicationCausedNativeException(
         "ColorValue: the value must be a number or Object.");
+  }
+
+  public static Integer resolveResourcePath(Context context, @Nullable String resourcePath) {
+    if (resourcePath == null || resourcePath.isEmpty()) {
+      return null;
+    }
+
+    boolean isResource = resourcePath.startsWith(PREFIX_RESOURCE);
+    boolean isThemeAttribute = resourcePath.startsWith(PREFIX_ATTR);
+
+    resourcePath = resourcePath.substring(1);
+
+    try {
+      if (isResource) {
+        return resolveResource(context, resourcePath);
+      } else if (isThemeAttribute) {
+        return resolveThemeAttribute(context, resourcePath);
+      }
+    } catch (Resources.NotFoundException exception) {
+      // The resource could not be found so do nothing to allow the for loop to continue and
+      // try the next fallback resource in the array.  If none of the fallbacks are
+      // found then the exception immediately after the for loop will be thrown.
+    }
+    return null;
   }
 
   private static int resolveResource(Context context, String resourcePath) {

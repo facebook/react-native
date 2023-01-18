@@ -28,7 +28,7 @@ class ViewEventEmitter : public TouchEventEmitter {
 
 #pragma mark - Accessibility
 
-  void onAccessibilityAction(const std::string &name) const;
+  void onAccessibilityAction(std::string const &name) const;
   void onAccessibilityTap() const;
   void onAccessibilityMagicTap() const;
   void onAccessibilityEscape() const;

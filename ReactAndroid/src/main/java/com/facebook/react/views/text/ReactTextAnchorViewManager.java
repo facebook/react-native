@@ -43,6 +43,11 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   };
   private static final String TAG = "ReactTextAnchorViewManager";
 
+  @ReactProp(name = "accessible")
+  public void setAccessible(ReactTextView view, boolean accessible) {
+    view.setFocusable(accessible);
+  }
+
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
   public void setNumberOfLines(ReactTextView view, int numberOfLines) {
@@ -188,24 +193,25 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
 
   @ReactProp(name = "dataDetectorType")
   public void setDataDetectorType(ReactTextView view, @Nullable String type) {
-    switch (type) {
-      case "phoneNumber":
-        view.setLinkifyMask(Linkify.PHONE_NUMBERS);
-        break;
-      case "link":
-        view.setLinkifyMask(Linkify.WEB_URLS);
-        break;
-      case "email":
-        view.setLinkifyMask(Linkify.EMAIL_ADDRESSES);
-        break;
-      case "all":
-        view.setLinkifyMask(Linkify.ALL);
-        break;
-      case "none":
-      default:
-        view.setLinkifyMask(0);
-        break;
+    if (type != null) {
+      switch (type) {
+        case "phoneNumber":
+          view.setLinkifyMask(Linkify.PHONE_NUMBERS);
+          return;
+        case "link":
+          view.setLinkifyMask(Linkify.WEB_URLS);
+          return;
+        case "email":
+          view.setLinkifyMask(Linkify.EMAIL_ADDRESSES);
+          return;
+        case "all":
+          view.setLinkifyMask(Linkify.ALL);
+          return;
+      }
     }
+
+    // "none" case, default, and null type are equivalent.
+    view.setLinkifyMask(0);
   }
 
   @ReactProp(name = "onInlineViewLayout")

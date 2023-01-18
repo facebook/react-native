@@ -14,6 +14,7 @@ import type {
   EventSubscription,
   IEventEmitter,
 } from '../vendor/emitter/EventEmitter';
+
 import Platform from '../Utilities/Platform';
 import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
 import invariant from 'invariant';
@@ -93,19 +94,6 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
         }
       },
     };
-  }
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addListener`.
-   */
-  removeListener<TEvent: $Keys<TEventToArgsMap>>(
-    eventType: TEvent,
-    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
-  ): void {
-    this._nativeModule?.removeListeners(1);
-    // NOTE: This will report a deprecation notice via `console.error`.
-    // $FlowFixMe[prop-missing] - `removeListener` exists but is deprecated.
-    RCTDeviceEventEmitter.removeListener(eventType, listener);
   }
 
   emit<TEvent: $Keys<TEventToArgsMap>>(

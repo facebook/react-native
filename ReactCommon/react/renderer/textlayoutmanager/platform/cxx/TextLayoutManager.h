@@ -29,7 +29,6 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
 class TextLayoutManager {
  public:
   TextLayoutManager(const ContextContainer::Shared &contextContainer) {}
-  ~TextLayoutManager();
 
   /*
    * Measures `attributedStringBox` using native text rendering infrastructure.

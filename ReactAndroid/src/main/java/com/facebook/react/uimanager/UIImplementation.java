@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -29,7 +30,6 @@ import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,30 +62,6 @@ public class UIImplementation {
 
     /** Called when the layout has been updated */
     void onLayoutUpdated(ReactShadowNode root);
-  }
-
-  public UIImplementation(
-      ReactApplicationContext reactContext,
-      ViewManagerResolver viewManagerResolver,
-      EventDispatcher eventDispatcher,
-      int minTimeLeftInFrameForNonBatchedOperationMs) {
-    this(
-        reactContext,
-        new ViewManagerRegistry(viewManagerResolver),
-        eventDispatcher,
-        minTimeLeftInFrameForNonBatchedOperationMs);
-  }
-
-  public UIImplementation(
-      ReactApplicationContext reactContext,
-      List<ViewManager> viewManagers,
-      EventDispatcher eventDispatcher,
-      int minTimeLeftInFrameForNonBatchedOperationMs) {
-    this(
-        reactContext,
-        new ViewManagerRegistry(viewManagers),
-        eventDispatcher,
-        minTimeLeftInFrameForNonBatchedOperationMs);
   }
 
   UIImplementation(
@@ -742,13 +718,23 @@ public class UIImplementation {
   @Deprecated
   public void dispatchViewManagerCommand(
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    assertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
+    boolean viewExists =
+        checkOrAssertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
+    if (!viewExists) {
+      return;
+    }
+
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
   public void dispatchViewManagerCommand(
       int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
-    assertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
+    boolean viewExists =
+        checkOrAssertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
+    if (!viewExists) {
+      return;
+    }
+
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
@@ -763,7 +749,11 @@ public class UIImplementation {
    *     no arguments if the menu is dismissed
    */
   public void showPopupMenu(int reactTag, ReadableArray items, Callback error, Callback success) {
-    assertViewExists(reactTag, "showPopupMenu");
+    boolean viewExists = checkOrAssertViewExists(reactTag, "showPopupMenu");
+    if (!viewExists) {
+      return;
+    }
+
     mOperationsQueue.enqueueShowPopupMenu(reactTag, items, error, success);
   }
 
@@ -867,15 +857,30 @@ public class UIImplementation {
     outputBuffer[3] = node.getScreenHeight();
   }
 
-  private void assertViewExists(int reactTag, String operationNameForExceptionMessage) {
-    if (mShadowNodeRegistry.getNode(reactTag) == null) {
-      throw new IllegalViewOperationException(
-          "Unable to execute operation "
-              + operationNameForExceptionMessage
-              + " on view with "
-              + "tag: "
-              + reactTag
-              + ", since the view does not exists");
+  /**
+   * Returns whether a view identified by the tag exists. In debug mode, this will throw whenever
+   * the view doesn't exist. In production, it'll log a warning. Callers should use this and just
+   * return if the view doesn't exist to avoid crashing.
+   */
+  private boolean checkOrAssertViewExists(int reactTag, String operationNameForExceptionMessage) {
+    boolean viewExists = mShadowNodeRegistry.getNode(reactTag) != null;
+    if (viewExists) {
+      return true;
+    }
+
+    String message =
+        "Unable to execute operation "
+            + operationNameForExceptionMessage
+            + " on view with "
+            + "tag: "
+            + reactTag
+            + ", since the view does not exist";
+
+    if (ReactBuildConfig.DEBUG) {
+      throw new IllegalViewOperationException(message);
+    } else {
+      FLog.w(ReactConstants.TAG, message);
+      return false;
     }
   }
 

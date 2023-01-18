@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
  * @flow strict-local
  * @format
+ * @oncall react_native
  */
 
+import View from '../../Components/View/View';
 import useRefEffect from '../useRefEffect';
 import * as React from 'react';
-import {View} from 'react-native';
 import {act, create} from 'react-test-renderer';
 
 /**
@@ -45,7 +45,7 @@ class TestEffect {
     this.name = name;
     this.key = key;
   }
-  static called(name: string, key: ?string) {
+  static called(name: string, key: ?string): $FlowFixMe {
     // $FlowIssue[prop-missing] - Flow does not support type augmentation.
     return expect.effect(name, key);
   }
@@ -61,7 +61,7 @@ class TestEffectCleanup {
     this.name = name;
     this.key = key;
   }
-  static called(name: string, key: ?string) {
+  static called(name: string, key: ?string): $FlowFixMe {
     // $FlowIssue[prop-missing] - Flow does not support type augmentation.
     return expect.effectCleanup(name, key);
   }
@@ -94,7 +94,7 @@ function mockEffectRegistry(): {
   mockEffectWithoutCleanup: string => () => void,
   registry: $ReadOnlyArray<TestEffect | TestEffectCleanup>,
 } {
-  const registry = [];
+  const registry: Array<TestEffect | TestEffectCleanup> = [];
   return {
     mockEffect(name: string): () => () => void {
       return instance => {

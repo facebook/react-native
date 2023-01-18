@@ -40,6 +40,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
   };
 
   // Add calls to methods in TurboModule here
+  // $FlowFixMe[missing-local-annot]
   _tests = {
     callback: () =>
       NativeSampleTurboModule.getValueWithCallback(callbackValue =>
@@ -73,7 +74,33 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       NativeSampleTurboModule.getValue(5, 'test', {a: 1, b: 'foo'}),
   };
 
-  _setResult(name, result) {
+  _setResult(
+    name:
+      | string
+      | 'callback'
+      | 'getArray'
+      | 'getBool'
+      | 'getConstants'
+      | 'getNumber'
+      | 'getObject'
+      | 'getRootTag'
+      | 'getString'
+      | 'getUnsafeObject'
+      | 'getValue'
+      | 'promise'
+      | 'rejectPromise'
+      | 'voidFunc',
+    result:
+      | $FlowFixMe
+      | void
+      | RootTag
+      | Promise<mixed>
+      | number
+      | string
+      | boolean
+      | {const1: boolean, const2: number, const3: string}
+      | Array<$FlowFixMe>,
+  ) {
     this.setState(({testResults}) => ({
       /* $FlowFixMe[cannot-spread-indexer] (>=0.122.0 site=react_native_fb)
        * This comment suppresses an error found when Flow v0.122.0 was
@@ -88,7 +115,22 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     }));
   }
 
-  _renderResult(name) {
+  _renderResult(
+    name:
+      | 'callback'
+      | 'getArray'
+      | 'getBool'
+      | 'getConstants'
+      | 'getNumber'
+      | 'getObject'
+      | 'getRootTag'
+      | 'getString'
+      | 'getUnsafeObject'
+      | 'getValue'
+      | 'promise'
+      | 'rejectPromise'
+      | 'voidFunc',
+  ): React.Node {
     const result = this.state.testResults[name] || {};
     return (
       <View style={styles.result}>
@@ -98,7 +140,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     );
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     if (global.__turboModuleProxy == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',

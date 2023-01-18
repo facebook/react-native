@@ -10,37 +10,32 @@
 
 'use strict';
 
+import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BlurEvent,
   FocusEvent,
-  MouseEvent,
-  PressEvent,
   Layout,
   LayoutEvent,
+  MouseEvent,
+  PointerEvent,
+  PressEvent,
   ScrollEvent, // [macOS]
   KeyEvent, // [macOS]
 } from '../../Types/CoreEventTypes';
-import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
-import type {Node} from 'react';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
   AccessibilityRole,
   AccessibilityState,
   AccessibilityValue,
-  AccessibilityActionEvent,
-  AccessibilityActionInfo,
+  Role,
 } from './ViewAccessibility';
 import type {DraggedTypesType} from '../View/DraggedType'; // [macOS]
+import type {Node} from 'react';
 
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
-
-type BubblingEventProps = $ReadOnly<{|
-  onBlur?: ?(event: BlurEvent) => mixed,
-  onFocus?: ?(event: FocusEvent) => mixed,
-  onKeyDown?: ?(event: KeyEvent) => mixed, // [macOS]
-  onKeyUp?: ?(event: KeyEvent) => mixed, // [macOS]
-|}>;
 
 type DirectEventProps = $ReadOnly<{|
   /**
@@ -108,9 +103,56 @@ type DirectEventProps = $ReadOnly<{|
   onAccessibilityEscape?: ?() => mixed,
 |}>;
 
+// [macOS
+type KeyboardEventProps = $ReadOnly<{|
+  onKeyDown?: ?(event: KeyEvent) => mixed,
+  onKeyUp?: ?(event: KeyEvent) => mixed,
+  /**
+   * Array of keys to receive key down events for
+   *
+   * @platform macos
+   */
+  validKeysDown?: ?Array<string>,
+
+  /**
+   * Array of keys to receive key up events for
+   *
+   * @platform macos
+   */
+  validKeysUp?: ?Array<string>,
+|}>;
+// macOS]
+
 type MouseEventProps = $ReadOnly<{|
-  onMouseEnter?: (event: MouseEvent) => void,
-  onMouseLeave?: (event: MouseEvent) => void,
+  onMouseEnter?: ?(event: MouseEvent) => void,
+  onMouseLeave?: ?(event: MouseEvent) => void,
+|}>;
+
+// Experimental/Work in Progress Pointer Event Callbacks (not yet ready for use)
+type PointerEventProps = $ReadOnly<{|
+  onPointerEnter?: ?(event: PointerEvent) => void,
+  onPointerEnterCapture?: ?(event: PointerEvent) => void,
+  onPointerLeave?: ?(event: PointerEvent) => void,
+  onPointerLeaveCapture?: ?(event: PointerEvent) => void,
+  onPointerMove?: ?(event: PointerEvent) => void,
+  onPointerMoveCapture?: ?(event: PointerEvent) => void,
+  onPointerCancel?: ?(e: PointerEvent) => void,
+  onPointerCancelCapture?: ?(e: PointerEvent) => void,
+  onPointerDown?: ?(e: PointerEvent) => void,
+  onPointerDownCapture?: ?(e: PointerEvent) => void,
+  onPointerUp?: ?(e: PointerEvent) => void,
+  onPointerUpCapture?: ?(e: PointerEvent) => void,
+  onPointerOver?: ?(e: PointerEvent) => void,
+  onPointerOverCapture?: ?(e: PointerEvent) => void,
+  onPointerOut?: ?(e: PointerEvent) => void,
+  onPointerOutCapture?: ?(e: PointerEvent) => void,
+|}>;
+
+type FocusEventProps = $ReadOnly<{|
+  onBlur?: ?(event: BlurEvent) => void,
+  onBlurCapture?: ?(event: BlurEvent) => void,
+  onFocus?: ?(event: FocusEvent) => void,
+  onFocusCapture?: ?(event: FocusEvent) => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -295,6 +337,16 @@ type AndroidViewProps = $ReadOnly<{|
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
 
   /**
+   * Indicates to accessibility services whether the user should be notified
+   * when this view changes. Works for Android API >= 19 only.
+   *
+   * @platform android
+   *
+   * See https://reactnative.dev/docs/view#accessibilityliveregion
+   */
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
+
+  /**
    * Controls how view is important for accessibility which is if it
    * fires accessibility events and if it is reported to accessibility services
    * that query the screen. Works for Android only.
@@ -355,6 +407,19 @@ type AndroidViewProps = $ReadOnly<{|
   focusable?: boolean,
 
   /**
+   * Indicates whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
+   * See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+   * for more details.
+   *
+   * Supports the following values:
+   * -  0 (View is focusable)
+   * - -1 (View is not focusable)
+   *
+   * @platform android
+   */
+  tabIndex?: 0 | -1,
+
+  /**
    * The action to perform when this `View` is clicked on by a non-touch click, eg. enter key on a hardware keyboard.
    *
    * @platform android
@@ -380,6 +445,15 @@ type IOSViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#accessibilityviewismodal
    */
   accessibilityViewIsModal?: ?boolean,
+
+  /**
+   * The aria-modal attribute indicates content contained within a modal with aria-modal="true"
+   * should be accessible to the user.
+   * Default is `false`.
+   *
+   *  @platform ios
+   */
+  'aria-modal'?: ?boolean,
 
   /**
    * A value indicating whether the accessibility elements contained within
@@ -446,20 +520,6 @@ type MacOSViewProps = $ReadOnly<{|
   enableFocusRing?: ?boolean,
 
   /**
-   * Array of keys to receive key down events for
-   *
-   * @platform macos
-   */
-  validKeysDown?: ?Array<string>,
-
-  /**
-   * Array of keys to receive key up events for
-   *
-   * @platform macos
-   */
-  validKeysUp?: ?Array<string>,
-
-  /**
    * Enables Drag'n'Drop Support for certain types of dragged types
    *
    * Possible values for `draggedTypes` are:
@@ -482,13 +542,15 @@ type MacOSViewProps = $ReadOnly<{|
 // macOS]
 
 export type ViewProps = $ReadOnly<{|
-  ...BubblingEventProps,
   ...DirectEventProps,
   ...GestureResponderEventProps,
   ...MouseEventProps,
+  ...PointerEventProps,
+  ...FocusEventProps,
   ...TouchEventProps,
   ...AndroidViewProps,
   ...IOSViewProps,
+  ...KeyboardEventProp, // [macOS]
   ...MacOSViewProps, // [macOS]
 
   children?: Node,
@@ -522,15 +584,44 @@ export type ViewProps = $ReadOnly<{|
   accessibilityHint?: ?Stringish,
 
   /**
+   * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
+   * https://github.com/facebook/react-native/issues/34424
+   */
+  'aria-label'?: ?Stringish,
+
+  /**
+   * Indicates to the accessibility services that the UI component is in
+   * a specific language. The provided string should be formatted following
+   * the BCP 47 specification (https://www.rfc-editor.org/info/bcp47).
+   *
+   * @platform ios
+   */
+  accessibilityLanguage?: ?Stringish,
+
+  /**
    * Indicates to accessibility services to treat UI component like a specific role.
    */
   accessibilityRole?: ?AccessibilityRole,
+
+  /**
+   * Alias for accessibilityRole
+   */
+  role?: ?Role,
 
   /**
    * Indicates to accessibility services that UI Component is in a specific State.
    */
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
+
+  /**
+   * alias for accessibilityState
+   * It represents textual description of a component's value, or for range-based components, such as sliders and progress bars.
+   */
+  'aria-valuemax'?: ?AccessibilityValue['max'],
+  'aria-valuemin'?: ?AccessibilityValue['min'],
+  'aria-valuenow'?: ?AccessibilityValue['now'],
+  'aria-valuetext'?: ?AccessibilityValue['text'],
 
   /**
    * Provides an array of custom actions available for accessibility.
@@ -546,6 +637,30 @@ export type ViewProps = $ReadOnly<{|
   accessibilityLabelledBy?: ?string | ?Array<string>,
 
   /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean | 'mixed',
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
+  /** A value indicating whether the accessibility elements contained within
+   * this accessibility element are hidden.
+   *
+   * See https://reactnative.dev/docs/view#aria-hidden
+   */
+  'aria-hidden'?: ?boolean,
+
+  /**
+   * It reperesents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   *
+   * @platform android
+   */
+  'aria-labelledby'?: ?string,
+
+  /**
    * Views that are only used to layout their children or otherwise don't draw
    * anything may be automatically removed from the native hierarchy as an
    * optimization. Set this property to `false` to disable this optimization and
@@ -557,6 +672,15 @@ export type ViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#collapsable
    */
   collapsable?: ?boolean,
+
+  /**
+   * Used to locate this view from native classes.
+   *
+   * > This disables the 'layout-only view removal' optimization for this view!
+   *
+   * See https://reactnative.dev/docs/view#id
+   */
+  id?: string,
 
   /**
    * Used to locate this view in end-to-end tests.

@@ -24,9 +24,9 @@ using namespace facebook::react;
 @end
 
 @implementation RCTPullToRefreshViewComponentView {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
   UIRefreshControl *_refreshControl;
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
   RCTScrollViewComponentView *__weak _scrollViewComponentView;
 }
 

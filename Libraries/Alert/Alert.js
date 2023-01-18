@@ -8,8 +8,9 @@
  * @flow
  */
 
-import Platform from '../Utilities/Platform';
 import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
+
+import Platform from '../Utilities/Platform';
 import RCTAlertManager from './RCTAlertManager';
 
 export type AlertType =
@@ -21,6 +22,7 @@ export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
 export type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
+  isPreferred?: boolean,
   style?: AlertButtonStyle,
   ...
 }>;
@@ -34,6 +36,7 @@ export type DefaultInputsArray = Array<{
 
 type Options = {
   cancelable?: ?boolean,
+  userInterfaceStyle?: 'unspecified' | 'light' | 'dark',
   onDismiss?: ?() => void,
   // [macOS
   modal?: ?boolean,
@@ -55,8 +58,16 @@ class Alert {
     options?: Options,
   ): void {
     if (Platform.OS === 'ios') {
-      Alert.prompt(title, message, buttons, 'default');
-      // [macOS
+      Alert.prompt(
+        title,
+        message,
+        buttons,
+        'default',
+        undefined,
+        undefined,
+        options,
+      );
+    // [macOS
     } else if (Platform.OS === 'macos') {
       Alert.promptMacOS(
         title,
@@ -67,7 +78,7 @@ class Alert {
         options?.modal,
         options?.critical,
       );
-      // macOS]
+    // macOS]
     } else if (Platform.OS === 'android') {
       const NativeDialogManagerAndroid =
         require('../NativeModules/specs/NativeDialogManagerAndroid').default;
@@ -105,6 +116,8 @@ class Alert {
         config.buttonPositive = buttonPositive.text || defaultPositiveText;
       }
 
+      /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+       * Flow's LTI update could not be added via codemod */
       const onAction = (action, buttonKey) => {
         if (action === constants.buttonClicked) {
           if (buttonKey === constants.buttonNeutral) {
@@ -118,7 +131,7 @@ class Alert {
           options && options.onDismiss && options.onDismiss();
         }
       };
-      const onError = errorMessage => console.warn(errorMessage);
+      const onError = (errorMessage: string) => console.warn(errorMessage);
       NativeDialogManagerAndroid.showAlert(config, onError, onAction);
     }
   }
@@ -130,12 +143,14 @@ class Alert {
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,
     keyboardType?: string,
+    options?: Options,
   ): void {
     if (Platform.OS === 'ios') {
-      let callbacks = [];
+      let callbacks: Array<?any> = [];
       const buttons = [];
       let cancelButtonKey;
       let destructiveButtonKey;
+      let preferredButtonKey;
       if (typeof callbackOrButtons === 'function') {
         callbacks = [callbackOrButtons];
       } else if (Array.isArray(callbackOrButtons)) {
@@ -146,8 +161,11 @@ class Alert {
           } else if (btn.style === 'destructive') {
             destructiveButtonKey = String(index);
           }
+          if (btn.isPreferred) {
+            preferredButtonKey = String(index);
+          }
           if (btn.text || index < (callbackOrButtons || []).length - 1) {
-            const btnDef = {};
+            const btnDef: {[number]: string} = {};
             btnDef[index] = btn.text || '';
             buttons.push(btnDef);
           }
@@ -163,7 +181,9 @@ class Alert {
           defaultValue,
           cancelButtonKey,
           destructiveButtonKey,
+          preferredButtonKey,
           keyboardType,
+          userInterfaceStyle: options?.userInterfaceStyle || undefined,
         },
         (id, value) => {
           const cb = callbacks[id];

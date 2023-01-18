@@ -36,14 +36,14 @@ module.exports = {
   overrides: [
     {
       files: ['*.js'],
-      parser: 'babel-eslint',
-      plugins: ['flowtype'],
+      parser: '@babel/eslint-parser',
+      plugins: ['ft-flow'],
       rules: {
         // Flow Plugin
-        // The following rules are made available via `eslint-plugin-flowtype`
+        // The following rules are made available via `eslint-plugin-ft-flow`
 
-        'flowtype/define-flow-type': 1,
-        'flowtype/use-flow-type': 1,
+        'ft-flow/define-flow-type': 1,
+        'ft-flow/use-flow-type': 1,
       },
     },
     {
@@ -53,12 +53,17 @@ module.exports = {
       rules: {
         '@typescript-eslint/no-unused-vars': [
           'error',
-          {argsIgnorePattern: '^_'},
+          {
+            argsIgnorePattern: '^_',
+            destructuredArrayIgnorePattern: '^_',
+          },
         ],
         'no-unused-vars': 'off',
         'no-shadow': 'off',
         '@typescript-eslint/no-shadow': 1,
         'no-undef': 'off',
+        'func-call-spacing': 'off',
+        '@typescript-eslint/func-call-spacing': 1,
       },
     },
     {
@@ -83,6 +88,7 @@ module.exports = {
     __dirname: false,
     __fbBatchedBridgeConfig: false,
     AbortController: false,
+    Blob: true,
     alert: false,
     cancelAnimationFrame: false,
     cancelIdleCallback: false,
@@ -97,6 +103,7 @@ module.exports = {
     EventTarget: false,
     exports: false,
     fetch: false,
+    File: true,
     FileReader: false,
     FormData: false,
     global: false,
@@ -257,7 +264,7 @@ module.exports = {
     'no-empty-character-class': 1, // disallow the use of empty character classes in regular expressions
     'no-lonely-if': 0, // disallow if as the only statement in an else block (off by default)
     'no-new-object': 1, // disallow use of the Object constructor
-    'no-spaced-func': 1, // disallow space between function identifier and application
+    'func-call-spacing': 1, // disallow space between function identifier and application
     'no-ternary': 0, // disallow the use of ternary operators (off by default)
     'no-trailing-spaces': 1, // disallow trailing whitespace at the end of lines
     'no-underscore-dangle': 0, // disallow dangling underscores in identifiers

@@ -10,14 +10,15 @@
 
 'use strict';
 
-import Image from './Image';
-import * as React from 'react';
-import StyleSheet from '../StyleSheet/StyleSheet';
-import flattenStyle from '../StyleSheet/flattenStyle';
-import View from '../Components/View/View';
+import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {ImageBackgroundProps} from './ImageProps';
-import type {ViewProps} from '../Components/View/ViewPropTypes';
+
+import View from '../Components/View/View';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import Image from './Image';
+import * as React from 'react';
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -66,15 +67,25 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
   };
 
   render(): React.Node {
-    const {children, style, imageStyle, imageRef, ...props} = this.props;
+    const {
+      children,
+      style,
+      imageStyle,
+      imageRef,
+      importantForAccessibility,
+      ...props
+    } = this.props;
+
     const flattenedStyle = flattenStyle(style);
     return (
       <View
         accessibilityIgnoresInvertColors={true}
+        importantForAccessibility={importantForAccessibility}
         style={style}
         ref={this._captureRef}>
         <Image
           {...props}
+          importantForAccessibility={importantForAccessibility}
           style={[
             StyleSheet.absoluteFill,
             {

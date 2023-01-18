@@ -56,22 +56,22 @@ function RotatingImagesView({useNativeDriver}: {useNativeDriver: boolean}) {
               {
                 scale: anim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: ([1, 10]: $ReadOnlyArray<number>),
+                  outputRange: [1, 10],
                 }),
               },
               {
                 translateX: anim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: ([0, 100]: $ReadOnlyArray<number>),
+                  outputRange: [0, 100],
                 }),
               },
               {
                 rotate: anim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: ([
+                  outputRange: [
                     '0deg',
                     '360deg', // 'deg' or 'rad'
-                  ]: $ReadOnlyArray<string>),
+                  ],
                 }),
               },
             ],

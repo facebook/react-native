@@ -17,7 +17,7 @@ const React = require('react');
 const {StyleSheet, Text, View} = require('react-native');
 
 class Circle extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     const size = this.props.size || 20;
     const backgroundColor = this.props.bgColor || '#527fe4';
     return (
@@ -35,7 +35,7 @@ class Circle extends React.Component<$FlowFixMeProps> {
 }
 
 class CircleBlock extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     const circleStyle = {
       flexDirection: 'row',
       backgroundColor: '#f6f7f8',

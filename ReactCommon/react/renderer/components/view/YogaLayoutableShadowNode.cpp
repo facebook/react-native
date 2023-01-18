@@ -20,12 +20,11 @@
 #include <limits>
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static int FabricDefaultYogaLog(
-    const YGConfigRef,
-    const YGNodeRef,
+    const YGConfigRef /*unused*/,
+    const YGNodeRef /*unused*/,
     YGLogLevel level,
     const char *format,
     va_list args) {
@@ -250,7 +249,7 @@ void YogaLayoutableShadowNode::appendChild(
   // (e.g. RCTRawText). This used to throw an error, but we are ignoring it
   // because we want core library components to be fault-tolerant and degrade
   // gracefully. A soft error will be emitted from JavaScript.
-  if (traitCast<YogaLayoutableShadowNode const *>(childNode.get())) {
+  if (traitCast<YogaLayoutableShadowNode const *>(childNode.get()) != nullptr) {
     // Appending the Yoga node.
     appendYogaChild(*childNode);
 
@@ -479,7 +478,6 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   react_native_assert(!yogaNode_.isDirty());
 
   auto contentFrame = Rect{};
-
   for (auto childYogaNode : yogaNode_.getChildren()) {
     auto &childNode =
         *static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
@@ -508,7 +506,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       // `newLayoutMetrics.frame` with `childNode.getLayoutMetrics().frame` to
       // detect if layout has not changed is not advised, please refer to
       // D22999891 for details.
-      if (layoutContext.affectedNodes) {
+      if (layoutContext.affectedNodes != nullptr) {
         layoutContext.affectedNodes->push_back(&childNode);
       }
 
@@ -521,24 +519,36 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 
     auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
     if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
+      // The contentFrame should always union with existing child node layout +
+      // overflowInset. The transform may in a deferred animation and not
+      // applied yet.
       contentFrame.unionInPlace(insetBy(
           layoutMetricsWithOverflowInset.frame,
           layoutMetricsWithOverflowInset.overflowInset));
+
+      auto childTransform = childNode.getTransform();
+      if (childTransform != Transform::Identity()) {
+        // The child node's transform matrix will affect the parent node's
+        // contentFrame. We need to union with child node's after transform
+        // layout here.
+        contentFrame.unionInPlace(insetBy(
+            layoutMetricsWithOverflowInset.frame * childTransform,
+            layoutMetricsWithOverflowInset.overflowInset * childTransform));
+      }
     }
   }
 
   if (yogaNode_.getStyle().overflow() == YGOverflowVisible) {
-    auto transform = getTransform();
-    auto transformedContentFrame = contentFrame;
-    if (Transform::Identity() != transform) {
-      // When animation uses native driver, Yoga has no knowledge of the
-      // animation. In case the content goes out from current container, we need
-      // to union the content frame with its transformed frame.
-      transformedContentFrame = contentFrame * getTransform();
-      transformedContentFrame.unionInPlace(contentFrame);
-    }
+    // Note that the parent node's overflow layout is NOT affected by its
+    // transform matrix. That transform matrix is applied on the parent node as
+    // well as all of its child nodes, which won't cause changes on the
+    // overflowInset values. A special note on the scale transform -- the scaled
+    // layout may look like it's causing overflowInset changes, but it's purely
+    // cosmetic and will be handled by pixel density conversion logic later when
+    // render the view. The actual overflowInset value is not changed as if the
+    // transform is not happening here.
     layoutMetrics_.overflowInset =
-        calculateOverflowInset(layoutMetrics_.frame, transformedContentFrame);
+        calculateOverflowInset(layoutMetrics_.frame, contentFrame);
   } else {
     layoutMetrics_.overflowInset = {};
   }
@@ -635,7 +645,8 @@ void YogaLayoutableShadowNode::swapLeftAndRightInTree(
   for (auto &child : shadowNode.getChildren()) {
     auto const yogaLayoutableChild =
         traitCast<YogaLayoutableShadowNode const *>(child.get());
-    if (yogaLayoutableChild && !yogaLayoutableChild->doesOwn(shadowNode)) {
+    if ((yogaLayoutableChild != nullptr) &&
+        !yogaLayoutableChild->doesOwn(shadowNode)) {
       swapLeftAndRightInTree(*yogaLayoutableChild);
     }
   }
@@ -811,5 +822,4 @@ void YogaLayoutableShadowNode::ensureYogaChildrenAlighment() const {
 #endif
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

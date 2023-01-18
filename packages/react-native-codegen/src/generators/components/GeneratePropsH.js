@@ -9,15 +9,19 @@
  */
 
 'use strict';
+import type {ComponentShape} from '../../CodegenSchema';
+
+const {
+  getNativeTypeFromAnnotation,
+  getLocalImports,
+} = require('./ComponentsGeneratorUtils.js');
 
 const {
   convertDefaultTypeToString,
-  getCppTypeForAnnotation,
   getEnumMaskName,
   getEnumName,
   toSafeCppString,
   generateStructName,
-  getImports,
   toIntEnumValueName,
 } = require('./CppHelpers.js');
 
@@ -76,7 +80,7 @@ const ClassTemplate = ({
   `
 ${enums}
 ${structs}
-class ${className} final${extendClasses} {
+class JSI_EXPORT ${className} final${extendClasses} {
  public:
   ${className}() = default;
   ${className}(const PropsParserContext& context, const ${className} &sourceProps, const RawProps &rawProps);
@@ -257,7 +261,7 @@ static inline std::string toString(const ${enumMask} &value) {
 }
 `.trim();
 
-function getClassExtendString(component): string {
+function getClassExtendString(component: ComponentShape): string {
   if (component.extendsProps.length === 0) {
     throw new Error('Invalid: component.extendsProps is empty');
   }
@@ -282,79 +286,6 @@ function getClassExtendString(component): string {
       .join(' ');
 
   return extendString;
-}
-
-function getNativeTypeFromAnnotation(
-  componentName: string,
-  prop,
-  nameParts: $ReadOnlyArray<string>,
-): string {
-  const typeAnnotation = prop.typeAnnotation;
-
-  switch (typeAnnotation.type) {
-    case 'BooleanTypeAnnotation':
-    case 'StringTypeAnnotation':
-    case 'Int32TypeAnnotation':
-    case 'DoubleTypeAnnotation':
-    case 'FloatTypeAnnotation':
-      return getCppTypeForAnnotation(typeAnnotation.type);
-    case 'ReservedPropTypeAnnotation':
-      switch (typeAnnotation.name) {
-        case 'ColorPrimitive':
-          return 'SharedColor';
-        case 'ImageSourcePrimitive':
-          return 'ImageSource';
-        case 'PointPrimitive':
-          return 'Point';
-        case 'EdgeInsetsPrimitive':
-          return 'EdgeInsets';
-        default:
-          (typeAnnotation.name: empty);
-          throw new Error('Received unknown ReservedPropTypeAnnotation');
-      }
-    case 'ArrayTypeAnnotation': {
-      const arrayType = typeAnnotation.elementType.type;
-      if (arrayType === 'ArrayTypeAnnotation') {
-        return `std::vector<${getNativeTypeFromAnnotation(
-          componentName,
-          {typeAnnotation: typeAnnotation.elementType, name: ''},
-          nameParts.concat([prop.name]),
-        )}>`;
-      }
-      if (arrayType === 'ObjectTypeAnnotation') {
-        const structName = generateStructName(
-          componentName,
-          nameParts.concat([prop.name]),
-        );
-        return `std::vector<${structName}>`;
-      }
-      if (arrayType === 'StringEnumTypeAnnotation') {
-        const enumName = getEnumName(componentName, prop.name);
-        return getEnumMaskName(enumName);
-      }
-      const itemAnnotation = getNativeTypeFromAnnotation(
-        componentName,
-        {
-          typeAnnotation: typeAnnotation.elementType,
-          name: componentName,
-        },
-        nameParts.concat([prop.name]),
-      );
-      return `std::vector<${itemAnnotation}>`;
-    }
-    case 'ObjectTypeAnnotation': {
-      return generateStructName(componentName, nameParts.concat([prop.name]));
-    }
-    case 'StringEnumTypeAnnotation':
-      return getEnumName(componentName, prop.name);
-    case 'Int32EnumTypeAnnotation':
-      return getEnumName(componentName, prop.name);
-    default:
-      (typeAnnotation: empty);
-      throw new Error(
-        `Received invalid typeAnnotation for ${componentName} prop ${prop.name}, received ${typeAnnotation.type}`,
-      );
-  }
 }
 
 function convertValueToEnumOption(value: string): string {
@@ -400,7 +331,10 @@ function generateArrayEnumString(
   });
 }
 
-function generateStringEnum(componentName, prop) {
+function generateStringEnum(
+  componentName: string,
+  prop: NamedShape<PropTypeAnnotation>,
+) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
     const values: $ReadOnlyArray<string> = typeAnnotation.options;
@@ -435,7 +369,10 @@ function generateStringEnum(componentName, prop) {
   return '';
 }
 
-function generateIntEnum(componentName, prop) {
+function generateIntEnum(
+  componentName: string,
+  prop: NamedShape<PropTypeAnnotation>,
+) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'Int32EnumTypeAnnotation') {
     const values: $ReadOnlyArray<number> = typeAnnotation.options;
@@ -476,7 +413,10 @@ function generateIntEnum(componentName, prop) {
   return '';
 }
 
-function generateEnumString(componentName: string, component): string {
+function generateEnumString(
+  componentName: string,
+  component: ComponentShape,
+): string {
   return component.props
     .map(prop => {
       if (
@@ -538,6 +478,7 @@ function getExtendsImports(
   const imports: Set<string> = new Set();
 
   imports.add('#include <react/renderer/core/PropsParserContext.h>');
+  imports.add('#include <jsi/jsi.h>');
 
   extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
@@ -561,80 +502,10 @@ function getExtendsImports(
   return imports;
 }
 
-function getLocalImports(
-  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
-): Set<string> {
-  const imports: Set<string> = new Set();
-
-  function addImportsForNativeName(name) {
-    switch (name) {
-      case 'ColorPrimitive':
-        imports.add('#include <react/renderer/graphics/Color.h>');
-        return;
-      case 'ImageSourcePrimitive':
-        imports.add('#include <react/renderer/imagemanager/primitives.h>');
-        return;
-      case 'PointPrimitive':
-        imports.add('#include <react/renderer/graphics/Geometry.h>');
-        return;
-      case 'EdgeInsetsPrimitive':
-        imports.add('#include <react/renderer/graphics/Geometry.h>');
-        return;
-      default:
-        (name: empty);
-        throw new Error(`Invalid ReservedPropTypeAnnotation name, got ${name}`);
-    }
-  }
-
-  properties.forEach(prop => {
-    const typeAnnotation = prop.typeAnnotation;
-
-    if (typeAnnotation.type === 'ReservedPropTypeAnnotation') {
-      addImportsForNativeName(typeAnnotation.name);
-    }
-
-    if (typeAnnotation.type === 'ArrayTypeAnnotation') {
-      imports.add('#include <vector>');
-      if (typeAnnotation.elementType.type === 'StringEnumTypeAnnotation') {
-        imports.add('#include <cinttypes>');
-      }
-    }
-
-    if (
-      typeAnnotation.type === 'ArrayTypeAnnotation' &&
-      typeAnnotation.elementType.type === 'ReservedPropTypeAnnotation'
-    ) {
-      addImportsForNativeName(typeAnnotation.elementType.name);
-    }
-
-    if (
-      typeAnnotation.type === 'ArrayTypeAnnotation' &&
-      typeAnnotation.elementType.type === 'ObjectTypeAnnotation'
-    ) {
-      const objectProps = typeAnnotation.elementType.properties;
-      const objectImports = getImports(objectProps);
-      const localImports = getLocalImports(objectProps);
-      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-      objectImports.forEach(imports.add, imports);
-      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-      localImports.forEach(imports.add, imports);
-    }
-
-    if (typeAnnotation.type === 'ObjectTypeAnnotation') {
-      imports.add('#include <react/renderer/core/propsConversions.h>');
-      const objectImports = getImports(typeAnnotation.properties);
-      const localImports = getLocalImports(typeAnnotation.properties);
-      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-      objectImports.forEach(imports.add, imports);
-      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-      localImports.forEach(imports.add, imports);
-    }
-  });
-
-  return imports;
-}
-
-function generateStructsForComponent(componentName: string, component): string {
+function generateStructsForComponent(
+  componentName: string,
+  component: ComponentShape,
+): string {
   const structs = generateStructs(componentName, component.props, []);
   const structArray = Array.from(structs.values());
   if (structArray.length < 1) {
@@ -645,8 +516,8 @@ function generateStructsForComponent(componentName: string, component): string {
 
 function generateStructs(
   componentName: string,
-  properties,
-  nameParts,
+  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  nameParts: Array<string>,
 ): StructsMap {
   const structs: StructsMap = new Map();
   properties.forEach(prop => {
@@ -860,13 +731,6 @@ module.exports = {
         }
 
         return Object.keys(components)
-          .filter(componentName => {
-            const component = components[componentName];
-            return !(
-              component.excludedPlatforms &&
-              component.excludedPlatforms.includes('iOS')
-            );
-          })
           .map(componentName => {
             const component = components[componentName];
 

@@ -372,6 +372,17 @@ static __weak RCTPlatformView *_pendingFocusView; // [macOS]
       self, @selector(accessibilityActions), accessibilityActions, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (NSString *)accessibilityLanguage
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityLanguage:(NSString *)accessibilityLanguage
+{
+  objc_setAssociatedObject(
+      self, @selector(accessibilityLanguage), accessibilityLanguage, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 - (NSString *)accessibilityRoleInternal // [macOS] renamed so it doesn't conflict with -[NSAccessibility accessibilityRole].
 {
   return objc_getAssociatedObject(self, _cmd);

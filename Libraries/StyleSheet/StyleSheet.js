@@ -10,23 +10,22 @@
 
 'use strict';
 
-const PixelRatio = require('../Utilities/PixelRatio');
-const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-
-const flatten = require('./flattenStyle');
-
 import type {
   ____ColorValue_Internal,
-  ____Styles_Internal,
   ____DangerouslyImpreciseStyle_Internal,
   ____DangerouslyImpreciseStyleProp_Internal,
-  ____ViewStyle_Internal,
-  ____ViewStyleProp_Internal,
-  ____TextStyle_Internal,
-  ____TextStyleProp_Internal,
   ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
+  ____Styles_Internal,
+  ____TextStyle_Internal,
+  ____TextStyleProp_Internal,
+  ____ViewStyle_Internal,
+  ____ViewStyleProp_Internal,
 } from './StyleSheetTypes';
+
+const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const PixelRatio = require('../Utilities/PixelRatio');
+const flatten = require('./flattenStyle');
 
 /**
  * This type should be used as the type for anything that is a color. It is
@@ -347,7 +346,12 @@ module.exports = {
       return;
     }
 
-    if (__DEV__ && typeof value.process === 'function') {
+    if (
+      __DEV__ &&
+      typeof value.process === 'function' &&
+      typeof ReactNativeStyleAttributes[property]?.process === 'function' &&
+      value.process !== ReactNativeStyleAttributes[property]?.process
+    ) {
       console.warn(`Overwriting ${property} style attribute preprocessor`);
     }
 

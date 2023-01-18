@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 jest
@@ -20,14 +20,14 @@ jest
   }))
   .mock('../NativeAnimatedModule')
   .mock('../../EventEmitter/NativeEventEmitter')
-  // findNodeHandle is imported from ReactNative so mock that whole module.
-  .setMock('../../Renderer/shims/ReactNative', {findNodeHandle: () => 1});
+  // findNodeHandle is imported from RendererProxy so mock that whole module.
+  .setMock('../../ReactNative/RendererProxy', {findNodeHandle: () => 1});
 
-import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
+import TestRenderer from 'react-test-renderer';
 
-const Animated = require('../Animated');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
+const Animated = require('../Animated').default;
+const NativeAnimatedHelper = require('../NativeAnimatedHelper').default;
 
 describe('Native Animated', () => {
   const NativeAnimatedModule = require('../NativeAnimatedModule').default;

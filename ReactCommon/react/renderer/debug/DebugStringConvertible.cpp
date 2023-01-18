@@ -10,8 +10,7 @@
 #include <folly/Conv.h>
 #include <folly/Format.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
@@ -24,7 +23,7 @@ std::string DebugStringConvertible::getDebugChildrenDescription(
   options.depth++;
 
   auto trailing = options.format ? std::string{"\n"} : std::string{""};
-  auto childrenString = std::string{""};
+  std::string childrenString;
 
   for (auto const &child : getDebugChildren()) {
     if (!child) {
@@ -50,7 +49,7 @@ std::string DebugStringConvertible::getDebugPropsDescription(
 
   options.depth++;
 
-  auto propsString = std::string{""};
+  std::string propsString;
 
   for (auto const &prop : getDebugProps()) {
     if (!prop) {
@@ -116,11 +115,11 @@ std::string DebugStringConvertible::getDebugValue() const {
 
 SharedDebugStringConvertibleList DebugStringConvertible::getDebugChildren()
     const {
-  return SharedDebugStringConvertibleList();
+  return {};
 }
 
 SharedDebugStringConvertibleList DebugStringConvertible::getDebugProps() const {
-  return SharedDebugStringConvertibleList();
+  return {};
 }
 
 /*
@@ -150,5 +149,4 @@ std::string toString(void const *value) {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

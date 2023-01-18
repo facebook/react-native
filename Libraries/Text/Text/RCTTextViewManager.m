@@ -10,8 +10,8 @@
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTUIManager.h>
-#import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
+#import <React/RCTUIManagerUtils.h>
 
 #import <React/RCTTextShadowView.h>
 #import <React/RCTTextView.h>
@@ -20,8 +20,7 @@
 
 @end
 
-@implementation RCTTextViewManager
-{
+@implementation RCTTextViewManager {
   NSHashTable<RCTTextShadowView *> *_shadowViews;
 }
 
@@ -48,7 +47,7 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
                                            selector:@selector(handleDidUpdateMultiplierNotification)
                                                name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
                                              object:[bridge moduleForName:@"AccessibilityManager"
-                                                    lazilyLoadIfNecessary:YES]];
+                                                        lazilyLoadIfNecessary:YES]];
 #endif // [macOS]
 }
 
@@ -61,8 +60,8 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 {
   RCTTextShadowView *shadowView = [[RCTTextShadowView alloc] initWithBridge:self.bridge];
 #if !TARGET_OS_OSX // [macOS]
-  shadowView.textAttributes.fontSizeMultiplier = [[[self.bridge moduleForName:@"AccessibilityManager"]
-                                                   valueForKey:@"multiplier"] floatValue];
+  shadowView.textAttributes.fontSizeMultiplier =
+      [[[self.bridge moduleForName:@"AccessibilityManager"] valueForKey:@"multiplier"] floatValue];
 #endif // [macOS]
   [_shadowViews addObject:shadowView];
   return shadowView;
@@ -81,8 +80,8 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 
 - (void)handleDidUpdateMultiplierNotification
 {
-  CGFloat fontSizeMultiplier = [[[self.bridge moduleForName:@"AccessibilityManager"]
-                                 valueForKey:@"multiplier"] floatValue];
+  CGFloat fontSizeMultiplier =
+      [[[self.bridge moduleForName:@"AccessibilityManager"] valueForKey:@"multiplier"] floatValue];
 
   NSHashTable<RCTTextShadowView *> *shadowViews = _shadowViews;
   RCTExecuteOnUIManagerQueue(^{

@@ -5,19 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTStyleAnimatedNode.h>
 #import <React/RCTAnimationUtils.h>
-#import <React/RCTValueAnimatedNode.h>
-#import <React/RCTTransformAnimatedNode.h>
 #import <React/RCTColorAnimatedNode.h>
+#import <React/RCTStyleAnimatedNode.h>
+#import <React/RCTTransformAnimatedNode.h>
+#import <React/RCTValueAnimatedNode.h>
 
-@implementation RCTStyleAnimatedNode
-{
+@implementation RCTStyleAnimatedNode {
   NSMutableDictionary<NSString *, NSObject *> *_propsDictionary;
 }
 
-- (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config
+- (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithTag:tag config:config])) {
     _propsDictionary = [NSMutableDictionary new];

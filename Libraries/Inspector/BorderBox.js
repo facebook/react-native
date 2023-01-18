@@ -10,8 +10,8 @@
 
 'use strict';
 
-const React = require('react');
 const View = require('../Components/View/View');
+const React = require('react');
 
 class BorderBox extends React.Component<$FlowFixMeProps> {
   render(): $FlowFixMe | React.Node {

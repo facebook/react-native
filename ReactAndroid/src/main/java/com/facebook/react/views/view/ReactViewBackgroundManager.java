@@ -24,6 +24,12 @@ public class ReactViewBackgroundManager {
     this.mView = view;
   }
 
+  public void cleanup() {
+    ViewCompat.setBackground(mView, null);
+    this.mView = null;
+    this.mReactBackgroundDrawable = null;
+  }
+
   private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
     if (mReactBackgroundDrawable == null) {
       mReactBackgroundDrawable = new ReactViewBackgroundDrawable(mView.getContext());
@@ -56,6 +62,10 @@ public class ReactViewBackgroundManager {
 
   public void setBorderColor(int position, float color, float alpha) {
     getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
+  }
+
+  public int getBorderColor(int position) {
+    return getOrCreateReactViewBackground().getBorderColor(position);
   }
 
   public void setBorderRadius(float borderRadius) {

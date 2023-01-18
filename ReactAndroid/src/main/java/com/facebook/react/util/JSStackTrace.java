@@ -15,12 +15,13 @@ import java.util.regex.Pattern;
 
 public class JSStackTrace {
 
-  private static final String LINE_NUMBER_KEY = "lineNumber";
+  public static final String LINE_NUMBER_KEY = "lineNumber";
+  public static final String FILE_KEY = "file";
+  public static final String COLUMN_KEY = "column";
+  public static final String METHOD_NAME_KEY = "methodName";
+
   private static final Pattern FILE_ID_PATTERN =
       Pattern.compile("\\b((?:seg-\\d+(?:_\\d+)?|\\d+)\\.js)");
-  private static final String FILE_KEY = "file";
-  private static final String COLUMN_KEY = "column";
-  private static final String METHOD_NAME_KEY = "methodName";
 
   public static String format(String message, ReadableArray stack) {
     StringBuilder stringBuilder = new StringBuilder(message).append(", stack:\n");

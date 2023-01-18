@@ -22,7 +22,7 @@ import type {
 
 import type {AliasResolver} from './Utils';
 const {createAliasResolver, getModules} = require('./Utils');
-const {unwrapNullable} = require('../../parsers/flow/modules/utils');
+const {unwrapNullable} = require('../../parsers/parsers-commons');
 
 type FilesOutput = Map<string, string>;
 
@@ -138,6 +138,15 @@ function translateFunctionParamToJavaType(
       return !isRequired ? 'Double' : 'double';
     case 'BooleanTypeAnnotation':
       return !isRequired ? 'Boolean' : 'boolean';
+    case 'EnumDeclaration':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return !isRequired ? 'Double' : 'double';
+        case 'StringTypeAnnotation':
+          return wrapIntoNullableIfNeeded('String');
+        default:
+          throw new Error(createErrorMessage(realTypeAnnotation.type));
+      }
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.ReadableMap');
       if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -156,7 +165,10 @@ function translateFunctionParamToJavaType(
       imports.add('com.facebook.react.bridge.Callback');
       return 'Callback';
     default:
-      (realTypeAnnotation.type: empty);
+      (realTypeAnnotation.type:
+        | 'EnumDeclaration'
+        | 'MixedTypeAnnotation'
+        | 'UnionTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -210,17 +222,29 @@ function translateFunctionReturnTypeToJavaType(
       return nullable ? 'Double' : 'double';
     case 'BooleanTypeAnnotation':
       return nullable ? 'Boolean' : 'boolean';
+    case 'EnumDeclaration':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return nullable ? 'Double' : 'double';
+        case 'StringTypeAnnotation':
+          return wrapIntoNullableIfNeeded('String');
+        default:
+          throw new Error(createErrorMessage(realTypeAnnotation.type));
+      }
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableMap');
-      return 'WritableMap';
+      return wrapIntoNullableIfNeeded('WritableMap');
     case 'GenericObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableMap');
-      return 'WritableMap';
+      return wrapIntoNullableIfNeeded('WritableMap');
     case 'ArrayTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableArray');
-      return 'WritableArray';
+      return wrapIntoNullableIfNeeded('WritableArray');
     default:
-      (realTypeAnnotation.type: empty);
+      (realTypeAnnotation.type:
+        | 'EnumDeclaration'
+        | 'MixedTypeAnnotation'
+        | 'UnionTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -263,6 +287,15 @@ function getFalsyReturnStatementFromReturnType(
       return nullable ? 'return null;' : 'return 0;';
     case 'BooleanTypeAnnotation':
       return nullable ? 'return null;' : 'return false;';
+    case 'EnumDeclaration':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return nullable ? 'return null;' : 'return 0;';
+        case 'StringTypeAnnotation':
+          return nullable ? 'return null;' : 'return "";';
+        default:
+          throw new Error(createErrorMessage(realTypeAnnotation.type));
+      }
     case 'StringTypeAnnotation':
       return nullable ? 'return null;' : 'return "";';
     case 'ObjectTypeAnnotation':
@@ -272,7 +305,10 @@ function getFalsyReturnStatementFromReturnType(
     case 'ArrayTypeAnnotation':
       return 'return null;';
     default:
-      (realTypeAnnotation.type: empty);
+      (realTypeAnnotation.type:
+        | 'EnumDeclaration'
+        | 'MixedTypeAnnotation'
+        | 'UnionTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -364,7 +400,7 @@ module.exports = {
     packageName?: string,
     assumeNonnull: boolean = false,
   ): FilesOutput {
-    const files = new Map();
+    const files = new Map<string, string>();
     const nativeModules = getModules(schema);
 
     const normalizedPackageName =

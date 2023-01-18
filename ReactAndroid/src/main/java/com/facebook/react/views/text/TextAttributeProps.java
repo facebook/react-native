@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -48,7 +48,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_TEXT_DECORATION_COLOR = 14;
   public static final short TA_KEY_TEXT_DECORATION_LINE = 15;
   public static final short TA_KEY_TEXT_DECORATION_STYLE = 16;
-  public static final short TA_KEY_TEXT_SHADOW_RAIDUS = 18;
+  public static final short TA_KEY_TEXT_SHADOW_RADIUS = 18;
   public static final short TA_KEY_TEXT_SHADOW_COLOR = 19;
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
@@ -102,6 +102,7 @@ public class TextAttributeProps {
 
   protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
+  protected boolean mIsAccessibilityLink = false;
 
   protected int mFontStyle = UNSET;
   protected int mFontWeight = UNSET;
@@ -136,51 +137,48 @@ public class TextAttributeProps {
 
   private TextAttributeProps() {}
 
-  /**
-   * Build a TextAttributeProps using data from the {@link ReadableMapBuffer} received as a
-   * parameter.
-   */
-  public static TextAttributeProps fromReadableMapBuffer(ReadableMapBuffer props) {
+  /** Build a TextAttributeProps using data from the {@link MapBuffer} received as a parameter. */
+  public static TextAttributeProps fromMapBuffer(MapBuffer props) {
     TextAttributeProps result = new TextAttributeProps();
 
     // TODO T83483191: Review constants that are not being set!
-    Iterator<ReadableMapBuffer.MapBufferEntry> iterator = props.iterator();
+    Iterator<MapBuffer.Entry> iterator = props.iterator();
     while (iterator.hasNext()) {
-      ReadableMapBuffer.MapBufferEntry entry = iterator.next();
+      MapBuffer.Entry entry = iterator.next();
       switch (entry.getKey()) {
         case TA_KEY_FOREGROUND_COLOR:
-          result.setColor(entry.getInt());
+          result.setColor(entry.getIntValue());
           break;
         case TA_KEY_BACKGROUND_COLOR:
-          result.setBackgroundColor(entry.getInt());
+          result.setBackgroundColor(entry.getIntValue());
           break;
         case TA_KEY_OPACITY:
           break;
         case TA_KEY_FONT_FAMILY:
-          result.setFontFamily(entry.getString());
+          result.setFontFamily(entry.getStringValue());
           break;
         case TA_KEY_FONT_SIZE:
-          result.setFontSize((float) entry.getDouble());
+          result.setFontSize((float) entry.getDoubleValue());
           break;
         case TA_KEY_FONT_SIZE_MULTIPLIER:
           break;
         case TA_KEY_FONT_WEIGHT:
-          result.setFontWeight(entry.getString());
+          result.setFontWeight(entry.getStringValue());
           break;
         case TA_KEY_FONT_STYLE:
-          result.setFontStyle(entry.getString());
+          result.setFontStyle(entry.getStringValue());
           break;
         case TA_KEY_FONT_VARIANT:
-          result.setFontVariant(entry.getReadableMapBuffer());
+          result.setFontVariant(entry.getMapBufferValue());
           break;
         case TA_KEY_ALLOW_FONT_SCALING:
-          result.setAllowFontScaling(entry.getBoolean());
+          result.setAllowFontScaling(entry.getBooleanValue());
           break;
         case TA_KEY_LETTER_SPACING:
-          result.setLetterSpacing((float) entry.getDouble());
+          result.setLetterSpacing((float) entry.getDoubleValue());
           break;
         case TA_KEY_LINE_HEIGHT:
-          result.setLineHeight((float) entry.getDouble());
+          result.setLineHeight((float) entry.getDoubleValue());
           break;
         case TA_KEY_ALIGNMENT:
           break;
@@ -189,23 +187,23 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_DECORATION_COLOR:
           break;
         case TA_KEY_TEXT_DECORATION_LINE:
-          result.setTextDecorationLine(entry.getString());
+          result.setTextDecorationLine(entry.getStringValue());
           break;
         case TA_KEY_TEXT_DECORATION_STYLE:
           break;
-        case TA_KEY_TEXT_SHADOW_RAIDUS:
-          result.setTextShadowRadius(entry.getInt());
+        case TA_KEY_TEXT_SHADOW_RADIUS:
+          result.setTextShadowRadius((float) entry.getDoubleValue());
           break;
         case TA_KEY_TEXT_SHADOW_COLOR:
-          result.setTextShadowColor(entry.getInt());
+          result.setTextShadowColor(entry.getIntValue());
           break;
         case TA_KEY_IS_HIGHLIGHTED:
           break;
         case TA_KEY_LAYOUT_DIRECTION:
-          result.setLayoutDirection(entry.getString());
+          result.setLayoutDirection(entry.getStringValue());
           break;
         case TA_KEY_ACCESSIBILITY_ROLE:
-          result.setAccessibilityRole(entry.getString());
+          result.setAccessibilityRole(entry.getStringValue());
           break;
       }
     }
@@ -243,7 +241,7 @@ public class TextAttributeProps {
     result.setTextDecorationLine(getStringProp(props, ViewProps.TEXT_DECORATION_LINE));
     result.setTextShadowOffset(
         props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
-    result.setTextShadowRadius(getIntProp(props, PROP_SHADOW_RADIUS, 1));
+    result.setTextShadowRadius(getFloatProp(props, PROP_SHADOW_RADIUS, 1));
     result.setTextShadowColor(getIntProp(props, PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     result.setTextTransform(getStringProp(props, PROP_TEXT_TRANSFORM));
     result.setLayoutDirection(getStringProp(props, ViewProps.LAYOUT_DIRECTION));
@@ -418,17 +416,17 @@ public class TextAttributeProps {
     mFontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariant);
   }
 
-  private void setFontVariant(@Nullable ReadableMapBuffer fontVariant) {
+  private void setFontVariant(@Nullable MapBuffer fontVariant) {
     if (fontVariant == null || fontVariant.getCount() == 0) {
       mFontFeatureSettings = null;
       return;
     }
 
     List<String> features = new ArrayList<>();
-    Iterator<ReadableMapBuffer.MapBufferEntry> iterator = fontVariant.iterator();
+    Iterator<MapBuffer.Entry> iterator = fontVariant.iterator();
     while (iterator.hasNext()) {
-      ReadableMapBuffer.MapBufferEntry entry = iterator.next();
-      String value = entry.getString();
+      MapBuffer.Entry entry = iterator.next();
+      String value = entry.getStringValue();
       if (value != null) {
         switch (value) {
           case "small-caps":
@@ -445,6 +443,66 @@ public class TextAttributeProps {
             break;
           case "proportional-nums":
             features.add("'pnum'");
+            break;
+          case "stylistic-one":
+            features.add("'ss01'");
+            break;
+          case "stylistic-two":
+            features.add("'ss02'");
+            break;
+          case "stylistic-three":
+            features.add("'ss03'");
+            break;
+          case "stylistic-four":
+            features.add("'ss04'");
+            break;
+          case "stylistic-five":
+            features.add("'ss05'");
+            break;
+          case "stylistic-six":
+            features.add("'ss06'");
+            break;
+          case "stylistic-seven":
+            features.add("'ss07'");
+            break;
+          case "stylistic-eight":
+            features.add("'ss08'");
+            break;
+          case "stylistic-nine":
+            features.add("'ss09'");
+            break;
+          case "stylistic-ten":
+            features.add("'ss10'");
+            break;
+          case "stylistic-eleven":
+            features.add("'ss11'");
+            break;
+          case "stylistic-twelve":
+            features.add("'ss12'");
+            break;
+          case "stylistic-thirteen":
+            features.add("'ss13'");
+            break;
+          case "stylistic-fourteen":
+            features.add("'ss14'");
+            break;
+          case "stylistic-fifteen":
+            features.add("'ss15'");
+            break;
+          case "stylistic-sixteen":
+            features.add("'ss16'");
+            break;
+          case "stylistic-seventeen":
+            features.add("'ss17'");
+            break;
+          case "stylistic-eighteen":
+            features.add("'ss18'");
+            break;
+          case "stylistic-nineteen":
+            features.add("'ss19'");
+            break;
+          case "stylistic-twenty":
+            features.add("'ss20'");
             break;
         }
       }
@@ -543,9 +601,11 @@ public class TextAttributeProps {
 
   private void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (accessibilityRole != null) {
-      mIsAccessibilityRoleSet = accessibilityRole != null;
+      mIsAccessibilityRoleSet = true;
       mAccessibilityRole =
           ReactAccessibilityDelegate.AccessibilityRole.fromValue(accessibilityRole);
+      mIsAccessibilityLink =
+          mAccessibilityRole.equals(ReactAccessibilityDelegate.AccessibilityRole.LINK);
     }
   }
 

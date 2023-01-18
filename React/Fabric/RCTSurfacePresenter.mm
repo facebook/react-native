@@ -27,6 +27,8 @@
 
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#import <react/renderer/components/text/BaseTextProps.h>
+#import <react/renderer/core/CoreFeatures.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
@@ -78,6 +80,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   RCTScheduler *_Nullable _scheduler; // Thread-safe. Pointer is protected by `_schedulerAccessMutex`.
   ContextContainer::Shared _contextContainer; // Protected by `_schedulerLifeCycleMutex`.
   RuntimeExecutor _runtimeExecutor; // Protected by `_schedulerLifeCycleMutex`.
+  std::optional<RuntimeExecutor> _bridgelessBindingsExecutor; // Only used for installing bindings.
 
   butter::shared_mutex _observerListMutex;
   std::vector<__weak id<RCTSurfacePresenterObserver>> _observers; // Protected by `_observerListMutex`.
@@ -85,10 +88,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
                          runtimeExecutor:(RuntimeExecutor)runtimeExecutor
+              bridgelessBindingsExecutor:(std::optional<RuntimeExecutor>)bridgelessBindingsExecutor
 {
   if (self = [super init]) {
     assert(contextContainer && "RuntimeExecutor must be not null.");
     _runtimeExecutor = runtimeExecutor;
+    _bridgelessBindingsExecutor = bridgelessBindingsExecutor;
     _contextContainer = contextContainer;
 
     _surfaceRegistry = [RCTSurfaceRegistry new];
@@ -98,13 +103,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
     _scheduler = [self _createScheduler];
 
-    auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
-    if (reactNativeConfig->getBool("react_native_new_architecture:suspend_before_app_termination")) {
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(_applicationWillTerminate)
-                                                   name:UIApplicationWillTerminateNotification
-                                                 object:nil];
-    }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_applicationWillTerminate)
+                                                 name:UIApplicationWillTerminateNotification
+                                               object:nil];
   }
 
   return self;
@@ -173,6 +175,13 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (id<RCTSurfaceProtocol>)createFabricSurfaceForModuleName:(NSString *)moduleName
                                          initialProperties:(NSDictionary *)initialProperties
+{
+  return [[RCTFabricSurface alloc] initWithSurfacePresenter:self
+                                                 moduleName:moduleName
+                                          initialProperties:initialProperties];
+}
+
+- (UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag
 {
   return [[RCTFabricSurface alloc] initWithSurfacePresenter:self
                                                  moduleName:moduleName
@@ -265,8 +274,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:preemptive_view_allocation_disabled_ios")) {
-    RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
+  if (reactNativeConfig && reactNativeConfig->getBool("rn_convergence:dispatch_pointer_events")) {
+    RCTSetDispatchW3CPointerEvents(YES);
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cpp_props_iterator_setter_ios")) {
+    CoreFeatures::enablePropIteratorSetter = true;
   }
 
   if (reactNativeConfig && reactNativeConfig->getBool("rn_convergence:dispatch_pointer_events")) {
@@ -289,21 +302,22 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
   auto runtimeScheduler = weakRuntimeScheduler.has_value() ? weakRuntimeScheduler.value().lock() : nullptr;
   if (runtimeScheduler) {
-    runtimeScheduler->setEnableYielding(
-        reactNativeConfig->getBool("react_native_new_architecture:runtimescheduler_enable_yielding_ios"));
     runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
       runtimeScheduler->scheduleWork(std::move(callback));
     };
   }
 
   toolbox.runtimeExecutor = runtimeExecutor;
+  toolbox.bridgelessBindingsExecutor = _bridgelessBindingsExecutor;
 
   toolbox.mainRunLoopObserverFactory = [](RunLoopObserver::Activity activities,
                                           RunLoopObserver::WeakOwner const &owner) {
     return std::make_unique<MainRunLoopObserver>(activities, owner);
   };
 
-  toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_background_executor_ios")) {
+    toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
+  }
 
   toolbox.synchronousEventBeatFactory =
       [runtimeExecutor, runtimeScheduler = runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {

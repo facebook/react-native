@@ -9,6 +9,8 @@
 
 #import <optional>
 
+#import <optional>
+
 #import <React/RCTBackedTextInputViewProtocol.h>
 #import <react/renderer/components/iostextinput/primitives.h>
 

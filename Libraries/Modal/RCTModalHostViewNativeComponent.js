@@ -8,16 +8,16 @@
  * @flow strict-local
  */
 
-import codegenNativeComponent from '../Utilities/codegenNativeComponent';
+import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {
-  WithDefault,
   DirectEventHandler,
   BubblingEventHandler,
   Int32,
+  WithDefault,
 } from '../Types/CodegenTypes';
 
-import type {ViewProps} from '../Components/View/ViewPropTypes';
+import codegenNativeComponent from '../Utilities/codegenNativeComponent';
 
 type OrientationChangeEvent = $ReadOnly<{|
   orientation: 'portrait' | 'landscape',

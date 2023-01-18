@@ -49,6 +49,7 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, assign) CGFloat lineHeight;
 @property (nonatomic, assign) NSTextAlignment alignment;
 @property (nonatomic, assign) NSWritingDirection baseWritingDirection;
+@property (nonatomic, assign) NSLineBreakStrategy lineBreakStrategy;
 // Decoration
 @property (nonatomic, strong, nullable) RCTUIColor *textDecorationColor; // [macOS]
 @property (nonatomic, assign) NSUnderlineStyle textDecorationStyle;

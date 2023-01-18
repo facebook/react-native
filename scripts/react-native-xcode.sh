@@ -13,7 +13,7 @@ set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
 # Enables iOS devices to get the IP address of the machine running Metro
-if [[ "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
+if [[ ! "$SKIP_BUNDLING_METRO_IP" && "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
   for num in 0 1 2 3 4 5 6 7 8; do
     IP=$(ipconfig getifaddr en${num})
     if [ ! -z "$IP" ]; then
@@ -76,29 +76,30 @@ else
    ENTRY_FILE=${1:-index.js}
 fi
 
-if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
-  echo "error: Entry file $ENTRY_FILE does not exist. If you use another file as your entry point, pass ENTRY_FILE=myindex.js" >&2
-  exit 2
-fi
-
-# Find path to Node
-# shellcheck source=/dev/null
-source "$REACT_NATIVE_DIR/scripts/find-node.sh"
-
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
-[ -z "$HERMES_CLI_PATH" ] && HERMES_CLI_PATH="$PODS_ROOT/hermes-engine/destroot/bin/hermesc"
+# If hermes-engine is in the Podfile.lock, it means that Hermes is a dependency of the project
+# and it is enabled. If not, it means that hermes is disabled.
+HERMES_ENABLED=$(grep hermes-engine $PODS_PODFILE_DIR_PATH/Podfile.lock)
 
-if [[ -z "$USE_HERMES" && -f "$HERMES_CLI_PATH" ]]; then
-  echo "Enabling Hermes byte-code compilation. Disable with USE_HERMES=false if needed."
-  USE_HERMES=true
+# If hermes-engine is not in the Podfile.lock, it means that the app is not using Hermes.
+# Setting USE_HERMES is no the only way to set whether the app can use hermes or not: users
+# can also modify manually the Podfile.
+if [[ -z "$HERMES_ENABLED" ]]; then
+  USE_HERMES=false
 fi
 
-if [[ $USE_HERMES == true && ! -f "$HERMES_CLI_PATH" ]]; then
-  echo "error: USE_HERMES is set to true but the hermesc binary could not be " \
-       "found at ${HERMES_CLI_PATH}. Perhaps you need to run 'bundle exec pod install' or otherwise " \
+HERMES_ENGINE_PATH="$PODS_ROOT/hermes-engine"
+[ -z "$HERMES_CLI_PATH" ] && HERMES_CLI_PATH="$HERMES_ENGINE_PATH/destroot/bin/hermesc"
+
+# Hermes is enabled in new projects by default, so we cannot assume that USE_HERMES=1 is set as an envvar.
+# If hermes-engine is found in Pods, we can assume Hermes has not been disabled.
+# If hermesc is not available and USE_HERMES is either unset or true, show error.
+if [[  ! -z "$HERMES_ENABLED" && -f "$HERMES_ENGINE_PATH" && ! -f "$HERMES_CLI_PATH" ]]; then
+  echo "error: Hermes is enabled but the hermesc binary could not be found at ${HERMES_CLI_PATH}." \
+       "Perhaps you need to run 'bundle exec pod install' or otherwise " \
        "point the HERMES_CLI_PATH variable to your custom location." >&2
   exit 2
 fi
@@ -141,7 +142,7 @@ fi
 
 PACKAGER_SOURCEMAP_FILE=
 if [[ $EMIT_SOURCEMAP == true ]]; then
-  if [[ $USE_HERMES == true ]]; then
+  if [[ $USE_HERMES != false ]]; then
     PACKAGER_SOURCEMAP_FILE="$CONFIGURATION_BUILD_DIR/$(basename $SOURCEMAP_FILE)"
   else
     PACKAGER_SOURCEMAP_FILE="$SOURCEMAP_FILE"
@@ -150,7 +151,7 @@ if [[ $EMIT_SOURCEMAP == true ]]; then
 fi
 
 # Hermes doesn't require JS minification.
-if [[ $USE_HERMES == true && $DEV == false ]]; then
+if [[ $USE_HERMES != false && $DEV == false ]]; then
   EXTRA_ARGS="$EXTRA_ARGS --minify false"
 fi
 
@@ -165,7 +166,7 @@ fi
   $EXTRA_ARGS \
   $EXTRA_PACKAGER_ARGS
 
-if [[ $USE_HERMES != true ]]; then
+if [[ $USE_HERMES == false ]]; then
   cp "$BUNDLE_FILE" "$DEST/"
   BUNDLE_FILE="$DEST/main.jsbundle"
 else
@@ -180,14 +181,15 @@ else
   fi
   "$HERMES_CLI_PATH" -emit-binary $EXTRA_COMPILER_ARGS -out "$DEST/main.jsbundle" "$BUNDLE_FILE"
   if [[ $EMIT_SOURCEMAP == true ]]; then
-    HBC_SOURCEMAP_FILE="$BUNDLE_FILE.map"
+    HBC_SOURCEMAP_FILE="$DEST/main.jsbundle.map"
     "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
+    rm "$HBC_SOURCEMAP_FILE"
+    rm "$PACKAGER_SOURCEMAP_FILE"
   fi
   BUNDLE_FILE="$DEST/main.jsbundle"
 fi
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then
-  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2
-  echo "React Native, please report it here: https://github.com/facebook/react-native/issues"
+  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with React Native, please report it here: https://github.com/facebook/react-native/issues" >&2
   exit 2
 fi

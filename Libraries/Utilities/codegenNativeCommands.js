@@ -8,14 +8,14 @@
  * @flow
  */
 
-import {dispatchCommand} from '../../Libraries/Renderer/shims/ReactNative';
+const {dispatchCommand} = require('../ReactNative/RendererProxy');
 
 type Options<T = string> = $ReadOnly<{|
   supportedCommands: $ReadOnlyArray<T>,
 |}>;
 
 function codegenNativeCommands<T: interface {}>(options: Options<$Keys<T>>): T {
-  const commandObj = {};
+  const commandObj: {[$Keys<T>]: (...$ReadOnlyArray<mixed>) => void} = {};
 
   options.supportedCommands.forEach(command => {
     commandObj[command] = (ref, ...args) => {

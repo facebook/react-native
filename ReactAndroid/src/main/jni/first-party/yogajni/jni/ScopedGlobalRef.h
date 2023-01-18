@@ -36,7 +36,7 @@ namespace vanillajni {
  * This class is very explicit in its behavior, and it does not allow to perform
  * unexpected conversions or unexpected ownership transfer. In practice, this
  * class acts as a unique pointer where the underying JNI reference can have one
- * and just one owner. Transfering ownership is allowed but it is an explicit
+ * and just one owner. Transferring ownership is allowed but it is an explicit
  * operation (implemneted via move semantics and also via explicity API calls).
  *
  * Note that this class doesn't receive an explicit JNIEnv at construction time.

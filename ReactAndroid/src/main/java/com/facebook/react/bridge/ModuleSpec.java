@@ -19,9 +19,8 @@ import javax.inject.Provider;
 public class ModuleSpec {
 
   private static final String TAG = "ModuleSpec";
-  private final @Nullable Class<? extends NativeModule> mType;
   private final Provider<? extends NativeModule> mProvider;
-  private final String mName;
+  private final @Nullable String mName;
 
   public static ModuleSpec viewManagerSpec(Provider<? extends NativeModule> provider) {
     return new ModuleSpec(provider);
@@ -54,22 +53,16 @@ public class ModuleSpec {
    * @param provider
    */
   private ModuleSpec(Provider<? extends NativeModule> provider) {
-    mType = null;
     mProvider = provider;
     mName = null;
   }
 
   private ModuleSpec(Provider<? extends NativeModule> provider, String name) {
-    mType = null;
     mProvider = provider;
     mName = name;
   }
 
-  public @Nullable Class<? extends NativeModule> getType() {
-    return mType;
-  }
-
-  public String getName() {
+  public @Nullable String getName() {
     return mName;
   }
 

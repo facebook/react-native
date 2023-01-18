@@ -7,6 +7,6 @@
 
 #import "RCTAnimationDriver.h"
 
-@interface RCTSpringAnimation : NSObject<RCTAnimationDriver>
+@interface RCTSpringAnimation : NSObject <RCTAnimationDriver>
 
 @end

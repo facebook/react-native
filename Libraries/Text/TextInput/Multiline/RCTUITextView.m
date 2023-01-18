@@ -13,8 +13,7 @@
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 #import <React/RCTTextAttributes.h>
 
-@implementation RCTUITextView
-{
+@implementation RCTUITextView {
 #if !TARGET_OS_OSX // [macOS]
   UILabel *_placeholderView;
   UITextView *_detachedTextView;
@@ -76,7 +75,8 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
   return self;
 }
 
-- (void)setDelegate:(id<UITextViewDelegate>)delegate {
+- (void)setDelegate:(id<UITextViewDelegate>)delegate
+{
   // Delegate is set inside `[RCTBackedTextViewDelegateAdapter initWithTextView]` and
   // it cannot be changed from outside.
   if (super.delegate) {
@@ -91,7 +91,8 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
 {
   // UITextView is accessible by default (some nested views are) and disabling that is not supported.
   // On iOS accessible elements cannot be nested, therefore enabling accessibility for some container view
-  // (even in a case where this view is a part of public API of TextInput on iOS) shadows some features implemented inside the component.
+  // (even in a case where this view is a part of public API of TextInput on iOS) shadows some features implemented
+  // inside the component.
 }
 
 - (NSString *)accessibilityLabel
@@ -338,6 +339,7 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
 
 - (void)paste:(id)sender
 {
+<<<<<<< HEAD
 #if TARGET_OS_OSX // [macOS
   if ([self.textInputDelegate textInputShouldHandlePaste:self]) {
 #endif // macOS]
@@ -346,6 +348,13 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
 #if TARGET_OS_OSX // [macOS
   }
 #endif // macOS]
+||||||| 49f3f47b1e9
+  [super paste:sender];
+  _textWasPasted = YES;
+=======
+  _textWasPasted = YES;
+  [super paste:sender];
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 }
 
 // Turn off scroll animation to fix flaky scrolling.
@@ -440,10 +449,23 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
   UIEdgeInsets textContainerInset = self.textContainerInsets;
 #endif // macOS]
   NSString *placeholder = self.placeholder ?: @"";
+<<<<<<< HEAD
   
 #if !TARGET_OS_OSX // [macOS]
   CGSize maxPlaceholderSize = CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
   CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self _placeholderTextAttributes] context:nil].size;
+||||||| 49f3f47b1e9
+  CGSize maxPlaceholderSize = CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
+  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self _placeholderTextAttributes] context:nil].size;
+=======
+  CGSize maxPlaceholderSize =
+      CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
+  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize
+                                                     options:NSStringDrawingUsesLineFragmentOrigin
+                                                  attributes:[self _placeholderTextAttributes]
+                                                     context:nil]
+                               .size;
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
 #else // [macOS
   CGFloat scale = self.window.backingScaleFactor;
@@ -468,9 +490,7 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
   // When a text input is empty, it actually displays a placehoder.
   // So, we have to consider `placeholderSize` as a minimum `contentSize`.
   // Returning size DOES contain `textContainerInset` (aka `padding`).
-  return CGSizeMake(
-    MAX(contentSize.width, placeholderSize.width),
-    MAX(contentSize.height, placeholderSize.height));
+  return CGSizeMake(MAX(contentSize.width, placeholderSize.width), MAX(contentSize.height, placeholderSize.height));
 }
 
 #if !TARGET_OS_OSX // [macOS]
@@ -564,17 +584,25 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
 
 - (void)_updatePlaceholder
 {
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // [macOS]
   _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self _placeholderTextAttributes]];
 #else // [macOS
   [self setNeedsDisplay:YES];
 #endif // macOS]
+||||||| 49f3f47b1e9
+  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self _placeholderTextAttributes]];
+=======
+  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @""
+                                                                    attributes:[self _placeholderTextAttributes]];
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
   [self _invalidatePlaceholderVisibility];
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes
 {
-  NSMutableDictionary<NSAttributedStringKey, id> *textAttributes = [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
+  NSMutableDictionary<NSAttributedStringKey, id> *textAttributes =
+      [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
 
   [textAttributes setValue:self.placeholderColor ?: defaultPlaceholderColor() forKey:NSForegroundColorAttributeName];
 

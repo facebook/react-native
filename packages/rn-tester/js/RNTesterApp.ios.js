@@ -8,6 +8,8 @@
  * @flow
  */
 
+import type {Node} from 'react';
+
 import {AppRegistry, NativeModules, Platform, View} from 'react-native'; // [macOS] everything but AppRegistry
 import React from 'react';
 
@@ -33,7 +35,7 @@ RNTesterList.Components.concat(RNTesterList.APIs).forEach(
     const ExampleModule = Example.module;
     if (ExampleModule.displayName) {
       class Snapshotter extends React.Component<{...}> {
-        render() {
+        render(): Node {
           return (
             <SnapshotViewIOS>
               <RNTesterModuleContainer

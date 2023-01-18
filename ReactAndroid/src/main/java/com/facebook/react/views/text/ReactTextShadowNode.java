@@ -343,11 +343,6 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               mJustificationMode);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
-
-    if (mAdjustsFontSizeToFit) {
-      // Nodes with `adjustsFontSizeToFit` enabled need to be remeasured on every relayout.
-      markUpdated();
-    }
   }
 
   @ReactProp(name = "onTextLayout")

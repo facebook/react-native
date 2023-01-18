@@ -25,13 +25,19 @@ class TaskUtilsTest {
   }
 
   @Test
+  fun windowsAwareCommandLine_withList_isEqualAsVararg() {
+    assertEquals(
+        windowsAwareCommandLine(listOf("a", "b", "c")), windowsAwareCommandLine("a", "b", "c"))
+  }
+
+  @Test
   @WithOs(OS.MAC)
   fun windowsAwareCommandLine_onMac_returnsTheList() {
     assertEquals(listOf("a", "b", "c"), windowsAwareCommandLine("a", "b", "c"))
   }
 
   @Test
-  @WithOs(OS.UNIX)
+  @WithOs(OS.LINUX)
   fun windowsAwareCommandLine_onLinux_returnsTheList() {
     assertEquals(listOf("a", "b", "c"), windowsAwareCommandLine("a", "b", "c"))
   }
@@ -44,31 +50,13 @@ class TaskUtilsTest {
 
   @Test
   @WithOs(OS.MAC)
-  fun windowsAwareYarn_onMac_returnsTheList() {
-    assertEquals(listOf("yarn", "a", "b", "c"), windowsAwareYarn("a", "b", "c"))
-  }
-
-  @Test
-  @WithOs(OS.UNIX)
-  fun windowsAwareYarn_onLinux_returnsTheList() {
-    assertEquals(listOf("yarn", "a", "b", "c"), windowsAwareYarn("a", "b", "c"))
-  }
-
-  @Test
-  @WithOs(OS.WIN)
-  fun windowsAwareYarn_onWindows_prependsCmd() {
-    assertEquals(listOf("yarn.cmd", "a", "b", "c"), windowsAwareYarn("a", "b", "c"))
-  }
-
-  @Test
-  @WithOs(OS.MAC)
   fun windowsAwareBashCommandLine_onMac_returnsTheList() {
     assertEquals(
         listOf("a", "b", "c"), windowsAwareBashCommandLine("a", "b", "c", bashWindowsHome = "abc"))
   }
 
   @Test
-  @WithOs(OS.UNIX)
+  @WithOs(OS.LINUX)
   fun windowsAwareBashCommandLine_onLinux_returnsTheList() {
     assertEquals(listOf("a", "b", "c"), windowsAwareBashCommandLine("a", "b", "c"))
   }

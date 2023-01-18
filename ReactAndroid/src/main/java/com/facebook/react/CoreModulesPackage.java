@@ -32,13 +32,12 @@ import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerResolver;
 import com.facebook.systrace.Systrace;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,7 +69,6 @@ public class CoreModulesPackage extends TurboReactPackage implements ReactPackag
   public CoreModulesPackage(
       ReactInstanceManager reactInstanceManager,
       DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
-      @Nullable UIImplementationProvider uiImplementationProvider,
       boolean lazyViewManagersEnabled,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     mReactInstanceManager = reactInstanceManager;
@@ -184,7 +182,7 @@ public class CoreModulesPackage extends TurboReactPackage implements ReactPackag
               }
 
               @Override
-              public List<String> getViewManagerNames() {
+              public Collection<String> getViewManagerNames() {
                 return mReactInstanceManager.getViewManagerNames();
               }
             };

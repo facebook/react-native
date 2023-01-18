@@ -60,7 +60,7 @@ CxxModule::Callback makeTurboCxxModuleCallback(
 TurboCxxModule::TurboCxxModule(
     std::unique_ptr<CxxModule> cxxModule,
     std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(cxxModule->getName(), jsInvoker),
+    : TurboModule(cxxModule->getName(), std::move(jsInvoker)),
       cxxMethods_(cxxModule->getMethods()),
       cxxModule_(std::move(cxxModule)) {}
 
@@ -69,10 +69,12 @@ jsi::Value TurboCxxModule::get(
     const jsi::PropNameID &propName) {
   std::string propNameUtf8 = propName.utf8(runtime);
 
+  auto result = jsi::Value::undefined();
+
   if (propNameUtf8 == "getConstants") {
     // This is special cased because `getConstants()` is already a part of
     // CxxModule.
-    return jsi::Function::createFromHostFunction(
+    result = jsi::Function::createFromHostFunction(
         runtime,
         propName,
         0,
@@ -89,30 +91,45 @@ jsi::Value TurboCxxModule::get(
           }
           return result;
         });
-  }
-
-  for (auto &method : cxxMethods_) {
-    if (method.name == propNameUtf8) {
-      return jsi::Function::createFromHostFunction(
-          runtime,
-          propName,
-          0,
-          [this, propNameUtf8](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
-              size_t count) {
-            return invokeMethod(rt, VoidKind, propNameUtf8, args, count);
-          });
+  } else {
+    for (auto &method : cxxMethods_) {
+      if (method.name == propNameUtf8) {
+        result = jsi::Function::createFromHostFunction(
+            runtime,
+            propName,
+            0,
+            [this, propNameUtf8](
+                jsi::Runtime &rt,
+                const jsi::Value &thisVal,
+                const jsi::Value *args,
+                size_t count) {
+              return invokeMethod(rt, propNameUtf8, args, count);
+            });
+      }
     }
   }
 
-  return jsi::Value::undefined();
+  // If we have a JS wrapper, cache the result of this lookup
+  if (jsRepresentation_) {
+    jsRepresentation_->setProperty(runtime, propName, result);
+  }
+
+  return result;
+}
+
+std::vector<jsi::PropNameID> TurboCxxModule::getPropertyNames(
+    jsi::Runtime &runtime) {
+  std::vector<jsi::PropNameID> result;
+  result.reserve(cxxMethods_.size() + 1);
+  result.push_back(jsi::PropNameID::forUtf8(runtime, "getConstants"));
+  for (auto it = cxxMethods_.begin(); it != cxxMethods_.end(); it++) {
+    result.push_back(jsi::PropNameID::forUtf8(runtime, it->name));
+  }
+  return result;
 }
 
 jsi::Value TurboCxxModule::invokeMethod(
     jsi::Runtime &runtime,
-    TurboModuleMethodValueKind valueKind,
     const std::string &methodName,
     const jsi::Value *args,
     size_t count) {

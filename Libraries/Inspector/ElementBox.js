@@ -10,14 +10,13 @@
 
 'use strict';
 
-const BorderBox = require('./BorderBox');
-const Dimensions = require('../Utilities/Dimensions');
-const React = require('react');
-const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
-
 const flattenStyle = require('../StyleSheet/flattenStyle');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Dimensions = require('../Utilities/Dimensions');
+const BorderBox = require('./BorderBox');
 const resolveBoxStyle = require('./resolveBoxStyle');
+const React = require('react');
 
 class ElementBox extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
@@ -26,7 +25,7 @@ class ElementBox extends React.Component<$FlowFixMeProps> {
     let padding = resolveBoxStyle('padding', style);
 
     const frameStyle = {...this.props.frame};
-    const contentStyle = {
+    const contentStyle: {width: number, height: number} = {
       width: this.props.frame.width,
       height: this.props.frame.height,
     };
@@ -102,7 +101,7 @@ type Style = {
  * @return a modified copy
  */
 function resolveRelativeSizes(style: $ReadOnly<Style>): Style {
-  let resolvedStyle = Object.assign({}, style);
+  let resolvedStyle = {...style};
   resolveSizeInPlace(resolvedStyle, 'top', 'height');
   resolveSizeInPlace(resolvedStyle, 'right', 'width');
   resolveSizeInPlace(resolvedStyle, 'bottom', 'height');

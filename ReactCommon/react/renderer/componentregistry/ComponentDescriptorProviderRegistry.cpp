@@ -7,11 +7,10 @@
 
 #include "ComponentDescriptorProviderRegistry.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void ComponentDescriptorProviderRegistry::add(
-    ComponentDescriptorProvider provider) const {
+    const ComponentDescriptorProvider &provider) const {
   std::unique_lock<butter::shared_mutex> lock(mutex_);
 
   /*
@@ -81,5 +80,4 @@ ComponentDescriptorProviderRegistry::createComponentDescriptorRegistry(
   return registry;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

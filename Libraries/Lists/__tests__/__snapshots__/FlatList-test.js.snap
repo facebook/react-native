@@ -58,6 +58,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <header />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <View
@@ -77,6 +78,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <View
@@ -96,6 +98,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <View
@@ -197,6 +200,7 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -216,6 +220,7 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
       </View>
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -268,6 +273,7 @@ exports[`FlatList renders simple list 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -276,6 +282,7 @@ exports[`FlatList renders simple list 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -284,6 +291,7 @@ exports[`FlatList renders simple list 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -328,6 +336,7 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -347,6 +356,7 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
       </View>
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -399,6 +409,7 @@ exports[`FlatList renders simple list using ListItemComponent 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -407,6 +418,7 @@ exports[`FlatList renders simple list using ListItemComponent 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -415,6 +427,7 @@ exports[`FlatList renders simple list using ListItemComponent 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >

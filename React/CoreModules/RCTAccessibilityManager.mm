@@ -283,9 +283,9 @@ RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers
 static void setMultipliers(
     NSMutableDictionary<NSString *, NSNumber *> *multipliers,
     NSString *key,
-    folly::Optional<double> optionalDouble)
+    std::optional<double> optionalDouble)
 {
-  if (optionalDouble.hasValue()) {
+  if (optionalDouble.has_value()) {
     multipliers[key] = @(optionalDouble.value());
   }
 }
@@ -358,6 +358,17 @@ RCT_EXPORT_METHOD(getCurrentReduceMotionState
                   : (__unused RCTResponseSenderBlock)onError)
 {
   onSuccess(@[ @(_isReduceMotionEnabled) ]);
+}
+
+RCT_EXPORT_METHOD(getCurrentPrefersCrossFadeTransitionsState
+                  : (RCTResponseSenderBlock)onSuccess onError
+                  : (__unused RCTResponseSenderBlock)onError)
+{
+  if (@available(iOS 14.0, *)) {
+    onSuccess(@[ @(UIAccessibilityPrefersCrossFadeTransitions()) ]);
+  } else {
+    onSuccess(@[ @(false) ]);
+  }
 }
 
 RCT_EXPORT_METHOD(getCurrentReduceTransparencyState

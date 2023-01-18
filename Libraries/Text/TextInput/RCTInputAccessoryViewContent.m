@@ -9,8 +9,7 @@
 
 #import <React/UIView+React.h>
 
-@implementation RCTInputAccessoryViewContent
-{
+@implementation RCTInputAccessoryViewContent {
   RCTUIView *_safeAreaContainer; // [macOS]
   NSLayoutConstraint *_heightConstraint;
 }

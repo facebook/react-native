@@ -12,6 +12,8 @@
 
 @protocol RCTSurfaceProtocol;
 
+@protocol RCTSurfaceProtocol;
+
 NS_ASSUME_NONNULL_BEGIN
 
 // TODO: Eventually this should go away and files should just include RCTSurfacePresenter.h, but

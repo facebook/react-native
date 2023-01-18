@@ -40,6 +40,7 @@ namespace m = ::facebook::hermes::inspector::chrome::message;
 static const char *const kVirtualBreakpointPrefix = "virtualbreakpoint-";
 static const char *const kBeforeScriptWithSourceMapExecution =
     "beforeScriptWithSourceMapExecution";
+static const char *const kUserEnteredScriptPrefix = "userScript";
 
 /*
  * Connection::Impl
@@ -54,7 +55,7 @@ class Connection::Impl : public inspector::InspectorObserver,
       bool waitForDebugger);
   ~Impl();
 
-  jsi::Runtime &getRuntime();
+  HermesRuntime &getRuntime();
   std::string getTitle() const;
 
   bool connect(std::unique_ptr<IRemoteConnection> remoteConn);
@@ -101,9 +102,14 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(
       const m::heapProfiler::GetObjectByHeapObjectIdRequest &req) override;
   void handle(const m::heapProfiler::GetHeapObjectIdRequest &req) override;
+  void handle(const m::profiler::StartRequest &req) override;
+  void handle(const m::profiler::StopRequest &req) override;
   void handle(const m::runtime::CallFunctionOnRequest &req) override;
+  void handle(const m::runtime::CompileScriptRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
+  void handle(const m::runtime::GetHeapUsageRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
+  void handle(const m::runtime::GlobalLexicalScopeNamesRequest &req) override;
   void handle(const m::runtime::RunIfWaitingForDebuggerRequest &req) override;
 
  private:
@@ -134,6 +140,11 @@ class Connection::Impl : public inspector::InspectorObserver,
   void sendNotificationToClientViaExecutor(const m::Notification &note);
   void sendErrorToClientViaExecutor(int id, const std::string &error);
 
+  template <typename C>
+  void runInExecutor(int id, C callback) {
+    executor_->add([cb = std::move(callback)]() { cb(); });
+  }
+
   std::shared_ptr<RuntimeAdapter> runtimeAdapter_;
   std::string title_;
 
@@ -150,6 +161,10 @@ class Connection::Impl : public inspector::InspectorObserver,
   // Access is protected by parsedScriptsMutex_.
   std::mutex parsedScriptsMutex_;
   std::vector<std::string> parsedScripts_;
+
+  // preparedScripts_ stores user-entered scripts that have been prepared for
+  // execution, and may be invoked by a later command.
+  std::vector<std::shared_ptr<const jsi::PreparedJavaScript>> preparedScripts_;
 
   // Some events are represented as a mode in Hermes but a breakpoint in CDP,
   // e.g. "beforeScriptExecution" and "beforeScriptWithSourceMapExecution".
@@ -194,7 +209,7 @@ Connection::Impl::Impl(
 
 Connection::Impl::~Impl() = default;
 
-jsi::Runtime &Connection::Impl::getRuntime() {
+HermesRuntime &Connection::Impl::getRuntime() {
   return runtimeAdapter_->getRuntime();
 }
 
@@ -375,8 +390,7 @@ void Connection::Impl::onScriptParsed(
   m::debugger::ScriptParsedNotification note;
   note.scriptId = folly::to<std::string>(info.fileId);
   note.url = info.fileName;
-  // TODO(jpporto): fix test cases sending invalid context id.
-  // note.executionContextId = kHermesExecutionContextId;
+  note.executionContextId = kHermesExecutionContextId;
 
   if (!info.sourceMappingUrl.empty()) {
     note.sourceMapURL = info.sourceMappingUrl;
@@ -720,6 +734,46 @@ void Connection::Impl::handle(
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
+void Connection::Impl::handle(const m::profiler::StartRequest &req) {
+  runInExecutor(req.id, [this, id = req.id]() {
+    HermesRuntime::enableSamplingProfiler();
+    sendResponseToClient(m::makeOkResponse(id));
+  });
+}
+
+void Connection::Impl::handle(const m::profiler::StopRequest &req) {
+  HermesRuntime *hermesRT = &getRuntime();
+
+  runInExecutor(req.id, [this, id = req.id, hermesRT]() {
+    HermesRuntime::disableSamplingProfiler();
+
+    std::ostringstream profileStream;
+    // HermesRuntime instance methods are usually unsafe to be called with a
+    // running VM, but sampledTraceToStreamInDevToolsFormat is an exception to
+    // that rule -- it synchronizes access to shared resources so it can be
+    // safely invoked with a running VM.
+    hermesRT->sampledTraceToStreamInDevToolsFormat(profileStream);
+
+    // Hermes can emit the proper format directly, but it still needs to
+    // be parsed into a dynamic.
+    try {
+      m::profiler::StopResponse resp;
+      resp.id = id;
+      // parseJson throws on errors, so make sure we don't crash the app
+      // if somehow the sampling profiler output is borked.
+      resp.profile = m::profiler::Profile(
+          folly::parseJson(std::move(profileStream).str()));
+      sendResponseToClient(resp);
+    } catch (const std::exception &) {
+      LOG(ERROR) << "Failed to parse Sampling Profiler output";
+      sendResponseToClient(m::makeErrorResponse(
+          id,
+          m::ErrorCode::InternalError,
+          "Hermes profile output could not be parsed."));
+    }
+  });
+}
+
 namespace {
 /// Runtime.CallArguments can have their values specified "inline", or they can
 /// have remote references. The inline values are eval'd together with the
@@ -1026,6 +1080,42 @@ void Connection::Impl::handle(const m::runtime::CallFunctionOnRequest &req) {
 
             sendResponseToClient(resp);
           })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(const m::runtime::CompileScriptRequest &req) {
+  auto resp = std::make_shared<m::runtime::CompileScriptResponse>();
+  resp->id = req.id;
+
+  inspector_
+      ->executeIfEnabled(
+          "Runtime.compileScriptRequest",
+          [this, req, resp](const debugger::ProgramState &state) {
+            if (req.executionContextId.hasValue() &&
+                req.executionContextId.value() != kHermesExecutionContextId) {
+              throw std::invalid_argument("Invalid execution context");
+            }
+
+            auto source = std::make_shared<jsi::StringBuffer>(req.expression);
+            std::shared_ptr<const jsi::PreparedJavaScript> preparedScript;
+            try {
+              preparedScript =
+                  getRuntime().prepareJavaScript(source, req.sourceURL);
+            } catch (const facebook::jsi::JSIException &err) {
+              resp->exceptionDetails = m::runtime::ExceptionDetails();
+              resp->exceptionDetails->text = err.what();
+              return;
+            }
+
+            if (req.persistScript) {
+              auto scriptId = folly::to<std::string>(
+                  kUserEnteredScriptPrefix, preparedScripts_.size());
+              preparedScripts_.push_back(std::move(preparedScript));
+              resp->scriptId = scriptId;
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
@@ -1348,6 +1438,17 @@ Connection::Impl::makePropsFromValue(
   return result;
 }
 
+void Connection::Impl::handle(const m::runtime::GetHeapUsageRequest &req) {
+  runInExecutor(req.id, [this, req]() {
+    auto heapInfo = getRuntime().instrumentation().getHeapInfo(false);
+    auto resp = std::make_shared<m::runtime::GetHeapUsageResponse>();
+    resp->id = req.id;
+    resp->usedSize = heapInfo["hermes_allocatedBytes"];
+    resp->totalSize = heapInfo["hermes_heapSize"];
+    sendResponseToClient(*resp);
+  });
+}
+
 void Connection::Impl::handle(const m::runtime::GetPropertiesRequest &req) {
   auto resp = std::make_shared<m::runtime::GetPropertiesResponse>();
   resp->id = req.id;
@@ -1365,6 +1466,45 @@ void Connection::Impl::handle(const m::runtime::GetPropertiesRequest &req) {
             } else if (valuePtr != nullptr) {
               resp->result = makePropsFromValue(
                   *valuePtr, objGroup, req.ownProperties.value_or(true));
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::runtime::GlobalLexicalScopeNamesRequest &req) {
+  auto resp = std::make_shared<m::runtime::GlobalLexicalScopeNamesResponse>();
+  resp->id = req.id;
+
+  inspector_
+      ->executeIfEnabled(
+          "Runtime.globalLexicalScopeNames",
+          [req, resp](const debugger::ProgramState &state) {
+            if (req.executionContextId.hasValue() &&
+                req.executionContextId.value() != kHermesExecutionContextId) {
+              throw std::invalid_argument("Invalid execution context");
+            }
+
+            const debugger::LexicalInfo &lexicalInfo = state.getLexicalInfo(0);
+            debugger::ScopeDepth scopeCount = lexicalInfo.getScopesCount();
+            if (scopeCount == 0) {
+              return;
+            }
+
+            const debugger::ScopeDepth globalScopeIndex = scopeCount - 1;
+            uint32_t variableCount =
+                lexicalInfo.getVariablesCountInScope(globalScopeIndex);
+            resp->names.reserve(variableCount);
+            for (uint32_t i = 0; i < variableCount; i++) {
+              debugger::String name =
+                  state.getVariableInfo(0, globalScopeIndex, i).name;
+              // The global scope has some entries prefixed with '?', which are
+              // not valid identifiers.
+              if (!name.empty() && name.front() != '?') {
+                resp->names.push_back(name);
+              }
             }
           })
       .via(executor_.get())
@@ -1460,7 +1600,7 @@ Connection::Connection(
 
 Connection::~Connection() = default;
 
-jsi::Runtime &Connection::getRuntime() {
+HermesRuntime &Connection::getRuntime() {
   return impl_->getRuntime();
 }
 

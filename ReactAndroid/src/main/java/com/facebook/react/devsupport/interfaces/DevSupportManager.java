@@ -11,7 +11,7 @@ import android.app.Activity;
 import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.SurfaceDelegate;
@@ -23,7 +23,7 @@ import java.io.File;
  * implementation {@link BridgeDevSupportManager}. In production mode, use the dummy implementation
  * {@link DisabledDevSupportManager}.
  */
-public interface DevSupportManager extends NativeModuleCallExceptionHandler {
+public interface DevSupportManager extends JSExceptionHandler {
 
   void showNewJavaError(String message, Throwable e);
 

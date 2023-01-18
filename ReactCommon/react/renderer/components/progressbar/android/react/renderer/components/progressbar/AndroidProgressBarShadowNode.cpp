@@ -10,8 +10,7 @@
 #include <react/renderer/components/progressbar/AndroidProgressBarShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char AndroidProgressBarComponentName[] = "AndroidProgressBar";
 
@@ -25,11 +24,10 @@ void AndroidProgressBarShadowNode::setAndroidProgressBarMeasurementsManager(
 #pragma mark - LayoutableShadowNode
 
 Size AndroidProgressBarShadowNode::measureContent(
-    LayoutContext const &layoutContext,
+    LayoutContext const & /*layoutContext*/,
     LayoutConstraints const &layoutConstraints) const {
   return measurementsManager_->measure(
       getSurfaceId(), getConcreteProps(), layoutConstraints);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

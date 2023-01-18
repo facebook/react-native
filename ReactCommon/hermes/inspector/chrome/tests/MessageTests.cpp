@@ -692,7 +692,10 @@ TEST(MessageTests, testResumeRequest) {
   std::string message = R"(
     {
       "id": 10,
-      "method": "Debugger.resume"
+      "method": "Debugger.resume",
+      "params": {
+        "terminateOnResume": false
+      }
     }
   )";
 

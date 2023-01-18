@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
@@ -14,6 +14,10 @@ const ViewabilityHelper = require('../ViewabilityHelper');
 
 let rowFrames;
 let data;
+const props = {
+  data,
+  getItemCount: () => data.length,
+};
 function getFrameMetrics(index: number) {
   const frame = rowFrames[data[index].key];
   return {length: frame.height, offset: frame.y};
@@ -34,9 +38,9 @@ describe('computeViewableItems', function () {
       d: {y: 150, height: 50},
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
-    expect(
-      helper.computeViewableItems(data.length, 0, 200, getFrameMetrics),
-    ).toEqual([0, 1, 2, 3]);
+    expect(helper.computeViewableItems(props, 0, 200, getFrameMetrics)).toEqual(
+      [0, 1, 2, 3],
+    );
   });
 
   it('returns top 2 rows as viewable (1. entirely visible and 2. majority)', function () {
@@ -50,9 +54,9 @@ describe('computeViewableItems', function () {
       d: {y: 250, height: 50},
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
-    expect(
-      helper.computeViewableItems(data.length, 0, 200, getFrameMetrics),
-    ).toEqual([0, 1]);
+    expect(helper.computeViewableItems(props, 0, 200, getFrameMetrics)).toEqual(
+      [0, 1],
+    );
   });
 
   it('returns only 2nd row as viewable (majority)', function () {
@@ -67,7 +71,7 @@ describe('computeViewableItems', function () {
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
     expect(
-      helper.computeViewableItems(data.length, 25, 200, getFrameMetrics),
+      helper.computeViewableItems(props, 25, 200, getFrameMetrics),
     ).toEqual([1]);
   });
 
@@ -77,9 +81,9 @@ describe('computeViewableItems', function () {
     });
     rowFrames = {};
     data = [];
-    expect(
-      helper.computeViewableItems(data.length, 0, 200, getFrameMetrics),
-    ).toEqual([]);
+    expect(helper.computeViewableItems(props, 0, 200, getFrameMetrics)).toEqual(
+      [],
+    );
   });
 
   it('handles different view area coverage percent thresholds', function () {
@@ -92,39 +96,39 @@ describe('computeViewableItems', function () {
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
 
     let helper = new ViewabilityHelper({viewAreaCoveragePercentThreshold: 0});
+    expect(helper.computeViewableItems(props, 0, 50, getFrameMetrics)).toEqual([
+      0,
+    ]);
+    expect(helper.computeViewableItems(props, 1, 50, getFrameMetrics)).toEqual([
+      0, 1,
+    ]);
     expect(
-      helper.computeViewableItems(data.length, 0, 50, getFrameMetrics),
-    ).toEqual([0]);
-    expect(
-      helper.computeViewableItems(data.length, 1, 50, getFrameMetrics),
-    ).toEqual([0, 1]);
-    expect(
-      helper.computeViewableItems(data.length, 199, 50, getFrameMetrics),
+      helper.computeViewableItems(props, 199, 50, getFrameMetrics),
     ).toEqual([1, 2]);
     expect(
-      helper.computeViewableItems(data.length, 250, 50, getFrameMetrics),
+      helper.computeViewableItems(props, 250, 50, getFrameMetrics),
     ).toEqual([2]);
 
     helper = new ViewabilityHelper({viewAreaCoveragePercentThreshold: 100});
+    expect(helper.computeViewableItems(props, 0, 200, getFrameMetrics)).toEqual(
+      [0, 1],
+    );
+    expect(helper.computeViewableItems(props, 1, 200, getFrameMetrics)).toEqual(
+      [1],
+    );
     expect(
-      helper.computeViewableItems(data.length, 0, 200, getFrameMetrics),
-    ).toEqual([0, 1]);
-    expect(
-      helper.computeViewableItems(data.length, 1, 200, getFrameMetrics),
-    ).toEqual([1]);
-    expect(
-      helper.computeViewableItems(data.length, 400, 200, getFrameMetrics),
+      helper.computeViewableItems(props, 400, 200, getFrameMetrics),
     ).toEqual([2]);
     expect(
-      helper.computeViewableItems(data.length, 600, 200, getFrameMetrics),
+      helper.computeViewableItems(props, 600, 200, getFrameMetrics),
     ).toEqual([3]);
 
     helper = new ViewabilityHelper({viewAreaCoveragePercentThreshold: 10});
     expect(
-      helper.computeViewableItems(data.length, 30, 200, getFrameMetrics),
+      helper.computeViewableItems(props, 30, 200, getFrameMetrics),
     ).toEqual([0, 1, 2]);
     expect(
-      helper.computeViewableItems(data.length, 31, 200, getFrameMetrics),
+      helper.computeViewableItems(props, 31, 200, getFrameMetrics),
     ).toEqual([1, 2]);
   });
 
@@ -137,30 +141,30 @@ describe('computeViewableItems', function () {
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
     let helper = new ViewabilityHelper({itemVisiblePercentThreshold: 0});
-    expect(
-      helper.computeViewableItems(data.length, 0, 50, getFrameMetrics),
-    ).toEqual([0]);
-    expect(
-      helper.computeViewableItems(data.length, 1, 50, getFrameMetrics),
-    ).toEqual([0, 1]);
+    expect(helper.computeViewableItems(props, 0, 50, getFrameMetrics)).toEqual([
+      0,
+    ]);
+    expect(helper.computeViewableItems(props, 1, 50, getFrameMetrics)).toEqual([
+      0, 1,
+    ]);
 
     helper = new ViewabilityHelper({itemVisiblePercentThreshold: 100});
-    expect(
-      helper.computeViewableItems(data.length, 0, 250, getFrameMetrics),
-    ).toEqual([0, 1, 2]);
-    expect(
-      helper.computeViewableItems(data.length, 1, 250, getFrameMetrics),
-    ).toEqual([1, 2]);
+    expect(helper.computeViewableItems(props, 0, 250, getFrameMetrics)).toEqual(
+      [0, 1, 2],
+    );
+    expect(helper.computeViewableItems(props, 1, 250, getFrameMetrics)).toEqual(
+      [1, 2],
+    );
 
     helper = new ViewabilityHelper({itemVisiblePercentThreshold: 10});
     expect(
-      helper.computeViewableItems(data.length, 184, 20, getFrameMetrics),
+      helper.computeViewableItems(props, 184, 20, getFrameMetrics),
     ).toEqual([1]);
     expect(
-      helper.computeViewableItems(data.length, 185, 20, getFrameMetrics),
+      helper.computeViewableItems(props, 185, 20, getFrameMetrics),
     ).toEqual([1, 2]);
     expect(
-      helper.computeViewableItems(data.length, 186, 20, getFrameMetrics),
+      helper.computeViewableItems(props, 186, 20, getFrameMetrics),
     ).toEqual([2]);
   });
 });
@@ -174,7 +178,7 @@ describe('onUpdate', function () {
     data = [{key: 'a'}];
     const onViewableItemsChanged = jest.fn();
     helper.onUpdate(
-      data.length,
+      props,
       0,
       200,
       getFrameMetrics,
@@ -188,7 +192,7 @@ describe('onUpdate', function () {
       viewableItems: [{isViewable: true, key: 'a'}],
     });
     helper.onUpdate(
-      data.length,
+      props,
       0,
       200,
       getFrameMetrics,
@@ -197,7 +201,7 @@ describe('onUpdate', function () {
     );
     expect(onViewableItemsChanged.mock.calls.length).toBe(1); // nothing changed!
     helper.onUpdate(
-      data.length,
+      props,
       100,
       200,
       getFrameMetrics,
@@ -221,7 +225,7 @@ describe('onUpdate', function () {
     data = [{key: 'a'}, {key: 'b'}];
     const onViewableItemsChanged = jest.fn();
     helper.onUpdate(
-      data.length,
+      props,
       0,
       200,
       getFrameMetrics,
@@ -235,7 +239,7 @@ describe('onUpdate', function () {
       viewableItems: [{isViewable: true, key: 'a'}],
     });
     helper.onUpdate(
-      data.length,
+      props,
       100,
       200,
       getFrameMetrics,
@@ -253,7 +257,7 @@ describe('onUpdate', function () {
       ],
     });
     helper.onUpdate(
-      data.length,
+      props,
       200,
       200,
       getFrameMetrics,
@@ -280,7 +284,7 @@ describe('onUpdate', function () {
     data = [{key: 'a'}, {key: 'b'}];
     const onViewableItemsChanged = jest.fn();
     helper.onUpdate(
-      data.length,
+      props,
       0,
       200,
       getFrameMetrics,
@@ -314,7 +318,7 @@ describe('onUpdate', function () {
     data = [{key: 'a'}, {key: 'b'}];
     const onViewableItemsChanged = jest.fn();
     helper.onUpdate(
-      data.length,
+      props,
       0,
       200,
       getFrameMetrics,
@@ -322,7 +326,7 @@ describe('onUpdate', function () {
       onViewableItemsChanged,
     );
     helper.onUpdate(
-      data.length,
+      props,
       300, // scroll past item 'a'
       200,
       getFrameMetrics,
@@ -355,7 +359,7 @@ describe('onUpdate', function () {
     data = [{key: 'a'}, {key: 'b'}];
     const onViewableItemsChanged = jest.fn();
     helper.onUpdate(
-      data.length,
+      props,
       0,
       100,
       getFrameMetrics,
@@ -367,7 +371,7 @@ describe('onUpdate', function () {
     helper.recordInteraction();
 
     helper.onUpdate(
-      data.length,
+      props,
       20,
       100,
       getFrameMetrics,
@@ -394,7 +398,7 @@ describe('onUpdate', function () {
     data = [{key: 'a'}, {key: 'b'}];
     const onViewableItemsChanged = jest.fn();
     helper.onUpdate(
-      data.length,
+      props,
       0,
       200,
       getFrameMetrics,
@@ -419,7 +423,7 @@ describe('onUpdate', function () {
     helper.resetViewableIndices();
 
     helper.onUpdate(
-      data.length,
+      props,
       0,
       200,
       getFrameMetrics,

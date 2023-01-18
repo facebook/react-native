@@ -15,7 +15,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 /** Event emitted by a ReactSliderManager when user changes slider position. */
 public class ReactSliderEvent extends Event<ReactSliderEvent> {
 
-  public static final String EVENT_NAME = "topChange";
+  public static final String EVENT_NAME = "topValueChange";
 
   private final double mValue;
   private final boolean mFromUser;

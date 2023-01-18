@@ -14,15 +14,14 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length)
     const noexcept {
   *length = 0;
 
   // Prefix
-  if (prefix) {
+  if (prefix != nullptr) {
     auto prefixLength =
         static_cast<RawPropsPropNameLength>(std::strlen(prefix));
     std::memcpy(buffer, prefix, prefixLength);
@@ -35,7 +34,7 @@ void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length)
   *length += nameLength;
 
   // Suffix
-  if (suffix) {
+  if (suffix != nullptr) {
     auto suffixLength =
         static_cast<RawPropsPropNameLength>(std::strlen(suffix));
     std::memcpy(buffer + *length, suffix, suffixLength);
@@ -56,7 +55,7 @@ static bool areFieldsEqual(char const *lhs, char const *rhs) {
   if (lhs == nullptr || rhs == nullptr) {
     return lhs == rhs;
   }
-  return std::string(lhs) == std::string(rhs);
+  return lhs == rhs || strcmp(lhs, rhs) == 0;
 }
 
 bool operator==(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept {
@@ -70,5 +69,4 @@ bool operator!=(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept {
   return !(lhs == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

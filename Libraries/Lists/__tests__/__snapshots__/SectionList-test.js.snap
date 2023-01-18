@@ -39,10 +39,12 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     />
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -51,6 +53,7 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -59,6 +62,7 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     />
@@ -98,6 +102,7 @@ exports[`SectionList renders a footer when there is no data 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -106,6 +111,7 @@ exports[`SectionList renders a footer when there is no data 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -149,10 +155,12 @@ exports[`SectionList renders a footer when there is no data and no header 1`] = 
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     />
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -250,6 +258,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -258,6 +267,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -274,6 +284,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       </View>
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -287,6 +298,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       </View>
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -295,6 +307,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -303,6 +316,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -319,6 +333,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       </View>
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -332,6 +347,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       </View>
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -340,6 +356,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -348,6 +365,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -364,6 +382,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       </View>
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -377,6 +396,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       </View>
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >

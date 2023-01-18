@@ -8,20 +8,31 @@
  * @format
  */
 
-import * as React from 'react';
-import BoundingDimensions from './BoundingDimensions';
-import Platform from '../../Utilities/Platform';
-import Position from './Position';
-import UIManager from '../../ReactNative/UIManager';
-import SoundManager from '../Sound/SoundManager';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {TouchableType} from './Touchable.flow';
 
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
+import UIManager from '../../ReactNative/UIManager';
+import Platform from '../../Utilities/Platform';
+import SoundManager from '../Sound/SoundManager';
+import BoundingDimensions from './BoundingDimensions';
+import Position from './Position';
+import * as React from 'react';
 
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
-import type {PressEvent} from '../../Types/CoreEventTypes';
-
-const extractSingleTouch = nativeEvent => {
+const extractSingleTouch = (nativeEvent: {
+  +changedTouches: $ReadOnlyArray<PressEvent['nativeEvent']>,
+  +force?: number,
+  +identifier: number,
+  +locationX: number,
+  +locationY: number,
+  +pageX: number,
+  +pageY: number,
+  +target: ?number,
+  +timestamp: number,
+  +touches: $ReadOnlyArray<PressEvent['nativeEvent']>,
+}) => {
   const touches = nativeEvent.touches;
   const changedTouches = nativeEvent.changedTouches;
   const hasTouches = touches && touches.length > 0;
@@ -370,6 +381,8 @@ const TouchableMixin = {
   /**
    * Clear all timeouts on unmount
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   componentWillUnmount: function () {
     this.touchableDelayTimeout && clearTimeout(this.touchableDelayTimeout);
     this.longPressDelayTimeout && clearTimeout(this.longPressDelayTimeout);
@@ -395,6 +408,8 @@ const TouchableMixin = {
   /**
    * Must return true if embedded in a native platform scroll view.
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   touchableHandleResponderTerminationRequest: function (): any {
     return !this.props.rejectResponderTermination;
   },
@@ -402,6 +417,8 @@ const TouchableMixin = {
   /**
    * Must return true to start the process of `Touchable`.
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   touchableHandleStartShouldSetResponder: function (): any {
     return !this.props.disabled;
   },
@@ -418,6 +435,8 @@ const TouchableMixin = {
    * @param {SyntheticEvent} e Synthetic event from event system.
    *
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   touchableHandleResponderGrant: function (e: PressEvent) {
     const dispatchID = e.currentTarget;
     // Since e is used in a callback invoked on another event loop
@@ -459,6 +478,8 @@ const TouchableMixin = {
   /**
    * Place as callback for a DOM element's `onResponderRelease` event.
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   touchableHandleResponderRelease: function (e: PressEvent) {
     this.pressInLocation = null;
     this._receiveSignal(Signals.RESPONDER_RELEASE, e);
@@ -467,6 +488,8 @@ const TouchableMixin = {
   /**
    * Place as callback for a DOM element's `onResponderTerminate` event.
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   touchableHandleResponderTerminate: function (e: PressEvent) {
     this.pressInLocation = null;
     this._receiveSignal(Signals.RESPONDER_TERMINATED, e);
@@ -475,6 +498,8 @@ const TouchableMixin = {
   /**
    * Place as callback for a DOM element's `onResponderMove` event.
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   touchableHandleResponderMove: function (e: PressEvent) {
     // Measurement may not have returned yet.
     if (!this.state.touchable.positionOnActivate) {
@@ -560,6 +585,8 @@ const TouchableMixin = {
    * element that was blurred just prior to this. This can be overridden when
    * using `Touchable.Mixin.withoutDefaultFocusAndBlur`.
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   touchableHandleFocus: function (e: Event) {
     this.props.onFocus && this.props.onFocus(e);
   },
@@ -572,6 +599,8 @@ const TouchableMixin = {
    * This can be overridden when using
    * `Touchable.Mixin.withoutDefaultFocusAndBlur`.
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   touchableHandleBlur: function (e: Event) {
     this.props.onBlur && this.props.onBlur(e);
   },
@@ -652,6 +681,8 @@ const TouchableMixin = {
    * @sideeffects
    * @private
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   _remeasureMetricsOnActivation: function () {
     const responderID = this.state.touchable.responderID;
     if (responderID == null) {
@@ -665,6 +696,8 @@ const TouchableMixin = {
     }
   },
 
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   _handleQueryLayout: function (
     l: number,
     t: number,
@@ -691,11 +724,15 @@ const TouchableMixin = {
     );
   },
 
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   _handleDelay: function (e: PressEvent) {
     this.touchableDelayTimeout = null;
     this._receiveSignal(Signals.DELAY, e);
   },
 
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   _handleLongDelay: function (e: PressEvent) {
     this.longPressDelayTimeout = null;
     const curState = this.state.touchable.touchState;
@@ -715,6 +752,8 @@ const TouchableMixin = {
    * @throws Error if invalid state transition or unrecognized signal.
    * @sideeffects
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   _receiveSignal: function (signal: Signal, e: PressEvent) {
     const responderID = this.state.touchable.responderID;
     const curState = this.state.touchable.touchState;
@@ -754,6 +793,8 @@ const TouchableMixin = {
     }
   },
 
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   _cancelLongPressDelayTimeout: function () {
     this.longPressDelayTimeout && clearTimeout(this.longPressDelayTimeout);
     this.longPressDelayTimeout = null;
@@ -766,6 +807,8 @@ const TouchableMixin = {
     );
   },
 
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   _savePressInLocation: function (e: PressEvent) {
     const touch = extractSingleTouch(e.nativeEvent);
     const pageX = touch && touch.pageX;
@@ -797,6 +840,8 @@ const TouchableMixin = {
    * @param {Event} e Native event.
    * @sideeffects
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   _performSideEffectsForTransition: function (
     curState: State,
     nextState: State,
@@ -858,11 +903,15 @@ const TouchableMixin = {
     this.touchableDelayTimeout = null;
   },
 
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   _startHighlight: function (e: PressEvent) {
     this._savePressInLocation(e);
     this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
   },
 
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   _endHighlight: function (e: PressEvent) {
     if (this.touchableHandleActivePressOut) {
       if (
@@ -878,7 +927,7 @@ const TouchableMixin = {
     }
   },
 
-  withoutDefaultFocusAndBlur: ({}: $TEMPORARY$object<{||}>),
+  withoutDefaultFocusAndBlur: ({}: {...}),
 };
 
 /**
@@ -895,7 +944,7 @@ const {
 TouchableMixin.withoutDefaultFocusAndBlur =
   TouchableMixinWithoutDefaultFocusAndBlur;
 
-const Touchable = {
+const Touchable: TouchableType = {
   Mixin: TouchableMixin,
   /**
    * Renders a debugging overlay to visualize touch target with hitSlop (might not work on Android).

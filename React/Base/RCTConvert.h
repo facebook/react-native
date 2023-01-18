@@ -9,6 +9,7 @@
 #import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTAnimationType.h>
+#import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
@@ -66,6 +67,7 @@ typedef NSURL RCTFileURL;
 + (NSUnderlineStyle)NSUnderlineStyle:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
 #if !TARGET_OS_OSX // [macOS]
++ (NSLineBreakStrategy)NSLineBreakStrategy:(id)json;
 + (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
 + (UITextFieldViewMode)UITextFieldViewMode:(id)json;
 + (UIKeyboardType)UIKeyboardType:(id)json;
@@ -141,6 +143,7 @@ typedef BOOL css_backface_visibility_t;
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
 + (RCTBorderStyle)RCTBorderStyle:(id)json;
++ (RCTBorderCurve)RCTBorderCurve:(id)json;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
 + (RCTFontSmoothing)RCTFontSmoothing:(id)json; // [macOS]
 

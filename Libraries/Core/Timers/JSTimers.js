@@ -8,12 +8,11 @@
  * @flow
  */
 
+import NativeTiming from './NativeTiming';
+
 const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
 const Systrace = require('../../Performance/Systrace');
-
 const invariant = require('invariant');
-
-import NativeTiming from './NativeTiming';
 
 /**
  * JS implementation of timer functions. Must be completely driven by an
@@ -243,7 +242,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked before the end of the
    * current JavaScript execution loop.
    */
-  queueReactNativeMicrotask: function (func: Function, ...args: any) {
+  queueReactNativeMicrotask: function (func: Function, ...args: any): number {
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'queueReactNativeMicrotask',
@@ -255,7 +254,7 @@ const JSTimers = {
   /**
    * @param {function} func Callback to be invoked every frame.
    */
-  requestAnimationFrame: function (func: Function) {
+  requestAnimationFrame: function (func: Function): any | number {
     const id = _allocateCallback(func, 'requestAnimationFrame');
     createTimer(id, 1, Date.now(), /* recurring */ false);
     return id;
@@ -266,16 +265,19 @@ const JSTimers = {
    * with time remaining in frame.
    * @param {?object} options
    */
-  requestIdleCallback: function (func: Function, options: ?Object) {
+  requestIdleCallback: function (
+    func: Function,
+    options: ?Object,
+  ): any | number {
     if (requestIdleCallbacks.length === 0) {
       setSendIdleEvents(true);
     }
 
     const timeout = options && options.timeout;
-    const id = _allocateCallback(
+    const id: number = _allocateCallback(
       timeout != null
-        ? deadline => {
-            const timeoutId = requestIdleCallbackTimeouts[id];
+        ? (deadline: any) => {
+            const timeoutId: number = requestIdleCallbackTimeouts[id];
             if (timeoutId) {
               JSTimers.clearTimeout(timeoutId);
               delete requestIdleCallbackTimeouts[id];
@@ -288,8 +290,8 @@ const JSTimers = {
     requestIdleCallbacks.push(id);
 
     if (timeout != null) {
-      const timeoutId = JSTimers.setTimeout(() => {
-        const index = requestIdleCallbacks.indexOf(id);
+      const timeoutId: number = JSTimers.setTimeout(() => {
+        const index: number = requestIdleCallbacks.indexOf(id);
         if (index > -1) {
           requestIdleCallbacks.splice(index, 1);
           _callTimer(id, global.performance.now(), true);
@@ -346,7 +348,7 @@ const JSTimers = {
    * This is called from the native side. We are passed an array of timerIDs,
    * and
    */
-  callTimers: function (timersToCall: Array<number>) {
+  callTimers: function (timersToCall: Array<number>): any | void {
     invariant(
       timersToCall.length !== 0,
       'Cannot call `callTimers` with an empty list of IDs.',
@@ -364,7 +366,7 @@ const JSTimers = {
         // error one at a time
         for (let ii = 1; ii < errorCount; ii++) {
           JSTimers.setTimeout(
-            (error => {
+            ((error: Error) => {
               throw error;
             }).bind(null, errors[ii]),
             0,

@@ -17,8 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
-@property (nonatomic, assign) BOOL emulateUnlessSupported;
-
 @end
 
 NS_ASSUME_NONNULL_END

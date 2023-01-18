@@ -63,7 +63,7 @@ export default function verifyComponentAttributeEquivalence(
 // Return the different key-value pairs of the right object, by iterating through the keys in the left object
 // Note it won't return a difference where a key is missing in the left but exists the right.
 function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
-  const differentKeys = {};
+  const differentKeys: {[string]: any | {...}} = {};
 
   function compare(leftItem: any, rightItem: any, key: string) {
     if (typeof leftItem !== typeof rightItem && leftItem != null) {
@@ -110,7 +110,7 @@ export function getConfigWithoutViewProps(
 
   return Object.keys(viewConfig[propName])
     .filter(prop => !PlatformBaseViewConfig[propName][prop])
-    .reduce((obj, prop) => {
+    .reduce<{[string]: any}>((obj, prop) => {
       obj[prop] = viewConfig[propName][prop];
       return obj;
     }, {});

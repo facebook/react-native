@@ -15,12 +15,24 @@ namespace react {
 
 extern const char ViewComponentName[];
 
+/**
+ * Implementation of the ViewProps that propagates feature flag.
+ */
+class ViewShadowNodeProps final : public ViewProps {
+ public:
+  ViewShadowNodeProps() = default;
+  ViewShadowNodeProps(
+      const PropsParserContext &context,
+      ViewShadowNodeProps const &sourceProps,
+      RawProps const &rawProps);
+};
+
 /*
  * `ShadowNode` for <View> component.
  */
 class ViewShadowNode final : public ConcreteViewShadowNode<
                                  ViewComponentName,
-                                 ViewProps,
+                                 ViewShadowNodeProps,
                                  ViewEventEmitter> {
  public:
   static ShadowNodeTraits BaseTraits() {

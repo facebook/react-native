@@ -142,6 +142,7 @@ class JSCRuntime : public jsi::Runtime {
   };
 
   PointerValue *cloneSymbol(const Runtime::PointerValue *pv) override;
+  PointerValue *cloneBigInt(const Runtime::PointerValue *pv) override;
   PointerValue *cloneString(const Runtime::PointerValue *pv) override;
   PointerValue *cloneObject(const Runtime::PointerValue *pv) override;
   PointerValue *clonePropNameID(const Runtime::PointerValue *pv) override;
@@ -151,10 +152,18 @@ class JSCRuntime : public jsi::Runtime {
   jsi::PropNameID createPropNameIDFromUtf8(const uint8_t *utf8, size_t length)
       override;
   jsi::PropNameID createPropNameIDFromString(const jsi::String &str) override;
+  jsi::PropNameID createPropNameIDFromSymbol(const jsi::Symbol &sym) override;
   std::string utf8(const jsi::PropNameID &) override;
   bool compare(const jsi::PropNameID &, const jsi::PropNameID &) override;
 
   std::string symbolToString(const jsi::Symbol &) override;
+
+  jsi::BigInt createBigIntFromInt64(int64_t) override;
+  jsi::BigInt createBigIntFromUint64(uint64_t) override;
+  bool bigintIsInt64(const jsi::BigInt &) override;
+  bool bigintIsUint64(const jsi::BigInt &) override;
+  uint64_t truncate(const jsi::BigInt &) override;
+  jsi::String bigintToString(const jsi::BigInt &, int) override;
 
   jsi::String createStringFromAscii(const char *str, size_t length) override;
   jsi::String createStringFromUtf8(const uint8_t *utf8, size_t length) override;
@@ -165,6 +174,12 @@ class JSCRuntime : public jsi::Runtime {
   virtual std::shared_ptr<jsi::HostObject> getHostObject(
       const jsi::Object &) override;
   jsi::HostFunctionType &getHostFunction(const jsi::Function &) override;
+
+  bool hasNativeState(const jsi::Object &) override;
+  std::shared_ptr<jsi::NativeState> getNativeState(
+      const jsi::Object &) override;
+  void setNativeState(const jsi::Object &, std::shared_ptr<jsi::NativeState>)
+      override;
 
   jsi::Value getProperty(const jsi::Object &, const jsi::String &name) override;
   jsi::Value getProperty(const jsi::Object &, const jsi::PropNameID &name)
@@ -191,6 +206,8 @@ class JSCRuntime : public jsi::Runtime {
   jsi::Value lockWeakObject(jsi::WeakObject &) override;
 
   jsi::Array createArray(size_t length) override;
+  jsi::ArrayBuffer createArrayBuffer(
+      std::shared_ptr<jsi::MutableBuffer> buffer) override;
   size_t size(const jsi::Array &) override;
   size_t size(const jsi::ArrayBuffer &) override;
   uint8_t *data(const jsi::ArrayBuffer &) override;
@@ -213,6 +230,7 @@ class JSCRuntime : public jsi::Runtime {
       size_t count) override;
 
   bool strictEquals(const jsi::Symbol &a, const jsi::Symbol &b) const override;
+  bool strictEquals(const jsi::BigInt &a, const jsi::BigInt &b) const override;
   bool strictEquals(const jsi::String &a, const jsi::String &b) const override;
   bool strictEquals(const jsi::Object &a, const jsi::Object &b) const override;
   bool instanceOf(const jsi::Object &o, const jsi::Function &f) override;
@@ -598,6 +616,11 @@ jsi::Runtime::PointerValue *JSCRuntime::cloneSymbol(
   return makeSymbolValue(symbol->sym_);
 }
 
+jsi::Runtime::PointerValue *JSCRuntime::cloneBigInt(
+    const Runtime::PointerValue *) {
+  throw std::logic_error("Not implemented");
+}
+
 jsi::Runtime::PointerValue *JSCRuntime::cloneString(
     const jsi::Runtime::PointerValue *pv) {
   if (!pv) {
@@ -653,6 +676,13 @@ jsi::PropNameID JSCRuntime::createPropNameIDFromString(const jsi::String &str) {
   return createPropNameID(stringRef(str));
 }
 
+jsi::PropNameID JSCRuntime::createPropNameIDFromSymbol(const jsi::Symbol &sym) {
+  // TODO: Support for symbols through the native API in JSC is very limited.
+  // While we could construct a PropNameID here, we would not be able to get a
+  // symbol property through the C++ API.
+  throw std::logic_error("Not implemented");
+}
+
 std::string JSCRuntime::utf8(const jsi::PropNameID &sym) {
   return JSStringToSTLString(stringRef(sym));
 }
@@ -663,6 +693,30 @@ bool JSCRuntime::compare(const jsi::PropNameID &a, const jsi::PropNameID &b) {
 
 std::string JSCRuntime::symbolToString(const jsi::Symbol &sym) {
   return jsi::Value(*this, sym).toString(*this).utf8(*this);
+}
+
+jsi::BigInt JSCRuntime::createBigIntFromInt64(int64_t) {
+  throw std::logic_error("Not implemented");
+}
+
+jsi::BigInt JSCRuntime::createBigIntFromUint64(uint64_t) {
+  throw std::logic_error("Not implemented");
+}
+
+bool JSCRuntime::bigintIsInt64(const jsi::BigInt &) {
+  throw std::logic_error("Not implemented");
+}
+
+bool JSCRuntime::bigintIsUint64(const jsi::BigInt &) {
+  throw std::logic_error("Not implemented");
+}
+
+uint64_t JSCRuntime::truncate(const jsi::BigInt &) {
+  throw std::logic_error("Not implemented");
+}
+
+jsi::String JSCRuntime::bigintToString(const jsi::BigInt &, int) {
+  throw std::logic_error("Not implemented");
 }
 
 jsi::String JSCRuntime::createStringFromAscii(const char *str, size_t length) {
@@ -847,6 +901,21 @@ std::shared_ptr<jsi::HostObject> JSCRuntime::getHostObject(
   return metadata->hostObject;
 }
 
+bool JSCRuntime::hasNativeState(const jsi::Object &) {
+  throw std::logic_error("Not implemented");
+}
+
+std::shared_ptr<jsi::NativeState> JSCRuntime::getNativeState(
+    const jsi::Object &) {
+  throw std::logic_error("Not implemented");
+}
+
+void JSCRuntime::setNativeState(
+    const jsi::Object &,
+    std::shared_ptr<jsi::NativeState>) {
+  throw std::logic_error("Not implemented");
+}
+
 jsi::Value JSCRuntime::getProperty(
     const jsi::Object &obj,
     const jsi::String &name) {
@@ -1018,6 +1087,11 @@ jsi::Array JSCRuntime::createArray(size_t length) {
       &exc);
   checkException(exc);
   return createObject(obj).getArray(*this);
+}
+
+jsi::ArrayBuffer JSCRuntime::createArrayBuffer(
+    std::shared_ptr<jsi::MutableBuffer> buffer) {
+  throw std::logic_error("Not implemented");
 }
 
 size_t JSCRuntime::size(const jsi::Array &arr) {
@@ -1289,6 +1363,11 @@ bool JSCRuntime::strictEquals(const jsi::Symbol &a, const jsi::Symbol &b)
   bool ret = JSValueIsEqual(ctx_, symbolRef(a), symbolRef(b), &exc);
   const_cast<JSCRuntime *>(this)->checkException(exc);
   return ret;
+}
+
+bool JSCRuntime::strictEquals(const jsi::BigInt &a, const jsi::BigInt &b)
+    const {
+  throw std::logic_error("Not implemented");
 }
 
 bool JSCRuntime::strictEquals(const jsi::String &a, const jsi::String &b)

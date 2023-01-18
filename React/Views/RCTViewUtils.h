@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTDefines.h>
+#import <UIKit/UIKit.h>
 
 #import <React/RCTUIKit.h> // [macOS]
 

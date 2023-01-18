@@ -17,9 +17,17 @@
  *   * Creates a gemfile
  */
 const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const {cat, echo, exec, exit, sed} = require('shelljs');
 const yargs = require('yargs');
 const {parseVersion} = require('./version-utils');
+const {saveFiles} = require('./scm-utils');
+
+const tmpVersioningFolder = fs.mkdtempSync(
+  path.join(os.tmpdir(), 'rn-set-version'),
+);
+echo(`The temp versioning folder is ${tmpVersioningFolder}`);
 
 let argv = yargs
   .option('v', {
@@ -113,6 +121,8 @@ try {
   exit(1);
 }
 
+saveFiles(['package.json', 'template/package.json'], tmpVersioningFolder);
+
 fs.writeFileSync(
   'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
   cat('scripts/versiontemplates/ReactNativeVersion.java.template')
@@ -189,6 +199,7 @@ packageJson.version = version;
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
 // Change ReactAndroid/gradle.properties
+saveFiles(['ReactAndroid/gradle.properties'], tmpVersioningFolder);
 if (
   sed(
     '-i',
@@ -228,10 +239,9 @@ const filesToValidate = [
   'ReactAndroid/gradle.properties',
   'template/package.json',
 ];
+
 const numberOfChangedLinesWithNewVersion = exec(
-  `git diff -U0 ${filesToValidate.join(
-    ' ',
-  )}| grep '^[+]' | grep -c ${version} `,
+  `diff -r ${tmpVersioningFolder} . | grep '^[>]' | grep -c ${version} `,
   {silent: true},
 ).stdout.trim();
 

@@ -7,10 +7,10 @@
 
 #include "ImageManager.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-ImageManager::ImageManager(ContextContainer::Shared const &contextContainer) {
+ImageManager::ImageManager(
+    ContextContainer::Shared const & /*contextContainer*/) {
   // Silence unused-private-field warning.
   (void)self_;
   // Not implemented.
@@ -22,10 +22,9 @@ ImageManager::~ImageManager() {
 
 ImageRequest ImageManager::requestImage(
     const ImageSource &imageSource,
-    SurfaceId surfaceId) const {
+    SurfaceId /*surfaceId*/) const {
   // Not implemented.
-  return ImageRequest(imageSource, nullptr);
+  return {imageSource, nullptr};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

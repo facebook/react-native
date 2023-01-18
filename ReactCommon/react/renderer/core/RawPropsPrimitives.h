@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <folly/Hash.h>
 #include <limits>
 
 namespace facebook {
@@ -20,6 +21,7 @@ static_assert(
     sizeof(RawPropsValueIndex) == 1,
     "RawPropsValueIndex must be one byte size.");
 using RawPropsPropNameLength = uint8_t;
+using RawPropsPropNameHash = uint32_t;
 
 /*
  * The number which is *usually* bigger than a number of explicitly specified

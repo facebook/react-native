@@ -1594,6 +1594,53 @@ const EXCLUDE_ANDROID_IOS: SchemaType = {
   },
 };
 
+const EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES: SchemaType = {
+  modules: {
+    ComponentFile1: {
+      type: 'Component',
+      components: {
+        ExcludedIosComponent: {
+          excludedPlatforms: ['iOS'],
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [],
+          commands: [],
+        },
+      },
+    },
+    ComponentFile2: {
+      type: 'Component',
+      components: {
+        MultiFileIncludedNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'disabled',
+              optional: true,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: true,
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 module.exports = {
   NO_PROPS_NO_EVENTS,
   INTERFACE_ONLY,
@@ -1621,4 +1668,5 @@ module.exports = {
   COMMANDS_AND_PROPS,
   EXCLUDE_ANDROID,
   EXCLUDE_ANDROID_IOS,
+  EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES,
 };

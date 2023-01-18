@@ -54,6 +54,7 @@ RCT_EXPORT_METHOD(show)
         return;
       }
 
+<<<<<<< HEAD
       if (strongSelf->_bridgelessSurfacePresenter) {
 #if !TARGET_OS_OSX // [macOS]
         strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:RCTKeyWindow().frame
@@ -75,7 +76,33 @@ RCT_EXPORT_METHOD(show)
 #else // [macOS
           strongSelf->_view = [[RCTLogBoxView alloc] initWithBridge:self->_bridge];
 #endif // macOS]
+||||||| 49f3f47b1e9
+      if (strongSelf->_bridge) {
+        if (strongSelf->_bridge.valid) {
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds
+                                                            bridge:strongSelf->_bridge];
+          [strongSelf->_view show];
+=======
+      if (strongSelf->_bridgelessSurfacePresenter) {
+        strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
+                                                 surfacePresenter:strongSelf->_bridgelessSurfacePresenter];
+        [strongSelf->_view show];
+      } else if (strongSelf->_bridge && strongSelf->_bridge.valid) {
+        if (strongSelf->_bridge.surfacePresenter) {
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
+                                                   surfacePresenter:strongSelf->_bridge.surfacePresenter];
+        } else {
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow() bridge:strongSelf->_bridge];
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
         }
+<<<<<<< HEAD
+||||||| 49f3f47b1e9
+      } else {
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:strongSelf, @"logbox", nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"CreateLogBoxSurface" object:nil userInfo:userInfo];
+=======
+        [strongSelf->_view show];
+>>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
       }
 
       [strongSelf->_view show];

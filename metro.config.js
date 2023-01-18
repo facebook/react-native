@@ -16,7 +16,14 @@ const getPolyfills = require('./rn-get-polyfills');
  * This cli config is needed for development purposes, e.g. for running
  * integration tests during local development or on CI services.
  */
-const config = {
+module.exports = {
+  resolver: {
+    // $FlowFixMe[signature-verification-failure] Can't infer RegExp type.
+    blockList: [/buck-out/, /sdks\/hermes/],
+    extraNodeModules: {
+      'react-native': __dirname,
+    },
+  },
   serializer: {
     getPolyfills,
   },

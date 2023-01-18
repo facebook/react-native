@@ -9,6 +9,7 @@
  */
 
 import type {TurboModule} from '../TurboModule/RCTExport';
+
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 type EndResult = {finished: boolean, ...};
@@ -64,6 +65,9 @@ export interface Spec extends TurboModule {
   // Events
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
+
+  // All of the above in a batched mode
+  +queueAndExecuteBatchedOperations?: (operationsAndArgs: Array<any>) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

@@ -10,11 +10,15 @@
 
 'use strict';
 
-const AnimatedValue = require('./AnimatedValue');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-const invariant = require('invariant');
+import AnimatedValue from './AnimatedValue';
+import AnimatedWithChildren from './AnimatedWithChildren';
+import invariant from 'invariant';
 
+export type AnimatedValueXYConfig = $ReadOnly<{
+  useNativeDriver: boolean,
+}>;
 type ValueXYListenerCallback = (value: {
   x: number,
   y: number,
@@ -29,7 +33,7 @@ let _uniqueId = 1;
  *
  * See https://reactnative.dev/docs/animatedvaluexy
  */
-class AnimatedValueXY extends AnimatedWithChildren {
+export default class AnimatedValueXY extends AnimatedWithChildren {
   x: AnimatedValue;
   y: AnimatedValue;
   _listeners: {
@@ -47,6 +51,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
       +y: number | AnimatedValue,
       ...
     },
+    config?: ?AnimatedValueXYConfig,
   ) {
     super();
     const value: any = valueIn || {x: 0, y: 0}; // @flowfixme: shouldn't need `: any`
@@ -63,6 +68,9 @@ class AnimatedValueXY extends AnimatedWithChildren {
       this.y = value.y;
     }
     this._listeners = {};
+    if (config && config.useNativeDriver) {
+      this.__makeNative();
+    }
   }
 
   /**
@@ -168,7 +176,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
    */
   addListener(callback: ValueXYListenerCallback): string {
     const id = String(_uniqueId++);
-    const jointCallback = ({value: number}) => {
+    const jointCallback = ({value: number}: any) => {
       callback(this.__getValue());
     };
     this._listeners[id] = {
@@ -221,6 +229,22 @@ class AnimatedValueXY extends AnimatedWithChildren {
   getTranslateTransform(): Array<{[key: string]: AnimatedValue, ...}> {
     return [{translateX: this.x}, {translateY: this.y}];
   }
-}
 
-module.exports = AnimatedValueXY;
+  __attach(): void {
+    this.x.__addChild(this);
+    this.y.__addChild(this);
+    super.__attach();
+  }
+
+  __detach(): void {
+    this.x.__removeChild(this);
+    this.y.__removeChild(this);
+    super.__detach();
+  }
+
+  __makeNative(platformConfig: ?PlatformConfig) {
+    this.x.__makeNative(platformConfig);
+    this.y.__makeNative(platformConfig);
+    super.__makeNative(platformConfig);
+  }
+}

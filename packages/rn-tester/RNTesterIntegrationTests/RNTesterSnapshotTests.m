@@ -29,11 +29,8 @@
   _runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp.macos", nil, nil);
 #endif // macOS]
 
-  // ---------
-  // WHEN SNAPSHOTS ARE FAILING LOCALLY
-  // THIS IS THE LINE TO CHANGE TO "YES"
-  // SO THAT YOU CAN REGENERATE THE SNAPSHOTS!
-  // ---------
+  // To update snapshots, set recordMode to YES and re-run RNTesterSnapshotTests.
+  // Do not forget to set back to NO before committing your changes.
   _runner.recordMode = NO;
 }
 

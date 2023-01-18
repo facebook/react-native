@@ -8,28 +8,26 @@
  * @format
  */
 
-import Platform from '../../Utilities/Platform';
-import * as React from 'react';
-import StatusBar from '../StatusBar/StatusBar';
+import type {
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+  MeasureOnSuccessCallback,
+} from '../../Renderer/shims/ReactNativeTypes';
+import type {ColorValue, ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {DirectEventHandler} from '../../Types/CodegenTypes';
+
 import StyleSheet from '../../StyleSheet/StyleSheet';
-import View from '../View/View';
-
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
-import nullthrows from 'nullthrows';
-
+import Platform from '../../Utilities/Platform';
+import StatusBar from '../StatusBar/StatusBar';
+import View from '../View/View';
 import AndroidDrawerLayoutNativeComponent, {
   Commands,
 } from './AndroidDrawerLayoutNativeComponent';
+import nullthrows from 'nullthrows';
+import * as React from 'react';
 
 const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
-
-import type {ColorValue, ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {DirectEventHandler} from '../../Types/CodegenTypes';
-import type {
-  MeasureOnSuccessCallback,
-  MeasureInWindowOnSuccessCallback,
-  MeasureLayoutOnSuccessCallback,
-} from '../../Renderer/shims/ReactNativeTypes';
 
 type DrawerStates = 'Idle' | 'Dragging' | 'Settling';
 
@@ -162,6 +160,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     return {Left: 'left', Right: 'right'};
   }
 
+  // $FlowFixMe[missing-local-annot]
   _nativeRef =
     React.createRef<
       React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
@@ -232,6 +231,8 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     );
   }
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onDrawerSlide = event => {
     if (this.props.onDrawerSlide) {
       this.props.onDrawerSlide(event);
@@ -253,6 +254,8 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     }
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onDrawerStateChanged = event => {
     if (this.props.onDrawerStateChanged) {
       this.props.onDrawerStateChanged(

@@ -105,6 +105,11 @@ static void RCTPerformMountInstructions(
         break;
       }
 
+      case ShadowViewMutation::RemoveDeleteTree: {
+        // TODO - not supported yet
+        break;
+      }
+
       case ShadowViewMutation::Update: {
         auto &oldChildShadowView = mutation.oldChildShadowView;
         auto &newChildShadowView = mutation.newChildShadowView;
@@ -287,8 +292,7 @@ static void RCTPerformMountInstructions(
 {
   ReactTag reactTag = shadowView.tag;
   RCTExecuteOnMainQueue(^{
-    RCTUIView<RCTComponentViewProtocol> *componentView =
-        [self->_componentViewRegistry findComponentViewWithTag:reactTag]; // [macOS]
+    RCTUIView<RCTComponentViewProtocol> *componentView = [self->_componentViewRegistry findComponentViewWithTag:reactTag]; // [macOS]
     [componentView setIsJSResponder:isJSResponder];
   });
 }
@@ -321,10 +325,7 @@ static void RCTPerformMountInstructions(
     componentView.layer.opacity = newViewProps.opacity;
   }
 
-  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:finalize_updates_on_synchronous_update_view_ios")) {
-    [componentView finalizeUpdates:RNComponentViewUpdateMaskProps];
-  }
+  [componentView finalizeUpdates:RNComponentViewUpdateMaskProps];
 }
 
 - (void)synchronouslyDispatchCommandOnUIThread:(ReactTag)reactTag

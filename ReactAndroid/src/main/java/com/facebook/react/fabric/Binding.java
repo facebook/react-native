@@ -16,6 +16,7 @@ import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.RuntimeScheduler;
+import com.facebook.react.common.mapbuffer.MapBufferSoLoader;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.uimanager.PixelUtil;
@@ -26,6 +27,7 @@ public class Binding {
 
   static {
     FabricSoLoader.staticInit();
+    MapBufferSoLoader.staticInit();
   }
 
   @DoNotStrip private final HybridData mHybridData;
@@ -42,7 +44,8 @@ public class Binding {
       Object uiManager,
       EventBeatManager eventBeatManager,
       ComponentFactory componentsRegistry,
-      Object reactNativeConfig);
+      Object reactNativeConfig,
+      CppComponentRegistry cppComponentRegistry);
 
   public native void startSurface(
       int surfaceId, @NonNull String moduleName, @NonNull NativeMap initialProps);
@@ -89,6 +92,24 @@ public class Binding {
       @NonNull EventBeatManager eventBeatManager,
       @NonNull ComponentFactory componentFactory,
       @NonNull ReactNativeConfig reactNativeConfig) {
+    register(
+        runtimeExecutor,
+        runtimeScheduler,
+        fabricUIManager,
+        eventBeatManager,
+        componentFactory,
+        reactNativeConfig,
+        null);
+  }
+
+  public void register(
+      @NonNull RuntimeExecutor runtimeExecutor,
+      @Nullable RuntimeScheduler runtimeScheduler,
+      @NonNull FabricUIManager fabricUIManager,
+      @NonNull EventBeatManager eventBeatManager,
+      @NonNull ComponentFactory componentFactory,
+      @NonNull ReactNativeConfig reactNativeConfig,
+      @Nullable CppComponentRegistry cppComponentRegistry) {
     fabricUIManager.setBinding(this);
     installFabricUIManager(
         runtimeExecutor,
@@ -96,7 +117,8 @@ public class Binding {
         fabricUIManager,
         eventBeatManager,
         componentFactory,
-        reactNativeConfig);
+        reactNativeConfig,
+        cppComponentRegistry);
 
     setPixelDensity(PixelUtil.getDisplayMetricDensity());
   }

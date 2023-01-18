@@ -17,6 +17,7 @@
 
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTConstants.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTInitializing.h>
 #import <React/RCTLog.h>
@@ -27,7 +28,9 @@
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModuleBinding.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
+#import <ReactCommon/TurboModuleUtils.h>
 
+using namespace facebook;
 using namespace facebook::react;
 
 /**
@@ -520,6 +523,19 @@ static Class getFallbackClassFromName(const char *name)
       std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
       module = [_delegate getModuleInstanceFromClass:moduleClass];
     }
+
+    /**
+     * If the application is unable to create the TurboModule object from its class:
+     * abort TurboModule creation, and early return nil.
+     */
+    if (!module) {
+      RCTLogError(
+          @"TurboModuleManager delegate %@ returned nil TurboModule object for module with name=\"%s\" and class=%@",
+          NSStringFromClass([_delegate class]),
+          moduleName,
+          NSStringFromClass(moduleClass));
+      return nil;
+    }
   } else {
     module = [moduleClass new];
   }
@@ -702,18 +718,14 @@ static Class getFallbackClassFromName(const char *name)
 
   BOOL requiresMainQueueSetup = hasConstantsToExport || hasCustomInit;
   if (requiresMainQueueSetup) {
-    const char *methodName = "";
-    if (hasConstantsToExport) {
-      methodName = "constantsToExport";
-    } else if (hasCustomInit) {
-      methodName = "init";
-    }
     RCTLogWarn(
         @"Module %@ requires main queue setup since it overrides `%s` but doesn't implement "
          "`requiresMainQueueSetup`. In a future release React Native will default to initializing all native modules "
          "on a background thread unless explicitly opted-out of.",
         moduleClass,
-        methodName);
+        hasConstantsToExport ? "constantsToExport"
+            : hasCustomInit  ? "init"
+                             : "");
   }
 
   return requiresMainQueueSetup;
@@ -766,12 +778,14 @@ static Class getFallbackClassFromName(const char *name)
   if (RCTGetTurboModuleCleanupMode() == kRCTGlobalScope ||
       RCTGetTurboModuleCleanupMode() == kRCTGlobalScopeUsingRetainJSCallback) {
     runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
-      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
+      react::TurboModuleBinding::install(
+          runtime, std::move(turboModuleProvider), TurboModuleBindingMode::HostObject, nullptr);
     });
   } else if (RCTGetTurboModuleCleanupMode() == kRCTTurboModuleManagerScope) {
     runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider),
                      longLivedObjectCollection = _longLivedObjectCollection](jsi::Runtime &runtime) {
-      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider), longLivedObjectCollection);
+      react::TurboModuleBinding::install(
+          runtime, std::move(turboModuleProvider), TurboModuleBindingMode::HostObject, longLivedObjectCollection);
     });
   }
 }

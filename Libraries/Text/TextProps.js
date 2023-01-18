@@ -11,18 +11,20 @@
 'use strict';
 
 import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+  AccessibilityRole,
+  AccessibilityState,
+  Role,
+} from '../Components/View/ViewAccessibility';
+import type {TextStyleProp} from '../StyleSheet/StyleSheet';
+import type {
   LayoutEvent,
+  PointerEvent,
   PressEvent,
   TextLayoutEvent,
 } from '../Types/CoreEventTypes';
 import type {Node} from 'react';
-import type {TextStyleProp} from '../StyleSheet/StyleSheet';
-import type {
-  AccessibilityRole,
-  AccessibilityState,
-  AccessibilityActionInfo,
-  AccessibilityActionEvent,
-} from '../Components/View/ViewAccessibility';
 
 export type PressRetentionOffset = $ReadOnly<{|
   top: number,
@@ -31,10 +33,18 @@ export type PressRetentionOffset = $ReadOnly<{|
   right: number,
 |}>;
 
+type PointerEventProps = $ReadOnly<{|
+  onPointerEnter?: (event: PointerEvent) => void,
+  onPointerLeave?: (event: PointerEvent) => void,
+  onPointerMove?: (event: PointerEvent) => void,
+|}>;
+
 /**
  * @see https://reactnative.dev/docs/text#reference
  */
 export type TextProps = $ReadOnly<{|
+  ...PointerEventProps,
+
   /**
    * Indicates whether the view is an accessibility element.
    *
@@ -44,9 +54,11 @@ export type TextProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityHint?: ?Stringish,
+  accessibilityLanguage?: ?Stringish,
   accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
+  'aria-label'?: ?string,
 
   /**
    * Whether font should be scaled down automatically.
@@ -67,6 +79,25 @@ export type TextProps = $ReadOnly<{|
    *
    */
   android_hyphenationFrequency?: ?('normal' | 'none' | 'full'),
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean | 'mixed',
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
+
+  /**
+   * Reperesents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   *
+   * @platform android
+   */
+  'aria-labelledby'?: ?string,
+
   children?: ?Node,
 
   /**
@@ -76,6 +107,13 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text#ellipsizemode
    */
   ellipsizeMode?: ?('clip' | 'head' | 'middle' | 'tail'),
+
+  /**
+   * Used to locate this view from native code.
+   *
+   * See https://reactnative.dev/docs/text#nativeid
+   */
+  id?: string,
 
   /**
    * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
@@ -138,6 +176,11 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text#pressretentionoffset
    */
   pressRetentionOffset?: ?PressRetentionOffset,
+
+  /**
+   * Indicates to accessibility services to treat UI component like a specific role.
+   */
+  role?: ?Role,
 
   /**
    * Lets the user select text.
@@ -218,23 +261,33 @@ export type TextProps = $ReadOnly<{|
   suppressHighlighting?: ?boolean,
 
   /**
-   * macOS Only
+   * Set line break strategy on iOS.
+   *
+   * See https://reactnative.dev/docs/text.html#linebreakstrategyios
    */
+  lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
 
   /**
    * Specifies the Tooltip for the button view
+   * 
+   * @platform macos
    */
   tooltip?: ?string,
 
   /**
    * When `true`, indicates that the text can be focused in key view loop
-   * By default, when `selectable={true}` the text view will be focusable unless disabled
+   * By default, when `selectable={true}` the text view will be focusable unless disabled.
+   * 
+   * @platform macos
    */
   focusable?: ?boolean,
 
   /**
    * Specifies whether focus ring should be drawn when the view has the first responder status.
-   * Only works when `focusable={true}`
+   * Only works when `focusable={true}`.
+   * 
+   * @platform macos
    */
-  enableFocusRing?: ?boolean, // [macOS]
+  enableFocusRing?: ?boolean, 
+  // macOS]
 |}>;

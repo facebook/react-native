@@ -8,6 +8,8 @@
 #import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTComponent.h>
+// Keeps RCTConvert.h here before yoga for clang module to generate correct header imports.
+#import <React/RCTConvert.h>
 #import <React/RCTLayout.h>
 #import <React/RCTRootView.h>
 #import <yoga/Yoga.h>
@@ -153,6 +155,9 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, RCTPlatformView *> *vie
 
 @property (nonatomic, assign) float flex;
 @property (nonatomic, assign) float flexGrow;
+@property (nonatomic, assign) float rowGap;
+@property (nonatomic, assign) float columnGap;
+@property (nonatomic, assign) float gap;
 @property (nonatomic, assign) float flexShrink;
 @property (nonatomic, assign) YGValue flexBasis;
 

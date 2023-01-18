@@ -1,6 +1,5 @@
 **/main.js
 **/staticBundle.js
-bots/node_modules
 docs/generatedComponentApiDocs.js
 flow/
 Libraries/Renderer/*
@@ -12,4 +11,4 @@ packages/*/lib-commonjs
 bots/node_modules
 android-patches/
 packages/react-native-codegen/lib
-repo-config/node_modules
+tools/eslint/rules/sort-imports.js

@@ -23,6 +23,7 @@ const {cd, cp, echo, exec, exit, mv, rm} = require('shelljs');
 const spawn = require('child_process').spawn;
 const argv = require('yargs').argv;
 const path = require('path');
+const {setupVerdaccio} = require('./setup-verdaccio');
 
 const SCRIPTS = __dirname;
 const ROOT = path.normalize(path.join(__dirname, '..'));
@@ -35,6 +36,7 @@ const REACT_NATIVE_APP_DIR = `${REACT_NATIVE_TEMP_DIR}/template`;
 const numberOfRetries = argv.retries || 1;
 let SERVER_PID;
 let APPIUM_PID;
+let VERDACCIO_PID;
 let exitCode;
 
 function describe(message) {
@@ -70,23 +72,26 @@ try {
 
   const REACT_NATIVE_PACKAGE = path.join(ROOT, 'react-native-*.tgz');
 
+  describe('Set up Verdaccio');
+  VERDACCIO_PID = setupVerdaccio();
+
+  describe('Publish packages');
+  const packages = JSON.parse(
+    JSON.parse(exec('yarn --json workspaces info').stdout).data,
+  );
+  Object.keys(packages).forEach(packageName => {
+    exec(
+      `cd ${packages[packageName].location} && npm publish --registry http://localhost:4873 --yes --access public`,
+    );
+  });
+
   describe('Scaffold a basic React Native app from template');
   exec(`rsync -a ${ROOT}/template ${REACT_NATIVE_TEMP_DIR}`);
   cd(REACT_NATIVE_APP_DIR);
 
-  const METRO_CONFIG = path.join(ROOT, 'metro.config.js');
-  const RN_GET_POLYFILLS = path.join(ROOT, 'rn-get-polyfills.js');
-  const RN_POLYFILLS_PATH = 'packages/polyfills/';
-  exec(`mkdir -p ${RN_POLYFILLS_PATH}`);
-
-  cp(METRO_CONFIG, '.');
-  cp(RN_GET_POLYFILLS, '.');
-  exec(
-    `rsync -a ${ROOT}/${RN_POLYFILLS_PATH} ${REACT_NATIVE_APP_DIR}/${RN_POLYFILLS_PATH}`,
-  );
-  mv('_flowconfig', '.flowconfig');
-  mv('_watchmanconfig', '.watchmanconfig');
   mv('_bundle', '.bundle');
+  mv('_eslintrc.js', '.eslintrc.js');
+  mv('_watchmanconfig', '.watchmanconfig');
 
   // [macOS
   process.env.REACT_NATIVE_RUNNING_E2E_TESTS = 'true';
@@ -160,9 +165,7 @@ try {
 
     describe(`Start Metro, ${SERVER_PID}`);
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
-    const packagerProcess = spawn('yarn', ['start', '--max-workers 1'], {
-      env: process.env,
-    });
+    const packagerProcess = spawn('yarn', ['start', '--max-workers 1']);
     SERVER_PID = packagerProcess.pid;
     // wait a bit to allow packager to startup
     exec('sleep 15s');
@@ -258,6 +261,7 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
+
     describe('Test: Verify packager can generate an iOS bundle');
     if (
       exec(
@@ -268,12 +272,17 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    describe('Test: Flow check');
-    // The resolve package included a test for a malformed package.json (see https://github.com/browserify/resolve/issues/89)
-    // that is failing the flow check. We're removing it.
-    rm('-rf', './node_modules/resolve/test/resolver/malformed_package_json');
-    if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
-      echo('Flow check failed.');
+
+    describe('Test: TypeScript typechecking');
+    if (exec('yarn tsc').code) {
+      echo('Typechecking errors were found');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
+
+    describe('Test: Jest tests');
+    if (exec('yarn test').code) {
+      echo('Jest tests failed');
       exitCode = 1;
       throw Error(exitCode);
     }
@@ -291,6 +300,10 @@ try {
   if (APPIUM_PID) {
     echo(`Killing appium ${APPIUM_PID}`);
     exec(`kill -9 ${APPIUM_PID}`);
+  }
+  if (VERDACCIO_PID) {
+    echo(`Killing verdaccio ${VERDACCIO_PID}`);
+    exec(`kill -9 ${VERDACCIO_PID}`);
   }
 }
 exit(exitCode);
