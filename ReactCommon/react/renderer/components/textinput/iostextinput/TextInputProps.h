@@ -49,6 +49,8 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
 
   int maxLength{};
 
+  bool showSoftInputOnFocus{true};
+
   /*
    * Tint colors
    */

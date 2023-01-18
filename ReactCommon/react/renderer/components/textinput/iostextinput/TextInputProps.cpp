@@ -50,6 +50,12 @@ TextInputProps::TextInputProps(
           "maxLength",
           sourceProps.maxLength,
           {})),
+      showSoftInputOnFocus(convertRawProp(
+          context,
+          rawProps,
+          "showSoftInputOnFocus",
+          sourceProps.showSoftInputOnFocus,
+          {})),
       cursorColor(convertRawProp(
           context,
           rawProps,

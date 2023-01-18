@@ -115,6 +115,10 @@ using namespace facebook::react;
     [self _setMultiline:newTextInputProps.traits.multiline];
   }
 
+  if (newTextInputProps.traits.showSoftInputOnFocus != oldTextInputProps.traits.showSoftInputOnFocus) {
+    [self _setShowSoftInputOnFocus:newTextInputProps.traits.showSoftInputOnFocus];
+  }
+
   if (newTextInputProps.traits.autocapitalizationType != oldTextInputProps.traits.autocapitalizationType) {
     _backedTextInputView.autocapitalizationType =
         RCTUITextAutocapitalizationTypeFromAutocapitalizationType(newTextInputProps.traits.autocapitalizationType);
@@ -617,6 +621,17 @@ using namespace facebook::react;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;
   [self addSubview:_backedTextInputView];
+}
+
+- (void)_setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
+{
+  if (showSoftInputOnFocus) {
+    // Resets to default keyboard.
+    _backedTextInputView.inputView = nil;
+  } else {
+    // Hides keyboard, but keeps blinking cursor.
+    _backedTextInputView.inputView = [UIView new];
+  }
 }
 
 - (BOOL)_textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText
