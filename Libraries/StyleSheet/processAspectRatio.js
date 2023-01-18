@@ -16,7 +16,7 @@ function processAspectRatio(aspectRatio?: number | string): ?number {
   if (typeof aspectRatio === 'number') {
     return aspectRatio;
   }
-  if (typeof aspectRatio !== 'string') {
+  if (typeof aspectRatio !== 'string' && !aspectRatio) {
     return;
   }
 
