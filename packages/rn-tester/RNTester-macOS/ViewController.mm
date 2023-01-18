@@ -1,5 +1,5 @@
 //
-//  ViewController.m
+//  ViewController.mm
 //  RNTester-macOS
 //
 //  Created by Jeff Cruikshank on 6/5/17.

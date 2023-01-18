@@ -56,7 +56,7 @@
 		3D2AFAF51D646CF80089D1A3 /* legacy_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */; };
 		460CE8493C58CA1961711C65 /* libPods-RNTester-macOSUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631E567DA6FC6811984E2E9E /* libPods-RNTester-macOSUnitTests.a */; };
 		5101985723AD9EE600118BF1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5101985523AD9EE600118BF1 /* Main.storyboard */; };
-		5101985A23AD9F5B00118BF1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5101985923AD9F5B00118BF1 /* ViewController.m */; };
+		5101985A23AD9F5B00118BF1 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5101985923AD9F5B00118BF1 /* ViewController.mm */; };
 		5101985B23ADA00B00118BF1 /* legacy_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */; };
 		5C60EB1C226440DB0018C04F /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C60EB1B226440DB0018C04F /* AppDelegate.mm */; };
 		5CB07C9B226467E60039471C /* RNTesterTurboModuleProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */; };
@@ -199,7 +199,7 @@
 		3DC317D3EE16C63CD9243667 /* Pods-RNTester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.release.xcconfig"; path = "Target Support Files/Pods-RNTester/Pods-RNTester.release.xcconfig"; sourceTree = "<group>"; };
 		5101985623AD9EE600118BF1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5101985823AD9F5B00118BF1 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		5101985923AD9F5B00118BF1 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		5101985923AD9F5B00118BF1 /* ViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
 		5C60EB1B226440DB0018C04F /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = RNTester/AppDelegate.mm; sourceTree = "<group>"; };
 		5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RNTesterTurboModuleProvider.mm; path = RNTester/RNTesterTurboModuleProvider.mm; sourceTree = "<group>"; };
 		5CB07C9A226467E60039471C /* RNTesterTurboModuleProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNTesterTurboModuleProvider.h; path = RNTester/RNTesterTurboModuleProvider.h; sourceTree = "<group>"; };
@@ -506,7 +506,7 @@
 				9F15345D233AB2C4006DFE44 /* AppDelegate.h */,
 				9F15345E233AB2C4006DFE44 /* AppDelegate.mm */,
 				5101985823AD9F5B00118BF1 /* ViewController.h */,
-				5101985923AD9F5B00118BF1 /* ViewController.m */,
+				5101985923AD9F5B00118BF1 /* ViewController.mm */,
 				9F153460233AB2C7006DFE44 /* Assets.xcassets */,
 				9F153465233AB2C7006DFE44 /* Info.plist */,
 				9F153466233AB2C7006DFE44 /* main.m */,
@@ -1348,7 +1348,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B2F2040A24E76D7600863BE1 /* ScreenshotMacOS.mm in Sources */,
-				5101985A23AD9F5B00118BF1 /* ViewController.m in Sources */,
+				5101985A23AD9F5B00118BF1 /* ViewController.mm in Sources */,
 				9F153467233AB2C7006DFE44 /* main.m in Sources */,
 				38CB64352445042D009035CC /* RNTesterTurboModuleProvider.mm in Sources */,
 				9F15345F233AB2C4006DFE44 /* AppDelegate.mm in Sources */,
