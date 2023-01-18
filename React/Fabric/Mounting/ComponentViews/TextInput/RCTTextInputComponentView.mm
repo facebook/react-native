@@ -621,6 +621,9 @@ using namespace facebook::react;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;
   [self addSubview:_backedTextInputView];
+
+  auto const &currentTextInputProps = *std::static_pointer_cast<TextInputProps const>(_props);
+  [self _setShowSoftInputOnFocus:currentTextInputProps.traits.showSoftInputOnFocus];
 }
 
 - (void)_setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
