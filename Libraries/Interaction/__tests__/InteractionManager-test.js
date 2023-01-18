@@ -168,7 +168,7 @@ describe('promise tasks', () => {
   }
   beforeEach(() => {
     jest.resetModules();
-    jest.useFakeTimers('legacy');
+    jest.useFakeTimers({legacyFakeTimers: true});
     InteractionManager = require('../InteractionManager');
     BatchedBridge = require('../../BatchedBridge/BatchedBridge');
     sequenceId = 0;
