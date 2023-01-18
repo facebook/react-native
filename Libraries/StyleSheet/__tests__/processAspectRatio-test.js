@@ -48,10 +48,17 @@ describe('processAspectRatio', () => {
     expect(() => processAspectRatio('auto 1/1')).toThrowErrorMatchingSnapshot();
   });
 
-  it('should not accept non number | string type', () => {
-    const invalidThings = [undefined, null, () => {}, [1, 2, 3]];
+  it('should not accept non string falsy types', () => {
+    const invalidThings = [undefined, null, false];
     invalidThings.forEach(thing => {
       expect(processAspectRatio(thing)).toBe(undefined);
+    });
+  });
+
+  it('should not accept non string truthy types', () => {
+    const invalidThings = [() => {}, [1, 2, 3], {}];
+    invalidThings.forEach(thing => {
+      expect(() => processAspectRatio(thing)).toThrowErrorMatchingSnapshot();
     });
   });
 });
