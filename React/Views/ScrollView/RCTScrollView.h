@@ -55,6 +55,7 @@
 @property (nonatomic, assign) BOOL snapToEnd;
 @property (nonatomic, copy) NSString *snapToAlignment;
 @property (nonatomic, assign) BOOL inverted;
+@property (nonatomic, assign) BOOL hasOverlayStyleIndicator; // [macOS]
 
 // NOTE: currently these event props are only declared so we can export the
 // event names to JS - we don't call the blocks directly because scroll events
