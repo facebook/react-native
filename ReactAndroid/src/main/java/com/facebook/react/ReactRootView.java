@@ -15,6 +15,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Insets;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
@@ -33,8 +34,6 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.graphics.Insets;
-import androidx.core.view.WindowInsetsCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -776,7 +775,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @VisibleForTesting
   /* package */ void simulateCheckForKeyboardForTesting() {
-    if (Build.VERSION.SDK_INT >= 23) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       getCustomGlobalLayoutListener().checkForKeyboardEvents();
     } else {
       getCustomGlobalLayoutListener().checkForKeyboardEventsLegacy();
@@ -907,9 +906,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         return;
       }
 
-      // WindowInsetsCompat IME measurement is reliable for API level 23+.
-      // https://developer.android.com/jetpack/androidx/releases/core#1.5.0-alpha02
-      if (Build.VERSION.SDK_INT >= 23) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         checkForKeyboardEvents();
       } else {
         checkForKeyboardEventsLegacy();
@@ -919,44 +916,44 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       checkForDeviceDimensionsChanges();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    @RequiresApi(api = Build.VERSION_CODES.R)
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
       WindowInsets rootInsets = getRootView().getRootWindowInsets();
-      if (rootInsets != null) {
-        WindowInsetsCompat compatRootInsets = WindowInsetsCompat.toWindowInsetsCompat(rootInsets);
+      if (rootInsets == null) {
+        return;
+      }
 
-        boolean keyboardIsVisible = compatRootInsets.isVisible(WindowInsetsCompat.Type.ime());
-        if (keyboardIsVisible != mKeyboardIsVisible) {
-          mKeyboardIsVisible = keyboardIsVisible;
+      boolean keyboardIsVisible = rootInsets.isVisible(WindowInsets.Type.ime());
+      if (keyboardIsVisible != mKeyboardIsVisible) {
+        mKeyboardIsVisible = keyboardIsVisible;
 
-          if (keyboardIsVisible) {
-            Insets imeInsets = compatRootInsets.getInsets(WindowInsetsCompat.Type.ime());
-            Insets barInsets = compatRootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            int height = imeInsets.bottom - barInsets.bottom;
+        if (keyboardIsVisible) {
+          Insets imeInsets = rootInsets.getInsets(WindowInsets.Type.ime());
+          Insets barInsets = rootInsets.getInsets(WindowInsets.Type.systemBars());
+          int height = imeInsets.bottom - barInsets.bottom;
 
-            int softInputMode = ((Activity) getContext()).getWindow().getAttributes().softInputMode;
-            int screenY =
-                softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
-                    ? mVisibleViewArea.bottom - height
-                    : mVisibleViewArea.bottom;
+          int softInputMode = ((Activity) getContext()).getWindow().getAttributes().softInputMode;
+          int screenY =
+              softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
+                  ? mVisibleViewArea.bottom - height
+                  : mVisibleViewArea.bottom;
 
-            sendEvent(
-                "keyboardDidShow",
-                createKeyboardEventPayload(
-                    PixelUtil.toDIPFromPixel(screenY),
-                    PixelUtil.toDIPFromPixel(mVisibleViewArea.left),
-                    PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
-                    PixelUtil.toDIPFromPixel(height)));
-          } else {
-            sendEvent(
-                "keyboardDidHide",
-                createKeyboardEventPayload(
-                    PixelUtil.toDIPFromPixel(mLastHeight),
-                    0,
-                    PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
-                    0));
-          }
+          sendEvent(
+              "keyboardDidShow",
+              createKeyboardEventPayload(
+                  PixelUtil.toDIPFromPixel(screenY),
+                  PixelUtil.toDIPFromPixel(mVisibleViewArea.left),
+                  PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
+                  PixelUtil.toDIPFromPixel(height)));
+        } else {
+          sendEvent(
+              "keyboardDidHide",
+              createKeyboardEventPayload(
+                  PixelUtil.toDIPFromPixel(mLastHeight),
+                  0,
+                  PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
+                  0));
         }
       }
     }
