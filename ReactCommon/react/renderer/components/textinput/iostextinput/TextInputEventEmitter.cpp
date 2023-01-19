@@ -36,6 +36,23 @@ static jsi::Value textInputMetricsPayload(
   return payload;
 };
 
+static jsi::Value textInputMetricsContentSizePayload(
+    jsi::Runtime &runtime,
+    TextInputMetrics const &textInputMetrics) {
+  auto payload = jsi::Object(runtime);
+
+  {
+    auto contentSize = jsi::Object(runtime);
+    contentSize.setProperty(
+        runtime, "width", textInputMetrics.contentSize.width);
+    contentSize.setProperty(
+        runtime, "height", textInputMetrics.contentSize.height);
+    payload.setProperty(runtime, "contentSize", contentSize);
+  }
+
+  return payload;
+};
+
 static jsi::Value keyPressMetricsPayload(
     jsi::Runtime &runtime,
     KeyPressMetrics const &keyPressMetrics) {
@@ -82,7 +99,8 @@ void TextInputEventEmitter::onChangeSync(
 
 void TextInputEventEmitter::onContentSizeChange(
     TextInputMetrics const &textInputMetrics) const {
-  dispatchTextInputEvent("contentSizeChange", textInputMetrics);
+  dispatchTextInputContentSizeChangeEvent(
+      "contentSizeChange", textInputMetrics);
 }
 
 void TextInputEventEmitter::onSelectionChange(
@@ -133,6 +151,18 @@ void TextInputEventEmitter::dispatchTextInputEvent(
       name,
       [textInputMetrics](jsi::Runtime &runtime) {
         return textInputMetricsPayload(runtime, textInputMetrics);
+      },
+      priority);
+}
+
+void TextInputEventEmitter::dispatchTextInputContentSizeChangeEvent(
+    std::string const &name,
+    TextInputMetrics const &textInputMetrics,
+    EventPriority priority) const {
+  dispatchEvent(
+      name,
+      [textInputMetrics](jsi::Runtime &runtime) {
+        return textInputMetricsContentSizePayload(runtime, textInputMetrics);
       },
       priority);
 }

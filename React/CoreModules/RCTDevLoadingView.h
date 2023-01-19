@@ -7,7 +7,6 @@
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTDevLoadingViewProtocol.h>
-#import <UIKit/UIKit.h>
 
 @interface RCTDevLoadingView : NSObject <RCTDevLoadingViewProtocol, RCTBridgeModule>
 @end

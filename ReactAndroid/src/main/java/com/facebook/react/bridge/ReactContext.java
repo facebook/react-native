@@ -422,7 +422,7 @@ public class ReactContext extends ContextWrapper {
           "Unable to handle Exception - catalystInstanceVariableExists: "
               + catalystInstanceVariableExists
               + " - isCatalystInstanceAlive: "
-              + !isCatalystInstanceAlive
+              + isCatalystInstanceAlive
               + " - hasExceptionHandler: "
               + hasExceptionHandler,
           e);
@@ -442,6 +442,10 @@ public class ReactContext extends ContextWrapper {
       mExceptionHandlerWrapper = new ExceptionHandlerWrapper();
     }
     return mExceptionHandlerWrapper;
+  }
+
+  public JSExceptionHandler getJSExceptionHandler() {
+    return mJSExceptionHandler;
   }
 
   public boolean hasCurrentActivity() {

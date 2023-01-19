@@ -10,10 +10,11 @@
 
 'use strict';
 
+import Dimensions from '../Utilities/Dimensions';
+
 const View = require('../Components/View/View');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Dimensions = require('../Utilities/Dimensions');
 const BorderBox = require('./BorderBox');
 const resolveBoxStyle = require('./resolveBoxStyle');
 const React = require('react');

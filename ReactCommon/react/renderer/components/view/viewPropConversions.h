@@ -38,6 +38,10 @@ constexpr MapBuffer::Key CORNER_TOP_END = 5;
 constexpr MapBuffer::Key CORNER_BOTTOM_END = 6;
 constexpr MapBuffer::Key CORNER_BOTTOM_START = 7;
 constexpr MapBuffer::Key CORNER_ALL = 8;
+constexpr MapBuffer::Key CORNER_END_END = 9;
+constexpr MapBuffer::Key CORNER_END_START = 10;
+constexpr MapBuffer::Key CORNER_START_END = 11;
+constexpr MapBuffer::Key CORNER_START_START = 12;
 
 inline void putOptionalFloat(
     MapBufferBuilder &builder,
@@ -116,7 +120,7 @@ MapBuffer convertCascadedEdges(CascadedRectangleEdges<T> const &edges) {
 
 template <typename T>
 MapBuffer convertCascadedCorners(CascadedRectangleCorners<T> const &corners) {
-  MapBufferBuilder builder(9);
+  MapBufferBuilder builder(13);
   putOptionalFloat(
       builder, CORNER_TOP_LEFT, optionalFromValue(corners.topLeft));
   putOptionalFloat(
@@ -132,6 +136,13 @@ MapBuffer convertCascadedCorners(CascadedRectangleCorners<T> const &corners) {
       builder, CORNER_BOTTOM_END, optionalFromValue(corners.bottomEnd));
   putOptionalFloat(
       builder, CORNER_BOTTOM_START, optionalFromValue(corners.bottomStart));
+  putOptionalFloat(builder, CORNER_END_END, optionalFromValue(corners.endEnd));
+  putOptionalFloat(
+      builder, CORNER_END_START, optionalFromValue(corners.endStart));
+  putOptionalFloat(
+      builder, CORNER_START_END, optionalFromValue(corners.startEnd));
+  putOptionalFloat(
+      builder, CORNER_START_START, optionalFromValue(corners.startStart));
   putOptionalFloat(builder, CORNER_ALL, optionalFromValue(corners.all));
   return builder.build();
 }

@@ -116,6 +116,17 @@ export namespace Animated {
 
   type ValueListenerCallback = (state: {value: number}) => void;
 
+  type Animation = {
+    start(
+      fromValue: number,
+      onUpdate: (value: number) => void,
+      onEnd: EndCallback | null,
+      previousAnimation: Animation | null,
+      animatedValue: AnimatedValue,
+    ): void;
+    stop(): void;
+  };
+
   /**
    * Standard value for driving animations.  One `Animated.Value` can drive
    * multiple properties in a synchronized fashion, but can only be driven by one
@@ -169,12 +180,27 @@ export namespace Animated {
     stopAnimation(callback?: (value: number) => void): void;
 
     /**
+     * Stops any animation and resets the value to its original.
+     *
+     * See https://reactnative.dev/docs/animatedvalue#resetanimation
+     */
+    resetAnimation(callback?: (value: number) => void): void;
+
+    /**
      * Interpolates the value before updating the property, e.g. mapping 0-1 to
      * 0-10.
      */
     interpolate<OutputT extends number | string>(
       config: InterpolationConfigType,
     ): AnimatedInterpolation<OutputT>;
+
+    /**
+     * Typically only used internally, but could be used by a custom Animation
+     * class.
+     *
+     * See https://reactnative.dev/docs/animatedvalue#animate
+     */
+    animate(animation: Animation, callback?: EndCallback | null): void;
   }
 
   type ValueXYListenerCallback = (value: {x: number; y: number}) => void;
@@ -200,6 +226,8 @@ export namespace Animated {
     flattenOffset(): void;
 
     extractOffset(): void;
+
+    resetAnimation(callback?: (value: {x: number; y: number}) => void): void;
 
     stopAnimation(callback?: (value: {x: number; y: number}) => void): void;
 

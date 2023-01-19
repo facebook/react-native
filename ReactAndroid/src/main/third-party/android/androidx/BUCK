@@ -16,6 +16,7 @@ fb_native.android_library(
         ":collection",
         ":core",
         ":cursoradapter",
+        ":drawerlayout",
         ":fragment",
         ":legacy-support-core-utils",
         ":vectordrawable",
@@ -138,10 +139,10 @@ fb_native.android_library(
         ":annotation",
         ":core",
         ":fragment-binary",
-        ":legacy-support-core-ui",
         ":legacy-support-core-utils",
         ":lifecycle-viewmodel",
         ":loader",
+        ":viewpager",
     ],
 )
 
@@ -151,26 +152,6 @@ fb_native.android_library(
     exported_deps = [
         ":annotation",
         ":interpolator-binary",
-    ],
-)
-
-fb_native.android_library(
-    name = "legacy-support-core-ui",
-    visibility = ["PUBLIC"],
-    exported_deps = [
-        ":annotation",
-        ":asynclayoutinflater",
-        ":coordinatorlayout",
-        ":core",
-        ":cursoradapter",
-        ":customview",
-        ":drawerlayout",
-        ":interpolator",
-        ":legacy-support-core-ui-binary",
-        ":legacy-support-core-utils",
-        ":slidingpanelayout",
-        ":swiperefreshlayout",
-        ":viewpager",
     ],
 )
 
@@ -342,7 +323,6 @@ fb_native.android_library(
     name = "vectordrawable-animated",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":legacy-support-core-ui",
         ":vectordrawable",
         ":vectordrawable-animated-binary",
     ],
@@ -443,11 +423,6 @@ fb_native.android_prebuilt_aar(
 fb_native.android_prebuilt_aar(
     name = "interpolator-binary",
     aar = ":interpolator-binary-aar",
-)
-
-fb_native.android_prebuilt_aar(
-    name = "legacy-support-core-ui-binary",
-    aar = ":legacy-support-core-ui-binary-aar",
 )
 
 fb_native.android_prebuilt_aar(
@@ -640,12 +615,6 @@ fb_native.remote_file(
     name = "interpolator-binary-aar",
     sha1 = "8a01fa254a23b9388571eb6334b03707c7d122d7",
     url = "mvn:androidx.interpolator:interpolator:aar:1.0.0",
-)
-
-fb_native.remote_file(
-    name = "legacy-support-core-ui-binary-aar",
-    sha1 = "61a264f996046e059f889914050fae1e75d3b702",
-    url = "mvn:androidx.legacy:legacy-support-core-ui:aar:1.0.0",
 )
 
 fb_native.remote_file(

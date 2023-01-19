@@ -267,6 +267,7 @@ public class SurfaceMountingManager {
    */
   @AnyThread
   public void stopSurface() {
+    FLog.e(TAG, "Stopping surface [" + mSurfaceId + "]");
     if (isStopped()) {
       return;
     }
@@ -309,6 +310,7 @@ public class SurfaceMountingManager {
             if (ReactFeatureFlags.enableViewRecycling) {
               mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
             }
+            FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
           }
         };
 

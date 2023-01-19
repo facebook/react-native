@@ -41,7 +41,7 @@ const ScrollViewViewConfig = {
     directionalLockEnabled: true,
     disableIntervalMomentum: true,
     endFillColor: {
-      process: require('../../StyleSheet/processColor'),
+      process: require('../../StyleSheet/processColor').default,
     },
     fadingEdgeLength: true,
     indicatorStyle: true,

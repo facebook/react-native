@@ -164,11 +164,14 @@ jest
     const mockScrollView = jest.requireActual('./mockScrollView');
     return mockScrollView(baseComponent);
   })
-  .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () =>
-    mockComponent(
+  .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () => ({
+    __esModule: true,
+    default: mockComponent(
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',
+      null,
+      true,
     ),
-  )
+  }))
   .mock('../Libraries/AppState/AppState', () => ({
     addEventListener: jest.fn(() => ({
       remove: jest.fn(),
@@ -338,10 +341,10 @@ jest
   .mock('../Libraries/NativeComponent/NativeComponentRegistry', () => {
     return {
       get: jest.fn((name, viewConfigProvider) => {
-        return jest.requireActual('./mockNativeComponent')(name);
+        return jest.requireActual('./mockNativeComponent').default(name);
       }),
       getWithFallback_DEPRECATED: jest.fn((name, viewConfigProvider) => {
-        return jest.requireActual('./mockNativeComponent')(name);
+        return jest.requireActual('./mockNativeComponent').default(name);
       }),
       setRuntimeConfigProvider: jest.fn(),
     };

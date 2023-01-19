@@ -14,7 +14,6 @@
 import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
 import typeof Button from './Libraries/Components/Button';
-import typeof DatePickerIOS from './Libraries/Components/DatePicker/DatePickerIOS';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof FlatList from './Libraries/Lists/FlatList';
 import typeof Image from './Libraries/Image/Image';
@@ -28,7 +27,6 @@ import typeof RefreshControl from './Libraries/Components/RefreshControl/Refresh
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
 import typeof ScrollView from './Libraries/Components/ScrollView/ScrollView';
 import typeof SectionList from './Libraries/Lists/SectionList';
-import typeof Slider from './Libraries/Components/Slider/Slider';
 import typeof StatusBar from './Libraries/Components/StatusBar/StatusBar';
 import typeof Switch from './Libraries/Components/Switch/Switch';
 import typeof Text from './Libraries/Text/Text';
@@ -108,20 +106,11 @@ module.exports = {
       .default;
   },
   get ActivityIndicator(): ActivityIndicator {
-    return require('./Libraries/Components/ActivityIndicator/ActivityIndicator');
+    return require('./Libraries/Components/ActivityIndicator/ActivityIndicator')
+      .default;
   },
   get Button(): Button {
     return require('./Libraries/Components/Button');
-  },
-  // $FlowFixMe[value-as-type]
-  get DatePickerIOS(): DatePickerIOS {
-    warnOnce(
-      'DatePickerIOS-merged',
-      'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-datetimepicker/datetimepicker',
-    );
-    return require('./Libraries/Components/DatePicker/DatePickerIOS');
   },
   // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
@@ -170,15 +159,6 @@ module.exports = {
   },
   get SectionList(): SectionList {
     return require('./Libraries/Lists/SectionList').default;
-  },
-  get Slider(): Slider {
-    warnOnce(
-      'slider-moved',
-      'Slider has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/slider' instead of 'react-native'. " +
-        'See https://github.com/callstack/react-native-slider',
-    );
-    return require('./Libraries/Components/Slider/Slider');
   },
   get StatusBar(): StatusBar {
     return require('./Libraries/Components/StatusBar/StatusBar');
@@ -258,7 +238,7 @@ module.exports = {
     return require('./Libraries/Utilities/DevSettings');
   },
   get Dimensions(): Dimensions {
-    return require('./Libraries/Utilities/Dimensions');
+    return require('./Libraries/Utilities/Dimensions').default;
   },
   get Easing(): Easing {
     return require('./Libraries/Animated/Easing').default;
@@ -282,7 +262,7 @@ module.exports = {
     return require('./Libraries/Linking/Linking');
   },
   get LogBox(): LogBox {
-    return require('./Libraries/LogBox/LogBox');
+    return require('./Libraries/LogBox/LogBox').default;
   },
   get NativeDialogManagerAndroid(): NativeDialogManagerAndroid {
     return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid')
@@ -292,16 +272,16 @@ module.exports = {
     return require('./Libraries/EventEmitter/NativeEventEmitter').default;
   },
   get Networking(): Networking {
-    return require('./Libraries/Network/RCTNetworking');
+    return require('./Libraries/Network/RCTNetworking').default;
   },
   get PanResponder(): PanResponder {
-    return require('./Libraries/Interaction/PanResponder');
+    return require('./Libraries/Interaction/PanResponder').default;
   },
   get PermissionsAndroid(): PermissionsAndroid {
     return require('./Libraries/PermissionsAndroid/PermissionsAndroid');
   },
   get PixelRatio(): PixelRatio {
-    return require('./Libraries/Utilities/PixelRatio');
+    return require('./Libraries/Utilities/PixelRatio').default;
   },
   get PushNotificationIOS(): PushNotificationIOS {
     warnOnce(
@@ -351,7 +331,7 @@ module.exports = {
     return require('./Libraries/Utilities/useWindowDimensions').default;
   },
   get UTFSequence(): UTFSequence {
-    return require('./Libraries/UTFSequence');
+    return require('./Libraries/UTFSequence').default;
   },
   get Vibration(): Vibration {
     return require('./Libraries/Vibration/Vibration');
@@ -382,12 +362,12 @@ module.exports = {
       .PlatformColor;
   },
   get processColor(): processColor {
-    return require('./Libraries/StyleSheet/processColor');
+    return require('./Libraries/StyleSheet/processColor').default;
   },
   get requireNativeComponent(): <T>(
     uiViewClassName: string,
   ) => HostComponent<T> {
-    return require('./Libraries/ReactNative/requireNativeComponent');
+    return require('./Libraries/ReactNative/requireNativeComponent').default;
   },
   get RootTagContext(): RootTagContext {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;
@@ -771,6 +751,36 @@ if (__DEV__) {
         'ProgressViewIOS has been removed from react-native core. ' +
           "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
           'See https://github.com/react-native-progress-view/progress-view',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access DatePickerIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access DatePickerIOS. */
+  Object.defineProperty(module.exports, 'DatePickerIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'DatePickerIOS has been removed from react-native core. ' +
+          "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+          'See https://github.com/react-native-datetimepicker/datetimepicker',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access Slider. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access Slider. */
+  Object.defineProperty(module.exports, 'Slider', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'Slider has been removed from react-native core. ' +
+          "It can now be installed and imported from '@react-native-community/slider' instead of 'react-native'. " +
+          'See https://github.com/callstack/react-native-slider',
       );
     },
   });

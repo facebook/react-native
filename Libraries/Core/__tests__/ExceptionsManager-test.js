@@ -10,7 +10,8 @@
 
 'use strict';
 
-const LogBox = require('../../LogBox/LogBox');
+import LogBox from '../../LogBox/LogBox';
+
 const ExceptionsManager = require('../ExceptionsManager');
 const NativeExceptionsManager = require('../NativeExceptionsManager').default;
 const ReactFiberErrorDialog = require('../ReactFiberErrorDialog').default;
@@ -57,9 +58,12 @@ function runExceptionsManagerTests() {
     let logBoxAddException;
 
     beforeEach(() => {
+      logBoxAddException = jest.fn();
       jest.resetModules();
       jest.mock('../../LogBox/LogBox', () => ({
-        addException: jest.fn(),
+        default: {
+          addException: logBoxAddException,
+        },
       }));
       jest.mock('../NativeExceptionsManager', () => {
         return {
@@ -80,7 +84,6 @@ function runExceptionsManagerTests() {
       );
       jest.spyOn(console, 'error').mockReturnValue(undefined);
       nativeReportException = NativeExceptionsManager.reportException;
-      logBoxAddException = LogBox.addException;
     });
 
     afterEach(() => {

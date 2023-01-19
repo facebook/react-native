@@ -19,6 +19,8 @@ import type {
   NativeModuleSchema,
   Nullable,
 } from '../../../CodegenSchema';
+
+import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
@@ -67,10 +69,7 @@ const {
   throwIfMoreThanOneModuleInterfaceParserError,
 } = require('../../error-utils');
 
-const {FlowParser} = require('../parser');
-
 const language = 'Flow';
-const parser = new FlowParser();
 
 function translateTypeAnnotation(
   hasteModuleName: string,
@@ -82,6 +81,7 @@ function translateTypeAnnotation(
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
+  parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeAliasResolutionStatus} =
     resolveTypeAnnotation(flowTypeAnnotation, types);
@@ -133,6 +133,7 @@ function translateTypeAnnotation(
               aliasMap,
               tryParse,
               cxxOnly,
+              parser,
             ),
           );
 
@@ -182,6 +183,7 @@ function translateTypeAnnotation(
             aliasMap,
             tryParse,
             cxxOnly,
+            parser,
           );
           // no need to do further checking
           return emitObject(nullable);
@@ -244,7 +246,7 @@ function translateTypeAnnotation(
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
-        language,
+        parser,
       );
     }
     case 'UnionTypeAnnotation': {
@@ -290,6 +292,7 @@ function buildModuleSchema(
    */
   ast: $FlowFixMe,
   tryParse: ParserErrorCapturer,
+  parser: Parser,
 ): NativeModuleSchema {
   const types = getTypes(ast);
   const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(
@@ -328,14 +331,12 @@ function buildModuleSchema(
       hasteModuleName,
       moduleSpec,
       callExpressions,
-      language,
     );
 
     throwIfMoreThanOneModuleRegistryCalls(
       hasteModuleName,
       callExpressions,
       callExpressions.length,
-      language,
     );
 
     const [callExpression] = callExpressions;
@@ -347,7 +348,6 @@ function buildModuleSchema(
       callExpression,
       methodName,
       callExpression.arguments.length,
-      language,
     );
 
     if (callExpression.arguments[0].type !== 'Literal') {
@@ -357,7 +357,6 @@ function buildModuleSchema(
         callExpression.arguments[0],
         methodName,
         type,
-        language,
       );
     }
 
@@ -369,7 +368,6 @@ function buildModuleSchema(
       callExpression,
       methodName,
       $moduleName,
-      language,
     );
 
     throwIfIncorrectModuleRegistryCallTypeParameterParserError(
@@ -409,9 +407,9 @@ function buildModuleSchema(
           aliasMap,
           tryParse,
           cxxOnly,
-          language,
           resolveTypeAnnotation,
           translateTypeAnnotation,
+          parser,
         ),
       }));
     })

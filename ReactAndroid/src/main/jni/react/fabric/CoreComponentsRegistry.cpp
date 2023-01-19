@@ -19,7 +19,6 @@
 #include <react/renderer/components/progressbar/AndroidProgressBarComponentDescriptor.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
-#include <react/renderer/components/slider/SliderComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
@@ -58,8 +57,6 @@ CoreComponentsRegistry::sharedProviderRegistry() {
         concreteComponentDescriptorProvider<TextComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<RawTextComponentDescriptor>());
-    providerRegistry->add(
-        concreteComponentDescriptorProvider<SliderComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>());
     providerRegistry->add(

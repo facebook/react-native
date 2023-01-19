@@ -282,10 +282,12 @@ export function SectionList_scrollable(Props: {
         ListHeaderComponent={HeaderComponent}
         ListFooterComponent={FooterComponent}
         // eslint-disable-next-line react/no-unstable-nested-components
+        // $FlowFixMe[missing-local-annot]
         SectionSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
         )}
         // eslint-disable-next-line react/no-unstable-nested-components
+        // $FlowFixMe[missing-local-annot]
         ItemSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
         )}

@@ -348,7 +348,7 @@ folly::Future<Unit> Inspector::executeIfEnabled(
 
 folly::Future<debugger::BreakpointInfo> Inspector::setBreakpoint(
     debugger::SourceLocation loc,
-    folly::Optional<std::string> condition) {
+    std::optional<std::string> condition) {
   auto promise = std::make_shared<folly::Promise<debugger::BreakpointInfo>>();
   // Automatically re-enable breakpoints since the user presumably wants this
   // to start triggering.
@@ -599,7 +599,7 @@ void Inspector::executeIfEnabledOnExecutor(
 
 void Inspector::setBreakpointOnExecutor(
     debugger::SourceLocation loc,
-    folly::Optional<std::string> condition,
+    std::optional<std::string> condition,
     std::shared_ptr<folly::Promise<debugger::BreakpointInfo>> promise) {
   std::lock_guard<std::mutex> lock(mutex_);
 

@@ -105,10 +105,6 @@ class Binding : public jni::HybridClass<Binding>,
       std::string const &commandName,
       folly::dynamic const &args) override;
 
-  void setNativeProps_DEPRECATED(
-      const ShadowView &shadowView,
-      Props::Shared props) override;
-
   void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,
       std::string const &eventType) override;

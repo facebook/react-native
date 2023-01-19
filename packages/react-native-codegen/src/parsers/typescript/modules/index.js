@@ -20,7 +20,9 @@ import type {
   Nullable,
 } from '../../../CodegenSchema';
 
+import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
+const {flattenProperties} = require('../components/componentsUtils');
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
 const {resolveTypeAnnotation, getTypes} = require('../utils');
@@ -68,10 +70,7 @@ const {
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
 } = require('../../error-utils');
 
-const {TypeScriptParser} = require('../parser');
-
 const language = 'TypeScript';
-const parser = new TypeScriptParser();
 
 function translateTypeAnnotation(
   hasteModuleName: string,
@@ -83,6 +82,7 @@ function translateTypeAnnotation(
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
+  parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeAliasResolutionStatus} =
     resolveTypeAnnotation(typeScriptTypeAnnotation, types);
@@ -97,8 +97,8 @@ function translateTypeAnnotation(
         'Array',
         typeAnnotation.elementType,
         nullable,
-        language,
         translateTypeAnnotation,
+        parser,
       );
     }
     case 'TSTypeOperator': {
@@ -114,8 +114,8 @@ function translateTypeAnnotation(
           'ReadonlyArray',
           typeAnnotation.typeAnnotation.elementType,
           nullable,
-          language,
           translateTypeAnnotation,
+          parser,
         );
       } else {
         throw new UnsupportedGenericParserError(
@@ -183,6 +183,41 @@ function translateTypeAnnotation(
         }
       }
     }
+    case 'TSInterfaceDeclaration': {
+      const objectTypeAnnotation = {
+        type: 'ObjectTypeAnnotation',
+        // $FlowFixMe[missing-type-arg]
+        properties: (flattenProperties(
+          [typeAnnotation],
+          types,
+        ): $ReadOnlyArray<$FlowFixMe>)
+          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
+            property => {
+              return tryParse(() => {
+                return parseObjectProperty(
+                  property,
+                  hasteModuleName,
+                  types,
+                  aliasMap,
+                  tryParse,
+                  cxxOnly,
+                  nullable,
+                  translateTypeAnnotation,
+                  parser,
+                );
+              });
+            },
+          )
+          .filter(Boolean),
+      };
+
+      return typeAliasResolution(
+        typeAliasResolutionStatus,
+        objectTypeAnnotation,
+        aliasMap,
+        nullable,
+      );
+    }
     case 'TSTypeLiteral': {
       // if there is TSIndexSignature, then it is a dictionary
       if (typeAnnotation.members) {
@@ -200,6 +235,7 @@ function translateTypeAnnotation(
             aliasMap,
             tryParse,
             cxxOnly,
+            parser,
           );
           // no need to do further checking
           return emitObject(nullable);
@@ -259,7 +295,7 @@ function translateTypeAnnotation(
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
-        language,
+        parser,
       );
     }
     case 'TSUnionType': {
@@ -297,6 +333,7 @@ function buildModuleSchema(
    */
   ast: $FlowFixMe,
   tryParse: ParserErrorCapturer,
+  parser: Parser,
 ): NativeModuleSchema {
   const types = getTypes(ast);
   const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(
@@ -335,14 +372,12 @@ function buildModuleSchema(
       hasteModuleName,
       moduleSpec,
       callExpressions,
-      language,
     );
 
     throwIfMoreThanOneModuleRegistryCalls(
       hasteModuleName,
       callExpressions,
       callExpressions.length,
-      language,
     );
 
     const [callExpression] = callExpressions;
@@ -354,7 +389,6 @@ function buildModuleSchema(
       callExpression,
       methodName,
       callExpression.arguments.length,
-      language,
     );
 
     if (callExpression.arguments[0].type !== 'StringLiteral') {
@@ -364,7 +398,6 @@ function buildModuleSchema(
         callExpression.arguments[0],
         methodName,
         type,
-        language,
       );
     }
 
@@ -376,7 +409,6 @@ function buildModuleSchema(
       callExpression,
       methodName,
       $moduleName,
-      language,
     );
 
     throwIfIncorrectModuleRegistryCallTypeParameterParserError(
@@ -421,9 +453,9 @@ function buildModuleSchema(
           aliasMap,
           tryParse,
           cxxOnly,
-          language,
           resolveTypeAnnotation,
           translateTypeAnnotation,
+          parser,
         ),
       }));
     })

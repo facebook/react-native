@@ -522,7 +522,6 @@ rn_apple_xplat_cxx_library(
         react_fabric_component_plugin_provider("ScrollView", "RCTScrollViewCls"),
         react_fabric_component_plugin_provider("PullToRefreshView", "RCTPullToRefreshViewCls"),
         react_fabric_component_plugin_provider("ActivityIndicatorView", "RCTActivityIndicatorViewCls"),
-        react_fabric_component_plugin_provider("Slider", "RCTSliderCls"),
         react_fabric_component_plugin_provider("Switch", "RCTSwitchCls"),
         react_fabric_component_plugin_provider("UnimplementedNativeView", "RCTUnimplementedNativeViewCls"),
         react_fabric_component_plugin_provider("Paragraph", "RCTParagraphCls"),
@@ -563,7 +562,6 @@ rn_apple_xplat_cxx_library(
     exported_deps = [
         react_native_xplat_target("react/renderer/animations:animations"),
         react_native_xplat_target("react/renderer/components/scrollview:scrollview"),
-        react_native_xplat_target("react/renderer/components/slider:slider"),
         react_native_xplat_target("react/renderer/components/safeareaview:safeareaview"),
         react_native_xplat_target("react/renderer/components/modal:modal"),
         react_native_xplat_target("react/renderer/components/unimplementedview:unimplementedview"),
@@ -1477,5 +1475,7 @@ rn_apple_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         ":FBReactNativeSpecJSI",
+        react_native_xplat_target("react/renderer/core:core"),
+        react_native_xplat_target("cxxreact:bridge"),
     ],
 )

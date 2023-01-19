@@ -34,6 +34,18 @@ references:
     attach_workspace:
       at: *hermes_workspace_root
 
+  main_only: &main_only
+    filters:
+      branches:
+        only: main
+  main_or_stable_only: &main_or_stable_only
+    filters:
+      branches:
+        only:
+          - main
+          - /0\.[0-9]+[\.[0-9]+]?-stable/
+
+
   # -------------------------
   #        Dependency Anchors
   # -------------------------
@@ -120,6 +132,8 @@ executors:
     macos:
       xcode: *xcode_version
     resource_class: macos.x86.medium.gen2
+    environment:
+      - BUILD_FROM_SOURCE: true
 
 # -------------------------
 #        COMMANDS
@@ -848,35 +862,6 @@ jobs:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
-      # Early exit in case of Release and WithFlipper. The two does not make sense together.
-      # Unfortunately, the `exclude` parameter of `matrix` does not work, so we have to do it manually.
-      - when:
-          condition:
-            and:
-              - equal: [ << parameters.flavor >>, "Release"]
-              - equal: [ << parameters.flipper >>, "WithFlipper" ]
-          steps:
-            - run:
-                command: circleci-agent step halt # this interrupts the job successfully.
-      # use_frameworks! does not works with Flipper enabled
-      - when:
-          condition:
-            and:
-              - equal: [ << parameters.use_frameworks >>, "StaticFrameworks"]
-              - equal: [ << parameters.flipper >>, "WithFlipper" ]
-          steps:
-            - run:
-                command: circleci-agent step halt # this interrupts the job successfully.
-      # use_frameworks! does not works with the New Architecture enabled
-      - when:
-          condition:
-            and:
-              - equal: [ << parameters.use_frameworks >>, "StaticFrameworks"]
-              - equal: [ << parameters.architecture >>, "NewArch" ]
-          steps:
-            - run:
-                command: circleci-agent step halt # this interrupts the job successfully.
-      # Valid configuration, we can continue
       - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
@@ -1130,6 +1115,7 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_VERSION_FILE: "sdks/.hermesversion"
+      - BUILD_FROM_SOURCE: true
     steps:
       - run:
           name: Install dependencies
@@ -1412,7 +1398,7 @@ jobs:
       - run_yarn
       - add_ssh_keys:
           fingerprints:
-            - "1c:98:e0:3a:52:79:95:29:12:cd:b4:87:5b:41:e2:bb"
+            - "1f:c7:61:c4:e2:ff:77:e3:cc:ca:a7:34:c2:79:e3:3c"
       - brew_install:
           package: cmake
       - run:
@@ -1480,10 +1466,6 @@ jobs:
               - equal: [ "nightly", << parameters.release_type >> ]
           steps:
             - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-            - run: |
-                git config --global user.email "react-native-bot@users.noreply.github.com"
-                git config --global user.name "npm Deployment Script"
-                echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
       # END: Stables and nightlies
 
       - run: node ./scripts/publish-npm.js --<< parameters.release_type >>
@@ -1545,7 +1527,7 @@ jobs:
                 command: |
                   curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \
                     -H "Accept: application/vnd.github.v3+json" \
-                    -u "$PAT_USERNAME:$PAT_TOKEN" \
+                    -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
       # END: Stable releases
 
@@ -1560,6 +1542,17 @@ jobs:
           name: Nightly
           command: |
             echo "Nightly build run"
+
+  find_and_publish_bumped_packages:
+    executor: reactnativeandroid
+    steps:
+      - checkout
+      - run:
+          name: Set NPM auth token
+          command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+      - run:
+          name: Find and publish all bumped packages
+          command: node ./scripts/monorepo/find-and-publish-all-bumped-packages.js
 
 
 # -------------------------
@@ -1634,6 +1627,87 @@ workflows:
               jsengine: ["Hermes", "JSC"]
               flipper: ["WithFlipper", "WithoutFlipper"]
               use_frameworks: [ "StaticLibraries", "StaticFrameworks" ] #TODO: make it works with DynamicFrameworks
+            exclude:
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticLibraries"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithoutFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticLibraries"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithoutFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "OldArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticLibraries"
+              - architecture: "OldArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "OldArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticLibraries"
+              - architecture: "OldArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithoutFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithoutFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "OldArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
+              - architecture: "OldArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "StaticFrameworks"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
@@ -1749,11 +1823,8 @@ workflows:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     triggers:
       - schedule:
+          <<: *main_only
           cron: "0 20 * * *"
-          filters:
-            branches:
-              only:
-                - main
     jobs:
       - nightly_job
 
@@ -1776,3 +1847,8 @@ workflows:
             - build_hermesc_linux
             - build_hermes_macos
             - build_hermesc_windows
+
+  publish_bumped_packages:
+    jobs:
+      - find_and_publish_bumped_packages:
+          <<: *main_or_stable_only

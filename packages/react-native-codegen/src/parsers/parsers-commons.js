@@ -27,6 +27,13 @@ import type {
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
 import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {ComponentSchemaBuilderConfig} from './flow/components/schema';
+
+const {
+  getConfigType,
+  extractNativeModuleName,
+  createParserErrorCapturer,
+} = require('./utils');
 
 const {
   throwIfPropertyValueTypeIsUnsupported,
@@ -152,6 +159,7 @@ function parseObjectProperty(
         aliasMap,
         tryParse,
         cxxOnly,
+        parser,
       ),
     );
 
@@ -165,7 +173,6 @@ function parseObjectProperty(
       languageTypeAnnotation,
       property.key,
       propertyTypeAnnotation.type,
-      language,
     );
   }
 
@@ -202,7 +209,6 @@ function translateDefault(
         hasteModuleName,
         typeAnnotation,
         memberType,
-        parser.language(),
       );
     }
   }
@@ -214,80 +220,41 @@ function translateDefault(
   );
 }
 
-function getTypeAnnotationParameters(
-  typeAnnotation: $FlowFixMe,
-  language: ParserType,
-): $ReadOnlyArray<$FlowFixMe> {
-  return language === 'Flow'
-    ? typeAnnotation.params
-    : typeAnnotation.parameters;
-}
-
-function getFunctionNameFromParameter(
-  param: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
-  language: ParserType,
-): $FlowFixMe {
-  return language === 'Flow' ? param.name : param.typeAnnotation;
-}
-
-function getParameterName(param: $FlowFixMe, language: ParserType): string {
-  return language === 'Flow' ? param.name.name : param.name;
-}
-
-function getParameterTypeAnnotation(
-  param: $FlowFixMe,
-  language: ParserType,
-): $FlowFixMe {
-  return language === 'Flow'
-    ? param.typeAnnotation
-    : param.typeAnnotation.typeAnnotation;
-}
-
-function getTypeAnnotationReturnType(
-  typeAnnotation: $FlowFixMe,
-  language: ParserType,
-): $FlowFixMe {
-  return language === 'Flow'
-    ? typeAnnotation.returnType
-    : typeAnnotation.typeAnnotation.typeAnnotation;
-}
-
 function translateFunctionTypeAnnotation(
   hasteModuleName: string,
   // TODO(T108222691): Use flow-types for @babel/parser
   // TODO(T71778680): This is a FunctionTypeAnnotation. Type this.
-  typeAnnotation: $FlowFixMe,
+  functionTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   translateTypeAnnotation: $FlowFixMe,
-  language: ParserType,
+  parser: Parser,
 ): NativeModuleFunctionTypeAnnotation {
   type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
   const params: Array<Param> = [];
 
-  for (const param of getTypeAnnotationParameters(typeAnnotation, language)) {
+  for (const param of parser.getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation,
+  )) {
     const parsedParam = tryParse(() => {
-      if (getFunctionNameFromParameter(param, language) == null) {
-        throw new UnnamedFunctionParamParserError(
-          param,
-          hasteModuleName,
-          language,
-        );
+      if (parser.getFunctionNameFromParameter(param) == null) {
+        throw new UnnamedFunctionParamParserError(param, hasteModuleName);
       }
 
-      const paramName = getParameterName(param, language);
+      const paramName = parser.getParameterName(param);
 
       const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
         unwrapNullable<$FlowFixMe>(
           translateTypeAnnotation(
             hasteModuleName,
-            getParameterTypeAnnotation(param, language),
+            parser.getParameterTypeAnnotation(param),
             types,
             aliasMap,
             tryParse,
             cxxOnly,
+            parser,
           ),
         );
 
@@ -322,19 +289,19 @@ function translateFunctionTypeAnnotation(
     unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
         hasteModuleName,
-        getTypeAnnotationReturnType(typeAnnotation, language),
+        parser.getFunctionTypeAnnotationReturnType(functionTypeAnnotation),
         types,
         aliasMap,
         tryParse,
         cxxOnly,
+        parser,
       ),
     );
 
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
     hasteModuleName,
-    typeAnnotation,
+    functionTypeAnnotation,
     'FunctionTypeAnnotation',
-    language,
     cxxOnly,
     returnTypeAnnotation.type,
   );
@@ -361,15 +328,15 @@ function buildPropertySchema(
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
-  language: ParserType,
   resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
+  parser: Parser,
 ): NativeModulePropertyShape {
   let nullable: boolean = false;
   let {key, value} = property;
   const methodName: string = key.name;
 
-  if (language === 'TypeScript') {
+  if (parser.language() === 'TypeScript') {
     value =
       property.type === 'TSMethodSignature'
         ? property
@@ -383,7 +350,7 @@ function buildPropertySchema(
     property.value,
     key.name,
     value.type,
-    language,
+    parser.language(),
   );
 
   return {
@@ -399,10 +366,102 @@ function buildPropertySchema(
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
-        language,
+        parser,
       ),
     ),
   };
+}
+
+function buildSchemaFromConfigType(
+  configType: 'module' | 'component' | 'none',
+  filename: ?string,
+  ast: $FlowFixMe,
+  wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
+  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildModuleSchema: (
+    hasteModuleName: string,
+    ast: $FlowFixMe,
+    tryParse: ParserErrorCapturer,
+    parser: Parser,
+  ) => NativeModuleSchema,
+  parser: Parser,
+): SchemaType {
+  switch (configType) {
+    case 'component': {
+      return wrapComponentSchema(buildComponentSchema(ast));
+    }
+    case 'module': {
+      if (filename === undefined || filename === null) {
+        throw new Error('Filepath expected while parasing a module');
+      }
+      const nativeModuleName = extractNativeModuleName(filename);
+
+      const [parsingErrors, tryParse] = createParserErrorCapturer();
+
+      const schema = tryParse(() =>
+        buildModuleSchema(nativeModuleName, ast, tryParse, parser),
+      );
+
+      if (parsingErrors.length > 0) {
+        /**
+         * TODO(T77968131): We have two options:
+         *  - Throw the first error, but indicate there are more then one errors.
+         *  - Display all errors, nicely formatted.
+         *
+         * For the time being, we're just throw the first error.
+         **/
+
+        throw parsingErrors[0];
+      }
+
+      invariant(
+        schema != null,
+        'When there are no parsing errors, the schema should not be null',
+      );
+
+      return wrapModuleSchema(schema, nativeModuleName);
+    }
+    default:
+      return {modules: {}};
+  }
+}
+
+function buildSchema(
+  contents: string,
+  filename: ?string,
+  wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
+  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildModuleSchema: (
+    hasteModuleName: string,
+    ast: $FlowFixMe,
+    tryParse: ParserErrorCapturer,
+    parser: Parser,
+  ) => NativeModuleSchema,
+  Visitor: ({isComponent: boolean, isModule: boolean}) => {
+    [type: string]: (node: $FlowFixMe) => void,
+  },
+  parser: Parser,
+): SchemaType {
+  // Early return for non-Spec JavaScript files
+  if (
+    !contents.includes('codegenNativeComponent') &&
+    !contents.includes('TurboModule')
+  ) {
+    return {modules: {}};
+  }
+
+  const ast = parser.getAst(contents);
+  const configType = getConfigType(ast, Visitor);
+
+  return buildSchemaFromConfigType(
+    configType,
+    filename,
+    ast,
+    wrapComponentSchema,
+    buildComponentSchema,
+    buildModuleSchema,
+    parser,
+  );
 }
 
 module.exports = {
@@ -415,4 +474,6 @@ module.exports = {
   translateDefault,
   translateFunctionTypeAnnotation,
   buildPropertySchema,
+  buildSchemaFromConfigType,
+  buildSchema,
 };

@@ -12,14 +12,10 @@ require_relative "./test_utils/PodMock.rb"
 require_relative "./test_utils/LocalPodspecPatchMock.rb"
 
 class LocalPodspecPatchTests < Test::Unit::TestCase
-    def setup
-        File.enable_testing_mode!
-        Dir.enable_testing_mode!
-    end
 
     def teardown
-        File.reset()
-        Dir.reset()
+        FileMock.reset()
+        DirMock.reset()
     end
 
     # =================== #
@@ -31,18 +27,18 @@ class LocalPodspecPatchTests < Test::Unit::TestCase
         react_native_path = "../node_modules/react-native"
         globs = ["a/path/to/boost.podspec", "a/path/to/DoubleConversion.podspec"]
         mocked_pwd = "a/path/to"
-        Dir.mocked_existing_globs(globs, "#{react_native_path}/third-party-podspecs/*")
-        Dir.set_pwd(mocked_pwd)
+        DirMock.mocked_existing_globs(globs, "#{react_native_path}/third-party-podspecs/*")
+        DirMock.set_pwd(mocked_pwd)
 
         # Act
-        local_podspec = LocalPodspecPatch.pods_to_update(:react_native_path => react_native_path)
+        local_podspec = LocalPodspecPatch.pods_to_update(:react_native_path => react_native_path, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(local_podspec, [])
-        assert_equal(Dir.glob_invocation, ["#{react_native_path}/third-party-podspecs/*"])
-        assert_equal(File.exist_invocation_params, [
-            File.join(mocked_pwd, "Pods/Local Podspecs", "boost.podspec.json"),
-            File.join(mocked_pwd, "Pods/Local Podspecs", "DoubleConversion.podspec.json"),
+        assert_equal(DirMock.glob_invocation, ["#{react_native_path}/third-party-podspecs/*"])
+        assert_equal(FileMock.exist_invocation_params, [
+            FileMock.join(mocked_pwd, "Pods/Local Podspecs", "boost.podspec.json"),
+            FileMock.join(mocked_pwd, "Pods/Local Podspecs", "DoubleConversion.podspec.json"),
         ])
     end
 
@@ -54,14 +50,14 @@ class LocalPodspecPatchTests < Test::Unit::TestCase
         prepare_PodsToUpdate_test_withMatchingVersions(react_native_path, globs, mocked_pwd)
 
         # Act
-        local_podspec = LocalPodspecPatch.pods_to_update(:react_native_path => react_native_path)
+        local_podspec = LocalPodspecPatch.pods_to_update(:react_native_path => react_native_path, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(local_podspec, [])
-        assert_equal(Dir.glob_invocation, ["#{react_native_path}/third-party-podspecs/*"])
-        assert_equal(File.exist_invocation_params, [
-            File.join(mocked_pwd, "Pods/Local Podspecs", "boost.podspec.json"),
-            File.join(mocked_pwd, "Pods/Local Podspecs", "DoubleConversion.podspec.json"),
+        assert_equal(DirMock.glob_invocation, ["#{react_native_path}/third-party-podspecs/*"])
+        assert_equal(FileMock.exist_invocation_params, [
+            FileMock.join(mocked_pwd, "Pods/Local Podspecs", "boost.podspec.json"),
+            FileMock.join(mocked_pwd, "Pods/Local Podspecs", "DoubleConversion.podspec.json"),
         ])
     end
 
@@ -73,17 +69,17 @@ class LocalPodspecPatchTests < Test::Unit::TestCase
         prepare_PodsToUpdate_test_withDifferentVersions(react_native_path, globs, mocked_pwd)
 
         # Act
-        local_podspec = LocalPodspecPatch.pods_to_update(:react_native_path => react_native_path)
+        local_podspec = LocalPodspecPatch.pods_to_update(:react_native_path => react_native_path, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(local_podspec, [
             "boost",
             "DoubleConversion"
         ])
-        assert_equal(Dir.glob_invocation, ["#{react_native_path}/third-party-podspecs/*"])
-        assert_equal(File.exist_invocation_params, [
-            File.join(mocked_pwd, "Pods/Local Podspecs", "boost.podspec.json"),
-            File.join(mocked_pwd, "Pods/Local Podspecs", "DoubleConversion.podspec.json"),
+        assert_equal(DirMock.glob_invocation, ["#{react_native_path}/third-party-podspecs/*"])
+        assert_equal(FileMock.exist_invocation_params, [
+            FileMock.join(mocked_pwd, "Pods/Local Podspecs", "boost.podspec.json"),
+            FileMock.join(mocked_pwd, "Pods/Local Podspecs", "DoubleConversion.podspec.json"),
         ])
     end
 
@@ -136,16 +132,16 @@ class LocalPodspecPatchTests < Test::Unit::TestCase
     # Utilities #
     # ========= #
     def prepare_PodsToUpdate_test_withMatchingVersions(react_native_path, globs, mocked_pwd)
-        File.mocked_existing_files([
+        FileMock.mocked_existing_files([
             "a/path/to/Pods/Local Podspecs/boost.podspec.json",
             "a/path/to/Pods/Local Podspecs/DoubleConversion.podspec.json"
         ])
-        File.files_to_read({
+        FileMock.files_to_read({
             "a/path/to/Pods/Local Podspecs/boost.podspec.json" => "{ \"version\": \"0.0.1\"}",
             "a/path/to/Pods/Local Podspecs/DoubleConversion.podspec.json" => "{ \"version\": \"1.0.1\"}",
         })
-        Dir.mocked_existing_globs(globs, "#{react_native_path}/third-party-podspecs/*")
-        Dir.set_pwd(mocked_pwd)
+        DirMock.mocked_existing_globs(globs, "#{react_native_path}/third-party-podspecs/*")
+        DirMock.set_pwd(mocked_pwd)
         Pod::Specification.specs_from_file({
             "../node_modules/react-native/third-party-podspecs/boost.podspec" => Pod::PodSpecMock.new(:version => "0.0.1"),
             "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec" => Pod::PodSpecMock.new(:version => "1.0.1"),
@@ -153,16 +149,16 @@ class LocalPodspecPatchTests < Test::Unit::TestCase
     end
 
     def prepare_PodsToUpdate_test_withDifferentVersions(react_native_path, globs, mocked_pwd)
-        File.mocked_existing_files([
+        FileMock.mocked_existing_files([
             "a/path/to/Pods/Local Podspecs/boost.podspec.json",
             "a/path/to/Pods/Local Podspecs/DoubleConversion.podspec.json"
         ])
-        File.files_to_read({
+        FileMock.files_to_read({
             "a/path/to/Pods/Local Podspecs/boost.podspec.json" => "{ \"version\": \"0.0.1\"}",
             "a/path/to/Pods/Local Podspecs/DoubleConversion.podspec.json" => "{ \"version\": \"1.0.1\"}",
         })
-        Dir.mocked_existing_globs(globs, "#{react_native_path}/third-party-podspecs/*")
-        Dir.set_pwd(mocked_pwd)
+        DirMock.mocked_existing_globs(globs, "#{react_native_path}/third-party-podspecs/*")
+        DirMock.set_pwd(mocked_pwd)
         Pod::Specification.specs_from_file({
             "../node_modules/react-native/third-party-podspecs/boost.podspec" => Pod::PodSpecMock.new(:version => "0.1.1"),
             "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec" => Pod::PodSpecMock.new(:version => "1.1.1"),

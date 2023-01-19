@@ -23,6 +23,7 @@
 #include <hermes/hermes.h>
 #include <hermes/inspector/chrome/MessageTypes.h>
 #include <jsi/instrumentation.h>
+#include <optional>
 
 namespace facebook {
 namespace hermes {
@@ -181,7 +182,7 @@ void expectCallFrames(
       EXPECT_EQ(frame.scopeChain.size(), info.scopeCount);
 
       for (int j = 0; j < info.scopeCount; j++) {
-        EXPECT_TRUE(frame.scopeChain[j].object.objectId.hasValue());
+        EXPECT_TRUE(frame.scopeChain[j].object.objectId.has_value());
       }
     }
 
@@ -250,7 +251,7 @@ m::debugger::ScriptParsedNotification expectScriptParsed(
   EXPECT_GT(note.scriptId.size(), 0);
 
   if (sourceMapURL.empty()) {
-    EXPECT_FALSE(note.sourceMapURL.hasValue());
+    EXPECT_FALSE(note.sourceMapURL.has_value());
   } else {
     EXPECT_EQ(note.sourceMapURL.value(), sourceMapURL);
   }
@@ -304,7 +305,7 @@ void expectEvalResponse(
   EXPECT_EQ(resp.id, id);
   EXPECT_EQ(resp.result.type, "string");
   EXPECT_EQ(resp.result.value, expectedValue);
-  EXPECT_FALSE(resp.exceptionDetails.hasValue());
+  EXPECT_FALSE(resp.exceptionDetails.has_value());
 }
 
 void expectEvalResponse(SyncConnection &conn, int id, bool expectedValue) {
@@ -314,7 +315,7 @@ void expectEvalResponse(SyncConnection &conn, int id, bool expectedValue) {
   EXPECT_EQ(resp.id, id);
   EXPECT_EQ(resp.result.type, "boolean");
   EXPECT_EQ(resp.result.value, expectedValue);
-  EXPECT_FALSE(resp.exceptionDetails.hasValue());
+  EXPECT_FALSE(resp.exceptionDetails.has_value());
 }
 
 void expectEvalResponse(SyncConnection &conn, int id, int expectedValue) {
@@ -324,7 +325,7 @@ void expectEvalResponse(SyncConnection &conn, int id, int expectedValue) {
   EXPECT_EQ(resp.id, id);
   EXPECT_EQ(resp.result.type, "number");
   EXPECT_EQ(resp.result.value, expectedValue);
-  EXPECT_FALSE(resp.exceptionDetails.hasValue());
+  EXPECT_FALSE(resp.exceptionDetails.has_value());
 }
 
 void expectEvalException(
@@ -336,7 +337,7 @@ void expectEvalException(
       expectResponse<m::debugger::EvaluateOnCallFrameResponse>(conn, id);
 
   EXPECT_EQ(resp.id, id);
-  EXPECT_TRUE(resp.exceptionDetails.hasValue());
+  EXPECT_TRUE(resp.exceptionDetails.has_value());
 
   m::runtime::ExceptionDetails &details = resp.exceptionDetails.value();
   EXPECT_EQ(details.text, exceptionText);
@@ -344,7 +345,7 @@ void expectEvalException(
   // TODO: Hermes doesn't seem to populate the line number for the exception?
   EXPECT_EQ(details.lineNumber, 0);
 
-  EXPECT_TRUE(details.stackTrace.hasValue());
+  EXPECT_TRUE(details.stackTrace.has_value());
 
   m::runtime::StackTrace &stackTrace = details.stackTrace.value();
   EXPECT_EQ(stackTrace.callFrames.size(), infos.size());
@@ -381,9 +382,9 @@ struct PropInfo {
   }
 
   std::string type;
-  folly::Optional<std::string> subtype;
-  folly::Optional<folly::dynamic> value;
-  folly::Optional<std::string> unserializableValue;
+  std::optional<std::string> subtype;
+  std::optional<folly::dynamic> value;
+  std::optional<std::string> unserializableValue;
 };
 
 std::unordered_map<std::string, std::string> expectProps(
@@ -412,23 +413,23 @@ std::unordered_map<std::string, std::string> expectProps(
     if (infoIt != infos.end()) {
       const PropInfo &info = infoIt->second;
 
-      EXPECT_TRUE(desc.value.hasValue());
+      EXPECT_TRUE(desc.value.has_value());
 
       m::runtime::RemoteObject &remoteObj = desc.value.value();
       EXPECT_EQ(remoteObj.type, info.type);
 
-      if (info.subtype.hasValue()) {
-        EXPECT_TRUE(remoteObj.subtype.hasValue());
+      if (info.subtype.has_value()) {
+        EXPECT_TRUE(remoteObj.subtype.has_value());
         EXPECT_EQ(remoteObj.subtype.value(), info.subtype.value());
       }
 
-      if (info.value.hasValue()) {
-        EXPECT_TRUE(remoteObj.value.hasValue());
+      if (info.value.has_value()) {
+        EXPECT_TRUE(remoteObj.value.has_value());
         EXPECT_EQ(remoteObj.value.value(), info.value.value());
       }
 
-      if (info.unserializableValue.hasValue()) {
-        EXPECT_TRUE(remoteObj.unserializableValue.hasValue());
+      if (info.unserializableValue.has_value()) {
+        EXPECT_TRUE(remoteObj.unserializableValue.has_value());
         EXPECT_EQ(
             remoteObj.unserializableValue.value(),
             info.unserializableValue.value());
@@ -436,7 +437,7 @@ std::unordered_map<std::string, std::string> expectProps(
 
       if ((info.type == "object" && info.subtype != "null") ||
           info.type == "function") {
-        EXPECT_TRUE(remoteObj.objectId.hasValue());
+        EXPECT_TRUE(remoteObj.objectId.has_value());
         objectIds[desc.name] = remoteObj.objectId.value();
       }
     }
@@ -454,9 +455,9 @@ void expectEvalResponse(
 
   EXPECT_EQ(resp.id, id);
   EXPECT_EQ(resp.result.type, "object");
-  EXPECT_FALSE(resp.exceptionDetails.hasValue());
+  EXPECT_FALSE(resp.exceptionDetails.has_value());
 
-  EXPECT_TRUE(resp.result.objectId.hasValue());
+  EXPECT_TRUE(resp.result.objectId.has_value());
   expectProps(conn, id + 1, resp.result.objectId.value(), infos);
 }
 
@@ -1007,7 +1008,7 @@ TEST(ConnectionTests, testSetBreakpointConditional) {
   m::debugger::SetBreakpointByUrlRequest req0;
   req0.id = msgId++;
   req0.lineNumber = 4;
-  req0.condition = folly::Optional<std::string>("throw Error('Boom!')");
+  req0.condition = std::optional<std::string>("throw Error('Boom!')");
   conn.send(req0.toJson());
 
   expectBreakpointResponse(conn, req0.id, 4, 4);
@@ -1015,7 +1016,7 @@ TEST(ConnectionTests, testSetBreakpointConditional) {
   m::debugger::SetBreakpointByUrlRequest req1;
   req1.id = msgId++;
   req1.lineNumber = 5;
-  req1.condition = folly::Optional<std::string>("b === a");
+  req1.condition = std::optional<std::string>("b === a");
   conn.send(req1.toJson());
 
   expectBreakpointResponse(conn, req1.id, 5, 5);
@@ -1023,7 +1024,7 @@ TEST(ConnectionTests, testSetBreakpointConditional) {
   m::debugger::SetBreakpointByUrlRequest req2;
   req2.id = msgId++;
   req2.lineNumber = 6;
-  req2.condition = folly::Optional<std::string>("c === 5");
+  req2.condition = std::optional<std::string>("c === 5");
   conn.send(req2.toJson());
 
   expectBreakpointResponse(conn, req2.id, 6, 6);
@@ -1321,7 +1322,7 @@ TEST(ConnectionTests, testRuntimeEvaluateReturnByValue) {
   auto resp =
       expectResponse<m::debugger::EvaluateOnCallFrameResponse>(conn, msgId);
   EXPECT_EQ(resp.result.type, "object");
-  ASSERT_TRUE(resp.result.value.hasValue());
+  ASSERT_TRUE(resp.result.value.has_value());
   EXPECT_EQ(folly::toJson(resp.result.value.value()), object);
 
   // [3] exit run loop
@@ -1484,7 +1485,7 @@ TEST(ConnectionTests, testGetProperties) {
       conn, "other", {{"bar", 17, 3}, {"foo", 19, 2}, {"global", 23, 1}});
 
   auto &scopeObj = pausedNote.callFrames.at(1).scopeChain.at(0).object;
-  EXPECT_TRUE(scopeObj.objectId.hasValue());
+  EXPECT_TRUE(scopeObj.objectId.has_value());
   std::string scopeObjId = scopeObj.objectId.value();
   objIds.push_back(scopeObjId);
 
@@ -1963,7 +1964,7 @@ TEST(ConnectionTests, testScopeVariables) {
   req.objectId = globalScopeObject.objectId.value();
   conn.send(req.toJson());
   auto resp = expectResponse<m::runtime::GetPropertiesResponse>(conn, req.id);
-  std::unordered_map<std::string, folly::Optional<m::runtime::RemoteObject>>
+  std::unordered_map<std::string, std::optional<m::runtime::RemoteObject>>
       globalProperties;
   for (auto propertyDescriptor : resp.result) {
     globalProperties[propertyDescriptor.name] = propertyDescriptor.value;
@@ -1972,20 +1973,20 @@ TEST(ConnectionTests, testScopeVariables) {
 
   // globalString should be of type "string" and have value "global-string".
   EXPECT_EQ(globalProperties.count("globalString"), 1);
-  EXPECT_TRUE(globalProperties["globalString"].hasValue());
+  EXPECT_TRUE(globalProperties["globalString"].has_value());
   EXPECT_EQ(globalProperties["globalString"].value().type, "string");
   EXPECT_EQ(
       globalProperties["globalString"].value().value.value(), "global-string");
 
   // func should be of type "function".
   EXPECT_EQ(globalProperties.count("func"), 1);
-  EXPECT_TRUE(globalProperties["func"].hasValue());
+  EXPECT_TRUE(globalProperties["func"].has_value());
   EXPECT_EQ(globalProperties["func"].value().type, "function");
 
   // globalObject should be of type "object" with "number" and "bool"
   // properties.
   EXPECT_EQ(globalProperties.count("globalObject"), 1);
-  EXPECT_TRUE(globalProperties["globalObject"].hasValue());
+  EXPECT_TRUE(globalProperties["globalObject"].has_value());
   EXPECT_EQ(globalProperties["globalObject"].value().type, "object");
   expectProps(
       conn,
@@ -2076,7 +2077,7 @@ TEST(ConnectionTests, testRuntimeCallFunctionOnObject) {
   /// ensures that \p objId has all of the expected properties; Returns the
   /// runtime::RemoteObjectId for the "self_ref" property (which must exist).
   auto verifyObjShape = [&](const m::runtime::RemoteObjectId &objId)
-      -> folly::Optional<std::string> {
+      -> std::optional<std::string> {
     auto objProps = expectProps(conn, msgId++, objId, expectedPropInfos);
     EXPECT_TRUE(objProps.count("__proto__"));
     auto objPropIt = objProps.find("self_ref");
@@ -2133,7 +2134,7 @@ TEST(ConnectionTests, testRuntimeCallFunctionOnExecutionContext) {
     req.objectId = objId;
     conn.send(req.toJson());
     auto resp = expectResponse<m::runtime::GetPropertiesResponse>(conn, req.id);
-    std::unordered_map<std::string, folly::Optional<m::runtime::RemoteObject>>
+    std::unordered_map<std::string, std::optional<m::runtime::RemoteObject>>
         properties;
     for (auto propertyDescriptor : resp.result) {
       properties[propertyDescriptor.name] = propertyDescriptor.value;
@@ -2202,18 +2203,18 @@ TEST(ConnectionTests, testRuntimeCallFunctionOnExecutionContext) {
       // and it should have a value.
       ASSERT_TRUE(it->second) << test.propName;
 
-      if (it->second->value.hasValue()) {
+      if (it->second->value.has_value()) {
         // the property has a value, so make sure that's what's being expected.
         auto actual = it->second->value;
         auto expected = test.callArg.value;
-        ASSERT_TRUE(expected.hasValue()) << test.propName;
+        ASSERT_TRUE(expected.has_value()) << test.propName;
         EXPECT_EQ(*actual, *expected) << test.propName;
-      } else if (it->second->unserializableValue.hasValue()) {
+      } else if (it->second->unserializableValue.has_value()) {
         // the property has an unserializable value, so make sure that's what's
         // being expected.
         auto actual = it->second->unserializableValue;
         auto expected = test.callArg.unserializableValue;
-        ASSERT_TRUE(expected.hasValue()) << test.propName;
+        ASSERT_TRUE(expected.has_value()) << test.propName;
         EXPECT_EQ(*actual, *expected) << test.propName;
       } else {
         FAIL() << "No value or unserializable value in " << test.propName;
@@ -2353,7 +2354,7 @@ TEST(ConnectionTests, testThisObject) {
   req.objectId = globalThisObj.objectId.value();
   conn.send(req.toJson());
   auto resp = expectResponse<m::runtime::GetPropertiesResponse>(conn, req.id);
-  std::unordered_map<std::string, folly::Optional<m::runtime::RemoteObject>>
+  std::unordered_map<std::string, std::optional<m::runtime::RemoteObject>>
       properties;
   for (auto propertyDescriptor : resp.result) {
     properties[propertyDescriptor.name] = propertyDescriptor.value;
@@ -2361,7 +2362,7 @@ TEST(ConnectionTests, testThisObject) {
 
   // globalString should be of type "string" and have value "global-string".
   EXPECT_EQ(properties.count("globalString"), 1);
-  EXPECT_TRUE(properties["globalString"].hasValue());
+  EXPECT_TRUE(properties["globalString"].has_value());
   EXPECT_EQ(properties["globalString"].value().type, "string");
   EXPECT_EQ(properties["globalString"].value().value.value(), "global-string");
 
@@ -2613,7 +2614,7 @@ TEST(ConnectionTests, canBreakOnScriptsWithSourceMap) {
   auto note = expectNotification<m::debugger::PausedNotification>(conn);
   ASSERT_FALSE(asyncRuntime.hasStoredValue());
   EXPECT_EQ(note.reason, "other");
-  ASSERT_TRUE(note.hitBreakpoints.hasValue());
+  ASSERT_TRUE(note.hitBreakpoints.has_value());
   ASSERT_EQ(note.hitBreakpoints->size(), 1);
   EXPECT_EQ(note.hitBreakpoints->at(0), bpId);
 

@@ -170,16 +170,15 @@ type OptionalProps = {|
    */
   maxToRenderPerBatch?: ?number,
   /**
-   * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
-   * content.
+   * Called once when the scroll position gets within within `onEndReachedThreshold`
+   * from the logical end of the list.
    */
   onEndReached?: ?(info: {distanceFromEnd: number, ...}) => void,
   /**
-   * How far from the end (in units of visible length of the list) the bottom edge of the
+   * How far from the end (in units of visible length of the list) the trailing edge of the
    * list must be from the end of the content to trigger the `onEndReached` callback.
-   * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
-   * within half the visible length of the list. A value of 0 will not trigger until scrolling
-   * to the very end of the list.
+   * Thus, a value of 0.5 will trigger `onEndReached` when the end of the content is
+   * within half the visible length of the list.
    */
   onEndReachedThreshold?: ?number,
   /**
@@ -198,6 +197,18 @@ type OptionalProps = {|
     averageItemLength: number,
     ...
   }) => void,
+  /**
+   * Called once when the scroll position gets within within `onStartReachedThreshold`
+   * from the logical start of the list.
+   */
+  onStartReached?: ?(info: {distanceFromStart: number, ...}) => void,
+  /**
+   * How far from the start (in units of visible length of the list) the leading edge of the
+   * list must be from the start of the content to trigger the `onStartReached` callback.
+   * Thus, a value of 0.5 will trigger `onStartReached` when the start of the content is
+   * within half the visible length of the list.
+   */
+  onStartReachedThreshold?: ?number,
   /**
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.

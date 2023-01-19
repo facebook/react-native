@@ -45,12 +45,6 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
   }
 
-  void setNativeProps_DEPRECATED(const ShadowView &shadowView, Props::Shared props) override
-  {
-    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate setNativeProps_DEPRECATED:shadowView withProps:std::move(props)];
-  }
-
   void schedulerDidSetIsJSResponder(ShadowView const &shadowView, bool isJSResponder, bool blockNativeResponder)
       override
   {

@@ -128,7 +128,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
     TOP_START,
     TOP_END,
     BOTTOM_START,
-    BOTTOM_END
+    BOTTOM_END,
+    END_END,
+    END_START,
+    START_END,
+    START_START
   }
 
   public ReactViewBackgroundDrawable(Context context) {
@@ -271,7 +275,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
   public void setRadius(float radius, int position) {
     if (mBorderCornerRadii == null) {
-      mBorderCornerRadii = new float[8];
+      mBorderCornerRadii = new float[12];
       Arrays.fill(mBorderCornerRadii, YogaConstants.UNDEFINED);
     }
 
@@ -581,6 +585,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
     float bottomStartRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_START);
     float bottomEndRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_END);
 
+    float endEndRadius = getBorderRadius(BorderRadiusLocation.END_END);
+    float endStartRadius = getBorderRadius(BorderRadiusLocation.END_START);
+    float startEndRadius = getBorderRadius(BorderRadiusLocation.START_END);
+    float startStartRadius = getBorderRadius(BorderRadiusLocation.START_START);
+
     if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
       if (YogaConstants.isUndefined(topStartRadius)) {
         topStartRadius = topLeftRadius;
@@ -598,20 +607,44 @@ public class ReactViewBackgroundDrawable extends Drawable {
         bottomEndRadius = bottomRightRadius;
       }
 
-      final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
-      final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
-      final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
-      final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
+      final float logicalTopStartRadius =
+          YogaConstants.isUndefined(topStartRadius) ? startStartRadius : topStartRadius;
+      final float logicalTopEndRadius =
+          YogaConstants.isUndefined(topEndRadius) ? startEndRadius : topEndRadius;
+      final float logicalBottomStartRadius =
+          YogaConstants.isUndefined(bottomStartRadius) ? endStartRadius : bottomStartRadius;
+      final float logicalBottomEndRadius =
+          YogaConstants.isUndefined(bottomEndRadius) ? endEndRadius : bottomEndRadius;
+
+      final float directionAwareTopLeftRadius = isRTL ? logicalTopEndRadius : logicalTopStartRadius;
+      final float directionAwareTopRightRadius =
+          isRTL ? logicalTopStartRadius : logicalTopEndRadius;
+      final float directionAwareBottomLeftRadius =
+          isRTL ? logicalBottomEndRadius : logicalBottomStartRadius;
+      final float directionAwareBottomRightRadius =
+          isRTL ? logicalBottomStartRadius : logicalBottomEndRadius;
 
       topLeftRadius = directionAwareTopLeftRadius;
       topRightRadius = directionAwareTopRightRadius;
       bottomLeftRadius = directionAwareBottomLeftRadius;
       bottomRightRadius = directionAwareBottomRightRadius;
     } else {
-      final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
-      final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
-      final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
-      final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
+      final float logicalTopStartRadius =
+          YogaConstants.isUndefined(topStartRadius) ? startStartRadius : topStartRadius;
+      final float logicalTopEndRadius =
+          YogaConstants.isUndefined(topEndRadius) ? startEndRadius : topEndRadius;
+      final float logicalBottomStartRadius =
+          YogaConstants.isUndefined(bottomStartRadius) ? endStartRadius : bottomStartRadius;
+      final float logicalBottomEndRadius =
+          YogaConstants.isUndefined(bottomEndRadius) ? endEndRadius : bottomEndRadius;
+
+      final float directionAwareTopLeftRadius = isRTL ? logicalTopEndRadius : logicalTopStartRadius;
+      final float directionAwareTopRightRadius =
+          isRTL ? logicalTopStartRadius : logicalTopEndRadius;
+      final float directionAwareBottomLeftRadius =
+          isRTL ? logicalBottomEndRadius : logicalBottomStartRadius;
+      final float directionAwareBottomRightRadius =
+          isRTL ? logicalBottomStartRadius : logicalBottomEndRadius;
 
       if (!YogaConstants.isUndefined(directionAwareTopLeftRadius)) {
         topLeftRadius = directionAwareTopLeftRadius;

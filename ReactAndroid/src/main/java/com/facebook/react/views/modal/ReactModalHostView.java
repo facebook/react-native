@@ -41,6 +41,7 @@ import com.facebook.react.uimanager.JSPointerDispatcher;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.common.ContextUtils;
@@ -87,9 +88,9 @@ public class ReactModalHostView extends ViewGroup
   private @Nullable DialogInterface.OnShowListener mOnShowListener;
   private @Nullable OnRequestCloseListener mOnRequestCloseListener;
 
-  public ReactModalHostView(Context context) {
+  public ReactModalHostView(ThemedReactContext context) {
     super(context);
-    ((ReactContext) context).addLifecycleEventListener(this);
+    context.addLifecycleEventListener(this);
 
     mHostView = new DialogRootViewGroup(context);
   }
@@ -159,7 +160,7 @@ public class ReactModalHostView extends ViewGroup
   }
 
   public void onDropInstance() {
-    ((ReactContext) getContext()).removeLifecycleEventListener(this);
+    ((ThemedReactContext) getContext()).removeLifecycleEventListener(this);
     dismiss();
   }
 
@@ -237,7 +238,7 @@ public class ReactModalHostView extends ViewGroup
   }
 
   private @Nullable Activity getCurrentActivity() {
-    return ((ReactContext) getContext()).getCurrentActivity();
+    return ((ThemedReactContext) getContext()).getCurrentActivity();
   }
 
   /**
@@ -460,7 +461,9 @@ public class ReactModalHostView extends ViewGroup
                 @Override
                 public void runGuarded() {
                   UIManagerModule uiManager =
-                      (getReactContext()).getNativeModule(UIManagerModule.class);
+                      getReactContext()
+                          .getReactApplicationContext()
+                          .getNativeModule(UIManagerModule.class);
 
                   if (uiManager == null) {
                     return;
@@ -520,11 +523,11 @@ public class ReactModalHostView extends ViewGroup
 
     @Override
     public void handleException(Throwable t) {
-      getReactContext().handleException(new RuntimeException(t));
+      getReactContext().getReactApplicationContext().handleException(new RuntimeException(t));
     }
 
-    private ReactContext getReactContext() {
-      return (ReactContext) getContext();
+    private ThemedReactContext getReactContext() {
+      return (ThemedReactContext) getContext();
     }
 
     @Override

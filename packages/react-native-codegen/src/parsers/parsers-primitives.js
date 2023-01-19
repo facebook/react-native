@@ -31,7 +31,6 @@ import type {
   StringTypeAnnotation,
   VoidTypeAnnotation,
 } from '../CodegenSchema';
-import type {ParserType} from './errors';
 import type {Parser} from './parser';
 import type {
   ParserErrorCapturer,
@@ -105,7 +104,7 @@ function emitFunction(
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   translateTypeAnnotation: $FlowFixMe,
-  language: ParserType,
+  parser: Parser,
 ): Nullable<NativeModuleFunctionTypeAnnotation> {
   const translateFunctionTypeAnnotationValue: NativeModuleFunctionTypeAnnotation =
     translateFunctionTypeAnnotation(
@@ -116,7 +115,7 @@ function emitFunction(
       tryParse,
       cxxOnly,
       translateTypeAnnotation,
-      language,
+      parser,
     );
   return wrapNullable(nullable, translateFunctionTypeAnnotationValue);
 }
@@ -225,6 +224,7 @@ function emitPromise(
           aliasMap,
           tryParse,
           cxxOnly,
+          parser,
         ),
       });
     } catch {
@@ -267,7 +267,6 @@ function emitUnion(
       hasteModuleName,
       typeAnnotation,
       unionTypes,
-      parser.language(),
     );
   }
 
@@ -285,8 +284,8 @@ function translateArrayTypeAnnotation(
   arrayType: 'Array' | 'ReadonlyArray',
   elementType: $FlowFixMe,
   nullable: boolean,
-  language: ParserType,
   translateTypeAnnotation: $FlowFixMe,
+  parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   try {
     /**
@@ -310,6 +309,7 @@ function translateArrayTypeAnnotation(
          */
         nullGuard,
         cxxOnly,
+        parser,
       ),
     );
 
@@ -318,7 +318,6 @@ function translateArrayTypeAnnotation(
       elementType,
       arrayType,
       _elementType.type,
-      language,
     );
 
     return wrapNullable(nullable, {
@@ -357,8 +356,8 @@ function emitArrayType(
     typeAnnotation.type,
     typeAnnotation.typeParameters.params[0],
     nullable,
-    parser.language(),
     translateTypeAnnotation,
+    parser,
   );
 }
 

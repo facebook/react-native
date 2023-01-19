@@ -23,6 +23,7 @@ describe('VirtualizedSectionList', () => {
           // $FlowFixMe[incompatible-type]
           {title: 's1', data: [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]},
         ]}
+        // $FlowFixMe[missing-local-annot]
         renderItem={({item}) => <item value={item.key} />}
         getItem={(data, key) => data[key]}
         getItemCount={data => data.length}
@@ -83,6 +84,7 @@ describe('VirtualizedSectionList', () => {
           // $FlowFixMe[incompatible-type]
           {
             title: 's1',
+            // $FlowFixMe[incompatible-call]
             data: new Array<void>(5).fill().map((_, ii) => ({id: String(ii)})),
           },
         ]}

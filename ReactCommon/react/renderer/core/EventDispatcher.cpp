@@ -6,8 +6,9 @@
  */
 
 #include "EventDispatcher.h"
-
+#include <cxxreact/JSExecutor.h>
 #include <react/renderer/core/StateUpdate.h>
+#include "EventLogger.h"
 
 #include "BatchedEventQueue.h"
 #include "RawEvent.h"
@@ -38,6 +39,11 @@ void EventDispatcher::dispatchEvent(RawEvent &&rawEvent, EventPriority priority)
   // Allows the event listener to interrupt default event dispatch
   if (eventListeners_.willDispatchEvent(rawEvent)) {
     return;
+  }
+
+  auto eventLogger = getEventLogger();
+  if (eventLogger != nullptr) {
+    rawEvent.loggingTag = eventLogger->onEventStart(rawEvent.type.c_str());
   }
   getEventQueue(priority).enqueueEvent(std::move(rawEvent));
 }

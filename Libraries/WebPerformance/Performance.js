@@ -8,11 +8,11 @@
  * @flow strict
  */
 
-import type {HighResTimeStamp} from './PerformanceObserver';
+import type {HighResTimeStamp} from './PerformanceEntry';
 
 import warnOnce from '../Utilities/warnOnce';
 import NativePerformance from './NativePerformance';
-import {PerformanceEntry} from './PerformanceObserver';
+import {PerformanceEntry} from './PerformanceEntry';
 
 type DetailType = mixed;
 
@@ -188,6 +188,10 @@ export default class Performance {
     NativePerformance.clearMeasures(measureName);
   }
 
+  /**
+   * Returns a double, measured in milliseconds.
+   * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+   */
   now(): HighResTimeStamp {
     return getCurrentTimeStamp();
   }
