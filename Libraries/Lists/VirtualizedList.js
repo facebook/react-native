@@ -860,16 +860,19 @@ export default class VirtualizedList extends StateSafePureComponent<
         <ListEmptyComponent />
       )): any);
       cells.push(
-        React.cloneElement(element, {
-          key: '$empty',
-          onLayout: event => {
-            this._onLayoutEmpty(event);
-            if (element.props.onLayout) {
-              element.props.onLayout(event);
-            }
-          },
-          style: StyleSheet.compose(inversionStyle, element.props.style),
-        }),
+        <VirtualizedListCellContextProvider
+          cellKey={this._getCellKey() + '-empty'}
+          key="$empty">
+          {React.cloneElement(element, {
+            onLayout: (event: LayoutEvent) => {
+              this._onLayoutEmpty(event);
+              if (element.props.onLayout) {
+                element.props.onLayout(event);
+              }
+            },
+            style: StyleSheet.compose(inversionStyle, element.props.style),
+          })}
+        </VirtualizedListCellContextProvider>,
       );
     }
 
