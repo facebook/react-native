@@ -251,6 +251,12 @@ export interface AccessibilityPropsAndroid {
     | 'no'
     | 'no-hide-descendants'
     | undefined;
+
+  /**
+   * A reference to another element `nativeID` used to build complex forms. The value of `accessibilityLabelledBy` should match the `nativeID` of the related element.
+   * @platform android
+   */
+  accessibilityLabelledBy?: string | string[] | undefined;
 }
 
 export interface AccessibilityPropsIOS {
