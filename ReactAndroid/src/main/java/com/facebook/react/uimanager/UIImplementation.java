@@ -175,7 +175,7 @@ public class UIImplementation {
    *
    * @return The num of root view
    */
-  public int getRootViewNum() {
+  private int getRootViewNum() {
     return mOperationsQueue.getNativeViewHierarchyManager().getRootViewNum();
   }
 
@@ -608,6 +608,12 @@ public class UIImplementation {
 
   /** Invoked at the end of the transaction to commit any updates to the node hierarchy. */
   public void dispatchViewUpdates(int batchId) {
+    if (getRootViewNum() <= 0) {
+      // If there are no RootViews registered, there will be no View updates to dispatch.
+      // This is a hack to prevent this from being called when Fabric is used everywhere.
+      // This should no longer be necessary in Bridgeless Mode.
+      return;
+    }
     SystraceMessage.beginSection(
             Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIImplementation.dispatchViewUpdates")
         .arg("batchId", batchId)
