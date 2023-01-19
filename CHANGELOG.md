@@ -1,5 +1,44 @@
 # Changelog
 
+## v0.71.1
+
+### Added
+
+#### Android specific
+
+- Add `jsinspector` to the prefab target ([a80cf96fc8](https://github.com/facebook/react-native/commit/a80cf96fc8821dcc07987c9b91dff0c839c8769c) by [@Kudo](https://github.com/Kudo))
+
+#### iOS specific
+
+- Add `initialProps` property to `RCTAppDelegate` ([b314e6f147](https://github.com/facebook/react-native/commit/b314e6f147fdfcd71e7ba3b17338bb44356df98e) by [@jblarriviere](https://github.com/jblarriviere))
+
+### Changed
+
+- Bump CLI to 10.1.3 ([b868970037](https://github.com/facebook/react-native/commit/b868970037f7fb510b23ac65d378ff1ba28e9af6) by [@kelset](https://github.com/kelset))
+- Bump RNGP to 0.71.13 ([416463c406](https://github.com/facebook/react-native/commit/416463c4068a3cdb5ed1e01f7e17f22d68c1b9ed) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- Fix(cli,metro,babel): bump cli and metro and babel to fix Windows+Metro issue ([df7c92ff4c](https://github.com/facebook/react-native/commit/df7c92ff4c095f5f6b3424de7287f5cb124d91d3) by [@kelset](https://github.com/kelset))
+
+#### Android specific
+
+- Fix ReactRootView crash when root view window insets are null ([4cdc2c48e8](https://github.com/facebook/react-native/commit/4cdc2c48e826f5bb762085fc38954ed09df6ef12) by [@enahum](https://github.com/enahum))
+- Fix for resources not correctly bundlded on release appbundles ([60b9d8c2b9](https://github.com/facebook/react-native/commit/60b9d8c2b9800135fdace5f58d94bebde2849510) by [@cortinico](https://github.com/cortinico))
+- RNGP - Honor the --active-arch-only when configuring the NDK ([470f79b617](https://github.com/facebook/react-native/commit/470f79b61734e085978b03507eda6ed026936b7b) by [@cortinico](https://github.com/cortinico))
+- Fixed typo in template build.gradle ([38e35df47c](https://github.com/facebook/react-native/commit/38e35df47c59e425fdac34d1f91540b8b8ca2908) by [@Titozzz](https://github.com/Titozzz))
+
+
+#### iOS specific
+
+- Exclude `react-native-flipper` when `NO_FLIPPER=1` to prevent iOS build fail ([f47b5b8b5d](https://github.com/facebook/react-native/commit/f47b5b8b5def41aeb6d5b672928cc57e20fba49d) by [@retyui](https://github.com/retyui))
+- Fix RCTAlertController not showing when using SceneDelegate on iOS 13.0+. ([0c53420a7a](https://github.com/facebook/react-native/commit/0c53420a7af306d629350e1244e8e2ccae08a312))
+- Handle Null Exception to Validate input in RCTAlertController and in RCTDevLoadingView ([79e603c5ab](https://github.com/facebook/react-native/commit/79e603c5ab5972859153a6ece80cd91ff0a04fc5) by [@admirsaheta](https://github.com/admirsaheta))
+- Fixed the potential race condition when dismissing and presentating modal ([e948c79bda](https://github.com/facebook/react-native/commit/e948c79bda7f000427d56dac6fe5c70555db5701) by [@wood1986](https://github.com/wood1986))
+- Fix build errors when inheriting RCTAppDelegate in Swift modules ([5eb25d2186](https://github.com/facebook/react-native/commit/5eb25d2186fd94128ec2ae74fec02429da969e63) by [@Kudo](https://github.com/Kudo))
+- OnSelectionChange() is fired before onChange() on multiline TextInput ([64475aeb3b](https://github.com/facebook/react-native/commit/64475aeb3b1b0e37bdad2c2d5abb2116b2141c06) by [@s77rt](https://github.com/s77rt))
+- Build: remove deprecated File.exists() method from Hermes podspec. ([38e5fa6a96](https://github.com/facebook/react-native/commit/38e5fa6a9604ab42fef442e7a51ebfe185df90bb) by [@kelset](https://github.com/kelset))
+
 ## v0.71.0
 
 Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/version-071).
