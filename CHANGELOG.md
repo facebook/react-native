@@ -33,7 +33,7 @@
 
 - Exclude `react-native-flipper` when `NO_FLIPPER=1` to prevent iOS build fail ([f47b5b8b5d](https://github.com/facebook/react-native/commit/f47b5b8b5def41aeb6d5b672928cc57e20fba49d) by [@retyui](https://github.com/retyui))
 - Fix RCTAlertController not showing when using SceneDelegate on iOS 13.0+. ([0c53420a7a](https://github.com/facebook/react-native/commit/0c53420a7af306d629350e1244e8e2ccae08a312))
-- Message ([79e603c5ab](https://github.com/facebook/react-native/commit/79e603c5ab5972859153a6ece80cd91ff0a04fc5) by [@admirsaheta](https://github.com/admirsaheta))
+- Handle Null Exception to Validate input in RCTAlertController and in RCTDevLoadingView ([79e603c5ab](https://github.com/facebook/react-native/commit/79e603c5ab5972859153a6ece80cd91ff0a04fc5) by [@admirsaheta](https://github.com/admirsaheta))
 - Fixed the potential race condition when dismissing and presentating modal ([e948c79bda](https://github.com/facebook/react-native/commit/e948c79bda7f000427d56dac6fe5c70555db5701) by [@wood1986](https://github.com/wood1986))
 - Fix build errors when inheriting RCTAppDelegate in Swift modules ([5eb25d2186](https://github.com/facebook/react-native/commit/5eb25d2186fd94128ec2ae74fec02429da969e63) by [@Kudo](https://github.com/Kudo))
 - OnSelectionChange() is fired before onChange() on multiline TextInput ([64475aeb3b](https://github.com/facebook/react-native/commit/64475aeb3b1b0e37bdad2c2d5abb2116b2141c06) by [@s77rt](https://github.com/s77rt))
