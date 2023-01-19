@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,7 +28,7 @@ class ViewEventEmitter : public TouchEventEmitter {
 
 #pragma mark - Accessibility
 
-  void onAccessibilityAction(const std::string &name) const;
+  void onAccessibilityAction(std::string const &name) const;
   void onAccessibilityTap() const;
   void onAccessibilityMagicTap() const;
   void onAccessibilityEscape() const;

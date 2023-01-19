@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 #import "RCTBridge.h"
 #import "RCTBridgeModule.h"
 #import "RCTComponentEvent.h"
+#import "RCTConstants.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcherProtocol.h"
 #import "RCTParserUtils.h"
@@ -260,7 +261,8 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     // Build setter block
     void (^setterBlock)(id target, id json) = nil;
     if (type == NSSelectorFromString(@"RCTBubblingEventBlock:") ||
-        type == NSSelectorFromString(@"RCTDirectEventBlock:")) {
+        type == NSSelectorFromString(@"RCTDirectEventBlock:") ||
+        type == NSSelectorFromString(@"RCTCapturingEventBlock:")) {
       // Special case for event handlers
       setterBlock =
           createEventSetter(name, setter, self.eventInterceptor, _bridge ? _bridge.eventDispatcher : _eventDispatcher);
@@ -386,6 +388,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 - (NSDictionary<NSString *, id> *)viewConfig
 {
   NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
+  NSMutableArray<NSString *> *capturingEvents = [NSMutableArray new];
   NSMutableArray<NSString *> *directEvents = [NSMutableArray new];
 
 #pragma clang diagnostic push
@@ -429,6 +432,9 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
       [bubblingEvents addObject:RCTNormalizeInputEventName(name)];
       propTypes[name] = @"BOOL";
+    } else if ([type isEqualToString:@"RCTCapturingEventBlock"]) {
+      [capturingEvents addObject:RCTNormalizeInputEventName(name)];
+      propTypes[name] = @"BOOL";
     } else if ([type isEqualToString:@"RCTDirectEventBlock"]) {
       [directEvents addObject:RCTNormalizeInputEventName(name)];
       propTypes[name] = @"BOOL";
@@ -456,6 +462,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     @"propTypes" : propTypes,
     @"directEvents" : directEvents,
     @"bubblingEvents" : bubblingEvents,
+    @"capturingEvents" : capturingEvents,
     @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : moduleNameForClass(superClass),
   };
 }

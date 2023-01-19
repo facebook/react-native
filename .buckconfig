@@ -1,6 +1,10 @@
 
 [android]
-  target = android-30
+  target = android-31
+
+[kotlin]
+  compile_against_abis = True
+  kotlin_version = 1.6.10
 
 [download]
   max_number_of_retries = 3
@@ -11,3 +15,6 @@
 
 [alias]
   rntester = //packages/rn-tester/android/app:app
+
+[buildfile]
+  includes = //tools/build_defs/oss/preload.bzl

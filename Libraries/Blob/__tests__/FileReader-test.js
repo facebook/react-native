@@ -1,11 +1,11 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
@@ -18,7 +18,7 @@ jest.unmock('event-target-shim').setMock('../../BatchedBridge/NativeModules', {
 const Blob = require('../Blob');
 const FileReader = require('../FileReader');
 
-describe('FileReader', function() {
+describe('FileReader', function () {
   it('should read blob as text', async () => {
     const e = await new Promise((resolve, reject) => {
       const reader = new FileReader();

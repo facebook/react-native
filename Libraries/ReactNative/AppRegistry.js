@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,21 +8,20 @@
  * @format
  */
 
-const BatchedBridge = require('../BatchedBridge/BatchedBridge');
-const BugReporting = require('../BugReporting/BugReporting');
-const ReactNative = require('../Renderer/shims/ReactNative');
-const SceneTracker = require('../Utilities/SceneTracker');
-
-const infoLog = require('../Utilities/infoLog');
-const invariant = require('invariant');
-const renderApplication = require('./renderApplication');
+import type {RootTag} from '../Types/RootTagTypes';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
-import {coerceDisplayMode} from './DisplayMode';
+import BatchedBridge from '../BatchedBridge/BatchedBridge';
+import BugReporting from '../BugReporting/BugReporting';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
-import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
+import infoLog from '../Utilities/infoLog';
+import SceneTracker from '../Utilities/SceneTracker';
+import {coerceDisplayMode} from './DisplayMode';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
+import renderApplication from './renderApplication';
+import {unmountComponentAtNodeAndRemoveContainer} from './RendererProxy';
+import invariant from 'invariant';
 
 type Task = (taskData: any) => Promise<void>;
 export type TaskProvider = () => Task;
@@ -52,16 +51,17 @@ export type Registry = {
   runnables: Runnables,
   ...
 };
-export type WrapperComponentProvider = any => React$ComponentType<any>;
+export type WrapperComponentProvider = (
+  appParameters: any,
+) => React$ComponentType<any>;
 
 const runnables: Runnables = {};
 let runCount = 1;
 const sections: Runnables = {};
 const taskProviders: Map<string, TaskProvider> = new Map();
 const taskCancelProviders: Map<string, TaskCancelProvider> = new Map();
-let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook = (
-  component: ComponentProvider,
-) => component();
+let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
+  (component: ComponentProvider) => component();
 
 let wrapperComponentProvider: ?WrapperComponentProvider;
 let showArchitectureIndicator = false;
@@ -69,7 +69,7 @@ let showArchitectureIndicator = false;
 /**
  * `AppRegistry` is the JavaScript entry point to running all React Native apps.
  *
- * See https://reactnative.dev/docs/appregistry.html
+ * See https://reactnative.dev/docs/appregistry
  */
 const AppRegistry = {
   setWrapperComponentProvider(provider: WrapperComponentProvider) {
@@ -103,7 +103,7 @@ const AppRegistry = {
   /**
    * Registers an app's root component.
    *
-   * See https://reactnative.dev/docs/appregistry.html#registercomponent
+   * See https://reactnative.dev/docs/appregistry#registercomponent
    */
   registerComponent(
     appKey: string,
@@ -114,6 +114,9 @@ const AppRegistry = {
     runnables[appKey] = {
       componentProvider,
       run: (appParameters, displayMode) => {
+        const concurrentRootEnabled =
+          appParameters.initialProps?.concurrentRoot ||
+          appParameters.concurrentRoot;
         renderApplication(
           componentProviderInstrumentationHook(
             componentProvider,
@@ -128,7 +131,7 @@ const AppRegistry = {
           appKey === 'LogBox',
           appKey,
           coerceDisplayMode(displayMode),
-          appParameters.concurrentRoot,
+          concurrentRootEnabled,
         );
       },
     };
@@ -181,7 +184,7 @@ const AppRegistry = {
   /**
    * Loads the JavaScript bundle and runs the app.
    *
-   * See https://reactnative.dev/docs/appregistry.html#runapplication
+   * See https://reactnative.dev/docs/appregistry#runapplication
    */
   runApplication(
     appKey: string,
@@ -245,18 +248,16 @@ const AppRegistry = {
   /**
    * Stops an application when a view should be destroyed.
    *
-   * See https://reactnative.dev/docs/appregistry.html#unmountapplicationcomponentatroottag
+   * See https://reactnative.dev/docs/appregistry#unmountapplicationcomponentatroottag
    */
   unmountApplicationComponentAtRootTag(rootTag: RootTag): void {
-    // NOTE: RootTag type
-    // $FlowFixMe[incompatible-call] RootTag: RootTag is incompatible with number, needs an updated synced version of the ReactNativeTypes.js file
-    ReactNative.unmountComponentAtNodeAndRemoveContainer(rootTag);
+    unmountComponentAtNodeAndRemoveContainer(rootTag);
   },
 
   /**
    * Register a headless task. A headless task is a bit of code that runs without a UI.
    *
-   * See https://reactnative.dev/docs/appregistry.html#registerheadlesstask
+   * See https://reactnative.dev/docs/appregistry#registerheadlesstask
    */
   registerHeadlessTask(taskKey: string, taskProvider: TaskProvider): void {
     // $FlowFixMe[object-this-reference]
@@ -268,7 +269,7 @@ const AppRegistry = {
   /**
    * Register a cancellable headless task. A headless task is a bit of code that runs without a UI.
    *
-   * See https://reactnative.dev/docs/appregistry.html#registercancellableheadlesstask
+   * See https://reactnative.dev/docs/appregistry#registercancellableheadlesstask
    */
   registerCancellableHeadlessTask(
     taskKey: string,
@@ -287,7 +288,7 @@ const AppRegistry = {
   /**
    * Only called from native code. Starts a headless task.
    *
-   * See https://reactnative.dev/docs/appregistry.html#startheadlesstask
+   * See https://reactnative.dev/docs/appregistry#startheadlesstask
    */
   startHeadlessTask(taskId: number, taskKey: string, data: any): void {
     const taskProvider = taskProviders.get(taskKey);
@@ -325,7 +326,7 @@ const AppRegistry = {
   /**
    * Only called from native code. Cancels a headless task.
    *
-   * See https://reactnative.dev/docs/appregistry.html#cancelheadlesstask
+   * See https://reactnative.dev/docs/appregistry#cancelheadlesstask
    */
   cancelHeadlessTask(taskId: number, taskKey: string): void {
     const taskCancelProvider = taskCancelProviders.get(taskKey);
@@ -336,19 +337,18 @@ const AppRegistry = {
   },
 };
 
-BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
+if (!(global.RN$Bridgeless === true)) {
+  BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
 
-if (__DEV__) {
-  const LogBoxInspector = require('../LogBox/LogBoxInspectorContainer').default;
-  AppRegistry.registerComponent('LogBox', () => LogBoxInspector);
-} else {
-  AppRegistry.registerComponent(
-    'LogBox',
-    () =>
-      function NoOp() {
+  AppRegistry.registerComponent('LogBox', () => {
+    if (__DEV__) {
+      return require('../LogBox/LogBoxInspectorContainer').default;
+    } else {
+      return function NoOp() {
         return null;
-      },
-  );
+      };
+    }
+  });
 }
 
 module.exports = AppRegistry;

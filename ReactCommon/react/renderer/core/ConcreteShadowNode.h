@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,6 +47,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
 
   using ConcreteProps = PropsT;
   using SharedConcreteProps = std::shared_ptr<PropsT const>;
+  using UnsharedConcreteProps = std::shared_ptr<PropsT>;
   using ConcreteEventEmitter = EventEmitterT;
   using SharedConcreteEventEmitter = std::shared_ptr<EventEmitterT const>;
   using SharedConcreteShadowNode = std::shared_ptr<ConcreteShadowNode const>;
@@ -69,11 +70,11 @@ class ConcreteShadowNode : public BaseShadowNodeT {
     return BaseShadowNodeT::BaseTraits();
   }
 
-  static SharedConcreteProps Props(
+  static UnsharedConcreteProps Props(
       const PropsParserContext &context,
       RawProps const &rawProps,
-      SharedProps const &baseProps = nullptr) {
-    return std::make_shared<PropsT const>(
+      Props::Shared const &baseProps = nullptr) {
+    return std::make_shared<PropsT>(
         context,
         baseProps ? static_cast<PropsT const &>(*baseProps) : PropsT(),
         rawProps);

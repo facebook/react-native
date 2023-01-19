@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,18 +17,11 @@ import java.util.Map;
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
-@ReactModule(name = SourceCodeModule.NAME)
+@ReactModule(name = NativeSourceCodeSpec.NAME)
 public class SourceCodeModule extends NativeSourceCodeSpec {
-
-  public static final String NAME = "SourceCode";
 
   public SourceCodeModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

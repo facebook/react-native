@@ -1,19 +1,19 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
-import * as React from 'react';
 import Text from '../../../Text/Text';
 import View from '../../View/View';
 import TouchableHighlight from '../TouchableHighlight';
+import * as React from 'react';
 
 const render = require('../../../../jest/renderer');
 

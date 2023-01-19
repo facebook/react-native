@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,14 @@
 
 import type {RNTesterModuleInfo} from '../types/RNTesterTypes';
 
+import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
+
 const Components: Array<RNTesterModuleInfo> = [
+  {
+    key: 'DrawerLayoutAndroid',
+    category: 'UI',
+    module: require('../examples/DrawerLayoutAndroid/DrawerLayoutAndroidExample'),
+  },
   {
     key: 'ActivityIndicatorExample',
     category: 'UI',
@@ -27,7 +34,6 @@ const Components: Array<RNTesterModuleInfo> = [
     key: 'FlatListExampleIndex',
     module: require('../examples/FlatList/FlatListExampleIndex').default,
     category: 'ListView',
-    supportsTVOS: true,
   },
   {
     key: 'ImageExample',
@@ -119,6 +125,11 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     module: require('../examples/View/ViewExample'),
   },
+  {
+    key: 'NewArchitectureExample',
+    category: 'UI',
+    module: require('../examples/NewArchitecture/NewArchitectureExample'),
+  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = [
@@ -135,7 +146,7 @@ const APIs: Array<RNTesterModuleInfo> = [
   {
     key: 'AlertExample',
     category: 'UI',
-    module: require('../examples/Alert/AlertExample'),
+    module: require('../examples/Alert/AlertExample').default,
   },
   {
     key: 'AnimatedIndex',
@@ -176,6 +187,11 @@ const APIs: Array<RNTesterModuleInfo> = [
     key: 'Dimensions',
     category: 'UI',
     module: require('../examples/Dimensions/DimensionsExample'),
+  },
+  {
+    key: 'Keyboard',
+    category: 'Basic',
+    module: require('../examples/Keyboard/KeyboardExample').default,
   },
   {
     key: 'LayoutEventsExample',
@@ -267,13 +283,23 @@ const APIs: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     module: require('../examples/XHR/XHRExample'),
   },
-];
-
-if (global.__turboModuleProxy) {
-  APIs.push({
+  {
     key: 'TurboModuleExample',
     category: 'Basic',
     module: require('../examples/TurboModule/TurboModuleExample'),
+  },
+  {
+    key: 'TurboCxxModuleExample',
+    category: 'Basic',
+    module: require('../examples/TurboModule/TurboCxxModuleExample'),
+  },
+];
+
+if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {
+  APIs.push({
+    key: 'W3C PointerEvents',
+    category: 'Experimental',
+    module: require('../examples/Experimental/W3CPointerEventsExample').default,
   });
 }
 

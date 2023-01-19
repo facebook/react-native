@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import java.util.Map;
 
 /** {@link NativeModule} that allows JS to show an Android Toast. */
-@ReactModule(name = ToastModule.NAME)
+@ReactModule(name = NativeToastAndroidSpec.NAME)
 public class ToastModule extends NativeToastAndroidSpec {
 
   private static final String DURATION_SHORT_KEY = "SHORT";
@@ -27,15 +27,9 @@ public class ToastModule extends NativeToastAndroidSpec {
   private static final String GRAVITY_TOP_KEY = "TOP";
   private static final String GRAVITY_BOTTOM_KEY = "BOTTOM";
   private static final String GRAVITY_CENTER = "CENTER";
-  public static final String NAME = "ToastAndroid";
 
   public ToastModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

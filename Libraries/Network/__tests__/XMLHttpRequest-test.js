@@ -1,42 +1,43 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
+
+'use strict';
 
 import createPerformanceLogger from '../../Utilities/createPerformanceLogger';
 
+const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
+const Platform = require('../../Utilities/Platform');
+const XMLHttpRequest = require('../XMLHttpRequest');
+
 jest.unmock('../../Utilities/Platform');
 jest.mock('../../Utilities/GlobalPerformanceLogger');
-
-const Platform = require('../../Utilities/Platform');
-const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
 let requestId = 1;
-
 function setRequestId(id) {
   if (Platform.OS === 'ios') {
     return;
   }
   requestId = id;
 }
-
 jest
   .dontMock('event-target-shim')
   .setMock('../../BatchedBridge/NativeModules', {
     Networking: {
-      addListener: function() {},
-      removeListeners: function() {},
+      addListener: function () {},
+      removeListeners: function () {},
       sendRequest(options, callback) {
         if (typeof callback === 'function') {
           // android does not pass a callback
           callback(requestId);
         }
       },
-      abortRequest: function() {},
+      abortRequest: function () {},
     },
     PlatformConstants: {
       getConstants() {
@@ -45,9 +46,7 @@ jest
     },
   });
 
-const XMLHttpRequest = require('../XMLHttpRequest');
-
-describe('XMLHttpRequest', function() {
+describe('XMLHttpRequest', function () {
   let xhr;
   let handleTimeout;
   let handleError;
@@ -88,7 +87,7 @@ describe('XMLHttpRequest', function() {
     handleReadyStateChange = null;
   });
 
-  it('should transition readyState correctly', function() {
+  it('should transition readyState correctly', function () {
     expect(xhr.readyState).toBe(xhr.UNSENT);
 
     xhr.open('GET', 'blabla');
@@ -98,7 +97,7 @@ describe('XMLHttpRequest', function() {
     expect(xhr.readyState).toBe(xhr.OPENED);
   });
 
-  it('should expose responseType correctly', function() {
+  it('should expose responseType correctly', function () {
     expect(xhr.responseType).toBe('');
 
     jest.spyOn(console, 'warn').mockReturnValue(undefined);
@@ -123,7 +122,7 @@ describe('XMLHttpRequest', function() {
     }).toThrow();
   });
 
-  it('should expose responseText correctly', function() {
+  it('should expose responseText correctly', function () {
     xhr.responseType = '';
     expect(xhr.responseText).toBe('');
     expect(xhr.response).toBe('');
@@ -150,7 +149,7 @@ describe('XMLHttpRequest', function() {
     expect(xhr.responseText).toBe('Some data');
   });
 
-  it('should call ontimeout function when the request times out', function() {
+  it('should call ontimeout function when the request times out', function () {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(3);
@@ -170,7 +169,7 @@ describe('XMLHttpRequest', function() {
     expect(handleLoad).not.toBeCalled();
   });
 
-  it('should call onerror function when the request times out', function() {
+  it('should call onerror function when the request times out', function () {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(4);
@@ -191,7 +190,7 @@ describe('XMLHttpRequest', function() {
     expect(handleLoad).not.toBeCalled();
   });
 
-  it('should call onload function when there is no error', function() {
+  it('should call onload function when there is no error', function () {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(5);
@@ -212,7 +211,7 @@ describe('XMLHttpRequest', function() {
     expect(handleTimeout).not.toBeCalled();
   });
 
-  it('should call upload onprogress', function() {
+  it('should call upload onprogress', function () {
     xhr.open('GET', 'blabla');
     xhr.send();
 
@@ -231,7 +230,7 @@ describe('XMLHttpRequest', function() {
     expect(handleProgress.mock.calls[0][0].total).toBe(100);
   });
 
-  it('should combine response headers with CRLF', function() {
+  it('should combine response headers with CRLF', function () {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(7);
@@ -241,7 +240,7 @@ describe('XMLHttpRequest', function() {
     });
 
     expect(xhr.getAllResponseHeaders()).toBe(
-      'Content-Type: text/plain; charset=utf-8\r\n' + 'Content-Length: 32',
+      'content-length: 32\r\n' + 'content-type: text/plain; charset=utf-8\r\n',
     );
   });
 
@@ -291,5 +290,23 @@ describe('XMLHttpRequest', function() {
       'network_XMLHttpRequest_blabla',
     );
     expect(GlobalPerformanceLogger.stopTimespan).not.toHaveBeenCalled();
+  });
+
+  it('should sort and lowercase response headers', function () {
+    // Derived from XHR Web Platform Test: https://github.com/web-platform-tests/wpt/blob/master/xhr/getallresponseheaders.htm
+    xhr.open('GET', 'blabla');
+    xhr.send();
+    setRequestId(10);
+    xhr.__didReceiveResponse(requestId, 200, {
+      'foo-TEST': '1',
+      'FOO-test': '2',
+      __Custom: 'token',
+      'ALSO-here': 'Mr. PB',
+      ewok: 'lego',
+    });
+
+    expect(xhr.getAllResponseHeaders()).toBe(
+      'also-here: Mr. PB\r\newok: lego\r\nfoo-test: 1, 2\r\n__custom: token\r\n',
+    );
   });
 });

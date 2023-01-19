@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,11 +26,10 @@ import com.facebook.react.modules.core.PermissionListener;
 import java.util.ArrayList;
 
 /** Module that exposes the Android M Permission system to JS. */
-@ReactModule(name = PermissionsModule.NAME)
+@ReactModule(name = NativePermissionsAndroidSpec.NAME)
 public class PermissionsModule extends NativePermissionsAndroidSpec implements PermissionListener {
 
   private static final String ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY";
-  public static final String NAME = "PermissionsAndroid";
   private final SparseArray<Callback> mCallbacks;
   private int mRequestCode = 0;
   private final String GRANTED = "granted";
@@ -40,11 +39,6 @@ public class PermissionsModule extends NativePermissionsAndroidSpec implements P
   public PermissionsModule(ReactApplicationContext reactContext) {
     super(reactContext);
     mCallbacks = new SparseArray<Callback>();
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,93 +10,42 @@
 
 'use strict';
 
-import type {ResolvedAssetSource} from './AssetSourceResolver';
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
-import type {ImageProps} from './ImageProps';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
-import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 import type {
-  ColorValue,
-  DangerouslyImpreciseStyle,
-  ImageStyleProp,
-} from '../StyleSheet/StyleSheet';
+  HostComponent,
+  PartialViewConfig,
+} from '../Renderer/shims/ReactNativeTypes';
+import type {ColorValue} from '../StyleSheet/StyleSheet';
+import type {ImageResizeMode} from './ImageResizeMode';
 
-type Props = $ReadOnly<{
-  ...ImageProps,
+import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
+
+type NativeProps = $ReadOnly<{
   ...ViewProps,
-
-  style?: ImageStyleProp | DangerouslyImpreciseStyle,
-
-  // iOS native props
-  tintColor?: ColorValue,
-
-  // Android native props
-  shouldNotifyLoadEvents?: boolean,
-  src?: ?ResolvedAssetSource | $ReadOnlyArray<{uri: string, ...}>,
-  headers?: ?string,
-  defaultSrc?: ?string,
-  loadingIndicatorSrc?: ?string,
-  internal_analyticTag?: ?string,
+  resizeMode?: ?ImageResizeMode,
+  src?: ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
+  tintColor?: ?ColorValue,
+  headers?: ?{[string]: string},
 }>;
 
-const TextInlineImage: HostComponent<Props> = NativeComponentRegistry.get<Props>(
-  'RCTTextInlineImage',
-  () => ({
-    uiViewClassName: 'RCTImageView',
-    bubblingEventTypes: {},
-    directEventTypes: {
-      topLoadStart: {
-        registrationName: 'onLoadStart',
-      },
-      topProgress: {
-        registrationName: 'onProgress',
-      },
-      topError: {
-        registrationName: 'onError',
-      },
-      topPartialLoad: {
-        registrationName: 'onPartialLoad',
-      },
-      topLoad: {
-        registrationName: 'onLoad',
-      },
-      topLoadEnd: {
-        registrationName: 'onLoadEnd',
-      },
+export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
+  uiViewClassName: 'RCTTextInlineImage',
+  bubblingEventTypes: {},
+  directEventTypes: {},
+  validAttributes: {
+    resizeMode: true,
+    src: true,
+    tintColor: {
+      process: require('../StyleSheet/processColor').default,
     },
-    validAttributes: {
-      blurRadius: true,
-      capInsets: {
-        diff: require('../Utilities/differ/insetsDiffer'),
-      },
-      defaultSource: {
-        process: require('./resolveAssetSource'),
-      },
-      defaultSrc: true,
-      fadeDuration: true,
-      headers: true,
-      internal_analyticTag: true,
-      loadingIndicatorSrc: true,
-      onError: true,
-      onLoad: true,
-      onLoadEnd: true,
-      onLoadStart: true,
-      onPartialLoad: true,
-      onProgress: true,
-      overlayColor: {
-        process: require('../StyleSheet/processColor'),
-      },
-      progressiveRenderingEnabled: true,
-      resizeMethod: true,
-      resizeMode: true,
-      shouldNotifyLoadEvents: true,
-      source: true,
-      src: true,
-      tintColor: {
-        process: require('../StyleSheet/processColor'),
-      },
-    },
-  }),
-);
+    headers: true,
+  },
+};
 
-module.exports = TextInlineImage;
+const TextInlineImage: HostComponent<NativeProps> =
+  NativeComponentRegistry.get<NativeProps>(
+    'RCTTextInlineImage',
+    () => __INTERNAL_VIEW_CONFIG,
+  );
+
+export default TextInlineImage;

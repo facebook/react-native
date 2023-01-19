@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -105,6 +105,12 @@ class Blob {
       blobId: this.data.blobId,
       offset,
       size,
+      /* Since `blob.slice()` creates a new view onto the same binary
+       * data as the original blob, we should re-use the same collector
+       * object so that the underlying resource gets deallocated when
+       * the last view into the data is released, not the first.
+       */
+      __collector: this.data.__collector,
     });
   }
 

@@ -6,11 +6,15 @@
 
 ## Changelog
 
-<!-- Help reviewers and the release process by writing your own changelog entry. For an example, see:
-https://github.com/facebook/react-native/wiki/Changelog
--->
+<!-- Help reviewers and the release process by writing your own changelog entry.
 
-[CATEGORY] [TYPE] - Message
+Pick one each for the category and type tags:
+
+[ANDROID|GENERAL|IOS|INTERNAL] [BREAKING|ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY] - Message
+
+For more details, see:
+https://reactnative.dev/contributing/changelogs-in-pull-requests
+-->
 
 ## Test Plan
 

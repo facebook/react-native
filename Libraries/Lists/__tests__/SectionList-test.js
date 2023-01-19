@@ -1,19 +1,18 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
+import SectionList from '../SectionList';
 import * as React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-
-import SectionList from '../SectionList';
 
 describe('SectionList', () => {
   it('renders empty list', () => {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,13 +8,12 @@
 #import "RCTWrapperShadowView.h"
 
 #import <React/RCTBridge.h>
-#import <React/RCTUIManager.h>
 #import <React/RCTShadowView+Layout.h>
+#import <React/RCTUIManager.h>
 
 #import "RCTWrapperView.h"
 
-@implementation RCTWrapperShadowView
-{
+@implementation RCTWrapperShadowView {
   __weak RCTBridge *_bridge;
   RCTWrapperMeasureBlock _measureBlock;
   CGSize _intrinsicContentSize;
@@ -30,7 +29,12 @@
   return self;
 }
 
-static YGSize RCTWrapperShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
+static YGSize RCTWrapperShadowViewMeasure(
+    YGNodeRef node,
+    float width,
+    YGMeasureMode widthMode,
+    float height,
+    YGMeasureMode heightMode)
 {
   CGSize minimumSize = CGSizeMake(0, 0);
   CGSize maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
@@ -62,10 +66,7 @@ static YGSize RCTWrapperShadowViewMeasure(YGNodeRef node, float width, YGMeasure
   RCTWrapperShadowView *shadowView = (__bridge RCTWrapperShadowView *)YGNodeGetContext(node);
   CGSize size = [shadowView measureWithMinimumSize:minimumSize maximumSize:maximumSize];
 
-  return (YGSize){
-    RCTYogaFloatFromCoreGraphicsFloat(size.width),
-    RCTYogaFloatFromCoreGraphicsFloat(size.height)
-  };
+  return (YGSize){RCTYogaFloatFromCoreGraphicsFloat(size.width), RCTYogaFloatFromCoreGraphicsFloat(size.height)};
 }
 
 - (CGSize)measureWithMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize

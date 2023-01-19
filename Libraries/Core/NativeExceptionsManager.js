@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,10 @@
  */
 
 import type {TurboModule} from '../TurboModule/RCTExport';
+
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+
+const Platform = require('../Utilities/Platform');
 
 export type StackFrame = {|
   column: ?number,
@@ -18,7 +21,6 @@ export type StackFrame = {|
   methodName: string,
   collapse?: boolean,
 |};
-
 export type ExceptionData = {
   message: string,
   originalMessage: ?string,
@@ -31,7 +33,6 @@ export type ExceptionData = {
   extraData?: Object,
   ...
 };
-
 export interface Spec extends TurboModule {
   // Deprecated: Use `reportException`
   +reportFatalException: (
@@ -55,11 +56,8 @@ export interface Spec extends TurboModule {
   +dismissRedbox?: () => void;
 }
 
-const Platform = require('../Utilities/Platform');
-
-const NativeModule = TurboModuleRegistry.getEnforcing<Spec>(
-  'ExceptionsManager',
-);
+const NativeModule =
+  TurboModuleRegistry.getEnforcing<Spec>('ExceptionsManager');
 
 const ExceptionsManager = {
   reportFatalException(

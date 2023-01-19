@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -183,6 +183,20 @@ void YGNodeToString(
     appendEdges(str, "margin", style.margin());
     appendEdges(str, "padding", style.padding());
     appendEdges(str, "border", style.border());
+
+    if (YGNode::computeColumnGap(
+            style.gap(), detail::CompactValue::ofUndefined()) !=
+        YGNode::computeColumnGap(
+            YGNode().getStyle().gap(), detail::CompactValue::ofUndefined())) {
+      appendNumberIfNotUndefined(
+          str, "column-gap", style.gap()[YGGutterColumn]);
+    }
+    if (YGNode::computeRowGap(
+            style.gap(), detail::CompactValue::ofUndefined()) !=
+        YGNode::computeRowGap(
+            YGNode().getStyle().gap(), detail::CompactValue::ofUndefined())) {
+      appendNumberIfNotUndefined(str, "row-gap", style.gap()[YGGutterRow]);
+    }
 
     appendNumberIfNotAuto(str, "width", style.dimensions()[YGDimensionWidth]);
     appendNumberIfNotAuto(str, "height", style.dimensions()[YGDimensionHeight]);

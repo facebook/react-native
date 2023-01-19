@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,17 +10,17 @@
 
 'use strict';
 
-import Platform from '../Utilities/Platform';
-import React, {useRef, forwardRef, useImperativeHandle} from 'react';
-import VirtualizedSectionList from './VirtualizedSectionList';
-
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {
-  SectionBase as _SectionBase,
   Props as VirtualizedSectionListProps,
   ScrollToLocationParamsType,
+  SectionBase as _SectionBase,
 } from './VirtualizedSectionList';
-import type {Element, ElementRef, AbstractComponent} from 'react';
+import type {AbstractComponent, Element, ElementRef} from 'react';
+
+import Platform from '../Utilities/Platform';
+import VirtualizedSectionList from './VirtualizedSectionList';
+import React, {forwardRef, useImperativeHandle, useRef} from 'react';
 
 type Item = any;
 
@@ -28,7 +28,7 @@ export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
 
 type RequiredProps<SectionT: SectionBase<any>> = {|
   /**
-   * The actual data to render, akin to the `data` prop in [`<FlatList>`](https://reactnative.dev/docs/flatlist.html).
+   * The actual data to render, akin to the `data` prop in [`<FlatList>`](https://reactnative.dev/docs/flatlist).
    *
    * General shape:
    *
@@ -132,7 +132,7 @@ export type Props<SectionT> = {|
  *  - Scroll loading.
  *
  * If you don't need section support and want a simpler interface, use
- * [`<FlatList>`](https://reactnative.dev/docs/flatlist.html).
+ * [`<FlatList>`](https://reactnative.dev/docs/flatlist).
  *
  * Simple Examples:
  *
@@ -154,7 +154,7 @@ export type Props<SectionT> = {|
  *       ]}
  *     />
  *
- * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
+ * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist),
  * and thus inherits its props (as well as those of `ScrollView`) that aren't explicitly listed
  * here, along with the following caveats:
  *

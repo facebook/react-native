@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,12 +7,14 @@
 
 package com.facebook.react.animated;
 
+import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.HashMap;
@@ -100,11 +102,15 @@ import java.util.Map;
         ((StyleAnimatedNode) node).collectViewUpdates(mPropMap);
       } else if (node instanceof ValueAnimatedNode) {
         Object animatedObject = ((ValueAnimatedNode) node).getAnimatedObject();
-        if (animatedObject instanceof String) {
+        if (animatedObject instanceof Integer) {
+          mPropMap.putInt(entry.getKey(), (Integer) animatedObject);
+        } else if (animatedObject instanceof String) {
           mPropMap.putString(entry.getKey(), (String) animatedObject);
         } else {
           mPropMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
         }
+      } else if (node instanceof ColorAnimatedNode) {
+        mPropMap.putInt(entry.getKey(), ((ColorAnimatedNode) node).getColor());
       } else {
         throw new IllegalArgumentException(
             "Unsupported type of node used in property node " + node.getClass());
@@ -112,6 +118,16 @@ import java.util.Map;
     }
 
     mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, mPropMap);
+  }
+
+  public View getConnectedView() {
+    try {
+      return mUIManager.resolveView(mConnectedViewTag);
+    } catch (IllegalViewOperationException ex) {
+      // resolveView throws an {@link IllegalViewOperationException} when the view doesn't exist
+      // (this can happen if the surface is being deallocated).
+      return null;
+    }
   }
 
   public String prettyPrint() {

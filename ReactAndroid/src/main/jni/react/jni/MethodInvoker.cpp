@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -279,7 +279,7 @@ MethodCallResult MethodInvoker::invoke(
     case 'v':
       env->CallVoidMethodA(module.get(), method_, args);
       throwPendingJniExceptionAsCppException();
-      return folly::none;
+      return std::nullopt;
 
     case 'z':
       PRIMITIVE_CASE_CASTING(Boolean, bool)
@@ -307,7 +307,7 @@ MethodCallResult MethodInvoker::invoke(
 
     default:
       LOG(FATAL) << "Unknown return type: " << returnType;
-      return folly::none;
+      return std::nullopt;
   }
 }
 

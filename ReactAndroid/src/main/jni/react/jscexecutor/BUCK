@@ -1,0 +1,22 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_target", "react_native_xplat_target", "rn_xplat_cxx_library")
+
+rn_xplat_cxx_library(
+    name = "jni",
+    srcs = glob(["*.cpp"]),
+    headers = glob(["*.h"]),
+    header_namespace = "",
+    compiler_flags_enable_exceptions = True,  # TODO: is this necessary?
+    compiler_flags_enable_rtti = True,  # TODO: is this necessary?
+    fbandroid_allow_jni_merging = True,
+    platforms = ANDROID,
+    soname = "libjscexecutor.$(ext)",
+    visibility = [
+        react_native_target("java/com/facebook/react/jscexecutor:jscexecutor"),
+    ],
+    deps = [
+        FBJNI_TARGET,
+        react_native_target("jni/react/jni:jni"),
+        react_native_xplat_target("jsc:JSCRuntime"),
+        react_native_xplat_target("jsiexecutor:jsiexecutor"),
+    ],
+)

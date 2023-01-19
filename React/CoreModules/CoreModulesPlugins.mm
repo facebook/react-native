@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,7 +29,6 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"SourceCode", RCTSourceCodeCls},
     {"ActionSheetManager", RCTActionSheetManagerCls},
     {"AlertManager", RCTAlertManagerCls},
-    {"AsyncLocalStorage", RCTAsyncLocalStorageCls},
     {"Timing", RCTTimingCls},
     {"StatusBarManager", RCTStatusBarManagerCls},
     {"KeyboardObserver", RCTKeyboardObserverCls},
@@ -44,6 +43,7 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"DevLoadingView", RCTDevLoadingViewCls},
     {"DevSplitBundleLoader", RCTDevSplitBundleLoaderCls},
     {"EventDispatcher", RCTEventDispatcherCls},
+    {"BlobModule", RCTBlobManagerCls},
   };
 
   auto p = sCoreModuleClassMap->find(name);

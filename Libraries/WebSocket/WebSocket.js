@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,13 +8,14 @@
  * @flow
  */
 
-import Blob from '../Blob/Blob';
 import type {BlobData} from '../Blob/BlobTypes';
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+
+import Blob from '../Blob/Blob';
 import BlobManager from '../Blob/BlobManager';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import binaryToBase64 from '../Utilities/binaryToBase64';
 import Platform from '../Utilities/Platform';
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeWebSocketModule from './NativeWebSocketModule';
 import WebSocketEvent from './WebSocketEvent';
 import base64 from 'base64-js';
@@ -41,6 +42,10 @@ const CLOSING = 2;
 const CLOSED = 3;
 
 const CLOSE_NORMAL = 1000;
+
+// Abnormal closure where no code is provided in a control frame
+// https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
+const CLOSE_ABNORMAL = 1006;
 
 const WEBSOCKET_EVENTS = ['close', 'error', 'message', 'open'];
 
@@ -104,6 +109,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
     const {headers = {}, ...unrecognized} = options || {};
 
     // Preserve deprecated backwards compatibility for the 'origin' option
+    // $FlowFixMe[prop-missing]
     if (unrecognized && typeof unrecognized.origin === 'string') {
       console.warn(
         'Specifying `origin` as a WebSocket connection option is deprecated. Include it under `headers` instead.',
@@ -230,7 +236,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
         if (ev.id !== this._socketId) {
           return;
         }
-        let data = ev.data;
+        let data: Blob | BlobData | ArrayBuffer | string = ev.data;
         switch (ev.type) {
           case 'binary':
             data = base64.toByteArray(ev.data).buffer;
@@ -258,6 +264,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
           new WebSocketEvent('close', {
             code: ev.code,
             reason: ev.reason,
+            // TODO: missing `wasClean` (exposed on iOS as `clean` but missing on Android)
           }),
         );
         this._unregisterEvents();
@@ -275,7 +282,9 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
         );
         this.dispatchEvent(
           new WebSocketEvent('close', {
-            message: ev.message,
+            code: CLOSE_ABNORMAL,
+            reason: ev.message,
+            // TODO: Expose `wasClean`
           }),
         );
         this._unregisterEvents();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,8 +31,7 @@ typedef struct RGBAPixel {
 
 @end
 
-@implementation FBSnapshotTestController
-{
+@implementation FBSnapshotTestController {
   NSFileManager *_fileManager;
 }
 
@@ -40,16 +39,16 @@ typedef struct RGBAPixel {
 
 - (instancetype)initWithTestClass:(Class)testClass
 {
-    return [self initWithTestName:NSStringFromClass(testClass)];
+  return [self initWithTestName:NSStringFromClass(testClass)];
 }
 
 - (instancetype)initWithTestName:(NSString *)testName
 {
-    if ((self = [super init])) {
-        _testName = [testName copy];
-        _fileManager = [NSFileManager new];
-    }
-    return self;
+  if ((self = [super init])) {
+    _testName = [testName copy];
+    _fileManager = [NSFileManager new];
+  }
+  return self;
 }
 
 #pragma mark - Properties
@@ -61,9 +60,7 @@ typedef struct RGBAPixel {
 
 #pragma mark - Public API
 
-- (UIImage *)referenceImageForSelector:(SEL)selector
-                            identifier:(NSString *)identifier
-                                 error:(NSError **)errorPtr
+- (UIImage *)referenceImageForSelector:(SEL)selector identifier:(NSString *)identifier error:(NSError **)errorPtr
 {
   NSString *filePath = [self _referenceFilePathForSelector:selector identifier:identifier];
   UIImage *image = [UIImage imageWithContentsOfFile:filePath];
@@ -73,10 +70,11 @@ typedef struct RGBAPixel {
       *errorPtr = [NSError errorWithDomain:FBSnapshotTestControllerErrorDomain
                                       code:FBSnapshotTestControllerErrorCodeNeedsRecord
                                   userInfo:@{
-               FBReferenceImageFilePathKey: filePath,
-                 NSLocalizedDescriptionKey: @"Unable to load reference image.",
-          NSLocalizedFailureReasonErrorKey: @"Reference image not found. You need to run the test in record mode",
-                   }];
+                                    FBReferenceImageFilePathKey : filePath,
+                                    NSLocalizedDescriptionKey : @"Unable to load reference image.",
+                                    NSLocalizedFailureReasonErrorKey :
+                                        @"Reference image not found. You need to run the test in record mode",
+                                  }];
     } else {
       *errorPtr = [NSError errorWithDomain:FBSnapshotTestControllerErrorDomain
                                       code:FBSnapshotTestControllerErrorCodeUnknown
@@ -116,8 +114,8 @@ typedef struct RGBAPixel {
         *errorPtr = [NSError errorWithDomain:FBSnapshotTestControllerErrorDomain
                                         code:FBSnapshotTestControllerErrorCodePNGCreationFailed
                                     userInfo:@{
-                 FBReferenceImageFilePathKey: filePath,
-                     }];
+                                      FBReferenceImageFilePathKey : filePath,
+                                    }];
       }
     }
   }
@@ -162,8 +160,8 @@ typedef struct RGBAPixel {
   }
 
   NSString *diffPath = [self _failedFilePathForSelector:selector
-                                               identifier:identifier
-                                             fileNameType:FBTestSnapshotFileNameTypeFailedTestDiff];
+                                             identifier:identifier
+                                           fileNameType:FBTestSnapshotFileNameTypeFailedTestDiff];
 
   UIImage *diffImage = [referenceImage diffWithImage:testImage];
   NSData *diffImageData = UIImagePNGRepresentation(diffImage);
@@ -172,8 +170,11 @@ typedef struct RGBAPixel {
     return NO;
   }
 
-  NSLog(@"If you have Kaleidoscope installed you can run this command to see an image diff:\n"
-        @"ksdiff \"%@\" \"%@\"", referencePath, testPath);
+  NSLog(
+      @"If you have Kaleidoscope installed you can run this command to see an image diff:\n"
+      @"ksdiff \"%@\" \"%@\"",
+      referencePath,
+      testPath);
 
   return YES;
 }
@@ -181,33 +182,33 @@ typedef struct RGBAPixel {
 - (BOOL)compareReferenceImage:(UIImage *)referenceImage toImage:(UIImage *)image error:(NSError **)errorPtr
 {
   if (CGSizeEqualToSize(referenceImage.size, image.size)) {
-
     BOOL imagesEqual = [referenceImage compareWithImage:image];
     if (NULL != errorPtr) {
       *errorPtr = [NSError errorWithDomain:FBSnapshotTestControllerErrorDomain
                                       code:FBSnapshotTestControllerErrorCodeImagesDifferent
                                   userInfo:@{
-                 NSLocalizedDescriptionKey: @"Images different",
-                   }];
+                                    NSLocalizedDescriptionKey : @"Images different",
+                                  }];
     }
     return imagesEqual;
   }
   if (NULL != errorPtr) {
-    *errorPtr = [NSError errorWithDomain:FBSnapshotTestControllerErrorDomain
-                                    code:FBSnapshotTestControllerErrorCodeImagesDifferentSizes
-                                userInfo:@{
-               NSLocalizedDescriptionKey: @"Images different sizes",
-        NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat:@"referenceImage:%@, image:%@",
-                                           NSStringFromCGSize(referenceImage.size),
-                                           NSStringFromCGSize(image.size)],
-                 }];
+    *errorPtr = [NSError
+        errorWithDomain:FBSnapshotTestControllerErrorDomain
+                   code:FBSnapshotTestControllerErrorCodeImagesDifferentSizes
+               userInfo:@{
+                 NSLocalizedDescriptionKey : @"Images different sizes",
+                 NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:@"referenceImage:%@, image:%@",
+                                                                               NSStringFromCGSize(referenceImage.size),
+                                                                               NSStringFromCGSize(image.size)],
+               }];
   }
   return NO;
 }
 
 #pragma mark - Private API
 
-typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
+typedef NS_ENUM(NSInteger, FBTestSnapshotFileNameType) {
   FBTestSnapshotFileNameTypeReference,
   FBTestSnapshotFileNameTypeFailedReference,
   FBTestSnapshotFileNameTypeFailedTest,
@@ -240,9 +241,6 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
   if ([[UIScreen mainScreen] scale] > 1.0) {
     fileName = [fileName stringByAppendingFormat:@"@%.fx", [[UIScreen mainScreen] scale]];
   }
-#if TARGET_OS_TV
-  fileName = [fileName stringByAppendingString:@"_tvOS"];
-#endif
   fileName = [fileName stringByAppendingPathExtension:@"png"];
   return fileName;
 }
@@ -261,9 +259,7 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
                               identifier:(NSString *)identifier
                             fileNameType:(FBTestSnapshotFileNameType)fileNameType
 {
-  NSString *fileName = [self _fileNameForSelector:selector
-                                       identifier:identifier
-                                     fileNameType:fileNameType];
+  NSString *fileName = [self _fileNameForSelector:selector identifier:identifier fileNameType:fileNameType];
   NSString *folderPath = NSTemporaryDirectory();
   if (getenv("IMAGE_DIFF_DIR")) {
     folderPath = @(getenv("IMAGE_DIFF_DIR"));
@@ -326,23 +322,14 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
   NSAssert1(CGRectGetWidth(bounds), @"Zero width for view %@", view);
   NSAssert1(CGRectGetHeight(bounds), @"Zero height for view %@", view);
 
-  UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  NSAssert1(context, @"Could not generate context for view %@", view);
+  UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
+  UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:bounds.size
+                                                                                   format:rendererFormat];
 
-  UIGraphicsPushContext(context);
-  CGContextSaveGState(context);
-  {
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
     BOOL success = [view drawViewHierarchyInRect:bounds afterScreenUpdates:YES];
     NSAssert1(success, @"Could not create snapshot for view %@", view);
-  }
-  CGContextRestoreGState(context);
-  UIGraphicsPopContext();
-
-  UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-
-  return snapshot;
+  }];
 }
 
 @end

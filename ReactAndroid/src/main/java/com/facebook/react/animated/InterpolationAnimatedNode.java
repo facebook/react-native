@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,13 @@
 package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
+import androidx.core.graphics.ColorUtils;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,8 +29,10 @@ import java.util.regex.Pattern;
   public static final String EXTRAPOLATE_TYPE_CLAMP = "clamp";
   public static final String EXTRAPOLATE_TYPE_EXTEND = "extend";
 
-  private static final String fpRegex = "[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?";
-  private static final Pattern fpPattern = Pattern.compile(fpRegex);
+  private static final Pattern sNumericPattern =
+      Pattern.compile("[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?");
+
+  private static final String COLOR_OUTPUT_TYPE = "color";
 
   private static double[] fromDoubleArray(ReadableArray ary) {
     double[] res = new double[ary.size()];
@@ -36,6 +40,44 @@ import java.util.regex.Pattern;
       res[i] = ary.getDouble(i);
     }
     return res;
+  }
+
+  private static int[] fromIntArray(ReadableArray ary) {
+    int[] res = new int[ary.size()];
+    for (int i = 0; i < res.length; i++) {
+      res[i] = ary.getInt(i);
+    }
+    return res;
+  }
+
+  private static double[][] fromStringPattern(ReadableArray array) {
+    int size = array.size();
+    double[][] outputRange = new double[size][];
+
+    // Match the first pattern into a List, since we don't know its length yet
+    Matcher m = sNumericPattern.matcher(array.getString(0));
+    List<Double> firstOutputRange = new ArrayList<>();
+    while (m.find()) {
+      firstOutputRange.add(Double.parseDouble(m.group()));
+    }
+    double[] firstOutputRangeArr = new double[firstOutputRange.size()];
+    for (int i = 0; i < firstOutputRange.size(); i++) {
+      firstOutputRangeArr[i] = firstOutputRange.get(i).doubleValue();
+    }
+    outputRange[0] = firstOutputRangeArr;
+
+    for (int i = 1; i < size; i++) {
+      double[] outputArr = new double[firstOutputRangeArr.length];
+
+      int j = 0;
+      m = sNumericPattern.matcher(array.getString(i));
+      while (m.find() && j < firstOutputRangeArr.length) {
+        outputArr[j++] = Double.parseDouble(m.group());
+      }
+      outputRange[i] = outputArr;
+    }
+
+    return outputRange;
   }
 
   private static double interpolate(
@@ -110,6 +152,57 @@ import java.util.regex.Pattern;
         extrapolateRight);
   }
 
+  /*package*/ static int interpolateColor(double value, double[] inputRange, int[] outputRange) {
+    int rangeIndex = findRangeIndex(value, inputRange);
+    int outputMin = outputRange[rangeIndex];
+    int outputMax = outputRange[rangeIndex + 1];
+    if (outputMin == outputMax) {
+      return outputMin;
+    }
+
+    double inputMin = inputRange[rangeIndex];
+    double inputMax = inputRange[rangeIndex + 1];
+    if (inputMin == inputMax) {
+      if (value <= inputMin) {
+        return outputMin;
+      }
+      return outputMax;
+    }
+
+    double ratio = (value - inputMin) / (inputMax - inputMin);
+    return ColorUtils.blendARGB(outputMin, outputMax, (float) ratio);
+  }
+
+  /*package*/ static String interpolateString(
+      String pattern,
+      double value,
+      double[] inputRange,
+      double[][] outputRange,
+      String extrapolateLeft,
+      String extrapolateRight) {
+    int rangeIndex = findRangeIndex(value, inputRange);
+    StringBuffer sb = new StringBuffer(pattern.length());
+
+    Matcher m = sNumericPattern.matcher(pattern);
+    int i = 0;
+    while (m.find() && i < outputRange[rangeIndex].length) {
+      double val =
+          interpolate(
+              value,
+              inputRange[rangeIndex],
+              inputRange[rangeIndex + 1],
+              outputRange[rangeIndex][i],
+              outputRange[rangeIndex + 1][i],
+              extrapolateLeft,
+              extrapolateRight);
+      int intVal = (int) val;
+      m.appendReplacement(sb, intVal != val ? Double.toString(val) : Integer.toString(intVal));
+      i++;
+    }
+    m.appendTail(sb);
+    return sb.toString();
+  }
+
   private static int findRangeIndex(double value, double[] ranges) {
     int index;
     for (index = 1; index < ranges.length - 1; index++) {
@@ -120,70 +213,39 @@ import java.util.regex.Pattern;
     return index - 1;
   }
 
+  private enum OutputType {
+    Number,
+    Color,
+    String,
+  }
+
   private final double mInputRange[];
-  private final double mOutputRange[];
-  private String mPattern;
-  private double mOutputs[][];
-  private final boolean mHasStringOutput;
-  private final Matcher mSOutputMatcher;
+  private final Object mOutputRange;
+  private final OutputType mOutputType;
+  private final @Nullable String mPattern;
   private final String mExtrapolateLeft;
   private final String mExtrapolateRight;
   private @Nullable ValueAnimatedNode mParent;
-  private boolean mShouldRound;
-  private int mNumVals;
+  private Object mObjectValue;
 
   public InterpolationAnimatedNode(ReadableMap config) {
     mInputRange = fromDoubleArray(config.getArray("inputRange"));
     ReadableArray output = config.getArray("outputRange");
-    mHasStringOutput = output.getType(0) == ReadableType.String;
-    if (mHasStringOutput) {
-      /*
-       * Supports string shapes by extracting numbers so new values can be computed,
-       * and recombines those values into new strings of the same shape.  Supports
-       * things like:
-       *
-       *   rgba(123, 42, 99, 0.36) // colors
-       *   -45deg                  // values with units
-       */
-      int size = output.size();
-      mOutputRange = new double[size];
-      mPattern = output.getString(0);
-      mShouldRound = mPattern.startsWith("rgb");
-      mSOutputMatcher = fpPattern.matcher(mPattern);
-      ArrayList<ArrayList<Double>> mOutputRanges = new ArrayList<>();
-      for (int i = 0; i < size; i++) {
-        String val = output.getString(i);
-        Matcher m = fpPattern.matcher(val);
-        ArrayList<Double> outputRange = new ArrayList<>();
-        mOutputRanges.add(outputRange);
-        while (m.find()) {
-          Double parsed = Double.parseDouble(m.group());
-          outputRange.add(parsed);
-        }
-        mOutputRange[i] = outputRange.get(0);
-      }
 
-      // ['rgba(0, 100, 200, 0)', 'rgba(50, 150, 250, 0.5)']
-      // ->
-      // [
-      //   [0, 50],
-      //   [100, 150],
-      //   [200, 250],
-      //   [0, 0.5],
-      // ]
-      mNumVals = mOutputRanges.get(0).size();
-      mOutputs = new double[mNumVals][];
-      for (int j = 0; j < mNumVals; j++) {
-        double[] arr = new double[size];
-        mOutputs[j] = arr;
-        for (int i = 0; i < size; i++) {
-          arr[i] = mOutputRanges.get(i).get(j);
-        }
-      }
+    if (COLOR_OUTPUT_TYPE.equals(config.getString("outputType"))) {
+      mOutputType = OutputType.Color;
+      mOutputRange = fromIntArray(output);
+      mPattern = null;
+    } else if (output.getType(0) == ReadableType.String) {
+      mOutputType = OutputType.String;
+      mOutputRange = fromStringPattern(output);
+      mPattern = output.getString(0);
     } else {
+      mOutputType = OutputType.Number;
       mOutputRange = fromDoubleArray(output);
-      mSOutputMatcher = null;
+      mPattern = null;
     }
+
     mExtrapolateLeft = config.getString("extrapolateLeft");
     mExtrapolateRight = config.getString("extrapolateRight");
   }
@@ -210,46 +272,39 @@ import java.util.regex.Pattern;
   @Override
   public void update() {
     if (mParent == null) {
-      // The graph is in the middle of being created, just skip this
-      // unattached node.
+      // The graph is in the middle of being created, just skip this unattached node.
       return;
     }
+
     double value = mParent.getValue();
-    mValue = interpolate(value, mInputRange, mOutputRange, mExtrapolateLeft, mExtrapolateRight);
-    if (mHasStringOutput) {
-      // 'rgba(0, 100, 200, 0)'
-      // ->
-      // 'rgba(${interpolations[0](input)}, ${interpolations[1](input)}, ...'
-      if (mNumVals > 1) {
-        StringBuffer sb = new StringBuffer(mPattern.length());
-        int i = 0;
-        mSOutputMatcher.reset();
-        while (mSOutputMatcher.find()) {
-          double val =
-              interpolate(value, mInputRange, mOutputs[i++], mExtrapolateLeft, mExtrapolateRight);
-          if (mShouldRound) {
-            // rgba requires that the r,g,b are integers.... so we want to round them, but we *dont*
-            // want to
-            // round the opacity (4th column).
-            boolean isAlpha = i == 4;
-            int rounded = (int) Math.round(isAlpha ? val * 1000 : val);
-            String num =
-                isAlpha ? Double.toString((double) rounded / 1000) : Integer.toString(rounded);
-            mSOutputMatcher.appendReplacement(sb, num);
-          } else {
-            int intVal = (int) val;
-            String num = intVal != val ? Double.toString(val) : Integer.toString(intVal);
-            mSOutputMatcher.appendReplacement(sb, num);
-          }
-        }
-        mSOutputMatcher.appendTail(sb);
-        mAnimatedObject = sb.toString();
-      } else {
-        mAnimatedObject = mSOutputMatcher.replaceFirst(String.valueOf(mValue));
-      }
+    switch (mOutputType) {
+      case Number:
+        mValue =
+            interpolate(
+                value, mInputRange, (double[]) mOutputRange, mExtrapolateLeft, mExtrapolateRight);
+        break;
+      case Color:
+        mObjectValue = Integer.valueOf(interpolateColor(value, mInputRange, (int[]) mOutputRange));
+        break;
+      case String:
+        mObjectValue =
+            interpolateString(
+                mPattern,
+                value,
+                mInputRange,
+                (double[][]) mOutputRange,
+                mExtrapolateLeft,
+                mExtrapolateRight);
+        break;
     }
   }
 
+  @Override
+  public Object getAnimatedObject() {
+    return mObjectValue;
+  }
+
+  @Override
   public String prettyPrint() {
     return "InterpolationAnimatedNode[" + mTag + "] super: " + super.prettyPrint();
   }

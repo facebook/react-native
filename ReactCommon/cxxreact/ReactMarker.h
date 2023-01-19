@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,25 +33,24 @@ enum ReactMarkerId {
 
 #ifdef __APPLE__
 using LogTaggedMarker =
+    std::function<void(const ReactMarkerId, const char *tag)>; // Bridge only
+using LogTaggedMarkerBridgeless =
     std::function<void(const ReactMarkerId, const char *tag)>;
-using LogTaggedMarkerWithInstanceKey = std::function<
-    void(const ReactMarkerId, const char *tag, const int instanceKey)>;
 #else
-typedef void (*LogTaggedMarker)(const ReactMarkerId, const char *tag);
-typedef void (*LogTaggedMarkerWithInstanceKey)(
-    const ReactMarkerId,
-    const char *tag,
-    const int instanceKey);
+typedef void (
+    *LogTaggedMarker)(const ReactMarkerId, const char *tag); // Bridge only
+typedef void (*LogTaggedMarkerBridgeless)(const ReactMarkerId, const char *tag);
 #endif
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-extern RN_EXPORT LogTaggedMarker logTaggedMarker;
-extern RN_EXPORT LogTaggedMarkerWithInstanceKey logTaggedMarkerWithInstanceKey;
+extern RN_EXPORT LogTaggedMarker logTaggedMarker; // Bridge only
+extern RN_EXPORT LogTaggedMarker logTaggedMarkerBridgeless;
 
-extern RN_EXPORT void logMarker(const ReactMarkerId markerId);
+extern RN_EXPORT void logMarker(const ReactMarkerId markerId); // Bridge only
+extern RN_EXPORT void logMarkerBridgeless(const ReactMarkerId markerId);
 
 } // namespace ReactMarker
 } // namespace react

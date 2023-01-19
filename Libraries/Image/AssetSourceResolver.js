@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,24 +18,23 @@ export type ResolvedAssetSource = {|
   +scale: number,
 |};
 
-import type {PackagerAsset} from '@react-native/assets/registry';
+import type {PackagerAsset} from '@react-native/assets-registry/registry';
 
-const PixelRatio = require('../Utilities/PixelRatio');
-const {pickScale} = require('./AssetUtils');
+import PixelRatio from '../Utilities/PixelRatio';
+
 const Platform = require('../Utilities/Platform');
-
-const invariant = require('invariant');
-
+const {pickScale} = require('./AssetUtils');
 const {
   getAndroidResourceFolderName,
   getAndroidResourceIdentifier,
   getBasePath,
-} = require('@react-native/assets/path-support');
+} = require('@react-native/assets-registry/path-support');
+const invariant = require('invariant');
 
 /**
  * Returns a path like 'assets/AwesomeModule/icon@2x.png'
  */
-function getScaledAssetPath(asset): string {
+function getScaledAssetPath(asset: PackagerAsset): string {
   const scale = pickScale(asset.scales, PixelRatio.get());
   const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
   const assetDir = getBasePath(asset);
@@ -45,11 +44,11 @@ function getScaledAssetPath(asset): string {
 /**
  * Returns a path like 'drawable-mdpi/icon.png'
  */
-function getAssetPathInDrawableFolder(asset): string {
+function getAssetPathInDrawableFolder(asset: PackagerAsset): string {
   const scale = pickScale(asset.scales, PixelRatio.get());
-  const drawbleFolder = getAndroidResourceFolderName(asset, scale);
+  const drawableFolder = getAndroidResourceFolderName(asset, scale);
   const fileName = getAndroidResourceIdentifier(asset);
-  return drawbleFolder + '/' + fileName + '.' + asset.type;
+  return drawableFolder + '/' + fileName + '.' + asset.type;
 }
 
 class AssetSourceResolver {
@@ -159,10 +158,8 @@ class AssetSourceResolver {
     };
   }
 
-  static pickScale: (
-    scales: Array<number>,
-    deviceScale?: number,
-  ) => number = pickScale;
+  static pickScale: (scales: Array<number>, deviceScale?: number) => number =
+    pickScale;
 }
 
 module.exports = AssetSourceResolver;

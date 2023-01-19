@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,7 +25,7 @@ using namespace facebook::react;
 
 @implementation RCTPullToRefreshViewComponentView {
   UIRefreshControl *_refreshControl;
-  RCTScrollViewComponentView *_scrollViewComponentView;
+  RCTScrollViewComponentView *__weak _scrollViewComponentView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -132,7 +132,7 @@ using namespace facebook::react;
     return;
   }
 
-  if (@available(macOS 13.0, *)) {
+  if (@available(macCatalyst 13.1, *)) {
     _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
   }
 }
@@ -146,7 +146,7 @@ using namespace facebook::react;
   // iOS requires to end refreshing before unmounting.
   [_refreshControl endRefreshing];
 
-  if (@available(macOS 13.0, *)) {
+  if (@available(macCatalyst 13.1, *)) {
     _scrollViewComponentView.scrollView.refreshControl = nil;
   }
   _scrollViewComponentView = nil;

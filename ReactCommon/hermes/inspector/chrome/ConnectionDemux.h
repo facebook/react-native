@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,7 @@
 #include <hermes/hermes.h>
 #include <hermes/inspector/RuntimeAdapter.h>
 #include <hermes/inspector/chrome/Connection.h>
+#include <hermes/inspector/chrome/Registration.h>
 #include <jsinspector/InspectorInterfaces.h>
 
 namespace facebook {
@@ -36,10 +37,10 @@ class ConnectionDemux {
   ConnectionDemux(const ConnectionDemux &) = delete;
   ConnectionDemux &operator=(const ConnectionDemux &) = delete;
 
-  int enableDebugging(
+  DebugSessionToken enableDebugging(
       std::unique_ptr<RuntimeAdapter> adapter,
       const std::string &title);
-  void disableDebugging(HermesRuntime &runtime);
+  void disableDebugging(DebugSessionToken session);
 
  private:
   int addPage(std::shared_ptr<Connection> conn);

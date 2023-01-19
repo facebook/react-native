@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,8 +16,7 @@
 #define STUB_VIEW_LOG(code)
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 StubViewTree::StubViewTree(ShadowView const &shadowView) {
   auto view = std::make_shared<StubView>();
@@ -200,6 +199,11 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         break;
       }
 
+      case ShadowViewMutation::RemoveDeleteTree: {
+        // TODO: do something here
+        break;
+      }
+
       case ShadowViewMutation::Update: {
         STUB_VIEW_LOG({
           LOG(ERROR) << "StubView: Update [" << mutation.newChildShadowView.tag
@@ -250,7 +254,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
 
   // For iOS especially: flush logs because some might be lost on iOS if an
   // assert is hit right after this.
-  google::FlushLogFiles(google::INFO);
+  google::FlushLogFiles(google::GLOG_INFO);
 }
 
 bool operator==(StubViewTree const &lhs, StubViewTree const &rhs) {
@@ -306,5 +310,4 @@ bool operator!=(StubViewTree const &lhs, StubViewTree const &rhs) {
   return !(lhs == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

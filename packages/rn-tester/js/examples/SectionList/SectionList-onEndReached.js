@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,10 +14,11 @@ import * as React from 'react';
 export function SectionList_onEndReached(): React.Node {
   const [output, setOutput] = React.useState('');
   const exampleProps = {
-    onEndReached: info => setOutput('onEndReached'),
+    onEndReached: (info: {distanceFromEnd: number, ...}) =>
+      setOutput('onEndReached'),
     onEndReachedThreshold: 0,
   };
-  const ref = React.useRef(null);
+  const ref = React.useRef<any>(null);
 
   const onTest = () => {
     const scrollResponder = ref?.current?.getScrollResponder();
@@ -40,7 +41,7 @@ export default {
   title: 'SectionList onEndReached',
   name: 'SectionList-onEndReached',
   description: 'Test onEndReached behavior',
-  render: function(): React.Element<typeof SectionList_onEndReached> {
+  render: function (): React.Element<typeof SectionList_onEndReached> {
     return <SectionList_onEndReached />;
   },
 };

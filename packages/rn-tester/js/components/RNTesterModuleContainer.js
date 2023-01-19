@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,14 +27,14 @@ type Props = {
   onExampleCardPress?: ?(exampleName: string) => mixed,
 };
 
-function getExampleTitle(title, platform) {
+function getExampleTitle(title: $FlowFixMe, platform: $FlowFixMe) {
   return platform != null ? `${title} (${platform} only)` : title;
 }
 
 export default function RNTesterModuleContainer(props: Props): React.Node {
   const {module, example, onExampleCardPress} = props;
   const theme = React.useContext(RNTesterThemeContext);
-  const renderExample = (e, i) => {
+  const renderExample = (e: $FlowFixMe, i: $FlowFixMe) => {
     // Filter platform-specific es
     const {title, description, platform, render: ExampleComponent} = e;
     if (platform != null && Platform.OS !== platform) {
@@ -73,7 +73,8 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
     );
   }
 
-  const filter = ({example: e, filterRegex}) => filterRegex.test(e.title);
+  const filter = ({example: e, filterRegex}: $FlowFixMe) =>
+    filterRegex.test(e.title);
 
   const sections = [
     {
@@ -124,7 +125,12 @@ function Header(props: {
       style={[
         styles.headerContainer,
         props.noBottomPadding === true ? styles.headerNoBottomPadding : null,
-        {backgroundColor: props.theme.BackgroundColor},
+        {
+          backgroundColor:
+            Platform.OS === 'ios'
+              ? props.theme.SystemBackgroundColor
+              : props.theme.BackgroundColor,
+        },
       ]}>
       <Text style={styles.headerDescription}>{props.description}</Text>
     </View>

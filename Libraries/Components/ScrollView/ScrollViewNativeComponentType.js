@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,17 +10,18 @@
 
 'use strict';
 
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
-import type {ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PointProp} from '../../StyleSheet/PointPropType';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {ScrollEvent} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 export type ScrollViewNativeProps = $ReadOnly<{
   ...ViewProps,
   alwaysBounceHorizontal?: ?boolean,
   alwaysBounceVertical?: ?boolean,
   automaticallyAdjustContentInsets?: ?boolean,
+  automaticallyAdjustKeyboardInsets?: ?boolean,
   automaticallyAdjustsScrollIndicatorInsets?: ?boolean,
   bounces?: ?boolean,
   bouncesZoom?: ?boolean,

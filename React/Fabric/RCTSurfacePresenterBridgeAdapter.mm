@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTConstants.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageLoaderWithAttributionProtocol.h>
 #import <React/RCTSurfacePresenter.h>
@@ -89,7 +90,8 @@ RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
   if (self = [super init]) {
     contextContainer->update(*RCTContextContainerFromBridge(bridge));
     _surfacePresenter = [[RCTSurfacePresenter alloc] initWithContextContainer:contextContainer
-                                                              runtimeExecutor:RCTRuntimeExecutorFromBridge(bridge)];
+                                                              runtimeExecutor:RCTRuntimeExecutorFromBridge(bridge)
+                                                   bridgelessBindingsExecutor:std::nullopt];
 
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -61,7 +61,7 @@ public class RNLog {
    * @param message The message to log.
    */
   public static void w(ReactContext context, String message) {
-    RNLog.logInternal(context, message, WARN);
+    logInternal(context, message, WARN);
     FLog.w(ReactConstants.TAG, message);
   }
 
@@ -72,7 +72,7 @@ public class RNLog {
    * @param message The message to log.
    */
   public static void e(ReactContext context, String message) {
-    RNLog.logInternal(context, message, ERROR);
+    logInternal(context, message, ERROR);
     FLog.e(ReactConstants.TAG, message);
   }
 
@@ -88,7 +88,7 @@ public class RNLog {
 
   private static void logInternal(ReactContext context, String message, int level) {
     if (level >= MINIMUM_LEVEL_FOR_UI) {
-      if (context != null && message != null) {
+      if (context != null && context.hasActiveReactInstance() && message != null) {
         context.getJSModule(RCTLog.class).logIfNoNativeHook(levelToString(level), message);
       }
     }

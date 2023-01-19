@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutMetrics.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 const char ScrollViewComponentName[] = "ScrollView";
 
@@ -63,5 +62,4 @@ Point ScrollViewShadowNode::getContentOriginOffset() const {
   return {-contentOffset.x, -contentOffset.y + stateData.scrollAwayPaddingTop};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

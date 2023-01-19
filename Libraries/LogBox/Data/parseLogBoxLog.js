@@ -1,22 +1,27 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
-import UTFSequence from '../../UTFSequence';
-import stringifySafe from '../../Utilities/stringifySafe';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {LogBoxLogData} from './LogBoxLog';
-import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 
-const BABEL_TRANSFORM_ERROR_FORMAT = /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
-const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
-const METRO_ERROR_FORMAT = /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
+import parseErrorStack from '../../Core/Devtools/parseErrorStack';
+import UTFSequence from '../../UTFSequence';
+import stringifySafe from '../../Utilities/stringifySafe';
+
+const BABEL_TRANSFORM_ERROR_FORMAT =
+  /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
+const BABEL_CODE_FRAME_ERROR_FORMAT =
+  // eslint-disable-next-line no-control-regex
+  /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
+const METRO_ERROR_FORMAT =
+  /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
 
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
@@ -51,9 +56,7 @@ export type ComponentStack = $ReadOnlyArray<CodeFrame>;
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
-export function parseInterpolation(
-  args: $ReadOnlyArray<mixed>,
-): $ReadOnly<{|
+export function parseInterpolation(args: $ReadOnlyArray<mixed>): $ReadOnly<{|
   category: Category,
   message: Message,
 |}> {
@@ -186,13 +189,8 @@ export function parseLogBoxException(
 
   const metroInternalError = message.match(METRO_ERROR_FORMAT);
   if (metroInternalError) {
-    const [
-      content,
-      fileName,
-      row,
-      column,
-      codeFrame,
-    ] = metroInternalError.slice(1);
+    const [content, fileName, row, column, codeFrame] =
+      metroInternalError.slice(1);
 
     return {
       level: 'fatal',
@@ -219,13 +217,8 @@ export function parseLogBoxException(
   const babelTransformError = message.match(BABEL_TRANSFORM_ERROR_FORMAT);
   if (babelTransformError) {
     // Transform errors are thrown from inside the Babel transformer.
-    const [
-      fileName,
-      content,
-      row,
-      column,
-      codeFrame,
-    ] = babelTransformError.slice(1);
+    const [fileName, content, row, column, codeFrame] =
+      babelTransformError.slice(1);
 
     return {
       level: 'syntax',
@@ -318,16 +311,14 @@ export function parseLogBoxException(
   };
 }
 
-export function parseLogBoxLog(
-  args: $ReadOnlyArray<mixed>,
-): {|
+export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
   componentStack: ComponentStack,
   category: Category,
   message: Message,
 |} {
   const message = args[0];
-  let argsWithoutComponentStack = [];
-  let componentStack = [];
+  let argsWithoutComponentStack: Array<mixed> = [];
+  let componentStack: ComponentStack = [];
 
   // Extract component stack from warnings like "Some warning%s".
   if (

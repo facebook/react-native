@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,12 @@
 #include "LayoutAnimationKeyFrameManager.h"
 
 #include <algorithm>
+#include <sstream>
+#include <utility>
 
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 
-#include <logger/react_native_log.h>
 #include <react/renderer/animations/conversions.h>
 #include <react/renderer/animations/utils.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
@@ -29,30 +30,17 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
 static std::string GetMutationInstructionString(
     ShadowViewMutation const &mutation) {
-  bool mutationIsRemove = mutation.type == ShadowViewMutation::Type::Remove;
-  bool mutationIsInsert = mutation.type == ShadowViewMutation::Type::Insert;
-  bool mutationIsDelete = mutation.type == ShadowViewMutation::Type::Delete;
-  bool mutationIsCreate = mutation.type == ShadowViewMutation::Type::Create;
-  std::string mutationType =
-      (mutationIsRemove
-           ? "REMOVE"
-           : (mutationIsInsert
-                  ? "INSERT"
-                  : (mutationIsDelete
-                         ? "DELETE"
-                         : (mutationIsCreate ? "CREATE" : "UPDATE"))));
-  return mutationType + " [" +
-      std::to_string(
-             mutationIsInsert || mutationIsCreate
-                 ? mutation.newChildShadowView.tag
-                 : mutation.oldChildShadowView.tag) +
-      "]->[" + std::to_string(mutation.parentShadowView.tag) + "] @" +
+  Tag tag = mutation.type == ShadowViewMutation::Type::Insert ||
+          mutation.type == ShadowViewMutation::Type::Create
+      ? mutation.newChildShadowView.tag
+      : mutation.oldChildShadowView.tag;
+  return getDebugName(mutation) + " [" + std::to_string(tag) + "]->[" +
+      std::to_string(mutation.parentShadowView.tag) + "] @" +
       std::to_string(mutation.index);
 }
 
@@ -85,8 +73,8 @@ void PrintMutationInstructionRelative(
 }
 #endif
 
-static inline float
-interpolateFloats(float coefficient, float oldValue, float newValue) {
+static inline Float
+interpolateFloats(Float coefficient, Float oldValue, Float newValue) {
   return oldValue + (newValue - oldValue) * coefficient;
 }
 
@@ -96,7 +84,7 @@ LayoutAnimationKeyFrameManager::LayoutAnimationKeyFrameManager(
     RuntimeExecutor runtimeExecutor,
     ContextContainer::Shared &contextContainer,
     LayoutAnimationStatusDelegate *delegate)
-    : runtimeExecutor_(runtimeExecutor),
+    : runtimeExecutor_(std::move(runtimeExecutor)),
       contextContainer_(contextContainer),
       layoutAnimationStatusDelegate_(delegate),
       now_([]() {
@@ -156,6 +144,11 @@ void LayoutAnimationKeyFrameManager::setComponentDescriptorRegistry(
   componentDescriptorRegistry_ = componentDescriptorRegistry;
 }
 
+void LayoutAnimationKeyFrameManager::setReduceDeleteCreateMutation(
+    const bool reduceDeleteCreateMutation) {
+  reduceDeleteCreateMutation_ = reduceDeleteCreateMutation;
+}
+
 bool LayoutAnimationKeyFrameManager::shouldAnimateFrame() const {
   std::lock_guard<std::mutex> lock(currentAnimationMutex_);
   return currentAnimation_ || !inflightAnimations_.empty();
@@ -172,7 +165,7 @@ bool LayoutAnimationKeyFrameManager::shouldOverridePullTransaction() const {
   return shouldAnimateFrame();
 }
 
-better::optional<MountingTransaction>
+std::optional<MountingTransaction>
 LayoutAnimationKeyFrameManager::pullTransaction(
     SurfaceId surfaceId,
     MountingTransaction::Number transactionNumber,
@@ -250,7 +243,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         surfaceId, mutations, conflictingAnimations);
 
     // Are we animating this list of mutations?
-    better::optional<LayoutAnimation> currentAnimation{};
+    std::optional<LayoutAnimation> currentAnimation{};
     {
       std::lock_guard<std::mutex> lock(currentAnimationMutex_);
       if (currentAnimation_) {
@@ -259,7 +252,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       }
     }
 
-    if (currentAnimation.hasValue()) {
+    if (currentAnimation.has_value()) {
       LayoutAnimation animation = std::move(currentAnimation).value();
       animation.surfaceId = surfaceId;
       animation.startTime = now;
@@ -271,9 +264,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       // TODO: to prevent this step we could tag Remove/Insert mutations as
       // being moves on the Differ level, since we know that there? We could use
       // TinyMap here, but it's not exposed by Differentiator (yet).
-      better::set<Tag> insertedTags;
-      better::set<Tag> deletedTags;
-      better::set<Tag> reparentedTags; // tags that are deleted and recreated
+      butter::set<Tag> insertedTags;
+      butter::set<Tag> deletedTags;
+      butter::set<Tag> reparentedTags; // tags that are deleted and recreated
       std::unordered_map<Tag, ShadowViewMutation> movedTags;
       for (const auto &mutation : mutations) {
         if (mutation.type == ShadowViewMutation::Type::Insert) {
@@ -303,6 +296,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       std::vector<AnimationKeyFrame> keyFramesToAnimate;
       auto const layoutAnimationConfig = animation.layoutAnimationConfig;
       for (auto const &mutation : mutations) {
+        if (mutation.type == ShadowViewMutation::Type::RemoveDeleteTree) {
+          continue;
+        }
+
         ShadowView baselineShadowView =
             (mutation.type == ShadowViewMutation::Type::Delete ||
                      mutation.type == ShadowViewMutation::Type::Remove ||
@@ -320,7 +317,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           continue;
         }
 
-        better::optional<ShadowViewMutation> executeMutationImmediately{};
+        std::optional<ShadowViewMutation> executeMutationImmediately{};
 
         bool isRemoveReinserted =
             mutation.type == ShadowViewMutation::Type::Remove &&
@@ -702,7 +699,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           keyFramesToAnimate.push_back(keyFrame);
         }
 
-        if (executeMutationImmediately.hasValue()) {
+        if (executeMutationImmediately.has_value()) {
           PrintMutationInstruction(
               "Queue Up For Immediate Execution", *executeMutationImmediately);
           immediateMutations.push_back(*executeMutationImmediately);
@@ -740,6 +737,40 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
       auto finalConflictingMutations = ShadowViewMutationList{};
       for (auto &keyFrame : conflictingAnimations) {
+        // Special-case: if the next conflicting animation contain "delete",
+        // while the final mutation has the same tag with "create", we should
+        // remove both the delete and create as they have no effect when
+        // combined in the same frame. The Fabric mount layer assumes no such
+        // combinations in the final mutations either.
+        if (reduceDeleteCreateMutation_) {
+          for (auto itMutation = immediateMutations.begin();
+               itMutation != immediateMutations.end();) {
+            auto &mutation = *itMutation;
+            bool hasCreateMutationDeletedWithSameTag = false;
+            if (mutation.newChildShadowView.tag == keyFrame.tag &&
+                mutation.type == ShadowViewMutation::Create) {
+              for (auto itKeyFrame = keyFrame.finalMutationsForKeyFrame.begin();
+                   itKeyFrame != keyFrame.finalMutationsForKeyFrame.end();) {
+                auto &conflictFinalMutation = *itKeyFrame;
+                if (conflictFinalMutation.type == ShadowViewMutation::Delete) {
+                  itKeyFrame =
+                      keyFrame.finalMutationsForKeyFrame.erase(itKeyFrame);
+                  hasCreateMutationDeletedWithSameTag = true;
+                  break;
+                } else {
+                  itKeyFrame++;
+                }
+              }
+            }
+
+            if (hasCreateMutationDeletedWithSameTag) {
+              itMutation = immediateMutations.erase(itMutation);
+            } else {
+              itMutation++;
+            }
+          }
+        }
+
         // Special-case: if we have some (1) ongoing UPDATE animation,
         // (2) it conflicted with a new MOVE operation (REMOVE+INSERT)
         // without another corresponding UPDATE, we should re-queue the
@@ -1063,7 +1094,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
 void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
     LayoutAnimation layoutAnimation) const {
-  currentAnimation_ = better::optional<LayoutAnimation>{layoutAnimation};
+  currentAnimation_ = std::optional<LayoutAnimation>{layoutAnimation};
 }
 
 void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
@@ -1074,7 +1105,7 @@ void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
 
 void LayoutAnimationKeyFrameManager::setClockNow(
     std::function<uint64_t()> now) {
-  now_ = now;
+  now_ = std::move(now);
 }
 
 void LayoutAnimationKeyFrameManager::enableSkipInvalidatedKeyFrames() {
@@ -1114,7 +1145,7 @@ LayoutAnimationKeyFrameManager::getComponentDescriptorForShadowView(
 }
 
 ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
-    double progress,
+    Float progress,
     ShadowView const &startingView,
     ShadowView const &finalView) const {
   react_native_assert(startingView.tag > 0);
@@ -1190,11 +1221,11 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     AnimationKeyFrame const &keyframe,
     ShadowViewMutation::List &mutationsList,
     bool interrupted,
-    const std::string &logPrefix) const {
+    const std::string & /*logPrefix*/) const {
   if (skipInvalidatedKeyFrames_ && keyframe.invalidated) {
     return;
   }
-  if (keyframe.finalMutationsForKeyFrame.size() > 0) {
+  if (!keyframe.finalMutationsForKeyFrame.empty()) {
     // TODO: modularize this segment, it is repeated 2x in KeyFrameManager
     // as well.
     ShadowView prev = keyframe.viewPrev;
@@ -1223,9 +1254,21 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           mutationsList.push_back(ShadowViewMutation::RemoveMutation(
               finalMutation.parentShadowView, prev, finalMutation.index));
           break;
+        case ShadowViewMutation::Type::RemoveDeleteTree:
+          // Note: Currently, there is a guarantee that if RemoveDeleteTree
+          // operations are generated, we /also/ generate corresponding
+          // Remove/Delete operations that are marked as "redundant".
+          // LayoutAnimations will process the redundant operations here, and
+          // ignore this mega-op. In the future for perf reasons it would be
+          // nice to remove the redundant operations entirely but we would need
+          // to find a way to make the RemoveDeleteTree operation work with
+          // LayoutAnimations (that might not be possible).
+          break;
         case ShadowViewMutation::Type::Update:
           mutationsList.push_back(ShadowViewMutation::UpdateMutation(
-              prev, finalMutation.newChildShadowView));
+              prev,
+              finalMutation.newChildShadowView,
+              finalMutation.parentShadowView));
           break;
       }
       if (finalMutation.newChildShadowView.tag > 0) {
@@ -1250,7 +1293,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
       auto mutatedShadowView =
           createInterpolatedShadowView(1, keyframe.viewStart, keyframe.viewEnd);
       auto generatedPenultimateMutation = ShadowViewMutation::UpdateMutation(
-          keyframe.viewPrev, mutatedShadowView);
+          keyframe.viewPrev, mutatedShadowView, keyframe.parentView);
       react_native_assert(
           generatedPenultimateMutation.oldChildShadowView.tag > 0);
       react_native_assert(
@@ -1261,7 +1304,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
       mutationsList.push_back(generatedPenultimateMutation);
 
       auto generatedMutation = ShadowViewMutation::UpdateMutation(
-          mutatedShadowView, keyframe.viewEnd);
+          mutatedShadowView, keyframe.viewEnd, keyframe.parentView);
       react_native_assert(generatedMutation.oldChildShadowView.tag > 0);
       react_native_assert(generatedMutation.newChildShadowView.tag > 0);
       PrintMutationInstruction(
@@ -1270,7 +1313,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
       mutationsList.push_back(generatedMutation);
     } else {
       auto mutation = ShadowViewMutation::UpdateMutation(
-          keyframe.viewPrev, keyframe.viewEnd);
+          keyframe.viewPrev, keyframe.viewEnd, keyframe.parentView);
       PrintMutationInstruction(
           logPrefix +
               "Animation Complete: Queuing up Final Synthetic Mutation:",
@@ -1308,7 +1351,7 @@ void LayoutAnimationKeyFrameManager::
 
   // First, collect all final mutations that could impact this immediate
   // mutation.
-  std::vector<ShadowViewMutation *> candidateMutations{};
+  std::vector<ShadowViewMutation const *> candidateMutations{};
 
   for (auto inflightAnimationIt =
            inflightAnimations_.rbegin() + (skipLastAnimation ? 1 : 0);
@@ -1322,11 +1365,7 @@ void LayoutAnimationKeyFrameManager::
       continue;
     }
 
-    for (auto it = inflightAnimation.keyFrames.begin();
-         it != inflightAnimation.keyFrames.end();
-         it++) {
-      auto &animatedKeyFrame = *it;
-
+    for (auto const &animatedKeyFrame : inflightAnimation.keyFrames) {
       if (animatedKeyFrame.invalidated) {
         continue;
       }
@@ -1337,7 +1376,8 @@ void LayoutAnimationKeyFrameManager::
         continue;
       }
 
-      for (auto &delayedMutation : animatedKeyFrame.finalMutationsForKeyFrame) {
+      for (auto const &delayedMutation :
+           animatedKeyFrame.finalMutationsForKeyFrame) {
         if (delayedMutation.type != ShadowViewMutation::Type::Remove) {
           continue;
         }
@@ -1375,7 +1415,7 @@ void LayoutAnimationKeyFrameManager::
             candidateMutations.begin(),
             candidateMutations.end(),
             [&changed, &mutation, &adjustedDelta, &isRemoveMutation](
-                ShadowViewMutation *candidateMutation) {
+                ShadowViewMutation const *candidateMutation) {
               bool indexConflicts =
                   (candidateMutation->index < mutation.index ||
                    (isRemoveMutation &&
@@ -1430,11 +1470,7 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
       continue;
     }
 
-    for (auto it = inflightAnimation.keyFrames.begin();
-         it != inflightAnimation.keyFrames.end();
-         it++) {
-      auto &animatedKeyFrame = *it;
-
+    for (auto &animatedKeyFrame : inflightAnimation.keyFrames) {
       if (animatedKeyFrame.invalidated) {
         continue;
       }
@@ -1519,6 +1555,10 @@ void LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     std::vector<AnimationKeyFrame> &conflictingAnimations) const {
   ShadowViewMutationList localConflictingMutations{};
   for (auto const &mutation : mutations) {
+    if (mutation.type == ShadowViewMutation::Type::RemoveDeleteTree) {
+      continue;
+    }
+
     bool mutationIsCreateOrDelete =
         mutation.type == ShadowViewMutation::Type::Create ||
         mutation.type == ShadowViewMutation::Type::Delete;
@@ -1616,22 +1656,26 @@ void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
 
   // Execute stopSurface on any ongoing animations
   if (inflightAnimationsExistInitially) {
-    better::set<SurfaceId> surfaceIdsToStop{};
+    butter::set<SurfaceId> surfaceIdsToStop{};
     {
       std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
       surfaceIdsToStop = surfaceIdsToStop_;
       surfaceIdsToStop_.clear();
     }
 
+#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
+    std::ostringstream surfaceIdsStr;
+    std::copy(
+        surfaceIdsToStop.begin(),
+        surfaceIdsToStop.end(),
+        std::ostream_iterator<SurfaceId>(surfaceIdsStr, ", "));
+    LOG(ERROR) << "LayoutAnimations: stopping animations due to stopSurface on "
+               << surfaceIdsStr.str();
+#endif
+
     for (auto it = inflightAnimations_.begin();
          it != inflightAnimations_.end();) {
       const auto &animation = *it;
-
-#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
-      LOG(ERROR)
-          << "LayoutAnimations: stopping animation due to stopSurface on "
-          << surfaceId;
-#endif
       if (surfaceIdsToStop.find(animation.surfaceId) !=
           surfaceIdsToStop.end()) {
         it = inflightAnimations_.erase(it);
@@ -1677,5 +1721,4 @@ void LayoutAnimationKeyFrameManager::simulateImagePropsMemoryAccess(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

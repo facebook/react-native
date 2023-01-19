@@ -1,11 +1,12 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTEventEmitter.h"
+#import <React/RCTConstants.h>
 #import "RCTAssert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -22,17 +23,6 @@
   return @"";
 }
 
-+ (void)initialize
-{
-  [super initialize];
-  if (self != [RCTEventEmitter class]) {
-    RCTAssert(
-        RCTClassOverridesInstanceMethod(self, @selector(supportedEvents)),
-        @"You must override the `supportedEvents` method of %@",
-        self);
-  }
-}
-
 - (instancetype)initWithDisabledObservation
 {
   self = [super init];
@@ -42,11 +32,16 @@
 
 - (NSArray<NSString *> *)supportedEvents
 {
+  NSString *message =
+      [NSString stringWithFormat:@"%@ must implement the supportedEvents method", NSStringFromClass(self.class)];
+  [self _log:message];
   return nil;
 }
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
 {
+  // Assert that subclasses of RCTEventEmitter does not have `@synthesize _callableJSModules`
+  // which would cause _callableJSModules in the parent RCTEventEmitter to be nil.
   RCTAssert(
       _callableJSModules != nil,
       @"Error when sending event: %@ with body: %@. "
@@ -74,6 +69,18 @@
   } else {
     RCTLogWarn(@"Sending `%@` with no listeners registered.", eventName);
   }
+}
+
+/* TODO: (T118587955) Remove canSendEvents_DEPRECATED and validate RCTEventEmitter does not fail
+ * RCTAssert in _callableJSModules when the React Native instance is invalidated.
+ */
+- (BOOL)canSendEvents_DEPRECATED
+{
+  bool canSendEvents = _callableJSModules != nil;
+  if (!canSendEvents && RCTGetValidateCanSendEventInRCTEventEmitter()) {
+    RCTLogError(@"Trying to send event when _callableJSModules is nil.");
+  }
+  return canSendEvents;
 }
 
 - (void)startObserving
@@ -130,6 +137,17 @@ RCT_EXPORT_METHOD(removeListeners : (double)count)
   if (_listenerCount == 0) {
     [self stopObserving];
   }
+}
+
+#pragma mark - Test utilities
+
+// For testing purposes only.
+// This is supposed to be overriden by a subclass in the Tests
+// to verified that the error message is actually emitted.
+// This is the less intrusive way found to mock the RCTLogError function in unit tests.
+- (void)_log:(NSString *)message
+{
+  RCTLogError(@"%@", message);
 }
 
 @end

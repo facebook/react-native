@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,47 +9,37 @@
  */
 
 import type {Node} from 'React';
+
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
-import React, {Component} from 'react';
 
-type State = {|animating: boolean|};
-type Props = $ReadOnly<{||}>;
-type Timer = TimeoutID;
+function ToggleAnimatingActivityIndicator() {
+  const timer = useRef<void | TimeoutID>();
 
-class ToggleAnimatingActivityIndicator extends Component<Props, State> {
-  _timer: Timer;
+  const [animating, setAnimating] = useState(true);
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      animating: true,
-    };
-  }
-
-  componentDidMount() {
-    this.setToggleTimeout();
-  }
-
-  componentWillUnmount() {
-    clearTimeout(this._timer);
-  }
-
-  setToggleTimeout() {
-    this._timer = setTimeout(() => {
-      this.setState({animating: !this.state.animating});
-      this.setToggleTimeout();
+  const setToggleTimeout: () => void = useCallback(() => {
+    timer.current = setTimeout(() => {
+      setAnimating(currentState => !currentState);
+      setToggleTimeout();
     }, 2000);
-  }
+  }, []);
 
-  render(): Node {
-    return (
-      <ActivityIndicator
-        animating={this.state.animating}
-        style={[styles.centering, {height: 80}]}
-        size="large"
-      />
-    );
-  }
+  useEffect(() => {
+    setToggleTimeout();
+
+    return () => {
+      clearTimeout(timer.current);
+    };
+  }, [timer, setToggleTimeout]);
+
+  return (
+    <ActivityIndicator
+      animating={animating}
+      style={[styles.centering, {height: 80}]}
+      size="large"
+    />
+  );
 }
 
 const styles = StyleSheet.create({

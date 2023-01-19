@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,7 @@ const React = require('react');
 
 const {Alert, Platform, ToastAndroid, Text, View} = require('react-native');
 
-function burnCPU(milliseconds) {
+function burnCPU(milliseconds: number) {
   const start = global.performance.now();
   while (global.performance.now() < start + milliseconds) {}
 }
@@ -27,7 +27,7 @@ class RequestIdleCallbackTester extends React.Component<
   RequestIdleCallbackTesterProps,
   RequestIdleCallbackTesterState,
 > {
-  state = {
+  state: RequestIdleCallbackTesterState = {
     message: '-',
   };
 
@@ -41,7 +41,7 @@ class RequestIdleCallbackTester extends React.Component<
     }
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         {/* $FlowFixMe[method-unbinding] added when improving typing for this
@@ -117,7 +117,11 @@ class RequestIdleCallbackTester extends React.Component<
       this._idleTimer = null;
     }
 
-    const handler = deadline => {
+    const handler = (deadline: {
+      didTimeout: boolean,
+      timeRemaining: () => number,
+      ...
+    }) => {
       while (deadline.timeRemaining() > 5) {
         burnCPU(5);
         this.setState({
@@ -155,7 +159,7 @@ class TimerTester extends React.Component<TimerTesterProps> {
   _immediateId: ?Object = null;
   _timerFn: ?() => any = null;
 
-  render() {
+  render(): any {
     const args =
       'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
     return (
@@ -264,6 +268,50 @@ class TimerTester extends React.Component<TimerTesterProps> {
   };
 }
 
+class IntervalExample extends React.Component<
+  $ReadOnly<{||}>,
+  {|
+    showTimer: boolean,
+  |},
+> {
+  state: {showTimer: boolean} = {
+    showTimer: true,
+  };
+
+  _timerTester: ?React.ElementRef<typeof TimerTester>;
+
+  render(): React.Node {
+    return (
+      <View>
+        {this.state.showTimer && this._renderTimer()}
+        <RNTesterButton onPress={this._toggleTimer}>
+          {this.state.showTimer ? 'Unmount timer' : 'Mount new timer'}
+        </RNTesterButton>
+      </View>
+    );
+  }
+
+  _renderTimer = (): React.Node => {
+    return (
+      <View>
+        <TimerTester
+          ref={ref => (this._timerTester = ref)}
+          dt={25}
+          type="setInterval"
+        />
+        <RNTesterButton
+          onPress={() => this._timerTester && this._timerTester.clear()}>
+          Clear interval
+        </RNTesterButton>
+      </View>
+    );
+  };
+
+  _toggleTimer = () => {
+    this.setState({showTimer: !this.state.showTimer});
+  };
+}
+
 exports.framework = 'React';
 exports.title = 'Timers';
 exports.category = 'UI';
@@ -275,7 +323,7 @@ exports.examples = [
     description: ('Execute function fn t milliseconds in the future.  If ' +
       't === 0, it will be enqueued immediately in the next event loop.  ' +
       'Larger values will fire on the closest frame.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TimerTester type="setTimeout" dt={0} />
@@ -288,7 +336,7 @@ exports.examples = [
   {
     title: 'this.requestAnimationFrame(fn)',
     description: 'Execute function fn on the next frame.',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TimerTester type="requestAnimationFrame" />
@@ -299,7 +347,7 @@ exports.examples = [
   {
     title: 'this.requestIdleCallback(fn)',
     description: 'Execute function fn on the next JS frame that has idle time',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <RequestIdleCallbackTester />
@@ -310,7 +358,7 @@ exports.examples = [
   {
     title: 'this.setImmediate(fn)',
     description: 'Execute function fn at the end of the current JS event loop.',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TimerTester type="setImmediate" />
@@ -322,54 +370,7 @@ exports.examples = [
     title: 'this.setInterval(fn, t)',
     description: ('Execute function fn every t milliseconds until cancelled ' +
       'or component is unmounted.': string),
-    render: function(): React.Node {
-      type IntervalExampleProps = $ReadOnly<{||}>;
-      type IntervalExampleState = {|
-        showTimer: boolean,
-      |};
-
-      class IntervalExample extends React.Component<
-        IntervalExampleProps,
-        IntervalExampleState,
-      > {
-        state = {
-          showTimer: true,
-        };
-
-        _timerTester: ?React.ElementRef<typeof TimerTester>;
-
-        render() {
-          return (
-            <View>
-              {this.state.showTimer && this._renderTimer()}
-              <RNTesterButton onPress={this._toggleTimer}>
-                {this.state.showTimer ? 'Unmount timer' : 'Mount new timer'}
-              </RNTesterButton>
-            </View>
-          );
-        }
-
-        _renderTimer = () => {
-          return (
-            <View>
-              <TimerTester
-                ref={ref => (this._timerTester = ref)}
-                dt={25}
-                type="setInterval"
-              />
-              <RNTesterButton
-                onPress={() => this._timerTester && this._timerTester.clear()}>
-                Clear interval
-              </RNTesterButton>
-            </View>
-          );
-        };
-
-        _toggleTimer = () => {
-          this.setState({showTimer: !this.state.showTimer});
-        };
-      }
-
+    render: function (): React.Node {
       return <IntervalExample />;
     },
   },

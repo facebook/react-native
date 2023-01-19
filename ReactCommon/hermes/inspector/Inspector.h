@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,7 +20,9 @@
 #include <hermes/DebuggerAPI.h>
 #include <hermes/hermes.h>
 #include <hermes/inspector/AsyncPauseState.h>
+#include <hermes/inspector/Exceptions.h>
 #include <hermes/inspector/RuntimeAdapter.h>
+#include <optional>
 
 namespace facebook {
 namespace hermes {
@@ -107,7 +109,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
       std::shared_ptr<RuntimeAdapter> adapter,
       InspectorObserver &observer,
       bool pauseOnFirstStatement);
-  ~Inspector();
+  ~Inspector() override;
 
   /**
    * disable turns off the inspector. All of the subsequent methods will not do
@@ -162,7 +164,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
    */
   folly::Future<facebook::hermes::debugger::BreakpointInfo> setBreakpoint(
       facebook::hermes::debugger::SourceLocation loc,
-      folly::Optional<std::string> condition = folly::none);
+      std::optional<std::string> condition = std::nullopt);
 
   folly::Future<folly::Unit> removeBreakpoint(
       facebook::hermes::debugger::BreakpointID loc);
@@ -279,7 +281,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   void setBreakpointOnExecutor(
       debugger::SourceLocation loc,
-      folly::Optional<std::string> condition,
+      std::optional<std::string> condition,
       std::shared_ptr<
           folly::Promise<facebook::hermes::debugger::BreakpointInfo>> promise);
 
@@ -362,6 +364,18 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   // NOTE: This needs to be declared LAST because it should be destroyed FIRST.
   std::unique_ptr<folly::Executor> executor_;
 };
+
+/// Helper function that guards user code execution in a try-catch block.
+template <typename C, typename... A>
+std::optional<UserCallbackException> runUserCallback(C &cb, A &&...arg) {
+  try {
+    cb(std::forward<A>(arg)...);
+  } catch (const std::exception &e) {
+    return UserCallbackException(e);
+  }
+
+  return {};
+}
 
 } // namespace inspector
 } // namespace hermes

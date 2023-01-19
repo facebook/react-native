@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,8 @@
 
 @end
 
-static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
+static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2)
+{
   CGFloat rgba1[4];
   CGFloat rgba2[4];
   RCTGetRGBAColorComponents(color1, rgba1);
@@ -41,16 +42,22 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
 
   __block NSString *errorMessage = nil;
   RCTLogFunction defaultLogFunction = RCTGetLogFunction();
-  RCTSetLogFunction(^(__unused RCTLogLevel level, __unused RCTLogSource source, __unused NSString *fileName, __unused NSNumber *lineNumber, NSString *message) {
-    errorMessage = message;
-  });
+  RCTSetLogFunction(
+      ^(__unused RCTLogLevel level,
+        __unused RCTLogSource source,
+        __unused NSString *fileName,
+        __unused NSNumber *lineNumber,
+        NSString *message) {
+        errorMessage = message;
+      });
 
   UIColor *value = [RCTConvert UIColor:json];
 
   RCTSetLogFunction(defaultLogFunction);
 
   XCTAssertEqualObjects(value, nil);
-  XCTAssertTrue([errorMessage containsString:@"labelColor"]); // the RedBox message will contain a list of the valid color names.
+  XCTAssertTrue(
+      [errorMessage containsString:@"labelColor"]); // the RedBox message will contain a list of the valid color names.
 }
 
 - (void)testFallbackColor
@@ -72,7 +79,8 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
   if (@available(iOS 13.0, *)) {
     id savedTraitCollection = [UITraitCollection currentTraitCollection];
 
-    [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
+    [UITraitCollection
+        setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
     CGFloat rgba[4];
     RCTGetRGBAColorComponents([value CGColor], rgba);
     XCTAssertEqual(rgba[0], 0);
@@ -80,7 +88,8 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
     XCTAssertEqual(rgba[2], 0);
     XCTAssertEqual(rgba[3], 0);
 
-    [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark]];
+    [UITraitCollection
+        setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark]];
     RCTGetRGBAColorComponents([value CGColor], rgba);
     XCTAssertEqual(rgba[0], 1);
     XCTAssertEqual(rgba[1], 1);
@@ -94,7 +103,9 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
 
 - (void)testCompositeDynamicColor
 {
-  id json = RCTJSONParse(@"{ \"dynamic\": { \"light\": { \"semantic\": \"systemRedColor\" }, \"dark\":{ \"semantic\": \"systemBlueColor\" } } }", nil);
+  id json = RCTJSONParse(
+      @"{ \"dynamic\": { \"light\": { \"semantic\": \"systemRedColor\" }, \"dark\":{ \"semantic\": \"systemBlueColor\" } } }",
+      nil);
   UIColor *value = [RCTConvert UIColor:json];
   XCTAssertNotNil(value);
 
@@ -102,11 +113,13 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
   if (@available(iOS 13.0, *)) {
     id savedTraitCollection = [UITraitCollection currentTraitCollection];
 
-    [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
+    [UITraitCollection
+        setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
 
     XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor systemRedColor] CGColor]));
 
-    [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark]];
+    [UITraitCollection
+        setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark]];
 
     XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor systemBlueColor] CGColor]));
 
@@ -117,45 +130,45 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
 
 - (void)testGenerateFallbacks
 {
-  NSDictionary<NSString *, NSNumber*>* semanticColors = @{
+  NSDictionary<NSString *, NSNumber *> *semanticColors = @{
     // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
     // Label Colors
-    @"labelColor": @(0xFF000000),
-    @"secondaryLabelColor": @(0x993c3c43),
-    @"tertiaryLabelColor": @(0x4c3c3c43),
-    @"quaternaryLabelColor": @(0x2d3c3c43),
+    @"labelColor" : @(0xFF000000),
+    @"secondaryLabelColor" : @(0x993c3c43),
+    @"tertiaryLabelColor" : @(0x4c3c3c43),
+    @"quaternaryLabelColor" : @(0x2d3c3c43),
     // Fill Colors
-    @"systemFillColor": @(0x33787880),
-    @"secondarySystemFillColor": @(0x28787880),
-    @"tertiarySystemFillColor": @(0x1e767680),
-    @"quaternarySystemFillColor": @(0x14747480),
+    @"systemFillColor" : @(0x33787880),
+    @"secondarySystemFillColor" : @(0x28787880),
+    @"tertiarySystemFillColor" : @(0x1e767680),
+    @"quaternarySystemFillColor" : @(0x14747480),
     // Text Colors
-    @"placeholderTextColor": @(0x4c3c3c43),
+    @"placeholderTextColor" : @(0x4c3c3c43),
     // Standard Content Background Colors
-    @"systemBackgroundColor": @(0xFFffffff),
-    @"secondarySystemBackgroundColor": @(0xFFf2f2f7),
-    @"tertiarySystemBackgroundColor": @(0xFFffffff),
+    @"systemBackgroundColor" : @(0xFFffffff),
+    @"secondarySystemBackgroundColor" : @(0xFFf2f2f7),
+    @"tertiarySystemBackgroundColor" : @(0xFFffffff),
     // Grouped Content Background Colors
-    @"systemGroupedBackgroundColor": @(0xFFf2f2f7),
-    @"secondarySystemGroupedBackgroundColor": @(0xFFffffff),
-    @"tertiarySystemGroupedBackgroundColor": @(0xFFf2f2f7),
+    @"systemGroupedBackgroundColor" : @(0xFFf2f2f7),
+    @"secondarySystemGroupedBackgroundColor" : @(0xFFffffff),
+    @"tertiarySystemGroupedBackgroundColor" : @(0xFFf2f2f7),
     // Separator Colors
-    @"separatorColor": @(0x493c3c43),
-    @"opaqueSeparatorColor": @(0xFFc6c6c8),
+    @"separatorColor" : @(0x493c3c43),
+    @"opaqueSeparatorColor" : @(0xFFc6c6c8),
     // Link Color
-    @"linkColor": @(0xFF007aff),
+    @"linkColor" : @(0xFF007aff),
     // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
     // Adaptable Colors
-    @"systemBrownColor": @(0xFFa2845e),
-    @"systemIndigoColor": @(0xFF5856d6),
+    @"systemBrownColor" : @(0xFFa2845e),
+    @"systemIndigoColor" : @(0xFF5856d6),
     // Adaptable Gray Colors
-    @"systemGray2Color": @(0xFFaeaeb2),
-    @"systemGray3Color": @(0xFFc7c7cc),
-    @"systemGray4Color": @(0xFFd1d1d6),
-    @"systemGray5Color": @(0xFFe5e5ea),
-    @"systemGray6Color": @(0xFFf2f2f7),
+    @"systemGray2Color" : @(0xFFaeaeb2),
+    @"systemGray3Color" : @(0xFFc7c7cc),
+    @"systemGray4Color" : @(0xFFd1d1d6),
+    @"systemGray5Color" : @(0xFFe5e5ea),
+    @"systemGray6Color" : @(0xFFf2f2f7),
     // Clear Color
-    @"clearColor": @(0x00000000),
+    @"clearColor" : @(0x00000000),
   };
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
@@ -163,7 +176,8 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
   if (@available(iOS 13.0, *)) {
     savedTraitCollection = [UITraitCollection currentTraitCollection];
 
-    [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
+    [UITraitCollection
+        setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
   }
 #endif
 

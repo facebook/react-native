@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,12 @@
 #include <functional>
 #include <memory>
 
+#include "SchedulerPriority.h"
+
 namespace facebook {
 namespace react {
+
+using CallFunc = std::function<void()>;
 
 /**
  * An interface for a generic native-to-JS call invoker. See BridgeJSCallInvoker
@@ -19,8 +23,13 @@ namespace react {
  */
 class CallInvoker {
  public:
-  virtual void invokeAsync(std::function<void()> &&func) = 0;
-  virtual void invokeSync(std::function<void()> &&func) = 0;
+  virtual void invokeAsync(CallFunc &&func) = 0;
+  virtual void invokeAsync(SchedulerPriority /*priority*/, CallFunc &&func) {
+    // When call with priority is not implemented, fall back to a regular async
+    // execution
+    invokeAsync(std::move(func));
+  }
+  virtual void invokeSync(CallFunc &&func) = 0;
   virtual ~CallInvoker() {}
 };
 

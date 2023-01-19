@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <better/optional.h>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -34,9 +34,9 @@ debugStringConvertibleItem(std::string name, T value, T defaultValue = {}) {
 template <typename T>
 inline SharedDebugStringConvertible debugStringConvertibleItem(
     std::string name,
-    better::optional<T> value,
+    std::optional<T> value,
     T defaultValue = {}) {
-  if (!value.hasValue()) {
+  if (!value.has_value()) {
     return nullptr;
   }
 

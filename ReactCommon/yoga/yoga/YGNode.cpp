@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -83,6 +83,30 @@ CompactValue YGNode::computeEdgeValueForColumn(
   }
 }
 
+CompactValue YGNode::computeRowGap(
+    const YGStyle::Gutters& gutters,
+    CompactValue defaultValue) {
+  if (!gutters[YGGutterRow].isUndefined()) {
+    return gutters[YGGutterRow];
+  } else if (!gutters[YGGutterAll].isUndefined()) {
+    return gutters[YGGutterAll];
+  } else {
+    return defaultValue;
+  }
+}
+
+CompactValue YGNode::computeColumnGap(
+    const YGStyle::Gutters& gutters,
+    CompactValue defaultValue) {
+  if (!gutters[YGGutterColumn].isUndefined()) {
+    return gutters[YGGutterColumn];
+  } else if (!gutters[YGGutterAll].isUndefined()) {
+    return gutters[YGGutterAll];
+  } else {
+    return defaultValue;
+  }
+}
+
 YGFloatOptional YGNode::getLeadingPosition(
     const YGFlexDirection axis,
     const float axisSize) const {
@@ -161,6 +185,15 @@ YGFloatOptional YGNode::getMarginForAxis(
     const YGFlexDirection axis,
     const float widthSize) const {
   return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
+}
+
+YGFloatOptional YGNode::getGapForAxis(
+    const YGFlexDirection axis,
+    const float widthSize) const {
+  auto gap = YGFlexDirectionIsRow(axis)
+      ? computeColumnGap(style_.gap(), CompactValue::ofZero())
+      : computeRowGap(style_.gap(), CompactValue::ofZero());
+  return YGResolveValue(gap, widthSize);
 }
 
 YGSize YGNode::measure(

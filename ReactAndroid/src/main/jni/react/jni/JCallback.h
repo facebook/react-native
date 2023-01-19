@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,9 +30,16 @@ class JCxxCallbackImpl : public jni::HybridClass<JCxxCallbackImpl, JCallback> {
       "Lcom/facebook/react/bridge/CxxCallbackImpl;";
 
   static void registerNatives() {
+#if __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+#endif
     javaClassStatic()->registerNatives({
         makeNativeMethod("nativeInvoke", JCxxCallbackImpl::invoke),
     });
+#if __clang__
+#pragma clang diagnostic pop
+#endif
   }
 
  private:

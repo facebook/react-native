@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,8 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
-#import <React/RCTUtils.h>
 #import <React/RCTLog.h>
+#import <React/RCTUtils.h>
 
 #import "RCTLinkingPlugins.h"
 
@@ -18,13 +18,11 @@ static NSString *const kOpenURLNotification = @"RCTOpenURLNotification";
 
 static void postNotificationWithURL(NSURL *URL, id sender)
 {
-  NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
-  [[NSNotificationCenter defaultCenter] postNotificationName:kOpenURLNotification
-                                                      object:sender
-                                                    userInfo:payload];
+  NSDictionary<NSString *, id> *payload = @{@"url" : URL.absoluteString};
+  [[NSNotificationCenter defaultCenter] postNotificationName:kOpenURLNotification object:sender userInfo:payload];
 }
 
-@interface RCTLinkingManager() <NativeLinkingManagerSpec>
+@interface RCTLinkingManager () <NativeLinkingManagerSpec>
 @end
 
 @implementation RCTLinkingManager
@@ -51,12 +49,12 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"url"];
+  return @[ @"url" ];
 }
 
 + (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)URL
-            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
   postNotificationWithURL(URL, self);
   return YES;
@@ -64,27 +62,27 @@ RCT_EXPORT_MODULE()
 
 // Corresponding api deprecated in iOS 9
 + (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)URL
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation
+              openURL:(NSURL *)URL
+    sourceApplication:(NSString *)sourceApplication
+           annotation:(id)annotation
 {
   postNotificationWithURL(URL, self);
   return YES;
 }
 
 + (BOOL)application:(UIApplication *)application
-continueUserActivity:(NSUserActivity *)userActivity
-  restorationHandler:
-    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
-        (nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler {
-    #else
-        (nonnull void (^)(NSArray *_Nullable))restorationHandler {
-    #endif
+    continueUserActivity:(NSUserActivity *)userActivity
+      restorationHandler:
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
+          (nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler
+{
+#else
+          (nonnull void (^)(NSArray *_Nullable))restorationHandler
+{
+#endif
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    NSDictionary *payload = @{@"url": userActivity.webpageURL.absoluteString};
-    [[NSNotificationCenter defaultCenter] postNotificationName:kOpenURLNotification
-                                                        object:self
-                                                      userInfo:payload];
+    NSDictionary *payload = @{@"url" : userActivity.webpageURL.absoluteString};
+    [[NSNotificationCenter defaultCenter] postNotificationName:kOpenURLNotification object:self userInfo:payload];
   }
   return YES;
 }
@@ -94,33 +92,37 @@ continueUserActivity:(NSUserActivity *)userActivity
   [self sendEventWithName:@"url" body:notification.userInfo];
 }
 
-RCT_EXPORT_METHOD(openURL:(NSURL *)URL
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(openURL
+                  : (NSURL *)URL resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject)
 {
-  [RCTSharedApplication() openURL:URL options:@{} completionHandler:^(BOOL success) {
-    if (success) {
-      resolve(@YES);
-    } else {
-      #if TARGET_OS_SIMULATOR
-        // Simulator-specific code
-        if([URL.absoluteString hasPrefix:@"tel:"]){
-          RCTLogWarn(@"Unable to open the Phone app in the simulator for telephone URLs. URL:  %@", URL);
-          resolve(@NO);
+  [RCTSharedApplication() openURL:URL
+      options:@{}
+      completionHandler:^(BOOL success) {
+        if (success) {
+          resolve(@YES);
         } else {
+#if TARGET_OS_SIMULATOR
+          // Simulator-specific code
+          if ([URL.absoluteString hasPrefix:@"tel:"]) {
+            RCTLogWarn(@"Unable to open the Phone app in the simulator for telephone URLs. URL:  %@", URL);
+            resolve(@NO);
+          } else {
+            reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+          }
+#else
+          // Device-specific code
           reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+#endif
         }
-      #else
-        // Device-specific code
-        reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
-      #endif
-    }
-  }];
+      }];
 }
 
-RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(__unused RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(canOpenURL
+                  : (NSURL *)URL resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (__unused RCTPromiseRejectBlock)reject)
 {
   if (RCTRunningInAppExtension()) {
     // Technically Today widgets can open urls, but supporting that would require
@@ -138,25 +140,31 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
     // On iOS 9 and above canOpenURL returns NO without a helpful error.
     // Check if a custom scheme is being used, and if it exists in LSApplicationQueriesSchemes
     NSArray *querySchemes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LSApplicationQueriesSchemes"];
-    if (querySchemes != nil && ([querySchemes containsObject:scheme] || [querySchemes containsObject:[scheme lowercaseString]])) {
+    if (querySchemes != nil &&
+        ([querySchemes containsObject:scheme] || [querySchemes containsObject:[scheme lowercaseString]])) {
       resolve(@NO);
     } else {
-      reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@. Add %@ to LSApplicationQueriesSchemes in your Info.plist.", URL, scheme], nil);
+      reject(
+          RCTErrorUnspecified,
+          [NSString
+              stringWithFormat:@"Unable to open URL: %@. Add %@ to LSApplicationQueriesSchemes in your Info.plist.",
+                               URL,
+                               scheme],
+          nil);
     }
   } else {
     resolve(@NO);
   }
 }
 
-RCT_EXPORT_METHOD(getInitialURL:(RCTPromiseResolveBlock)resolve
-                  reject:(__unused RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getInitialURL : (RCTPromiseResolveBlock)resolve reject : (__unused RCTPromiseRejectBlock)reject)
 {
   NSURL *initialURL = nil;
   if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
     initialURL = self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
   } else {
     NSDictionary *userActivityDictionary =
-      self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+        self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
     if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
       initialURL = ((NSUserActivity *)userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
     }
@@ -164,34 +172,38 @@ RCT_EXPORT_METHOD(getInitialURL:(RCTPromiseResolveBlock)resolve
   resolve(RCTNullIfNil(initialURL.absoluteString));
 }
 
-RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve
-                  reject:(__unused RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(openSettings : (RCTPromiseResolveBlock)resolve reject : (__unused RCTPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-  [RCTSharedApplication() openURL:url options:@{} completionHandler:^(BOOL success) {
-    if (success) {
-      resolve(nil);
-    } else {
-      reject(RCTErrorUnspecified, @"Unable to open app settings", nil);
-    }
-  }];
+  [RCTSharedApplication() openURL:url
+      options:@{}
+      completionHandler:^(BOOL success) {
+        if (success) {
+          resolve(nil);
+        } else {
+          reject(RCTErrorUnspecified, @"Unable to open app settings", nil);
+        }
+      }];
 }
 
-RCT_EXPORT_METHOD(sendIntent:(NSString *)action
-                  extras:(NSArray *_Nullable)extras
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(sendIntent
+                  : (NSString *)action extras
+                  : (NSArray *_Nullable)extras resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject)
 {
   RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<facebook::react::NativeLinkingManagerSpecJSI>(params);
 }
 
 @end
 
-Class RCTLinkingManagerCls(void) {
+Class RCTLinkingManagerCls(void)
+{
   return RCTLinkingManager.class;
 }

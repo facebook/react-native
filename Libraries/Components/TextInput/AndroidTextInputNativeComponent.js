@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,15 @@
  * @format
  */
 
-import type {ViewProps} from '../View/ViewPropTypes';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  ColorValue,
+  TextStyleProp,
+  ViewStyleProp,
+} from '../../StyleSheet/StyleSheet';
 import type {
   BubblingEventHandler,
   DirectEventHandler,
@@ -17,16 +25,11 @@ import type {
   Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {
-  TextStyleProp,
-  ViewStyleProp,
-  ColorValue,
-} from '../../StyleSheet/StyleSheet';
-import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
-import AndroidTextInputViewConfig from './AndroidTextInputViewConfig';
+
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 
 export type KeyboardType =
   // Cross Platform
@@ -64,6 +67,8 @@ export type ReturnKeyType =
   | 'route'
   | 'yahoo';
 
+export type SubmitBehavior = 'submit' | 'blurAndSubmit' | 'newline';
+
 export type NativeProps = $ReadOnly<{|
   // This allows us to inherit everything from ViewProps except for style (see below)
   // This must be commented for Fabric codegen to work.
@@ -73,42 +78,90 @@ export type NativeProps = $ReadOnly<{|
    * Android props after this
    */
   /**
-   * Determines which content to suggest on auto complete, e.g.`username`.
-   * To disable auto complete, use `off`.
+   * Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
+   * To disable autocomplete, set `autoComplete` to `off`.
    *
    * *Android Only*
    *
-   * The following values work on Android only:
+   * Possible values for `autoComplete` are:
    *
-   * - `username`
-   * - `password`
-   * - `email`
-   * - `name`
-   * - `tel`
-   * - `street-address`
-   * - `postal-code`
-   * - `cc-number`
+   * - `birthdate-day`
+   * - `birthdate-full`
+   * - `birthdate-month`
+   * - `birthdate-year`
    * - `cc-csc`
    * - `cc-exp`
+   * - `cc-exp-day`
    * - `cc-exp-month`
    * - `cc-exp-year`
+   * - `cc-number`
+   * - `email`
+   * - `gender`
+   * - `name`
+   * - `name-family`
+   * - `name-given`
+   * - `name-middle`
+   * - `name-middle-initial`
+   * - `name-prefix`
+   * - `name-suffix`
+   * - `password`
+   * - `password-new`
+   * - `postal-address`
+   * - `postal-address-country`
+   * - `postal-address-extended`
+   * - `postal-address-extended-postal-code`
+   * - `postal-address-locality`
+   * - `postal-address-region`
+   * - `postal-code`
+   * - `street-address`
+   * - `sms-otp`
+   * - `tel`
+   * - `tel-country-code`
+   * - `tel-national`
+   * - `tel-device`
+   * - `username`
+   * - `username-new`
    * - `off`
    *
    * @platform android
    */
   autoComplete?: WithDefault<
+    | 'birthdate-day'
+    | 'birthdate-full'
+    | 'birthdate-month'
+    | 'birthdate-year'
     | 'cc-csc'
     | 'cc-exp'
+    | 'cc-exp-day'
     | 'cc-exp-month'
     | 'cc-exp-year'
     | 'cc-number'
     | 'email'
+    | 'gender'
     | 'name'
+    | 'name-family'
+    | 'name-given'
+    | 'name-middle'
+    | 'name-middle-initial'
+    | 'name-prefix'
+    | 'name-suffix'
     | 'password'
+    | 'password-new'
+    | 'postal-address'
+    | 'postal-address-country'
+    | 'postal-address-extended'
+    | 'postal-address-extended-postal-code'
+    | 'postal-address-locality'
+    | 'postal-address-region'
     | 'postal-code'
     | 'street-address'
+    | 'sms-otp'
     | 'tel'
+    | 'tel-country-code'
+    | 'tel-national'
+    | 'tel-device'
     | 'username'
+    | 'username-new'
     | 'off',
     'off',
   >,
@@ -470,8 +523,33 @@ export type NativeProps = $ReadOnly<{|
    * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
    * to `true` means that pressing return will blur the field and trigger the
    * `onSubmitEditing` event instead of inserting a newline into the field.
+   *
+   * @deprecated
+   * Note that `submitBehavior` now takes the place of `blurOnSubmit` and will
+   * override any behavior defined by `blurOnSubmit`.
+   * @see submitBehavior
    */
   blurOnSubmit?: ?boolean,
+
+  /**
+   * When the return key is pressed,
+   *
+   * For single line inputs:
+   *
+   * - `'newline`' defaults to `'blurAndSubmit'`
+   * - `undefined` defaults to `'blurAndSubmit'`
+   *
+   * For multiline inputs:
+   *
+   * - `'newline'` adds a newline
+   * - `undefined` defaults to `'newline'`
+   *
+   * For both single line and multiline inputs:
+   *
+   * - `'submit'` will only send a submit event and not blur the input
+   * - `'blurAndSubmit`' will both blur the input and send a submit event
+   */
+  submitBehavior?: ?SubmitBehavior,
 
   /**
    * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
@@ -546,9 +624,135 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
+export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
+  uiViewClassName: 'AndroidTextInput',
+  bubblingEventTypes: {
+    topBlur: {
+      phasedRegistrationNames: {
+        bubbled: 'onBlur',
+        captured: 'onBlurCapture',
+      },
+    },
+    topEndEditing: {
+      phasedRegistrationNames: {
+        bubbled: 'onEndEditing',
+        captured: 'onEndEditingCapture',
+      },
+    },
+    topFocus: {
+      phasedRegistrationNames: {
+        bubbled: 'onFocus',
+        captured: 'onFocusCapture',
+      },
+    },
+    topKeyPress: {
+      phasedRegistrationNames: {
+        bubbled: 'onKeyPress',
+        captured: 'onKeyPressCapture',
+      },
+    },
+    topSubmitEditing: {
+      phasedRegistrationNames: {
+        bubbled: 'onSubmitEditing',
+        captured: 'onSubmitEditingCapture',
+      },
+    },
+    topTextInput: {
+      phasedRegistrationNames: {
+        bubbled: 'onTextInput',
+        captured: 'onTextInputCapture',
+      },
+    },
+  },
+  directEventTypes: {
+    topScroll: {
+      registrationName: 'onScroll',
+    },
+  },
+  validAttributes: {
+    maxFontSizeMultiplier: true,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: true,
+    autoFocus: true,
+    placeholder: true,
+    inlineImagePadding: true,
+    contextMenuHidden: true,
+    textShadowColor: {
+      process: require('../../StyleSheet/processColor').default,
+    },
+    maxLength: true,
+    selectTextOnFocus: true,
+    textShadowRadius: true,
+    underlineColorAndroid: {
+      process: require('../../StyleSheet/processColor').default,
+    },
+    textDecorationLine: true,
+    submitBehavior: true,
+    textAlignVertical: true,
+    fontStyle: true,
+    textShadowOffset: true,
+    selectionColor: {process: require('../../StyleSheet/processColor').default},
+    selection: true,
+    placeholderTextColor: {
+      process: require('../../StyleSheet/processColor').default,
+    },
+    importantForAutofill: true,
+    lineHeight: true,
+    textTransform: true,
+    returnKeyType: true,
+    keyboardType: true,
+    multiline: true,
+    color: {process: require('../../StyleSheet/processColor').default},
+    autoComplete: true,
+    numberOfLines: true,
+    letterSpacing: true,
+    returnKeyLabel: true,
+    fontSize: true,
+    onKeyPress: true,
+    cursorColor: {process: require('../../StyleSheet/processColor').default},
+    text: true,
+    showSoftInputOnFocus: true,
+    textAlign: true,
+    autoCapitalize: true,
+    autoCorrect: true,
+    caretHidden: true,
+    secureTextEntry: true,
+    textBreakStrategy: true,
+    onScroll: true,
+    onContentSizeChange: true,
+    disableFullscreenUI: true,
+    includeFontPadding: true,
+    fontWeight: true,
+    fontFamily: true,
+    allowFontScaling: true,
+    onSelectionChange: true,
+    mostRecentEventCount: true,
+    inlineImageLeft: true,
+    editable: true,
+    fontVariant: true,
+    borderBottomRightRadius: true,
+    borderBottomColor: {
+      process: require('../../StyleSheet/processColor').default,
+    },
+    borderRadius: true,
+    borderRightColor: {
+      process: require('../../StyleSheet/processColor').default,
+    },
+    borderColor: {process: require('../../StyleSheet/processColor').default},
+    borderTopRightRadius: true,
+    borderStyle: true,
+    borderBottomLeftRadius: true,
+    borderLeftColor: {
+      process: require('../../StyleSheet/processColor').default,
+    },
+    borderTopLeftRadius: true,
+    borderTopColor: {process: require('../../StyleSheet/processColor').default},
+  },
+};
+
 let AndroidTextInputNativeComponent = NativeComponentRegistry.get<NativeProps>(
   'AndroidTextInput',
-  () => AndroidTextInputViewConfig,
+  () => __INTERNAL_VIEW_CONFIG,
 );
 
 // flowlint-next-line unclear-type:off

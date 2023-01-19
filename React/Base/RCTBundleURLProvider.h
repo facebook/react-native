@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,11 +23,6 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
 #endif
 
 @interface RCTBundleURLProvider : NSObject
-
-/**
- * Set default settings on NSUserDefaults.
- */
-- (void)setDefaults;
 
 /**
  * Reset every settings to default.
@@ -73,25 +68,22 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
- * if resourceName or extension are nil, "main" and "jsbundle" will be
- * used, respectively.
+ * if extension is nil, "jsbundle" will be used.
  */
-- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                   fallbackResource:(NSString *)resourceName
-                  fallbackExtension:(NSString *)extension;
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackExtension:(NSString *)extension;
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
  */
-- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName;
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot;
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
- * the fallback offline JS bundle. If resourceName or extension
- * are nil, "main" and "jsbundle" will be used, respectively.
+ * the fallback offline JS bundle. If extension is nil,
+ * "jsbundle" will be used.
  */
-- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension;
+- (NSURL *)jsBundleURLForFallbackExtension:(NSString *)extension;
 
 /**
  * Returns the resourceURL for a given bundle entrypoint and
@@ -137,13 +129,6 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                        packagerHost:(NSString *)packagerHost
-                          enableDev:(BOOL)enableDev
-                 enableMinification:(BOOL)enableMinification
-                        modulesOnly:(BOOL)modulesOnly
-                          runModule:(BOOL)runModule;
-
-+ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                       packagerHost:(NSString *)packagerHost
                      packagerScheme:(NSString *)scheme
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
@@ -154,8 +139,6 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
  * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged
  * resource if it is not: -resourceURLForResourceRoot:resourceName:resourceExtension:offlineBundle:
  */
-+ (NSURL *)resourceURLForResourcePath:(NSString *)path packagerHost:(NSString *)packagerHost query:(NSString *)query;
-
 + (NSURL *)resourceURLForResourcePath:(NSString *)path
                          packagerHost:(NSString *)packagerHost
                                scheme:(NSString *)scheme

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -70,7 +70,7 @@ class Sealable {
 
   /*
    * Seals the object. This operation is irreversible;
-   * the object cannot be "unsealed" after being sealing.
+   * the object cannot be "unsealed" after being sealed.
    */
   void seal() const;
 

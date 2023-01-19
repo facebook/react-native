@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,6 +31,8 @@
  * or data update notification.
  */
 - (void)sendEventWithName:(NSString *)name body:(id)body;
+
+- (BOOL)canSendEvents_DEPRECATED;
 
 /**
  * These methods will be called when the first observer is added and when the

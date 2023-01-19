@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@
 #include <jsi/jsi.h>
 #include <functional>
 #include <mutex>
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -116,9 +117,7 @@ class JSIExecutor : public JSExecutor {
   void callNativeModules(const jsi::Value &queue, bool isEndOfBatch);
   jsi::Value nativeCallSyncHook(const jsi::Value *args, size_t count);
   jsi::Value nativeRequire(const jsi::Value *args, size_t count);
-#ifdef DEBUG
   jsi::Value globalEvalWithSourceUrl(const jsi::Value *args, size_t count);
-#endif
 
   std::shared_ptr<jsi::Runtime> runtime_;
   std::shared_ptr<ExecutorDelegate> delegate_;
@@ -129,18 +128,17 @@ class JSIExecutor : public JSExecutor {
   JSIScopedTimeoutInvoker scopedTimeoutInvoker_;
   RuntimeInstaller runtimeInstaller_;
 
-  folly::Optional<jsi::Function> callFunctionReturnFlushedQueue_;
-  folly::Optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
-  folly::Optional<jsi::Function> flushedQueue_;
+  std::optional<jsi::Function> callFunctionReturnFlushedQueue_;
+  std::optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
+  std::optional<jsi::Function> flushedQueue_;
 };
 
 using Logger =
     std::function<void(const std::string &message, unsigned int logLevel)>;
 void bindNativeLogger(jsi::Runtime &runtime, Logger logger);
 
-using PerformanceNow = std::function<double()>;
-void bindNativePerformanceNow(
-    jsi::Runtime &runtime,
-    PerformanceNow performanceNow);
+void bindNativePerformanceNow(jsi::Runtime &runtime);
+
+double performanceNow();
 } // namespace react
 } // namespace facebook

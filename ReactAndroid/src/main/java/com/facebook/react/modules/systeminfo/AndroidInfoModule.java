@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,10 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Module that exposes Android Constants to JS. */
-@ReactModule(name = AndroidInfoModule.NAME)
+@ReactModule(name = NativePlatformConstantsAndroidSpec.NAME)
 @SuppressLint("HardwareIds")
 public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implements TurboModule {
-  public static final String NAME = "PlatformConstants";
   private static final String IS_TESTING = "IS_TESTING";
 
   public AndroidInfoModule(ReactApplicationContext reactContext) {
@@ -50,16 +49,13 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
         return "desk";
       case Configuration.UI_MODE_TYPE_WATCH:
         return "watch";
+      case Configuration.UI_MODE_TYPE_VR_HEADSET:
+        return "vrheadset";
       case Configuration.UI_MODE_TYPE_NORMAL:
         return "normal";
       default:
         return "unknown";
     }
-  }
-
-  @Override
-  public String getName() {
-    return "PlatformConstants";
   }
 
   @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,8 +13,7 @@
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 #import <React/RCTTextAttributes.h>
 
-@implementation RCTUITextView
-{
+@implementation RCTUITextView {
   UILabel *_placeholderView;
   UITextView *_detachedTextView;
   RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
@@ -58,7 +57,8 @@ static UIColor *defaultPlaceholderColor()
   return self;
 }
 
-- (void)setDelegate:(id<UITextViewDelegate>)delegate {
+- (void)setDelegate:(id<UITextViewDelegate>)delegate
+{
   // Delegate is set inside `[RCTBackedTextViewDelegateAdapter initWithTextView]` and
   // it cannot be changed from outside.
   if (super.delegate) {
@@ -73,7 +73,8 @@ static UIColor *defaultPlaceholderColor()
 {
   // UITextView is accessible by default (some nested views are) and disabling that is not supported.
   // On iOS accessible elements cannot be nested, therefore enabling accessibility for some container view
-  // (even in a case where this view is a part of public API of TextInput on iOS) shadows some features implemented inside the component.
+  // (even in a case where this view is a part of public API of TextInput on iOS) shadows some features implemented
+  // inside the component.
 }
 
 - (NSString *)accessibilityLabel
@@ -147,21 +148,7 @@ static UIColor *defaultPlaceholderColor()
 
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
-  // Using `setAttributedString:` while user is typing breaks some internal mechanics
-  // when entering complex input languages such as Chinese, Korean or Japanese.
-  // see: https://github.com/facebook/react-native/issues/19339
-
-  // We try to avoid calling this method as much as we can.
-  // If the text has changed, there is nothing we can do.
-  if (![super.attributedText.string isEqualToString:attributedText.string]) {
-    [super setAttributedText:attributedText];
-  } else {
-  // But if the text is preserved, we just copying the attributes from the source string.
-    if (![super.attributedText isEqualToAttributedString:attributedText]) {
-      [self copyTextAttributesFrom:attributedText];
-    }
-  }
-
+  [super setAttributedText:attributedText];
   [self textDidChange];
 }
 
@@ -178,8 +165,8 @@ static UIColor *defaultPlaceholderColor()
 
 - (void)paste:(id)sender
 {
-  [super paste:sender];
   _textWasPasted = YES;
+  [super paste:sender];
 }
 
 // Turn off scroll animation to fix flaky scrolling.
@@ -214,8 +201,13 @@ static UIColor *defaultPlaceholderColor()
 {
   UIEdgeInsets textContainerInset = self.textContainerInset;
   NSString *placeholder = self.placeholder ?: @"";
-  CGSize maxPlaceholderSize = CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
-  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self _placeholderTextAttributes] context:nil].size;
+  CGSize maxPlaceholderSize =
+      CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
+  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize
+                                                     options:NSStringDrawingUsesLineFragmentOrigin
+                                                  attributes:[self _placeholderTextAttributes]
+                                                     context:nil]
+                               .size;
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
   placeholderSize.width += textContainerInset.left + textContainerInset.right;
   placeholderSize.height += textContainerInset.top + textContainerInset.bottom;
@@ -230,9 +222,7 @@ static UIColor *defaultPlaceholderColor()
   // When a text input is empty, it actually displays a placehoder.
   // So, we have to consider `placeholderSize` as a minimum `contentSize`.
   // Returning size DOES contain `textContainerInset` (aka `padding`).
-  return CGSizeMake(
-    MAX(contentSize.width, placeholderSize.width),
-    MAX(contentSize.height, placeholderSize.height));
+  return CGSizeMake(MAX(contentSize.width, placeholderSize.width), MAX(contentSize.height, placeholderSize.height));
 }
 
 - (void)layoutSubviews
@@ -281,13 +271,15 @@ static UIColor *defaultPlaceholderColor()
 
 - (void)_updatePlaceholder
 {
-  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self _placeholderTextAttributes]];
+  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @""
+                                                                    attributes:[self _placeholderTextAttributes]];
   [self _invalidatePlaceholderVisibility];
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes
 {
-  NSMutableDictionary<NSAttributedStringKey, id> *textAttributes = [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
+  NSMutableDictionary<NSAttributedStringKey, id> *textAttributes =
+      [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
 
   [textAttributes setValue:self.placeholderColor ?: defaultPlaceholderColor() forKey:NSForegroundColorAttributeName];
 
@@ -310,19 +302,5 @@ static UIColor *defaultPlaceholderColor()
 }
 
 #pragma mark - Utility Methods
-
-- (void)copyTextAttributesFrom:(NSAttributedString *)sourceString
-{
-  [self.textStorage beginEditing];
-
-  NSTextStorage *textStorage = self.textStorage;
-  [sourceString enumerateAttributesInRange:NSMakeRange(0, sourceString.length)
-                                   options:NSAttributedStringEnumerationReverse
-                                usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-                                  [textStorage setAttributes:attrs range:range];
-                                }];
-
-  [self.textStorage endEditing];
-}
 
 @end

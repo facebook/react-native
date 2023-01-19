@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,9 +16,8 @@
  * --jestBinary [path] - path to jest binary, defaults to local node modules
  * --yarnBinary [path] - path to yarn binary, defaults to yarn
  */
-/*eslint-disable no-undef */
-require('shelljs/global');
 
+const {echo, exec, exit} = require('shelljs');
 const argv = require('yargs').argv;
 
 const numberOfMaxWorkers = argv.maxWorkers || 1;
@@ -66,11 +65,16 @@ try {
     throw Error(exitCode);
   }
 
+  describe('Test: TypeScript tests');
+  if (exec(`${YARN_BINARY} run test-typescript-offline`).code) {
+    echo('Failed to run TypeScript tests.');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+
   exitCode = 0;
 } finally {
   // Do cleanup here
   echo('Finished.');
 }
 exit(exitCode);
-
-/*eslint-enable no-undef */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,12 @@
 
 #include "EventBeat.h"
 
-namespace facebook {
-namespace react {
+#include <utility>
 
-EventBeat::EventBeat(SharedOwnerBox const &ownerBox) : ownerBox_(ownerBox) {}
+namespace facebook::react {
+
+EventBeat::EventBeat(SharedOwnerBox ownerBox)
+    : ownerBox_(std::move(ownerBox)) {}
 
 void EventBeat::request() const {
   isRequested_ = true;
@@ -32,9 +34,8 @@ void EventBeat::induce() const {
   // Default implementation does nothing.
 }
 
-void EventBeat::setBeatCallback(const BeatCallback &beatCallback) {
-  beatCallback_ = beatCallback;
+void EventBeat::setBeatCallback(BeatCallback beatCallback) {
+  beatCallback_ = std::move(beatCallback);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

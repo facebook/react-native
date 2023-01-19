@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <ReactCommon/RuntimeExecutor.h>
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 #include <react/renderer/core/RawValue.h>
@@ -24,13 +23,11 @@ class UIManagerBinding : public jsi::HostObject {
   /*
    * Installs UIManagerBinding into JavaScript runtime if needed.
    * Creates and sets `UIManagerBinding` into the global namespace.
-   * In case if the global namespace already has a `UIManagerBinding` installed,
-   * returns that.
    * Thread synchronization must be enforced externally.
    */
-  static std::shared_ptr<UIManagerBinding> createAndInstallIfNeeded(
+  static void createAndInstallIfNeeded(
       jsi::Runtime &runtime,
-      RuntimeExecutor const &runtimeExecutor);
+      std::shared_ptr<UIManager> const &uiManager);
 
   /*
    * Returns a pointer to UIManagerBinding previously installed into a runtime.
@@ -38,49 +35,13 @@ class UIManagerBinding : public jsi::HostObject {
    */
   static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime &runtime);
 
-  UIManagerBinding(RuntimeExecutor const &runtimeExecutor);
+  UIManagerBinding(std::shared_ptr<UIManager> uiManager);
 
   ~UIManagerBinding();
-
-  /*
-   * Establish a relationship between `UIManager` and `UIManagerBinding` by
-   * setting internal pointers to each other.
-   * Must be called on JavaScript thread or during VM destruction.
-   */
-  void attach(std::shared_ptr<UIManager> const &uiManager);
-
-  /*
-   * Starts React Native Surface with given id, moduleName, and props.
-   * Thread synchronization must be enforced externally.
-   */
-  void startSurface(
-      jsi::Runtime &runtime,
-      SurfaceId surfaceId,
-      std::string const &moduleName,
-      folly::dynamic const &initalProps,
-      DisplayMode displayMode) const;
-
-  /*
-   * Updates the React Native Surface identified with surfaceId and moduleName
-   * with the given props.
-   * Thread synchronization must be enforced externally.
-   */
-  void setSurfaceProps(
-      jsi::Runtime &runtime,
-      SurfaceId surfaceId,
-      std::string const &moduleName,
-      folly::dynamic const &props,
-      DisplayMode displayMode) const;
 
   jsi::Value getInspectorDataForInstance(
       jsi::Runtime &runtime,
       EventEmitter const &eventEmitter) const;
-
-  /*
-   * Stops React Native Surface with given id.
-   * Thread synchronization must be enforced externally.
-   */
-  void stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId) const;
 
   /*
    * Delivers raw event data to JavaScript.
@@ -111,8 +72,6 @@ class UIManagerBinding : public jsi::HostObject {
   std::shared_ptr<UIManager> uiManager_;
   std::unique_ptr<EventHandler const> eventHandler_;
   mutable ReactEventPriority currentEventPriority_;
-
-  RuntimeExecutor runtimeExecutor_;
 };
 
 } // namespace facebook::react

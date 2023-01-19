@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -248,6 +248,86 @@ typedef NSDictionary RCTFontVariantDescriptor;
         UIFontFeatureTypeIdentifierKey : @(kNumberSpacingType),
         UIFontFeatureSelectorIdentifierKey : @(kProportionalNumbersSelector),
       },
+      @"stylistic-one" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltOneOnSelector),
+      },
+      @"stylistic-two" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTwoOnSelector),
+      },
+      @"stylistic-three" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltThreeOnSelector),
+      },
+      @"stylistic-four" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFourOnSelector),
+      },
+      @"stylistic-five" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFiveOnSelector),
+      },
+      @"stylistic-six" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSixOnSelector),
+      },
+      @"stylistic-seven" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSevenOnSelector),
+      },
+      @"stylistic-eight" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltEightOnSelector),
+      },
+      @"stylistic-nine" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltNineOnSelector),
+      },
+      @"stylistic-ten" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTenOnSelector),
+      },
+      @"stylistic-eleven" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltElevenOnSelector),
+      },
+      @"stylistic-twelve" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTwelveOnSelector),
+      },
+      @"stylistic-thirteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltThirteenOnSelector),
+      },
+      @"stylistic-fourteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFourteenOnSelector),
+      },
+      @"stylistic-fifteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFifteenOnSelector),
+      },
+      @"stylistic-sixteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSixteenOnSelector),
+      },
+      @"stylistic-seventeen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSeventeenOnSelector),
+      },
+      @"stylistic-eighteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltEighteenOnSelector),
+      },
+      @"stylistic-nineteen" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltNineteenOnSelector),
+      },
+      @"stylistic-twenty" : @{
+        UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+        UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTwentyOnSelector),
+      }
     };
   });
   RCTFontVariantDescriptor *value = mapping[json];
@@ -355,16 +435,18 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
     }
   }
 
-  // Get the closest font that matches the given weight for the fontFamily
-  CGFloat closestWeight = INFINITY;
   NSArray<NSString *> *names = fontNamesForFamilyName(familyName);
-  for (NSString *name in names) {
-    UIFont *match = [UIFont fontWithName:name size:fontSize];
-    if (isItalic == isItalicFont(match) && isCondensed == isCondensedFont(match)) {
-      CGFloat testWeight = weightOfFont(match);
-      if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
-        font = match;
-        closestWeight = testWeight;
+  if (!didFindFont) {
+    // Get the closest font that matches the given weight for the fontFamily
+    CGFloat closestWeight = INFINITY;
+    for (NSString *name in names) {
+      UIFont *match = [UIFont fontWithName:name size:fontSize];
+      if (isItalic == isItalicFont(match) && isCondensed == isCondensedFont(match)) {
+        CGFloat testWeight = weightOfFont(match);
+        if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
+          font = match;
+          closestWeight = testWeight;
+        }
       }
     }
   }

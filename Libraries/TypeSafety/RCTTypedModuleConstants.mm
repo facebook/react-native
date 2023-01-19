@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,11 +24,13 @@
 
 #pragma mark - NSDictionary subclass
 
-// See subclassing notes in https://developer.apple.com/documentation/foundation/nsdictionary#//apple_ref/occ/cl/NSDictionary
+// See subclassing notes in
+// https://developer.apple.com/documentation/foundation/nsdictionary#//apple_ref/occ/cl/NSDictionary
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithObjects:(id  _Nonnull const [])objects
-                                            forKeys:(id<NSCopying> _Nonnull const [])keys
-                                              count:(NSUInteger)count)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithObjects
+                    : (id _Nonnull const[])objects forKeys
+                    : (id<NSCopying> _Nonnull const[])keys count
+                    : (NSUInteger)count)
 
 - (NSUInteger)count
 {

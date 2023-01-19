@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,8 @@
 
 #include <memory>
 
-#include <better/mutex.h>
-#include <better/small_vector.h>
+#include <butter/mutex.h>
+#include <butter/small_vector.h>
 
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/ReactPrimitives.h>
@@ -32,7 +32,7 @@ class ShadowNodeFamily final {
   using Shared = std::shared_ptr<ShadowNodeFamily const>;
   using Weak = std::weak_ptr<ShadowNodeFamily const>;
 
-  using AncestorList = better::small_vector<
+  using AncestorList = butter::small_vector<
       std::pair<
           std::reference_wrapper<ShadowNode const> /* parentNode */,
           int /* childIndex */>,
@@ -86,6 +86,13 @@ class ShadowNodeFamily final {
   void dispatchRawState(StateUpdate &&stateUpdate, EventPriority priority)
       const;
 
+  /*
+   * Holds currently applied native props. `nullptr` if setNativeProps API is
+   * not used. It is used to backport setNativeProps API from the old
+   * architecture and will be removed in the future.
+   */
+  mutable std::unique_ptr<folly::dynamic> nativeProps_DEPRECATED;
+
  private:
   friend ShadowNode;
   friend ShadowNodeFamilyFragment;
@@ -101,7 +108,7 @@ class ShadowNodeFamily final {
 
   EventDispatcher::Weak eventDispatcher_;
   mutable std::shared_ptr<State const> mostRecentState_;
-  mutable better::shared_mutex mutex_;
+  mutable butter::shared_mutex mutex_;
 
   /*
    * Deprecated.

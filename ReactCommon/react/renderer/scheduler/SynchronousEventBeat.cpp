@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,24 +9,25 @@
 
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+#include <utility>
+
+namespace facebook::react {
 
 SynchronousEventBeat::SynchronousEventBeat(
     RunLoopObserver::Unique uiRunLoopObserver,
     RuntimeExecutor runtimeExecutor,
-    std::shared_ptr<RuntimeScheduler> const &runtimeScheduler)
+    std::shared_ptr<RuntimeScheduler> runtimeScheduler)
     : EventBeat({}),
       uiRunLoopObserver_(std::move(uiRunLoopObserver)),
       runtimeExecutor_(std::move(runtimeExecutor)),
-      runtimeScheduler_(runtimeScheduler) {
+      runtimeScheduler_(std::move(runtimeScheduler)) {
   uiRunLoopObserver_->setDelegate(this);
   uiRunLoopObserver_->enable();
 }
 
 void SynchronousEventBeat::activityDidChange(
     RunLoopObserver::Delegate const *delegate,
-    RunLoopObserver::Activity activity) const noexcept {
+    RunLoopObserver::Activity /*activity*/) const noexcept {
   react_native_assert(delegate == this);
   lockExecutorAndBeat();
 }
@@ -55,5 +56,4 @@ void SynchronousEventBeat::lockExecutorAndBeat() const {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

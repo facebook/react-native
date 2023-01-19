@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,14 +24,14 @@ using namespace facebook::react;
 
 class DummyShadowTreeDelegate : public ShadowTreeDelegate {
  public:
-  virtual RootShadowNode::Unshared shadowTreeWillCommit(
-      ShadowTree const &shadowTree,
-      RootShadowNode::Shared const &oldRootShadowNode,
+  RootShadowNode::Unshared shadowTreeWillCommit(
+      ShadowTree const & /*shadowTree*/,
+      RootShadowNode::Shared const & /*oldRootShadowNode*/,
       RootShadowNode::Unshared const &newRootShadowNode) const override {
     return newRootShadowNode;
   };
 
-  virtual void shadowTreeDidFinishTransaction(
+  void shadowTreeDidFinishTransaction(
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override{};
 };
@@ -108,7 +108,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       contextContainer};
 
   shadowTree.commit(
-      [&](RootShadowNode const &oldRootShadowNode) {
+      [&](RootShadowNode const & /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState1);
       },
       {true});
@@ -133,7 +133,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       findDescendantNode(*rootShadowNodeState2, family)->getState(), state2);
 
   shadowTree.commit(
-      [&](RootShadowNode const &oldRootShadowNode) {
+      [&](RootShadowNode const & /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
       {true});
@@ -156,7 +156,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       findDescendantNode(*rootShadowNodeState3, family)->getState(), state3);
 
   shadowTree.commit(
-      [&](RootShadowNode const &oldRootShadowNode) {
+      [&](RootShadowNode const & /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState3);
       },
       {true});
@@ -171,7 +171,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   // Here we commit the old tree but we expect that the state associated with
   // the node will stay the same (newer that the old tree has).
   shadowTree.commit(
-      [&](RootShadowNode const &oldRootShadowNode) {
+      [&](RootShadowNode const & /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
       {true});

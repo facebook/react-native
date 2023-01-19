@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,12 +13,14 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/core/ComponentDescriptor.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/core/State.h>
+#include <react/renderer/graphics/Float.h>
 
 namespace facebook {
 namespace react {
@@ -93,9 +95,9 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     concreteNonConstParentShadowNode->appendChild(childShadowNode);
   }
 
-  virtual SharedProps cloneProps(
+  virtual Props::Shared cloneProps(
       const PropsParserContext &context,
-      const SharedProps &props,
+      const Props::Shared &props,
       const RawProps &rawProps) const override {
     // Optimization:
     // Quite often nodes are constructed with default/empty props: the base
@@ -108,22 +110,36 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
     rawProps.parse(rawPropsParser_, context);
 
-    return ShadowNodeT::Props(context, rawProps, props);
+    // Call old-style constructor
+    auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
+
+    // Use the new-style iterator
+    // Note that we just check if `Props` has this flag set, no matter
+    // the type of ShadowNode; it acts as the single global flag.
+    if (CoreFeatures::enablePropIteratorSetter) {
+      rawProps.iterateOverValues([&](RawPropsPropNameHash hash,
+                                     const char *propName,
+                                     RawValue const &fn) {
+        shadowNodeProps.get()->setProp(context, hash, propName, fn);
+      });
+    }
+
+    return shadowNodeProps;
   };
 
-  SharedProps interpolateProps(
+  Props::Shared interpolateProps(
       const PropsParserContext &context,
-      float animationProgress,
-      const SharedProps &props,
-      const SharedProps &newProps) const override {
+      Float animationProgress,
+      const Props::Shared &props,
+      const Props::Shared &newProps) const override {
 #ifdef ANDROID
     // On Android only, the merged props should have the same RawProps as the
     // final props struct
-    SharedProps interpolatedPropsShared =
+    Props::Shared interpolatedPropsShared =
         (newProps != nullptr ? cloneProps(context, newProps, newProps->rawProps)
                              : cloneProps(context, newProps, {}));
 #else
-    SharedProps interpolatedPropsShared = cloneProps(context, newProps, {});
+    Props::Shared interpolatedPropsShared = cloneProps(context, newProps, {});
 #endif
 
     if (ConcreteShadowNode::BaseTraits().check(
@@ -178,6 +194,18 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
  protected:
+  /*
+   * Called immediatelly after `ShadowNode` is created or cloned.
+   *
+   * Override this method to pass information from custom `ComponentDescriptor`
+   * to new instance of `ShadowNode`.
+   *
+   * Example usages:
+   *   - Inject image manager to `ImageShadowNode` in
+   * `ImageComponentDescriptor`.
+   *   - Set `ShadowNode`'s size from state in
+   * `ModalHostViewComponentDescriptor`.
+   */
   virtual void adopt(ShadowNode::Unshared const &shadowNode) const {
     // Default implementation does nothing.
     react_native_assert(

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,7 +38,7 @@ export function SectionList_inverted(): React.Node {
 export default {
   title: 'SectionList Inverted',
   name: 'SectionList-inverted',
-  render: function(): React.Element<typeof SectionList_inverted> {
+  render: function (): React.Element<typeof SectionList_inverted> {
     return <SectionList_inverted />;
   },
 };

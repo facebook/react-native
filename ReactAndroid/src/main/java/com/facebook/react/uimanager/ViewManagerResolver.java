@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 package com.facebook.react.uimanager;
 
-import java.util.List;
+import java.util.Collection;
 import javax.annotation.Nullable;
 
 /** Enables lazy discovery of a specific {@link ViewManager} by its name. */
@@ -22,5 +22,5 @@ public interface ViewManagerResolver {
   /**
    * Provides a list of view manager names to register in JS as {@code UIManager.ViewManagerName}
    */
-  List<String> getViewManagerNames();
+  Collection<String> getViewManagerNames();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -51,7 +51,7 @@ void RCTCopyBackedTextInput(
   [toTextInput setSelectedTextRange:fromTextInput.selectedTextRange notifyDelegate:NO];
 }
 
-UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(facebook::better::optional<bool> autoCorrect)
+UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(std::optional<bool> autoCorrect)
 {
   return autoCorrect.has_value() ? (*autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo)
                                  : UITextAutocorrectionTypeDefault;
@@ -84,7 +84,7 @@ UIKeyboardAppearance RCTUIKeyboardAppearanceFromKeyboardAppearance(KeyboardAppea
   }
 }
 
-UITextSpellCheckingType RCTUITextSpellCheckingTypeFromOptionalBool(facebook::better::optional<bool> spellCheck)
+UITextSpellCheckingType RCTUITextSpellCheckingTypeFromOptionalBool(std::optional<bool> spellCheck)
 {
   return spellCheck.has_value() ? (*spellCheck ? UITextSpellCheckingTypeYes : UITextSpellCheckingTypeNo)
                                 : UITextSpellCheckingTypeDefault;
@@ -177,7 +177,6 @@ UIReturnKeyType RCTUIReturnKeyTypeFromReturnKeyType(ReturnKeyType returnKeyType)
   }
 }
 
-API_AVAILABLE(ios(10.0))
 UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
 {
   static dispatch_once_t onceToken;
@@ -210,12 +209,9 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
       @"streetAddressLine2" : UITextContentTypeStreetAddressLine2,
       @"sublocality" : UITextContentTypeSublocality,
       @"telephoneNumber" : UITextContentTypeTelephoneNumber,
+      @"username" : UITextContentTypeUsername,
+      @"password" : UITextContentTypePassword,
     } mutableCopy];
-
-    if (@available(iOS 11.0, *)) {
-      [mutableContentTypeMap
-          addEntriesFromDictionary:@{@"username" : UITextContentTypeUsername, @"password" : UITextContentTypePassword}];
-    }
 
     if (@available(iOS 12.0, *)) {
       [mutableContentTypeMap addEntriesFromDictionary:@{
@@ -230,7 +226,6 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
   return contentTypeMap[RCTNSStringFromString(contentType)] ?: @"";
 }
 
-API_AVAILABLE(ios(12.0))
 UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(std::string const &passwordRules)
 {
   return [UITextInputPasswordRules passwordRulesWithDescriptor:RCTNSStringFromStringNilIfEmpty(passwordRules)];

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,14 +12,7 @@
 
 const React = require('react');
 
-const {
-  Text,
-  TextInput,
-  View,
-  StyleSheet,
-  Slider,
-  Switch,
-} = require('react-native');
+const {Text, TextInput, View, StyleSheet, Switch} = require('react-native');
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 
@@ -29,11 +22,13 @@ class ToggleDefaultPaddingExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   constructor(props) {
     super(props);
     this.state = {hasPadding: false};
   }
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TextInput style={this.state.hasPadding ? {padding: 0} : null} />
@@ -47,14 +42,16 @@ class ToggleDefaultPaddingExample extends React.Component<
 }
 
 class AutogrowingTextInputExample extends React.Component<{...}> {
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   constructor(props) {
     super(props);
 
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
     this.state = {
-      width: 100,
       multiline: true,
+      fullWidth: true,
       text: '',
       contentSize: {
         width: 0,
@@ -63,6 +60,8 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
     };
   }
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   UNSAFE_componentWillReceiveProps(props) {
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
@@ -73,22 +72,22 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
     });
   }
 
-  render() {
+  render(): React.Node {
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
     const {style, multiline, ...props} = this.props;
     return (
       <View>
-        <Text>Width:</Text>
-        <Slider
-          value={100}
-          minimumValue={0}
-          maximumValue={100}
-          step={10}
+        <Text>Full width:</Text>
+        <Switch
           /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
            * found when making Flow check .android.js files. */
-          onValueChange={value => this.setState({width: value})}
+          value={this.state.fullWidth}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
+          onValueChange={value => this.setState({fullWidth: value})}
         />
+
         <Text>Multiline:</Text>
         <Switch
           /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
@@ -98,6 +97,7 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
            * found when making Flow check .android.js files. */
           onValueChange={value => this.setState({multiline: value})}
         />
+
         <Text>TextInput:</Text>
         {/* $FlowFixMe(>=0.122.0 site=react_native_android_fb) This comment
          * suppresses an error found when Flow v0.122.0 was deployed. To see
@@ -108,7 +108,7 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
           multiline={this.state.multiline}
           /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
            * found when making Flow check .android.js files. */
-          style={[style, {width: this.state.width + '%'}]}
+          style={[style, {width: this.state.fullWidth ? '100%' : '50%'}]}
           /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
            * found when making Flow check .android.js files. */
           onChangeText={value => this.setState({text: value})}
@@ -142,6 +142,13 @@ const styles = StyleSheet.create({
   singleLineWithHeightTextInput: {
     height: 30,
   },
+  default: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#0f0f0f',
+    flex: 1,
+    fontSize: 13,
+    padding: 4,
+  },
 });
 
 exports.title = 'TextInput';
@@ -152,7 +159,7 @@ exports.examples = ([
   ...TextInputSharedExamples,
   {
     title: 'Colors and text inputs',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -202,7 +209,7 @@ exports.examples = ([
   },
   {
     title: 'Font Weight',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -234,7 +241,7 @@ exports.examples = ([
   },
   {
     title: 'Text input, themes and heights',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <TextInput
           placeholder="If you set height, beware of padding set from themes"
@@ -245,7 +252,7 @@ exports.examples = ([
   },
   {
     title: 'letterSpacing',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -270,7 +277,7 @@ exports.examples = ([
   },
   {
     title: 'Passwords',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -290,7 +297,7 @@ exports.examples = ([
   },
   {
     title: 'Editable',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <TextInput
           defaultValue="Can't touch this! (>'-')> ^(' - ')^ <('-'<) (>'-')> ^(' - ')^"
@@ -302,7 +309,7 @@ exports.examples = ([
   },
   {
     title: 'Multiline',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -342,20 +349,59 @@ exports.examples = ([
     },
   },
   {
+    title: 'Editable and Read only',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            placeholder="editable text input using editable prop"
+            style={styles.default}
+            editable
+          />
+          <TextInput
+            placeholder="uneditable text input using editable prop"
+            style={styles.default}
+            editable={false}
+          />
+          <TextInput
+            placeholder="editable text input using readOnly prop"
+            style={styles.default}
+            readOnly={false}
+          />
+          <TextInput
+            placeholder="uneditable text input using readOnly prop"
+            style={styles.default}
+            readOnly
+          />
+        </View>
+      );
+    },
+  },
+  {
     title: 'Fixed number of lines',
     platform: 'android',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
             numberOfLines={2}
             multiline={true}
-            placeholder="Two line input"
+            placeholder="Two line input using numberOfLines prop"
           />
           <TextInput
             numberOfLines={5}
             multiline={true}
-            placeholder="Five line input"
+            placeholder="Five line input using numberOfLines prop"
+          />
+          <TextInput
+            rows={2}
+            multiline={true}
+            placeholder="Two line input using rows prop"
+          />
+          <TextInput
+            rows={5}
+            multiline={true}
+            placeholder="Five line input using rows prop"
           />
         </View>
       );
@@ -363,7 +409,7 @@ exports.examples = ([
   },
   {
     title: 'Auto-expanding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <AutogrowingTextInputExample
@@ -386,8 +432,37 @@ exports.examples = ([
     },
   },
   {
+    title: 'Text Auto Complete',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            autoComplete="country"
+            placeholder="country"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="postal-address-country"
+            placeholder="postal-address-country"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="one-time-code"
+            placeholder="one-time-code"
+            style={styles.default}
+          />
+          <TextInput
+            autoComplete="sms-otp"
+            placeholder="sms-otp"
+            style={styles.default}
+          />
+        </View>
+      );
+    },
+  },
+  {
     title: 'Return key',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const returnKeyTypes = [
         'none',
         'go',
@@ -428,7 +503,7 @@ exports.examples = ([
   },
   {
     title: 'Inline Images',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -452,7 +527,7 @@ exports.examples = ([
   },
   {
     title: 'Toggle Default Padding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <ToggleDefaultPaddingExample />;
     },
   },

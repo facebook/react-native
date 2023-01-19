@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,16 +8,17 @@
  * @format
  */
 
+import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+
+import * as React from 'react';
 import {
-  Pressable,
   Button,
   FlatList,
+  Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-
-import * as React from 'react';
 
 const DATA = [
   'Pizza',
@@ -33,7 +34,7 @@ const DATA = [
   'Ice Cream',
 ];
 
-const Item = ({item, separators}) => {
+const Item = ({item, separators}: RenderItemProps<string>) => {
   return (
     <Pressable
       onPressIn={() => {
@@ -66,47 +67,60 @@ type Props = {
   children?: ?React.Node,
 };
 
-const BaseFlatListExample = React.forwardRef((props: Props, ref) => {
-  return (
-    <View style={styles.container}>
-      {props.testOutput != null ? (
-        <View testID="test_container" style={styles.testContainer}>
-          <Text style={styles.output} numberOfLines={1} testID="output">
-            {props.testOutput}
-          </Text>
-          {props.onTest != null ? (
-            <Button
-              testID="start_test"
-              onPress={props.onTest}
-              title={props.testLabel ?? 'Test'}
-            />
-          ) : null}
-        </View>
-      ) : null}
-      {props.children}
-      <FlatList
-        {...props.exampleProps}
-        ref={ref}
-        testID="flat_list"
-        data={DATA}
-        keyExtractor={(item, index) => item + index}
-        style={styles.list}
-        renderItem={Item}
-      />
-    </View>
-  );
-});
+const BaseFlatListExample = React.forwardRef(
+  (
+    props: Props,
+    ref:
+      | ((null | FlatList<string>) => mixed)
+      | {current: null | FlatList<string>, ...},
+  ) => {
+    return (
+      <View style={styles.container}>
+        {props.testOutput != null ? (
+          <View testID="test_container" style={styles.testContainer}>
+            <Text style={styles.output} numberOfLines={1} testID="output">
+              {props.testOutput}
+            </Text>
+            {props.onTest != null ? (
+              <Button
+                testID="start_test"
+                onPress={props.onTest}
+                title={props.testLabel ?? 'Test'}
+              />
+            ) : null}
+          </View>
+        ) : null}
+        {props.children}
+        <FlatList
+          {...props.exampleProps}
+          ref={ref}
+          testID="flat_list"
+          data={DATA}
+          keyExtractor={(item, index) => item + index}
+          style={styles.list}
+          renderItem={Item}
+        />
+      </View>
+    );
+  },
+);
 
 export default (BaseFlatListExample: React.AbstractComponent<
   Props,
   FlatList<string>,
 >);
 
+const ITEM_INNER_HEIGHT = 70;
+const ITEM_MARGIN = 8;
+export const ITEM_HEIGHT: number = ITEM_INNER_HEIGHT + ITEM_MARGIN * 2;
+
 const styles = StyleSheet.create({
   item: {
     backgroundColor: 'pink',
-    padding: 20,
-    marginVertical: 8,
+    paddingHorizontal: 20,
+    height: ITEM_INNER_HEIGHT,
+    marginVertical: ITEM_MARGIN,
+    justifyContent: 'center',
   },
   header: {
     fontSize: 32,
@@ -143,7 +157,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 12,
   },
-  separtorText: {
+  separatorText: {
     fontSize: 10,
   },
   list: {

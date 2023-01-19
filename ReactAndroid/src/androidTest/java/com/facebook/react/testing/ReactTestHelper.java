@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,9 +24,9 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -90,8 +90,8 @@ public class ReactTestHelper {
             .setJSBundleLoader(
                 JSBundleLoader.createAssetLoader(
                     mContext, "assets://AndroidTestBundle.js", false /* Asynchronous */))
-            .setNativeModuleCallExceptionHandler(
-                new NativeModuleCallExceptionHandler() {
+            .setJSExceptionHandler(
+                new JSExceptionHandler() {
                   @Override
                   public void handleException(Exception e) {
                     throw new RuntimeException(e);

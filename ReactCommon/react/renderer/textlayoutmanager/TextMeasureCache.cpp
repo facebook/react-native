@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,9 @@
 
 #include "TextMeasureCache.h"
 
-namespace facebook {
-namespace react {
+#include <utility>
+
+namespace facebook::react {
 
 static Rect rectFromDynamic(folly::dynamic const &data) {
   Point origin;
@@ -30,7 +31,7 @@ LineMeasurement::LineMeasurement(
     Float capHeight,
     Float ascender,
     Float xHeight)
-    : text(text),
+    : text(std::move(text)),
       frame(frame),
       descender(descender),
       capHeight(capHeight),
@@ -64,5 +65,4 @@ bool LineMeasurement::operator==(LineMeasurement const &rhs) const {
              rhs.xHeight);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

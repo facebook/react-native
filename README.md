@@ -67,7 +67,7 @@ React Native is developed and supported by many companies and individual core co
 
 ## 📋 Requirements
 
-React Native apps may target iOS 11.0 and Android 5.0 (API 21) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.io) can be used to work around this.
+React Native apps may target iOS 12.4 and Android 5.0 (API 21) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.dev) can be used to work around this.
 
 ## 🎉 Building your first React Native app
 
@@ -77,7 +77,7 @@ Follow the [Getting Started guide](https://reactnative.dev/docs/getting-started)
 - [Creating a New Application][new-app]
 - [Adding React Native to an Existing Application][existing]
 
-[hello-world]: https://snack.expo.io/@hramos/hello,-world!
+[hello-world]: https://snack.expo.dev/@samples/hello-world
 [new-app]: https://reactnative.dev/docs/getting-started
 [existing]: https://reactnative.dev/docs/integration-with-existing-apps
 
@@ -97,7 +97,7 @@ The source for the React Native documentation and website is hosted on a separat
 
 Upgrading to new versions of React Native may give you access to more APIs, views, developer tools, and other goodies. See the [Upgrading Guide][u] for instructions.
 
-React Native releases are discussed in the React Native Community, [**@react-native-community/react-native-releases**][repo-releases].
+React Native releases are discussed [in this discussion repo](https://github.com/reactwg/react-native-releases/discussions).
 
 [u]: https://reactnative.dev/docs/upgrading
 [repo-releases]: https://github.com/react-native-community/react-native-releases

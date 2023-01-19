@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,7 +19,7 @@ const InitialOperationField = {
 };
 
 const InterpolateMatrix = {
-  transformScale: function(mat, x, y, z) {
+  transformScale: function (mat, x, y, z) {
     mat[0] = mat[0] * x;
     mat[1] = mat[1] * x;
     mat[2] = mat[2] * x;
@@ -33,7 +33,7 @@ const InterpolateMatrix = {
     mat[10] = mat[10] * z;
     mat[11] = mat[11] * z;
   },
-  transformTranslate: function(mat, x, y, z) {
+  transformTranslate: function (mat, x, y, z) {
     mat[12] = mat[0] * x + mat[4] * y + mat[8] * z + mat[12];
     mat[13] = mat[1] * x + mat[5] * y + mat[9] * z + mat[13];
     mat[14] = mat[2] * x + mat[6] * y + mat[10] * z + mat[14];
@@ -41,7 +41,7 @@ const InterpolateMatrix = {
   },
 };
 
-const computeNextValLinear = function(anim, from, to, value) {
+const computeNextValLinear = function (anim, from, to, value) {
   const hasRoundRatio = 'round' in anim;
   const roundRatio = anim.round;
   let ratio = (value - anim.min) / (anim.max - anim.min);
@@ -58,11 +58,11 @@ const computeNextValLinear = function(anim, from, to, value) {
   return nextVal;
 };
 
-const computeNextValLinearScalar = function(anim, value) {
+const computeNextValLinearScalar = function (anim, value) {
   return computeNextValLinear(anim, anim.from, anim.to, value);
 };
 
-const setNextValAndDetectChange = function(result, name, nextVal, didChange) {
+const setNextValAndDetectChange = function (result, name, nextVal, didChange) {
   if (!didChange) {
     const prevVal = result[name];
     result[name] = nextVal;
@@ -73,7 +73,7 @@ const setNextValAndDetectChange = function(result, name, nextVal, didChange) {
   return didChange;
 };
 
-const initIdentity = function(mat) {
+const initIdentity = function (mat) {
   mat[0] = 1;
   mat[1] = 0;
   mat[2] = 0;
@@ -92,7 +92,7 @@ const initIdentity = function(mat) {
   mat[15] = 1;
 };
 
-const computeNextMatrixOperationField = function(
+const computeNextMatrixOperationField = function (
   anim,
   name,
   dim,
@@ -106,7 +106,7 @@ const computeNextMatrixOperationField = function(
   }
 };
 
-const computeTransform = function(
+const computeTransform = function (
   anim,
   name,
   value,
@@ -169,7 +169,7 @@ const computeTransform = function(
  * @return {function} Function accepting style object, that mutates that style
  * object and returns a boolean describing if any update was actually applied.
  */
-const buildStyleInterpolator = function(anims) {
+const buildStyleInterpolator = function (anims) {
   function styleInterpolator(result, value) {
     let didChange = false;
     let didMatrix = false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,28 +18,27 @@
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 bool constexpr DEBUG_FLY = false;
 
 struct RBCContext {
   const Tag rootTag;
-  const std::vector<SharedShadowNode> &nodes;
+  const std::vector<ShadowNode::Shared> &nodes;
   const std::vector<folly::dynamic> &registers;
   const ComponentDescriptorRegistry &componentDescriptorRegistry;
   const NativeModuleRegistry &nativeModuleRegistry;
 };
 
 // TODO: use RBCContext instead of all the separate arguments.
-SharedShadowNode UITemplateProcessor::runCommand(
+ShadowNode::Shared UITemplateProcessor::runCommand(
     const folly::dynamic &command,
     SurfaceId surfaceId,
-    std::vector<SharedShadowNode> &nodes,
+    std::vector<ShadowNode::Shared> &nodes,
     std::vector<folly::dynamic> &registers,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
-    const std::shared_ptr<const ReactNativeConfig> reactNativeConfig) {
+    std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig) {
   const std::string &opcode = command[0].asString();
   const int tagOffset = 420000;
   // TODO: change to integer codes and a switch statement
@@ -100,13 +99,13 @@ SharedShadowNode UITemplateProcessor::runCommand(
   return nullptr;
 }
 
-SharedShadowNode UITemplateProcessor::buildShadowTree(
+ShadowNode::Shared UITemplateProcessor::buildShadowTree(
     const std::string &jsonStr,
     SurfaceId surfaceId,
     const folly::dynamic &params,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
-    const std::shared_ptr<const ReactNativeConfig> reactNativeConfig) {
+    std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig) {
   if (DEBUG_FLY) {
     LOG(INFO)
         << "(strt) UITemplateProcessor inject hardcoded 'server rendered' view tree";
@@ -122,7 +121,7 @@ SharedShadowNode UITemplateProcessor::buildShadowTree(
   }
   auto parsed = folly::parseJson(content);
   auto commands = parsed["commands"];
-  std::vector<SharedShadowNode> nodes(commands.size() * 2);
+  std::vector<ShadowNode::Shared> nodes(commands.size() * 2);
   std::vector<folly::dynamic> registers(32);
   for (const auto &command : commands) {
     try {
@@ -148,8 +147,7 @@ SharedShadowNode UITemplateProcessor::buildShadowTree(
   LOG(ERROR) << "react ui template missing returnRoot command :(";
   throw std::runtime_error(
       "Missing returnRoot command in template content:\n" + content);
-  return SharedShadowNode{};
+  return ShadowNode::Shared{};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,11 @@
 
 #import <React/RCTLog.h>
 
-static NSUInteger _RCTFindIndexOfNearestValue(CGFloat value, NSArray<NSNumber *> *range)
+NSString *const EXTRAPOLATE_TYPE_IDENTITY = @"identity";
+NSString *const EXTRAPOLATE_TYPE_CLAMP = @"clamp";
+NSString *const EXTRAPOLATE_TYPE_EXTEND = @"extend";
+
+NSUInteger RCTFindIndexOfNearestValue(CGFloat value, NSArray<NSNumber *> *range)
 {
   NSUInteger index;
   NSUInteger rangeCount = range.count;
@@ -25,13 +29,14 @@ static NSUInteger _RCTFindIndexOfNearestValue(CGFloat value, NSArray<NSNumber *>
 /**
  * Interpolates value by remapping it linearly fromMin->fromMax to toMin->toMax
  */
-CGFloat RCTInterpolateValue(CGFloat value,
-                            CGFloat inputMin,
-                            CGFloat inputMax,
-                            CGFloat outputMin,
-                            CGFloat outputMax,
-                            NSString *extrapolateLeft,
-                            NSString *extrapolateRight)
+CGFloat RCTInterpolateValue(
+    CGFloat value,
+    CGFloat inputMin,
+    CGFloat inputMax,
+    CGFloat outputMin,
+    CGFloat outputMax,
+    NSString *extrapolateLeft,
+    NSString *extrapolateRight)
 {
   if (value < inputMin) {
     if ([extrapolateLeft isEqualToString:EXTRAPOLATE_TYPE_IDENTITY]) {
@@ -63,35 +68,44 @@ CGFloat RCTInterpolateValue(CGFloat value,
 /**
  * Interpolates value by mapping it from the inputRange to the outputRange.
  */
-CGFloat RCTInterpolateValueInRange(CGFloat value,
-                                   NSArray<NSNumber *> *inputRange,
-                                   NSArray<NSNumber *> *outputRange,
-                                   NSString *extrapolateLeft,
-                                   NSString *extrapolateRight)
+CGFloat RCTInterpolateValueInRange(
+    CGFloat value,
+    NSArray<NSNumber *> *inputRange,
+    NSArray<NSNumber *> *outputRange,
+    NSString *extrapolateLeft,
+    NSString *extrapolateRight)
 {
-  NSUInteger rangeIndex = _RCTFindIndexOfNearestValue(value, inputRange);
+  NSUInteger rangeIndex = RCTFindIndexOfNearestValue(value, inputRange);
   CGFloat inputMin = inputRange[rangeIndex].doubleValue;
   CGFloat inputMax = inputRange[rangeIndex + 1].doubleValue;
   CGFloat outputMin = outputRange[rangeIndex].doubleValue;
   CGFloat outputMax = outputRange[rangeIndex + 1].doubleValue;
 
-  return RCTInterpolateValue(value,
-                             inputMin,
-                             inputMax,
-                             outputMin,
-                             outputMax,
-                             extrapolateLeft,
-                             extrapolateRight);
+  return RCTInterpolateValue(value, inputMin, inputMax, outputMin, outputMax, extrapolateLeft, extrapolateRight);
 }
 
-CGFloat RCTRadiansToDegrees(CGFloat radians)
+int32_t RCTInterpolateColorInRange(CGFloat value, NSArray<NSNumber *> *inputRange, NSArray<UIColor *> *outputRange)
 {
-  return radians * 180.0 / M_PI;
+  NSUInteger rangeIndex = RCTFindIndexOfNearestValue(value, inputRange);
+  CGFloat inputMin = inputRange[rangeIndex].doubleValue;
+  CGFloat inputMax = inputRange[rangeIndex + 1].doubleValue;
+
+  CGFloat redMin, greenMin, blueMin, alphaMin;
+  [outputRange[rangeIndex] getRed:&redMin green:&greenMin blue:&blueMin alpha:&alphaMin];
+  CGFloat redMax, greenMax, blueMax, alphaMax;
+  [outputRange[rangeIndex + 1] getRed:&redMax green:&greenMax blue:&blueMax alpha:&alphaMax];
+
+  return RCTColorFromComponents(
+      0xFF * (redMin + (value - inputMin) * (redMax - redMin) / (inputMax - inputMin)),
+      0xFF * (greenMin + (value - inputMin) * (greenMax - greenMin) / (inputMax - inputMin)),
+      0xFF * (blueMin + (value - inputMin) * (blueMax - blueMin) / (inputMax - inputMin)),
+      alphaMin + (value - inputMin) * (alphaMax - alphaMin) / (inputMax - inputMin));
 }
 
-CGFloat RCTDegreesToRadians(CGFloat degrees)
+int32_t RCTColorFromComponents(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha)
 {
-  return degrees / 180.0 * M_PI;
+  return ((int)round(alpha * 255) & 0xFF) << 24 | ((int)round(red) & 0xFF) << 16 | ((int)round(green) & 0xFF) << 8 |
+      ((int)round(blue) & 0xFF);
 }
 
 #if TARGET_IPHONE_SIMULATOR

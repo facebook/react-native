@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,12 +28,8 @@ const NUM_CIRCLES = 30;
 class Circle extends React.Component<any, any> {
   longTimer: number;
 
-  _onLongPress: () => void;
-  _toggleIsActive: () => void;
   constructor(props: Object): void {
     super();
-    this._onLongPress = this._onLongPress.bind(this);
-    this._toggleIsActive = this._toggleIsActive.bind(this);
     this.state = {
       isActive: false,
       pan: new Animated.ValueXY(), // Vectors reduce boilerplate.  (step1: uncomment)
@@ -41,7 +37,7 @@ class Circle extends React.Component<any, any> {
     };
   }
 
-  _onLongPress(): void {
+  _onLongPress = (): void => {
     const config = {tension: 40, friction: 3};
     this.state.pan.addListener(value => {
       // Async listener for state changes  (step1: uncomment)
@@ -90,7 +86,7 @@ class Circle extends React.Component<any, any> {
         this.props.onActivate();
       },
     );
-  }
+  };
 
   render(): React.Node {
     let handlers;
@@ -193,7 +189,7 @@ class Circle extends React.Component<any, any> {
       </Animated.View>
     );
   }
-  _toggleIsActive(velocity) {
+  _toggleIsActive = (velocity: void) => {
     const config = {tension: 30, friction: 7};
     if (this.state.isActive) {
       Animated.spring(this.props.openVal, {
@@ -215,11 +211,10 @@ class Circle extends React.Component<any, any> {
         }).start(); // (step4: uncomment)
       });
     }
-  }
+  };
 }
 
 class AnExApp extends React.Component<any, any> {
-  _onMove: (position: Point) => void;
   constructor(props: any): void {
     super(props);
     const keys = [];
@@ -231,7 +226,6 @@ class AnExApp extends React.Component<any, any> {
       restLayouts: [],
       openVal: new Animated.Value(0),
     };
-    this._onMove = this._onMove.bind(this);
   }
 
   render(): React.Node {
@@ -241,7 +235,11 @@ class AnExApp extends React.Component<any, any> {
       } else {
         let onLayout = null;
         if (!this.state.restLayouts[idx]) {
-          onLayout = function(index, e) {
+          /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+           * Flow's LTI update could not be added via codemod */
+          /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s)
+           * required by Flow's LTI update could not be added via codemod */
+          onLayout = function (index, e) {
             const layout = e.nativeEvent.layout;
             this.setState(state => {
               state.restLayouts[index] = layout;
@@ -297,13 +295,13 @@ class AnExApp extends React.Component<any, any> {
     );
   }
 
-  _onMove(position: Point): void {
+  _onMove = (position: Point): void => {
     const newKeys = moveToClosest(this.state, position);
     if (newKeys !== this.state.keys) {
       LayoutAnimation.easeInEaseOut(); // animates layout update as one batch (step3: uncomment)
       this.setState({keys: newKeys});
     }
-  }
+  };
 }
 
 type Point = {
@@ -317,7 +315,7 @@ function distance(p1: Point, p2: Point): number {
   return dx * dx + dy * dy;
 }
 
-function moveToClosest({activeKey, keys, restLayouts}, position) {
+function moveToClosest({activeKey, keys, restLayouts}: any, position: Point) {
   const activeIdx = -1;
   let closestIdx = activeIdx;
   let minDist = Infinity;

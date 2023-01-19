@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,17 +27,27 @@ struct EventHandlerWrapper : public EventHandler {
 };
 
 struct ShadowNodeWrapper : public jsi::HostObject {
-  ShadowNodeWrapper(SharedShadowNode shadowNode)
+  ShadowNodeWrapper(ShadowNode::Shared shadowNode)
       : shadowNode(std::move(shadowNode)) {}
+
+  // The below method needs to be implemented out-of-line in order for the class
+  // to have at least one "key function" (see
+  // https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vague-vtable)
+  ~ShadowNodeWrapper() override;
 
   ShadowNode::Shared shadowNode;
 };
 
 struct ShadowNodeListWrapper : public jsi::HostObject {
-  ShadowNodeListWrapper(SharedShadowNodeUnsharedList shadowNodeList)
+  ShadowNodeListWrapper(ShadowNode::UnsharedListOfShared shadowNodeList)
       : shadowNodeList(shadowNodeList) {}
 
-  SharedShadowNodeUnsharedList shadowNodeList;
+  // The below method needs to be implemented out-of-line in order for the class
+  // to have at least one "key function" (see
+  // https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vague-vtable)
+  ~ShadowNodeListWrapper() override;
+
+  ShadowNode::UnsharedListOfShared shadowNodeList;
 };
 
 inline static ShadowNode::Shared shadowNodeFromValue(
@@ -54,12 +64,12 @@ inline static ShadowNode::Shared shadowNodeFromValue(
 
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime &runtime,
-    const ShadowNode::Shared &shadowNode) {
+    ShadowNode::Shared shadowNode) {
   return jsi::Object::createFromHostObject(
-      runtime, std::make_shared<ShadowNodeWrapper>(shadowNode));
+      runtime, std::make_shared<ShadowNodeWrapper>(std::move(shadowNode)));
 }
 
-inline static SharedShadowNodeUnsharedList shadowNodeListFromValue(
+inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
     jsi::Runtime &runtime,
     jsi::Value const &value) {
   return value.getObject(runtime)
@@ -97,7 +107,7 @@ inline static ShadowNode::UnsharedListOfWeak weakShadowNodeListFromValue(
 
 inline static jsi::Value valueFromShadowNodeList(
     jsi::Runtime &runtime,
-    const SharedShadowNodeUnsharedList &shadowNodeList) {
+    const ShadowNode::UnsharedListOfShared &shadowNodeList) {
   return jsi::Object::createFromHostObject(
       runtime, std::make_unique<ShadowNodeListWrapper>(shadowNodeList));
 }

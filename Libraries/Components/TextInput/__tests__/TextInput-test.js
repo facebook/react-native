@@ -1,25 +1,22 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
- * @format
  * @flow-strict
+ * @format
+ * @oncall react_native
  */
 
-const React = require('react');
-const ReactTestRenderer = require('react-test-renderer');
-const TextInput = require('../TextInput');
-const ReactNative = require('../../../Renderer/shims/ReactNative');
-
-import Component from '@reactions/component';
-
+const ReactNative = require('../../../ReactNative/RendererProxy');
 const {
   enter,
   expectRendersMatchingSnapshot,
 } = require('../../../Utilities/ReactNativeTestTools');
+const TextInput = require('../TextInput');
+const React = require('react');
+const ReactTestRenderer = require('react-test-renderer');
 
 jest.unmock('../TextInput');
 
@@ -33,23 +30,24 @@ describe('TextInput tests', () => {
     inputRef = React.createRef(null);
     onChangeListener = jest.fn();
     onChangeTextListener = jest.fn();
-    const renderTree = ReactTestRenderer.create(
-      <Component initialState={{text: initialValue}}>
-        {({setState, state}) => (
-          <TextInput
-            ref={inputRef}
-            value={state.text}
-            onChangeText={text => {
-              onChangeTextListener(text);
-              setState({text});
-            }}
-            onChange={event => {
-              onChangeListener(event);
-            }}
-          />
-        )}
-      </Component>,
-    );
+    function TextInputWrapper() {
+      const [state, setState] = React.useState({text: initialValue});
+
+      return (
+        <TextInput
+          ref={inputRef}
+          value={state.text}
+          onChangeText={text => {
+            onChangeTextListener(text);
+            setState({text});
+          }}
+          onChange={event => {
+            onChangeListener(event);
+          }}
+        />
+      );
+    }
+    const renderTree = ReactTestRenderer.create(<TextInputWrapper />);
     input = renderTree.root.findByType(TextInput);
   });
   it('has expected instance functions', () => {
@@ -71,7 +69,9 @@ describe('TextInput tests', () => {
   it('calls onChange callbacks', () => {
     expect(input.props.value).toBe(initialValue);
     const message = 'This is a test message';
-    enter(input, message);
+    ReactTestRenderer.act(() => {
+      enter(input, message);
+    });
     expect(input.props.value).toBe(message);
     expect(onChangeTextListener).toHaveBeenCalledWith(message);
     expect(onChangeListener).toHaveBeenCalledWith({
@@ -79,9 +79,26 @@ describe('TextInput tests', () => {
     });
   });
 
-  it('should have support being focused and unfocused', () => {
+  function createTextInput(extraProps) {
     const textInputRef = React.createRef(null);
-    ReactTestRenderer.create(<TextInput ref={textInputRef} value="value1" />);
+    ReactTestRenderer.create(
+      <TextInput ref={textInputRef} value="value1" {...extraProps} />,
+    );
+    return textInputRef;
+  }
+
+  it('focus() should not do anything if the TextInput is not editable', () => {
+    const textInputRef = createTextInput({editable: false});
+    // currentProps is the property actually containing props at runtime
+    textInputRef.current.currentProps = textInputRef.current.props;
+    expect(textInputRef.current.isFocused()).toBe(false);
+
+    TextInput.State.focusTextInput(textInputRef.current);
+    expect(textInputRef.current.isFocused()).toBe(false);
+  });
+
+  it('should have support for being focused and blurred', () => {
+    const textInputRef = createTextInput();
 
     expect(textInputRef.current.isFocused()).toBe(false);
     ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
@@ -102,15 +119,10 @@ describe('TextInput tests', () => {
     TextInput.State.focusTextInput(textInputRef.current);
     expect(textInputRef.current.isFocused()).toBe(true);
     expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRef.current);
-    // This function is currently deprecated and will be removed in the future
-    expect(TextInput.State.currentlyFocusedField()).toBe(
-      ReactNative.findNodeHandle(textInputRef.current),
-    );
+
     TextInput.State.blurTextInput(textInputRef.current);
     expect(textInputRef.current.isFocused()).toBe(false);
     expect(TextInput.State.currentlyFocusedInput()).toBe(null);
-    // This function is currently deprecated and will be removed in the future
-    expect(TextInput.State.currentlyFocusedField()).toBe(null);
   });
 
   it('should unfocus when other TextInput is focused', () => {
@@ -144,24 +156,17 @@ describe('TextInput tests', () => {
     expect(textInputRe1.current.isFocused()).toBe(false);
     expect(textInputRe2.current.isFocused()).toBe(false);
 
-    const inputTag1 = ReactNative.findNodeHandle(textInputRe1.current);
-    const inputTag2 = ReactNative.findNodeHandle(textInputRe2.current);
-
     TextInput.State.focusTextInput(textInputRe1.current);
 
     expect(textInputRe1.current.isFocused()).toBe(true);
     expect(textInputRe2.current.isFocused()).toBe(false);
     expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRe1.current);
-    // This function is currently deprecated and will be removed in the future
-    expect(TextInput.State.currentlyFocusedField()).toBe(inputTag1);
 
     TextInput.State.focusTextInput(textInputRe2.current);
 
     expect(textInputRe1.current.isFocused()).toBe(false);
     expect(textInputRe2.current.isFocused()).toBe(true);
     expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRe2.current);
-    // This function is currently deprecated and will be removed in the future
-    expect(TextInput.State.currentlyFocusedField()).toBe(inputTag2);
   });
 
   it('should render as expected', () => {
@@ -172,5 +177,271 @@ describe('TextInput tests', () => {
         jest.dontMock('../TextInput');
       },
     );
+  });
+});
+
+describe('TextInput', () => {
+  it('default render', () => {
+    const instance = ReactTestRenderer.create(<TextInput />);
+
+    expect(instance.toJSON()).toMatchInlineSnapshot(`
+      <RCTSinglelineTextInputView
+        accessible={true}
+        allowFontScaling={true}
+        focusable={true}
+        forwardedRef={null}
+        mostRecentEventCount={0}
+        onBlur={[Function]}
+        onChange={[Function]}
+        onChangeSync={null}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onScroll={[Function]}
+        onSelectionChange={[Function]}
+        onSelectionChangeShouldSetResponder={[Function]}
+        onStartShouldSetResponder={[Function]}
+        rejectResponderTermination={true}
+        selection={null}
+        submitBehavior="blurAndSubmit"
+        text=""
+        underlineColorAndroid="transparent"
+      />
+    `);
+  });
+
+  it('has displayName', () => {
+    expect(TextInput.displayName).toEqual('TextInput');
+  });
+});
+
+describe('TextInput compat with web', () => {
+  it('renders core props', () => {
+    const props = {
+      id: 'id',
+      tabIndex: 0,
+      testID: 'testID',
+    };
+
+    const instance = ReactTestRenderer.create(<TextInput {...props} />);
+
+    expect(instance.toJSON()).toMatchInlineSnapshot(`
+      <RCTSinglelineTextInputView
+        accessible={true}
+        allowFontScaling={true}
+        focusable={true}
+        forwardedRef={null}
+        mostRecentEventCount={0}
+        nativeID="id"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onChangeSync={null}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onScroll={[Function]}
+        onSelectionChange={[Function]}
+        onSelectionChangeShouldSetResponder={[Function]}
+        onStartShouldSetResponder={[Function]}
+        rejectResponderTermination={true}
+        selection={null}
+        submitBehavior="blurAndSubmit"
+        testID="testID"
+        text=""
+        underlineColorAndroid="transparent"
+      />
+    `);
+  });
+
+  it('renders "aria-*" props', () => {
+    const props = {
+      'aria-activedescendant': 'activedescendant',
+      'aria-atomic': true,
+      'aria-autocomplete': 'list',
+      'aria-busy': true,
+      'aria-checked': true,
+      'aria-columncount': 5,
+      'aria-columnindex': 3,
+      'aria-columnspan': 2,
+      'aria-controls': 'controls',
+      'aria-current': 'current',
+      'aria-describedby': 'describedby',
+      'aria-details': 'details',
+      'aria-disabled': true,
+      'aria-errormessage': 'errormessage',
+      'aria-expanded': true,
+      'aria-flowto': 'flowto',
+      'aria-haspopup': true,
+      'aria-hidden': true,
+      'aria-invalid': true,
+      'aria-keyshortcuts': 'Cmd+S',
+      'aria-label': 'label',
+      'aria-labelledby': 'labelledby',
+      'aria-level': 3,
+      'aria-live': 'polite',
+      'aria-modal': true,
+      'aria-multiline': true,
+      'aria-multiselectable': true,
+      'aria-orientation': 'portrait',
+      'aria-owns': 'owns',
+      'aria-placeholder': 'placeholder',
+      'aria-posinset': 5,
+      'aria-pressed': true,
+      'aria-readonly': true,
+      'aria-required': true,
+      role: 'main',
+      'aria-roledescription': 'roledescription',
+      'aria-rowcount': 5,
+      'aria-rowindex': 3,
+      'aria-rowspan': 3,
+      'aria-selected': true,
+      'aria-setsize': 5,
+      'aria-sort': 'ascending',
+      'aria-valuemax': 5,
+      'aria-valuemin': 0,
+      'aria-valuenow': 3,
+      'aria-valuetext': '3',
+    };
+
+    const instance = ReactTestRenderer.create(<TextInput {...props} />);
+
+    expect(instance.toJSON()).toMatchInlineSnapshot(`
+      <RCTSinglelineTextInputView
+        accessibilityState={
+          Object {
+            "busy": true,
+            "checked": true,
+            "disabled": true,
+            "expanded": true,
+            "selected": true,
+          }
+        }
+        accessible={true}
+        allowFontScaling={true}
+        aria-activedescendant="activedescendant"
+        aria-atomic={true}
+        aria-autocomplete="list"
+        aria-columncount={5}
+        aria-columnindex={3}
+        aria-columnspan={2}
+        aria-controls="controls"
+        aria-current="current"
+        aria-describedby="describedby"
+        aria-details="details"
+        aria-errormessage="errormessage"
+        aria-flowto="flowto"
+        aria-haspopup={true}
+        aria-hidden={true}
+        aria-invalid={true}
+        aria-keyshortcuts="Cmd+S"
+        aria-label="label"
+        aria-labelledby="labelledby"
+        aria-level={3}
+        aria-live="polite"
+        aria-modal={true}
+        aria-multiline={true}
+        aria-multiselectable={true}
+        aria-orientation="portrait"
+        aria-owns="owns"
+        aria-placeholder="placeholder"
+        aria-posinset={5}
+        aria-pressed={true}
+        aria-readonly={true}
+        aria-required={true}
+        aria-roledescription="roledescription"
+        aria-rowcount={5}
+        aria-rowindex={3}
+        aria-rowspan={3}
+        aria-setsize={5}
+        aria-sort="ascending"
+        aria-valuemax={5}
+        aria-valuemin={0}
+        aria-valuenow={3}
+        aria-valuetext="3"
+        focusable={true}
+        forwardedRef={null}
+        mostRecentEventCount={0}
+        onBlur={[Function]}
+        onChange={[Function]}
+        onChangeSync={null}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onScroll={[Function]}
+        onSelectionChange={[Function]}
+        onSelectionChangeShouldSetResponder={[Function]}
+        onStartShouldSetResponder={[Function]}
+        rejectResponderTermination={true}
+        role="main"
+        selection={null}
+        submitBehavior="blurAndSubmit"
+        text=""
+        underlineColorAndroid="transparent"
+      />
+    `);
+  });
+
+  it('renders styles', () => {
+    const style = {
+      display: 'flex',
+      flex: 1,
+      backgroundColor: 'white',
+      marginInlineStart: 10,
+      userSelect: 'none',
+      verticalAlign: 'middle',
+    };
+
+    const instance = ReactTestRenderer.create(<TextInput style={style} />);
+
+    expect(instance.toJSON()).toMatchInlineSnapshot(`
+      <RCTSinglelineTextInputView
+        accessible={true}
+        allowFontScaling={true}
+        focusable={true}
+        forwardedRef={null}
+        mostRecentEventCount={0}
+        onBlur={[Function]}
+        onChange={[Function]}
+        onChangeSync={null}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onScroll={[Function]}
+        onSelectionChange={[Function]}
+        onSelectionChangeShouldSetResponder={[Function]}
+        onStartShouldSetResponder={[Function]}
+        rejectResponderTermination={true}
+        selection={null}
+        style={
+          Object {
+            "backgroundColor": "white",
+            "display": "flex",
+            "flex": 1,
+            "marginInlineStart": 10,
+            "textAlignVertical": "center",
+            "userSelect": "none",
+          }
+        }
+        submitBehavior="blurAndSubmit"
+        text=""
+        underlineColorAndroid="transparent"
+      />
+    `);
   });
 });

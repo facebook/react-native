@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,16 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
 #import <React/RCTComponent.h>
 #import <React/RCTPointerEvents.h>
-#import <React/RCTView.h>
 
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 
 @protocol RCTAutoInsetsProtocol;
-
-@class RCTView;
 
 @interface RCTView : UIView
 
@@ -36,11 +34,6 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 + (void)autoAdjustInsetsForView:(UIView<RCTAutoInsetsProtocol> *)parentView
                  withScrollView:(UIScrollView *)scrollView
                    updateOffset:(BOOL)updateOffset;
-
-/**
- * Find the first view controller whose view, or any subview is the specified view.
- */
-+ (UIEdgeInsets)contentInsetsForView:(UIView *)curView;
 
 /**
  * Layout direction of the view.
@@ -78,6 +71,10 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, assign) CGFloat borderBottomRightRadius;
 @property (nonatomic, assign) CGFloat borderBottomStartRadius;
 @property (nonatomic, assign) CGFloat borderBottomEndRadius;
+@property (nonatomic, assign) CGFloat borderEndEndRadius;
+@property (nonatomic, assign) CGFloat borderEndStartRadius;
+@property (nonatomic, assign) CGFloat borderStartEndRadius;
+@property (nonatomic, assign) CGFloat borderStartStartRadius;
 
 /**
  * Border colors (actually retained).
@@ -102,6 +99,11 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, assign) CGFloat borderWidth;
 
 /**
+ * Border curve.
+ */
+@property (nonatomic, assign) RCTBorderCurve borderCurve;
+
+/**
  * Border styles.
  */
 @property (nonatomic, assign) RCTBorderStyle borderStyle;
@@ -110,5 +112,17 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
  *  Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+
+/**
+ * (Experimental and unused for Paper) Pointer event handlers.
+ */
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerCancel;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerDown;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerMove;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerUp;
+@property (nonatomic, assign) RCTCapturingEventBlock onPointerEnter;
+@property (nonatomic, assign) RCTCapturingEventBlock onPointerLeave;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerOver;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerOut;
 
 @end

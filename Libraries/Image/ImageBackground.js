@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,12 +10,15 @@
 
 'use strict';
 
+import type {ViewProps} from '../Components/View/ViewPropTypes';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {ImageBackgroundProps} from './ImageProps';
+
+import View from '../Components/View/View';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import StyleSheet from '../StyleSheet/StyleSheet';
 import Image from './Image';
 import * as React from 'react';
-import StyleSheet from '../StyleSheet/StyleSheet';
-import flattenStyle from '../StyleSheet/flattenStyle';
-import View from '../Components/View/View';
-import type {ImageBackgroundProps} from './ImageProps';
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -52,20 +55,38 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
 
   _viewRef: ?React.ElementRef<typeof View> = null;
 
-  _captureRef = ref => {
+  _captureRef = (
+    ref: null | React$ElementRef<
+      React$AbstractComponent<
+        ViewProps,
+        React.ElementRef<HostComponent<ViewProps>>,
+      >,
+    >,
+  ) => {
     this._viewRef = ref;
   };
 
   render(): React.Node {
-    const {children, style, imageStyle, imageRef, ...props} = this.props;
+    const {
+      children,
+      style,
+      imageStyle,
+      imageRef,
+      importantForAccessibility,
+      ...props
+    } = this.props;
+
+    // $FlowFixMe[underconstrained-implicit-instantiation]
     const flattenedStyle = flattenStyle(style);
     return (
       <View
         accessibilityIgnoresInvertColors={true}
+        importantForAccessibility={importantForAccessibility}
         style={style}
         ref={this._captureRef}>
         <Image
           {...props}
+          importantForAccessibility={importantForAccessibility}
           style={[
             StyleSheet.absoluteFill,
             {

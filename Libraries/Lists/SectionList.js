@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,16 +10,16 @@
 
 'use strict';
 
-import Platform from '../Utilities/Platform';
-import * as React from 'react';
-import VirtualizedSectionList from './VirtualizedSectionList';
-
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {
-  SectionBase as _SectionBase,
   Props as VirtualizedSectionListProps,
   ScrollToLocationParamsType,
+  SectionBase as _SectionBase,
 } from './VirtualizedSectionList';
+
+import Platform from '../Utilities/Platform';
+import VirtualizedSectionList from './VirtualizedSectionList';
+import * as React from 'react';
 
 type Item = any;
 
@@ -27,7 +27,7 @@ export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
 
 type RequiredProps<SectionT: SectionBase<any>> = {|
   /**
-   * The actual data to render, akin to the `data` prop in [`<FlatList>`](https://reactnative.dev/docs/flatlist.html).
+   * The actual data to render, akin to the `data` prop in [`<FlatList>`](https://reactnative.dev/docs/flatlist).
    *
    * General shape:
    *
@@ -131,7 +131,7 @@ export type Props<SectionT> = {|
  *  - Scroll loading.
  *
  * If you don't need section support and want a simpler interface, use
- * [`<FlatList>`](https://reactnative.dev/docs/flatlist.html).
+ * [`<FlatList>`](https://reactnative.dev/docs/flatlist).
  *
  * Simple Examples:
  *
@@ -153,7 +153,7 @@ export type Props<SectionT> = {|
  *       ]}
  *     />
  *
- * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
+ * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist),
  * and thus inherits its props (as well as those of `ScrollView`) that aren't explicitly listed
  * here, along with the following caveats:
  *
@@ -248,13 +248,17 @@ export default class SectionList<
         {...restProps}
         stickySectionHeadersEnabled={stickySectionHeadersEnabled}
         ref={this._captureRef}
+        // $FlowFixMe[missing-local-annot]
         getItemCount={items => items.length}
+        // $FlowFixMe[missing-local-annot]
         getItem={(items, index) => items[index]}
       />
     );
   }
 
   _wrapperListRef: ?React.ElementRef<typeof VirtualizedSectionList>;
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _captureRef = ref => {
     this._wrapperListRef = ref;
   };

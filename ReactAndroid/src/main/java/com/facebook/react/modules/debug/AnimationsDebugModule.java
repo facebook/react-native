@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,10 +22,8 @@ import java.util.Locale;
  * Module that records debug information during transitions (animated navigation events such as
  * going from one screen to another).
  */
-@ReactModule(name = AnimationsDebugModule.NAME)
+@ReactModule(name = NativeAnimationsDebugModuleSpec.NAME)
 public class AnimationsDebugModule extends NativeAnimationsDebugModuleSpec {
-
-  protected static final String NAME = "AnimationsDebugModule";
 
   private @Nullable FpsDebugFrameCallback mFrameCallback;
   private @Nullable final DeveloperSettings mCatalystSettings;
@@ -34,11 +32,6 @@ public class AnimationsDebugModule extends NativeAnimationsDebugModuleSpec {
       ReactApplicationContext reactContext, DeveloperSettings catalystSettings) {
     super(reactContext);
     mCatalystSettings = catalystSettings;
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

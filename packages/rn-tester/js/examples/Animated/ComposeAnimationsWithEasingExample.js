@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,7 +40,6 @@ function CompositeAnimationsWithEasingExample(): React.Node {
             // One after the other
             Animated.timing(anims[0], {
               toValue: 200,
-              // $FlowFixMe[method-unbinding]
               easing: Easing.linear,
               useNativeDriver: false,
             }),
@@ -75,14 +74,12 @@ function CompositeAnimationsWithEasingExample(): React.Node {
             Animated.delay(400),
             Animated.parallel(
               [
-                // $FlowFixMe[method-unbinding]
                 Easing.inOut(Easing.quad), // Symmetric
                 Easing.back(1.5), // Goes backwards first
                 Easing.ease, // Default bezier
               ].map((easing, ii) =>
                 Animated.timing(anims[ii], {
                   toValue: 320,
-                  // $FlowFixMe[method-unbinding]
                   easing,
                   duration: 3000,
                   useNativeDriver: false,
@@ -97,7 +94,6 @@ function CompositeAnimationsWithEasingExample(): React.Node {
                   toValue: 0,
 
                   // Like a ball
-                  // $FlowFixMe[method-unbinding]
                   easing: Easing.bounce,
 
                   duration: 2000,

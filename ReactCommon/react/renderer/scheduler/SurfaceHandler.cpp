@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,8 +12,7 @@
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/uimanager/UIManager.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using Status = SurfaceHandler::Status;
 
@@ -29,12 +28,12 @@ SurfaceHandler::SurfaceHandler(SurfaceHandler &&other) noexcept {
 }
 
 SurfaceHandler &SurfaceHandler::operator=(SurfaceHandler &&other) noexcept {
-  std::unique_lock<better::shared_mutex> lock1(linkMutex_, std::defer_lock);
-  std::unique_lock<better::shared_mutex> lock2(
+  std::unique_lock<butter::shared_mutex> lock1(linkMutex_, std::defer_lock);
+  std::unique_lock<butter::shared_mutex> lock2(
       parametersMutex_, std::defer_lock);
-  std::unique_lock<better::shared_mutex> lock3(
+  std::unique_lock<butter::shared_mutex> lock3(
       other.linkMutex_, std::defer_lock);
-  std::unique_lock<better::shared_mutex> lock4(
+  std::unique_lock<butter::shared_mutex> lock4(
       other.parametersMutex_, std::defer_lock);
   std::lock(lock1, lock2, lock3, lock4);
 
@@ -51,17 +50,17 @@ SurfaceHandler &SurfaceHandler::operator=(SurfaceHandler &&other) noexcept {
 
 void SurfaceHandler::setContextContainer(
     ContextContainer::Shared contextContainer) const noexcept {
-  parameters_.contextContainer = contextContainer;
+  parameters_.contextContainer = std::move(contextContainer);
 }
 
 Status SurfaceHandler::getStatus() const noexcept {
-  std::shared_lock<better::shared_mutex> lock(linkMutex_);
+  std::shared_lock<butter::shared_mutex> lock(linkMutex_);
   return link_.status;
 }
 
 void SurfaceHandler::start() const noexcept {
   SystraceSection s("SurfaceHandler::start");
-  std::unique_lock<better::shared_mutex> lock(linkMutex_);
+  std::unique_lock<butter::shared_mutex> lock(linkMutex_);
   react_native_assert(
       link_.status == Status::Registered && "Surface must be registered.");
   react_native_assert(
@@ -73,7 +72,7 @@ void SurfaceHandler::start() const noexcept {
   auto parameters = Parameters{};
   {
     SystraceSection s2("SurfaceHandler::start::paramsLock");
-    std::shared_lock<better::shared_mutex> parametersLock(parametersMutex_);
+    std::shared_lock<butter::shared_mutex> parametersLock(parametersMutex_);
     parameters = parameters_;
   }
 
@@ -100,7 +99,7 @@ void SurfaceHandler::start() const noexcept {
 void SurfaceHandler::stop() const noexcept {
   auto shadowTree = ShadowTree::Unique{};
   {
-    std::unique_lock<better::shared_mutex> lock(linkMutex_);
+    std::unique_lock<butter::shared_mutex> lock(linkMutex_);
     react_native_assert(
         link_.status == Status::Running && "Surface must be running.");
 
@@ -118,7 +117,7 @@ void SurfaceHandler::stop() const noexcept {
 
 void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
   {
-    std::unique_lock<better::shared_mutex> lock(parametersMutex_);
+    std::unique_lock<butter::shared_mutex> lock(parametersMutex_);
     if (parameters_.displayMode == displayMode) {
       return;
     }
@@ -127,7 +126,7 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
   }
 
   {
-    std::shared_lock<better::shared_mutex> lock(linkMutex_);
+    std::shared_lock<butter::shared_mutex> lock(linkMutex_);
 
     if (link_.status != Status::Running) {
       return;
@@ -144,41 +143,41 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
 }
 
 DisplayMode SurfaceHandler::getDisplayMode() const noexcept {
-  std::shared_lock<better::shared_mutex> lock(parametersMutex_);
+  std::shared_lock<butter::shared_mutex> lock(parametersMutex_);
   return parameters_.displayMode;
 }
 
 #pragma mark - Accessors
 
 SurfaceId SurfaceHandler::getSurfaceId() const noexcept {
-  std::shared_lock<better::shared_mutex> lock(parametersMutex_);
+  std::shared_lock<butter::shared_mutex> lock(parametersMutex_);
   return parameters_.surfaceId;
 }
 
 void SurfaceHandler::setSurfaceId(SurfaceId surfaceId) const noexcept {
-  std::unique_lock<better::shared_mutex> lock(parametersMutex_);
+  std::unique_lock<butter::shared_mutex> lock(parametersMutex_);
   parameters_.surfaceId = surfaceId;
 }
 
 std::string SurfaceHandler::getModuleName() const noexcept {
-  std::shared_lock<better::shared_mutex> lock(parametersMutex_);
+  std::shared_lock<butter::shared_mutex> lock(parametersMutex_);
   return parameters_.moduleName;
 }
 
 void SurfaceHandler::setProps(folly::dynamic const &props) const noexcept {
   SystraceSection s("SurfaceHandler::setProps");
-  std::unique_lock<better::shared_mutex> lock(parametersMutex_);
+  std::unique_lock<butter::shared_mutex> lock(parametersMutex_);
   parameters_.props = props;
 }
 
 folly::dynamic SurfaceHandler::getProps() const noexcept {
-  std::shared_lock<better::shared_mutex> lock(parametersMutex_);
+  std::shared_lock<butter::shared_mutex> lock(parametersMutex_);
   return parameters_.props;
 }
 
 std::shared_ptr<MountingCoordinator const>
 SurfaceHandler::getMountingCoordinator() const noexcept {
-  std::shared_lock<better::shared_mutex> lock(linkMutex_);
+  std::shared_lock<butter::shared_mutex> lock(linkMutex_);
   react_native_assert(
       link_.status != Status::Unregistered && "Surface must be registered.");
   react_native_assert(
@@ -191,7 +190,7 @@ SurfaceHandler::getMountingCoordinator() const noexcept {
 Size SurfaceHandler::measure(
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext) const noexcept {
-  std::shared_lock<better::shared_mutex> lock(linkMutex_);
+  std::shared_lock<butter::shared_mutex> lock(linkMutex_);
 
   if (link_.status != Status::Running) {
     return layoutConstraints.clamp({0, 0});
@@ -217,7 +216,7 @@ void SurfaceHandler::constraintLayout(
     LayoutContext const &layoutContext) const noexcept {
   SystraceSection s("SurfaceHandler::constraintLayout");
   {
-    std::unique_lock<better::shared_mutex> lock(parametersMutex_);
+    std::unique_lock<butter::shared_mutex> lock(parametersMutex_);
 
     if (parameters_.layoutConstraints == layoutConstraints &&
         parameters_.layoutContext == layoutContext) {
@@ -229,7 +228,7 @@ void SurfaceHandler::constraintLayout(
   }
 
   {
-    std::shared_lock<better::shared_mutex> lock(linkMutex_);
+    std::shared_lock<butter::shared_mutex> lock(linkMutex_);
 
     if (link_.status != Status::Running) {
       return;
@@ -248,12 +247,12 @@ void SurfaceHandler::constraintLayout(
 }
 
 LayoutConstraints SurfaceHandler::getLayoutConstraints() const noexcept {
-  std::shared_lock<better::shared_mutex> lock(parametersMutex_);
+  std::shared_lock<butter::shared_mutex> lock(parametersMutex_);
   return parameters_.layoutConstraints;
 }
 
 LayoutContext SurfaceHandler::getLayoutContext() const noexcept {
-  std::shared_lock<better::shared_mutex> lock(parametersMutex_);
+  std::shared_lock<butter::shared_mutex> lock(parametersMutex_);
   return parameters_.layoutContext;
 }
 
@@ -283,16 +282,17 @@ void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
       link_.shadowTree->setCommitMode(ShadowTree::CommitMode::Suspended);
       // Committing the current revision back. It will be mounted only when
       // `DisplayMode` is changed back to `Normal`.
-      link_.shadowTree->commit([&](RootShadowNode const &oldRootShadowNode) {
-        return std::static_pointer_cast<RootShadowNode>(
-            revision.rootShadowNode->ShadowNode::clone(ShadowNodeFragment{}));
-      });
+      link_.shadowTree->commit(
+          [&](RootShadowNode const & /*oldRootShadowNode*/) {
+            return std::static_pointer_cast<RootShadowNode>(
+                revision.rootShadowNode->ShadowNode::clone({}));
+          });
       break;
   }
 }
 
 void SurfaceHandler::setUIManager(UIManager const *uiManager) const noexcept {
-  std::unique_lock<better::shared_mutex> lock(linkMutex_);
+  std::unique_lock<butter::shared_mutex> lock(linkMutex_);
 
   react_native_assert(
       link_.status != Status::Running && "Surface must not be running.");
@@ -302,7 +302,8 @@ void SurfaceHandler::setUIManager(UIManager const *uiManager) const noexcept {
   }
 
   link_.uiManager = uiManager;
-  link_.status = uiManager ? Status::Registered : Status::Unregistered;
+  link_.status =
+      uiManager != nullptr ? Status::Registered : Status::Unregistered;
 }
 
 SurfaceHandler::~SurfaceHandler() noexcept {
@@ -313,5 +314,4 @@ SurfaceHandler::~SurfaceHandler() noexcept {
   //      deallocation.");
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

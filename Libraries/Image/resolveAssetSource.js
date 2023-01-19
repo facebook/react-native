@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,11 +12,11 @@
 
 'use strict';
 
-const AssetRegistry = require('@react-native/assets/registry');
+import type {ResolvedAssetSource} from './AssetSourceResolver';
+
 const AssetSourceResolver = require('./AssetSourceResolver');
 const {pickScale} = require('./AssetUtils');
-
-import type {ResolvedAssetSource} from './AssetSourceResolver';
+const AssetRegistry = require('@react-native/assets-registry/registry');
 
 let _customSourceTransformer, _serverURL, _scriptURL;
 
@@ -105,6 +105,6 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
   return resolver.defaultAsset();
 }
 
+resolveAssetSource.pickScale = pickScale;
+resolveAssetSource.setCustomSourceTransformer = setCustomSourceTransformer;
 module.exports = resolveAssetSource;
-module.exports.pickScale = pickScale;
-module.exports.setCustomSourceTransformer = setCustomSourceTransformer;

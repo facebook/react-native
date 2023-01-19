@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,25 +9,25 @@
  * @generate-docs
  */
 
-import Platform from '../../Utilities/Platform';
-import * as React from 'react';
-import StyleSheet from '../../StyleSheet/StyleSheet';
-import useMergeRefs from '../../Utilities/useMergeRefs';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Platform from '../../Utilities/Platform';
+import useMergeRefs from '../../Utilities/useMergeRefs';
 import AndroidSwitchNativeComponent, {
   Commands as AndroidSwitchCommands,
 } from './AndroidSwitchNativeComponent';
 import SwitchNativeComponent, {
   Commands as SwitchCommands,
 } from './SwitchNativeComponent';
-
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
+import * as React from 'react';
 
 type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     value: boolean,
+    target: number,
   |}>,
 >;
 
@@ -157,7 +157,7 @@ const SwitchWithForwardedRef: React.AbstractComponent<
 
   const ref = useMergeRefs(nativeSwitchRef, forwardedRef);
 
-  const [native, setNative] = React.useState({value: null});
+  const [native, setNative] = React.useState({value: (null: ?boolean)});
 
   const handleChange = (event: SwitchChangeEvent) => {
     onChange?.(event);
@@ -170,7 +170,8 @@ const SwitchWithForwardedRef: React.AbstractComponent<
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
     const jsValue = value === true;
-    const shouldUpdateNativeSwitch = native.value !== jsValue;
+    const shouldUpdateNativeSwitch =
+      native.value != null && native.value !== jsValue;
     if (
       shouldUpdateNativeSwitch &&
       nativeSwitchRef.current?.setNativeProps != null
@@ -184,8 +185,18 @@ const SwitchWithForwardedRef: React.AbstractComponent<
   }, [value, native]);
 
   if (Platform.OS === 'android') {
+    const {accessibilityState} = restProps;
+    const _disabled =
+      disabled != null ? disabled : accessibilityState?.disabled;
+
+    const _accessibilityState =
+      _disabled !== accessibilityState?.disabled
+        ? {...accessibilityState, disabled: _disabled}
+        : accessibilityState;
+
     const platformProps = {
-      enabled: disabled !== true,
+      accessibilityState: _accessibilityState,
+      enabled: _disabled !== true,
       on: value === true,
       style,
       thumbTintColor: thumbColor,

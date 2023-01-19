@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +8,10 @@
  * @format
  */
 
-import NativeDevSettings from '../NativeModules/specs/NativeDevSettings';
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import NativeDevSettings from '../NativeModules/specs/NativeDevSettings';
 import Platform from '../Utilities/Platform';
 
 let DevSettings: {
@@ -32,7 +34,7 @@ if (__DEV__) {
     // If you want to use the native module on other platforms, please remove this condition and test its behavior
     Platform.OS !== 'ios' ? null : NativeDevSettings,
   );
-  const subscriptions = new Map();
+  const subscriptions = new Map<string, EventSubscription>();
 
   DevSettings = {
     addMenuItem(title: string, handler: () => mixed): void {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,8 +14,7 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 bool RawPropsKeyMap::hasSameName(Item const &lhs, Item const &rhs) noexcept {
   return lhs.length == rhs.length &&
@@ -104,5 +103,4 @@ RawPropsValueIndex RawPropsKeyMap::at(
   return kRawPropsValueIndexEmpty;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

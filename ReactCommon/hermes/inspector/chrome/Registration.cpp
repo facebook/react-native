@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,14 +22,14 @@ ConnectionDemux &demux() {
 
 } // namespace
 
-void enableDebugging(
+DebugSessionToken enableDebugging(
     std::unique_ptr<RuntimeAdapter> adapter,
     const std::string &title) {
-  demux().enableDebugging(std::move(adapter), title);
+  return demux().enableDebugging(std::move(adapter), title);
 }
 
-void disableDebugging(HermesRuntime &runtime) {
-  demux().disableDebugging(runtime);
+void disableDebugging(DebugSessionToken session) {
+  demux().disableDebugging(session);
 }
 
 } // namespace chrome

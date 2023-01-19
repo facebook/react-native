@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@ import android.content.Context;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -31,7 +32,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import java.util.Map;
 
 /** {@link NativeModule} that allows changing the appearance of the status bar. */
-@ReactModule(name = StatusBarModule.NAME)
+@ReactModule(name = NativeStatusBarManagerAndroidSpec.NAME)
 public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
 
   private static final String HEIGHT_KEY = "HEIGHT";
@@ -40,11 +41,6 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
 
   public StatusBarModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override
@@ -184,12 +180,23 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      UiThreadUtil.runOnUiThread(
-          new Runnable() {
-            @TargetApi(Build.VERSION_CODES.M)
-            @Override
-            public void run() {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @TargetApi(Build.VERSION_CODES.R)
+          @Override
+          public void run() {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+              WindowInsetsController insetsController = activity.getWindow().getInsetsController();
+              if ("dark-content".equals(style)) {
+                // dark-content means dark icons on a light status bar
+                insetsController.setSystemBarsAppearance(
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+              } else {
+                insetsController.setSystemBarsAppearance(
+                    0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+              }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
               View decorView = activity.getWindow().getDecorView();
               int systemUiVisibilityFlags = decorView.getSystemUiVisibility();
               if ("dark-content".equals(style)) {
@@ -199,7 +206,7 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
               }
               decorView.setSystemUiVisibility(systemUiVisibilityFlags);
             }
-          });
-    }
+          }
+        });
   }
 }

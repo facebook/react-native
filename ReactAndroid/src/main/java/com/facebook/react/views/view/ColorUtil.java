@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,6 +39,7 @@ public class ColorUtil {
   /**
    * Gets the opacity from a color. Inspired by Android ColorDrawable.
    *
+   * @param color color to get opacity from
    * @return opacity expressed by one of PixelFormat constants
    */
   public static int getOpacityFromColor(int color) {
@@ -50,5 +51,23 @@ public class ColorUtil {
     } else {
       return PixelFormat.TRANSLUCENT;
     }
+  }
+
+  /**
+   * Converts individual {r, g, b, a} channel values to a single integer representation of the color
+   * as 0xAARRGGBB.
+   *
+   * @param r red channel value, [0, 255]
+   * @param g green channel value, [0, 255]
+   * @param b blue channel value, [0, 255]
+   * @param a alpha channel value, [0, 1]
+   * @return integer representation of the color as 0xAARRGGBB
+   */
+  public static int normalize(double r, double g, double b, double a) {
+    return (clamp255(a * 255) << 24) | (clamp255(r) << 16) | (clamp255(g) << 8) | clamp255(b);
+  }
+
+  private static int clamp255(double value) {
+    return Math.max(0, Math.min(255, (int) Math.round(value)));
   }
 }

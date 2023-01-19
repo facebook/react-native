@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,7 +37,6 @@ export type RNTesterModuleInfo = $ReadOnly<{|
   key: string,
   module: RNTesterModule,
   category?: string,
-  supportsTVOS?: boolean,
   documentationURL?: string,
   isBookmarked?: boolean,
   exampleType?: 'components' | 'apis',
@@ -59,11 +58,18 @@ export type ScreenTypes = 'components' | 'apis' | 'bookmarks' | null;
 
 export type ComponentList = null | {components: string[], apis: string[]};
 
-export type RNTesterState = {
+export type RNTesterNavigationState = {
   activeModuleKey: null | string,
   activeModuleTitle: null | string,
   activeModuleExampleKey: null | string,
   screen: ScreenTypes,
   bookmarks: ComponentList,
   recentlyUsed: ComponentList,
+};
+
+export type RNTesterJsStallsState = {
+  stallIntervalId: ?IntervalID,
+  busyTime: null | number,
+  filteredStall: number,
+  tracking: boolean,
 };

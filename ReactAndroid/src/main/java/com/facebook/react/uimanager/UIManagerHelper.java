@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -160,10 +160,18 @@ public class UIManagerHelper {
   }
 
   /**
-   * @return Get the ThemedReactContext associated with a View, if possible, and then call
-   *     getSurfaceId on it. See above (getReactContext) for additional context.
+   * @return Gets the surfaceId for the {@link ThemedReactContext} associated with a View, if
+   *     possible, and then call getSurfaceId on it. See above (getReactContext) for additional
+   *     context.
+   *     <p>For RootViews, the root's rootViewTag is returned
+   *     <p>Returns -1 for non-Fabric views
    */
   public static int getSurfaceId(View view) {
+    if (view instanceof ReactRoot) {
+      ReactRoot rootView = (ReactRoot) view;
+      return rootView.getUIManagerType() == UIManagerType.FABRIC ? rootView.getRootViewTag() : -1;
+    }
+
     int reactTag = view.getId();
 
     // In non-Fabric we don't have (or use) SurfaceId
@@ -177,9 +185,8 @@ public class UIManagerHelper {
     }
 
     int surfaceId = getSurfaceId(context);
-
-    // All Fabric-managed Views (should) have a ThemedReactContext attached.
     if (surfaceId == -1) {
+      // All Fabric-managed Views (should) have a ThemedReactContext attached.
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(

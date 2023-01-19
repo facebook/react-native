@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,7 +31,7 @@ export default function useRefEffect<TInstance>(
 ): CallbackRef<TInstance | null> {
   const cleanupRef = useRef<(() => void) | void>(undefined);
   return useCallback(
-    instance => {
+    (instance: null | TInstance) => {
       if (cleanupRef.current) {
         cleanupRef.current();
         cleanupRef.current = undefined;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,13 +29,11 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.Map;
 
-@ReactModule(name = DialogModule.NAME)
+@ReactModule(name = NativeDialogManagerAndroidSpec.NAME)
 public class DialogModule extends NativeDialogManagerAndroidSpec implements LifecycleEventListener {
 
   /* package */ static final String FRAGMENT_TAG =
       "com.facebook.catalyst.react.dialog.DialogModule";
-
-  public static final String NAME = "DialogManagerAndroid";
 
   /* package */ static final String ACTION_BUTTON_CLICKED = "buttonClicked";
   /* package */ static final String ACTION_DISMISSED = "dismissed";
@@ -59,11 +57,6 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
 
   public DialogModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public @NonNull String getName() {
-    return NAME;
   }
 
   private class FragmentManagerHelper {

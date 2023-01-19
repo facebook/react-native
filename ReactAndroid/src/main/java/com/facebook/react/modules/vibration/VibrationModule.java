@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,18 +18,11 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
 
 @SuppressLint("MissingPermission")
-@ReactModule(name = VibrationModule.NAME)
+@ReactModule(name = NativeVibrationSpec.NAME)
 public class VibrationModule extends NativeVibrationSpec {
-
-  public static final String NAME = "Vibration";
 
   public VibrationModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

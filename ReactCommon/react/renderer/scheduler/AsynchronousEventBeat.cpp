@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,7 +23,7 @@ AsynchronousEventBeat::AsynchronousEventBeat(
 
 void AsynchronousEventBeat::activityDidChange(
     RunLoopObserver::Delegate const *delegate,
-    RunLoopObserver::Activity) const noexcept {
+    RunLoopObserver::Activity /*activity*/) const noexcept {
   react_native_assert(delegate == this);
   induce();
 }

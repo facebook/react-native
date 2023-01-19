@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,12 +36,8 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 
-@ReactModule(name = WebSocketModule.NAME, hasConstants = false)
+@ReactModule(name = NativeWebSocketModuleSpec.NAME, hasConstants = false)
 public final class WebSocketModule extends NativeWebSocketModuleSpec {
-  public static final String TAG = WebSocketModule.class.getSimpleName();
-
-  public static final String NAME = "WebSocketModule";
-
   public interface ContentHandler {
     void onMessage(String text, WritableMap params);
 
@@ -58,19 +54,22 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
     mCookieHandler = new ForwardingCookieHandler(context);
   }
 
-  private void sendEvent(String eventName, WritableMap params) {
-    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+  @Override
+  public void invalidate() {
+    for (WebSocket socket : mWebSocketConnections.values()) {
+      socket.close(1001 /* endpoint is going away */, null);
+    }
+    mWebSocketConnections.clear();
+    mContentHandlers.clear();
+  }
 
-    if (reactApplicationContext != null) {
+  private void sendEvent(String eventName, WritableMap params) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+    if (reactApplicationContext.hasActiveReactInstance()) {
       reactApplicationContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit(eventName, params);
     }
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   public void setContentHandler(final int id, final ContentHandler contentHandler) {

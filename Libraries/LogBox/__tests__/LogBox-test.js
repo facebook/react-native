@@ -1,22 +1,22 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
- * @format
  * @flow
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
-const LogBox = require('../LogBox');
 const LogBoxData = require('../Data/LogBoxData');
+const LogBox = require('../LogBox').default;
 
 declare var console: any;
 
-function mockFilterResult(returnValues) {
+function mockFilterResult(returnValues: $FlowFixMe) {
   (LogBoxData.checkWarningFilter: any).mockReturnValue({
     finalFormat: 'Warning: ...',
     forceDialogImmediately: false,
@@ -30,20 +30,19 @@ function mockFilterResult(returnValues) {
 }
 
 describe('LogBox', () => {
-  const {error, warn} = console;
-  let consoleError;
-  let consoleWarn;
+  const {error, log, warn} = console;
 
   beforeEach(() => {
     jest.resetModules();
-    console.error = consoleError = jest.fn();
-    console.warn = consoleWarn = jest.fn();
-    console.disableYellowBox = false;
+    console.error = jest.fn();
+    console.log = jest.fn();
+    console.warn = jest.fn();
   });
 
   afterEach(() => {
     LogBox.uninstall();
     console.error = error;
+    console.log = log;
     console.warn = warn;
   });
 
@@ -329,6 +328,8 @@ describe('LogBox', () => {
   });
 
   it('preserves decorations of console.error after installing/uninstalling', () => {
+    const consoleError = console.error;
+
     LogBox.install();
 
     const originalConsoleError = console.error;
@@ -356,6 +357,8 @@ describe('LogBox', () => {
   });
 
   it('preserves decorations of console.warn after installing/uninstalling', () => {
+    const consoleWarn = console.warn;
+
     LogBox.install();
 
     const originalConsoleWarn = console.warn;

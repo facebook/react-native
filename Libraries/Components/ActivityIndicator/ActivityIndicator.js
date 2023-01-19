@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,12 +10,13 @@
  */
 
 'use strict';
-import * as React from 'react';
-import Platform from '../../Utilities/Platform';
-import StyleSheet, {type ColorValue} from '../../StyleSheet/StyleSheet';
-import View from '../View/View';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+
+import StyleSheet, {type ColorValue} from '../../StyleSheet/StyleSheet';
+import Platform from '../../Utilities/Platform';
+import View from '../View/View';
+import * as React from 'react';
 
 const PlatformActivityIndicator =
   Platform.OS === 'android'
@@ -204,4 +205,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ActivityIndicatorWithRef;
+export default ActivityIndicatorWithRef;

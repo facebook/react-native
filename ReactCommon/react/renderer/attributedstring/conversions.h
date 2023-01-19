@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,7 +20,6 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/core/propsConversions.h>
-#include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/conversions.h>
 #include <cmath>
 
@@ -33,6 +32,84 @@
 
 namespace facebook {
 namespace react {
+
+inline std::string toString(const DynamicTypeRamp &dynamicTypeRamp) {
+  switch (dynamicTypeRamp) {
+    case DynamicTypeRamp::Caption2:
+      return "caption2";
+    case DynamicTypeRamp::Caption1:
+      return "caption1";
+    case DynamicTypeRamp::Footnote:
+      return "footnote";
+    case DynamicTypeRamp::Subheadline:
+      return "subheadline";
+    case DynamicTypeRamp::Callout:
+      return "callout";
+    case DynamicTypeRamp::Body:
+      return "body";
+    case DynamicTypeRamp::Headline:
+      return "headline";
+    case DynamicTypeRamp::Title3:
+      return "title3";
+    case DynamicTypeRamp::Title2:
+      return "title2";
+    case DynamicTypeRamp::Title1:
+      return "title1";
+    case DynamicTypeRamp::LargeTitle:
+      return "largeTitle";
+  }
+
+  LOG(ERROR) << "Unsupported DynamicTypeRamp value";
+  react_native_assert(false);
+
+  // Sane default in case of parsing errors
+  return "body";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    DynamicTypeRamp &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "caption2") {
+      result = DynamicTypeRamp::Caption2;
+    } else if (string == "caption1") {
+      result = DynamicTypeRamp::Caption1;
+    } else if (string == "footnote") {
+      result = DynamicTypeRamp::Footnote;
+    } else if (string == "subheadline") {
+      result = DynamicTypeRamp::Subheadline;
+    } else if (string == "callout") {
+      result = DynamicTypeRamp::Callout;
+    } else if (string == "body") {
+      result = DynamicTypeRamp::Body;
+    } else if (string == "headline") {
+      result = DynamicTypeRamp::Headline;
+    } else if (string == "title3") {
+      result = DynamicTypeRamp::Title3;
+    } else if (string == "title2") {
+      result = DynamicTypeRamp::Title2;
+    } else if (string == "title1") {
+      result = DynamicTypeRamp::Title1;
+    } else if (string == "largeTitle") {
+      result = DynamicTypeRamp::LargeTitle;
+    } else {
+      // sane default
+      LOG(ERROR) << "Unsupported DynamicTypeRamp value: " << string;
+      react_native_assert(false);
+      result = DynamicTypeRamp::Body;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported DynamicTypeRamp type";
+  react_native_assert(false);
+
+  // Sane default in case of parsing errors
+  result = DynamicTypeRamp::Body;
+}
 
 inline std::string toString(const EllipsizeMode &ellipsisMode) {
   switch (ellipsisMode) {
@@ -423,6 +500,52 @@ inline std::string toString(const WritingDirection &writingDirection) {
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
+    LineBreakStrategy &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = LineBreakStrategy::None;
+    } else if (string == "push-out") {
+      result = LineBreakStrategy::PushOut;
+    } else if (string == "hangul-word") {
+      result = LineBreakStrategy::HangulWordPriority;
+    } else if (string == "standard") {
+      result = LineBreakStrategy::Standard;
+    } else {
+      LOG(ERROR) << "Unsupported LineBreakStrategy value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = LineBreakStrategy::None;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported LineBreakStrategy type";
+  // sane default for prod
+  result = LineBreakStrategy::None;
+}
+
+inline std::string toString(const LineBreakStrategy &lineBreakStrategy) {
+  switch (lineBreakStrategy) {
+    case LineBreakStrategy::None:
+      return "none";
+    case LineBreakStrategy::PushOut:
+      return "push-out";
+    case LineBreakStrategy::HangulWordPriority:
+      return "hangul-word";
+    case LineBreakStrategy::Standard:
+      return "standard";
+  }
+
+  LOG(ERROR) << "Unsupported LineBreakStrategy value";
+  // sane default for prod
+  return "none";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
     TextDecorationLineType &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
@@ -594,7 +717,7 @@ inline void fromRawValue(
     auto string = (std::string)value;
     if (string == "none") {
       result = AccessibilityRole::None;
-    } else if (string == "button") {
+    } else if (string == "button" || string == "togglebutton") {
       result = AccessibilityRole::Button;
     } else if (string == "link") {
       result = AccessibilityRole::Link;
@@ -768,7 +891,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     RawValue const &value,
     AttributedString::Range &result) {
-  auto map = (better::map<std::string, int>)value;
+  auto map = (butter::map<std::string, int>)value;
 
   auto start = map.find("start");
   if (start != map.end()) {
@@ -827,11 +950,11 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   auto _textAttributes = folly::dynamic::object();
   if (textAttributes.foregroundColor) {
     _textAttributes(
-        "foregroundColor", toDynamic(textAttributes.foregroundColor));
+        "foregroundColor", toAndroidRepr(textAttributes.foregroundColor));
   }
   if (textAttributes.backgroundColor) {
     _textAttributes(
-        "backgroundColor", toDynamic(textAttributes.backgroundColor));
+        "backgroundColor", toAndroidRepr(textAttributes.backgroundColor));
   }
   if (!std::isnan(textAttributes.opacity)) {
     _textAttributes("opacity", textAttributes.opacity);
@@ -860,7 +983,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   if (!std::isnan(textAttributes.letterSpacing)) {
     _textAttributes("letterSpacing", textAttributes.letterSpacing);
   }
-  if (textAttributes.textTransform.hasValue()) {
+  if (textAttributes.textTransform.has_value()) {
     _textAttributes("textTransform", toString(*textAttributes.textTransform));
   }
   if (!std::isnan(textAttributes.lineHeight)) {
@@ -873,10 +996,15 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "baseWritingDirection", toString(*textAttributes.baseWritingDirection));
   }
+  if (textAttributes.lineBreakStrategy.has_value()) {
+    _textAttributes(
+        "lineBreakStrategyIOS", toString(*textAttributes.lineBreakStrategy));
+  }
   // Decoration
   if (textAttributes.textDecorationColor) {
     _textAttributes(
-        "textDecorationColor", toDynamic(textAttributes.textDecorationColor));
+        "textDecorationColor",
+        toAndroidRepr(textAttributes.textDecorationColor));
   }
   if (textAttributes.textDecorationLineType.has_value()) {
     _textAttributes(
@@ -894,7 +1022,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   }
   if (textAttributes.textShadowColor) {
     _textAttributes(
-        "textShadowColor", toDynamic(textAttributes.textShadowColor));
+        "textShadowColor", toAndroidRepr(textAttributes.textShadowColor));
   }
   // Special
   if (textAttributes.isHighlighted.has_value()) {
@@ -945,50 +1073,51 @@ inline folly::dynamic toDynamic(AttributedString::Range const &range) {
 }
 
 // constants for AttributedString serialization
-constexpr static Key AS_KEY_HASH = 0;
-constexpr static Key AS_KEY_STRING = 1;
-constexpr static Key AS_KEY_FRAGMENTS = 2;
-constexpr static Key AS_KEY_CACHE_ID = 3;
+constexpr static MapBuffer::Key AS_KEY_HASH = 0;
+constexpr static MapBuffer::Key AS_KEY_STRING = 1;
+constexpr static MapBuffer::Key AS_KEY_FRAGMENTS = 2;
+constexpr static MapBuffer::Key AS_KEY_CACHE_ID = 3;
 
 // constants for Fragment serialization
-constexpr static Key FR_KEY_STRING = 0;
-constexpr static Key FR_KEY_REACT_TAG = 1;
-constexpr static Key FR_KEY_IS_ATTACHMENT = 2;
-constexpr static Key FR_KEY_WIDTH = 3;
-constexpr static Key FR_KEY_HEIGHT = 4;
-constexpr static Key FR_KEY_TEXT_ATTRIBUTES = 5;
+constexpr static MapBuffer::Key FR_KEY_STRING = 0;
+constexpr static MapBuffer::Key FR_KEY_REACT_TAG = 1;
+constexpr static MapBuffer::Key FR_KEY_IS_ATTACHMENT = 2;
+constexpr static MapBuffer::Key FR_KEY_WIDTH = 3;
+constexpr static MapBuffer::Key FR_KEY_HEIGHT = 4;
+constexpr static MapBuffer::Key FR_KEY_TEXT_ATTRIBUTES = 5;
 
 // constants for Text Attributes serialization
-constexpr static Key TA_KEY_FOREGROUND_COLOR = 0;
-constexpr static Key TA_KEY_BACKGROUND_COLOR = 1;
-constexpr static Key TA_KEY_OPACITY = 2;
-constexpr static Key TA_KEY_FONT_FAMILY = 3;
-constexpr static Key TA_KEY_FONT_SIZE = 4;
-constexpr static Key TA_KEY_FONT_SIZE_MULTIPLIER = 5;
-constexpr static Key TA_KEY_FONT_WEIGHT = 6;
-constexpr static Key TA_KEY_FONT_STYLE = 7;
-constexpr static Key TA_KEY_FONT_VARIANT = 8;
-constexpr static Key TA_KEY_ALLOW_FONT_SCALING = 9;
-constexpr static Key TA_KEY_LETTER_SPACING = 10;
-constexpr static Key TA_KEY_LINE_HEIGHT = 11;
-constexpr static Key TA_KEY_ALIGNMENT = 12;
-constexpr static Key TA_KEY_BEST_WRITING_DIRECTION = 13;
-constexpr static Key TA_KEY_TEXT_DECORATION_COLOR = 14;
-constexpr static Key TA_KEY_TEXT_DECORATION_LINE = 15;
-constexpr static Key TA_KEY_TEXT_DECORATION_STYLE = 16;
-constexpr static Key TA_KEY_TEXT_SHADOW_RAIDUS = 18;
-constexpr static Key TA_KEY_TEXT_SHADOW_COLOR = 19;
-constexpr static Key TA_KEY_IS_HIGHLIGHTED = 20;
-constexpr static Key TA_KEY_LAYOUT_DIRECTION = 21;
-constexpr static Key TA_KEY_ACCESSIBILITY_ROLE = 22;
+constexpr static MapBuffer::Key TA_KEY_FOREGROUND_COLOR = 0;
+constexpr static MapBuffer::Key TA_KEY_BACKGROUND_COLOR = 1;
+constexpr static MapBuffer::Key TA_KEY_OPACITY = 2;
+constexpr static MapBuffer::Key TA_KEY_FONT_FAMILY = 3;
+constexpr static MapBuffer::Key TA_KEY_FONT_SIZE = 4;
+constexpr static MapBuffer::Key TA_KEY_FONT_SIZE_MULTIPLIER = 5;
+constexpr static MapBuffer::Key TA_KEY_FONT_WEIGHT = 6;
+constexpr static MapBuffer::Key TA_KEY_FONT_STYLE = 7;
+constexpr static MapBuffer::Key TA_KEY_FONT_VARIANT = 8;
+constexpr static MapBuffer::Key TA_KEY_ALLOW_FONT_SCALING = 9;
+constexpr static MapBuffer::Key TA_KEY_LETTER_SPACING = 10;
+constexpr static MapBuffer::Key TA_KEY_LINE_HEIGHT = 11;
+constexpr static MapBuffer::Key TA_KEY_ALIGNMENT = 12;
+constexpr static MapBuffer::Key TA_KEY_BEST_WRITING_DIRECTION = 13;
+constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_COLOR = 14;
+constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_LINE = 15;
+constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_STYLE = 16;
+constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_RADIUS = 18;
+constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_COLOR = 19;
+constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 20;
+constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
+constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 22;
+constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 23;
 
 // constants for ParagraphAttributes serialization
-constexpr static Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
-constexpr static Key PA_KEY_ELLIPSIZE_MODE = 1;
-constexpr static Key PA_KEY_TEXT_BREAK_STRATEGY = 2;
-constexpr static Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
-constexpr static Key PA_KEY_INCLUDE_FONT_PADDING = 4;
-constexpr static Key PA_KEY_HYPHENATION_FREQUENCY = 5;
+constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
+constexpr static MapBuffer::Key PA_KEY_ELLIPSIZE_MODE = 1;
+constexpr static MapBuffer::Key PA_KEY_TEXT_BREAK_STRATEGY = 2;
+constexpr static MapBuffer::Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
+constexpr static MapBuffer::Key PA_KEY_INCLUDE_FONT_PADDING = 4;
+constexpr static MapBuffer::Key PA_KEY_HYPHENATION_FREQUENCY = 5;
 
 inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
   auto builder = MapBufferBuilder();
@@ -1036,11 +1165,11 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   auto builder = MapBufferBuilder();
   if (textAttributes.foregroundColor) {
     builder.putInt(
-        TA_KEY_FOREGROUND_COLOR, toMapBuffer(textAttributes.foregroundColor));
+        TA_KEY_FOREGROUND_COLOR, toAndroidRepr(textAttributes.foregroundColor));
   }
   if (textAttributes.backgroundColor) {
     builder.putInt(
-        TA_KEY_BACKGROUND_COLOR, toMapBuffer(textAttributes.backgroundColor));
+        TA_KEY_BACKGROUND_COLOR, toAndroidRepr(textAttributes.backgroundColor));
   }
   if (!std::isnan(textAttributes.opacity)) {
     builder.putDouble(TA_KEY_OPACITY, textAttributes.opacity);
@@ -1083,11 +1212,16 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
         TA_KEY_BEST_WRITING_DIRECTION,
         toString(*textAttributes.baseWritingDirection));
   }
+  if (textAttributes.lineBreakStrategy.has_value()) {
+    builder.putString(
+        TA_KEY_LINE_BREAK_STRATEGY,
+        toString(*textAttributes.lineBreakStrategy));
+  }
   // Decoration
   if (textAttributes.textDecorationColor) {
     builder.putInt(
         TA_KEY_TEXT_DECORATION_COLOR,
-        toMapBuffer(textAttributes.textDecorationColor));
+        toAndroidRepr(textAttributes.textDecorationColor));
   }
   if (textAttributes.textDecorationLineType.has_value()) {
     builder.putString(
@@ -1103,11 +1237,12 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   // Shadow
   if (!std::isnan(textAttributes.textShadowRadius)) {
     builder.putDouble(
-        TA_KEY_TEXT_SHADOW_RAIDUS, textAttributes.textShadowRadius);
+        TA_KEY_TEXT_SHADOW_RADIUS, textAttributes.textShadowRadius);
   }
   if (textAttributes.textShadowColor) {
     builder.putInt(
-        TA_KEY_TEXT_SHADOW_COLOR, toMapBuffer(textAttributes.textShadowColor));
+        TA_KEY_TEXT_SHADOW_COLOR,
+        toAndroidRepr(textAttributes.textShadowColor));
   }
   // Special
   if (textAttributes.isHighlighted.has_value()) {

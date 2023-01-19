@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,20 +13,13 @@
 require('react-native/Libraries/Core/InitializeCore');
 const React = require('react');
 const ReactNative = require('react-native');
-const {
-  AppRegistry,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} = ReactNative;
+const {AppRegistry, ScrollView, StyleSheet, Text, TouchableOpacity, View} =
+  ReactNative;
 
 // Keep this list in sync with RNTesterIntegrationTests.m
 const TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
-  require('./AsyncStorageTest'),
   require('./LayoutEventsTest'),
   require('./AppEventsTest'),
   require('./SimpleSnapshotTest'),
@@ -52,11 +45,11 @@ require('./LoggingTestModule');
 type Test = any;
 
 class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: {test: ?Test} = {
     test: (null: ?Test),
   };
 
-  render() {
+  render(): React.Node {
     if (this.state.test) {
       return (
         <ScrollView>

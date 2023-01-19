@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,9 +8,10 @@
 package com.facebook.react.devsupport.interfaces;
 
 import android.app.Activity;
+import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.SurfaceDelegate;
@@ -22,7 +23,7 @@ import java.io.File;
  * implementation {@link BridgeDevSupportManager}. In production mode, use the dummy implementation
  * {@link DisabledDevSupportManager}.
  */
-public interface DevSupportManager extends NativeModuleCallExceptionHandler {
+public interface DevSupportManager extends JSExceptionHandler {
 
   void showNewJavaError(String message, Throwable e);
 
@@ -50,6 +51,8 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   boolean getDevSupportEnabled();
 
   DeveloperSettings getDevSettings();
+
+  RedBoxHandler getRedBoxHandler();
 
   void onNewReactContextCreated(ReactContext reactContext);
 
@@ -97,7 +100,11 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   @Nullable
   ErrorType getLastErrorType();
 
+  int getLastErrorCookie();
+
   void registerErrorCustomizer(ErrorCustomizer errorCustomizer);
+
+  Pair<String, StackFrame[]> processErrorCustomizers(Pair<String, StackFrame[]> errorInfo);
 
   /**
    * The PackagerLocationCustomizer allows you to have a dynamic packager location that is

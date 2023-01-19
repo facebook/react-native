@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,10 +10,12 @@
 
 'use strict';
 
-const AnimatedNode = require('./AnimatedNode');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-class AnimatedWithChildren extends AnimatedNode {
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedNode from './AnimatedNode';
+
+export default class AnimatedWithChildren extends AnimatedNode {
   _children: Array<AnimatedNode>;
 
   constructor() {
@@ -21,18 +23,18 @@ class AnimatedWithChildren extends AnimatedNode {
     this._children = [];
   }
 
-  __makeNative() {
+  __makeNative(platformConfig: ?PlatformConfig) {
     if (!this.__isNative) {
       this.__isNative = true;
       for (const child of this._children) {
-        child.__makeNative();
+        child.__makeNative(platformConfig);
         NativeAnimatedHelper.API.connectAnimatedNodes(
           this.__getNativeTag(),
           child.__getNativeTag(),
         );
       }
     }
-    super.__makeNative();
+    super.__makeNative(platformConfig);
   }
 
   __addChild(child: AnimatedNode): void {
@@ -42,7 +44,7 @@ class AnimatedWithChildren extends AnimatedNode {
     this._children.push(child);
     if (this.__isNative) {
       // Only accept "native" animated nodes as children
-      child.__makeNative();
+      child.__makeNative(this.__getPlatformConfig());
       NativeAnimatedHelper.API.connectAnimatedNodes(
         this.__getNativeTag(),
         child.__getNativeTag(),
@@ -68,7 +70,7 @@ class AnimatedWithChildren extends AnimatedNode {
     }
   }
 
-  __getChildren(): Array<AnimatedNode> {
+  __getChildren(): $ReadOnlyArray<AnimatedNode> {
     return this._children;
   }
 
@@ -84,5 +86,3 @@ class AnimatedWithChildren extends AnimatedNode {
     }
   }
 }
-
-module.exports = AnimatedWithChildren;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,6 @@ import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.SoftAssertions;
-import com.facebook.react.config.ReactFeatureFlags;
 
 /**
  * An event representing the start, end or movement of a touch. Corresponds to a single {@link
@@ -182,32 +181,15 @@ public class TouchEvent extends Event<TouchEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    if (!hasMotionEvent()) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new IllegalStateException(
-              "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
-      return;
+    if (verifyMotionEvent()) {
+      TouchesHelper.sendTouchesLegacy(rctEventEmitter, this);
     }
-
-    TouchesHelper.sendTouchEvent(rctEventEmitter, this);
   }
 
   @Override
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    if (ReactFeatureFlags.useUpdatedTouchPreprocessing) {
-      TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ false);
-    } else {
-      dispatch(rctEventEmitter);
-    }
-  }
-
-  @Override
-  public void dispatchModernV2(RCTModernEventEmitter rctEventEmitter) {
-    if (ReactFeatureFlags.useUpdatedTouchPreprocessing) {
-      TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ true);
-    } else {
-      dispatch(rctEventEmitter);
+    if (verifyMotionEvent()) {
+      rctEventEmitter.receiveTouches(this);
     }
   }
 
@@ -237,8 +219,15 @@ public class TouchEvent extends Event<TouchEvent> {
     return mMotionEvent;
   }
 
-  private boolean hasMotionEvent() {
-    return mMotionEvent != null;
+  private boolean verifyMotionEvent() {
+    if (mMotionEvent == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
+      return false;
+    }
+    return true;
   }
 
   public TouchEventType getTouchEventType() {

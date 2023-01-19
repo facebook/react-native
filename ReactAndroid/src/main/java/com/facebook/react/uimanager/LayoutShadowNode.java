@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -222,6 +222,30 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
       return;
     }
     super.setFlexGrow(flexGrow);
+  }
+
+  @ReactProp(name = ViewProps.ROW_GAP, defaultFloat = YogaConstants.UNDEFINED)
+  public void setRowGap(float rowGap) {
+    if (isVirtual()) {
+      return;
+    }
+    super.setRowGap(PixelUtil.toPixelFromDIP(rowGap));
+  }
+
+  @ReactProp(name = ViewProps.COLUMN_GAP, defaultFloat = YogaConstants.UNDEFINED)
+  public void setColumnGap(float columnGap) {
+    if (isVirtual()) {
+      return;
+    }
+    super.setColumnGap(PixelUtil.toPixelFromDIP(columnGap));
+  }
+
+  @ReactProp(name = ViewProps.GAP, defaultFloat = YogaConstants.UNDEFINED)
+  public void setGap(float gap) {
+    if (isVirtual()) {
+      return;
+    }
+    super.setGap(PixelUtil.toPixelFromDIP(gap));
   }
 
   @ReactProp(name = ViewProps.FLEX_SHRINK, defaultFloat = 0f)
@@ -806,5 +830,23 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
   @ReactProp(name = "onLayout")
   public void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
     super.setShouldNotifyOnLayout(shouldNotifyOnLayout);
+  }
+
+  @ReactProp(name = "onPointerEnter")
+  public void setShouldNotifyPointerEnter(boolean value) {
+    // This method exists to inject Native View configs in RN Android VR
+    // DO NOTHING
+  }
+
+  @ReactProp(name = "onPointerLeave")
+  public void setShouldNotifyPointerLeave(boolean value) {
+    // This method exists to inject Native View configs in RN Android VR
+    // DO NOTHING
+  }
+
+  @ReactProp(name = "onPointerMove")
+  public void setShouldNotifyPointerMove(boolean value) {
+    // This method exists to inject Native View configs in RN Android VR
+    // DO NOTHING
   }
 }

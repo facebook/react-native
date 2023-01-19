@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,18 +8,20 @@
  * @format
  */
 
-import * as React from 'react';
+import type {StackFrame} from '../../Core/NativeExceptionsManager';
+import type LogBoxLog from '../Data/LogBoxLog';
+import type {Stack} from '../Data/LogBoxSymbolication';
+
+import View from '../../Components/View/View';
+import openFileInEditor from '../../Core/Devtools/openFileInEditor';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import View from '../../Components/View/View';
 import LogBoxButton from './LogBoxButton';
+import LogBoxInspectorSection from './LogBoxInspectorSection';
 import LogBoxInspectorSourceMapStatus from './LogBoxInspectorSourceMapStatus';
 import LogBoxInspectorStackFrame from './LogBoxInspectorStackFrame';
-import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxStyle from './LogBoxStyle';
-import openFileInEditor from '../../Core/Devtools/openFileInEditor';
-import type {Stack} from '../Data/LogBoxSymbolication';
-import type LogBoxLog from '../Data/LogBoxLog';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   log: LogBoxLog,
@@ -111,7 +113,10 @@ function LogBoxInspectorStackFrames(props: Props): React.Node {
   );
 }
 
-function StackFrameList(props) {
+function StackFrameList(props: {
+  list: Stack | Array<StackFrame>,
+  status: string | 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING',
+}) {
   return (
     <>
       {props.list.map((frame, index) => {
@@ -132,7 +137,9 @@ function StackFrameList(props) {
   );
 }
 
-function StackFrameFooter(props) {
+function StackFrameFooter(
+  props: $TEMPORARY$object<{message: string, onPress: () => void}>,
+) {
   return (
     <View style={stackStyles.collapseContainer}>
       <LogBoxButton

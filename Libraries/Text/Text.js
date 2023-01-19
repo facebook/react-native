@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,20 +8,24 @@
  * @format
  */
 
+import type {PressEvent} from '../Types/CoreEventTypes';
+import type {TextProps} from './TextProps';
+
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
-import StyleSheet from '../StyleSheet/StyleSheet';
+import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
+import {getAccessibilityRoleFromRole} from '../Utilities/AcessibilityMapping';
+import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
-import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
 
 /**
  * Text is the fundamental component for displaying text.
  *
- * @see https://reactnative.dev/docs/text.html
+ * @see https://reactnative.dev/docs/text
  */
 const Text: React.AbstractComponent<
   TextProps,
@@ -29,8 +33,19 @@ const Text: React.AbstractComponent<
 > = React.forwardRef((props: TextProps, forwardedRef) => {
   const {
     accessible,
+    accessibilityLabel,
+    accessibilityRole,
+    accessibilityState,
     allowFontScaling,
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-label': ariaLabel,
+    'aria-selected': ariaSelected,
     ellipsizeMode,
+    id,
+    nativeID,
     onLongPress,
     onPress,
     onPressIn,
@@ -42,17 +57,46 @@ const Text: React.AbstractComponent<
     onResponderTerminationRequest,
     onStartShouldSetResponder,
     pressRetentionOffset,
+    role,
     suppressHighlighting,
     ...restProps
   } = props;
 
   const [isHighlighted, setHighlighted] = useState(false);
 
+  let _accessibilityState;
+  if (
+    accessibilityState != null ||
+    ariaBusy != null ||
+    ariaChecked != null ||
+    ariaDisabled != null ||
+    ariaExpanded != null ||
+    ariaSelected != null
+  ) {
+    _accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
+  }
+
+  const _disabled =
+    restProps.disabled != null
+      ? restProps.disabled
+      : _accessibilityState?.disabled;
+
+  const nativeTextAccessibilityState =
+    _disabled !== _accessibilityState?.disabled
+      ? {..._accessibilityState, disabled: _disabled}
+      : _accessibilityState;
+
   const isPressable =
     (onPress != null ||
       onLongPress != null ||
       onStartShouldSetResponder != null) &&
-    restProps.disabled !== true;
+    _disabled !== true;
 
   const initialized = useLazyInitialization(isPressable);
   const config = useMemo(
@@ -63,15 +107,16 @@ const Text: React.AbstractComponent<
             pressRectOffset: pressRetentionOffset,
             onLongPress,
             onPress,
-            onPressIn(event) {
+            onPressIn(event: PressEvent) {
               setHighlighted(!suppressHighlighting);
               onPressIn?.(event);
             },
-            onPressOut(event) {
+            onPressOut(event: PressEvent) {
               setHighlighted(false);
               onPressOut?.(event);
             },
-            onResponderTerminationRequest_DEPRECATED: onResponderTerminationRequest,
+            onResponderTerminationRequest_DEPRECATED:
+              onResponderTerminationRequest,
             onStartShouldSetResponder_DEPRECATED: onStartShouldSetResponder,
           }
         : null,
@@ -95,30 +140,31 @@ const Text: React.AbstractComponent<
       eventHandlers == null
         ? null
         : {
-            onResponderGrant(event) {
+            onResponderGrant(event: PressEvent) {
               eventHandlers.onResponderGrant(event);
               if (onResponderGrant != null) {
                 onResponderGrant(event);
               }
             },
-            onResponderMove(event) {
+            onResponderMove(event: PressEvent) {
               eventHandlers.onResponderMove(event);
               if (onResponderMove != null) {
                 onResponderMove(event);
               }
             },
-            onResponderRelease(event) {
+            onResponderRelease(event: PressEvent) {
               eventHandlers.onResponderRelease(event);
               if (onResponderRelease != null) {
                 onResponderRelease(event);
               }
             },
-            onResponderTerminate(event) {
+            onResponderTerminate(event: PressEvent) {
               eventHandlers.onResponderTerminate(event);
               if (onResponderTerminate != null) {
                 onResponderTerminate(event);
               }
             },
+            onClick: eventHandlers.onClick,
             onResponderTerminationRequest:
               eventHandlers.onResponderTerminationRequest,
             onStartShouldSetResponder: eventHandlers.onStartShouldSetResponder,
@@ -139,11 +185,10 @@ const Text: React.AbstractComponent<
       : processColor(restProps.selectionColor);
 
   let style = restProps.style;
+
   if (__DEV__) {
     if (PressabilityDebug.isEnabled() && onPress != null) {
-      style = StyleSheet.compose(restProps.style, {
-        color: 'magenta',
-      });
+      style = [restProps.style, {color: 'magenta'}];
     }
   }
 
@@ -157,29 +202,76 @@ const Text: React.AbstractComponent<
 
   const hasTextAncestor = useContext(TextAncestor);
 
+  const _accessible = Platform.select({
+    ios: accessible !== false,
+    default: accessible,
+  });
+
+  // $FlowFixMe[underconstrained-implicit-instantiation]
+  style = flattenStyle(style);
+
+  if (typeof style?.fontWeight === 'number') {
+    style.fontWeight = style?.fontWeight.toString();
+  }
+
+  let _selectable = restProps.selectable;
+  if (style?.userSelect != null) {
+    _selectable = userSelectToSelectableMap[style.userSelect];
+    delete style.userSelect;
+  }
+
+  if (style?.verticalAlign != null) {
+    style.textAlignVertical =
+      verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+    delete style.verticalAlign;
+  }
+
+  const _hasOnPressOrOnLongPress =
+    props.onPress != null || props.onLongPress != null;
+
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
       {...eventHandlersForText}
+      accessibilityLabel={ariaLabel ?? accessibilityLabel}
+      accessibilityRole={
+        role ? getAccessibilityRoleFromRole(role) : accessibilityRole
+      }
+      accessibilityState={_accessibilityState}
       isHighlighted={isHighlighted}
+      isPressable={isPressable}
+      nativeID={id ?? nativeID}
       numberOfLines={numberOfLines}
+      ref={forwardedRef}
+      selectable={_selectable}
       selectionColor={selectionColor}
       style={style}
-      ref={forwardedRef}
     />
   ) : (
     <TextAncestor.Provider value={true}>
       <NativeText
         {...restProps}
         {...eventHandlersForText}
-        accessible={accessible !== false}
+        accessibilityLabel={ariaLabel ?? accessibilityLabel}
+        accessibilityRole={
+          role ? getAccessibilityRoleFromRole(role) : accessibilityRole
+        }
+        accessibilityState={nativeTextAccessibilityState}
+        accessible={
+          accessible == null && Platform.OS === 'android'
+            ? _hasOnPressOrOnLongPress
+            : _accessible
+        }
         allowFontScaling={allowFontScaling !== false}
+        disabled={_disabled}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
+        nativeID={id ?? nativeID}
         numberOfLines={numberOfLines}
+        ref={forwardedRef}
+        selectable={_selectable}
         selectionColor={selectionColor}
         style={style}
-        ref={forwardedRef}
       />
     </TextAncestor.Provider>
   );
@@ -205,5 +297,20 @@ function useLazyInitialization(newValue: boolean): boolean {
   }
   return oldValue;
 }
+
+const userSelectToSelectableMap = {
+  auto: true,
+  text: true,
+  none: false,
+  contain: true,
+  all: true,
+};
+
+const verticalAlignToTextAlignVerticalMap = {
+  auto: 'auto',
+  top: 'top',
+  bottom: 'bottom',
+  middle: 'center',
+};
 
 module.exports = Text;

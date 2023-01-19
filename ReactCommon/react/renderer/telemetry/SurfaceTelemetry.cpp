@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,7 @@
 
 #include <algorithm>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void SurfaceTelemetry::incorporate(
     TransactionTelemetry const &telemetry,
@@ -81,5 +80,4 @@ SurfaceTelemetry::getRecentTransactionTelemetries() const {
   return result;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

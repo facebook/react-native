@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,8 @@
  * @format
  * @flow
  */
+
+import type {Node} from 'react';
 
 import {AppRegistry} from 'react-native';
 import React from 'react';
@@ -31,7 +33,7 @@ RNTesterList.Components.concat(RNTesterList.APIs).forEach(
     const ExampleModule = Example.module;
     if (ExampleModule.displayName) {
       class Snapshotter extends React.Component<{...}> {
-        render() {
+        render(): Node {
           return (
             <SnapshotViewIOS>
               <RNTesterModuleContainer

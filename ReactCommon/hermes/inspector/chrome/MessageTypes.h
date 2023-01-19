@@ -1,13 +1,12 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<a541d174394c8959b9fb6a7c575e7040>>
+// Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
+// @generated SignedSource<<521cb6eba7e5df060b4836f0f60126b9>>
 
 #pragma once
 
 #include <hermes/inspector/chrome/MessageInterfaces.h>
 
+#include <optional>
 #include <vector>
-
-#include <folly/Optional.h>
 
 namespace facebook {
 namespace hermes {
@@ -48,7 +47,12 @@ struct StepOverRequest;
 } // namespace debugger
 
 namespace runtime {
+struct CallArgument;
 struct CallFrame;
+struct CallFunctionOnRequest;
+struct CallFunctionOnResponse;
+struct CompileScriptRequest;
+struct CompileScriptResponse;
 struct ConsoleAPICalledNotification;
 struct EvaluateRequest;
 struct EvaluateResponse;
@@ -56,8 +60,12 @@ struct ExceptionDetails;
 struct ExecutionContextCreatedNotification;
 struct ExecutionContextDescription;
 using ExecutionContextId = int;
+struct GetHeapUsageRequest;
+struct GetHeapUsageResponse;
 struct GetPropertiesRequest;
 struct GetPropertiesResponse;
+struct GlobalLexicalScopeNamesRequest;
+struct GlobalLexicalScopeNamesResponse;
 struct InternalPropertyDescriptor;
 struct PropertyDescriptor;
 struct RemoteObject;
@@ -91,6 +99,15 @@ struct StopTrackingHeapObjectsRequest;
 struct TakeHeapSnapshotRequest;
 } // namespace heapProfiler
 
+namespace profiler {
+struct PositionTickInfo;
+struct Profile;
+struct ProfileNode;
+struct StartRequest;
+struct StopRequest;
+struct StopResponse;
+} // namespace profiler
+
 /// RequestHandler handles requests via the visitor pattern.
 struct RequestHandler {
   virtual ~RequestHandler() = default;
@@ -122,8 +139,14 @@ struct RequestHandler {
   virtual void handle(
       const heapProfiler::StopTrackingHeapObjectsRequest &req) = 0;
   virtual void handle(const heapProfiler::TakeHeapSnapshotRequest &req) = 0;
+  virtual void handle(const profiler::StartRequest &req) = 0;
+  virtual void handle(const profiler::StopRequest &req) = 0;
+  virtual void handle(const runtime::CallFunctionOnRequest &req) = 0;
+  virtual void handle(const runtime::CompileScriptRequest &req) = 0;
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
+  virtual void handle(const runtime::GetHeapUsageRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
+  virtual void handle(const runtime::GlobalLexicalScopeNamesRequest &req) = 0;
   virtual void handle(const runtime::RunIfWaitingForDebuggerRequest &req) = 0;
 };
 
@@ -156,8 +179,14 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(
       const heapProfiler::StopTrackingHeapObjectsRequest &req) override {}
   void handle(const heapProfiler::TakeHeapSnapshotRequest &req) override {}
+  void handle(const profiler::StartRequest &req) override {}
+  void handle(const profiler::StopRequest &req) override {}
+  void handle(const runtime::CallFunctionOnRequest &req) override {}
+  void handle(const runtime::CompileScriptRequest &req) override {}
   void handle(const runtime::EvaluateRequest &req) override {}
+  void handle(const runtime::GetHeapUsageRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
+  void handle(const runtime::GlobalLexicalScopeNamesRequest &req) override {}
   void handle(const runtime::RunIfWaitingForDebuggerRequest &req) override {}
 };
 
@@ -169,7 +198,7 @@ struct debugger::Location : public Serializable {
 
   runtime::ScriptId scriptId{};
   int lineNumber{};
-  folly::Optional<int> columnNumber;
+  std::optional<int> columnNumber;
 };
 
 struct runtime::RemoteObject : public Serializable {
@@ -178,12 +207,12 @@ struct runtime::RemoteObject : public Serializable {
   folly::dynamic toDynamic() const override;
 
   std::string type;
-  folly::Optional<std::string> subtype;
-  folly::Optional<std::string> className;
-  folly::Optional<folly::dynamic> value;
-  folly::Optional<runtime::UnserializableValue> unserializableValue;
-  folly::Optional<std::string> description;
-  folly::Optional<runtime::RemoteObjectId> objectId;
+  std::optional<std::string> subtype;
+  std::optional<std::string> className;
+  std::optional<folly::dynamic> value;
+  std::optional<runtime::UnserializableValue> unserializableValue;
+  std::optional<std::string> description;
+  std::optional<runtime::RemoteObjectId> objectId;
 };
 
 struct runtime::CallFrame : public Serializable {
@@ -203,7 +232,7 @@ struct runtime::StackTrace : public Serializable {
   explicit StackTrace(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
 
-  folly::Optional<std::string> description;
+  std::optional<std::string> description;
   std::vector<runtime::CallFrame> callFrames;
   std::unique_ptr<runtime::StackTrace> parent;
 };
@@ -217,11 +246,11 @@ struct runtime::ExceptionDetails : public Serializable {
   std::string text;
   int lineNumber{};
   int columnNumber{};
-  folly::Optional<runtime::ScriptId> scriptId;
-  folly::Optional<std::string> url;
-  folly::Optional<runtime::StackTrace> stackTrace;
-  folly::Optional<runtime::RemoteObject> exception;
-  folly::Optional<runtime::ExecutionContextId> executionContextId;
+  std::optional<runtime::ScriptId> scriptId;
+  std::optional<std::string> url;
+  std::optional<runtime::StackTrace> stackTrace;
+  std::optional<runtime::RemoteObject> exception;
+  std::optional<runtime::ExecutionContextId> executionContextId;
 };
 
 struct debugger::Scope : public Serializable {
@@ -231,9 +260,9 @@ struct debugger::Scope : public Serializable {
 
   std::string type;
   runtime::RemoteObject object{};
-  folly::Optional<std::string> name;
-  folly::Optional<debugger::Location> startLocation;
-  folly::Optional<debugger::Location> endLocation;
+  std::optional<std::string> name;
+  std::optional<debugger::Location> startLocation;
+  std::optional<debugger::Location> endLocation;
 };
 
 struct debugger::CallFrame : public Serializable {
@@ -243,12 +272,12 @@ struct debugger::CallFrame : public Serializable {
 
   debugger::CallFrameId callFrameId{};
   std::string functionName;
-  folly::Optional<debugger::Location> functionLocation;
+  std::optional<debugger::Location> functionLocation;
   debugger::Location location{};
   std::string url;
   std::vector<debugger::Scope> scopeChain;
   runtime::RemoteObject thisObj{};
-  folly::Optional<runtime::RemoteObject> returnValue;
+  std::optional<runtime::RemoteObject> returnValue;
 };
 
 struct heapProfiler::SamplingHeapProfileNode : public Serializable {
@@ -281,6 +310,50 @@ struct heapProfiler::SamplingHeapProfile : public Serializable {
   std::vector<heapProfiler::SamplingHeapProfileSample> samples;
 };
 
+struct profiler::PositionTickInfo : public Serializable {
+  PositionTickInfo() = default;
+  explicit PositionTickInfo(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  int line{};
+  int ticks{};
+};
+
+struct profiler::ProfileNode : public Serializable {
+  ProfileNode() = default;
+  explicit ProfileNode(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  int id{};
+  runtime::CallFrame callFrame{};
+  std::optional<int> hitCount;
+  std::optional<std::vector<int>> children;
+  std::optional<std::string> deoptReason;
+  std::optional<std::vector<profiler::PositionTickInfo>> positionTicks;
+};
+
+struct profiler::Profile : public Serializable {
+  Profile() = default;
+  explicit Profile(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  std::vector<profiler::ProfileNode> nodes;
+  double startTime{};
+  double endTime{};
+  std::optional<std::vector<int>> samples;
+  std::optional<std::vector<int>> timeDeltas;
+};
+
+struct runtime::CallArgument : public Serializable {
+  CallArgument() = default;
+  explicit CallArgument(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  std::optional<folly::dynamic> value;
+  std::optional<runtime::UnserializableValue> unserializableValue;
+  std::optional<runtime::RemoteObjectId> objectId;
+};
+
 struct runtime::ExecutionContextDescription : public Serializable {
   ExecutionContextDescription() = default;
   explicit ExecutionContextDescription(const folly::dynamic &obj);
@@ -289,7 +362,7 @@ struct runtime::ExecutionContextDescription : public Serializable {
   runtime::ExecutionContextId id{};
   std::string origin;
   std::string name;
-  folly::Optional<folly::dynamic> auxData;
+  std::optional<folly::dynamic> auxData;
 };
 
 struct runtime::PropertyDescriptor : public Serializable {
@@ -298,15 +371,15 @@ struct runtime::PropertyDescriptor : public Serializable {
   folly::dynamic toDynamic() const override;
 
   std::string name;
-  folly::Optional<runtime::RemoteObject> value;
-  folly::Optional<bool> writable;
-  folly::Optional<runtime::RemoteObject> get;
-  folly::Optional<runtime::RemoteObject> set;
+  std::optional<runtime::RemoteObject> value;
+  std::optional<bool> writable;
+  std::optional<runtime::RemoteObject> get;
+  std::optional<runtime::RemoteObject> set;
   bool configurable{};
   bool enumerable{};
-  folly::Optional<bool> wasThrown;
-  folly::Optional<bool> isOwn;
-  folly::Optional<runtime::RemoteObject> symbol;
+  std::optional<bool> wasThrown;
+  std::optional<bool> isOwn;
+  std::optional<runtime::RemoteObject> symbol;
 };
 
 struct runtime::InternalPropertyDescriptor : public Serializable {
@@ -315,7 +388,7 @@ struct runtime::InternalPropertyDescriptor : public Serializable {
   folly::dynamic toDynamic() const override;
 
   std::string name;
-  folly::Optional<runtime::RemoteObject> value;
+  std::optional<runtime::RemoteObject> value;
 };
 
 /// Requests
@@ -326,7 +399,7 @@ struct UnknownRequest : public Request {
   folly::dynamic toDynamic() const override;
   void accept(RequestHandler &handler) const override;
 
-  folly::Optional<folly::dynamic> params;
+  std::optional<folly::dynamic> params;
 };
 
 struct debugger::DisableRequest : public Request {
@@ -354,11 +427,11 @@ struct debugger::EvaluateOnCallFrameRequest : public Request {
 
   debugger::CallFrameId callFrameId{};
   std::string expression;
-  folly::Optional<std::string> objectGroup;
-  folly::Optional<bool> includeCommandLineAPI;
-  folly::Optional<bool> silent;
-  folly::Optional<bool> returnByValue;
-  folly::Optional<bool> throwOnSideEffect;
+  std::optional<std::string> objectGroup;
+  std::optional<bool> includeCommandLineAPI;
+  std::optional<bool> silent;
+  std::optional<bool> returnByValue;
+  std::optional<bool> throwOnSideEffect;
 };
 
 struct debugger::PauseRequest : public Request {
@@ -385,6 +458,8 @@ struct debugger::ResumeRequest : public Request {
 
   folly::dynamic toDynamic() const override;
   void accept(RequestHandler &handler) const override;
+
+  std::optional<bool> terminateOnResume;
 };
 
 struct debugger::SetBreakpointRequest : public Request {
@@ -395,7 +470,7 @@ struct debugger::SetBreakpointRequest : public Request {
   void accept(RequestHandler &handler) const override;
 
   debugger::Location location{};
-  folly::Optional<std::string> condition;
+  std::optional<std::string> condition;
 };
 
 struct debugger::SetBreakpointByUrlRequest : public Request {
@@ -406,11 +481,11 @@ struct debugger::SetBreakpointByUrlRequest : public Request {
   void accept(RequestHandler &handler) const override;
 
   int lineNumber{};
-  folly::Optional<std::string> url;
-  folly::Optional<std::string> urlRegex;
-  folly::Optional<std::string> scriptHash;
-  folly::Optional<int> columnNumber;
-  folly::Optional<std::string> condition;
+  std::optional<std::string> url;
+  std::optional<std::string> urlRegex;
+  std::optional<std::string> scriptHash;
+  std::optional<int> columnNumber;
+  std::optional<std::string> condition;
 };
 
 struct debugger::SetBreakpointsActiveRequest : public Request {
@@ -493,7 +568,7 @@ struct heapProfiler::GetObjectByHeapObjectIdRequest : public Request {
   void accept(RequestHandler &handler) const override;
 
   heapProfiler::HeapSnapshotObjectId objectId{};
-  folly::Optional<std::string> objectGroup;
+  std::optional<std::string> objectGroup;
 };
 
 struct heapProfiler::StartSamplingRequest : public Request {
@@ -503,7 +578,7 @@ struct heapProfiler::StartSamplingRequest : public Request {
   folly::dynamic toDynamic() const override;
   void accept(RequestHandler &handler) const override;
 
-  folly::Optional<double> samplingInterval;
+  std::optional<double> samplingInterval;
 };
 
 struct heapProfiler::StartTrackingHeapObjectsRequest : public Request {
@@ -513,7 +588,7 @@ struct heapProfiler::StartTrackingHeapObjectsRequest : public Request {
   folly::dynamic toDynamic() const override;
   void accept(RequestHandler &handler) const override;
 
-  folly::Optional<bool> trackAllocations;
+  std::optional<bool> trackAllocations;
 };
 
 struct heapProfiler::StopSamplingRequest : public Request {
@@ -531,8 +606,9 @@ struct heapProfiler::StopTrackingHeapObjectsRequest : public Request {
   folly::dynamic toDynamic() const override;
   void accept(RequestHandler &handler) const override;
 
-  folly::Optional<bool> reportProgress;
-  folly::Optional<bool> treatGlobalObjectsAsRoots;
+  std::optional<bool> reportProgress;
+  std::optional<bool> treatGlobalObjectsAsRoots;
+  std::optional<bool> captureNumericValue;
 };
 
 struct heapProfiler::TakeHeapSnapshotRequest : public Request {
@@ -542,8 +618,56 @@ struct heapProfiler::TakeHeapSnapshotRequest : public Request {
   folly::dynamic toDynamic() const override;
   void accept(RequestHandler &handler) const override;
 
-  folly::Optional<bool> reportProgress;
-  folly::Optional<bool> treatGlobalObjectsAsRoots;
+  std::optional<bool> reportProgress;
+  std::optional<bool> treatGlobalObjectsAsRoots;
+  std::optional<bool> captureNumericValue;
+};
+
+struct profiler::StartRequest : public Request {
+  StartRequest();
+  explicit StartRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+};
+
+struct profiler::StopRequest : public Request {
+  StopRequest();
+  explicit StopRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+};
+
+struct runtime::CallFunctionOnRequest : public Request {
+  CallFunctionOnRequest();
+  explicit CallFunctionOnRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  std::string functionDeclaration;
+  std::optional<runtime::RemoteObjectId> objectId;
+  std::optional<std::vector<runtime::CallArgument>> arguments;
+  std::optional<bool> silent;
+  std::optional<bool> returnByValue;
+  std::optional<bool> userGesture;
+  std::optional<bool> awaitPromise;
+  std::optional<runtime::ExecutionContextId> executionContextId;
+  std::optional<std::string> objectGroup;
+};
+
+struct runtime::CompileScriptRequest : public Request {
+  CompileScriptRequest();
+  explicit CompileScriptRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  std::string expression;
+  std::string sourceURL;
+  bool persistScript{};
+  std::optional<runtime::ExecutionContextId> executionContextId;
 };
 
 struct runtime::EvaluateRequest : public Request {
@@ -554,13 +678,21 @@ struct runtime::EvaluateRequest : public Request {
   void accept(RequestHandler &handler) const override;
 
   std::string expression;
-  folly::Optional<std::string> objectGroup;
-  folly::Optional<bool> includeCommandLineAPI;
-  folly::Optional<bool> silent;
-  folly::Optional<runtime::ExecutionContextId> contextId;
-  folly::Optional<bool> returnByValue;
-  folly::Optional<bool> userGesture;
-  folly::Optional<bool> awaitPromise;
+  std::optional<std::string> objectGroup;
+  std::optional<bool> includeCommandLineAPI;
+  std::optional<bool> silent;
+  std::optional<runtime::ExecutionContextId> contextId;
+  std::optional<bool> returnByValue;
+  std::optional<bool> userGesture;
+  std::optional<bool> awaitPromise;
+};
+
+struct runtime::GetHeapUsageRequest : public Request {
+  GetHeapUsageRequest();
+  explicit GetHeapUsageRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
 };
 
 struct runtime::GetPropertiesRequest : public Request {
@@ -571,7 +703,17 @@ struct runtime::GetPropertiesRequest : public Request {
   void accept(RequestHandler &handler) const override;
 
   runtime::RemoteObjectId objectId{};
-  folly::Optional<bool> ownProperties;
+  std::optional<bool> ownProperties;
+};
+
+struct runtime::GlobalLexicalScopeNamesRequest : public Request {
+  GlobalLexicalScopeNamesRequest();
+  explicit GlobalLexicalScopeNamesRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  std::optional<runtime::ExecutionContextId> executionContextId;
 };
 
 struct runtime::RunIfWaitingForDebuggerRequest : public Request {
@@ -590,7 +732,7 @@ struct ErrorResponse : public Response {
 
   int code;
   std::string message;
-  folly::Optional<folly::dynamic> data;
+  std::optional<folly::dynamic> data;
 };
 
 struct OkResponse : public Response {
@@ -605,7 +747,7 @@ struct debugger::EvaluateOnCallFrameResponse : public Response {
   folly::dynamic toDynamic() const override;
 
   runtime::RemoteObject result{};
-  folly::Optional<runtime::ExceptionDetails> exceptionDetails;
+  std::optional<runtime::ExceptionDetails> exceptionDetails;
 };
 
 struct debugger::SetBreakpointResponse : public Response {
@@ -658,13 +800,48 @@ struct heapProfiler::StopSamplingResponse : public Response {
   heapProfiler::SamplingHeapProfile profile{};
 };
 
+struct profiler::StopResponse : public Response {
+  StopResponse() = default;
+  explicit StopResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  profiler::Profile profile{};
+};
+
+struct runtime::CallFunctionOnResponse : public Response {
+  CallFunctionOnResponse() = default;
+  explicit CallFunctionOnResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  runtime::RemoteObject result{};
+  std::optional<runtime::ExceptionDetails> exceptionDetails;
+};
+
+struct runtime::CompileScriptResponse : public Response {
+  CompileScriptResponse() = default;
+  explicit CompileScriptResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  std::optional<runtime::ScriptId> scriptId;
+  std::optional<runtime::ExceptionDetails> exceptionDetails;
+};
+
 struct runtime::EvaluateResponse : public Response {
   EvaluateResponse() = default;
   explicit EvaluateResponse(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
 
   runtime::RemoteObject result{};
-  folly::Optional<runtime::ExceptionDetails> exceptionDetails;
+  std::optional<runtime::ExceptionDetails> exceptionDetails;
+};
+
+struct runtime::GetHeapUsageResponse : public Response {
+  GetHeapUsageResponse() = default;
+  explicit GetHeapUsageResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  double usedSize{};
+  double totalSize{};
 };
 
 struct runtime::GetPropertiesResponse : public Response {
@@ -673,9 +850,17 @@ struct runtime::GetPropertiesResponse : public Response {
   folly::dynamic toDynamic() const override;
 
   std::vector<runtime::PropertyDescriptor> result;
-  folly::Optional<std::vector<runtime::InternalPropertyDescriptor>>
+  std::optional<std::vector<runtime::InternalPropertyDescriptor>>
       internalProperties;
-  folly::Optional<runtime::ExceptionDetails> exceptionDetails;
+  std::optional<runtime::ExceptionDetails> exceptionDetails;
+};
+
+struct runtime::GlobalLexicalScopeNamesResponse : public Response {
+  GlobalLexicalScopeNamesResponse() = default;
+  explicit GlobalLexicalScopeNamesResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  std::vector<std::string> names;
 };
 
 /// Notifications
@@ -695,9 +880,9 @@ struct debugger::PausedNotification : public Notification {
 
   std::vector<debugger::CallFrame> callFrames;
   std::string reason;
-  folly::Optional<folly::dynamic> data;
-  folly::Optional<std::vector<std::string>> hitBreakpoints;
-  folly::Optional<runtime::StackTrace> asyncStackTrace;
+  std::optional<folly::dynamic> data;
+  std::optional<std::vector<std::string>> hitBreakpoints;
+  std::optional<runtime::StackTrace> asyncStackTrace;
 };
 
 struct debugger::ResumedNotification : public Notification {
@@ -719,11 +904,11 @@ struct debugger::ScriptParsedNotification : public Notification {
   int endColumn{};
   runtime::ExecutionContextId executionContextId{};
   std::string hash;
-  folly::Optional<folly::dynamic> executionContextAuxData;
-  folly::Optional<std::string> sourceMapURL;
-  folly::Optional<bool> hasSourceURL;
-  folly::Optional<bool> isModule;
-  folly::Optional<int> length;
+  std::optional<folly::dynamic> executionContextAuxData;
+  std::optional<std::string> sourceMapURL;
+  std::optional<bool> hasSourceURL;
+  std::optional<bool> isModule;
+  std::optional<int> length;
 };
 
 struct heapProfiler::AddHeapSnapshotChunkNotification : public Notification {
@@ -759,7 +944,7 @@ struct heapProfiler::ReportHeapSnapshotProgressNotification
 
   int done{};
   int total{};
-  folly::Optional<bool> finished;
+  std::optional<bool> finished;
 };
 
 struct runtime::ConsoleAPICalledNotification : public Notification {
@@ -771,7 +956,7 @@ struct runtime::ConsoleAPICalledNotification : public Notification {
   std::vector<runtime::RemoteObject> args;
   runtime::ExecutionContextId executionContextId{};
   runtime::Timestamp timestamp{};
-  folly::Optional<runtime::StackTrace> stackTrace;
+  std::optional<runtime::StackTrace> stackTrace;
 };
 
 struct runtime::ExecutionContextCreatedNotification : public Notification {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,12 +7,11 @@
 
 #include "ViewEventEmitter.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #pragma mark - Accessibility
 
-void ViewEventEmitter::onAccessibilityAction(const std::string &name) const {
+void ViewEventEmitter::onAccessibilityAction(std::string const &name) const {
   dispatchEvent("accessibilityAction", [name](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, "actionName", name);
@@ -115,5 +114,4 @@ void ViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
       EventPriority::AsynchronousUnbatched);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

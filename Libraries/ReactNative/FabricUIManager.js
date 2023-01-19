@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,12 +11,12 @@
 'use strict';
 
 import type {
-  MeasureOnSuccessCallback,
+  LayoutAnimationConfig,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
-  LayoutAnimationConfig,
+  MeasureOnSuccessCallback,
 } from '../Renderer/shims/ReactNativeTypes';
-import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import type {RootTag} from '../Types/RootTagTypes';
 
 // TODO: type these properly.
 type Node = {...};
@@ -58,6 +58,7 @@ export type Spec = {|
     errorCallback: (error: Object) => void,
   ) => void,
   +sendAccessibilityEvent: (node: Node, eventType: string) => void,
+  +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node,
 |};
 
 const FabricUIManager: ?Spec = global.nativeFabricUIManager;

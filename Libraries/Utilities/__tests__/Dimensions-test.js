@@ -1,17 +1,17 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
 describe('Dimensions', () => {
-  const Dimensions = require('../Dimensions');
+  const Dimensions = require('../Dimensions').default;
   const Platform = require('../Platform');
 
   it('should set window dimensions', () => {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,8 +25,10 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
+import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import java.io.File;
 import java.io.IOException;
@@ -58,11 +60,13 @@ import java.util.concurrent.TimeoutException;
  *
  * IMPORTANT: In order for developer support to work correctly it is required that the
  * manifest of your application contain the following entries:
- * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
+ * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
 public final class BridgeDevSupportManager extends DevSupportManagerBase {
   private boolean mIsSamplingProfilerEnabled = false;
+  private ReactInstanceDevHelper mReactInstanceManagerHelper;
+  private @Nullable DevLoadingViewManager mDevLoadingViewManager;
 
   public BridgeDevSupportManager(
       Context applicationContext,
@@ -73,7 +77,8 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
-      @Nullable SurfaceDelegateFactory surfaceDelegateFactory) {
+      @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
+      @Nullable DevLoadingViewManager devLoadingViewManager) {
     super(
         applicationContext,
         reactInstanceManagerHelper,
@@ -83,7 +88,11 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         devBundleDownloadListener,
         minNumShakes,
         customPackagerCommandHandlers,
-        surfaceDelegateFactory);
+        surfaceDelegateFactory,
+        devLoadingViewManager);
+
+    mReactInstanceManagerHelper = reactInstanceManagerHelper;
+    mDevLoadingViewManager = devLoadingViewManager;
 
     if (getDevSettings().isStartSamplingProfilerOnInit()) {
       // Only start the profiler. If its already running, there is an error
@@ -99,11 +108,7 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
     }
 
     addCustomDevOption(
-        mIsSamplingProfilerEnabled
-            ? applicationContext.getString(
-                com.facebook.react.R.string.catalyst_sample_profiler_disable)
-            : applicationContext.getString(
-                com.facebook.react.R.string.catalyst_sample_profiler_enable),
+        mIsSamplingProfilerEnabled ? "Disable Sampling Profiler" : "Enable Sampling Profiler",
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -126,6 +131,14 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
             }
           });
     }
+  }
+
+  public DevLoadingViewManager getDevLoadingViewManager() {
+    return mDevLoadingViewManager;
+  }
+
+  public ReactInstanceDevHelper getReactInstanceManagerHelper() {
+    return mReactInstanceManagerHelper;
   }
 
   @Override

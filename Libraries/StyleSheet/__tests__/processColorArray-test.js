@@ -1,24 +1,23 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
 const {OS} = require('../../Utilities/Platform');
+const PlatformColorAndroid =
+  require('../PlatformColorValueTypes.android').PlatformColor;
+const PlatformColorIOS =
+  require('../PlatformColorValueTypes.ios').PlatformColor;
+const DynamicColorIOS =
+  require('../PlatformColorValueTypesIOS.ios').DynamicColorIOS;
 const processColorArray = require('../processColorArray');
-
-const PlatformColorIOS = require('../PlatformColorValueTypes.ios')
-  .PlatformColor;
-const DynamicColorIOS = require('../PlatformColorValueTypesIOS.ios')
-  .DynamicColorIOS;
-const PlatformColorAndroid = require('../PlatformColorValueTypes.android')
-  .PlatformColor;
 
 const platformSpecific =
   OS === 'android'
@@ -70,11 +69,7 @@ describe('processColorArray', () => {
       const colors = ['red', '???', null, undefined, false];
       const colorFromStringArray = processColorArray(colors);
       const expectedIntArray = [
-        0xffff0000,
-        0x00000000,
-        0x00000000,
-        0x00000000,
-        0x00000000,
+        0xffff0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
       ].map(platformSpecific);
       expect(colorFromStringArray).toEqual(expectedIntArray);
 

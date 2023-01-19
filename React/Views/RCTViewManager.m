@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #import "RCTViewManager.h"
 
 #import "RCTAssert.h"
+#import "RCTBorderCurve.h"
 #import "RCTBorderStyle.h"
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
@@ -27,6 +28,7 @@ RCT_MULTI_ENUM_CONVERTER(
     (@{
       @"none" : @(UIAccessibilityTraitNone),
       @"button" : @(UIAccessibilityTraitButton),
+      @"dropdownlist" : @(UIAccessibilityTraitNone),
       @"togglebutton" : @(UIAccessibilityTraitButton),
       @"link" : @(UIAccessibilityTraitLink),
       @"header" : @(UIAccessibilityTraitHeader),
@@ -62,7 +64,17 @@ RCT_MULTI_ENUM_CONVERTER(
       @"tablist" : @(UIAccessibilityTraitNone),
       @"timer" : @(UIAccessibilityTraitNone),
       @"toolbar" : @(UIAccessibilityTraitNone),
+      @"grid" : @(UIAccessibilityTraitNone),
+      @"pager" : @(UIAccessibilityTraitNone),
+      @"scrollview" : @(UIAccessibilityTraitNone),
+      @"horizontalscrollview" : @(UIAccessibilityTraitNone),
+      @"viewgroup" : @(UIAccessibilityTraitNone),
+      @"webview" : @(UIAccessibilityTraitNone),
+      @"drawerlayout" : @(UIAccessibilityTraitNone),
+      @"slidingdrawer" : @(UIAccessibilityTraitNone),
+      @"iconmenu" : @(UIAccessibilityTraitNone),
       @"list" : @(UIAccessibilityTraitNone),
+      @"grid" : @(UIAccessibilityTraitNone),
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
@@ -82,7 +94,8 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTWarnNotAllowedForNewArchitecture(self, @"RCTViewManager must not be initialized for the new architecture");
+  RCTErrorNewArchitectureValidation(
+      RCTNotAllowedInBridgeless, self, @"RCTViewManager must not be initialized for the new architecture");
   _bridge = bridge;
 }
 
@@ -124,6 +137,7 @@ RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityEle
 RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessibilityActions, NSDictionaryArray)
 RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibilityHint, NSString)
+RCT_REMAP_VIEW_PROPERTY(accessibilityLanguage, reactAccessibilityElement.accessibilityLanguage, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityValue, reactAccessibilityElement.accessibilityValueInternal, NSDictionary)
 RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityElementsHidden, reactAccessibilityElement.accessibilityElementsHidden, BOOL)
@@ -163,8 +177,9 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
-  // Enable edge antialiasing in perspective transforms
-  view.layer.allowsEdgeAntialiasing = !(view.layer.transform.m34 == 0.0f);
+  // Enable edge antialiasing in rotation, skew, or perspective transforms
+  view.layer.allowsEdgeAntialiasing =
+      view.layer.transform.m12 != 0.0f || view.layer.transform.m21 != 0.0f || view.layer.transform.m34 != 0.0f;
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
@@ -261,6 +276,19 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
     view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(borderCurve, RCTBorderCurve, RCTView)
+{
+  if (@available(iOS 13.0, *)) {
+    switch ([RCTConvert RCTBorderCurve:json]) {
+      case RCTBorderCurveContinuous:
+        view.layer.cornerCurve = kCACornerCurveContinuous;
+        break;
+      case RCTBorderCurveCircular:
+        view.layer.cornerCurve = kCACornerCurveCircular;
+        break;
+    }
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderRadius:)]) {
@@ -269,7 +297,7 @@ RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
     view.layer.cornerRadius = json ? [RCTConvert CGFloat:json] : defaultView.layer.cornerRadius;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(borderColor, UIColor, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderColor:)]) {
     view.borderColor = json ? [RCTConvert UIColor:json] : defaultView.borderColor;
@@ -348,6 +376,10 @@ RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomStart)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomEnd)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(EndEnd)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(EndStart)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(StartEnd)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(StartStart)
 
 RCT_REMAP_VIEW_PROPERTY(display, reactDisplay, YGDisplay)
 RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
@@ -409,6 +441,9 @@ RCT_EXPORT_SHADOW_PROPERTY(alignSelf, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(alignContent, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(position, YGPositionType)
 RCT_EXPORT_SHADOW_PROPERTY(aspectRatio, float)
+RCT_EXPORT_SHADOW_PROPERTY(rowGap, float)
+RCT_EXPORT_SHADOW_PROPERTY(columnGap, float)
+RCT_EXPORT_SHADOW_PROPERTY(gap, float)
 
 RCT_EXPORT_SHADOW_PROPERTY(overflow, YGOverflow)
 RCT_EXPORT_SHADOW_PROPERTY(display, YGDisplay)
@@ -416,5 +451,40 @@ RCT_EXPORT_SHADOW_PROPERTY(display, YGDisplay)
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 
 RCT_EXPORT_SHADOW_PROPERTY(direction, YGDirection)
+
+// The events below define the properties that are not used by native directly, but required in the view config for new
+// renderer to function.
+// They can be deleted after Static View Configs are rolled out.
+
+// PanResponder handlers
+RCT_CUSTOM_VIEW_PROPERTY(onMoveShouldSetResponder, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onMoveShouldSetResponderCapture, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onStartShouldSetResponder, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onStartShouldSetResponderCapture, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderGrant, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderReject, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderStart, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderEnd, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderRelease, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderMove, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderTerminate, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderTerminationRequest, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onShouldBlockNativeResponder, BOOL, RCTView) {}
+
+// Touch events
+RCT_CUSTOM_VIEW_PROPERTY(onTouchStart, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onTouchMove, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onTouchEnd, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onTouchCancel, BOOL, RCTView) {}
+
+// Experimental/WIP Pointer Events (not yet ready for use)
+RCT_EXPORT_VIEW_PROPERTY(onPointerCancel, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerDown, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerMove, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerUp, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerEnter, RCTCapturingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerLeave, RCTCapturingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerOver, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerOut, RCTBubblingEventBlock)
 
 @end

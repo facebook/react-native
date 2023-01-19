@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,7 +36,7 @@ namespace detail {
 class SerialExecutor : public folly::Executor {
  public:
   SerialExecutor(const std::string &name);
-  ~SerialExecutor();
+  ~SerialExecutor() override;
 
   void add(folly::Func) override;
 

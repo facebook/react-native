@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -641,6 +641,20 @@ RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float
 {
   return YGNodeStyleGetFlexBasis(_yogaNode);
 }
+
+#define RCT_GAP_PROPERTY(setProp, getProp, cssProp, type, gap) \
+  -(void)set##setProp : (type)value                            \
+  {                                                            \
+    YGNodeStyleSet##cssProp(_yogaNode, gap, value);            \
+  }                                                            \
+  -(type)getProp                                               \
+  {                                                            \
+    return YGNodeStyleGet##cssProp(_yogaNode, gap);            \
+  }
+
+RCT_GAP_PROPERTY(RowGap, rowGap, Gap, float, YGGutterRow);
+RCT_GAP_PROPERTY(ColumnGap, columnGap, Gap, float, YGGutterColumn);
+RCT_GAP_PROPERTY(Gap, gap, Gap, float, YGGutterAll);
 
 #define RCT_STYLE_PROPERTY(setProp, getProp, cssProp, type) \
   -(void)set##setProp : (type)value                         \

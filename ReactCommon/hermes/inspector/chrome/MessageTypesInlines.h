@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@
 #include <hermes/inspector/chrome/MessageInterfaces.h>
 
 #include <memory>
+#include <optional>
 #include <type_traits>
 
 namespace facebook {
@@ -21,7 +22,7 @@ namespace message {
 using dynamic = folly::dynamic;
 
 template <typename T>
-using optional = folly::Optional<T>;
+using optional = std::optional<T>;
 
 template <typename>
 struct is_vector : std::false_type {};
@@ -90,7 +91,7 @@ void assign(optional<T> &lhs, const dynamic &obj, const U &key) {
   if (it != obj.items().end()) {
     lhs = valueFromDynamic<T>(it->second);
   } else {
-    lhs.clear();
+    lhs.reset();
   }
 }
 
@@ -136,7 +137,7 @@ void put(dynamic &obj, const K &key, const V &value) {
 
 template <typename K, typename V>
 void put(dynamic &obj, const K &key, const optional<V> &optValue) {
-  if (optValue.hasValue()) {
+  if (optValue.has_value()) {
     obj[key] = valueToDynamic(optValue.value());
   } else {
     obj.erase(key);

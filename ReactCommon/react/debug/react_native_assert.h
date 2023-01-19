@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -55,7 +55,7 @@ void react_native_assert_fail(
 #define react_native_assert(cond)                           \
   if (!(cond)) {                                            \
     LOG(ERROR) << "react_native_assert failure: " << #cond; \
-    google::FlushLogFiles(google::INFO);                    \
+    google::FlushLogFiles(google::GLOG_INFO);               \
     assert(cond);                                           \
   }
 

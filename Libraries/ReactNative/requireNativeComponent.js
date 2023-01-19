@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,10 +10,10 @@
 
 'use strict';
 
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+
 const createReactNativeComponentClass = require('../Renderer/shims/createReactNativeComponentClass');
 const getNativeComponentAttributes = require('./getNativeComponentAttributes');
-
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 
 /**
  * Creates values that can be used like React components which represent native
@@ -29,4 +29,4 @@ const requireNativeComponent = <T>(uiViewClassName: string): HostComponent<T> =>
     getNativeComponentAttributes(uiViewClassName),
   ): any): HostComponent<T>);
 
-module.exports = requireNativeComponent;
+export default requireNativeComponent;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RCTFabricSurface;
 @class RCTImageLoader;
 @class RCTMountingManager;
+@class RCTScheduler;
 
 /**
  * Coordinates presenting of React Native Surfaces and represents application
@@ -27,7 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfacePresenter : NSObject
 
 - (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContainer
-                         runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
+                         runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor
+              bridgelessBindingsExecutor:(std::optional<facebook::react::RuntimeExecutor>)bridgelessBindingsExecutor;
 
 @property (nonatomic) facebook::react::ContextContainer::Shared contextContainer;
 @property (nonatomic) facebook::react::RuntimeExecutor runtimeExecutor;
@@ -53,6 +55,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
 
 @property (readonly) RCTMountingManager *mountingManager;
+@property (readonly, nullable) RCTScheduler *scheduler;
+
+/*
+ * Allow callers to initialize a new fabric surface without adding Fabric as a Buck dependency.
+ */
+- (id<RCTSurfaceProtocol>)createFabricSurfaceForModuleName:(NSString *)moduleName
+                                         initialProperties:(NSDictionary *)initialProperties;
 
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 

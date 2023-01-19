@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,8 +12,8 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('@react-native/polyfills/Object.es8');
-jest.requireActual('@react-native/polyfills/error-guard');
+jest.requireActual('@react-native/js-polyfills/Object.es8');
+jest.requireActual('@react-native/js-polyfills/error-guard');
 
 global.__DEV__ = true;
 
@@ -21,14 +21,13 @@ global.performance = {
   now: jest.fn(Date.now),
 };
 
-global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
 global.window = global;
 
-global.requestAnimationFrame = function(callback) {
+global.requestAnimationFrame = function (callback) {
   return setTimeout(callback, 0);
 };
-global.cancelAnimationFrame = function(id) {
+global.cancelAnimationFrame = function (id) {
   clearTimeout(id);
 };
 
@@ -123,17 +122,22 @@ jest
     default: {
       addEventListener: jest.fn(),
       announceForAccessibility: jest.fn(),
+      isAccessibilityServiceEnabled: jest.fn(),
       isBoldTextEnabled: jest.fn(),
       isGrayscaleEnabled: jest.fn(),
       isInvertColorsEnabled: jest.fn(),
       isReduceMotionEnabled: jest.fn(),
+      prefersCrossFadeTransitions: jest.fn(),
       isReduceTransparencyEnabled: jest.fn(),
       isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
-      removeEventListener: jest.fn(),
       setAccessibilityFocus: jest.fn(),
-      sendAccessibilityEvent_unstable: jest.fn(),
+      sendAccessibilityEvent: jest.fn(),
       getRecommendedTimeoutMillis: jest.fn(),
     },
+  }))
+  .mock('../Libraries/Components/Clipboard/Clipboard', () => ({
+    getString: jest.fn(() => ''),
+    setString: jest.fn(),
   }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
     jest.requireActual(
@@ -160,11 +164,14 @@ jest
     const mockScrollView = jest.requireActual('./mockScrollView');
     return mockScrollView(baseComponent);
   })
-  .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () =>
-    mockComponent(
+  .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () => ({
+    __esModule: true,
+    default: mockComponent(
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',
+      null,
+      true,
     ),
-  )
+  }))
   .mock('../Libraries/AppState/AppState', () => ({
     addEventListener: jest.fn(() => ({
       remove: jest.fn(),
@@ -176,7 +183,6 @@ jest
     openSettings: jest.fn(),
     addEventListener: jest.fn(),
     getInitialURL: jest.fn(() => Promise.resolve()),
-    removeEventListener: jest.fn(),
     sendIntent: jest.fn(),
   }))
   // Mock modules defined by the native layer (ex: Objective-C, Java)
@@ -201,10 +207,6 @@ jest
       getAllKeys: jest.fn(callback =>
         process.nextTick(() => callback(null, [])),
       ),
-    },
-    Clipboard: {
-      getString: jest.fn(() => ''),
-      setString: jest.fn(),
     },
     DeviceInfo: {
       getConstants() {
@@ -231,7 +233,7 @@ jest
       reload: jest.fn(),
     },
     ImageLoader: {
-      getSize: jest.fn(url => Promise.resolve({width: 320, height: 240})),
+      getSize: jest.fn(url => Promise.resolve([320, 240])),
       prefetchImage: jest.fn(),
     },
     ImageViewManager: {
@@ -339,10 +341,10 @@ jest
   .mock('../Libraries/NativeComponent/NativeComponentRegistry', () => {
     return {
       get: jest.fn((name, viewConfigProvider) => {
-        return jest.requireActual('./mockNativeComponent')(name);
+        return jest.requireActual('./mockNativeComponent').default(name);
       }),
       getWithFallback_DEPRECATED: jest.fn((name, viewConfigProvider) => {
-        return jest.requireActual('./mockNativeComponent')(name);
+        return jest.requireActual('./mockNativeComponent').default(name);
       }),
       setRuntimeConfigProvider: jest.fn(),
     };
@@ -352,8 +354,12 @@ jest
   })
   .mock(
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',
-    () => function() {},
+    () => function () {},
   )
+  .mock('../Libraries/Vibration/Vibration', () => ({
+    vibrate: jest.fn(),
+    cancel: jest.fn(),
+  }))
   .mock('../Libraries/Components/View/ViewNativeComponent', () => {
     const React = require('react');
     const Component = class extends React.Component {

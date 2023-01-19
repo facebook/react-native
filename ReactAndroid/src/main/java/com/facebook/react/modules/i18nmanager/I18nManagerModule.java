@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,20 +18,12 @@ import java.util.Locale;
 import java.util.Map;
 
 /** {@link NativeModule} that allows JS to set allowRTL and get isRTL status. */
-@ReactModule(name = I18nManagerModule.NAME)
+@ReactModule(name = NativeI18nManagerSpec.NAME)
 public class I18nManagerModule extends NativeI18nManagerSpec {
-
-  public static final String NAME = "I18nManager";
-
   private final I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
 
   public I18nManagerModule(ReactApplicationContext context) {
     super(context);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

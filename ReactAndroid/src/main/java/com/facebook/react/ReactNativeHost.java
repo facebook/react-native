@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,8 +18,8 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
-import com.facebook.react.devsupport.RedBoxHandler;
-import com.facebook.react.uimanager.UIImplementationProvider;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
+import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import java.util.List;
 
 /**
@@ -72,11 +72,12 @@ public abstract class ReactNativeHost {
             .setJSMainModulePath(getJSMainModuleName())
             .setUseDeveloperSupport(getUseDeveloperSupport())
             .setDevSupportManagerFactory(getDevSupportManagerFactory())
+            .setDevLoadingViewManager(getDevLoadingViewManager())
             .setRequireActivity(getShouldRequireActivity())
             .setSurfaceDelegateFactory(getSurfaceDelegateFactory())
+            .setLazyViewManagersEnabled(getLazyViewManagersEnabled())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
-            .setUIImplementationProvider(getUIImplementationProvider())
             .setJSIModulesPackage(getJSIModulePackage())
             .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
             .setReactPackageTurboModuleManagerDelegateBuilder(
@@ -116,16 +117,6 @@ public abstract class ReactNativeHost {
     return mApplication;
   }
 
-  /**
-   * Get the {@link UIImplementationProvider} to use. Override this method if you want to use a
-   * custom UI implementation.
-   *
-   * <p>Note: this is very advanced functionality, in 99% of cases you don't need to override this.
-   */
-  protected UIImplementationProvider getUIImplementationProvider() {
-    return new UIImplementationProvider();
-  }
-
   protected @Nullable JSIModulePackage getJSIModulePackage() {
     return null;
   }
@@ -133,6 +124,16 @@ public abstract class ReactNativeHost {
   /** Returns whether or not to treat it as normal if Activity is null. */
   public boolean getShouldRequireActivity() {
     return true;
+  }
+
+  /**
+   * Returns whether view managers should be created lazily. See {@link
+   * ViewManagerOnDemandReactPackage} for details.
+   *
+   * @experimental
+   */
+  public boolean getLazyViewManagersEnabled() {
+    return false;
   }
 
   /**
@@ -148,6 +149,13 @@ public abstract class ReactNativeHost {
         return null;
       }
     };
+  }
+
+  /**
+   * Get the {@link DevLoadingViewManager}. Override this to use a custom dev loading view manager
+   */
+  protected @Nullable DevLoadingViewManager getDevLoadingViewManager() {
+    return null;
   }
 
   /**
@@ -191,4 +199,12 @@ public abstract class ReactNativeHost {
    * default ones, you'll want to include more packages here.
    */
   protected abstract List<ReactPackage> getPackages();
+
+  /**
+   * Returns the {@link JSEngineResolutionAlgorithm} to be used when loading the JS engine. If null,
+   * will try to load JSC first and fallback to Hermes if JSC is not available.
+   */
+  protected @Nullable JSEngineResolutionAlgorithm getJSEngineResolutionAlgorithm() {
+    return null;
+  }
 }

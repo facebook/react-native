@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,8 +11,7 @@
 
 @interface RCTAnimatedNode : NSObject
 
-- (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) NSNumber *nodeTag;
 @property (nonatomic, weak) RCTNativeAnimatedNodesManager *manager;
@@ -23,7 +22,7 @@
 
 @property (nonatomic, readonly) BOOL needsUpdate;
 
--(BOOL)isManagedByFabric;
+- (BOOL)isManagedByFabric;
 
 /**
  * Marks a node and its children as needing update.

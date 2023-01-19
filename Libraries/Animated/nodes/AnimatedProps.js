@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,15 +10,16 @@
 
 'use strict';
 
-const {AnimatedEvent} = require('../AnimatedEvent');
-const AnimatedNode = require('./AnimatedNode');
-const AnimatedStyle = require('./AnimatedStyle');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-const ReactNative = require('../../Renderer/shims/ReactNative');
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-const invariant = require('invariant');
+import {findNodeHandle} from '../../ReactNative/RendererProxy';
+import {AnimatedEvent} from '../AnimatedEvent';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedNode from './AnimatedNode';
+import AnimatedStyle from './AnimatedStyle';
+import invariant from 'invariant';
 
-class AnimatedProps extends AnimatedNode {
+export default class AnimatedProps extends AnimatedNode {
   _props: Object;
   _animatedView: any;
   _callback: () => void;
@@ -36,26 +37,23 @@ class AnimatedProps extends AnimatedNode {
   }
 
   __getValue(): Object {
-    const props = {};
+    const props: {[string]: any | ((...args: any) => void)} = {};
     for (const key in this._props) {
       const value = this._props[key];
       if (value instanceof AnimatedNode) {
-        if (!value.__isNative || value instanceof AnimatedStyle) {
-          // We cannot use value of natively driven nodes this way as the value we have access from
-          // JS may not be up to date.
-          props[key] = value.__getValue();
-        }
+        props[key] = value.__getValue();
       } else if (value instanceof AnimatedEvent) {
         props[key] = value.__getHandler();
       } else {
         props[key] = value;
       }
     }
+
     return props;
   }
 
   __getAnimatedValue(): Object {
-    const props = {};
+    const props: {[string]: any} = {};
     for (const key in this._props) {
       const value = this._props[key];
       if (value instanceof AnimatedNode) {
@@ -91,15 +89,21 @@ class AnimatedProps extends AnimatedNode {
     this._callback();
   }
 
-  __makeNative(): void {
+  __makeNative(platformConfig: ?PlatformConfig): void {
     if (!this.__isNative) {
       this.__isNative = true;
       for (const key in this._props) {
         const value = this._props[key];
         if (value instanceof AnimatedNode) {
-          value.__makeNative();
+          value.__makeNative(platformConfig);
         }
       }
+
+      // Since this does not call the super.__makeNative, we need to store the
+      // supplied platformConfig here, before calling __connectAnimatedView
+      // where it will be needed to traverse the graph of attached values.
+      super.__setPlatformConfig(platformConfig);
+
       if (this._animatedView) {
         this.__connectAnimatedView();
       }
@@ -118,9 +122,7 @@ class AnimatedProps extends AnimatedNode {
 
   __connectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    const nativeViewTag: ?number = ReactNative.findNodeHandle(
-      this._animatedView,
-    );
+    const nativeViewTag: ?number = findNodeHandle(this._animatedView);
     invariant(
       nativeViewTag != null,
       'Unable to locate attached view in the native tree',
@@ -133,9 +135,7 @@ class AnimatedProps extends AnimatedNode {
 
   __disconnectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    const nativeViewTag: ?number = ReactNative.findNodeHandle(
-      this._animatedView,
-    );
+    const nativeViewTag: ?number = findNodeHandle(this._animatedView);
     invariant(
       nativeViewTag != null,
       'Unable to locate attached view in the native tree',
@@ -157,11 +157,11 @@ class AnimatedProps extends AnimatedNode {
   }
 
   __getNativeConfig(): Object {
-    const propsConfig = {};
+    const propsConfig: {[string]: number} = {};
     for (const propKey in this._props) {
       const value = this._props[propKey];
       if (value instanceof AnimatedNode) {
-        value.__makeNative();
+        value.__makeNative(this.__getPlatformConfig());
         propsConfig[propKey] = value.__getNativeTag();
       }
     }
@@ -171,5 +171,3 @@ class AnimatedProps extends AnimatedNode {
     };
   }
 }
-
-module.exports = AnimatedProps;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,20 +8,21 @@
  * @flow
  */
 
+import type {RequestBody} from './convertRequestBody';
+
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
 // It will add the necessary requestId, so that you don't have to generate it yourself.
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import NativeNetworkingAndroid from './NativeNetworkingAndroid';
-import convertRequestBody from './convertRequestBody';
-import type {RequestBody} from './convertRequestBody';
 import Platform from '../Utilities/Platform';
+import convertRequestBody from './convertRequestBody';
+import NativeNetworkingAndroid from './NativeNetworkingAndroid';
 
 type Header = [string, string];
 
 // Convert FormData headers to arrays, which are easier to consume in
 // native on Android.
 function convertHeadersMapToArray(headers: Object): Array<Header> {
-  const headerArray = [];
+  const headerArray: Array<Header> = [];
   for (const name in headers) {
     headerArray.push([name, headers[name]]);
   }
@@ -90,4 +91,4 @@ class RCTNetworking extends NativeEventEmitter<$FlowFixMe> {
   }
 }
 
-module.exports = (new RCTNetworking(): RCTNetworking);
+export default (new RCTNetworking(): RCTNetworking);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
  */
 
 import Platform from '../Utilities/Platform';
+
 const ReactNativeVersion = require('./ReactNativeVersion');
 
 /**
@@ -38,7 +39,9 @@ exports.checkVersions = function checkVersions(): void {
   }
 };
 
-function _formatVersion(version): string {
+function _formatVersion(
+  version: (typeof Platform)['constants']['reactNativeVersion'],
+): string {
   return (
     `${version.major}.${version.minor}.${version.patch}` +
     // eslint-disable-next-line eqeqeq

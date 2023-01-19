@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -593,7 +593,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
                 + " has already registered a property named \""
                 + name
                 + "\". If you want to override a property, don't add"
-                + "the @ReactProp annotation to the property in the subclass",
+                + " the @ReactProp annotation to the property in the subclass",
             propertyInfo);
       }
 

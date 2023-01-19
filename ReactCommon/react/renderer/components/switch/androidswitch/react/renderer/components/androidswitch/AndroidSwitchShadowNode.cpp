@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,7 @@
 
 #include "AndroidSwitchShadowNode.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char AndroidSwitchComponentName[] = "AndroidSwitch";
 
@@ -22,10 +21,9 @@ void AndroidSwitchShadowNode::setAndroidSwitchMeasurementsManager(
 #pragma mark - LayoutableShadowNode
 
 Size AndroidSwitchShadowNode::measureContent(
-    LayoutContext const &layoutContext,
+    LayoutContext const & /*layoutContext*/,
     LayoutConstraints const &layoutConstraints) const {
   return measurementsManager_->measure(getSurfaceId(), layoutConstraints);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

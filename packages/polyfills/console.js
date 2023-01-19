@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,7 @@
  * This pipes all of our console logging functions to native logging so that
  * JavaScript errors in required modules show up in Xcode via NSLog.
  */
-const inspect = (function() {
+const inspect = (function () {
   // Copyright Joyent, Inc. and other Node contributors.
   //
   // Permission is hereby granted, free of charge, to any person obtaining a
@@ -55,7 +55,7 @@ const inspect = (function() {
   function arrayToHash(array) {
     var hash = {};
 
-    array.forEach(function(val, idx) {
+    array.forEach(function (val, idx) {
       hash[val] = true;
     });
 
@@ -153,7 +153,7 @@ const inspect = (function() {
     if (array) {
       output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
     } else {
-      output = keys.map(function(key) {
+      output = keys.map(function (key) {
         return formatProperty(
           ctx,
           value,
@@ -210,7 +210,7 @@ const inspect = (function() {
         output.push('');
       }
     }
-    keys.forEach(function(key) {
+    keys.forEach(function (key) {
       if (!key.match(/^\d+$/)) {
         output.push(
           formatProperty(ctx, value, recurseTimes, visibleKeys, key, true),
@@ -248,7 +248,7 @@ const inspect = (function() {
           if (array) {
             str = str
               .split('\n')
-              .map(function(line) {
+              .map(function (line) {
                 return '  ' + line;
               })
               .join('\n')
@@ -258,7 +258,7 @@ const inspect = (function() {
               '\n' +
               str
                 .split('\n')
-                .map(function(line) {
+                .map(function (line) {
                   return '   ' + line;
                 })
                 .join('\n');
@@ -290,7 +290,7 @@ const inspect = (function() {
 
   function reduceToSingleString(output, base, braces) {
     var numLinesEst = 0;
-    var length = output.reduce(function(prev, cur) {
+    var length = output.reduce(function (prev, cur) {
       numLinesEst++;
       if (cur.indexOf('\n') >= 0) numLinesEst++;
       return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
@@ -396,13 +396,13 @@ INSPECTOR_LEVELS[LOG_LEVELS.error] = 'error';
 const INSPECTOR_FRAMES_TO_SKIP = __DEV__ ? 2 : 1;
 
 function getNativeLogFunction(level) {
-  return function() {
+  return function () {
     let str;
     if (arguments.length === 1 && typeof arguments[0] === 'string') {
       str = arguments[0];
     } else {
       str = Array.prototype.map
-        .call(arguments, function(arg) {
+        .call(arguments, function (arg) {
           return inspect(arg, {depth: 10});
         })
         .join(', ');
@@ -443,7 +443,7 @@ function getNativeLogFunction(level) {
 }
 
 function repeat(element, n) {
-  return Array.apply(null, Array(n)).map(function() {
+  return Array.apply(null, Array(n)).map(function () {
     return element;
   });
 }
@@ -472,7 +472,7 @@ function consoleTablePolyfill(rows) {
 
   // Convert each cell to a string. Also
   // figure out max cell width for each column
-  columns.forEach(function(k, i) {
+  columns.forEach(function (k, i) {
     columnWidths[i] = k.length;
     for (var j = 0; j < rows.length; j++) {
       var cellStr = (rows[j][k] || '?').toString();
@@ -485,7 +485,7 @@ function consoleTablePolyfill(rows) {
   // Join all elements in the row into a single string with | separators
   // (appends extra spaces to each cell to make separators  | aligned)
   function joinRow(row, space) {
-    var cells = row.map(function(cell, i) {
+    var cells = row.map(function (cell, i) {
       var extraSpaces = repeat(' ', columnWidths[i] - cell.length).join('');
       return cell + extraSpaces;
     });
@@ -493,7 +493,7 @@ function consoleTablePolyfill(rows) {
     return cells.join(space + '|' + space);
   }
 
-  var separators = columnWidths.map(function(columnWidth) {
+  var separators = columnWidths.map(function (columnWidth) {
     return repeat('-', columnWidth).join('');
   });
   var separatorRow = joinRow(separators, '-');
@@ -579,7 +579,7 @@ if (global.nativeLoggingHook) {
     Object.keys(console).forEach(methodName => {
       const reactNativeMethod = console[methodName];
       if (originalConsole[methodName]) {
-        console[methodName] = function() {
+        console[methodName] = function () {
           originalConsole[methodName](...arguments);
           reactNativeMethod.apply(console, arguments);
         };
@@ -591,7 +591,7 @@ if (global.nativeLoggingHook) {
     // supported by it.
     ['clear', 'dir', 'dirxml', 'profile', 'profileEnd'].forEach(methodName => {
       if (typeof originalConsole[methodName] === 'function') {
-        console[methodName] = function() {
+        console[methodName] = function () {
           originalConsole[methodName](...arguments);
         };
       }

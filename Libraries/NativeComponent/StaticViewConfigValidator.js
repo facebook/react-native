@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,10 +9,33 @@
  */
 
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
+import {isIgnored} from './ViewConfigIgnore';
 
-type Difference = {
-  path: $ReadOnlyArray<string>,
-  type: 'missing' | 'unequal' | 'unexpected',
+export type Difference =
+  | {
+      type: 'missing',
+      path: Array<string>,
+      nativeValue: mixed,
+    }
+  | {
+      type: 'unequal',
+      path: Array<string>,
+      nativeValue: mixed,
+      staticValue: mixed,
+    }
+  | {
+      type: 'unexpected',
+      path: Array<string>,
+      staticValue: mixed,
+    };
+
+export type ValidationResult = ValidResult | InvalidResult;
+type ValidResult = {
+  type: 'valid',
+};
+type InvalidResult = {
+  type: 'invalid',
+  differences: Array<Difference>,
 };
 
 /**
@@ -23,8 +46,8 @@ export function validate(
   name: string,
   nativeViewConfig: ViewConfig,
   staticViewConfig: ViewConfig,
-): ?string {
-  const differences = [];
+): ValidationResult {
+  const differences: Array<Difference> = [];
   accumulateDifferences(
     differences,
     [],
@@ -41,13 +64,27 @@ export function validate(
       validAttributes: staticViewConfig.validAttributes,
     },
   );
+
   if (differences.length === 0) {
-    return null;
+    return {type: 'valid'};
   }
+
+  return {
+    type: 'invalid',
+    differences,
+  };
+}
+
+export function stringifyValidationResult(
+  name: string,
+  validationResult: InvalidResult,
+): string {
+  const {differences} = validationResult;
   return [
     `StaticViewConfigValidator: Invalid static view config for '${name}'.`,
     '',
-    ...differences.map(({path, type}) => {
+    ...differences.map(difference => {
+      const {type, path} = difference;
       switch (type) {
         case 'missing':
           return `- '${path.join('.')}' is missing.`;
@@ -71,7 +108,11 @@ function accumulateDifferences(
     const nativeValue = nativeObject[nativeKey];
 
     if (!staticObject.hasOwnProperty(nativeKey)) {
-      differences.push({path: [...path, nativeKey], type: 'missing'});
+      differences.push({
+        path: [...path, nativeKey],
+        type: 'missing',
+        nativeValue,
+      });
       continue;
     }
 
@@ -94,13 +135,25 @@ function accumulateDifferences(
     }
 
     if (nativeValue !== staticValue) {
-      differences.push({path: [...path, nativeKey], type: 'unequal'});
+      differences.push({
+        path: [...path, nativeKey],
+        type: 'unequal',
+        nativeValue,
+        staticValue,
+      });
     }
   }
 
   for (const staticKey in staticObject) {
-    if (!nativeObject.hasOwnProperty(staticKey)) {
-      differences.push({path: [...path, staticKey], type: 'unexpected'});
+    if (
+      !nativeObject.hasOwnProperty(staticKey) &&
+      !isIgnored(staticObject[staticKey])
+    ) {
+      differences.push({
+        path: [...path, staticKey],
+        type: 'unexpected',
+        staticValue: staticObject[staticKey],
+      });
     }
   }
 }

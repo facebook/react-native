@@ -1,12 +1,11 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
-
 #import <React/RCTBridgeModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,10 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleSoftJSExceptionWithMessage:(nullable NSString *)message
                                    stack:(nullable NSArray *)stack
-                             exceptionId:(NSNumber *)exceptionId;
+                             exceptionId:(NSNumber *)exceptionId
+                         extraDataAsJSON:(nullable NSString *)extraDataAsJSON;
 - (void)handleFatalJSExceptionWithMessage:(nullable NSString *)message
                                     stack:(nullable NSArray *)stack
-                              exceptionId:(NSNumber *)exceptionId;
+                              exceptionId:(NSNumber *)exceptionId
+                          extraDataAsJSON:(nullable NSString *)extraDataAsJSON;
 
 @optional
 - (void)updateJSExceptionWithMessage:(nullable NSString *)message
@@ -37,6 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reportFatalException:(nullable NSString *)message
                        stack:(nullable NSArray<NSDictionary *> *)stack
                  exceptionId:(double)exceptionId;
+- (void)reportJsException:(nullable NSString *)message
+                    stack:(nullable NSArray<NSDictionary *> *)stack
+              exceptionId:(double)exceptionId
+                  isFatal:(bool)isFatal;
 
 @property (nonatomic, weak) id<RCTExceptionsManagerDelegate> delegate;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,10 +11,10 @@
 'use strict';
 
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import convertRequestBody, {type RequestBody} from './convertRequestBody';
 import NativeNetworkingIOS from './NativeNetworkingIOS';
 import {type NativeResponseType} from './XMLHttpRequest';
-import convertRequestBody, {type RequestBody} from './convertRequestBody';
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 
 type RCTNetworkingEventDefinitions = $ReadOnly<{
   didSendNetworkData: [
@@ -68,6 +68,7 @@ const RCTNetworking = {
     listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
     context?: mixed,
   ): EventSubscription {
+    // $FlowFixMe[incompatible-call]
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
   },
 
@@ -108,4 +109,4 @@ const RCTNetworking = {
   },
 };
 
-module.exports = RCTNetworking;
+export default RCTNetworking;

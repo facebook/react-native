@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -46,7 +46,8 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
    * `TextInputShadowNode` uses the manager to measure text content
    * and construct `TextInputState` objects.
    */
-  void setTextLayoutManager(TextLayoutManager::Shared const &textLayoutManager);
+  void setTextLayoutManager(
+      std::shared_ptr<TextLayoutManager const> textLayoutManager);
 
 #pragma mark - LayoutableShadowNode
 
@@ -75,7 +76,7 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
   AttributedStringBox attributedStringBoxToMeasure(
       LayoutContext const &layoutContext) const;
 
-  TextLayoutManager::Shared textLayoutManager_;
+  std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 };
 
 } // namespace react

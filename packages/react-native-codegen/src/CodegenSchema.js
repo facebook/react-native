@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -182,7 +182,8 @@ export type ReservedPropTypeAnnotation = $ReadOnly<{
     | 'ColorPrimitive'
     | 'ImageSourcePrimitive'
     | 'PointPrimitive'
-    | 'EdgeInsetsPrimitive',
+    | 'EdgeInsetsPrimitive'
+    | 'ImageRequestPrimitive',
 }>;
 
 export type CommandTypeAnnotation = FunctionTypeAnnotation<
@@ -219,7 +220,7 @@ export type NativeModuleSchema = $ReadOnly<{
   type: 'NativeModule',
   aliases: NativeModuleAliasMap,
   spec: NativeModuleSpec,
-  moduleNames: $ReadOnlyArray<string>,
+  moduleName: string,
   // Use for modules that are not used on other platforms.
   // TODO: It's clearer to define `restrictedToPlatforms` instead, but
   // `excludedPlatforms` is used here to be consistent with ComponentSchema.
@@ -282,6 +283,11 @@ export type NativeModuleBooleanTypeAnnotation = $ReadOnly<{
   type: 'BooleanTypeAnnotation',
 }>;
 
+export type NativeModuleEnumDeclaration = $ReadOnly<{
+  type: 'EnumDeclaration',
+  memberType: 'NumberTypeAnnotation' | 'StringTypeAnnotation',
+}>;
+
 export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{
   type: 'GenericObjectTypeAnnotation',
 }>;
@@ -293,6 +299,21 @@ export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{
 
 export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   type: 'PromiseTypeAnnotation',
+  elementType?: Nullable<NativeModuleBaseTypeAnnotation>,
+}>;
+
+export type UnionTypeAnnotationMemberType =
+  | 'NumberTypeAnnotation'
+  | 'ObjectTypeAnnotation'
+  | 'StringTypeAnnotation';
+
+export type NativeModuleUnionTypeAnnotation = $ReadOnly<{
+  type: 'UnionTypeAnnotation',
+  memberType: UnionTypeAnnotationMemberType,
+}>;
+
+export type NativeModuleMixedTypeAnnotation = $ReadOnly<{
+  type: 'MixedTypeAnnotation',
 }>;
 
 export type NativeModuleBaseTypeAnnotation =
@@ -302,11 +323,14 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleDoubleTypeAnnotation
   | NativeModuleFloatTypeAnnotation
   | NativeModuleBooleanTypeAnnotation
+  | NativeModuleEnumDeclaration
   | NativeModuleGenericObjectTypeAnnotation
   | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleArrayTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>
-  | NativeModuleObjectTypeAnnotation;
+  | NativeModuleObjectTypeAnnotation
+  | NativeModuleUnionTypeAnnotation
+  | NativeModuleMixedTypeAnnotation;
 
 export type NativeModuleParamTypeAnnotation =
   | NativeModuleBaseTypeAnnotation

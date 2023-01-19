@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@ import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** Native module for JS timer execution. Timers fire on frame boundaries. */
-@ReactModule(name = TimingModule.NAME)
+@ReactModule(name = NativeTimingSpec.NAME)
 public final class TimingModule extends NativeTimingSpec
     implements LifecycleEventListener, HeadlessJsTaskEventListener {
 
@@ -51,8 +51,6 @@ public final class TimingModule extends NativeTimingSpec
     }
   }
 
-  public static final String NAME = "Timing";
-
   private final JavaTimerManager mJavaTimerManager;
 
   public TimingModule(ReactApplicationContext reactContext, DevSupportManager devSupportManager) {
@@ -72,11 +70,6 @@ public final class TimingModule extends NativeTimingSpec
     HeadlessJsTaskContext headlessJsTaskContext =
         HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     headlessJsTaskContext.addTaskEventListener(this);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

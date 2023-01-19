@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,22 +15,24 @@ const fs = require('fs');
 
 const argv = process.argv.slice(2);
 let outputPath;
-for (let i = 0; i < argv.length;) {
-    if (argv[i] === '-o') {
-      outputPath = argv[i + 1];
-      argv.splice(i, 2);
-      continue;
-    }
-    ++i;
+for (let i = 0; i < argv.length; ) {
+  if (argv[i] === '-o') {
+    outputPath = argv[i + 1];
+    argv.splice(i, 2);
+    continue;
+  }
+  ++i;
 }
 if (!argv.length) {
   process.stderr.write(
-    'Usage: node compose-source-maps.js <packager_sourcemap> <compiler_sourcemap> [-o output_file]\n'
+    'Usage: node compose-source-maps.js <packager_sourcemap> <compiler_sourcemap> [-o output_file]\n',
   );
   process.exitCode = -1;
 } else {
   const [packagerSourcemapPath, compilerSourcemapPath] = argv.splice(0, 2);
-  const packagerSourcemap = JSON.parse(fs.readFileSync(packagerSourcemapPath, 'utf8'));
+  const packagerSourcemap = JSON.parse(
+    fs.readFileSync(packagerSourcemapPath, 'utf8'),
+  );
   const compilerSourcemap = JSON.parse(
     fs.readFileSync(compilerSourcemapPath, 'utf8'),
   );
@@ -53,7 +55,9 @@ if (!argv.length) {
     );
   }
 
-  const composedMapJSON = JSON.stringify(composeSourceMaps([packagerSourcemap, compilerSourcemap]));
+  const composedMapJSON = JSON.stringify(
+    composeSourceMaps([packagerSourcemap, compilerSourcemap]),
+  );
   if (outputPath) {
     fs.writeFileSync(outputPath, composedMapJSON, 'utf8');
   } else {

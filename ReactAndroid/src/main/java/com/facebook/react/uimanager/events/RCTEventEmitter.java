@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,12 +20,12 @@ public interface RCTEventEmitter extends JavaScriptModule {
   /**
    * Deprecated in favor of RCTModernEventEmitter.receiveEvent.
    *
-   * @param targetTag
-   * @param eventName
-   * @param event
+   * @param targetReactTag react tag of the view that receives the event
+   * @param eventName name of event
+   * @param event event params
    */
   @Deprecated
-  void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event);
+  void receiveEvent(int targetReactTag, String eventName, @Nullable WritableMap event);
 
   /**
    * Receive and process touches

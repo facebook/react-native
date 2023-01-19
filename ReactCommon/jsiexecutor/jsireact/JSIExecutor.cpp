@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -121,7 +121,6 @@ void JSIExecutor::initializeRuntime() {
               const jsi::Value *args,
               size_t count) { return nativeCallSyncHook(args, count); }));
 
-#if DEBUG
   runtime_->global().setProperty(
       *runtime_,
       "globalEvalWithSourceUrl",
@@ -134,7 +133,6 @@ void JSIExecutor::initializeRuntime() {
               const jsi::Value &,
               const jsi::Value *args,
               size_t count) { return globalEvalWithSourceUrl(args, count); }));
-#endif
 
   if (runtimeInstaller_) {
     runtimeInstaller_(*runtime_);
@@ -175,7 +173,7 @@ void JSIExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry> r) {
             PropNameID::forAscii(*runtime_, "nativeRequire"),
             2,
             [this](
-                __unused Runtime &rt,
+                [[maybe_unused]] Runtime &rt,
                 const facebook::jsi::Value &,
                 const facebook::jsi::Value *args,
                 size_t count) { return nativeRequire(args, count); }));
@@ -244,8 +242,7 @@ void JSIExecutor::callFunction(
   // by value.
   auto errorProducer = [=] {
     std::stringstream ss;
-    ss << "moduleID: " << moduleId << " methodID: " << methodId
-       << " arguments: " << folly::toJson(arguments);
+    ss << "moduleID: " << moduleId << " methodID: " << methodId;
     return ss.str();
   };
 
@@ -498,20 +495,21 @@ Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
 
   /**
    * Note:
-   * In RCTNativeModule, folly::none is returned from callSerializableNativeHook
-   * when executing a NativeModule method fails. Therefore, it's safe to not
-   * terminate the syncMethodCall when folly::none is returned.
+   * In RCTNativeModule, std::nullopt is returned from
+   * callSerializableNativeHook when executing a NativeModule method fails.
+   * Therefore, it's safe to not terminate the syncMethodCall when std::nullopt
+   * is returned.
    *
-   * TODO: In JavaNativeModule, folly::none is returned when the synchronous
+   * TODO: In JavaNativeModule, std::nullopt is returned when the synchronous
    * NativeModule method has the void return type. Change this to return
-   * folly::dynamic(nullptr) instead, so that folly::none is reserved for
+   * folly::dynamic(nullptr) instead, so that std::nullopt is reserved for
    * exceptional scenarios.
    *
-   * TODO: Investigate CxxModule infra to see if folly::none is used for
+   * TODO: Investigate CxxModule infra to see if std::nullopt is used for
    * returns in exceptional scenarios.
    **/
 
-  if (!result.hasValue()) {
+  if (!result.has_value()) {
     return Value::undefined();
   }
 
@@ -527,7 +525,6 @@ Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
   return returnValue;
 }
 
-#if DEBUG
 Value JSIExecutor::globalEvalWithSourceUrl(const Value *args, size_t count) {
   if (count != 1 && count != 2) {
     throw std::invalid_argument(
@@ -543,7 +540,6 @@ Value JSIExecutor::globalEvalWithSourceUrl(const Value *args, size_t count) {
   return runtime_->evaluateJavaScript(
       std::make_unique<StringBuffer>(std::move(code)), url);
 }
-#endif
 
 void bindNativeLogger(Runtime &runtime, Logger logger) {
   runtime.global().setProperty(
@@ -569,7 +565,7 @@ void bindNativeLogger(Runtime &runtime, Logger logger) {
           }));
 }
 
-void bindNativePerformanceNow(Runtime &runtime, PerformanceNow performanceNow) {
+void bindNativePerformanceNow(Runtime &runtime) {
   runtime.global().setProperty(
       runtime,
       "nativePerformanceNow",
@@ -577,11 +573,10 @@ void bindNativePerformanceNow(Runtime &runtime, PerformanceNow performanceNow) {
           runtime,
           PropNameID::forAscii(runtime, "nativePerformanceNow"),
           0,
-          [performanceNow = std::move(performanceNow)](
-              jsi::Runtime &runtime,
-              const jsi::Value &,
-              const jsi::Value *args,
-              size_t count) { return Value(performanceNow()); }));
+          [](jsi::Runtime &runtime,
+             const jsi::Value &,
+             const jsi::Value *args,
+             size_t count) { return Value(JSExecutor::performanceNow()); }));
 }
 
 } // namespace react

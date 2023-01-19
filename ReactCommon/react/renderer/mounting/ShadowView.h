@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/small_vector.h>
+#include <butter/small_vector.h>
 #include <folly/Hash.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/LayoutMetrics.h>
@@ -65,9 +65,9 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
  *
  */
 struct ShadowViewNodePair final {
-  using NonOwningList = better::
+  using NonOwningList = butter::
       small_vector<ShadowViewNodePair *, kShadowNodeChildrenSmallVectorSize>;
-  using OwningList = better::
+  using OwningList = butter::
       small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
 
   ShadowView shadowView;
@@ -103,7 +103,7 @@ struct ShadowViewNodePair final {
  *
  */
 struct ShadowViewNodePairLegacy final {
-  using OwningList = better::small_vector<
+  using OwningList = butter::small_vector<
       ShadowViewNodePairLegacy,
       kShadowNodeChildrenSmallVectorSize>;
 

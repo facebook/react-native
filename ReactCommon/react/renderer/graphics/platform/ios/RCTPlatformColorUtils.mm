@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,6 @@
 #import "RCTPlatformColorUtils.h"
 
 #import <Foundation/Foundation.h>
-#import <React/RCTUtils.h>
 #import <UIKit/UIKit.h>
 
 #include <string>
@@ -180,23 +179,21 @@ static inline NSString *_NSStringFromCString(
 static inline facebook::react::ColorComponents _ColorComponentsFromUIColor(UIColor *color)
 {
   CGFloat rgba[4];
-  RCTGetRGBAColorComponents(color.CGColor, rgba);
+  [color getRed:&rgba[0] green:&rgba[1] blue:&rgba[2] alpha:&rgba[3]];
   return {(float)rgba[0], (float)rgba[1], (float)rgba[2], (float)rgba[3]};
 }
 
 facebook::react::ColorComponents RCTPlatformColorComponentsFromSemanticItems(std::vector<std::string> &semanticItems)
 {
   for (const auto &semanticCString : semanticItems) {
-    if (@available(iOS 11.0, *)) {
-      NSString *semanticNSString = _NSStringFromCString(semanticCString);
-      UIColor *uiColor = [UIColor colorNamed:semanticNSString];
-      if (uiColor != nil) {
-        return _ColorComponentsFromUIColor(uiColor);
-      }
-      uiColor = _UIColorFromSemanticString(semanticNSString);
-      if (uiColor != nil) {
-        return _ColorComponentsFromUIColor(uiColor);
-      }
+    NSString *semanticNSString = _NSStringFromCString(semanticCString);
+    UIColor *uiColor = [UIColor colorNamed:semanticNSString];
+    if (uiColor != nil) {
+      return _ColorComponentsFromUIColor(uiColor);
+    }
+    uiColor = _UIColorFromSemanticString(semanticNSString);
+    if (uiColor != nil) {
+      return _ColorComponentsFromUIColor(uiColor);
     }
   }
 

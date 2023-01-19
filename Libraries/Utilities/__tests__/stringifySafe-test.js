@@ -1,12 +1,12 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
- * @emails oncall+react_native
+ * @format
+ * @oncall react_native
  */
 
 import stringifySafe, {createStringifySafeWithLimits} from '../stringifySafe';
@@ -25,7 +25,7 @@ describe('stringifySafe', () => {
   });
 
   it('stringifySafe stringifies function values', () => {
-    expect(stringifySafe(function() {})).toEqual('function () {}');
+    expect(stringifySafe(function () {})).toEqual('function () {}');
   });
 
   it('stringifySafe stringifies non-circular objects', () => {
@@ -33,7 +33,7 @@ describe('stringifySafe', () => {
   });
 
   it('stringifySafe stringifies circular objects with toString', () => {
-    const arg = {};
+    const arg: {arg?: {...}} = {};
     arg.arg = arg;
     const result = stringifySafe(arg);
     expect(result).toEqual('[object Object]');

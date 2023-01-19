@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,9 +20,7 @@ class TimelineSnapshot final {
  public:
   using List = std::vector<TimelineSnapshot>;
 
-  TimelineSnapshot(
-      RootShadowNode::Shared const &rootShadowNode,
-      int index) noexcept;
+  TimelineSnapshot(RootShadowNode::Shared rootShadowNode, int index) noexcept;
 
   TimelineFrame getFrame() const noexcept;
   RootShadowNode::Shared getRootShadowNode() const noexcept;

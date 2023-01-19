@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,7 @@
 #include "EventEmitter.h"
 #include "ShadowNodeFamily.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 EventQueue::EventQueue(
     EventQueueProcessor eventProcessor,
@@ -19,7 +18,7 @@ EventQueue::EventQueue(
     : eventProcessor_(std::move(eventProcessor)),
       eventBeat_(std::move(eventBeat)) {
   eventBeat_->setBeatCallback(
-      std::bind(&EventQueue::onBeat, this, std::placeholders::_1));
+      [this](jsi::Runtime &runtime) { onBeat(runtime); });
 }
 
 void EventQueue::enqueueEvent(RawEvent &&rawEvent) const {
@@ -87,7 +86,7 @@ void EventQueue::flushEvents(jsi::Runtime &runtime) const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
 
-    if (eventQueue_.size() == 0) {
+    if (eventQueue_.empty()) {
       return;
     }
 
@@ -115,5 +114,4 @@ void EventQueue::flushStateUpdates() const {
   eventProcessor_.flushStateUpdates(std::move(stateUpdateQueue));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

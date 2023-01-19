@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,16 +12,19 @@
 #include <react/renderer/core/State.h>
 #include <react/renderer/core/StateData.h>
 
-namespace facebook {
-namespace react {
+#include <utility>
 
-State::State(StateData::Shared const &data, State const &state)
-    : family_(state.family_), data_(data), revision_(state.revision_ + 1){};
+namespace facebook::react {
 
-State::State(
-    StateData::Shared const &data,
-    ShadowNodeFamily::Shared const &family)
-    : family_(family), data_(data), revision_{State::initialRevisionValue} {};
+State::State(StateData::Shared data, State const &state)
+    : family_(state.family_),
+      data_(std::move(data)),
+      revision_(state.revision_ + 1){};
+
+State::State(StateData::Shared data, ShadowNodeFamily::Shared const &family)
+    : family_(family),
+      data_(std::move(data)),
+      revision_{State::initialRevisionValue} {};
 
 State::Shared State::getMostRecentState() const {
   auto family = family_.lock();
@@ -45,5 +48,4 @@ size_t State::getRevision() const {
   return revision_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

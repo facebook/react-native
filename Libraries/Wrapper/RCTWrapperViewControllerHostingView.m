@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,7 +42,7 @@
 
 - (void)detachChildViewController:(UIViewController *)childViewController
 {
-  [childViewController beginAppearanceTransition:false animated: false];
+  [childViewController beginAppearanceTransition:false animated:false];
   [childViewController endAppearanceTransition];
 
   [childViewController willMoveToParentViewController:nil];
@@ -66,7 +66,6 @@
 
 - (void)setContentViewController:(UIViewController *)contentViewController
 {
-
   if (_contentViewController) {
     [self detachContentViewControllerIfNeeded];
   }

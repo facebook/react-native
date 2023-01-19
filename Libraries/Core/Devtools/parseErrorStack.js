@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,13 +16,13 @@ import type {HermesParsedStack} from './parseHermesStack';
 const parseHermesStack = require('./parseHermesStack');
 
 function convertHermesStack(stack: HermesParsedStack): Array<StackFrame> {
-  const frames = [];
+  const frames: Array<StackFrame> = [];
   for (const entry of stack.entries) {
     if (entry.type !== 'FRAME') {
       continue;
     }
     const {location, functionName} = entry;
-    if (location.type === 'NATIVE') {
+    if (location.type === 'NATIVE' || location.type === 'INTERNAL_BYTECODE') {
       continue;
     }
     frames.push({
@@ -48,7 +48,7 @@ function parseErrorStack(errorStack?: string): Array<StackFrame> {
     ? errorStack
     : global.HermesInternal
     ? convertHermesStack(parseHermesStack(errorStack))
-    : stacktraceParser.parse(errorStack).map(frame => ({
+    : stacktraceParser.parse(errorStack).map((frame): StackFrame => ({
         ...frame,
         column: frame.column != null ? frame.column - 1 : null,
       }));

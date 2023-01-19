@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,6 +30,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
@@ -50,7 +51,7 @@ import okio.GzipSource;
 import okio.Okio;
 
 /** Implements the XMLHttpRequest JavaScript interface. */
-@ReactModule(name = NetworkingModule.NAME)
+@ReactModule(name = NativeNetworkingAndroidSpec.NAME)
 public final class NetworkingModule extends NativeNetworkingAndroidSpec {
 
   /**
@@ -83,9 +84,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     WritableMap toResponseData(ResponseBody body) throws IOException;
   }
 
-  public static final String NAME = "Networking";
-
-  private static final String TAG = "NetworkingModule";
+  private static final String TAG = NativeNetworkingAndroidSpec.NAME;
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
   private static final String CONTENT_TYPE_HEADER_NAME = "content-type";
   private static final String REQUEST_BODY_KEY_STRING = "string";
@@ -108,7 +107,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   private final List<ResponseHandler> mResponseHandlers = new ArrayList<>();
   private boolean mShuttingDown;
 
-  /* package */ NetworkingModule(
+  public NetworkingModule(
       ReactApplicationContext reactContext,
       @Nullable String defaultUserAgent,
       OkHttpClient client,
@@ -182,11 +181,6 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   @Override
   public void initialize() {
     mCookieJarContainer.setCookieJar(new JavaNetCookieJar(mCookieHandler));
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override
@@ -376,7 +370,9 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     }
 
     RequestBody requestBody;
-    if (data == null || method.toLowerCase().equals("get") || method.toLowerCase().equals("head")) {
+    if (data == null
+        || method.toLowerCase(Locale.ROOT).equals("get")
+        || method.toLowerCase(Locale.ROOT).equals("head")) {
       requestBody = RequestBodyUtil.getEmptyBody(method);
     } else if (handler != null) {
       requestBody = handler.toRequestBody(data, contentType);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,7 +32,6 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
@@ -125,12 +124,10 @@ public class TextLayoutManager {
                 sb.length(),
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
       } else if (end >= start) {
-        if (ReactAccessibilityDelegate.AccessibilityRole.LINK.equals(
-            textAttributes.mAccessibilityRole)) {
-          ops.add(
-              new SetSpanOperation(
-                  start, end, new ReactClickableSpan(reactTag, textAttributes.mColor)));
-        } else if (textAttributes.mIsColorSet) {
+        if (textAttributes.mIsAccessibilityLink) {
+          ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
+        }
+        if (textAttributes.mIsColorSet) {
           ops.add(
               new SetSpanOperation(
                   start, end, new ReactForegroundColorSpan(textAttributes.mColor)));
@@ -195,24 +192,8 @@ public class TextLayoutManager {
       ReadableMap attributedString,
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
-    Spannable preparedSpannableText;
-
-    synchronized (sSpannableCacheLock) {
-      preparedSpannableText = sSpannableCache.get((ReadableNativeMap) attributedString);
-      if (preparedSpannableText != null) {
-        return preparedSpannableText;
-      }
-    }
-
-    preparedSpannableText =
-        createSpannableFromAttributedString(
-            context, attributedString, reactTextViewManagerCallback);
-
-    synchronized (sSpannableCacheLock) {
-      sSpannableCache.put((ReadableNativeMap) attributedString, preparedSpannableText);
-    }
-
-    return preparedSpannableText;
+    return createSpannableFromAttributedString(
+        context, attributedString, reactTextViewManagerCallback);
   }
 
   private static Spannable createSpannableFromAttributedString(
@@ -424,6 +405,13 @@ public class TextLayoutManager {
       if (widthYogaMeasureMode == YogaMeasureMode.AT_MOST && calculatedWidth > width) {
         calculatedWidth = width;
       }
+    }
+
+    // Android 11+ introduces changes in text width calculation which leads to cases
+    // where the container is measured smaller than text. Math.ceil prevents it
+    // See T136756103 for investigation
+    if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
+      calculatedWidth = (float) Math.ceil(calculatedWidth);
     }
 
     float calculatedHeight = height;

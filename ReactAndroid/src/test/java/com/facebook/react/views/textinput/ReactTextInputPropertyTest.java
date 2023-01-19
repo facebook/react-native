@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.textinput;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -194,7 +194,7 @@ public class ReactTextInputPropertyTest {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
 
     mManager.updateProperties(view, buildStyles("multiline", true));
-    mManager.updateProperties(view, buildStyles("blurOnSubmit", true));
+    mManager.updateProperties(view, buildStyles("submitBehavior", "blurAndSubmit"));
 
     EditorInfo editorInfo = new EditorInfo();
     editorInfo.imeOptions = EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_ENTER_ACTION;

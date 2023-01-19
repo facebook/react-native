@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,16 +10,14 @@
 
 'use strict';
 
-const AnimatedValue = require('./AnimatedValue');
-const AnimatedNode = require('./AnimatedNode');
-const {
-  generateNewAnimationId,
-  shouldUseNativeDriver,
-} = require('../NativeAnimatedHelper');
-
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {EndCallback} from '../animations/Animation';
+import type AnimatedValue from './AnimatedValue';
 
-class AnimatedTracking extends AnimatedNode {
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedNode from './AnimatedNode';
+
+export default class AnimatedTracking extends AnimatedNode {
   _value: AnimatedValue;
   _parent: AnimatedNode;
   _callback: ?EndCallback;
@@ -39,16 +37,17 @@ class AnimatedTracking extends AnimatedNode {
     this._parent = parent;
     this._animationClass = animationClass;
     this._animationConfig = animationConfig;
-    this._useNativeDriver = shouldUseNativeDriver(animationConfig);
+    this._useNativeDriver =
+      NativeAnimatedHelper.shouldUseNativeDriver(animationConfig);
     this._callback = callback;
     this.__attach();
   }
 
-  __makeNative() {
+  __makeNative(platformConfig: ?PlatformConfig) {
     this.__isNative = true;
-    this._parent.__makeNative();
-    super.__makeNative();
-    this._value.__makeNative();
+    this._parent.__makeNative(platformConfig);
+    super.__makeNative(platformConfig);
+    this._value.__makeNative(platformConfig);
   }
 
   __getValue(): Object {
@@ -63,7 +62,8 @@ class AnimatedTracking extends AnimatedNode {
       // if we don't do this `update` method will get called. At that point it
       // may be too late as it would mean the JS driver has already started
       // updating node values
-      this.__makeNative();
+      let {platformConfig} = this._animationConfig;
+      this.__makeNative(platformConfig);
     }
   }
 
@@ -91,12 +91,10 @@ class AnimatedTracking extends AnimatedNode {
     const animationConfig = animation.__getNativeAnimationConfig();
     return {
       type: 'tracking',
-      animationId: generateNewAnimationId(),
+      animationId: NativeAnimatedHelper.generateNewAnimationId(),
       animationConfig,
       toValue: this._parent.__getNativeTag(),
       value: this._value.__getNativeTag(),
     };
   }
 }
-
-module.exports = AnimatedTracking;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,17 +8,18 @@
  * @flow
  */
 
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
+
 import AndroidSwipeRefreshLayoutNativeComponent, {
   Commands as AndroidSwipeRefreshLayoutCommands,
 } from './AndroidSwipeRefreshLayoutNativeComponent';
 import PullToRefreshViewNativeComponent, {
   Commands as PullToRefreshCommands,
 } from './PullToRefreshViewNativeComponent';
+
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
 
 type IOSProps = $ReadOnly<{|
   /**
@@ -158,13 +159,8 @@ class RefreshControl extends React.Component<RefreshControlProps> {
 
   render(): React.Node {
     if (Platform.OS === 'ios') {
-      const {
-        enabled,
-        colors,
-        progressBackgroundColor,
-        size,
-        ...props
-      } = this.props;
+      const {enabled, colors, progressBackgroundColor, size, ...props} =
+        this.props;
       return (
         <PullToRefreshViewNativeComponent
           {...props}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,7 @@
 
 #import "RCTVibrationPlugins.h"
 
-@interface RCTVibration() <NativeVibrationSpec>
+@interface RCTVibration () <NativeVibrationSpec>
 @end
 
 @implementation RCTVibration
@@ -25,18 +25,18 @@ RCT_EXPORT_MODULE()
   AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
 
-RCT_EXPORT_METHOD(vibrate:(double)pattern)
+RCT_EXPORT_METHOD(vibrate : (double)pattern)
 {
   [self vibrate];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<facebook::react::NativeVibrationSpecJSI>(params);
 }
 
-RCT_EXPORT_METHOD(vibrateByPattern:(NSArray *)pattern
-                  repeat:(double)repeat)
+RCT_EXPORT_METHOD(vibrateByPattern : (NSArray *)pattern repeat : (double)repeat)
 {
   RCTLogError(@"Vibration.vibrateByPattern does not have an iOS implementation");
 }

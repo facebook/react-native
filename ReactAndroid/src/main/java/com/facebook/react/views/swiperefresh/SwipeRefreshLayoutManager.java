@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,6 +29,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.viewmanagers.AndroidSwipeRefreshLayoutManagerDelegate;
 import com.facebook.react.viewmanagers.AndroidSwipeRefreshLayoutManagerInterface;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -175,9 +176,15 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
 
   @Override
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put("topRefresh", MapBuilder.of("registrationName", "onRefresh"))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put("topRefresh", MapBuilder.of("registrationName", "onRefresh"))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override

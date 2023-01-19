@@ -20,19 +20,26 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+**/.xcode.env.local
 
 # Gradle
 /build/
 /packages/react-native-gradle-plugin/build/
+/packages/rn-tester/build
 /packages/rn-tester/android/app/.cxx/
 /packages/rn-tester/android/app/build/
 /packages/rn-tester/android/app/gradle/
 /packages/rn-tester/android/app/gradlew
 /packages/rn-tester/android/app/gradlew.bat
 /ReactAndroid/build/
+/ReactAndroid/.cxx/
 /ReactAndroid/gradle/
 /ReactAndroid/gradlew
 /ReactAndroid/gradlew.bat
+/ReactAndroid/external-artifacts/build/
+/ReactAndroid/external-artifacts/artifacts/
+/ReactAndroid/hermes-engine/build/
+/ReactAndroid/hermes-engine/.cxx/
 /template/android/app/build/
 /template/android/build/
 
@@ -57,13 +64,13 @@ buck-out
 .gradle
 local.properties
 *.iml
-/android/
+/android/*
+!/android/README.md
 
 # Node
 node_modules
 *.log
 .nvm
-/bots/node_modules/
 package-lock.json
 
 # OS X
@@ -76,13 +83,17 @@ package-lock.json
 /coverage
 /third-party
 
+# Test Reports
+/reports
+
+# Stack Dumps generated when programs crash (Ex. bash.exe.stackdump on Win)
+*.stackdump
+
 # Root dir shouldn't have Xcode project
 /*.xcodeproj
 
 # ReactCommon subdir shouldn't have Xcode project
 /ReactCommon/**/*.xcodeproj
-/packages/rn-tester/build
-/packages/rn-tester/android/app/build/*
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
@@ -95,20 +106,29 @@ package-lock.json
 /vendor
 /template/vendor
 
-# CocoaPods
+# iOS / CocoaPods
+/template/ios/build/
 /template/ios/Pods/
 /template/ios/Podfile.lock
 /packages/rn-tester/Gemfile.lock
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*
-!/packages/rn-tester/Pods/__offline_mirrors__
+!/packages/rn-tester/Pods/__offline_mirrors_hermes__
+!/packages/rn-tester/Pods/__offline_mirrors_jsc__
 
-# react-native-codegen
+# @react-native/codegen
 /React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
+/packages/react-native-codegen/tmp/
 /ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
+
+
+# Additional SDKs
+/sdks/download
+/sdks/hermes
+/sdks/hermesc
 
 # Visual studio
 .vscode
@@ -116,3 +136,6 @@ package-lock.json
 
 # Android memory profiler files
 *.hprof
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*

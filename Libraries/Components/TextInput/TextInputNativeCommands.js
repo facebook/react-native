@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,9 +8,9 @@
  * @format
  */
 
-import * as React from 'react';
-
 import type {Int32} from '../../Types/CodegenTypes';
+
+import * as React from 'react';
 
 export interface TextInputNativeCommands<T> {
   +focus: (viewRef: React.ElementRef<T>) => void;

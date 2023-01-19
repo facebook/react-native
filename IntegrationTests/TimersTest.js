@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,7 +39,7 @@ class TimersTest extends React.Component<Props, State> {
   };
 
   setTimeout(fn: () => void, time: number): TimeoutID {
-    const id = setTimeout(() => {
+    const id: TimeoutID = setTimeout(() => {
       this._timeoutIDs.delete(id);
       fn();
     }, time);
@@ -70,7 +70,7 @@ class TimersTest extends React.Component<Props, State> {
   }
 
   setImmediate(fn: () => void): ImmediateID {
-    const id = setImmediate(() => {
+    const id: any = setImmediate(() => {
       this._immediateIDs.delete(id);
       fn();
     });
@@ -81,7 +81,7 @@ class TimersTest extends React.Component<Props, State> {
   }
 
   requestAnimationFrame(fn: () => void): AnimationFrameID {
-    const id = requestAnimationFrame(() => {
+    const id: AnimationFrameID = requestAnimationFrame(() => {
       this._animationFrameIDs.delete(id);
       fn();
     });
@@ -253,7 +253,7 @@ class TimersTest extends React.Component<Props, State> {
     );
   }
 
-  _incrementInterval() {
+  _incrementInterval(): void {
     if (this.state.count > 3) {
       throw new Error('interval incremented past end.');
     }

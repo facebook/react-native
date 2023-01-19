@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -185,5 +185,7 @@ RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(
     NSString const *componentName,
     NSString const *commandName,
     NSString const *argPos);
+
+RCT_EXTERN BOOL RCTIsAppActive(void);
 
 NS_ASSUME_NONNULL_END

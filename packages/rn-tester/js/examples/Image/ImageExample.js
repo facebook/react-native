@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,8 @@
  */
 
 'use strict';
+
+import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 const React = require('react');
 
@@ -41,7 +43,7 @@ type BlobImageProps = $ReadOnly<{|
 |}>;
 
 class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
-  state = {
+  state: BlobImageState = {
     objectURL: null,
   };
 
@@ -54,7 +56,7 @@ class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
     })();
   }
 
-  render() {
+  render(): React.Node {
     return this.state.objectURL !== null ? (
       <Image source={{uri: this.state.objectURL}} style={styles.base} />
     ) : (
@@ -73,7 +75,7 @@ class BlobImageExample extends React.Component<
   BlobImageExampleProps,
   BlobImageExampleState,
 > {
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.horizontal}>
         {this.props.urls.map(url => (
@@ -100,7 +102,7 @@ class NetworkImageCallbackExample extends React.Component<
   NetworkImageCallbackExampleProps,
   NetworkImageCallbackExampleState,
 > {
-  state = {
+  state: NetworkImageCallbackExampleState = {
     events: [],
     startLoadPrefetched: false,
     mountTime: Date.now(),
@@ -121,13 +123,13 @@ class NetworkImageCallbackExample extends React.Component<
     this.setState({imageHash: Date.now()});
   };
 
-  render() {
+  render(): React.Node {
     const {mountTime} = this.state;
     return (
       <View>
         <Image
           source={this.props.source}
-          style={[styles.base, {overflow: 'visible'}]}
+          style={[styles.base, styles.visibleOverflow]}
           onLoadStart={() =>
             this._loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
           }
@@ -160,8 +162,9 @@ class NetworkImageCallbackExample extends React.Component<
                     const result = map[IMAGE_PREFETCH_URL];
                     if (result) {
                       this._loadEventFired(
-                        `✔ queryCache "${result}" (+${Date.now() -
-                          mountTime}ms)`,
+                        `✔ queryCache "${result}" (+${
+                          Date.now() - mountTime
+                        }ms)`,
                       );
                     } else {
                       this._loadEventFired(
@@ -182,7 +185,7 @@ class NetworkImageCallbackExample extends React.Component<
         {this.state.startLoadPrefetched ? (
           <Image
             source={this.props.prefetchedSource}
-            style={[styles.base, {overflow: 'visible'}]}
+            style={[styles.base, styles.visibleOverflow]}
             onLoadStart={() =>
               this._loadEventFired(
                 `✔ (prefetched) onLoadStart (+${Date.now() - mountTime}ms)`,
@@ -193,8 +196,9 @@ class NetworkImageCallbackExample extends React.Component<
               if (event.nativeEvent.source) {
                 const url = event.nativeEvent.source.uri;
                 this._loadEventFired(
-                  `✔ (prefetched) onLoad (+${Date.now() -
-                    mountTime}ms) for URL ${url}`,
+                  `✔ (prefetched) onLoad (+${
+                    Date.now() - mountTime
+                  }ms) for URL ${url}`,
                 );
               } else {
                 this._loadEventFired(
@@ -209,7 +213,9 @@ class NetworkImageCallbackExample extends React.Component<
             }
           />
         ) : null}
-        <Text style={{marginTop: 20}}>{this.state.events.join('\n')}</Text>
+        <Text style={styles.networkImageText}>
+          {this.state.events.join('\n')}
+        </Text>
       </View>
     );
   }
@@ -229,20 +235,20 @@ class NetworkImageExample extends React.Component<
   NetworkImageExampleProps,
   NetworkImageExampleState,
 > {
-  state = {
+  state: NetworkImageExampleState = {
     error: null,
     loading: false,
     progress: [],
   };
 
-  render() {
+  render(): React.Node {
     return this.state.error != null ? (
       <Text>{this.state.error}</Text>
     ) : (
       <>
         <Image
           source={this.props.source}
-          style={[styles.base, {overflow: 'visible'}]}
+          style={[styles.base, styles.visibleOverflow]}
           onLoadStart={e => this.setState({loading: true})}
           onError={e =>
             this.setState({error: e.nativeEvent.error, loading: false})
@@ -279,7 +285,7 @@ class ImageSizeExample extends React.Component<
   ImageSizeExampleProps,
   ImageSizeExampleState,
 > {
-  state = {
+  state: ImageSizeExampleState = {
     width: 0,
     height: 0,
   };
@@ -290,18 +296,10 @@ class ImageSizeExample extends React.Component<
     });
   }
 
-  render() {
+  render(): React.Node {
     return (
-      <View style={{flexDirection: 'row'}}>
-        <Image
-          style={{
-            width: 60,
-            height: 60,
-            backgroundColor: 'transparent',
-            marginRight: 10,
-          }}
-          source={this.props.source}
-        />
+      <View style={styles.flexRow}>
+        <Image style={styles.imageSizeExample} source={this.props.source} />
         <Text>
           Actual dimensions:{'\n'}
           Width: {this.state.width}, Height: {this.state.height}
@@ -322,19 +320,9 @@ class MultipleSourcesExample extends React.Component<
   MultipleSourcesExampleProps,
   MultipleSourcesExampleState,
 > {
-  state = {
+  state: MultipleSourcesExampleState = {
     width: 30,
     height: 30,
-  };
-
-  increaseImageSize = () => {
-    if (this.state.width >= 100) {
-      return;
-    }
-    this.setState({
-      width: this.state.width + 10,
-      height: this.state.height + 10,
-    });
   };
 
   increaseImageSize = () => {
@@ -357,10 +345,10 @@ class MultipleSourcesExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={styles.spaceBetweenView}>
           <Text style={styles.touchableText} onPress={this.decreaseImageSize}>
             Decrease image size
           </Text>
@@ -373,7 +361,7 @@ class MultipleSourcesExample extends React.Component<
         </Text>
         <View style={{height: this.state.height, width: this.state.width}}>
           <Image
-            style={{flex: 1}}
+            style={styles.flex}
             source={[
               {
                 uri: 'https://www.facebook.com/favicon.ico',
@@ -381,14 +369,9 @@ class MultipleSourcesExample extends React.Component<
                 height: 38,
               },
               {
-                uri: 'https://www.facebook.com/favicon.ico',
-                width: 76,
-                height: 76,
-              },
-              {
                 uri: 'https://www.facebook.com/ads/pics/successstories.png',
-                width: 400,
-                height: 400,
+                width: 100,
+                height: 100,
               },
             ]}
           />
@@ -408,7 +391,7 @@ class LoadingIndicatorSourceExample extends React.Component<
   LoadingIndicatorSourceExampleProps,
   LoadingIndicatorSourceExampleState,
 > {
-  state = {
+  state: LoadingIndicatorSourceExampleState = {
     imageHash: Date.now(),
   };
 
@@ -418,18 +401,18 @@ class LoadingIndicatorSourceExample extends React.Component<
     });
   };
 
-  loaderGif = {
+  loaderGif: {uri: string} = {
     uri: 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif',
   };
 
-  render() {
+  render(): React.Node {
     const loadingImage = {
       uri: `https://www.facebook.com/ads/pics/successstories.png?hash=${this.state.imageHash}`,
     };
 
     return (
       <View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={styles.spaceBetweenView}>
           <Text style={styles.touchableText} onPress={this.reloadImage}>
             Refresh Image
           </Text>
@@ -458,29 +441,19 @@ class OnLayoutExample extends React.Component<
   OnLayoutExampleProps,
   OnLayoutExampleState,
 > {
-  state = {
+  state: OnLayoutExampleState = {
     width: 30,
     height: 30,
     layoutHandlerMessage: 'No Message',
   };
 
-  onLayoutHandler = event => {
+  onLayoutHandler = (event: LayoutEvent) => {
     this.setState({
       width: this.state.width,
       height: this.state.height,
       layoutHandlerMessage: JSON.stringify(event.nativeEvent),
     });
     console.log(event.nativeEvent);
-  };
-
-  increaseImageSize = () => {
-    if (this.state.width >= 100) {
-      return;
-    }
-    this.setState({
-      width: this.state.width + 10,
-      height: this.state.height + 10,
-    });
   };
 
   increaseImageSize = () => {
@@ -503,11 +476,11 @@ class OnLayoutExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text>Adjust the image size to trigger the OnLayout handler.</Text>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={styles.spaceBetweenView}>
           <Text style={styles.touchableText} onPress={this.decreaseImageSize}>
             Decrease image size
           </Text>
@@ -521,7 +494,7 @@ class OnLayoutExample extends React.Component<
         <View style={{height: this.state.height, width: this.state.width}}>
           <Image
             onLayout={this.onLayoutHandler}
-            style={{flex: 1}}
+            style={styles.flex}
             source={[
               {
                 uri: 'https://www.facebook.com/favicon.ico',
@@ -557,7 +530,7 @@ class OnPartialLoadExample extends React.Component<
   OnPartialLoadExampleProps,
   OnPartialLoadExampleState,
 > {
-  state = {
+  state: OnPartialLoadExampleState = {
     hasLoaded: false,
   };
 
@@ -567,7 +540,7 @@ class OnPartialLoadExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text>
@@ -594,8 +567,12 @@ const smallImage = {
 
 const styles = StyleSheet.create({
   base: {
-    width: 38,
-    height: 38,
+    width: 64,
+    height: 64,
+    margin: 4,
+  },
+  visibleOverflow: {
+    overflow: 'visible',
   },
   leftMargin: {
     marginLeft: 10,
@@ -625,9 +602,11 @@ const styles = StyleSheet.create({
   icon: {
     width: 15,
     height: 15,
+    margin: 4,
   },
   horizontal: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   gif: {
     flex: 1,
@@ -642,6 +621,144 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'blue',
   },
+  networkImageText: {
+    marginTop: 20,
+  },
+  flex: {
+    flex: 1,
+  },
+  imageWithBorderRadius: {
+    borderRadius: 5,
+  },
+  imageSizeExample: {
+    width: 60,
+    height: 60,
+    backgroundColor: 'transparent',
+    marginRight: 10,
+  },
+  flexRow: {
+    flexDirection: 'row',
+  },
+  spaceBetweenView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  customBorderColor: {
+    borderWidth: 5,
+    borderColor: '#f099f0',
+  },
+  borderTopLeftRadius: {
+    borderTopLeftRadius: 20,
+  },
+  opacity1: {
+    opacity: 1,
+  },
+  opacity2: {
+    opacity: 0.8,
+  },
+  opacity3: {
+    opacity: 0.6,
+  },
+  opacity4: {
+    opacity: 0.4,
+  },
+  opacity5: {
+    opacity: 0.2,
+  },
+  opacity6: {
+    opacity: 0,
+  },
+  transparentImageBackground: {
+    width: 60,
+    height: 60,
+    backgroundColor: 'transparent',
+  },
+  tintColor1: {
+    tintColor: '#ff2d55',
+  },
+  tintColor2: {
+    tintColor: '#5ac8fa',
+  },
+  tintColor3: {
+    tintColor: '#4cd964',
+  },
+  tintColor4: {
+    tintColor: '#8e8e93',
+  },
+  objectFitContain: {
+    objectFit: 'contain',
+  },
+  objectFitCover: {
+    objectFit: 'cover',
+  },
+  objectFitFill: {
+    objectFit: 'fill',
+  },
+  objectFitScaleDown: {
+    objectFit: 'scale-down',
+  },
+  imageInBundle: {
+    borderColor: 'yellow',
+    borderWidth: 4,
+  },
+  imageInAssetCatalog: {
+    marginLeft: 10,
+    borderColor: 'blue',
+    borderWidth: 4,
+  },
+  backgroundColor1: {
+    backgroundColor: 'rgba(0, 0, 100, 0.25)',
+  },
+  backgroundColor2: {
+    backgroundColor: 'red',
+  },
+  backgroundColor3: {
+    backgroundColor: 'red',
+    borderColor: 'green',
+    borderWidth: 3,
+    borderRadius: 25,
+  },
+  borderRadius1: {
+    borderRadius: 19,
+  },
+  borderRadius2: {
+    borderWidth: 4,
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 20,
+    borderColor: 'green',
+  },
+  borderRadius3: {
+    resizeMode: 'cover',
+    width: 90,
+    borderWidth: 4,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 40,
+    borderColor: 'red',
+  },
+  borderRadius4: {
+    resizeMode: 'stretch',
+    width: 90,
+    borderWidth: 4,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 40,
+    borderColor: 'red',
+    backgroundColor: 'yellow',
+  },
+  borderRadius5: {
+    resizeMode: 'contain',
+    width: 90,
+    borderWidth: 4,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 40,
+    borderColor: 'red',
+    backgroundColor: 'yellow',
+  },
 });
 
 exports.displayName = (undefined: ?string);
@@ -653,18 +770,44 @@ exports.description =
 
 exports.examples = [
   {
-    title: 'Plain Network Image',
+    title: 'Plain Network Image with `source` prop.',
     description: ('If the `source` prop `uri` property is prefixed with ' +
       '"http", then it will be downloaded from the network.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <Image source={fullImage} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Plain Network Image with `src` prop.',
+    description: ('If the `src` prop is defined with ' +
+      '"http", then it will be downloaded from the network.': string),
+    render: function (): React.Node {
+      return <Image src={fullImage.uri} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Multiple Image Source using the `srcSet` prop.',
+    description:
+      ('A list of comma seperated uris along with scale are provided in `srcSet`.' +
+        'An appropriate value will be used based on the scale of the device.': string),
+    render: function (): React.Node {
+      return (
+        <Image
+          width={64}
+          height={64}
+          srcSet={
+            'https://www.facebook.com/ads/pics/successstories.png 4x, https://www.facebook.com/favicon.ico 2x'
+          }
+          style={styles.base}
+        />
+      );
     },
   },
   {
     title: 'Plain Blob Image',
     description: ('If the `source` prop `uri` property is an object URL, ' +
       'then it will be resolved using `BlobProvider` (Android) or `RCTBlobManager` (iOS).': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <BlobImageExample
           urls={[
@@ -677,9 +820,10 @@ exports.examples = [
   },
   {
     title: 'Plain Static Image',
-    description: ('Static assets should be placed in the source code tree, and ' +
-      'required in the same way as JavaScript modules.': string),
-    render: function(): React.Node {
+    description:
+      ('Static assets should be placed in the source code tree, and ' +
+        'required in the same way as JavaScript modules.': string),
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -704,7 +848,7 @@ exports.examples = [
   },
   {
     title: 'Image Loading Events',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <NetworkImageCallbackExample
           source={{
@@ -717,7 +861,7 @@ exports.examples = [
   },
   {
     title: 'Error Handler',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <NetworkImageExample
           source={{
@@ -729,7 +873,7 @@ exports.examples = [
   },
   {
     title: 'Image Download Progress',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <NetworkImageExample
           source={{
@@ -742,7 +886,7 @@ exports.examples = [
   {
     title: 'defaultSource',
     description: 'Show a placeholder image when a network image is loading',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Image
           defaultSource={require('../../assets/bunny.png')}
@@ -759,10 +903,11 @@ exports.examples = [
   },
   {
     title: 'Cache Policy',
-    description: ('First image has never been loaded before and is instructed not to load unless in cache.' +
-      'Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
-      ' local cache state.': string),
-    render: function(): React.Node {
+    description:
+      ('First image has never been loaded before and is instructed not to load unless in cache.' +
+        'Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
+        ' local cache state.': string),
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -787,34 +932,13 @@ exports.examples = [
     platform: 'ios',
   },
   {
-    title: 'Border Color',
-    render: function(): React.Node {
+    title: 'Borders',
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
             source={smallImage}
-            style={[
-              styles.base,
-              styles.background,
-              {borderWidth: 3, borderColor: '#f099f0'},
-            ]}
-          />
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Border Width',
-    render: function(): React.Node {
-      return (
-        <View style={styles.horizontal}>
-          <Image
-            source={smallImage}
-            style={[
-              styles.base,
-              styles.background,
-              {borderWidth: 5, borderColor: '#f099f0'},
-            ]}
+            style={[styles.base, styles.background, styles.customBorderColor]}
           />
         </View>
       );
@@ -822,44 +946,35 @@ exports.examples = [
   },
   {
     title: 'Border Radius',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
-          <Image style={[styles.base, {borderRadius: 5}]} source={fullImage} />
           <Image
-            style={[styles.base, styles.leftMargin, {borderRadius: 19}]}
+            style={[styles.base, styles.imageWithBorderRadius]}
             source={fullImage}
           />
           <Image
-            style={[styles.base, styles.leftMargin, {borderTopLeftRadius: 20}]}
+            style={[styles.base, styles.borderRadius1]}
             source={fullImage}
           />
           <Image
-            style={[
-              styles.base,
-              styles.leftMargin,
-              {
-                borderWidth: 10,
-                borderTopLeftRadius: 10,
-                borderBottomRightRadius: 20,
-                borderColor: 'green',
-              },
-            ]}
+            style={[styles.base, styles.borderTopLeftRadius]}
             source={fullImage}
           />
           <Image
-            style={[
-              styles.base,
-              styles.leftMargin,
-              {
-                borderWidth: 5,
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 20,
-                borderBottomRightRadius: 30,
-                borderBottomLeftRadius: 40,
-                borderColor: 'red',
-              },
-            ]}
+            style={[styles.base, styles.borderRadius2]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.borderRadius3]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.borderRadius4]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.borderRadius5]}
             source={fullImage}
           />
         </View>
@@ -868,24 +983,20 @@ exports.examples = [
   },
   {
     title: 'Background Color',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image source={smallImage} style={styles.base} />
           <Image
-            style={[
-              styles.base,
-              styles.leftMargin,
-              {backgroundColor: 'rgba(0, 0, 100, 0.25)'},
-            ]}
+            style={[styles.base, styles.backgroundColor1]}
             source={smallImage}
           />
           <Image
-            style={[styles.base, styles.leftMargin, {backgroundColor: 'red'}]}
+            style={[styles.base, styles.backgroundColor2]}
             source={smallImage}
           />
           <Image
-            style={[styles.base, styles.leftMargin, {backgroundColor: 'black'}]}
+            style={[styles.base, styles.backgroundColor3]}
             source={smallImage}
           />
         </View>
@@ -894,39 +1005,24 @@ exports.examples = [
   },
   {
     title: 'Opacity',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
-          <Image style={[styles.base, {opacity: 1}]} source={fullImage} />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.8}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.6}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.4}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.2}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0}]}
-            source={fullImage}
-          />
+          <Image style={[styles.base, styles.opacity1]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity2]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity3]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity4]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity5]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity6]} source={fullImage} />
         </View>
       );
     },
   },
   {
     title: 'Nesting content inside <Image> component',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
-        <View style={{width: 60, height: 60}}>
+        <View style={styles.base}>
           <Image
             style={{...StyleSheet.absoluteFillObject}}
             source={fullImage}
@@ -938,10 +1034,10 @@ exports.examples = [
   },
   {
     title: 'Nesting content inside <ImageBackground> component',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <ImageBackground
-          style={{width: 60, height: 60, backgroundColor: 'transparent'}}
+          style={styles.transparentImageBackground}
           source={fullImage}>
           <Text style={styles.nestedText}>React</Text>
         </ImageBackground>
@@ -950,39 +1046,113 @@ exports.examples = [
   },
   {
     title: 'Tint Color',
-    description: ('The `tintColor` style prop changes all the non-alpha ' +
+    description: ('The `tintColor` prop changes all the non-alpha ' +
       'pixels to the tint color.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <View style={styles.horizontal}>
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
-              style={[styles.icon, {borderRadius: 5, tintColor: '#5ac8fa'}]}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
+              ]}
+              tintColor={'#5ac8fa'}
             />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, styles.imageWithBorderRadius]}
+              tintColor={'#4cd964'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, styles.imageWithBorderRadius]}
+              tintColor={'#ff2d55'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, styles.imageWithBorderRadius]}
+              tintColor={'#8e8e93'}
+            />
+          </View>
+          <Text style={styles.sectionText}>
+            It also works using the `tintColor` style prop
+          </Text>
+          <View style={styles.horizontal}>
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
               style={[
                 styles.icon,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#4cd964'},
+                styles.imageWithBorderRadius,
+                styles.tintColor2,
               ]}
             />
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
               style={[
                 styles.icon,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#ff2d55'},
+                styles.imageWithBorderRadius,
+                styles.tintColor3,
               ]}
             />
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
               style={[
                 styles.icon,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#8e8e93'},
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
               ]}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor4,
+              ]}
+            />
+          </View>
+          <Text style={styles.sectionText}>
+            The `tintColor` prop has precedence over the `tintColor` style prop
+          </Text>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor2,
+              ]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor3,
+              ]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
+              ]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor4,
+              ]}
+              tintColor={'#5ac8fa'}
             />
           </View>
           <Text style={styles.sectionText}>
@@ -991,30 +1161,34 @@ exports.examples = [
           <View style={styles.horizontal}>
             <Image
               source={smallImage}
-              style={[styles.base, {borderRadius: 5, tintColor: '#5ac8fa'}]}
-            />
-            <Image
-              source={smallImage}
               style={[
                 styles.base,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#4cd964'},
+                styles.imageWithBorderRadius,
+                styles.tintColor2,
               ]}
             />
             <Image
               source={smallImage}
               style={[
                 styles.base,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#ff2d55'},
+                styles.imageWithBorderRadius,
+                styles.tintColor3,
               ]}
             />
             <Image
               source={smallImage}
               style={[
                 styles.base,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#8e8e93'},
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
+              ]}
+            />
+            <Image
+              source={smallImage}
+              style={[
+                styles.base,
+                styles.imageWithBorderRadius,
+                styles.tintColor4,
               ]}
             />
           </View>
@@ -1023,10 +1197,10 @@ exports.examples = [
     },
   },
   {
-    title: 'Resize Mode',
-    description: ('The `resizeMode` style prop controls how the image is ' +
+    title: 'Object Fit',
+    description: ('The `objectFit` style prop controls how the image is ' +
       'rendered within the frame.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           {[smallImage, fullImage].map((image, index) => {
@@ -1034,19 +1208,64 @@ exports.examples = [
               <View key={index}>
                 <View style={styles.horizontal}>
                   <View>
-                    <Text style={[styles.resizeModeText]}>Contain</Text>
+                    <Text style={styles.resizeModeText}>Contain</Text>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitContain]}
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <Text style={styles.resizeModeText}>Cover</Text>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitCover]}
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <Text style={styles.resizeModeText}>Fill</Text>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitFill]}
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <Text style={styles.resizeModeText}>Scale Down</Text>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitScaleDown]}
+                      source={image}
+                    />
+                  </View>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Resize Mode',
+    description: ('The `resizeMode` style prop controls how the image is ' +
+      'rendered within the frame.': string),
+    render: function (): React.Node {
+      return (
+        <View>
+          {[smallImage, fullImage].map((image, index) => {
+            return (
+              <View key={index}>
+                <View style={styles.horizontal}>
+                  <View>
+                    <Text style={styles.resizeModeText}>Contain</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="contain"
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
-                   * native_fb) This comment suppresses an error found when
-                   * Flow v0.115 was deployed. To see the error, delete this
-                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>Cover</Text>
+                    <Text style={styles.resizeModeText}>Cover</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="cover"
@@ -1056,31 +1275,23 @@ exports.examples = [
                 </View>
                 <View style={styles.horizontal}>
                   <View>
-                    <Text style={[styles.resizeModeText]}>Stretch</Text>
+                    <Text style={styles.resizeModeText}>Stretch</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="stretch"
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
-                   * native_fb) This comment suppresses an error found when
-                   * Flow v0.115 was deployed. To see the error, delete this
-                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>Repeat</Text>
+                    <Text style={styles.resizeModeText}>Repeat</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="repeat"
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
-                   * native_fb) This comment suppresses an error found when
-                   * Flow v0.115 was deployed. To see the error, delete this
-                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>Center</Text>
+                    <Text style={styles.resizeModeText}>Center</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="center"
@@ -1097,7 +1308,7 @@ exports.examples = [
   },
   {
     title: 'Animated GIF',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Image
           style={styles.gif}
@@ -1109,7 +1320,7 @@ exports.examples = [
   },
   {
     title: 'Base64 image',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Image style={styles.base64} source={{uri: base64Icon, scale: 3}} />
       );
@@ -1118,32 +1329,28 @@ exports.examples = [
   },
   {
     title: 'Cap Insets',
-    description: ('When the image is resized, the corners of the size specified ' +
-      'by capInsets will stay a fixed size, but the center content and ' +
-      'borders of the image will be stretched. This is useful for creating ' +
-      'resizable rounded buttons, shadows, and other resizable assets.': string),
-    render: function(): React.Node {
+    description:
+      ('When the image is resized, the corners of the size specified ' +
+        'by capInsets will stay a fixed size, but the center content and ' +
+        'borders of the image will be stretched. This is useful for creating ' +
+        'resizable rounded buttons, shadows, and other resizable assets.': string),
+    render: function (): React.Node {
       return <ImageCapInsetsExample />;
     },
     platform: 'ios',
   },
   {
     title: 'Image Size',
-    render: function(): React.Node {
-      /* $FlowFixMe[prop-missing] (>=0.115.0 site=react_native_fb) This comment
-       * suppresses an error found when Flow v0.115 was deployed. To see the
-       * error, delete this comment and run Flow. */
-      /* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_native_fb) This
-       * comment suppresses an error found when Flow v0.115 was deployed. To
-       * see the error, delete this comment and run Flow. */
+    render: function (): React.Node {
       return <ImageSizeExample source={fullImage} />;
     },
   },
   {
     title: 'MultipleSourcesExample',
-    description: ('The `source` prop allows passing in an array of uris, so that native to choose which image ' +
-      'to diplay based on the size of the of the target image': string),
-    render: function(): React.Node {
+    description:
+      ('The `source` prop allows passing in an array of uris, so that native to choose which image ' +
+        'to diplay based on the size of the of the target image': string),
+    render: function (): React.Node {
       return <MultipleSourcesExample />;
     },
   },
@@ -1151,16 +1358,16 @@ exports.examples = [
     title: 'Legacy local image',
     description: ('Images shipped with the native bundle, but not managed ' +
       'by the JS packager': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <Image source={{uri: 'legacy_image', width: 120, height: 120}} />;
     },
   },
   {
     title: 'Bundled images',
     description: 'Images shipped in a separate native bundle',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
-        <View style={{flexDirection: 'row'}}>
+        <View style={styles.flexRow}>
           <Image
             source={{
               uri: 'ImageInBundle',
@@ -1168,7 +1375,7 @@ exports.examples = [
               width: 100,
               height: 100,
             }}
-            style={{borderColor: 'yellow', borderWidth: 4}}
+            style={styles.imageInBundle}
           />
           <Image
             source={{
@@ -1177,7 +1384,7 @@ exports.examples = [
               width: 100,
               height: 100,
             }}
-            style={{marginLeft: 10, borderColor: 'blue', borderWidth: 4}}
+            style={styles.imageInAssetCatalog}
           />
         </View>
       );
@@ -1186,50 +1393,32 @@ exports.examples = [
   },
   {
     title: 'Blur Radius',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
-          <Image style={[styles.base]} source={fullImage} blurRadius={0} />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={5}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={10}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={15}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={20}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={25}
-          />
+          <Image style={styles.base} source={fullImage} blurRadius={0} />
+          <Image style={styles.base} source={fullImage} blurRadius={5} />
+          <Image style={styles.base} source={fullImage} blurRadius={10} />
+          <Image style={styles.base} source={fullImage} blurRadius={15} />
+          <Image style={styles.base} source={fullImage} blurRadius={20} />
+          <Image style={styles.base} source={fullImage} blurRadius={25} />
         </View>
       );
     },
   },
   {
     title: 'Accessibility',
-    description: ('If the `accessible` (boolean) prop is set to True, the image will be indicated as an accessbility element.': string),
-    render: function(): React.Node {
+    description:
+      ('If the `accessible` (boolean) prop is set to True, the image will be indicated as an accessbility element.': string),
+    render: function (): React.Node {
       return <Image accessible source={fullImage} style={styles.base} />;
     },
   },
   {
     title: 'Accessibility Label',
-    description: ('When an element is marked as accessibile (using the accessibility prop), it is good practice to set an accessibilityLabel on the image to provide a description of the element to people who use VoiceOver. VoiceOver will read this string when people select this element.': string),
-    render: function(): React.Node {
+    description:
+      ('When an element is marked as accessibile (using the accessibility prop), it is good practice to set an accessibilityLabel on the image to provide a description of the element to people who use VoiceOver. VoiceOver will read this string when people select this element.': string),
+    render: function (): React.Node {
       return (
         <Image
           accessible
@@ -1241,9 +1430,24 @@ exports.examples = [
     },
   },
   {
+    title: 'Accessibility Label via alt prop',
+    description:
+      'Using the alt prop markes an element as being accessibile, and passes the alt text to accessibilityLabel',
+    render: function (): React.Node {
+      return (
+        <Image
+          alt="Picture of people standing around a table"
+          source={fullImage}
+          style={styles.base}
+        />
+      );
+    },
+  },
+  {
     title: 'Fade Duration',
-    description: ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
-    render: function(): React.Node {
+    description:
+      ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
+    render: function (): React.Node {
       return (
         <>
           <Image fadeDuration={1500} source={fullImage} style={styles.base} />
@@ -1255,22 +1459,25 @@ exports.examples = [
   },
   {
     title: 'Loading Indicator Source',
-    description: ('This prop is used to set the resource that will be used as the loading indicator for the image (displayed until the image is ready to be displayed).': string),
-    render: function(): React.Node {
+    description:
+      ('This prop is used to set the resource that will be used as the loading indicator for the image (displayed until the image is ready to be displayed).': string),
+    render: function (): React.Node {
       return <LoadingIndicatorSourceExample />;
     },
   },
   {
     title: 'On Layout',
-    description: ('This prop is used to set the handler function to be called when the image is mounted or its layout changes. The function receives an event with `{nativeEvent: {layout: {x, y, width, height}}}`': string),
-    render: function(): React.Node {
+    description:
+      ('This prop is used to set the handler function to be called when the image is mounted or its layout changes. The function receives an event with `{nativeEvent: {layout: {x, y, width, height}}}`': string),
+    render: function (): React.Node {
       return <OnLayoutExample />;
     },
   },
   {
     title: 'On Partial Load',
-    description: ('This prop is used to set the handler function to be called when the partial load of the image is complete. This is meant for progressive JPEG loads.': string),
-    render: function(): React.Node {
+    description:
+      ('This prop is used to set the handler function to be called when the partial load of the image is complete. This is meant for progressive JPEG loads.': string),
+    render: function (): React.Node {
       return <OnPartialLoadExample />;
     },
     platform: 'ios',

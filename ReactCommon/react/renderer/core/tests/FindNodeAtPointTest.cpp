@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -45,9 +45,9 @@ TEST(FindNodeAtPointTest, withoutTransform) {
           })
         })
     });
-  
+
   auto parentShadowNode = builder.build(element);
-  
+
   EXPECT_EQ(
             LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {115, 115})->getTag(), 3);
   EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {105, 105})->getTag(), 2);
@@ -91,7 +91,7 @@ TEST(FindNodeAtPointTest, viewIsTranslated) {
           })
         })
     });
-  
+
   auto parentShadowNode = builder.build(element);
 
   EXPECT_EQ(
@@ -125,7 +125,7 @@ TEST(FindNodeAtPointTest, viewIsScaled) {
           Element<ViewShadowNode>()
           .tag(3)
           .props([] {
-            auto sharedProps = std::make_shared<ViewProps>();
+            auto sharedProps = std::make_shared<ViewShadowNodeProps>();
             sharedProps->transform = Transform::Scale(0.5, 0.5, 0);
             return sharedProps;
           })
@@ -137,7 +137,7 @@ TEST(FindNodeAtPointTest, viewIsScaled) {
           })
         })
     });
-  
+
   auto parentShadowNode = builder.build(element);
 
   EXPECT_EQ(
@@ -175,9 +175,9 @@ TEST(FindNodeAtPointTest, overlappingViews) {
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
     });
-  
+
   auto parentShadowNode = builder.build(element);
-  
+
   EXPECT_EQ(
             LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {50, 50})->getTag(), 3);
 }
@@ -198,7 +198,7 @@ TEST(FindNodeAtPointTest, overlappingViewsWithZIndex) {
         Element<ViewShadowNode>()
         .tag(2)
         .props([] {
-          auto sharedProps = std::make_shared<ViewProps>();
+          auto sharedProps = std::make_shared<ViewShadowNodeProps>();
           sharedProps->zIndex = 1;
           auto &yogaStyle = sharedProps->yogaStyle;
           yogaStyle.positionType() = YGPositionTypeAbsolute;
@@ -219,11 +219,9 @@ TEST(FindNodeAtPointTest, overlappingViewsWithZIndex) {
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
     });
-  
+
   auto parentShadowNode = builder.build(element);
-  
+
   EXPECT_EQ(
             LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {50, 50})->getTag(), 2);
 }
-
-

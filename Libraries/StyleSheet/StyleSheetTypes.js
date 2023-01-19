@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,23 +10,29 @@
 
 'use strict';
 
-const AnimatedNode = require('../Animated/nodes/AnimatedNode');
-
+import type AnimatedNode from '../Animated/nodes/AnimatedNode';
 import type {NativeColorValue} from './PlatformColorValueTypes';
+import type {
+  ____DangerouslyImpreciseStyle_InternalOverrides,
+  ____ImageStyle_InternalOverrides,
+  ____ShadowStyle_InternalOverrides,
+  ____TextStyle_InternalOverrides,
+  ____ViewStyle_InternalOverrides,
+} from './private/_StyleSheetTypesOverrides';
+import type {____TransformStyle_Internal} from './private/_TransformStyle';
 
-export type ____ColorValue_Internal = null | string | NativeColorValue;
-
+export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
-export type PointValue = {|
+export type PointValue = {
   x: number,
   y: number,
-|};
-export type EdgeInsetsValue = {|
+};
+export type EdgeInsetsValue = {
   top: number,
   left: number,
   right: number,
   bottom: number,
-|};
+};
 export type DimensionValue = null | number | string | AnimatedNode;
 
 /**
@@ -42,7 +48,7 @@ export type DimensionValue = null | number | string | AnimatedNode;
  * These properties are a subset of our styles that are consumed by the layout
  * algorithm and affect the positioning and sizing of views.
  */
-type ____LayoutStyle_Internal = $ReadOnly<{|
+type ____LayoutStyle_Internal = $ReadOnly<{
   /** `display` sets the display type of this component.
    *
    *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
@@ -126,6 +132,80 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
    */
   top?: DimensionValue,
 
+  /** `inset` is a shorthand that corresponds to the top, right, bottom, and/or left properties.
+   *
+   *  It works similarly to `inset` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset
+   *  for more details of how `inset` affects layout.
+   */
+  inset?: DimensionValue,
+
+  /** `insetBlock` is a shorthand that corresponds to the `insetBlockStart` and `insetBlockEnd` properties.
+   *
+   *  It works similarly to `inset-block` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-block
+   *  for more details of how `inset-block` affects layout.
+   */
+  insetBlock?: DimensionValue,
+
+  /** `insetBlockEnd` is a logical property that sets the length that an
+   *  element is offset in the block direction from its ending edge.
+   *
+   *  It works similarly to `inset-block-end` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-block-end
+   *  for more details of how `inset-block-end` affects layout.
+   */
+  insetBlockEnd?: DimensionValue,
+
+  /** `insetBlockStart` is a logical property that sets the length that an
+   *  element is offset in the block direction from its starting edge.
+   *
+   *  It works similarly to `inset-block-start` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-block-start
+   *  for more details of how `inset-block-start` affects layout.
+   */
+  insetBlockStart?: DimensionValue,
+
+  /** `insetInline` is a shorthand that corresponds to the `insetInlineStart` and `insetInlineEnd` properties.
+   *
+   *  It works similarly to `inset-inline` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-inline
+   *  for more details of how `inset-inline` affects layout.
+   */
+  insetInline?: DimensionValue,
+
+  /** `insetInlineEnd` is a logical property that sets the length that an
+   *  element is offset in the starting inline direction.
+   *
+   *  It works similarly to `inset-inline-end` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-inline-end
+   *  for more details of how `inset-inline-end` affects layout.
+   */
+  insetInlineEnd?: DimensionValue,
+
+  /** `insetInlineStart` is a logical property that sets the length that an
+   *  element is offset in the starting inline direction.
+   *
+   *  It works similarly to `inset-inline-start` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-inline-start
+   *  for more details of how `inset-inline-start` affects layout.
+   */
+  insetInlineStart?: DimensionValue,
+
   /** `minWidth` is the minimum width for this component, in logical pixels.
    *
    *  It works similarly to `min-width` in CSS, but in React Native you
@@ -173,8 +253,27 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
    */
   margin?: DimensionValue,
 
+  /** Setting `marginBlock` has the same effect as setting both
+   *  `marginTop` and `marginBottom`.
+   */
+  marginBlock?: DimensionValue,
+
+  /** `marginBlockEnd` works like `margin-block-end`in CSS. Because React
+   *  Native doesn not support `writing-mode` this is always mapped to
+   *  `margin-bottom`. See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-block-end
+   *  for more details.
+   */
+  marginBlockEnd?: DimensionValue,
+
+  /** `marginBlockEnd` works like `margin-block-end`in CSS. Because React
+   *  Native doesn not support `writing-mode` this is always mapped to
+   *  `margin-top`. See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-block-end
+   *  for more details.
+   */
+  marginBlockStart?: DimensionValue,
+
   /** `marginBottom` works like `margin-bottom` in CSS.
-   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-bottom
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-block-start
    *  for more details.
    */
   marginBottom?: DimensionValue,
@@ -189,6 +288,23 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
    *  both `marginLeft` and `marginRight`.
    */
   marginHorizontal?: DimensionValue,
+
+  /** Setting `marginInline` has the same effect as setting
+   *  both `marginLeft` and `marginRight`.
+   */
+  marginInline?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `marginInlineEnd` is equivalent to `marginRight`.
+   * When direction is `rtl`, `marginInlineEnd` is equivalent to `marginLeft`.
+   */
+  marginInlineEnd?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `marginInlineStart` is equivalent to `marginLeft`.
+   * When direction is `rtl`, `marginInlineStart` is equivalent to `marginRight`.
+   */
+  marginInlineStart?: DimensionValue,
 
   /** `marginLeft` works like `margin-left` in CSS.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-left
@@ -226,6 +342,25 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
    */
   padding?: DimensionValue,
 
+  /** Setting `paddingBlock` is like setting both of
+   *  `paddingTop` and `paddingBottom`.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-block
+   * for more details.
+   */
+  paddingBlock?: DimensionValue,
+
+  /** `paddingBlockEnd` works like `padding-bottom` in CSS.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-block-end
+   * for more details.
+   */
+  paddingBlockEnd?: DimensionValue,
+
+  /** `paddingBlockStart` works like `padding-top` in CSS.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-block-start
+   * for more details.
+   */
+  paddingBlockStart?: DimensionValue,
+
   /** `paddingBottom` works like `padding-bottom` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-bottom
    * for more details.
@@ -242,6 +377,23 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
    *  `paddingLeft` and `paddingRight`.
    */
   paddingHorizontal?: DimensionValue,
+
+  /** Setting `paddingInline` is like setting both of
+   *  `paddingLeft` and `paddingRight`.
+   */
+  paddingInline?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `paddingInlineEnd` is equivalent to `paddingRight`.
+   * When direction is `rtl`, `paddingInlineEnd` is equivalent to `paddingLeft`.
+   */
+  paddingInlineEnd?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `paddingInlineStart` is equivalent to `paddingLeft`.
+   * When direction is `rtl`, `paddingInlineStart` is equivalent to `paddingRight`.
+   */
+  paddingInlineStart?: DimensionValue,
 
   /** `paddingLeft` works like `padding-left` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-left
@@ -436,8 +588,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
   flexBasis?: number | string,
 
   /**
-   * Aspect ratio control the size of the undefined dimension of a node. Aspect ratio is a
-   * non-standard property only available in react native and not CSS.
+   * Aspect ratio control the size of the undefined dimension of a node.
    *
    * - On a node with a set width/height aspect ratio control the size of the unset dimension
    * - On a node with a set flex basis aspect ratio controls the size of the node in the cross axis
@@ -447,8 +598,13 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
    * - On a node with flex grow/shrink aspect ratio controls the size of the node in the cross axis
    *   if unset
    * - Aspect ratio takes min/max dimensions into account
+   *
+   * Supports a number or a ratio, e.g.:
+   * - aspectRatio: '1 / 1'
+   * - aspectRatio: '1'
+   * - aspectRatio: '1'
    */
-  aspectRatio?: number,
+  aspectRatio?: number | string,
 
   /** `zIndex` controls which components display on top of others.
    *  Normally, you don't use `zIndex`. Components render according to
@@ -472,49 +628,20 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
    *  @platform ios
    */
   direction?: 'inherit' | 'ltr' | 'rtl',
-|}>;
 
-type ____TransformStyle_Internal = $ReadOnly<{|
   /**
-   * `transform` accepts an array of transformation objects. Each object specifies
-   * the property that will be transformed as the key, and the value to use in the
-   * transformation. Objects should not be combined. Use a single key/value pair
-   * per object.
-   *
-   * The rotate transformations require a string so that the transform may be
-   * expressed in degrees (deg) or radians (rad). For example:
-   *
-   * `transform([{ rotateX: '45deg' }, { rotateZ: '0.785398rad' }])`
-   *
-   * The skew transformations require a string so that the transform may be
-   * expressed in degrees (deg). For example:
-   *
-   * `transform([{ skewX: '45deg' }])`
+   * In React Native, gap works the same way it does in CSS.
+   * If there are two or more children in a container, they will be separated from each other
+   * by the value of the gap - but the children will not be separated from the edges of their parent container.
+   * For horizontal gaps, use columnGap, for vertical gaps, use rowGap, and to apply both at the same time, it's gap.
+   * When align-content or justify-content are set to space-between or space-around, the separation
+   * between children may be larger than the gap value.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/gap for more details.
    */
-  transform?: $ReadOnlyArray<
-    | {|+perspective: number | AnimatedNode|}
-    | {|+rotate: string | AnimatedNode|}
-    | {|+rotateX: string | AnimatedNode|}
-    | {|+rotateY: string | AnimatedNode|}
-    | {|+rotateZ: string | AnimatedNode|}
-    | {|+scale: number | AnimatedNode|}
-    | {|+scaleX: number | AnimatedNode|}
-    | {|+scaleY: number | AnimatedNode|}
-    | {|+translateX: number | AnimatedNode|}
-    | {|+translateY: number | AnimatedNode|}
-    | {|
-        +translate:
-          | [number | AnimatedNode, number | AnimatedNode]
-          | AnimatedNode,
-      |}
-    | {|+skewX: string|}
-    | {|+skewY: string|}
-    // TODO: what is the actual type it expects?
-    | {|
-        +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-      |},
-  >,
-|}>;
+  rowGap?: number,
+  columnGap?: number,
+  gap?: number,
+}>;
 
 /**
  * These props can be used to dynamically generate shadows on views, images, text, etc.
@@ -526,7 +653,7 @@ type ____TransformStyle_Internal = $ReadOnly<{|
  * To add a drop shadow to a view use the [`elevation` property](docs/viewstyleproptypes.html#elevation) (Android 5.0+).
  * To customize the color use the [`shadowColor` property](docs/shadow-props.html#shadowColor) (Android 9.0+).
  */
-export type ____ShadowStyle_Internal = $ReadOnly<{|
+export type ____ShadowStyle_InternalCore = $ReadOnly<{
   /**
    * Sets the drop shadow color
    * @platform ios
@@ -536,10 +663,10 @@ export type ____ShadowStyle_Internal = $ReadOnly<{|
    * Sets the drop shadow offset
    * @platform ios
    */
-  shadowOffset?: $ReadOnly<{|
+  shadowOffset?: $ReadOnly<{
     width?: number,
     height?: number,
-  |}>,
+  }>,
   /**
    * Sets the drop shadow opacity (multiplied by the color's alpha component)
    * @platform ios
@@ -550,15 +677,21 @@ export type ____ShadowStyle_Internal = $ReadOnly<{|
    * @platform ios
    */
   shadowRadius?: number,
-|}>;
+}>;
 
-export type ____ViewStyle_Internal = $ReadOnly<{|
+export type ____ShadowStyle_Internal = $ReadOnly<{
+  ...____ShadowStyle_InternalCore,
+  ...____ShadowStyle_InternalOverrides,
+}>;
+
+export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
+  borderCurve?: 'circular' | 'continuous',
   borderBottomColor?: ____ColorValue_Internal,
   borderEndColor?: ____ColorValue_Internal,
   borderLeftColor?: ____ColorValue_Internal,
@@ -570,6 +703,10 @@ export type ____ViewStyle_Internal = $ReadOnly<{|
   borderBottomLeftRadius?: number | AnimatedNode,
   borderBottomRightRadius?: number | AnimatedNode,
   borderBottomStartRadius?: number | AnimatedNode,
+  borderEndEndRadius?: number | AnimatedNode,
+  borderEndStartRadius?: number | AnimatedNode,
+  borderStartEndRadius?: number | AnimatedNode,
+  borderStartStartRadius?: number | AnimatedNode,
   borderTopEndRadius?: number | AnimatedNode,
   borderTopLeftRadius?: number | AnimatedNode,
   borderTopRightRadius?: number | AnimatedNode,
@@ -584,7 +721,30 @@ export type ____ViewStyle_Internal = $ReadOnly<{|
   borderTopWidth?: number | AnimatedNode,
   opacity?: number | AnimatedNode,
   elevation?: number,
-|}>;
+  pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
+}>;
+
+export type ____ViewStyle_Internal = $ReadOnly<{
+  ...____ViewStyle_InternalCore,
+  ...____ViewStyle_InternalOverrides,
+}>;
+
+export type FontStyleType = {
+  fontFamily: string,
+  fontWeight: ____FontWeight_Internal,
+};
+
+export type FontStyleMap = {
+  ultraLight: FontStyleType,
+  thin: FontStyleType,
+  light: FontStyleType,
+  regular: FontStyleType,
+  medium: FontStyleType,
+  semibold: FontStyleType,
+  bold: FontStyleType,
+  heavy: FontStyleType,
+  black: FontStyleType,
+};
 
 export type ____FontWeight_Internal =
   | 'normal'
@@ -597,26 +757,67 @@ export type ____FontWeight_Internal =
   | '600'
   | '700'
   | '800'
-  | '900';
+  | '900'
+  | 100
+  | 200
+  | 300
+  | 400
+  | 500
+  | 600
+  | 700
+  | 800
+  | 900
+  | 'ultralight'
+  | 'thin'
+  | 'light'
+  | 'medium'
+  | 'regular'
+  | 'semibold'
+  | 'condensedBold'
+  | 'condensed'
+  | 'heavy'
+  | 'black';
 
-export type ____TextStyle_Internal = $ReadOnly<{|
+export type ____FontVariantArray_Internal = $ReadOnlyArray<
+  | 'small-caps'
+  | 'oldstyle-nums'
+  | 'lining-nums'
+  | 'tabular-nums'
+  | 'proportional-nums'
+  | 'stylistic-one'
+  | 'stylistic-two'
+  | 'stylistic-three'
+  | 'stylistic-four'
+  | 'stylistic-five'
+  | 'stylistic-six'
+  | 'stylistic-seven'
+  | 'stylistic-eight'
+  | 'stylistic-nine'
+  | 'stylistic-ten'
+  | 'stylistic-eleven'
+  | 'stylistic-twelve'
+  | 'stylistic-thirteen'
+  | 'stylistic-fourteen'
+  | 'stylistic-fifteen'
+  | 'stylistic-sixteen'
+  | 'stylistic-seventeen'
+  | 'stylistic-eighteen'
+  | 'stylistic-nineteen'
+  | 'stylistic-twenty',
+>;
+
+export type ____TextStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
   color?: ____ColorValue_Internal,
   fontFamily?: string,
   fontSize?: number,
   fontStyle?: 'normal' | 'italic',
   fontWeight?: ____FontWeight_Internal,
-  fontVariant?: $ReadOnlyArray<
-    | 'small-caps'
-    | 'oldstyle-nums'
-    | 'lining-nums'
-    | 'tabular-nums'
-    | 'proportional-nums',
-  >,
-  textShadowOffset?: $ReadOnly<{|
+  fontVariant?: ____FontVariantArray_Internal | string,
+  textShadowOffset?: $ReadOnly<{
     width: number,
     height: number,
-  |}>,
+  }>,
   textShadowRadius?: number,
   textShadowColor?: ____ColorValue_Internal,
   letterSpacing?: number,
@@ -632,23 +833,42 @@ export type ____TextStyle_Internal = $ReadOnly<{|
   textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed',
   textDecorationColor?: ____ColorValue_Internal,
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
+  userSelect?: 'auto' | 'text' | 'none' | 'contain' | 'all',
+  verticalAlign?: 'auto' | 'top' | 'bottom' | 'middle',
   writingDirection?: 'auto' | 'ltr' | 'rtl',
-|}>;
+}>;
 
-export type ____ImageStyle_Internal = $ReadOnly<{|
+export type ____TextStyle_Internal = $ReadOnly<{
+  ...____TextStyle_InternalCore,
+  ...____TextStyle_InternalOverrides,
+}>;
+
+export type ____ImageStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
-|}>;
+}>;
 
-export type ____DangerouslyImpreciseStyle_Internal = {
+export type ____ImageStyle_Internal = $ReadOnly<{
+  ...____ImageStyle_InternalCore,
+  ...____ImageStyle_InternalOverrides,
+}>;
+
+export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   ...$Exact<____TextStyle_Internal>,
-  +resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
-  +tintColor?: ____ColorValue_Internal,
-  +overlayColor?: string,
+  resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
+  tintColor?: ____ColorValue_Internal,
+  overlayColor?: string,
+}>;
+
+export type ____DangerouslyImpreciseStyle_Internal = $ReadOnly<{
+  ...____DangerouslyImpreciseStyle_InternalCore,
+  ...____DangerouslyImpreciseStyle_InternalOverrides,
   ...
-};
+}>;
 
 type GenericStyleProp<+T> =
   | null
@@ -673,7 +893,7 @@ export type ____ImageStyleProp_Internal = GenericStyleProp<
 
 export type ____Styles_Internal = {
   +[key: string]: $Shape<____DangerouslyImpreciseStyle_Internal>,
-  ...,
+  ...
 };
 
 export type ____FlattenStyleProp_Internal<+TStyleProp> = $Call<

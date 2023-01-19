@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,12 +7,18 @@
 
 package com.facebook.react.utils
 
-import java.util.*
-
 object Os {
 
   fun isWindows(): Boolean =
-      System.getProperty("os.name")?.toLowerCase(Locale.ROOT)?.contains("windows") ?: false
+      System.getProperty("os.name")?.lowercase()?.contains("windows") ?: false
+
+  fun isMac(): Boolean = System.getProperty("os.name")?.lowercase()?.contains("mac") ?: false
+
+  fun isLinuxAmd64(): Boolean {
+    val osNameMatch = System.getProperty("os.name")?.lowercase()?.contains("linux") ?: false
+    val archMatch = System.getProperty("os.arch")?.lowercase()?.contains("amd64") ?: false
+    return osNameMatch && archMatch
+  }
 
   fun String.unixifyPath() =
       this.replace('\\', '/').replace(":", "").let {

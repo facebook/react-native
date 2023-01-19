@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +8,9 @@
  * @format
  */
 
-import createPerformanceLogger from './createPerformanceLogger';
 import type {IPerformanceLogger} from './createPerformanceLogger';
+
+import createPerformanceLogger from './createPerformanceLogger';
 
 /**
  * This is a global shared instance of IPerformanceLogger that is created with

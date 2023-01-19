@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,8 @@
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/debug/flags.h>
-#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/graphics/Rect.h>
+#include <react/renderer/graphics/RectangleEdges.h>
 
 namespace facebook {
 namespace react {

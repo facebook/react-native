@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,6 +21,7 @@ class AnExTilt extends React.Component<Object, any> {
       opacity: new Animated.Value(1),
       burns: new Animated.Value(1.15),
     };
+    // $FlowFixMe[prop-missing]
     this.state.tiltPanResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderGrant: () => {
@@ -59,7 +60,7 @@ class AnExTilt extends React.Component<Object, any> {
           useNativeDriver: false,
         }).start();
         this.state.panX.removeAllListeners();
-        const id = this.state.panX.addListener(({value}) => {
+        const id: any = this.state.panX.addListener(({value}) => {
           // listen until offscreen
           if (Math.abs(value) > 400) {
             this.state.panX.removeListener(id); // offscreen, so stop listening

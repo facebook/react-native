@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,15 +8,15 @@
  * @format
  */
 
+import * as React from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
+  Button,
   Pressable,
   ScrollView,
-  Button,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
-import * as React from 'react';
 
 function StickyHeader() {
   const [backgroundColor, setBackgroundColor] = React.useState('blue');
@@ -41,7 +41,7 @@ function StickyHeader() {
   );
 }
 
-function renderComponent1(i) {
+function renderComponent1(i: number) {
   return (
     <View
       key={i}
@@ -51,7 +51,7 @@ function renderComponent1(i) {
 }
 
 export default function ScrollViewPressableStickyHeaderExample(): React.Node {
-  const scrollRef = React.useRef(null);
+  const scrollRef = React.useRef<$FlowFixMe>(null);
   const components = [];
   for (var i = 1; i < 10; i++) {
     components.push(renderComponent1(i));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include <folly/Optional.h>
 #include <folly/dynamic.h>
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -25,7 +25,7 @@ struct MethodDescriptor {
       : name(std::move(n)), type(std::move(t)) {}
 };
 
-using MethodCallResult = folly::Optional<folly::dynamic>;
+using MethodCallResult = std::optional<folly::dynamic>;
 
 class NativeModule {
  public:

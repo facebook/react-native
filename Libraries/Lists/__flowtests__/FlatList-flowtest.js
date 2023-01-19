@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -93,6 +93,7 @@ module.exports = {
       <FlatList
         // $FlowExpectedError - bad title type number, should be string
         renderItem={(info: {item: {title: number}}) => <span />}
+        // $FlowExpectedError - bad title type number, should be string
         data={data}
       />,
       // EverythingIsFine

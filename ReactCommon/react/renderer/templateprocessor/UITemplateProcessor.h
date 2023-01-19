@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -46,21 +46,21 @@ class UITemplateProcessor {
  public:
   static ShadowNode::Shared buildShadowTree(
       const std::string &jsonStr,
-      int rootTag,
+      int surfaceId,
       const folly::dynamic &params,
       const ComponentDescriptorRegistry &componentDescriptorRegistry,
       const NativeModuleRegistry &nativeModuleRegistry,
-      const std::shared_ptr<const ReactNativeConfig> reactNativeConfig);
+      std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig);
 
  private:
   static ShadowNode::Shared runCommand(
       const folly::dynamic &command,
-      Tag rootTag,
-      std::vector<SharedShadowNode> &nodes,
+      Tag surfaceId,
+      std::vector<ShadowNode::Shared> &nodes,
       std::vector<folly::dynamic> &registers,
       const ComponentDescriptorRegistry &componentDescriptorRegistry,
       const NativeModuleRegistry &nativeModuleRegistry,
-      const std::shared_ptr<const ReactNativeConfig> reactNativeConfig);
+      std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig);
 };
 } // namespace react
 } // namespace facebook

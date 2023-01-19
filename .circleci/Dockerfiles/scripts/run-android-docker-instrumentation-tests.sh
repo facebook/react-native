@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -33,7 +33,7 @@ node cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/a
 
 # build test APK
 # shellcheck disable=SC1091
-source ./scripts/android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
+source ./scripts/android-setup.sh && NO_BUCKD=1 scripts/retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
 
 # run installed apk with tests
 node ./.circleci/Dockerfiles/scripts/run-android-ci-instrumentation-tests.js "$*"

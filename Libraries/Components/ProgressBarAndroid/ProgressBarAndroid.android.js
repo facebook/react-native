@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,12 +8,12 @@
  * @format
  */
 
-const React = require('react');
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 import ProgressBarAndroidNativeComponent from './ProgressBarAndroidNativeComponent';
 
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
+const React = require('react');
 
 export type ProgressBarAndroidProps = $ReadOnly<{|
   ...ViewProps,
@@ -100,7 +100,8 @@ const ProgressBarAndroid = (
 
 const ProgressBarAndroidToExport = React.forwardRef(ProgressBarAndroid);
 
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
-module.exports = (ProgressBarAndroidToExport: typeof ProgressBarAndroidNativeComponent);
+module.exports =
+  /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+   * error found when Flow v0.89 was deployed. To see the error, delete this
+   * comment and run Flow. */
+  (ProgressBarAndroidToExport: typeof ProgressBarAndroidNativeComponent);

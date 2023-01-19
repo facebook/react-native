@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -77,6 +77,12 @@ function toJavaType(
 
         // TODO: Make ImageSourcePrimitive type-safe
         case 'ImageSourcePrimitive':
+          importNullable();
+          importReadableMap();
+          return '@Nullable ReadableMap';
+
+        // TODO: Make ImageRequestPrimitive type-safe
+        case 'ImageRequestPrimitive':
           importNullable();
           importReadableMap();
           return '@Nullable ReadableMap';
@@ -159,6 +165,11 @@ function toJavaType(
 
               // TODO: Make ImageSourcePrimitive type-safe
               case 'ImageSourcePrimitive':
+                importReadableMap();
+                return 'ReadableMap';
+
+              // TODO: Make ImageRequestPrimitive type-safe
+              case 'ImageRequestPrimitive':
                 importReadableMap();
                 return 'ReadableMap';
 
@@ -264,7 +275,7 @@ function serializePojo(pojo: Pojo, basePackageName: string): string {
     .join('\n');
 
   return `/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.

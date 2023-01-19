@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
+
+#ifdef __cplusplus
 
 #include <cstdio>
 #include <cstdint>
@@ -65,3 +67,5 @@ inline void setBooleanData(uint8_t& flags, size_t index, bool value) {
 } // namespace detail
 } // namespace yoga
 } // namespace facebook
+
+#endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,7 +37,7 @@ static uint16_t RCTUniqueCoalescingKeyGenerator = 0;
   NSMutableArray<NSNumber *> *_eventQueue;
   BOOL _eventsDispatchScheduled;
   NSHashTable<id<RCTEventDispatcherObserver>> *_observers;
-  NSLock *_observersLock;
+  NSRecursiveLock *_observersLock;
 }
 
 @synthesize bridge = _bridge;
@@ -53,7 +53,7 @@ RCT_EXPORT_MODULE()
   _eventQueueLock = [NSLock new];
   _eventsDispatchScheduled = NO;
   _observers = [NSHashTable weakObjectsHashTable];
-  _observersLock = [NSLock new];
+  _observersLock = [NSRecursiveLock new];
 }
 
 - (void)sendViewEventWithName:(NSString *)name reactTag:(NSNumber *)reactTag
@@ -86,7 +86,9 @@ RCT_EXPORT_MODULE()
   }];
 
   if (text) {
-    body[@"text"] = text;
+    // We copy the string here because if it's a mutable string it may get released before we dispatch the event on a
+    // different thread, causing a crash.
+    body[@"text"] = [text copy];
   }
 
   if (key) {
@@ -103,14 +105,16 @@ RCT_EXPORT_MODULE()
           break;
       }
     }
-    body[@"key"] = key;
+    // We copy the string here because if it's a mutable string it may get released before we dispatch the event on a
+    // different thread, causing a crash.
+    body[@"key"] = [key copy];
   }
 
   RCTComponentEvent *event = [[RCTComponentEvent alloc] initWithName:events[type] viewTag:reactTag body:body];
   [self sendEvent:event];
 }
 
-- (void)sendEvent:(id<RCTEvent>)event
+- (void)notifyObserversOfEvent:(id<RCTEvent>)event
 {
   [_observersLock lock];
 
@@ -119,6 +123,11 @@ RCT_EXPORT_MODULE()
   }
 
   [_observersLock unlock];
+}
+
+- (void)sendEvent:(id<RCTEvent>)event
+{
+  [self notifyObserversOfEvent:event];
 
   [_eventQueueLock lock];
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -92,8 +92,7 @@ std::vector<std::string> ModuleRegistry::moduleNames() {
   return names;
 }
 
-folly::Optional<ModuleConfig> ModuleRegistry::getConfig(
-    const std::string &name) {
+std::optional<ModuleConfig> ModuleRegistry::getConfig(const std::string &name) {
   SystraceSection s("ModuleRegistry::getConfig", "module", name);
 
   // Initialize modulesByName_
@@ -107,14 +106,14 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(
     if (unknownModules_.find(name) != unknownModules_.end()) {
       BridgeNativeModulePerfLogger::moduleJSRequireBeginningFail(name.c_str());
       BridgeNativeModulePerfLogger::moduleJSRequireEndingStart(name.c_str());
-      return folly::none;
+      return std::nullopt;
     }
 
     if (!moduleNotFoundCallback_) {
       unknownModules_.insert(name);
       BridgeNativeModulePerfLogger::moduleJSRequireBeginningFail(name.c_str());
       BridgeNativeModulePerfLogger::moduleJSRequireEndingStart(name.c_str());
-      return folly::none;
+      return std::nullopt;
     }
 
     BridgeNativeModulePerfLogger::moduleJSRequireBeginningEnd(name.c_str());
@@ -128,7 +127,7 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(
     if (!wasModuleRegisteredWithRegistry) {
       BridgeNativeModulePerfLogger::moduleJSRequireEndingStart(name.c_str());
       unknownModules_.insert(name);
-      return folly::none;
+      return std::nullopt;
     }
   } else {
     BridgeNativeModulePerfLogger::moduleJSRequireBeginningEnd(name.c_str());
@@ -187,9 +186,9 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(
 
   if (config.size() == 2 && config[1].empty()) {
     // no constants or methods
-    return folly::none;
+    return std::nullopt;
   } else {
-    return ModuleConfig{index, config};
+    return ModuleConfig{index, std::move(config)};
   }
 }
 

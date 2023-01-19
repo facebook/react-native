@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,7 @@
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Note:
@@ -29,15 +28,15 @@ namespace react {
 
 Sealable::Sealable() : sealed_(false) {}
 
-Sealable::Sealable(const Sealable &other) : sealed_(false){};
+Sealable::Sealable(const Sealable & /*other*/) : sealed_(false){};
 
 Sealable::Sealable(Sealable &&other) noexcept : sealed_(false) {
   other.ensureUnsealed();
 };
 
-Sealable::~Sealable() noexcept {};
+Sealable::~Sealable() noexcept = default;
 
-Sealable &Sealable::operator=(const Sealable &other) {
+Sealable &Sealable::operator=(const Sealable & /*other*/) {
   ensureUnsealed();
   return *this;
 }
@@ -62,5 +61,4 @@ void Sealable::ensureUnsealed() const {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

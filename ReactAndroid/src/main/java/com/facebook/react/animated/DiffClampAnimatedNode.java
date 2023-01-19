@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -41,7 +41,7 @@ import com.facebook.react.bridge.ReadableMap;
     AnimatedNode animatedNode = mNativeAnimatedNodesManager.getNodeById(mInputNodeTag);
     if (animatedNode == null || !(animatedNode instanceof ValueAnimatedNode)) {
       throw new JSApplicationCausedNativeException(
-          "Illegal node ID set as an input for " + "Animated.DiffClamp node");
+          "Illegal node ID set as an input for Animated.DiffClamp node");
     }
 
     return ((ValueAnimatedNode) animatedNode).getValue();

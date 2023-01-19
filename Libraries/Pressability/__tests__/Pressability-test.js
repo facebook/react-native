@@ -1,21 +1,22 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @emails oncall+react_native
- * @format
  * @flow strict-local
+ * @format
+ * @oncall react_native
  */
 
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import * as HoverState from '../HoverState';
-import Pressability from '../Pressability';
-import invariant from 'invariant';
-import nullthrows from 'nullthrows';
-import Platform from '../../Utilities/Platform';
-import UIManager from '../../ReactNative/UIManager';
+
+const UIManager = require('../../ReactNative/UIManager');
+const Platform = require('../../Utilities/Platform');
+const HoverState = require('../HoverState');
+const Pressability = require('../Pressability').default;
+const invariant = require('invariant');
+const nullthrows = require('nullthrows');
 
 // TODO: Move this util to a shared location.
 function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
@@ -27,6 +28,8 @@ function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
   return (fn: $FlowFixMe);
 }
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const createMockPressability = overrides => {
   const config = {
     cancelable: null,
@@ -104,7 +107,7 @@ const mockUIManagerMeasure = (options?: {|delay: number|}) => {
   });
 };
 
-const createMockTargetEvent = registrationName => {
+const createMockTargetEvent = (registrationName: string) => {
   const nativeEvent = {
     target: 42,
   };
@@ -131,7 +134,7 @@ const createMockTargetEvent = registrationName => {
   };
 };
 
-const createMockMouseEvent = registrationName => {
+const createMockMouseEvent = (registrationName: string) => {
   const nativeEvent = {
     clientX: 0,
     clientY: 0,
@@ -184,7 +187,7 @@ const createMockPressEvent = (
   }
 
   const nativeEvent = {
-    changedTouches: [],
+    changedTouches: ([]: Array<PressEvent['nativeEvent']>),
     force: 1,
     identifier: 42,
     locationX: pageX,
@@ -193,7 +196,7 @@ const createMockPressEvent = (
     pageY,
     target: 42,
     timestamp: 1075881600000,
-    touches: [],
+    touches: ([]: Array<PressEvent['nativeEvent']>),
   };
 
   nativeEvent.changedTouches.push(nativeEvent);
@@ -230,6 +233,7 @@ const createMockPressEvent = (
 describe('Pressability', () => {
   beforeEach(() => {
     jest.resetModules();
+    jest.restoreAllMocks();
     jest.spyOn(Date, 'now');
     jest.spyOn(HoverState, 'isHoverEnabled');
   });
@@ -664,15 +668,20 @@ describe('Pressability', () => {
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
       jest.runOnlyPendingTimers();
       expect(config.onPressIn).toBeCalled();
+
       // WORKAROUND: Jest does not advance `Date.now()`.
-      const touchActivateTime = Date.now();
+      expect(Date.now).toHaveBeenCalledTimes(1);
+      const touchActivateTime = Date.now.mock.results[0].value;
       jest.advanceTimersByTime(120);
       Date.now.mockReturnValue(touchActivateTime + 120);
       handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
 
       expect(config.onPressOut).not.toBeCalled();
       jest.advanceTimersByTime(10);
+      Date.now.mockReturnValue(touchActivateTime + 130);
       expect(config.onPressOut).toBeCalled();
+
+      Date.now.mockRestore();
     });
 
     it('is called synchronously if minimum press duration is 0ms', () => {

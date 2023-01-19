@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridge;
 
+import android.os.SystemClock;
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.List;
@@ -91,7 +92,7 @@ public class ReactMarker {
   @DoNotStrip
   public static void logFabricMarker(
       ReactMarkerConstants name, @Nullable String tag, int instanceKey) {
-    logFabricMarker(name, tag, instanceKey, -1);
+    logFabricMarker(name, tag, instanceKey, SystemClock.uptimeMillis());
   }
 
   @DoNotStrip

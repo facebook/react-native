@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,10 +10,16 @@ package com.facebook.react.views.drawer;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 
 /**
@@ -25,9 +31,34 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
   public static final int DEFAULT_DRAWER_WIDTH = LayoutParams.MATCH_PARENT;
   private int mDrawerPosition = Gravity.START;
   private int mDrawerWidth = DEFAULT_DRAWER_WIDTH;
+  private boolean mDragging = false;
 
   public ReactDrawerLayout(ReactContext reactContext) {
     super(reactContext);
+    ViewCompat.setAccessibilityDelegate(
+        this,
+        new AccessibilityDelegateCompat() {
+          @Override
+          public void onInitializeAccessibilityNodeInfo(
+              View host, AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            final AccessibilityRole accessibilityRole =
+                (AccessibilityRole) host.getTag(R.id.accessibility_role);
+            if (accessibilityRole != null) {
+              info.setClassName(AccessibilityRole.getValue(accessibilityRole));
+            }
+          }
+
+          @Override
+          public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+            super.onInitializeAccessibilityEvent(host, event);
+            final AccessibilityRole accessibilityRole =
+                (AccessibilityRole) host.getTag(R.id.accessibility_role);
+            if (accessibilityRole != null) {
+              event.setClassName(AccessibilityRole.getValue(accessibilityRole));
+            }
+          }
+        });
   }
 
   @Override
@@ -35,6 +66,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     try {
       if (super.onInterceptTouchEvent(ev)) {
         NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+        mDragging = true;
         return true;
       }
     } catch (IllegalArgumentException e) {
@@ -45,6 +77,16 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     }
 
     return false;
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    int action = ev.getActionMasked();
+    if (action == MotionEvent.ACTION_UP && mDragging) {
+      NativeGestureUtil.notifyNativeGestureEnded(this, ev);
+      mDragging = false;
+    }
+    return super.onTouchEvent(ev);
   }
 
   /* package */ void openDrawer() {

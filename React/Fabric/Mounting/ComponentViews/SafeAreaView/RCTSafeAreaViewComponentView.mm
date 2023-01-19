@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,19 +24,9 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static auto const defaultProps = std::make_shared<SafeAreaViewProps const>();
     _props = defaultProps;
-    self.clipsToBounds = YES;
   }
 
   return self;
-}
-
-- (UIEdgeInsets)_safeAreaInsets
-{
-  if (@available(iOS 11.0, *)) {
-    return self.safeAreaInsets;
-  }
-
-  return UIEdgeInsetsZero;
 }
 
 - (void)safeAreaInsetsDidChange
@@ -52,7 +42,7 @@ using namespace facebook::react;
     return;
   }
 
-  UIEdgeInsets insets = [self _safeAreaInsets];
+  UIEdgeInsets insets = self.safeAreaInsets;
   insets.left = RCTRoundPixelValue(insets.left);
   insets.top = RCTRoundPixelValue(insets.top);
   insets.right = RCTRoundPixelValue(insets.right);

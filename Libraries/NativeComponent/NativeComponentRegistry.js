@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,22 +8,21 @@
  * @format
  */
 
-import * as StaticViewConfigValidator from './StaticViewConfigValidator';
-import {createViewConfig} from './ViewConfig';
-import UIManager from '../ReactNative/UIManager';
 import type {
   HostComponent,
   PartialViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';
-import ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
+
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
+import UIManager from '../ReactNative/UIManager';
+import ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
 import verifyComponentAttributeEquivalence from '../Utilities/verifyComponentAttributeEquivalence';
+import * as StaticViewConfigValidator from './StaticViewConfigValidator';
+import {createViewConfig} from './ViewConfig';
 import invariant from 'invariant';
 import * as React from 'react';
 
 let getRuntimeConfig;
-
-let componentNameToExists: Map<string, boolean> = new Map();
 
 /**
  * Configures a function that is called to determine whether a given component
@@ -33,9 +32,7 @@ let componentNameToExists: Map<string, boolean> = new Map();
  * the current environment.
  */
 export function setRuntimeConfigProvider(
-  runtimeConfigProvider: (
-    name: string,
-  ) => ?{
+  runtimeConfigProvider: (name: string) => ?{
     native: boolean,
     strict: boolean,
     verify: boolean,
@@ -70,33 +67,30 @@ export function get<Config>(
       : createViewConfig(viewConfigProvider());
 
     if (verify) {
+      const nativeViewConfig = native
+        ? viewConfig
+        : getNativeComponentAttributes(name);
+      const staticViewConfig = native
+        ? createViewConfig(viewConfigProvider())
+        : viewConfig;
+
       if (strict) {
-        const results = native
-          ? StaticViewConfigValidator.validate(
+        const validationOutput = StaticViewConfigValidator.validate(
+          name,
+          nativeViewConfig,
+          staticViewConfig,
+        );
+
+        if (validationOutput.type === 'invalid') {
+          console.error(
+            StaticViewConfigValidator.stringifyValidationResult(
               name,
-              viewConfig,
-              createViewConfig(viewConfigProvider()),
-            )
-          : StaticViewConfigValidator.validate(
-              name,
-              getNativeComponentAttributes(name),
-              viewConfig,
-            );
-        if (results != null) {
-          console.error(results);
+              validationOutput,
+            ),
+          );
         }
       } else {
-        if (native) {
-          verifyComponentAttributeEquivalence(
-            viewConfig,
-            createViewConfig(viewConfigProvider()),
-          );
-        } else {
-          verifyComponentAttributeEquivalence(
-            getNativeComponentAttributes(name),
-            viewConfig,
-          );
-        }
+        verifyComponentAttributeEquivalence(nativeViewConfig, staticViewConfig);
       }
     }
 
@@ -121,6 +115,7 @@ export function getWithFallback_DEPRECATED<Config>(
   viewConfigProvider: () => PartialViewConfig,
 ): React.AbstractComponent<Config> {
   if (getRuntimeConfig == null) {
+    // `getRuntimeConfig == null` when static view configs are disabled
     // If `setRuntimeConfigProvider` is not configured, use native reflection.
     if (hasNativeViewConfig(name)) {
       return get<Config>(name, viewConfigProvider);
@@ -132,7 +127,7 @@ export function getWithFallback_DEPRECATED<Config>(
     }
   }
 
-  const FallbackNativeComponent = function(props: Config): React.Node {
+  const FallbackNativeComponent = function (props: Config): React.Node {
     return null;
   };
   FallbackNativeComponent.displayName = `Fallback(${name})`;
@@ -155,23 +150,4 @@ export function unstable_hasStaticViewConfig(name: string): boolean {
     native: true,
   };
   return !native;
-}
-
-/**
- * Unstable API. Do not use!
- *
- * This method returns if the component with name received as a parameter
- * is registed in the native platform.
- */
-export function unstable_hasComponent(name: string): boolean {
-  let hasNativeComponent = componentNameToExists.get(name);
-  if (hasNativeComponent == null) {
-    if (global.__nativeComponentRegistry__hasComponent) {
-      hasNativeComponent = global.__nativeComponentRegistry__hasComponent(name);
-      componentNameToExists.set(name, hasNativeComponent);
-    } else {
-      throw `unstable_hasComponent('${name}'): Global function is not registered`;
-    }
-  }
-  return hasNativeComponent;
 }

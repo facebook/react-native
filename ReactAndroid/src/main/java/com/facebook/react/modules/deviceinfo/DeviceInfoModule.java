@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,10 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Module that exposes Android Constants to JS. */
-@ReactModule(name = DeviceInfoModule.NAME)
+@ReactModule(name = NativeDeviceInfoSpec.NAME)
 public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleEventListener {
-
-  public static final String NAME = "DeviceInfo";
 
   private @Nullable ReactApplicationContext mReactApplicationContext;
   private float mFontScale;
@@ -45,11 +43,6 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
     mReactApplicationContext = null;
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context);
     mFontScale = context.getResources().getConfiguration().fontScale;
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

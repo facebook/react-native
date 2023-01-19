@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,10 +8,12 @@
  * @format
  */
 
-import invariant from 'invariant';
 import type {ViewToken} from './ViewabilityHelper';
+
+import View from '../Components/View/View';
+import VirtualizedList from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
-import {View, VirtualizedList} from 'react-native';
+import invariant from 'invariant';
 import * as React from 'react';
 
 type Item = any;
@@ -137,9 +139,9 @@ class VirtualizedSectionList<
       return;
     }
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
-      // $FlowFixMe[prop-missing] Cannot access private property
-      const frame = this._listRef._getFrameMetricsApprox(
+      const frame = this._listRef.__getFrameMetricsApprox(
         index - params.itemIndex,
+        this._listRef.props,
       );
       viewOffset += frame.length;
     }
@@ -148,6 +150,7 @@ class VirtualizedSectionList<
       viewOffset,
       index,
     };
+    // $FlowFixMe[incompatible-use]
     this._listRef.scrollToIndex(toIndexParams);
   }
 
@@ -170,7 +173,7 @@ class VirtualizedSectionList<
     const listHeaderOffset = this.props.ListHeaderComponent ? 1 : 0;
 
     const stickyHeaderIndices = this.props.stickySectionHeadersEnabled
-      ? []
+      ? ([]: Array<number>)
       : undefined;
 
     let itemCount = 0;
@@ -235,14 +238,13 @@ class VirtualizedSectionList<
     return null;
   }
 
+  // $FlowFixMe[missing-local-annot]
   _keyExtractor = (item: Item, index: number) => {
     const info = this._subExtractor(index);
     return (info && info.key) || String(index);
   };
 
-  _subExtractor(
-    index: number,
-  ): ?{
+  _subExtractor(index: number): ?{
     section: SectionT,
     // Key of the section or combined key for section + item
     key: string,
@@ -339,87 +341,87 @@ class VirtualizedSectionList<
     }
   };
 
-  _renderItem = (listItemCount: number) => ({
-    item,
-    index,
-  }: {
-    item: Item,
-    index: number,
-    ...
-  }) => {
-    const info = this._subExtractor(index);
-    if (!info) {
-      return null;
-    }
-    const infoIndex = info.index;
-    if (infoIndex == null) {
-      const {section} = info;
-      if (info.header === true) {
-        const {renderSectionHeader} = this.props;
-        return renderSectionHeader ? renderSectionHeader({section}) : null;
-      } else {
-        const {renderSectionFooter} = this.props;
-        return renderSectionFooter ? renderSectionFooter({section}) : null;
+  _renderItem =
+    (listItemCount: number): $FlowFixMe =>
+    // eslint-disable-next-line react/no-unstable-nested-components
+    ({item, index}: {item: Item, index: number, ...}) => {
+      const info = this._subExtractor(index);
+      if (!info) {
+        return null;
       }
-    } else {
-      const renderItem = info.section.renderItem || this.props.renderItem;
-      const SeparatorComponent = this._getSeparatorComponent(
-        index,
-        info,
-        listItemCount,
-      );
-      invariant(renderItem, 'no renderItem!');
-      return (
-        <ItemWithSeparator
-          SeparatorComponent={SeparatorComponent}
-          LeadingSeparatorComponent={
-            infoIndex === 0 ? this.props.SectionSeparatorComponent : undefined
-          }
-          cellKey={info.key}
-          index={infoIndex}
-          item={item}
-          leadingItem={info.leadingItem}
-          leadingSection={info.leadingSection}
-          prevCellKey={(this._subExtractor(index - 1) || {}).key}
-          // Callback to provide updateHighlight for this item
-          setSelfHighlightCallback={this._setUpdateHighlightFor}
-          setSelfUpdatePropsCallback={this._setUpdatePropsFor}
-          // Provide child ability to set highlight/updateProps for previous item using prevCellKey
-          updateHighlightFor={this._updateHighlightFor}
-          updatePropsFor={this._updatePropsFor}
-          renderItem={renderItem}
-          section={info.section}
-          trailingItem={info.trailingItem}
-          trailingSection={info.trailingSection}
-          inverted={!!this.props.inverted}
-        />
-      );
-    }
-  };
+      const infoIndex = info.index;
+      if (infoIndex == null) {
+        const {section} = info;
+        if (info.header === true) {
+          const {renderSectionHeader} = this.props;
+          return renderSectionHeader ? renderSectionHeader({section}) : null;
+        } else {
+          const {renderSectionFooter} = this.props;
+          return renderSectionFooter ? renderSectionFooter({section}) : null;
+        }
+      } else {
+        const renderItem = info.section.renderItem || this.props.renderItem;
+        const SeparatorComponent = this._getSeparatorComponent(
+          index,
+          info,
+          listItemCount,
+        );
+        invariant(renderItem, 'no renderItem!');
+        return (
+          <ItemWithSeparator
+            SeparatorComponent={SeparatorComponent}
+            LeadingSeparatorComponent={
+              infoIndex === 0 ? this.props.SectionSeparatorComponent : undefined
+            }
+            cellKey={info.key}
+            index={infoIndex}
+            item={item}
+            leadingItem={info.leadingItem}
+            leadingSection={info.leadingSection}
+            prevCellKey={(this._subExtractor(index - 1) || {}).key}
+            // Callback to provide updateHighlight for this item
+            setSelfHighlightCallback={this._setUpdateHighlightFor}
+            setSelfUpdatePropsCallback={this._setUpdatePropsFor}
+            // Provide child ability to set highlight/updateProps for previous item using prevCellKey
+            updateHighlightFor={this._updateHighlightFor}
+            updatePropsFor={this._updatePropsFor}
+            renderItem={renderItem}
+            section={info.section}
+            trailingItem={info.trailingItem}
+            trailingSection={info.trailingSection}
+            inverted={!!this.props.inverted}
+          />
+        );
+      }
+    };
 
-  _updatePropsFor = (cellKey, value) => {
+  _updatePropsFor = (cellKey: string, value: any) => {
     const updateProps = this._updatePropsMap[cellKey];
     if (updateProps != null) {
       updateProps(value);
     }
   };
 
-  _updateHighlightFor = (cellKey, value) => {
+  _updateHighlightFor = (cellKey: string, value: boolean) => {
     const updateHighlight = this._updateHighlightMap[cellKey];
     if (updateHighlight != null) {
       updateHighlight(value);
     }
   };
 
-  _setUpdateHighlightFor = (cellKey, updateHighlightFn) => {
+  _setUpdateHighlightFor = (
+    cellKey: string,
+    updateHighlightFn: ?(boolean) => void,
+  ) => {
     if (updateHighlightFn != null) {
       this._updateHighlightMap[cellKey] = updateHighlightFn;
     } else {
+      // $FlowFixMe[prop-missing]
       delete this._updateHighlightFor[cellKey];
     }
   };
 
-  _setUpdatePropsFor = (cellKey, updatePropsFn) => {
+  _setUpdatePropsFor = (cellKey: string, updatePropsFn: ?(boolean) => void) => {
     if (updatePropsFn != null) {
       this._updatePropsMap[cellKey] = updatePropsFn;
     } else {
@@ -451,10 +453,10 @@ class VirtualizedSectionList<
     return null;
   }
 
-  _updateHighlightMap = {};
-  _updatePropsMap = {};
+  _updateHighlightMap: {[string]: (boolean) => void} = {};
+  _updatePropsMap: {[string]: void | (boolean => void)} = {};
   _listRef: ?React.ElementRef<typeof VirtualizedList>;
-  _captureRef = ref => {
+  _captureRef = (ref: null | React$ElementRef<Class<VirtualizedList>>) => {
     this._listRef = ref;
   };
 }
@@ -506,10 +508,8 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
     inverted,
   } = props;
 
-  const [
-    leadingSeparatorHiglighted,
-    setLeadingSeparatorHighlighted,
-  ] = React.useState(false);
+  const [leadingSeparatorHiglighted, setLeadingSeparatorHighlighted] =
+    React.useState(false);
 
   const [separatorHighlighted, setSeparatorHighlighted] = React.useState(false);
 
@@ -530,6 +530,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
 
   React.useEffect(() => {
     setSelfHighlightCallback(cellKey, setSeparatorHighlighted);
+    // $FlowFixMe[incompatible-call]
     setSelfUpdatePropsCallback(cellKey, setSeparatorProps);
 
     return () => {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,9 +8,9 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <folly/Optional.h>
 #include <folly/dynamic.h>
 #include <folly/json.h>
+#include <optional>
 
 #include "NativeCommon.h"
 #include "NativeMap.h"
@@ -38,11 +38,11 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   jni::local_ref<jni::JArrayClass<jstring>> importKeys();
   jni::local_ref<jni::JArrayClass<jobject>> importValues();
   jni::local_ref<jni::JArrayClass<jobject>> importTypes();
-  folly::Optional<folly::dynamic> keys_;
+  std::optional<folly::dynamic> keys_;
   static jni::local_ref<jhybridobject> createWithContents(folly::dynamic &&map);
 
   static void mapException(const std::exception &ex);
-
+  static void mapException(std::exception_ptr ex);
   static void registerNatives();
 
   using HybridBase::HybridBase;

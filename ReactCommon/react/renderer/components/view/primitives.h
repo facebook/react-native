@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,25 +7,88 @@
 
 #pragma once
 
-#include <better/optional.h>
 #include <react/renderer/graphics/Color.h>
-#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/graphics/RectangleCorners.h>
+#include <react/renderer/graphics/RectangleEdges.h>
+
 #include <array>
+#include <bitset>
 #include <cmath>
+#include <optional>
 
 namespace facebook {
 namespace react {
 
-enum class PointerEventsMode { Auto, None, BoxNone, BoxOnly };
+enum class PointerEventsMode : uint8_t { Auto, None, BoxNone, BoxOnly };
 
-enum class BackfaceVisibility { Auto, Visible, Hidden };
+struct ViewEvents {
+  std::bitset<32> bits{};
 
-enum class BorderStyle { Solid, Dotted, Dashed };
+  enum class Offset : std::size_t {
+    // Pointer events
+    PointerEnter = 0,
+    PointerMove = 1,
+    PointerLeave = 2,
+
+    // PanResponder callbacks
+    MoveShouldSetResponder = 3,
+    MoveShouldSetResponderCapture = 4,
+    StartShouldSetResponder = 5,
+    StartShouldSetResponderCapture = 6,
+    ResponderGrant = 7,
+    ResponderReject = 8,
+    ResponderStart = 9,
+    ResponderEnd = 10,
+    ResponderRelease = 11,
+    ResponderMove = 12,
+    ResponderTerminate = 13,
+    ResponderTerminationRequest = 14,
+    ShouldBlockNativeResponder = 15,
+
+    // Touch events
+    TouchStart = 16,
+    TouchMove = 17,
+    TouchEnd = 18,
+    TouchCancel = 19,
+
+    // W3C Pointer Events
+    PointerEnterCapture = 23,
+    PointerLeaveCapture = 24,
+    PointerMoveCapture = 25,
+    PointerOver = 26,
+    PointerOut = 27,
+    PointerOverCapture = 28,
+    PointerOutCapture = 29,
+
+  };
+
+  constexpr bool operator[](const Offset offset) const {
+    return bits[static_cast<std::size_t>(offset)];
+  }
+
+  std::bitset<32>::reference operator[](const Offset offset) {
+    return bits[static_cast<std::size_t>(offset)];
+  }
+};
+
+inline static bool operator==(ViewEvents const &lhs, ViewEvents const &rhs) {
+  return lhs.bits == rhs.bits;
+}
+
+inline static bool operator!=(ViewEvents const &lhs, ViewEvents const &rhs) {
+  return lhs.bits != rhs.bits;
+}
+
+enum class BackfaceVisibility : uint8_t { Auto, Visible, Hidden };
+
+enum class BorderCurve : uint8_t { Circular, Continuous };
+
+enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
 
 template <typename T>
 struct CascadedRectangleEdges {
   using Counterpart = RectangleEdges<T>;
-  using OptionalT = better::optional<T>;
+  using OptionalT = std::optional<T>;
 
   OptionalT left{};
   OptionalT top{};
@@ -86,7 +149,7 @@ struct CascadedRectangleEdges {
 template <typename T>
 struct CascadedRectangleCorners {
   using Counterpart = RectangleCorners<T>;
-  using OptionalT = better::optional<T>;
+  using OptionalT = std::optional<T>;
 
   OptionalT topLeft{};
   OptionalT topRight{};
@@ -97,12 +160,21 @@ struct CascadedRectangleCorners {
   OptionalT bottomStart{};
   OptionalT bottomEnd{};
   OptionalT all{};
+  OptionalT endEnd{};
+  OptionalT endStart{};
+  OptionalT startEnd{};
+  OptionalT startStart{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
-    const auto topLeading = isRTL ? topEnd : topStart;
-    const auto topTrailing = isRTL ? topStart : topEnd;
-    const auto bottomLeading = isRTL ? bottomEnd : bottomStart;
-    const auto bottomTrailing = isRTL ? bottomStart : bottomEnd;
+    const auto logicalTopStart = topStart ? topStart : startStart;
+    const auto logicalTopEnd = topEnd ? topEnd : startEnd;
+    const auto logicalBottomStart = bottomStart ? bottomStart : endStart;
+    const auto logicalBottomEnd = bottomEnd ? bottomEnd : endEnd;
+
+    const auto topLeading = isRTL ? logicalTopEnd : logicalTopStart;
+    const auto topTrailing = isRTL ? logicalTopStart : logicalTopEnd;
+    const auto bottomLeading = isRTL ? logicalBottomEnd : logicalBottomStart;
+    const auto bottomTrailing = isRTL ? logicalBottomStart : logicalBottomEnd;
 
     return {
         /* .topLeft = */ topLeft.value_or(
@@ -126,7 +198,11 @@ struct CascadedRectangleCorners {
                this->topEnd,
                this->bottomStart,
                this->bottomEnd,
-               this->all) ==
+               this->all,
+               this->endEnd,
+               this->endStart,
+               this->startEnd,
+               this->startStart) ==
         std::tie(
                rhs.topLeft,
                rhs.topRight,
@@ -136,7 +212,11 @@ struct CascadedRectangleCorners {
                rhs.topEnd,
                rhs.bottomStart,
                rhs.bottomEnd,
-               rhs.all);
+               rhs.all,
+               rhs.endEnd,
+               rhs.endStart,
+               rhs.startEnd,
+               rhs.startStart);
   }
 
   bool operator!=(const CascadedRectangleCorners<T> &rhs) const {
@@ -145,11 +225,13 @@ struct CascadedRectangleCorners {
 };
 
 using BorderWidths = RectangleEdges<Float>;
+using BorderCurves = RectangleCorners<BorderCurve>;
 using BorderStyles = RectangleEdges<BorderStyle>;
 using BorderColors = RectangleEdges<SharedColor>;
 using BorderRadii = RectangleCorners<Float>;
 
 using CascadedBorderWidths = CascadedRectangleEdges<Float>;
+using CascadedBorderCurves = CascadedRectangleCorners<BorderCurve>;
 using CascadedBorderStyles = CascadedRectangleEdges<BorderStyle>;
 using CascadedBorderColors = CascadedRectangleEdges<SharedColor>;
 using CascadedBorderRadii = CascadedRectangleCorners<Float>;
@@ -158,6 +240,7 @@ struct BorderMetrics {
   BorderColors borderColors{};
   BorderWidths borderWidths{};
   BorderRadii borderRadii{};
+  BorderCurves borderCurves{};
   BorderStyles borderStyles{};
 
   bool operator==(const BorderMetrics &rhs) const {
@@ -165,11 +248,13 @@ struct BorderMetrics {
                this->borderColors,
                this->borderWidths,
                this->borderRadii,
+               this->borderCurves,
                this->borderStyles) ==
         std::tie(
                rhs.borderColors,
                rhs.borderWidths,
                rhs.borderRadii,
+               rhs.borderCurves,
                rhs.borderStyles);
   }
 
@@ -177,6 +262,49 @@ struct BorderMetrics {
     return !(*this == rhs);
   }
 };
+
+#ifdef ANDROID
+
+struct NativeDrawable {
+  enum class Kind : uint8_t {
+    Ripple,
+    ThemeAttr,
+  };
+
+  struct Ripple {
+    std::optional<int32_t> color{};
+    std::optional<Float> rippleRadius{};
+    bool borderless{false};
+
+    bool operator==(const Ripple &rhs) const {
+      return std::tie(this->color, this->borderless, this->rippleRadius) ==
+          std::tie(rhs.color, rhs.borderless, rhs.rippleRadius);
+    }
+  };
+
+  std::string themeAttr;
+  Ripple ripple;
+  Kind kind;
+
+  bool operator==(const NativeDrawable &rhs) const {
+    if (this->kind != rhs.kind)
+      return false;
+    switch (this->kind) {
+      case Kind::ThemeAttr:
+        return this->themeAttr == rhs.themeAttr;
+      case Kind::Ripple:
+        return this->ripple == rhs.ripple;
+    }
+  }
+
+  bool operator!=(const NativeDrawable &rhs) const {
+    return !(*this == rhs);
+  }
+
+  ~NativeDrawable() = default;
+};
+
+#endif
 
 } // namespace react
 } // namespace facebook

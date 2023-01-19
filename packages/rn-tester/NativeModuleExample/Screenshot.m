@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,13 +13,14 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(takeScreenshot:(id /* NSString or NSNumber */)target
-                  withOptions:(NSDictionary *)options
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(takeScreenshot
+                  : (id /* NSString or NSNumber */)target withOptions
+                  : (NSDictionary *)options resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-
+  [self.bridge.uiManager addUIBlock:^(
+                             __unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     // Get view
     UIView *view;
     if (target == nil || [target isEqual:@"window"]) {
@@ -40,10 +41,14 @@ RCT_EXPORT_METHOD(takeScreenshot:(id /* NSString or NSNumber */)target
     if (size.width < 0.1 || size.height < 0.1) {
       size = view.bounds.size;
     }
-    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
-    BOOL success = [view drawViewHierarchyInRect:(CGRect){CGPointZero, size} afterScreenUpdates:YES];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+
+    UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
+    UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size format:rendererFormat];
+
+    __block BOOL success = NO;
+    UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
+      success = [view drawViewHierarchyInRect:(CGRect){CGPointZero, size} afterScreenUpdates:YES];
+    }];
 
     if (!success || !image) {
       reject(RCTErrorUnspecified, @"Failed to capture view snapshot.", nil);
@@ -52,7 +57,6 @@ RCT_EXPORT_METHOD(takeScreenshot:(id /* NSString or NSNumber */)target
 
     // Convert image to data (on a background thread)
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
       NSData *data;
       if ([format isEqualToString:@"png"]) {
         data = UIImagePNGRepresentation(image);

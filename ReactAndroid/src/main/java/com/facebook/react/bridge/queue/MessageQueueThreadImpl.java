@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -55,15 +55,17 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    */
   @DoNotStrip
   @Override
-  public void runOnQueue(Runnable runnable) {
+  public boolean runOnQueue(Runnable runnable) {
     if (mIsFinished) {
       FLog.w(
           ReactConstants.TAG,
           "Tried to enqueue runnable on already finished thread: '"
               + getName()
               + "... dropping Runnable.");
+      return false;
     }
     mHandler.post(runnable);
+    return true;
   }
 
   @DoNotStrip

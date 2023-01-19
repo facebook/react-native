@@ -1,22 +1,21 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTStyleAnimatedNode.h>
 #import <React/RCTAnimationUtils.h>
-#import <React/RCTValueAnimatedNode.h>
+#import <React/RCTColorAnimatedNode.h>
+#import <React/RCTStyleAnimatedNode.h>
 #import <React/RCTTransformAnimatedNode.h>
+#import <React/RCTValueAnimatedNode.h>
 
-@implementation RCTStyleAnimatedNode
-{
+@implementation RCTStyleAnimatedNode {
   NSMutableDictionary<NSString *, NSObject *> *_propsDictionary;
 }
 
-- (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config
+- (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithTag:tag config:config])) {
     _propsDictionary = [NSMutableDictionary new];
@@ -38,11 +37,19 @@
     RCTAnimatedNode *node = [self.parentNodes objectForKey:nodeTag];
     if (node) {
       if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
-        RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
-        [self->_propsDictionary setObject:@(parentNode.value) forKey:property];
+        RCTValueAnimatedNode *valueAnimatedNode = (RCTValueAnimatedNode *)node;
+        id animatedObject = valueAnimatedNode.animatedObject;
+        if (animatedObject) {
+          _propsDictionary[property] = animatedObject;
+        } else {
+          _propsDictionary[property] = @(valueAnimatedNode.value);
+        }
       } else if ([node isKindOfClass:[RCTTransformAnimatedNode class]]) {
-        RCTTransformAnimatedNode *parentNode = (RCTTransformAnimatedNode *)node;
-        [self->_propsDictionary addEntriesFromDictionary:parentNode.propsDictionary];
+        RCTTransformAnimatedNode *transformAnimatedNode = (RCTTransformAnimatedNode *)node;
+        [_propsDictionary addEntriesFromDictionary:transformAnimatedNode.propsDictionary];
+      } else if ([node isKindOfClass:[RCTColorAnimatedNode class]]) {
+        RCTColorAnimatedNode *colorAnimatedNode = (RCTColorAnimatedNode *)node;
+        _propsDictionary[property] = @(colorAnimatedNode.color);
       }
     }
   }];

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,12 @@
 
 'use strict';
 
-const ErrorUtils = require('../vendor/core/ErrorUtils');
 const Systrace = require('../Performance/Systrace');
-
 const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
-const invariant = require('invariant');
 const stringifySafe = require('../Utilities/stringifySafe').default;
 const warnOnce = require('../Utilities/warnOnce');
+const ErrorUtils = require('../vendor/core/ErrorUtils');
+const invariant = require('invariant');
 
 export type SpyData = {
   type: number,
@@ -72,19 +71,17 @@ class MessageQueue {
     }
 
     // $FlowFixMe[cannot-write]
-    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-    this.callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(
-      this,
-    );
+    this.callFunctionReturnFlushedQueue =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      this.callFunctionReturnFlushedQueue.bind(this);
     // $FlowFixMe[cannot-write]
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     this.flushedQueue = this.flushedQueue.bind(this);
 
     // $FlowFixMe[cannot-write]
-    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-    this.invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(
-      this,
-    );
+    this.invokeCallbackAndReturnFlushedQueue =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      this.invokeCallbackAndReturnFlushedQueue.bind(this);
   }
 
   /**
@@ -201,7 +198,7 @@ class MessageQueue {
           delete this._debugInfo[this._callID - DEBUG_INFO_LIMIT];
         }
         if (this._successCallbacks.size > 500) {
-          const info = {};
+          const info: {[number]: {method: string, module: string}} = {};
           this._successCallbacks.forEach((_, callID) => {
             const debug = this._debugInfo[callID];
             const module = debug && this._remoteModuleTable[debug[0]];
@@ -210,7 +207,7 @@ class MessageQueue {
           });
           warnOnce(
             'excessive-number-of-pending-callbacks',
-            `Please report: Excessive number of pending callbacks: ${
+            `Excessive number of pending callbacks: ${
               this._successCallbacks.size
             }. Some pending callbacks that might have leaked by never being called from native code: ${stringifySafe(
               info,
@@ -244,7 +241,7 @@ class MessageQueue {
     params: mixed[],
     onFail: ?(...mixed[]) => void,
     onSucc: ?(...mixed[]) => void,
-  ) {
+  ): void {
     this.processCallbacks(moduleID, methodID, params, onFail, onSucc);
 
     this._queue[MODULE_IDS].push(moduleID);
@@ -255,7 +252,7 @@ class MessageQueue {
       // folly-convertible.  As a special case, if a prop value is a
       // function it is permitted here, and special-cased in the
       // conversion.
-      const isValidArgument = val => {
+      const isValidArgument = (val: mixed): boolean => {
         switch (typeof val) {
           case 'undefined':
           case 'boolean':
@@ -289,7 +286,7 @@ class MessageQueue {
       // Replacement allows normally non-JSON-convertible values to be
       // seen.  There is ambiguity with string values, but in context,
       // it should at least be a strong hint.
-      const replacer = (key, val) => {
+      const replacer = (key: string, val: $FlowFixMe) => {
         const t = typeof val;
         if (t === 'function') {
           return '<<Function ' + val.name + '>>';
@@ -324,6 +321,7 @@ class MessageQueue {
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && this.__spy && isFinite(moduleID)) {
+      // $FlowFixMe[not-a-function]
       this.__spy({
         type: TO_NATIVE,
         module: this._remoteModuleTable[moduleID],
@@ -383,7 +381,8 @@ class MessageQueue {
     return (
       // $FlowFixMe[cannot-resolve-name]
       typeof DebuggerInternal !== 'undefined' &&
-      DebuggerInternal.shouldPauseOnThrow === true // eslint-disable-line no-undef
+      // $FlowFixMe[cannot-resolve-name]
+      DebuggerInternal.shouldPauseOnThrow === true
     );
   }
 
@@ -407,20 +406,30 @@ class MessageQueue {
       this.__spy({type: TO_JS, module, method, args});
     }
     const moduleMethods = this.getCallableModule(module);
-    invariant(
-      !!moduleMethods,
-      `Module ${module} is not a registered callable module (calling ${method}). A frequent cause of the error is that the application entry file path is incorrect.
-      This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
-    );
-    invariant(
-      !!moduleMethods[method],
-      `Method ${method} does not exist on module ${module}`,
-    );
+    if (!moduleMethods) {
+      const callableModuleNames = Object.keys(this._lazyCallableModules);
+      const n = callableModuleNames.length;
+      const callableModuleNameList = callableModuleNames.join(', ');
+
+      // TODO(T122225939): Remove after investigation: Why are we getting to this line in bridgeless mode?
+      const isBridgelessMode = global.RN$Bridgeless === true ? 'true' : 'false';
+      invariant(
+        false,
+        `Failed to call into JavaScript module method ${module}.${method}(). Module has not been registered as callable. Bridgeless Mode: ${isBridgelessMode}. Registered callable JavaScript modules (n = ${n}): ${callableModuleNameList}.
+        A frequent cause of the error is that the application entry file path is incorrect. This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
+      );
+    }
+    if (!moduleMethods[method]) {
+      invariant(
+        false,
+        `Failed to call into JavaScript module method ${module}.${method}(). Module exists, but the method is undefined.`,
+      );
+    }
     moduleMethods[method].apply(moduleMethods, args);
     Systrace.endEvent();
   }
 
-  __invokeCallback(cbID: number, args: mixed[]) {
+  __invokeCallback(cbID: number, args: mixed[]): void {
     this._lastFlush = Date.now();
     this._eventLoopStartTime = this._lastFlush;
 

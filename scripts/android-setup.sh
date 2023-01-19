@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -93,22 +93,4 @@ function waitForAVD {
   else
     echo "Skipping AVD-related test setup..."
   fi
-}
-
-function retry3 {
-  local n=1
-  local max=3
-  local delay=1
-  while true; do
-    "$@" && break || {
-      if [[ $n -lt $max ]]; then
-        ((n++))
-        echo "Command failed. Attempt $n/$max:"
-        sleep $delay;
-      else
-        echo "The command has failed after $n attempts." >&2
-        return 1
-      fi
-    }
-  done
 }

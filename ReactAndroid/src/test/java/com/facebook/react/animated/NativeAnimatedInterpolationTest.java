@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 package com.facebook.react.animated;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -119,5 +119,43 @@ public class NativeAnimatedInterpolationTest {
                 InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
                 InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
         .isEqualTo(5);
+  }
+
+  @Test
+  public void testInterpolateColor() {
+    double[] input = new double[] {0, 1};
+    int[] output = new int[] {0xFF000000, 0xFFFF0000};
+    assertThat(InterpolationAnimatedNode.interpolateColor(0, input, output)).isEqualTo(0xFF000000);
+    assertThat(InterpolationAnimatedNode.interpolateColor(0.5, input, output))
+        .isEqualTo(0xFF7F0000);
+  }
+
+  @Test
+  public void testInterpolateString() {
+    double[] input = new double[] {0, 1};
+    double[][] output =
+        new double[][] {
+          new double[] {20, 20, 20, 80, 80, 80, 80, 20},
+          new double[] {40, 40, 33, 60, 60, 60, 65, 40},
+        };
+    String pattern = "M20,20L20,80L80,80L80,20Z";
+    assertThat(
+            InterpolationAnimatedNode.interpolateString(
+                pattern,
+                0,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+        .isEqualTo("M20,20L20,80L80,80L80,20Z");
+    assertThat(
+            InterpolationAnimatedNode.interpolateString(
+                pattern,
+                0.5,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+        .isEqualTo("M30,30L26.5,70L70,70L72.5,30Z");
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,13 +7,19 @@
 
 #import "RCTView.h"
 
+#import <QuartzCore/QuartzCore.h>
+#import <React/RCTMockDef.h>
+
 #import "RCTAutoInsetsProtocol.h"
+#import "RCTBorderCurve.h"
 #import "RCTBorderDrawing.h"
-#import "RCTConvert.h"
 #import "RCTI18nUtil.h"
 #import "RCTLog.h"
-#import "RCTUtils.h"
+#import "RCTViewUtils.h"
 #import "UIView+React.h"
+
+RCT_MOCK_DEF(RCTView, RCTContentInsets);
+#define RCTContentInsets RCT_MOCK_USE(RCTView, RCTContentInsets)
 
 UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
 
@@ -122,6 +128,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderBottomRightRadius = -1;
     _borderBottomStartRadius = -1;
     _borderBottomEndRadius = -1;
+    _borderEndEndRadius = -1;
+    _borderEndStartRadius = -1;
+    _borderStartEndRadius = -1;
+    _borderStartStartRadius = -1;
+    _borderCurve = RCTBorderCurveCircular;
     _borderStyle = RCTBorderStyleSolid;
     _hitTestEdgeInsets = UIEdgeInsetsZero;
 
@@ -458,7 +469,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   CGPoint contentOffset = scrollView.contentOffset;
 
   if (parentView.automaticallyAdjustContentInsets) {
-    UIEdgeInsets autoInset = [self contentInsetsForView:parentView];
+    UIEdgeInsets autoInset = RCTContentInsets(parentView);
     baseInset.top += autoInset.top;
     baseInset.bottom += autoInset.bottom;
     baseInset.left += autoInset.left;
@@ -478,18 +489,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
       scrollView.contentOffset = contentOffset;
     }
   }
-}
-
-+ (UIEdgeInsets)contentInsetsForView:(UIView *)view
-{
-  while (view) {
-    UIViewController *controller = view.reactViewController;
-    if (controller) {
-      return controller.view.safeAreaInsets;
-    }
-    view = view.superview;
-  }
-  return UIEdgeInsetsZero;
 }
 
 #pragma mark - View Unmounting
@@ -672,11 +671,16 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   CGFloat bottomLeftRadius;
   CGFloat bottomRightRadius;
 
+  const CGFloat logicalTopStartRadius = RCTDefaultIfNegativeTo(_borderStartStartRadius, _borderTopStartRadius);
+  const CGFloat logicalTopEndRadius = RCTDefaultIfNegativeTo(_borderStartEndRadius, _borderTopEndRadius);
+  const CGFloat logicalBottomStartRadius = RCTDefaultIfNegativeTo(_borderEndStartRadius, _borderBottomStartRadius);
+  const CGFloat logicalBottomEndRadius = RCTDefaultIfNegativeTo(_borderEndEndRadius, _borderBottomEndRadius);
+
   if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
-    const CGFloat topStartRadius = RCTDefaultIfNegativeTo(_borderTopLeftRadius, _borderTopStartRadius);
-    const CGFloat topEndRadius = RCTDefaultIfNegativeTo(_borderTopRightRadius, _borderTopEndRadius);
-    const CGFloat bottomStartRadius = RCTDefaultIfNegativeTo(_borderBottomLeftRadius, _borderBottomStartRadius);
-    const CGFloat bottomEndRadius = RCTDefaultIfNegativeTo(_borderBottomRightRadius, _borderBottomEndRadius);
+    const CGFloat topStartRadius = RCTDefaultIfNegativeTo(_borderTopLeftRadius, logicalTopStartRadius);
+    const CGFloat topEndRadius = RCTDefaultIfNegativeTo(_borderTopRightRadius, logicalTopEndRadius);
+    const CGFloat bottomStartRadius = RCTDefaultIfNegativeTo(_borderBottomLeftRadius, logicalBottomStartRadius);
+    const CGFloat bottomEndRadius = RCTDefaultIfNegativeTo(_borderBottomRightRadius, logicalBottomEndRadius);
 
     const CGFloat directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
     const CGFloat directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
@@ -688,10 +692,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     bottomLeftRadius = RCTDefaultIfNegativeTo(radius, directionAwareBottomLeftRadius);
     bottomRightRadius = RCTDefaultIfNegativeTo(radius, directionAwareBottomRightRadius);
   } else {
-    const CGFloat directionAwareTopLeftRadius = isRTL ? _borderTopEndRadius : _borderTopStartRadius;
-    const CGFloat directionAwareTopRightRadius = isRTL ? _borderTopStartRadius : _borderTopEndRadius;
-    const CGFloat directionAwareBottomLeftRadius = isRTL ? _borderBottomEndRadius : _borderBottomStartRadius;
-    const CGFloat directionAwareBottomRightRadius = isRTL ? _borderBottomStartRadius : _borderBottomEndRadius;
+    const CGFloat directionAwareTopLeftRadius = isRTL ? logicalTopEndRadius : logicalTopStartRadius;
+    const CGFloat directionAwareTopRightRadius = isRTL ? logicalTopStartRadius : logicalTopEndRadius;
+    const CGFloat directionAwareBottomLeftRadius = isRTL ? logicalBottomEndRadius : logicalBottomStartRadius;
+    const CGFloat directionAwareBottomRightRadius = isRTL ? logicalBottomStartRadius : logicalBottomEndRadius;
 
     topLeftRadius =
         RCTDefaultIfNegativeTo(radius, RCTDefaultIfNegativeTo(_borderTopLeftRadius, directionAwareTopLeftRadius));
@@ -719,33 +723,45 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   };
 }
 
-- (RCTBorderColors)borderColors
+- (RCTBorderColors)borderColorsWithTraitCollection:(UITraitCollection *)traitCollection
 {
   const BOOL isRTL = _reactLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
+
+  UIColor *directionAwareBorderLeftColor = nil;
+  UIColor *directionAwareBorderRightColor = nil;
 
   if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
     UIColor *borderStartColor = _borderStartColor ?: _borderLeftColor;
     UIColor *borderEndColor = _borderEndColor ?: _borderRightColor;
 
-    UIColor *directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor;
-    UIColor *directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor;
-
-    return (RCTBorderColors){
-        (_borderTopColor ?: _borderColor).CGColor,
-        (directionAwareBorderLeftColor ?: _borderColor).CGColor,
-        (_borderBottomColor ?: _borderColor).CGColor,
-        (directionAwareBorderRightColor ?: _borderColor).CGColor,
-    };
+    directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor;
+    directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor;
+  } else {
+    directionAwareBorderLeftColor = (isRTL ? _borderEndColor : _borderStartColor) ?: _borderLeftColor;
+    directionAwareBorderRightColor = (isRTL ? _borderStartColor : _borderEndColor) ?: _borderRightColor;
   }
 
-  UIColor *directionAwareBorderLeftColor = isRTL ? _borderEndColor : _borderStartColor;
-  UIColor *directionAwareBorderRightColor = isRTL ? _borderStartColor : _borderEndColor;
+  UIColor *borderColor = _borderColor;
+  UIColor *borderTopColor = _borderTopColor;
+  UIColor *borderBottomColor = _borderBottomColor;
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+  if (@available(iOS 13.0, *)) {
+    borderColor = [borderColor resolvedColorWithTraitCollection:self.traitCollection];
+    borderTopColor = [borderTopColor resolvedColorWithTraitCollection:self.traitCollection];
+    directionAwareBorderLeftColor =
+        [directionAwareBorderLeftColor resolvedColorWithTraitCollection:self.traitCollection];
+    borderBottomColor = [borderBottomColor resolvedColorWithTraitCollection:self.traitCollection];
+    directionAwareBorderRightColor =
+        [directionAwareBorderRightColor resolvedColorWithTraitCollection:self.traitCollection];
+  }
+#endif
 
   return (RCTBorderColors){
-    (_borderTopColor ?: _borderColor).CGColor,
-    (directionAwareBorderLeftColor ?: _borderLeftColor ?: _borderColor).CGColor,
-    (_borderBottomColor ?: _borderColor).CGColor,
-    (directionAwareBorderRightColor ?: _borderRightColor ?: _borderColor).CGColor,
+      (borderTopColor ?: borderColor).CGColor,
+      (directionAwareBorderLeftColor ?: borderColor).CGColor,
+      (borderBottomColor ?: borderColor).CGColor,
+      (directionAwareBorderRightColor ?: borderColor).CGColor,
   };
 }
 
@@ -771,7 +787,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
 
   const RCTCornerRadii cornerRadii = [self cornerRadii];
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
-  const RCTBorderColors borderColors = [self borderColors];
+  const RCTBorderColors borderColors = [self borderColorsWithTraitCollection:self.traitCollection];
 
   BOOL useIOSBorderRendering = RCTCornerRadiiAreEqual(cornerRadii) && RCTBorderInsetsAreEqual(borderInsets) &&
       RCTBorderColorsAreEqual(borderColors) && _borderStyle == RCTBorderStyleSolid &&
@@ -939,7 +955,22 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 
                 setBorderRadius() setBorderRadius(TopLeft) setBorderRadius(TopRight) setBorderRadius(TopStart)
                     setBorderRadius(TopEnd) setBorderRadius(BottomLeft) setBorderRadius(BottomRight)
-                        setBorderRadius(BottomStart) setBorderRadius(BottomEnd)
+                        setBorderRadius(BottomStart) setBorderRadius(BottomEnd) setBorderRadius(EndEnd)
+                            setBorderRadius(EndStart) setBorderRadius(StartEnd) setBorderRadius(StartStart)
+
+#pragma mark - Border Curve
+
+#define setBorderCurve(side)                            \
+  -(void)setBorder##side##Curve : (RCTBorderCurve)curve \
+  {                                                     \
+    if (_border##side##Curve == curve) {                \
+      return;                                           \
+    }                                                   \
+    _border##side##Curve = curve;                       \
+    [self.layer setNeedsDisplay];                       \
+  }
+
+                                setBorderCurve()
 
 #pragma mark - Border Style
 
@@ -953,6 +984,6 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     [self.layer setNeedsDisplay];                       \
   }
 
-                            setBorderStyle()
+                                    setBorderStyle()
 
-                                @end
+                                        @end

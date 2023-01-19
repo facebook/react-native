@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,88 +7,86 @@
 
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
-#import <React/RCTUIManager.h>
-#import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTEventDispatcherProtocol.h>
+#import <React/RCTSurfacePresenterStub.h>
+#import <React/RCTUIManager.h>
 
 @protocol RCTValueAnimatedNodeObserver;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface RCTNativeAnimatedNodesManager : NSObject
 
-- (nonnull instancetype)initWithBridge:(RCTBridge *)bridge
+- (nonnull instancetype)initWithBridge:(nullable RCTBridge *)bridge
                       surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 
 - (void)updateAnimations;
 
-- (void)stepAnimations:(nonnull CADisplayLink *)displaylink;
+- (void)stepAnimations:(CADisplayLink *)displaylink;
 
-- (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag;
+- (BOOL)isNodeManagedByFabric:(NSNumber *)tag;
 
-- (void)getValue:(nonnull NSNumber *)nodeTag
-        saveCallback:(nullable RCTResponseSenderBlock)saveCallback;
+- (void)getValue:(NSNumber *)nodeTag saveCallback:(RCTResponseSenderBlock)saveCallback;
 
 // graph
 
-- (void)createAnimatedNode:(nonnull NSNumber *)tag
-                    config:(NSDictionary<NSString *, id> *__nonnull)config;
+- (void)createAnimatedNode:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config;
 
-- (void)connectAnimatedNodes:(nonnull NSNumber *)parentTag
-                    childTag:(nonnull NSNumber *)childTag;
+- (void)connectAnimatedNodes:(NSNumber *)parentTag childTag:(NSNumber *)childTag;
 
-- (void)disconnectAnimatedNodes:(nonnull NSNumber *)parentTag
-                       childTag:(nonnull NSNumber *)childTag;
+- (void)disconnectAnimatedNodes:(NSNumber *)parentTag childTag:(NSNumber *)childTag;
 
-- (void)connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
-                          viewTag:(nonnull NSNumber *)viewTag
-                         viewName:(nonnull NSString *)viewName;
+- (void)connectAnimatedNodeToView:(NSNumber *)nodeTag
+                          viewTag:(NSNumber *)viewTag
+                         viewName:(nullable NSString *)viewName;
 
-- (void)restoreDefaultValues:(nonnull NSNumber *)nodeTag;
+- (void)restoreDefaultValues:(NSNumber *)nodeTag;
 
-- (void)disconnectAnimatedNodeFromView:(nonnull NSNumber *)nodeTag
-                               viewTag:(nonnull NSNumber *)viewTag;
+- (void)disconnectAnimatedNodeFromView:(NSNumber *)nodeTag viewTag:(NSNumber *)viewTag;
 
-- (void)dropAnimatedNode:(nonnull NSNumber *)tag;
+- (void)dropAnimatedNode:(NSNumber *)tag;
 
 // mutations
 
-- (void)setAnimatedNodeValue:(nonnull NSNumber *)nodeTag
-                       value:(nonnull NSNumber *)value;
+- (void)setAnimatedNodeValue:(NSNumber *)nodeTag value:(NSNumber *)value;
 
-- (void)setAnimatedNodeOffset:(nonnull NSNumber *)nodeTag
-                       offset:(nonnull NSNumber *)offset;
+- (void)setAnimatedNodeOffset:(NSNumber *)nodeTag offset:(NSNumber *)offset;
 
-- (void)flattenAnimatedNodeOffset:(nonnull NSNumber *)nodeTag;
+- (void)flattenAnimatedNodeOffset:(NSNumber *)nodeTag;
 
-- (void)extractAnimatedNodeOffset:(nonnull NSNumber *)nodeTag;
+- (void)extractAnimatedNodeOffset:(NSNumber *)nodeTag;
+
+- (void)updateAnimatedNodeConfig:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config;
 
 // drivers
 
-- (void)startAnimatingNode:(nonnull NSNumber *)animationId
-                   nodeTag:(nonnull NSNumber *)nodeTag
-                    config:(NSDictionary<NSString *, id> *__nonnull)config
+- (void)startAnimatingNode:(NSNumber *)animationId
+                   nodeTag:(NSNumber *)nodeTag
+                    config:(NSDictionary<NSString *, id> *)config
                endCallback:(nullable RCTResponseSenderBlock)callBack;
 
-- (void)stopAnimation:(nonnull NSNumber *)animationId;
+- (void)stopAnimation:(NSNumber *)animationId;
 
 - (void)stopAnimationLoop;
 
 // events
 
-- (void)addAnimatedEventToView:(nonnull NSNumber *)viewTag
-                     eventName:(nonnull NSString *)eventName
-                  eventMapping:(NSDictionary<NSString *, id> *__nonnull)eventMapping;
+- (void)addAnimatedEventToView:(NSNumber *)viewTag
+                     eventName:(NSString *)eventName
+                  eventMapping:(NSDictionary<NSString *, id> *)eventMapping;
 
-- (void)removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
-                          eventName:(nonnull NSString *)eventName
-                    animatedNodeTag:(nonnull NSNumber *)animatedNodeTag;
+- (void)removeAnimatedEventFromView:(NSNumber *)viewTag
+                          eventName:(NSString *)eventName
+                    animatedNodeTag:(NSNumber *)animatedNodeTag;
 
-- (void)handleAnimatedEvent:(nonnull id<RCTEvent>)event;
+- (void)handleAnimatedEvent:(id<RCTEvent>)event;
 
 // listeners
 
-- (void)startListeningToAnimatedNodeValue:(nonnull NSNumber *)tag
-                            valueObserver:(nonnull id<RCTValueAnimatedNodeObserver>)valueObserver;
+- (void)startListeningToAnimatedNodeValue:(NSNumber *)tag valueObserver:(id<RCTValueAnimatedNodeObserver>)valueObserver;
 
-- (void)stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag;
+- (void)stopListeningToAnimatedNodeValue:(NSNumber *)tag;
 
 @end
+
+NS_ASSUME_NONNULL_END

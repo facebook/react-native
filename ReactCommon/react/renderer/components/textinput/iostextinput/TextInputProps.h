@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,6 +31,12 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
       TextInputProps const &sourceProps,
       RawProps const &rawProps);
 
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
+
 #pragma mark - Props
 
   TextInputTraits const traits{};
@@ -58,9 +64,12 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   int const mostRecentEventCount{0};
 
   bool autoFocus{false};
-  better::optional<Selection> selection{};
+  std::optional<Selection> selection{};
 
   std::string const inputAccessoryViewID{};
+
+  bool onKeyPressSync{false};
+  bool onChangeSync{false};
 
   /*
    * Accessors

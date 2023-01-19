@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -108,7 +108,7 @@ Inspector::Inspector(
     InspectorObserver &observer,
     bool pauseOnFirstStatement)
     : adapter_(adapter),
-      debugger_(adapter->getDebugger()),
+      debugger_(adapter->getRuntime().getDebugger()),
       observer_(observer),
       executor_(std::make_unique<detail::SerialExecutor>("hermes-inspector")) {
   // TODO (t26491391): make tickleJs a real Hermes runtime API
@@ -348,7 +348,7 @@ folly::Future<Unit> Inspector::executeIfEnabled(
 
 folly::Future<debugger::BreakpointInfo> Inspector::setBreakpoint(
     debugger::SourceLocation loc,
-    folly::Optional<std::string> condition) {
+    std::optional<std::string> condition) {
   auto promise = std::make_shared<folly::Promise<debugger::BreakpointInfo>>();
   // Automatically re-enable breakpoints since the user presumably wants this
   // to start triggering.
@@ -589,14 +589,17 @@ void Inspector::executeIfEnabledOnExecutor(
 
   state_->pushPendingFunc(
       [wrappedFunc = std::move(wrappedFunc), promise]() mutable {
-        wrappedFunc();
-        promise->setValue();
+        if (auto userCallbackException = runUserCallback(wrappedFunc)) {
+          promise->setException(*userCallbackException);
+        } else {
+          promise->setValue();
+        }
       });
 }
 
 void Inspector::setBreakpointOnExecutor(
     debugger::SourceLocation loc,
-    folly::Optional<std::string> condition,
+    std::optional<std::string> condition,
     std::shared_ptr<folly::Promise<debugger::BreakpointInfo>> promise) {
   std::lock_guard<std::mutex> lock(mutex_);
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,13 @@
 const React = require('react');
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterPage from '../../components/RNTesterPage';
-import {StyleSheet, Text, View, TouchableWithoutFeedback} from 'react-native';
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  View,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
 const importantForAccessibilityValues = [
   'auto',
@@ -143,6 +149,77 @@ class AccessibilityAndroidExample extends React.Component<
             </Text>
           </View>
         </RNTesterBlock>
+        <RNTesterBlock title="Links">
+          <Text style={styles.paragraph}>
+            In the following example, the words "test", "inline links", "another
+            link", and "link that spans multiple lines because the text is so
+            long", should each be independently focusable elements, announced as
+            their content followed by ", Link".
+          </Text>
+          <Text style={styles.paragraph}>
+            They should be focused in order from top to bottom *after* the
+            contents of the entire paragraph.
+          </Text>
+          <Text style={styles.paragraph}>
+            Focusing on the paragraph itself should also announce that there are
+            "links available", and opening Talkback's links menu should show
+            these same links.
+          </Text>
+          <Text style={styles.paragraph}>
+            Clicking on each link, or selecting the link From Talkback's links
+            menu should trigger an alert.
+          </Text>
+          <Text style={styles.paragraph}>
+            The links that wraps to multiple lines will intentionally only draw
+            a focus outline around the first line, but using the "explore by
+            touch" tap-and-drag gesture should move focus to this link even if
+            the second line is touched.
+          </Text>
+          <Text style={styles.paragraph}>
+            Using the "Explore by touch" gesture and touching an area that is
+            *not* a link should move focus to the entire paragraph.
+          </Text>
+          <Text style={styles.exampleTitle}>Example</Text>
+          <Text style={styles.paragraph} accessible={true}>
+            This is a{' '}
+            <Text
+              style={styles.link}
+              accessibilityRole="link"
+              onPress={() => {
+                Alert.alert('pressed test');
+              }}>
+              test
+            </Text>{' '}
+            of{' '}
+            <Text
+              style={styles.link}
+              accessibilityRole="link"
+              onPress={() => {
+                Alert.alert('pressed Inline Links');
+              }}>
+              inline links
+            </Text>{' '}
+            in React Native. Here's{' '}
+            <Text
+              style={styles.link}
+              accessibilityRole="link"
+              onPress={() => {
+                Alert.alert('pressed another link');
+              }}>
+              another link
+            </Text>
+            . Here is a{' '}
+            <Text
+              style={styles.link}
+              accessibilityRole="link"
+              onPress={() => {
+                Alert.alert('pressed long link');
+              }}>
+              link that spans multiple lines because the text is so long.
+            </Text>
+            This sentence has no links in it.
+          </Text>
+        </RNTesterBlock>
       </RNTesterPage>
     );
   }
@@ -166,6 +243,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 10,
     height: 150,
+  },
+  paragraph: {
+    paddingBottom: 10,
+  },
+  link: {
+    color: 'blue',
+    fontWeight: 'bold',
+  },
+  exampleTitle: {
+    fontWeight: 'bold',
+    fontSize: 20,
   },
 });
 

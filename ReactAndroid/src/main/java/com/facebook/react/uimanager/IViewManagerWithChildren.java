@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,5 +16,5 @@ public interface IViewManagerWithChildren {
    * of automatically laying out children without going through the ViewGroup's onLayout method. In
    * that case, onLayout for this View type must *not* call layout on its children.
    */
-  public boolean needsCustomLayoutForChildren();
+  boolean needsCustomLayoutForChildren();
 }

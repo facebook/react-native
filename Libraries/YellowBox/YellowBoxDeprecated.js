@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,11 +10,11 @@
 
 'use strict';
 
-const React = require('react');
-
-const LogBox = require('../LogBox/LogBox');
-
 import type {IgnorePattern} from '../LogBox/Data/LogBoxData';
+
+import LogBox from '../LogBox/LogBox';
+
+const React = require('react');
 
 type Props = $ReadOnly<{||}>;
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -41,6 +41,10 @@ function retry {
   done
   return 0
 }
+
+CURRENT_DIR=$(pwd)
+export KOTLIN_HOME="$CURRENT_DIR/third-party/kotlin"
+retry 3 scripts/download-kotlin-compiler-with-buck.sh
 
 retry 3 buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
 retry 3 buck fetch ReactAndroid/src/main/java/com/facebook/react

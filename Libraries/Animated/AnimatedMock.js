@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,19 +10,21 @@
 
 'use strict';
 
-const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');
-const AnimatedImplementation = require('./AnimatedImplementation');
-const AnimatedInterpolation = require('./nodes/AnimatedInterpolation');
-const AnimatedNode = require('./nodes/AnimatedNode');
-const AnimatedValue = require('./nodes/AnimatedValue');
-const AnimatedValueXY = require('./nodes/AnimatedValueXY');
-
-const createAnimatedComponent = require('./createAnimatedComponent');
-
+import type {Numeric as AnimatedNumeric} from './AnimatedImplementation';
+import type {EndResult} from './animations/Animation';
 import type {EndCallback} from './animations/Animation';
-import type {TimingAnimationConfig} from './animations/TimingAnimation';
 import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
+import type {TimingAnimationConfig} from './animations/TimingAnimation';
+
+import {AnimatedEvent, attachNativeEvent} from './AnimatedEvent';
+import AnimatedImplementation from './AnimatedImplementation';
+import createAnimatedComponent from './createAnimatedComponent';
+import AnimatedColor from './nodes/AnimatedColor';
+import AnimatedInterpolation from './nodes/AnimatedInterpolation';
+import AnimatedNode from './nodes/AnimatedNode';
+import AnimatedValue from './nodes/AnimatedValue';
+import AnimatedValueXY from './nodes/AnimatedValueXY';
 
 /**
  * Animations are a source of flakiness in snapshot testing. This mock replaces
@@ -41,7 +43,7 @@ function mockAnimationStart(
     const guardedCallback =
       callback == null
         ? callback
-        : (...args) => {
+        : (...args: Array<EndResult>) => {
             if (inAnimationCallback) {
               console.warn(
                 'Ignoring recursive animation callback when running mock animations',
@@ -88,8 +90,8 @@ const mockCompositeAnimation = (
   }),
 });
 
-const spring = function(
-  value: AnimatedValue | AnimatedValueXY,
+const spring = function (
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
   const anyValue: any = value;
@@ -102,8 +104,8 @@ const spring = function(
   };
 };
 
-const timing = function(
-  value: AnimatedValue | AnimatedValueXY,
+const timing = function (
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
   const anyValue: any = value;
@@ -116,32 +118,32 @@ const timing = function(
   };
 };
 
-const decay = function(
-  value: AnimatedValue | AnimatedValueXY,
+const decay = function (
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: DecayAnimationConfig,
 ): CompositeAnimation {
   return emptyAnimation;
 };
 
-const sequence = function(
+const sequence = function (
   animations: Array<CompositeAnimation>,
 ): CompositeAnimation {
   return mockCompositeAnimation(animations);
 };
 
 type ParallelConfig = {stopTogether?: boolean, ...};
-const parallel = function(
+const parallel = function (
   animations: Array<CompositeAnimation>,
   config?: ?ParallelConfig,
 ): CompositeAnimation {
   return mockCompositeAnimation(animations);
 };
 
-const delay = function(time: number): CompositeAnimation {
+const delay = function (time: number): CompositeAnimation {
   return emptyAnimation;
 };
 
-const stagger = function(
+const stagger = function (
   time: number,
   animations: Array<CompositeAnimation>,
 ): CompositeAnimation {
@@ -154,16 +156,20 @@ type LoopAnimationConfig = {
   ...
 };
 
-const loop = function(
+const loop = function (
   animation: CompositeAnimation,
+  // $FlowFixMe[prop-missing]
   {iterations = -1}: LoopAnimationConfig = {},
 ): CompositeAnimation {
   return emptyAnimation;
 };
 
-module.exports = {
+export type {AnimatedNumeric as Numeric};
+
+export default {
   Value: AnimatedValue,
   ValueXY: AnimatedValueXY,
+  Color: AnimatedColor,
   Interpolation: AnimatedInterpolation,
   Node: AnimatedNode,
   decay,

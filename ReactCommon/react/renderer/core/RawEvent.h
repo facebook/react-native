@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include <react/renderer/core/EventLogger.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/ValueFactory.h>
 
@@ -68,6 +69,7 @@ struct RawEvent {
   ValueFactory payloadFactory;
   SharedEventTarget eventTarget;
   Category category;
+  EventTag loggingTag{0};
 };
 
 } // namespace react

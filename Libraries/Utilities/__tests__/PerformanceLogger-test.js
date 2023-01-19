@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,9 +8,10 @@
  * @flow strict-local
  */
 
-import GlobalPerformanceLogger from '../GlobalPerformanceLogger';
-import createPerformanceLogger from '../createPerformanceLogger';
 import type {IPerformanceLogger} from '../createPerformanceLogger';
+
+import createPerformanceLogger from '../createPerformanceLogger';
+import GlobalPerformanceLogger from '../GlobalPerformanceLogger';
 
 const TIMESPAN_1 = '<timespan_1>';
 const EXTRA_KEY = '<extra_key>';

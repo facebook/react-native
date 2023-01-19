@@ -1,6 +1,5 @@
 **/main.js
 **/staticBundle.js
-bots/node_modules
 docs/generatedComponentApiDocs.js
 flow/
 Libraries/Renderer/*
@@ -8,3 +7,4 @@ Libraries/vendor/**/*
 node_modules/
 packages/*/node_modules
 packages/react-native-codegen/lib
+tools/eslint/rules/sort-imports.js

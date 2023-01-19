@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,19 +18,11 @@
 + (instancetype)sharedInstance;
 
 - (BOOL)isRTL;
-
-/**
- * Should be used very early during app start up
- * Before the bridge is initialized
- */
-@property (atomic, setter=allowRTL:) BOOL isRTLAllowed;
-
-/**
- * Could be used to test RTL layout with English
- * Used for development and testing purpose
- */
-@property (atomic, setter=forceRTL:) BOOL isRTLForced;
-
-@property (atomic, setter=swapLeftAndRightInRTL:) BOOL doLeftAndRightSwapInRTL;
+- (BOOL)isRTLAllowed;
+- (void)allowRTL:(BOOL)value;
+- (BOOL)isRTLForced;
+- (void)forceRTL:(BOOL)value;
+- (BOOL)doLeftAndRightSwapInRTL;
+- (void)swapLeftAndRightInRTL:(BOOL)value;
 
 @end

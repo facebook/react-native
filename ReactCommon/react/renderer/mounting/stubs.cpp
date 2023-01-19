@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,8 +11,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/mounting/Differentiator.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Sorting comparator for `reorderInPlaceIfNeeded`.
@@ -96,5 +95,4 @@ StubViewTree buildStubViewTreeUsingDifferentiator(
   return stubViewTree;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

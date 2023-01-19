@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -79,6 +79,17 @@ function PermissionsExample() {
             }
             selected={
               permission === PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+            }
+            style={styles.option}
+          />
+          <RNTOption
+            label={PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS}
+            key={PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS}
+            onPress={() =>
+              setPermission(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS)
+            }
+            selected={
+              permission === PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
             }
             style={styles.option}
           />

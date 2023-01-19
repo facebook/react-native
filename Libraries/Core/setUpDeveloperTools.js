@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,13 +17,11 @@ declare var console: typeof console & {_isPolyfilled: boolean, ...};
  * You can use this module directly, or just require InitializeCore.
  */
 if (__DEV__) {
-  if (!global.__RCTProfileIsProfiling) {
-    require('./setUpReactDevTools');
+  require('./setUpReactDevTools');
 
-    // Set up inspector
-    const JSInspector = require('../JSInspector/JSInspector');
-    JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
-  }
+  // Set up inspector
+  const JSInspector = require('../JSInspector/JSInspector');
+  JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
 
   // Note we can't check if console is "native" because it would appear "native" in JSC and Hermes.
   // We also can't check any properties that don't exist in the Chrome worker environment.
@@ -58,7 +56,7 @@ if (__DEV__) {
         'debug',
       ].forEach(level => {
         const originalFunction = console[level];
-        console[level] = function(...args) {
+        console[level] = function (...args: $ReadOnlyArray<mixed>) {
           HMRClient.log(level, args);
           originalFunction.apply(console, args);
         };

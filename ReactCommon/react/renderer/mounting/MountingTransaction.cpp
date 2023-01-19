@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,7 @@
 
 #include "MountingTransaction.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using Number = MountingTransaction::Number;
 
@@ -30,7 +29,7 @@ ShadowViewMutationList MountingTransaction::getMutations() && {
   return std::move(mutations_);
 }
 
-TransactionTelemetry const &MountingTransaction::getTelemetry() const {
+TransactionTelemetry &MountingTransaction::getTelemetry() const {
   return telemetry_;
 }
 
@@ -42,5 +41,4 @@ Number MountingTransaction::getNumber() const {
   return number_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

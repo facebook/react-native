@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,28 +8,27 @@
  * @format
  */
 
-import Platform from '../../Utilities/Platform';
-import * as React from 'react';
-import StatusBar from '../StatusBar/StatusBar';
+import type {AccessibilityRole} from '../../Components/View/ViewAccessibility';
+import type {
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+  MeasureOnSuccessCallback,
+} from '../../Renderer/shims/ReactNativeTypes';
+import type {ColorValue, ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {DirectEventHandler} from '../../Types/CodegenTypes';
+
 import StyleSheet from '../../StyleSheet/StyleSheet';
-import View from '../View/View';
-
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
-import nullthrows from 'nullthrows';
-
+import Platform from '../../Utilities/Platform';
+import StatusBar from '../StatusBar/StatusBar';
+import View from '../View/View';
 import AndroidDrawerLayoutNativeComponent, {
   Commands,
 } from './AndroidDrawerLayoutNativeComponent';
+import nullthrows from 'nullthrows';
+import * as React from 'react';
 
 const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
-
-import type {ColorValue, ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {DirectEventHandler} from '../../Types/CodegenTypes';
-import type {
-  MeasureOnSuccessCallback,
-  MeasureInWindowOnSuccessCallback,
-  MeasureLayoutOnSuccessCallback,
-} from '../../Renderer/shims/ReactNativeTypes';
 
 type DrawerStates = 'Idle' | 'Dragging' | 'Settling';
 
@@ -38,6 +37,8 @@ type DrawerSlideEvent = $ReadOnly<{|
 |}>;
 
 type Props = $ReadOnly<{|
+  accessibilityRole?: ?AccessibilityRole,
+
   /**
    * Determines whether the keyboard gets dismissed in response to a drag.
    *   - 'none' (the default), drags do not dismiss the keyboard.
@@ -162,9 +163,11 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     return {Left: 'left', Right: 'right'};
   }
 
-  _nativeRef = React.createRef<
-    React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
-  >();
+  // $FlowFixMe[missing-local-annot]
+  _nativeRef =
+    React.createRef<
+      React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
+    >();
 
   state: State = {statusBarBackgroundColor: null};
 
@@ -231,6 +234,8 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     );
   }
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onDrawerSlide = event => {
     if (this.props.onDrawerSlide) {
       this.props.onDrawerSlide(event);
@@ -252,6 +257,8 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     }
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onDrawerStateChanged = event => {
     if (this.props.onDrawerStateChanged) {
       this.props.onDrawerStateChanged(

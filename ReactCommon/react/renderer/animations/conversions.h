@@ -1,19 +1,19 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <better/optional.h>
+#include <glog/logging.h>
 #include <react/renderer/animations/primitives.h>
 
-#include <glog/logging.h>
+#include <optional>
 
 namespace facebook {
 namespace react {
 
-static inline better::optional<AnimationType> parseAnimationType(
+static inline std::optional<AnimationType> parseAnimationType(
     std::string param) {
   if (param == "spring") {
     return AnimationType::Spring;
@@ -38,7 +38,7 @@ static inline better::optional<AnimationType> parseAnimationType(
   return {};
 }
 
-static inline better::optional<AnimationProperty> parseAnimationProperty(
+static inline std::optional<AnimationProperty> parseAnimationProperty(
     std::string param) {
   if (param == "opacity") {
     return AnimationProperty::Opacity;
@@ -57,7 +57,7 @@ static inline better::optional<AnimationProperty> parseAnimationProperty(
   return {};
 }
 
-static inline better::optional<AnimationConfig> parseAnimationConfig(
+static inline std::optional<AnimationConfig> parseAnimationConfig(
     folly::dynamic const &config,
     double defaultDuration,
     bool parsePropertyType) {
@@ -115,8 +115,8 @@ static inline better::optional<AnimationConfig> parseAnimationConfig(
 
   double duration = defaultDuration;
   double delay = 0;
-  double springDamping = 0.5;
-  double initialVelocity = 0;
+  Float springDamping = 0.5;
+  Float initialVelocity = 0;
 
   auto const durationIt = config.find("duration");
   if (durationIt != config.items().end()) {
@@ -144,7 +144,7 @@ static inline better::optional<AnimationConfig> parseAnimationConfig(
   if (springDampingIt != config.items().end() &&
       springDampingIt->second.isDouble()) {
     if (springDampingIt->second.isDouble()) {
-      springDamping = springDampingIt->second.asDouble();
+      springDamping = (Float)springDampingIt->second.asDouble();
     } else {
       LOG(ERROR)
           << "Error parsing animation config: field `springDamping` must be a number";
@@ -155,7 +155,7 @@ static inline better::optional<AnimationConfig> parseAnimationConfig(
   auto const initialVelocityIt = config.find("initialVelocity");
   if (initialVelocityIt != config.items().end()) {
     if (initialVelocityIt->second.isDouble()) {
-      initialVelocity = initialVelocityIt->second.asDouble();
+      initialVelocity = (Float)initialVelocityIt->second.asDouble();
     } else {
       LOG(ERROR)
           << "Error parsing animation config: field `initialVelocity` must be a number";
@@ -163,7 +163,7 @@ static inline better::optional<AnimationConfig> parseAnimationConfig(
     }
   }
 
-  return better::optional<AnimationConfig>(AnimationConfig{
+  return std::optional<AnimationConfig>(AnimationConfig{
       *animationType,
       animationProperty,
       duration,
@@ -173,8 +173,8 @@ static inline better::optional<AnimationConfig> parseAnimationConfig(
 }
 
 // Parse animation config from JS
-static inline better::optional<LayoutAnimationConfig>
-parseLayoutAnimationConfig(folly::dynamic const &config) {
+static inline std::optional<LayoutAnimationConfig> parseLayoutAnimationConfig(
+    folly::dynamic const &config) {
   if (config.empty() || !config.isObject()) {
     return {};
   }
@@ -187,17 +187,17 @@ parseLayoutAnimationConfig(folly::dynamic const &config) {
 
   const auto createConfigIt = config.find("create");
   const auto createConfig = createConfigIt == config.items().end()
-      ? better::optional<AnimationConfig>(AnimationConfig{})
+      ? std::optional<AnimationConfig>(AnimationConfig{})
       : parseAnimationConfig(createConfigIt->second, duration, true);
 
   const auto updateConfigIt = config.find("update");
   const auto updateConfig = updateConfigIt == config.items().end()
-      ? better::optional<AnimationConfig>(AnimationConfig{})
+      ? std::optional<AnimationConfig>(AnimationConfig{})
       : parseAnimationConfig(updateConfigIt->second, duration, false);
 
   const auto deleteConfigIt = config.find("delete");
   const auto deleteConfig = deleteConfigIt == config.items().end()
-      ? better::optional<AnimationConfig>(AnimationConfig{})
+      ? std::optional<AnimationConfig>(AnimationConfig{})
       : parseAnimationConfig(deleteConfigIt->second, duration, true);
 
   if (!createConfig || !updateConfig || !deleteConfig) {

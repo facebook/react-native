@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.yoga.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -724,5 +724,15 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
       arr[LAYOUT_EDGE_SET_FLAG_INDEX] = ((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX]) & ~(HAS_NEW_LAYOUT);
     }
     mHasNewLayout = false;
+  }
+
+  @Override
+  public float getGap(YogaGutter gutter) {
+    return YogaNative.jni_YGNodeStyleGetGapJNI(mNativePointer, gutter.intValue());
+  }
+
+  @Override
+  public void setGap(YogaGutter gutter, float gapLength) {
+    YogaNative.jni_YGNodeStyleSetGapJNI(mNativePointer, gutter.intValue(), gapLength);
   }
 }

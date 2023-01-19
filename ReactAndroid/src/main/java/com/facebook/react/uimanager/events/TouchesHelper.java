@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.systrace.Systrace;
 
 /** Class responsible for generating catalyst touch events based on android {@link MotionEvent}. */
 public class TouchesHelper {
@@ -74,15 +75,16 @@ public class TouchesHelper {
 
   /**
    * Generate and send touch event to RCTEventEmitter JS module associated with the given {@param
-   * context}. Touch event can encode multiple concurrent touches (pointers).
+   * context} for legacy renderer. Touch event can encode multiple concurrent touches (pointers).
    *
    * @param rctEventEmitter Event emitter used to execute JS module call
    * @param touchEvent native touch event to read pointers count and coordinates from
    */
-  public static void sendTouchEvent(RCTEventEmitter rctEventEmitter, TouchEvent touchEvent) {
+  public static void sendTouchesLegacy(RCTEventEmitter rctEventEmitter, TouchEvent touchEvent) {
     TouchEventType type = touchEvent.getTouchEventType();
 
-    WritableArray pointers = getWritableArray(createPointersArray(touchEvent));
+    WritableArray pointers =
+        getWritableArray(/* copyObjects */ false, createPointersArray(touchEvent));
     MotionEvent motionEvent = touchEvent.getMotionEvent();
 
     // For START and END events send only index of the pointer that is associated with that event
@@ -111,10 +113,11 @@ public class TouchesHelper {
    *
    * @param eventEmitter emitter to dispatch event to
    * @param event the touch event to extract data from
-   * @param useDispatchV2 whether to dispatch additional data used by {@link Event#dispatchModernV2}
    */
-  public static void sendTouchEventModern(
-      RCTModernEventEmitter eventEmitter, TouchEvent event, boolean useDispatchV2) {
+  public static void sendTouchEvent(RCTModernEventEmitter eventEmitter, TouchEvent event) {
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "TouchesHelper.sentTouchEventModern(" + event.getEventName() + ")");
     TouchEventType type = event.getTouchEventType();
     MotionEvent motionEvent = event.getMotionEvent();
 
@@ -158,31 +161,25 @@ public class TouchesHelper {
         break;
     }
 
-    WritableArray touchesArray = getWritableArray(touches);
-    WritableArray changedTouchesArray = getWritableArray(/* copyObjects */ true, changedTouches);
+    for (WritableMap touchData : changedTouches) {
+      WritableMap eventData = touchData.copy();
+      WritableArray changedTouchesArray = getWritableArray(/* copyObjects */ true, changedTouches);
+      WritableArray touchesArray = getWritableArray(/* copyObjects */ true, touches);
 
-    for (WritableMap eventData : changedTouches) {
       eventData.putArray(CHANGED_TOUCHES_KEY, changedTouchesArray);
       eventData.putArray(TOUCHES_KEY, touchesArray);
 
-      if (useDispatchV2) {
-        eventEmitter.receiveEvent(
-            event.getSurfaceId(),
-            event.getViewTag(),
-            event.getEventName(),
-            event.canCoalesce(),
-            0,
-            eventData,
-            event.getEventCategory());
-      } else {
-        eventEmitter.receiveEvent(
-            event.getSurfaceId(), event.getViewTag(), event.getEventName(), eventData);
-      }
+      eventEmitter.receiveEvent(
+          event.getSurfaceId(),
+          event.getViewTag(),
+          event.getEventName(),
+          event.canCoalesce(),
+          0,
+          eventData,
+          event.getEventCategory());
     }
-  }
 
-  private static WritableArray getWritableArray(WritableMap... objects) {
-    return getWritableArray(false, objects);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   private static WritableArray getWritableArray(boolean copyObjects, WritableMap... objects) {

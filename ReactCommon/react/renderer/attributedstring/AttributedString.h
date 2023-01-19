@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -46,6 +46,12 @@ class AttributedString : public Sealable, public DebugStringConvertible {
      */
     bool isAttachment() const;
 
+    /*
+     * Returns whether the underlying text and attributes are equal,
+     * disregarding layout or other information.
+     */
+    bool isContentEqual(const Fragment &rhs) const;
+
     bool operator==(const Fragment &rhs) const;
     bool operator!=(const Fragment &rhs) const;
   };
@@ -56,7 +62,7 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     int length{0};
   };
 
-  using Fragments = better::small_vector<Fragment, 1>;
+  using Fragments = butter::small_vector<Fragment, 1>;
 
   /*
    * Appends and prepends a `fragment` to the string.
@@ -96,6 +102,8 @@ class AttributedString : public Sealable, public DebugStringConvertible {
    */
   bool compareTextAttributesWithoutFrame(const AttributedString &rhs) const;
 
+  bool isContentEqual(const AttributedString &rhs) const;
+
   bool operator==(const AttributedString &rhs) const;
   bool operator!=(const AttributedString &rhs) const;
 
@@ -118,7 +126,11 @@ struct hash<facebook::react::AttributedString::Fragment> {
   size_t operator()(
       const facebook::react::AttributedString::Fragment &fragment) const {
     return folly::hash::hash_combine(
-        0, fragment.string, fragment.textAttributes, fragment.parentShadowView);
+        0,
+        fragment.string,
+        fragment.textAttributes,
+        fragment.parentShadowView,
+        fragment.parentShadowView.layoutMetrics);
   }
 };
 

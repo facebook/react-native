@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -137,6 +137,27 @@ size_t AsyncHermesRuntime::getNumberOfExceptions() {
 
 std::string AsyncHermesRuntime::getLastThrownExceptionMessage() {
   return thrownExceptions_.back();
+}
+
+void AsyncHermesRuntime::registerForProfilingInExecutor() {
+  // Sampling profiler registration needs to happen in the thread where JS runs.
+  folly::via(executor_.get(), [runtime = runtime_]() {
+    runtime->registerForProfiling();
+  });
+
+  // Wait until the executor is registered for profiling.
+  wait();
+}
+
+void AsyncHermesRuntime::unregisterForProfilingInExecutor() {
+  // Sampling profiler deregistration needs to happen in the thread where JS
+  // runs.
+  folly::via(executor_.get(), [runtime = runtime_]() {
+    runtime->unregisterForProfiling();
+  });
+
+  // Wait until the executor is unregistered for profiling.
+  wait();
 }
 
 } // namespace chrome

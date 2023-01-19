@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -139,10 +139,9 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 25,
     color: 'white',
-    shadowRadius: 3,
-    shadowColor: 'black',
-    shadowOpacity: 1,
-    shadowOffset: {height: 1},
+    textShadowRadius: 3,
+    textShadowColor: 'rgba(0, 0, 0, 1.0)',
+    textShadowOffset: {height: 1, width: 0},
   },
 });
 

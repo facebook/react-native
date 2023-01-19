@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -128,7 +128,7 @@ class RN_EXPORT JSExecutor {
    */
   virtual std::string getDescription() = 0;
 
-  virtual void handleMemoryPressure(__unused int pressureLevel) {}
+  virtual void handleMemoryPressure([[maybe_unused]] int pressureLevel) {}
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}
@@ -138,6 +138,8 @@ class RN_EXPORT JSExecutor {
   static std::string getSyntheticBundlePath(
       uint32_t bundleId,
       const std::string &bundlePath);
+
+  static double performanceNow();
 };
 
 } // namespace react

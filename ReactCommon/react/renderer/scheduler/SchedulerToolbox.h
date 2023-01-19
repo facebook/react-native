@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,6 +40,13 @@ struct SchedulerToolbox final {
 
   /*
    * Represents running JavaScript VM and associated execution queue.
+   * Can execute lambdas before main bundle has loaded.
+   */
+  std::optional<RuntimeExecutor> bridgelessBindingsExecutor;
+
+  /*
+   * Represents running JavaScript VM and associated execution queue.
+   * Executes lambdas after main bundle has loaded.
    */
   RuntimeExecutor runtimeExecutor;
 

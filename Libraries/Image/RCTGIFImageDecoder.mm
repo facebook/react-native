@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,7 @@
 
 #import "RCTImagePlugins.h"
 
-@interface RCTGIFImageDecoder() <RCTTurboModule>
+@interface RCTGIFImageDecoder () <RCTTurboModule>
 @end
 
 @implementation RCTGIFImageDecoder
@@ -40,11 +40,13 @@ RCT_EXPORT_MODULE()
 
   if (!image) {
     completionHandler(nil, nil);
-    return ^{};
+    return ^{
+    };
   }
 
   completionHandler(nil, image);
-  return ^{};
+  return ^{
+  };
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
@@ -55,6 +57,7 @@ RCT_EXPORT_MODULE()
 
 @end
 
-Class RCTGIFImageDecoderCls() {
+Class RCTGIFImageDecoderCls()
+{
   return RCTGIFImageDecoder.class;
 }

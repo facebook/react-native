@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,8 +12,7 @@
 #include <react/renderer/animations/utils.h>
 #include <algorithm>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void LayoutAnimationDriver::animationMutationsForFrame(
     SurfaceId surfaceId,
@@ -47,19 +46,19 @@ void LayoutAnimationDriver::animationMutationsForFrame(
                       : layoutAnimationConfig.updateConfig));
 
       // Interpolate
-      std::pair<double, double> progress =
+      auto progress =
           calculateAnimationProgress(now, animation, mutationConfig);
-      double animationTimeProgressLinear = progress.first;
-      double animationInterpolationFactor = progress.second;
+      auto animationTimeProgressLinear = progress.first;
+      auto animationInterpolationFactor = progress.second;
 
       auto mutatedShadowView = createInterpolatedShadowView(
           animationInterpolationFactor, baselineShadowView, finalShadowView);
 
       // Create the mutation instruction
       mutationsList.emplace_back(ShadowViewMutation::UpdateMutation(
-          keyframe.viewPrev, mutatedShadowView));
+          keyframe.viewPrev, mutatedShadowView, keyframe.parentView));
 
-      PrintMutationInstruction("Animation Progress:", updateMutation);
+      PrintMutationInstruction("Animation Progress:", mutationsList.back());
 
       keyframe.viewPrev = std::move(mutatedShadowView);
 
@@ -107,5 +106,4 @@ void LayoutAnimationDriver::animationMutationsForFrame(
       &shouldFirstComeBeforeSecondMutation);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

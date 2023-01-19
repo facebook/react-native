@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,9 @@
 
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+#include <utility>
+
+namespace facebook::react {
 
 thread_local TransactionTelemetry *threadLocalTransactionTelemetry = nullptr;
 
@@ -19,7 +20,7 @@ TransactionTelemetry::TransactionTelemetry()
 
 TransactionTelemetry::TransactionTelemetry(
     std::function<TelemetryTimePoint()> now)
-    : now_{now} {}
+    : now_{std::move(now)} {}
 
 TransactionTelemetry *TransactionTelemetry::threadLocalTelemetry() {
   return threadLocalTransactionTelemetry;
@@ -159,5 +160,4 @@ int TransactionTelemetry::getRevisionNumber() const {
   return revisionNumber_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

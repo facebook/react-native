@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,8 +12,8 @@ import androidx.annotation.Nullable;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewManager;
 
 /**
  * Manages Images embedded in Text nodes using Fresco. Since they are used only as a virtual nodes
@@ -21,7 +21,7 @@ import com.facebook.react.uimanager.ViewManager;
  */
 @ReactModule(name = FrescoBasedReactTextInlineImageViewManager.REACT_CLASS)
 public class FrescoBasedReactTextInlineImageViewManager
-    extends ViewManager<View, FrescoBasedReactTextInlineImageShadowNode> {
+    extends BaseViewManager<View, FrescoBasedReactTextInlineImageShadowNode> {
 
   public static final String REACT_CLASS = "RCTTextInlineImage";
 

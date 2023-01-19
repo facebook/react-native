@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,8 +26,12 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     _backedTextInputView = backedTextInputView;
     backedTextInputView.delegate = self;
 
-    [_backedTextInputView addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
-    [_backedTextInputView addTarget:self action:@selector(textFieldDidEndEditingOnExit) forControlEvents:UIControlEventEditingDidEndOnExit];
+    [_backedTextInputView addTarget:self
+                             action:@selector(textFieldDidChange)
+                   forControlEvents:UIControlEventEditingChanged];
+    [_backedTextInputView addTarget:self
+                             action:@selector(textFieldDidEndEditingOnExit)
+                   forControlEvents:UIControlEventEditingDidEndOnExit];
   }
 
   return self;
@@ -68,10 +72,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [_backedTextInputView.textInputDelegate textInputDidEndEditing];
 }
 
-- (BOOL)textField:(__unused UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+- (BOOL)textField:(__unused UITextField *)textField
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString *)string
 {
-  NSString *newText =
-    [_backedTextInputView.textInputDelegate textInputShouldChangeText:string inRange:range];
+  NSString *newText = [_backedTextInputView.textInputDelegate textInputShouldChangeText:string inRange:range];
 
   if (newText == nil) {
     return NO;
@@ -87,9 +92,8 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [_backedTextInputView setAttributedText:[attributedString copy]];
 
   // Setting selection to the end of the replaced text.
-  UITextPosition *position =
-    [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
-                                        offset:(range.location + newText.length)];
+  UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                 offset:(range.location + newText.length)];
   [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                               notifyDelegate:YES];
 
@@ -100,6 +104,8 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (BOOL)textFieldShouldReturn:(__unused UITextField *)textField
 {
+  // Ignore the value of whether we submitted; just make sure the submit event is called if necessary.
+  [_backedTextInputView.textInputDelegate textInputShouldSubmitOnReturn];
   return [_backedTextInputView.textInputDelegate textInputShouldReturn];
 }
 
@@ -162,6 +168,8 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 @implementation RCTBackedTextViewDelegateAdapter {
   __weak UITextView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
+  NSAttributedString *_lastStringStateWasUpdatedWith;
+  BOOL _ignoreNextTextInputCall;
   BOOL _textDidChangeIsComing;
   UITextRange *_previousSelectedTextRange;
 }
@@ -209,15 +217,18 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 {
   // Custom implementation of `textInputShouldReturn` and `textInputDidReturn` pair for `UITextView`.
   if (!_backedTextInputView.textWasPasted && [text isEqualToString:@"\n"]) {
-    if ([_backedTextInputView.textInputDelegate textInputShouldReturn]) {
+    const BOOL shouldSubmit = [_backedTextInputView.textInputDelegate textInputShouldSubmitOnReturn];
+    const BOOL shouldReturn = [_backedTextInputView.textInputDelegate textInputShouldReturn];
+    if (shouldReturn) {
       [_backedTextInputView.textInputDelegate textInputDidReturn];
       [_backedTextInputView endEditing:NO];
+      return NO;
+    } else if (shouldSubmit) {
       return NO;
     }
   }
 
-  NSString *newText =
-    [_backedTextInputView.textInputDelegate textInputShouldChangeText:text inRange:range];
+  NSString *newText = [_backedTextInputView.textInputDelegate textInputShouldChangeText:text inRange:range];
 
   if (newText == nil) {
     return NO;
@@ -233,9 +244,8 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [_backedTextInputView setAttributedText:[attributedString copy]];
 
   // Setting selection to the end of the replaced text.
-  UITextPosition *position =
-    [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
-                                        offset:(range.location + newText.length)];
+  UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                 offset:(range.location + newText.length)];
   [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                               notifyDelegate:YES];
 
@@ -246,12 +256,21 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textViewDidChange:(__unused UITextView *)textView
 {
+  if (_ignoreNextTextInputCall && [_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
+    _ignoreNextTextInputCall = NO;
+    return;
+  }
+  _lastStringStateWasUpdatedWith = _backedTextInputView.attributedText;
   _textDidChangeIsComing = NO;
   [_backedTextInputView.textInputDelegate textInputDidChange];
 }
 
 - (void)textViewDidChangeSelection:(__unused UITextView *)textView
 {
+  if (![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
+    [self textViewDidChange:_backedTextInputView];
+    _ignoreNextTextInputCall = YES;
+  }
   [self textViewProbablyDidChangeSelection];
 }
 

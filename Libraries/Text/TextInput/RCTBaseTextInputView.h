@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,13 +35,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onContentSizeChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onSelectionChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onChange;
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onChangeSync;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onTextInput;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onScroll;
 
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, assign, readonly) NSInteger nativeEventCount;
 @property (nonatomic, assign) BOOL autoFocus;
-@property (nonatomic, assign) BOOL blurOnSubmit;
+@property (nonatomic, copy) NSString *submitBehavior;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, assign) BOOL secureTextEntry;
@@ -55,8 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Sets selection intext input if both start and end are within range of the text input.
  **/
-- (void)setSelectionStart:(NSInteger)start
-             selectionEnd:(NSInteger)end;
+- (void)setSelectionStart:(NSInteger)start selectionEnd:(NSInteger)end;
 
 @end
 
