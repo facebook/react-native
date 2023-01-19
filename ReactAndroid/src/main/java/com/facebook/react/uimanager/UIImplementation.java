@@ -170,6 +170,15 @@ public class UIImplementation {
     mOperationsQueue.enqueueRemoveRootView(rootViewTag);
   }
 
+  /**
+   * Return root view num
+   *
+   * @return The num of root view
+   */
+  public int getRootViewNum() {
+    return mOperationsQueue.getNativeViewHierarchyManager().getRootViewNum();
+  }
+
   /** Unregisters a root node with a given tag from the shadow node registry */
   public void removeRootShadowNode(int rootViewTag) {
     synchronized (uiImplementationThreadLock) {
