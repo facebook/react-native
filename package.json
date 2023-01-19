@@ -138,6 +138,7 @@
   },
   "resolutions": {
     "async": "^3.2.2",
+    "debug": ">=2.6.9",
     "es5-ext": "0.10.53",
     "micromatch": "^4.0.0",
     "readable-stream": "^4.0.0",
@@ -145,6 +146,7 @@
   },
   "_justification": {
     "async": "Versions of async prior to 3.2.2 are vulnerable to prototype pollution",
+    "debug": "ReDoS vulnerability in older versions, plus the dependents that pull in debug@<1.0.0 haven't been updated in years",
     "es5-ext": "Packages after 0.10.54 and at the moment up until 0.10.59 contain a protest message. A policy prevents us from using packages with protestware, therefore downgrading to the latest release without the message.",
     "micromatch": "Version 3.x.x depends on decode-uri-component 0.2.0, which has a DoS vulnerability",
     "readable-stream": "Eliminates dependency on outdated string_decoder component",
