@@ -43,7 +43,7 @@ elsif isNightly
   destination_path = download_nightly_hermes(react_native_path, version)
   # set tarball as hermes engine
   source[:http] = "file://#{destination_path}"
-elsif File.exists?(hermestag_file) && isInCI
+elsif File.exist?(hermestag_file) && isInCI
   Pod::UI.puts '[Hermes] Detected that you are on a React Native release branch, building Hermes from source but fetched from tag...'.yellow if Object.const_defined?("Pod::UI")
   hermestag = File.read(hermestag_file).strip
   source[:git] = git
