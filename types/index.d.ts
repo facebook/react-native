@@ -139,7 +139,7 @@ export * from '../Libraries/StyleSheet/StyleSheetTypes';
 export * from '../Libraries/StyleSheet/processColor';
 export * from '../Libraries/Text/Text';
 export * from '../Libraries/TurboModule/RCTExport';
-export * from '../Libraries/TurboModule/TurboModuleRegistry';
+export * as TurboModuleRegistry from '../Libraries/TurboModule/TurboModuleRegistry';
 export * from '../Libraries/Types/CoreEventTypes';
 export * from '../Libraries/Utilities/Appearance';
 export * from '../Libraries/Utilities/BackHandler';
