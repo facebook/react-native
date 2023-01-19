@@ -7,6 +7,8 @@
  * @format
  */
 
+require('flow-remove-types/register');
+
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const path = require('path');

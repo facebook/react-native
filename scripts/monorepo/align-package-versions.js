@@ -7,6 +7,8 @@
  * @format
  */
 
+require('flow-remove-types/register');
+
 const {spawnSync} = require('child_process');
 const {writeFileSync, readFileSync} = require('fs');
 const path = require('path');

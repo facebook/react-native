@@ -7,6 +7,8 @@
  * @format
  */
 
+require('flow-remove-types/register');
+
 const path = require('path');
 const {spawnSync} = require('child_process');
 

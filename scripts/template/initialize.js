@@ -9,6 +9,8 @@
 
 'use strict';
 
+require('flow-remove-types/register');
+
 const yargs = require('yargs');
 const {execSync, spawnSync} = require('child_process');
 

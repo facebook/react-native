@@ -9,6 +9,8 @@
 
 'use strict';
 
+require('flow-remove-types/register');
+
 /**
  * This script tests that React Native end to end installation/bootstrap works for different platforms
  * Available arguments:
