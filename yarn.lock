@@ -1487,7 +1487,7 @@
     glob "^7.1.3"
     logkitty "^0.7.1"
 
-"@react-native-community/cli-platform-ios@10.1.3", "@react-native-community/cli-platform-ios@^10.1.1":
+"@react-native-community/cli-platform-ios@10.1.1", "@react-native-community/cli-platform-ios@^10.1.1":
   version "10.1.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-10.1.1.tgz#39ed6810117d8e7330d3aa4d85818fb6ae358785"
   integrity sha512-EB9/L8j1LqrqyfJtLRixU+d8FIP6Pr83rEgUgXgya/u8wk3h/bvX70w+Ff2skwjdPLr5dLUQ/n5KFX4r3bsNmA==
@@ -6395,10 +6395,10 @@ react-native-codegen@^0.71.3:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-gradle-plugin@^0.71.12:
-  version "0.71.12"
-  resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.12.tgz#7f0000b3d9593288183a13889fd6225d0ab506b8"
-  integrity sha512-ILujN0C+cX5QHmm22MXbHqZR619OzV/VThLHFhe7qnzZWpPh8O4KSvbtezoYMiBbmowAfy8SQpohwlN3nv6wZQ==
+react-native-gradle-plugin@^0.71.13:
+  version "0.71.13"
+  resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.13.tgz#6f60ff24ac712554903dfc0ae98475cb280c57a6"
+  integrity sha512-C66LNZAXbU0YDRkWx8d/8kjesdu7fsUAc/3QPJNftSXKEvEtnFZK2aH/rIgu1s5dbTcE0fjhdVPNJMRIfKo61w==
 
 react-refresh@^0.4.0:
   version "0.4.0"
