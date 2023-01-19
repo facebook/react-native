@@ -138,7 +138,7 @@
   },
   "resolutions": {
     "async": "^3.2.2",
-    "debug": ">=2.6.9",
+    "debug": ">=3.1.0",
     "es5-ext": "0.10.53",
     "micromatch": "^4.0.0",
     "readable-stream": "^4.0.0",
