@@ -271,7 +271,7 @@ RCT_EXPORT_MODULE()
                              [RCTInspectorDevServerHelper
                                           openURL:@"flipper://null/Hermesdebuggerrn?device=React%20Native"
                                     withBundleURL:bundleManager.bundleURL
-                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
+                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is running."];
                            }]];
 
       [items addObject:[RCTDevMenuItem
@@ -282,7 +282,7 @@ RCT_EXPORT_MODULE()
                              [RCTInspectorDevServerHelper
                                           openURL:@"flipper://null/React?device=React%20Native"
                                     withBundleURL:bundleManager.bundleURL
-                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
+                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is running."];
                            }]];
     } else if (devSettings.isRemoteDebuggingAvailable) {
 #else
