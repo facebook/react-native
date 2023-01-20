@@ -28,6 +28,11 @@ using namespace facebook::react;
   BOOL _removeClippedSubviews;
   NSMutableArray<UIView *> *_reactSubviews;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
+  /*
+   * A flag that triggers the accessibilityElement.accessibilityValue update and VoiceOver announcement
+   * to avoid duplicated announcements of accessibilityErrorMessage more info https://bit.ly/3yfUXD8
+   */
+  BOOL _triggerAccessibilityAnnouncement;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -37,6 +42,7 @@ using namespace facebook::react;
     _props = defaultProps;
     _reactSubviews = [NSMutableArray new];
     self.multipleTouchEnabled = YES;
+    _triggerAccessibilityAnnouncement = NO;
   }
   return self;
 }
@@ -418,7 +424,7 @@ using namespace facebook::react;
     BOOL accessibilityAnnouncementNotEmpty = [announcement length] != 0;
     if (accessibilityAnnouncementNotEmpty) {
       UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
-      self.triggerAccessibilityAnnouncement = NO;
+      _triggerAccessibilityAnnouncement = NO;
     }
   }
 }

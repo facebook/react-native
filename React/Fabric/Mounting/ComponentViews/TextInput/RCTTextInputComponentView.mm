@@ -32,8 +32,6 @@ using namespace facebook::react;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
-  NSString *currentAccessibilityError;
-  NSString *previousAccessibilityError;
 
   /*
    * UIKit uses either UITextField or UITextView as its UIKit element for <TextInput>. UITextField is for single line
@@ -62,7 +60,7 @@ using namespace facebook::react;
    * A flag that triggers the accessibilityElement.accessibilityValue update and VoiceOver announcement
    * to avoid duplicated announcements of accessibilityErrorMessage more info https://bit.ly/3yfUXD8 
    */
-  BOOL _errorMessageRemoved;
+  BOOL _triggerAccessibilityAnnouncement;
 }
 
 #pragma mark - UIView overrides
@@ -79,7 +77,7 @@ using namespace facebook::react;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
-    _errorMessageRemoved = NO;
+    _triggerAccessibilityAnnouncement = NO;
     [self addSubview:_backedTextInputView];
   }
 
@@ -153,12 +151,12 @@ using namespace facebook::react;
     NSString *text = RCTNSStringFromString(newTextInputProps.text);
     NSString *error = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
     if ([error length] != 0) {
-      self.triggerAccessibilityAnnouncement = YES;
+      _triggerAccessibilityAnnouncement = YES;
       NSString *errorWithText = [NSString stringWithFormat: @"%@ %@", text, error];
       self.accessibilityElement.accessibilityValue = errorWithText;
     } else {
       self.accessibilityElement.accessibilityValue = text;
-      self.triggerAccessibilityAnnouncement = NO;
+      _triggerAccessibilityAnnouncement = NO;
     }
   } 
 
@@ -268,9 +266,9 @@ using namespace facebook::react;
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
   [super finalizeUpdates:updateMask];
-  if (self.triggerAccessibilityAnnouncement) {
+  if (_triggerAccessibilityAnnouncement) {
     [self announceForAccessibilityWithOptions:self.accessibilityElement.accessibilityValue];
-    self.triggerAccessibilityAnnouncement = NO;
+    _triggerAccessibilityAnnouncement = NO;
   }
 }
 
@@ -634,13 +632,13 @@ using namespace facebook::react;
   _backedTextInputView.attributedText = attributedString;
 
   // check that current error is not empty
-  if (self.triggerAccessibilityAnnouncement) {
+  if (_triggerAccessibilityAnnouncement) {
     [self announceForAccessibilityWithOptions:self.accessibilityElement.accessibilityValue];
-    self.triggerAccessibilityAnnouncement = NO;
+    _triggerAccessibilityAnnouncement = NO;
   } else {
     NSString *lastChar = [attributedString.string substringFromIndex:[attributedString.string length] - 1];
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
-    self.triggerAccessibilityAnnouncement = NO;
+    _triggerAccessibilityAnnouncement = NO;
   }
   if (selectedRange.empty) {
     // Maintaining a cursor position relative to the end of the old text.
