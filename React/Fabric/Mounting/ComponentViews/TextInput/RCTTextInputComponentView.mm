@@ -144,19 +144,13 @@ using namespace facebook::react;
 
   NSString *newAccessibilityErrorMessage = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
   if (newTextInputProps.text != oldTextInputProps.text && [newAccessibilityErrorMessage length] == 0) {
-    self.accessibilityElement.accessibilityValue = RCTNSStringFromString(newTextInputProps.text);
+    _backedTextInputView.accessibilityValue = RCTNSStringFromString(newTextInputProps.text);
   }
   
   if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage) {
     NSString *text = RCTNSStringFromString(newTextInputProps.text);
     NSString *error = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
-    if ([error length] != 0) {
-      _triggerAccessibilityAnnouncement = YES;
-      self.accessibilityElement.accessibilityValue = [NSString stringWithFormat: @"%@ %@", text, error];
-    } else {
-      self.accessibilityElement.accessibilityValue = text;
-      _triggerAccessibilityAnnouncement = NO;
-    }
+    [self _setAccessibilityValueWithError:error text:text];
   } 
 
   if (newTextInputProps.traits.enablesReturnKeyAutomatically !=
@@ -662,6 +656,17 @@ using namespace facebook::react;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;
   [self addSubview:_backedTextInputView];
+}
+
+- (void)_setAccessibilityValueWithError:(NSString *)error text:(NSString *)text
+{
+  if ([error length] != 0) {
+    _triggerAccessibilityAnnouncement = YES;
+    _backedTextInputView.accessibilityValue = [NSString stringWithFormat: @"%@ %@", text, error];
+  } else {
+    _backedTextInputView.accessibilityValue = text;
+    _triggerAccessibilityAnnouncement = NO;
+  }
 }
 
 - (BOOL)_textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText
