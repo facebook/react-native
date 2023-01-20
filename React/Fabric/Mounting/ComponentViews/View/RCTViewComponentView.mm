@@ -424,7 +424,6 @@ using namespace facebook::react;
     BOOL accessibilityAnnouncementNotEmpty = [announcement length] != 0;
     if (accessibilityAnnouncementNotEmpty) {
       UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
-      _triggerAccessibilityAnnouncement = NO;
     }
   }
 }

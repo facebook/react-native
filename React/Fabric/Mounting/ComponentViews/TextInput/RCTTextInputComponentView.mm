@@ -61,6 +61,7 @@ using namespace facebook::react;
    * to avoid duplicated announcements of accessibilityErrorMessage more info https://bit.ly/3yfUXD8 
    */
   BOOL _triggerAccessibilityAnnouncement;
+  BOOL _skipNextAccessibilityAnnouncement;
 }
 
 #pragma mark - UIView overrides
@@ -78,6 +79,7 @@ using namespace facebook::react;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
     _triggerAccessibilityAnnouncement = NO;
+    _skipNextAccessibilityAnnouncement = NO;
     [self addSubview:_backedTextInputView];
   }
 
@@ -628,14 +630,14 @@ using namespace facebook::react;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
 
-  // check that current error is not empty
-  if (_triggerAccessibilityAnnouncement) {
+  if (_triggerAccessibilityAnnouncement && [self.accessibilityElement.accessibilityValue length] != 0) {
     [self announceForAccessibilityWithOptions:self.accessibilityElement.accessibilityValue];
     _triggerAccessibilityAnnouncement = NO;
-  } else {
+    _skipNextAccessibilityAnnouncement = YES;
+  } else if (_skipNextAccessibilityAnnouncement) {
     NSString *lastChar = [attributedString.string substringFromIndex:[attributedString.string length] - 1];
-    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
-    _triggerAccessibilityAnnouncement = NO;
+    [self announceForAccessibilityWithOptions:lastChar];
+    _skipNextAccessibilityAnnouncement = NO;
   }
   if (selectedRange.empty) {
     // Maintaining a cursor position relative to the end of the old text.
