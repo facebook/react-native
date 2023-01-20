@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<RCTBackedTextInputDelegate> textInputDelegate;
 
-@property (nonatomic, assign, nullable) NSString *accessibilityErrorMessage;
 @property (nonatomic, assign) BOOL contextMenuHidden;
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
 @property (nonatomic, copy, nullable) NSString *placeholder;
