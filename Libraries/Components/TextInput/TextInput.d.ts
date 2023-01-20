@@ -522,6 +522,14 @@ export interface TextInputProps
     TextInputAndroidProps,
     AccessibilityProps {
   /**
+   * String to be read by screenreaders to indicate an error state. The acceptable parameters
+   * of accessibilityErrorMessage is a string. Setting accessibilityInvalid to true activates
+   * the error message. Setting accessibilityInvalid to false removes the error message.
+   */
+  accessibilityErrorMessage?: string | undefined;
+  accessibilityInvalid?: boolean | undefined;
+
+  /**
    * Specifies whether fonts should scale to respect Text Size accessibility settings.
    * The default is `true`.
    */

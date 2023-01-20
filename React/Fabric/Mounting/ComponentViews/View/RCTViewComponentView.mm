@@ -412,6 +412,17 @@ using namespace facebook::react;
   [self invalidateLayer];
 }
 
+- (void)announceForAccessibilityWithOptions:(NSString*)announcement
+{
+  if (@available(iOS 11.0, *)) {
+    BOOL accessibilityAnnouncementNotEmpty = [announcement length] != 0;
+    if (accessibilityAnnouncementNotEmpty) {
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
+      self.triggerAccessibilityAnnouncement = NO;
+    }
+  }
+}
+
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];

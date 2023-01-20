@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Defaults to `self`.
  */
 @property (nonatomic, strong, nullable, readonly) NSObject *accessibilityElement;
-
+@property (nonatomic, readwrite) BOOL triggerAccessibilityAnnouncement;
 /**
  * Insets used when hit testing inside this view.
  */
@@ -85,6 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
  * This is a fragment of temporary workaround that we need only temporary and will get rid of soon.
  */
 - (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN;
+- (void)announceForAccessibilityWithOptions:(NSString *)announcement;
 
 @end
 

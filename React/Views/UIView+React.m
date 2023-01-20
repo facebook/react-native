@@ -320,6 +320,17 @@
   return objc_getAssociatedObject(self, _cmd);
 }
 
+- (NSString *)accessibilityErrorMessage
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityErrorMessage:(NSString *)accessibilityErrorMessage
+{
+  objc_setAssociatedObject(
+      self, @selector(accessibilityErrorMessage), accessibilityErrorMessage, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 - (void)setAccessibilityLanguage:(NSString *)accessibilityLanguage
 {
   objc_setAssociatedObject(

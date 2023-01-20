@@ -524,6 +524,14 @@ export type Props = $ReadOnly<{|
   ...AndroidProps,
 
   /**
+   * String to be read by screenreaders to indicate an error state. The acceptable parameters
+   * of accessibilityErrorMessage is a string. Setting accessibilityInvalid to true activates
+   * the error message. Setting accessibilityInvalid to false removes the error message.
+   */
+  accessibilityErrorMessage?: ?Stringish,
+  accessibilityInvalid?: ?boolean,
+
+  /**
    * Can tell `TextInput` to automatically capitalize certain characters.
    *
    * - `characters`: all characters.

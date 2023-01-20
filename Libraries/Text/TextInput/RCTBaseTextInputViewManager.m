@@ -36,6 +36,7 @@ RCT_REMAP_VIEW_PROPERTY(autoCapitalize, backedTextInputView.autocapitalizationTy
 RCT_REMAP_VIEW_PROPERTY(autoCorrect, backedTextInputView.autocorrectionType, UITextAutocorrectionType)
 RCT_REMAP_VIEW_PROPERTY(contextMenuHidden, backedTextInputView.contextMenuHidden, BOOL)
 RCT_REMAP_VIEW_PROPERTY(editable, backedTextInputView.editable, BOOL)
+RCT_REMAP_VIEW_PROPERTY(accessibilityErrorMessage, backedTextInputView.accessibilityErrorMessage, NSString)
 RCT_REMAP_VIEW_PROPERTY(enablesReturnKeyAutomatically, backedTextInputView.enablesReturnKeyAutomatically, BOOL)
 RCT_REMAP_VIEW_PROPERTY(keyboardAppearance, backedTextInputView.keyboardAppearance, UIKeyboardAppearance)
 RCT_REMAP_VIEW_PROPERTY(placeholder, backedTextInputView.placeholder, NSString)

@@ -148,6 +148,17 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
   textNeedsUpdate = ([self textOf:attributedTextCopy equals:backedTextInputViewTextCopy] == NO);
 
+  NSString *currentAccessibilityError = self.backedTextInputView.currentAccessibilityError;
+  NSString *previousAccessibilityError = self.backedTextInputView.previousAccessibilityError;
+  BOOL accessibilityErrorMessageWasRemoved = currentAccessibilityError == nil && ![currentAccessibilityError isEqualToString: previousAccessibilityError];
+  if (accessibilityErrorMessageWasRemoved) {
+    BOOL validString = attributedText && [attributedText.string length] != 0;
+    NSString *lastChar = validString ? [attributedText.string substringFromIndex:[attributedText.string length] - 1] : @"";
+    self.backedTextInputView.accessibilityValue = nil;
+    // Triggering the announcement manually fixes screenreader announcement getting cut off
+    // https://bit.ly/3w18QmV https://bit.ly/3AdVKW3 https://bit.ly/3QHm7c7 https://bit.ly/3BVnmAy
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
+  }
   if (eventLag == 0 && textNeedsUpdate) {
     UITextRange *selection = self.backedTextInputView.selectedTextRange;
     NSInteger oldTextLength = self.backedTextInputView.attributedText.string.length;

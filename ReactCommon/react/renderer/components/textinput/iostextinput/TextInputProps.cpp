@@ -87,6 +87,12 @@ TextInputProps::TextInputProps(
           "selection",
           sourceProps.selection,
           std::optional<Selection>())),
+      accessibilityErrorMessage(convertRawProp(
+            context,
+            rawProps,
+            "accessibilityErrorMessage",
+            sourceProps.accessibilityErrorMessage,
+            {})),
       inputAccessoryViewID(convertRawProp(
           context,
           rawProps,

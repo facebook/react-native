@@ -107,6 +107,8 @@ const RCTTextInputViewConfig = {
     allowFontScaling: true,
     fontStyle: true,
     textTransform: true,
+    accessibilityErrorMessage: true,
+    accessibilityInvalid: true,
     textAlign: true,
     fontFamily: true,
     lineHeight: true,
