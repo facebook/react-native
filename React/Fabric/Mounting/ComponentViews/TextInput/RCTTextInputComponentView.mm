@@ -260,7 +260,7 @@ using namespace facebook::react;
 {
   [super finalizeUpdates:updateMask];
   if (_triggerAccessibilityAnnouncement) {
-    [self announceForAccessibilityWithOptions:self.accessibilityElement.accessibilityValue];
+    [self announceForAccessibility:self.accessibilityElement.accessibilityValue];
     _triggerAccessibilityAnnouncement = NO;
   }
 }
@@ -625,12 +625,12 @@ using namespace facebook::react;
   _backedTextInputView.attributedText = attributedString;
 
   if (_triggerAccessibilityAnnouncement && [self.accessibilityElement.accessibilityValue length] != 0) {
-    [self announceForAccessibilityWithOptions:self.accessibilityElement.accessibilityValue];
+    [self announceForAccessibility:self.accessibilityElement.accessibilityValue];
     _triggerAccessibilityAnnouncement = NO;
     _skipNextAccessibilityAnnouncement = YES;
   } else if (_skipNextAccessibilityAnnouncement) {
     NSString *lastChar = [attributedString.string substringFromIndex:[attributedString.string length] - 1];
-    [self announceForAccessibilityWithOptions:lastChar];
+    [self announceForAccessibility:lastChar];
     _skipNextAccessibilityAnnouncement = NO;
   }
   if (selectedRange.empty) {
