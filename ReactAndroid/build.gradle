@@ -39,6 +39,16 @@ def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File(
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 def reactNativeRootDir = projectDir.parent
 
+// We put the publishing version from gradle.properties inside ext. so other
+// subprojects can access it as well.
+ext.publishing_version = VERSION_NAME
+
+// This is the version of CMake we're requesting to the Android SDK to use.
+// If missing it will be downloaded automatically. Only CMake versions shipped with the
+// Android SDK are supported (you can find them listed in the SDK Manager of Android Studio).
+def cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.22.1"
+ext.cmake_version = cmakeVersion
+
 // You need to have following folders in this directory:
 //   - boost_1_76_0
 //   - double-conversion-1.1.6
@@ -223,10 +233,6 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
     )
     it.outputDir.set(prefabHeadersDir)
 }
-
-// We put the publishing version from gradle.properties inside ext. so other
-// subprojects can access it as well.
-ext.publishing_version = VERSION_NAME
 
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
@@ -487,6 +493,7 @@ android {
 
     externalNativeBuild {
         cmake {
+            version cmakeVersion
             path "src/main/jni/CMakeLists.txt"
         }
     }

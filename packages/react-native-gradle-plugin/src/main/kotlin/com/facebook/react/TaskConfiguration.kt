@@ -22,14 +22,16 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
   val targetName = variant.name.replaceFirstChar { it.uppercase() }
   val targetPath = variant.name
 
-  // React js bundle directories
+  // Resources: generated/assets/react/<variant>/index.android.bundle
   val resourcesDir = File(buildDir, "generated/res/react/$targetPath")
-  // Bundle: generated/assets/react/path/index.android.bundle
+  // Bundle: generated/assets/react/<variant>/index.android.bundle
   val jsBundleDir = File(buildDir, "generated/assets/react/$targetPath")
-  // Sourcemap: generated/sourcemaps/react/path/index.android.bundle.map
+  // Sourcemap: generated/sourcemaps/react/<variant>/index.android.bundle.map
   val jsSourceMapsDir = File(buildDir, "generated/sourcemaps/react/$targetPath")
-  // Intermediate packager: intermediates/sourcemaps/react/path/index.android.bundle.packager.map
-  // Intermediate compiler: intermediates/sourcemaps/react/path/index.android.bundle.compiler.map
+  // Intermediate packager:
+  // intermediates/sourcemaps/react/<variant>/index.android.bundle.packager.map
+  // Intermediate compiler:
+  // intermediates/sourcemaps/react/<variant>/index.android.bundle.compiler.map
   val jsIntermediateSourceMapsDir = File(buildDir, "intermediates/sourcemaps/react/$targetPath")
 
   // The location of the cli.js file for React Native

@@ -32,7 +32,8 @@ const getUpdatedBookmarks = ({
 }) => {
   const updatedBookmarks = bookmarks
     ? {...bookmarks}
-    : {components: [], apis: []};
+    : // $FlowFixMe[missing-empty-array-annot]
+      {components: [], apis: []};
 
   if (!exampleType || !key) {
     return null;
@@ -60,7 +61,8 @@ const getUpdatedRecentlyUsed = ({
 }) => {
   const updatedRecentlyUsed = recentlyUsed
     ? {...recentlyUsed}
-    : {components: [], apis: []};
+    : // $FlowFixMe[missing-empty-array-annot]
+      {components: [], apis: []};
 
   if (!exampleType || !key) {
     return updatedRecentlyUsed;
