@@ -148,9 +148,7 @@ using namespace facebook::react;
   }
   
   if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage) {
-    NSString *text = RCTNSStringFromString(newTextInputProps.text);
-    NSString *error = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
-    [self _setAccessibilityValueWithError:error text:text];
+    [self _setAccessibilityValueWithError:RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage) text:RCTNSStringFromString(newTextInputProps.text)];
   } 
 
   if (newTextInputProps.traits.enablesReturnKeyAutomatically !=
