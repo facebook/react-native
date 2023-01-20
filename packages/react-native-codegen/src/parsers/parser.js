@@ -78,9 +78,9 @@ export interface Parser {
     types: $FlowFixMe,
   ): UnionTypeAnnotationMemberType[];
   /**
-   * Given the content of a file and options, it returns an AST.
-   * @parameter contents: the content of the file.
-   * @returns: the AST of the file (given in program property for typescript).
+   * Given the name of a file, it returns a Schema.
+   * @parameter filename: the name of the file.
+   * @returns: the Schema of the file.
    */
   parseFile(filename: string): SchemaType;
 
