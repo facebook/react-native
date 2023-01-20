@@ -121,7 +121,6 @@
 @property (nonatomic, copy) NSArray<NSDictionary *> *accessibilityActions;
 @property (nonatomic, copy) NSDictionary *accessibilityValueInternal;
 @property (nonatomic, copy) NSString *accessibilityLanguage;
-@property (nonatomic, copy) NSString *accessibilityErrorMessage;
 
 /**
  * Used in debugging to get a description of the view hierarchy rooted at

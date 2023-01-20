@@ -99,24 +99,6 @@
   self.enabled = editable;
 }
 
-- (void)setAccessibilityErrorMessage:(NSString *)accessibilityErrorMessage
-{
-  self.previousAccessibilityError = [self.currentAccessibilityError mutableCopy];
-  self.currentAccessibilityError = accessibilityErrorMessage;
-  NSString *text = self.attributedText == nil ? @"" : self.attributedText.string;
-  NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
-  if (accessibilityErrorMessage != nil) {
-    NSString *errorWithLastCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, accessibilityErrorMessage];
-    NSString *errorWithText = [NSString stringWithFormat: @"%@ %@", text, accessibilityErrorMessage];
-    self.accessibilityValue = errorWithText;
-    // onChangeText announce only the last typed/deleted character
-    // more info at https://bit.ly/3zOHsda
-    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithLastCharacter);
-  } else {
-    self.accessibilityValue = nil;
-  }
-}
-
 - (void)setSecureTextEntry:(BOOL)secureTextEntry
 {
   if (self.secureTextEntry == secureTextEntry) {
