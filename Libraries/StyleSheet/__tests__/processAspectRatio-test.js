@@ -48,7 +48,7 @@ describe('processAspectRatio', () => {
     expect(() => processAspectRatio('auto 1/1')).toThrowErrorMatchingSnapshot();
   });
 
-  it('should ignone non string falsy types', () => {
+  it('should ignore non string falsy types', () => {
     const invalidThings = [undefined, null, false];
     invalidThings.forEach(thing => {
       expect(processAspectRatio(thing)).toBe(undefined);
