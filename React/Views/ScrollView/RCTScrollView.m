@@ -308,6 +308,7 @@
     _cachedChildFrames = [NSMutableArray new];
 
     _scrollListeners = [NSHashTable weakObjectsHashTable];
+    _setResponderIgnoreScroll = false;
 
     [self addSubview:_scrollView];
   }
@@ -970,7 +971,8 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
                                                           scrollViewFrame:scrollView.frame
                                                       scrollViewZoomScale:scrollView.zoomScale
                                                                  userData:userData
-                                                            coalescingKey:_coalescingKey];
+                                                            coalescingKey:_coalescingKey
+                                                            responderIgnoreScroll:_setResponderIgnoreScroll];
   [_eventDispatcher sendEvent:scrollEvent];
 }
 
@@ -988,6 +990,7 @@ void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNu
                                                               scrollViewFrame:CGRectZero
                                                           scrollViewZoomScale:0
                                                                      userData:nil
-                                                                coalescingKey:0];
+                                                                coalescingKey:0
+                                                                responderIgnoreScroll:false];
   [eventDispatcher sendEvent:fakeScrollEvent];
 }
