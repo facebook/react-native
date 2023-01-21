@@ -119,6 +119,12 @@ class FlowParser implements Parser {
     );
   }
 
+  parseModuleFixture(filename: string): SchemaType {
+    const contents = fs.readFileSync(filename, 'utf8');
+
+    return this.parseString(contents, 'path/NativeSampleTurboModule.js');
+  }
+
   getAst(contents: string): $FlowFixMe {
     return flowParser.parse(contents, {
       enums: true,

@@ -90,6 +90,12 @@ export interface Parser {
    * @returns: the Schema of the file.
    */
   parseString(contents: string, filename: ?string): SchemaType;
+  /**
+   * Given the name of a file, it returns a Schema.
+   * @parameter filename: the name of the file.
+   * @returns: the Schema of the file.
+   */
+  parseModuleFixture(filename: string): SchemaType;
 
   /**
    * Given the content of a file, it returns an AST.

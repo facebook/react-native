@@ -125,6 +125,12 @@ class TypeScriptParser implements Parser {
     );
   }
 
+  parseModuleFixture(filename: string): SchemaType {
+    const contents = fs.readFileSync(filename, 'utf8');
+
+    return this.parseString(contents, 'path/NativeSampleTurboModule.ts');
+  }
+
   getAst(contents: string): $FlowFixMe {
     return babelParser.parse(contents, {
       sourceType: 'module',
