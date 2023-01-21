@@ -18,16 +18,8 @@
 
 - (void)createRootViewController:(UIView *)view;
 
-<<<<<<< HEAD
-- (instancetype)initWithFrame:(CGRect)frame surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
-
-- (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge;
-||||||| 49f3f47b1e9
-- (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge;
-=======
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge;
 - (instancetype)initWithWindow:(UIWindow *)window surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 
 - (void)show;
 
@@ -38,7 +30,6 @@
 @interface RCTLogBoxView : NSWindow
 
 - (instancetype)initWithSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
-
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 - (void)setHidden:(BOOL)hidden;
