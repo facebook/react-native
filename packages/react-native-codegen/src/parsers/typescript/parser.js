@@ -113,6 +113,18 @@ class TypeScriptParser implements Parser {
     );
   }
 
+  parseString(contents: string, filename: ?string): SchemaType {
+    return buildSchema(
+      contents,
+      filename,
+      wrapComponentSchema,
+      buildComponentSchema,
+      buildModuleSchema,
+      Visitor,
+      this,
+    );
+  }
+
   getAst(contents: string): $FlowFixMe {
     return babelParser.parse(contents, {
       sourceType: 'module',

@@ -107,6 +107,18 @@ class FlowParser implements Parser {
     );
   }
 
+  parseString(contents: string, filename: ?string): SchemaType {
+    return buildSchema(
+      contents,
+      filename,
+      wrapComponentSchema,
+      buildComponentSchema,
+      buildModuleSchema,
+      Visitor,
+      this,
+    );
+  }
+
   getAst(contents: string): $FlowFixMe {
     return flowParser.parse(contents, {
       enums: true,

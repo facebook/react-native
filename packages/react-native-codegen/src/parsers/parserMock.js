@@ -93,6 +93,10 @@ export class MockedParser implements Parser {
     return schemaMock;
   }
 
+  parseString(contents: string, filename: ?string): SchemaType {
+    return schemaMock;
+  }
+
   getAst(contents: string): $FlowFixMe {
     return flowParser.parse(contents, {
       enums: true,

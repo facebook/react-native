@@ -14,34 +14,16 @@ import type {SchemaType} from '../../CodegenSchema.js';
 
 const fs = require('fs');
 
-const {buildSchema} = require('../parsers-commons');
-const {Visitor} = require('./Visitor');
 const {TypeScriptParser} = require('./parser');
-const {buildComponentSchema} = require('./components');
-const {wrapComponentSchema} = require('./components/schema');
-const {buildModuleSchema} = require('./modules');
 
 const parser = new TypeScriptParser();
 
 function parseModuleFixture(filename: string): SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
-  return parseString(contents, 'path/NativeSampleTurboModule.ts');
-}
-
-function parseString(contents: string, filename: ?string): SchemaType {
-  return buildSchema(
-    contents,
-    filename,
-    wrapComponentSchema,
-    buildComponentSchema,
-    buildModuleSchema,
-    Visitor,
-    parser,
-  );
+  return parser.parseString(contents, 'path/NativeSampleTurboModule.ts');
 }
 
 module.exports = {
   parseModuleFixture,
-  parseString,
 };
