@@ -26,6 +26,22 @@ const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('./errors');
 
+const schemaMock = {
+  modules: {
+    StringPropNativeComponentView: {
+      type: 'Component',
+      components: {
+        StringPropNativeComponentView: {
+          extendsProps: [],
+          events: [],
+          props: [],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 export class MockedParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
 
@@ -74,21 +90,7 @@ export class MockedParser implements Parser {
   }
 
   parseFile(filename: string): SchemaType {
-    return {
-      modules: {
-        StringPropNativeComponentView: {
-          type: 'Component',
-          components: {
-            StringPropNativeComponentView: {
-              extendsProps: [],
-              events: [],
-              props: [],
-              commands: [],
-            },
-          },
-        },
-      },
-    };
+    return schemaMock;
   }
 
   getAst(contents: string): $FlowFixMe {
