@@ -66,7 +66,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
                                                           scrollViewFrame:scrollView.frame
                                                       scrollViewZoomScale:scrollView.zoomScale
                                                                  userData:nil
-                                                            coalescingKey:coalescingKey];
+                                                            coalescingKey:coalescingKey
+                                                            responderIgnoreScroll:false];
   RCTBridge *bridge = [RCTBridge currentBridge];
   if (bridge) {
     [bridge.eventDispatcher sendEvent:scrollEvent];
