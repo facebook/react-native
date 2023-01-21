@@ -28,7 +28,7 @@ type DevServerInfo = {
 function getDevServer(): DevServerInfo {
   if (_cachedDevServerURL === undefined) {
     const scriptUrl = NativeSourceCode.getConstants().scriptURL;
-    const match = scriptUrl.match(/^https?:\/\/.*?\//);
+    const match = scriptUrl?.match(/^https?:\/\/.*?\//);
     _cachedDevServerURL = match ? match[0] : null;
     _cachedFullBundleURL = match ? scriptUrl : null;
   }
