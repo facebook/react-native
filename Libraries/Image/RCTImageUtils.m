@@ -381,30 +381,8 @@ UIImage *__nullable RCTTransformImage(UIImage *image, CGSize destSize, CGFloat d
     return nil;
   }
 
-<<<<<<< HEAD
   BOOL opaque = !RCTUIImageHasAlpha(image); // [macOS]
-  UIGraphicsBeginImageContextWithOptions(destSize, opaque, destScale);
-  CGContextRef currentContext = UIGraphicsGetCurrentContext();
-  CGContextConcatCTM(currentContext, transform);
 #if !TARGET_OS_OSX // [macOS]
-  [image drawAtPoint:CGPointZero];
-#else // [macOS
-  [image drawAtPoint:CGPointZero fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
-#endif // macOS]
-  UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return result;
-||||||| 49f3f47b1e9
-  BOOL opaque = !RCTImageHasAlpha(image.CGImage);
-  UIGraphicsBeginImageContextWithOptions(destSize, opaque, destScale);
-  CGContextRef currentContext = UIGraphicsGetCurrentContext();
-  CGContextConcatCTM(currentContext, transform);
-  [image drawAtPoint:CGPointZero];
-  UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return result;
-=======
-  BOOL opaque = !RCTImageHasAlpha(image.CGImage);
   UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
   rendererFormat.opaque = opaque;
   rendererFormat.scale = destScale;
@@ -414,7 +392,15 @@ UIImage *__nullable RCTTransformImage(UIImage *image, CGSize destSize, CGFloat d
     CGContextConcatCTM(context.CGContext, transform);
     [image drawAtPoint:CGPointZero];
   }];
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
+#else // [macOS
+  UIGraphicsBeginImageContextWithOptions(destSize, opaque, destScale);
+  CGContextRef currentContext = UIGraphicsGetCurrentContext();
+  CGContextConcatCTM(currentContext, transform);
+  [image drawAtPoint:CGPointZero fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
+  UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return result;
+#endif // macOS]
 }
 
 BOOL RCTImageHasAlpha(CGImageRef image)

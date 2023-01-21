@@ -15,52 +15,37 @@
     return nil;
   }
   CGSize imageSize = CGSizeMake(MAX(self.size.width, image.size.width), MAX(self.size.height, image.size.height));
-<<<<<<< HEAD
-  UIGraphicsBeginImageContextWithOptions(imageSize, YES, 0.0);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  [self drawInRect:CGRectMake(0, 0, self.size.width, self.size.height)];
-  CGContextSetAlpha(context, 0.5f);
-  CGContextBeginTransparencyLayer(context, NULL);
-  [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-  CGContextSetBlendMode(context, kCGBlendModeDifference);
-  CGContextSetFillColorWithColor(context, [RCTUIColor whiteColor].CGColor); // [macOS]
-  CGContextFillRect(context, CGRectMake(0, 0, self.size.width, self.size.height));
-  CGContextEndTransparencyLayer(context);
-  UIImage *returnImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return returnImage;
-||||||| 49f3f47b1e9
-  UIGraphicsBeginImageContextWithOptions(imageSize, YES, 0.0);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  [self drawInRect:CGRectMake(0, 0, self.size.width, self.size.height)];
-  CGContextSetAlpha(context, 0.5f);
-  CGContextBeginTransparencyLayer(context, NULL);
-  [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-  CGContextSetBlendMode(context, kCGBlendModeDifference);
-  CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
-  CGContextFillRect(context, CGRectMake(0, 0, self.size.width, self.size.height));
-  CGContextEndTransparencyLayer(context);
-  UIImage *returnImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return returnImage;
-=======
 
+#if !TARGET_OS_OSX // [macOS]
   UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
   rendererFormat.opaque = YES;
   UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:imageSize
                                                                                    format:rendererFormat];
 
-  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
+    CGCotextRef context = context.CGContext; // [macOS] Pull out the underlying CGContextRef
+#else // [macOS
+  UIGraphicsBeginImageContextWithOptions(imageSize, YES, 0.0);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  // Add extra braces for scope to match the indentation level of the iOS block
+  {
+#endif // macOS]
     [self drawInRect:CGRectMake(0, 0, self.size.width, self.size.height)];
-    CGContextSetAlpha(context.CGContext, 0.5f);
-    CGContextBeginTransparencyLayer(context.CGContext, NULL);
+    CGContextSetAlpha(context, 0.5f); // [macOS]
+    CGContextBeginTransparencyLayer(context, NULL); // [macOS]
     [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-    CGContextSetBlendMode(context.CGContext, kCGBlendModeDifference);
-    CGContextSetFillColorWithColor(context.CGContext, [UIColor whiteColor].CGColor);
-    CGContextFillRect(context.CGContext, CGRectMake(0, 0, self.size.width, self.size.height));
-    CGContextEndTransparencyLayer(context.CGContext);
+    CGContextSetBlendMode(context, kCGBlendModeDifference); // [macOS]
+    CGContextSetFillColorWithColor(context, [RCTUIColor whiteColor].CGColor); // [macOS]
+    CGContextFillRect(context, CGRectMake(0, 0, self.size.width, self.size.height)); // [macOS]
+    CGContextEndTransparencyLayer(context); // [macOS]
+#if !TARGET_OS_OSX // [macOS]
   }];
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
+#else // [macOS
+  }
+  UIImage *returnImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return returnImage;
+#endif // macOS]
 }
 
 @end

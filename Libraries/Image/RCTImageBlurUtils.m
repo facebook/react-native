@@ -26,22 +26,7 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   // convert to ARGB if it isn't
   if (CGImageGetBitsPerPixel(imageRef) != 32 || CGImageGetBitsPerComponent(imageRef) != 8 ||
       !((CGImageGetBitmapInfo(imageRef) & kCGBitmapAlphaInfoMask))) {
-<<<<<<< HEAD
-    UIGraphicsBeginImageContextWithOptions(inputImage.size, NO, imageScale);
 #if !TARGET_OS_OSX // [macOS]
-		[inputImage drawAtPoint:CGPointZero];
-    imageRef = UIGraphicsGetImageFromCurrentImageContext().CGImage;
-#else // [macOS
-    [inputImage drawAtPoint:CGPointZero fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
-    imageRef = (CGImageRef)CFAutorelease(CGBitmapContextCreateImage(UIGraphicsGetCurrentContext()));
-#endif // macOS]
-    UIGraphicsEndImageContext();
-||||||| 49f3f47b1e9
-    UIGraphicsBeginImageContextWithOptions(inputImage.size, NO, inputImage.scale);
-    [inputImage drawAtPoint:CGPointZero];
-    imageRef = UIGraphicsGetImageFromCurrentImageContext().CGImage;
-    UIGraphicsEndImageContext();
-=======
     UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
     rendererFormat.scale = inputImage.scale;
     UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:inputImage.size
@@ -50,7 +35,12 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
     imageRef = [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
                  [inputImage drawAtPoint:CGPointZero];
                }].CGImage;
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
+#else // [macOS
+    UIGraphicsBeginImageContextWithOptions(inputImage.size, NO, imageScale);
+    [inputImage drawAtPoint:CGPointZero fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
+    imageRef = (CGImageRef)CFAutorelease(CGBitmapContextCreateImage(UIGraphicsGetCurrentContext()));
+    UIGraphicsEndImageContext();
+#endif // macOS]
   }
 
   vImage_Buffer buffer1, buffer2;
