@@ -18,6 +18,8 @@
                   scrollViewFrame:(CGRect)scrollViewFrame
               scrollViewZoomScale:(CGFloat)scrollViewZoomScale
                          userData:(NSDictionary *)userData
-                    coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;
+                    coalescingKey:(uint16_t)coalescingKey
+                    responderIgnoreScroll:(BOOL)responderIgnoreScroll
+                    NS_DESIGNATED_INITIALIZER;
 
 @end
