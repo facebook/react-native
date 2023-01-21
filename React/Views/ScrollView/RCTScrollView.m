@@ -272,6 +272,8 @@
   uint16_t _coalescingKey;
   NSString *_lastEmittedEventName;
   NSHashTable *_scrollListeners;
+  BOOL _isScrollBeginFired;
+  BOOL _isScrollEndFired;
 }
 
 - (void)_registerKeyboardListener
@@ -369,6 +371,8 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     _cachedChildFrames = [NSMutableArray new];
 
     _scrollListeners = [NSHashTable weakObjectsHashTable];
+    _isScrollBeginFired = NO;
+    _isScrollEndFired = NO;
 
     [self addSubview:_scrollView];
   }
@@ -619,7 +623,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
     RCT_FORWARD_SCROLL_EVENT(delegateMethod : scrollView);  \
   }
 
-RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, onMomentumScrollBegin)
+//RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, onMomentumScrollBegin)
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
@@ -817,12 +821,36 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndZooming : scrollView withView : view atScale : scale);
 }
 
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+  if (self.window == nil) {
+    if(_isScrollBeginFired == YES && _isScrollEndFired == NO) {
+      // Fire the end deceleration event
+      RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil);
+      RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndDecelerating : _scrollView);
+      _isScrollEndFired = YES;
+      _isScrollBeginFired = NO;
+    }
+  }
+}
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
+{
+  _isScrollBeginFired = YES;
+  _isScrollEndFired = NO;
+  RCT_SEND_SCROLL_EVENT(onMomentumScrollBegin, nil);
+  RCT_FORWARD_SCROLL_EVENT(scrollViewWillBeginDecelerating : scrollView);
+}
+
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
   // Fire a final scroll event
   _allowNextScrollNoMatterWhat = YES;
   [self scrollViewDidScroll:scrollView];
-
+  _isScrollEndFired = YES;
+  _isScrollBeginFired = NO;
+  
   // Fire the end deceleration event
   RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil);
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndDecelerating : scrollView);
