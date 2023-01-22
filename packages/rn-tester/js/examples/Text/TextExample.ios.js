@@ -1287,7 +1287,54 @@ exports.examples = [
       );
     },
   },
-<<<<<<< HEAD
+  {
+    title: 'Selectable Text',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text style={{userSelect: 'auto'}}>Text element is selectable</Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Line Break Strategy',
+    render: function (): React.Node {
+      const lineBreakStrategy = ['none', 'standard', 'hangul-word', 'push-out'];
+      const textByCode = {
+        en: 'lineBreakStrategy lineBreakStrategy lineBreakStrategy lineBreakStrategy',
+        ko: '한글개행 한글개행 한글개행 한글개행 한글개행 한글개행 한글개행 한글개행',
+        ja: 'かいぎょう かいぎょう かいぎょう かいぎょう かいぎょう かいぎょう',
+        cn: '改行 改行 改行 改行 改行 改行 改行 改行 改行 改行 改行 改行',
+      };
+
+      return (
+        <View>
+          {lineBreakStrategy.map(strategy => {
+            return (
+              <View key={strategy} style={{marginBottom: 12}}>
+                <Text
+                  style={{
+                    backgroundColor: 'lightgrey',
+                  }}>{`Strategy: ${strategy}`}</Text>
+                {Object.keys(textByCode).map(code => {
+                  return (
+                    <View key={code}>
+                      <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
+                      <Text lineBreakStrategyIOS={strategy}>
+                        {textByCode[code]}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+            );
+          })}
+        </View>
+      );
+    },
+  },
+  // [macOS
   {
     title: 'Text components inheriting color from parent',
     render: function (): React.Node {
@@ -1346,7 +1393,6 @@ exports.examples = [
       );
     },
   },
-  // [macOS
   {
     title: 'Cursor',
     render: function (): React.Node {
@@ -1375,54 +1421,4 @@ exports.examples = [
     },
   },
   // [macOS]
-||||||| 49f3f47b1e9
-=======
-  {
-    title: 'Selectable Text',
-    render: function (): React.Node {
-      return (
-        <View>
-          <Text style={{userSelect: 'auto'}}>Text element is selectable</Text>
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Line Break Strategy',
-    render: function (): React.Node {
-      const lineBreakStrategy = ['none', 'standard', 'hangul-word', 'push-out'];
-      const textByCode = {
-        en: 'lineBreakStrategy lineBreakStrategy lineBreakStrategy lineBreakStrategy',
-        ko: '한글개행 한글개행 한글개행 한글개행 한글개행 한글개행 한글개행 한글개행',
-        ja: 'かいぎょう かいぎょう かいぎょう かいぎょう かいぎょう かいぎょう',
-        cn: '改行 改行 改行 改行 改行 改行 改行 改行 改行 改行 改行 改行',
-      };
-
-      return (
-        <View>
-          {lineBreakStrategy.map(strategy => {
-            return (
-              <View key={strategy} style={{marginBottom: 12}}>
-                <Text
-                  style={{
-                    backgroundColor: 'lightgrey',
-                  }}>{`Strategy: ${strategy}`}</Text>
-                {Object.keys(textByCode).map(code => {
-                  return (
-                    <View key={code}>
-                      <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
-                      <Text lineBreakStrategyIOS={strategy}>
-                        {textByCode[code]}
-                      </Text>
-                    </View>
-                  );
-                })}
-              </View>
-            );
-          })}
-        </View>
-      );
-    },
-  },
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 ];

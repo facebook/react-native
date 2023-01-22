@@ -394,7 +394,7 @@ type IOSProps = $ReadOnly<{|
 
   /**
    * Set line break strategy on iOS.
-   * @platform ios
+   * @platform ios macos
    */
   lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
 |}>;

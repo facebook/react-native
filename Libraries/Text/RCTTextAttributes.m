@@ -158,20 +158,14 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     paragraphStyle.baseWritingDirection = _baseWritingDirection;
     isParagraphStyleUsed = YES;
   }
-<<<<<<< HEAD
-
-||||||| 49f3f47b1e9
-  
-=======
 
   if (_lineBreakStrategy != NSLineBreakStrategyNone) {
-    if (@available(iOS 14.0, *)) {
+    if (@available(iOS 14.0, macOS 11.0, *)) { // [macOS]
       paragraphStyle.lineBreakStrategy = _lineBreakStrategy;
       isParagraphStyleUsed = YES;
     }
   }
 
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
   if (!isnan(_lineHeight)) {
     CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
     paragraphStyle.minimumLineHeight = lineHeight;
@@ -463,6 +457,7 @@ static NSString *capitalizeText(NSString *text)
       RCTTextAttributesCompareStrings(_fontWeight) && RCTTextAttributesCompareObjects(_fontStyle) &&
       RCTTextAttributesCompareObjects(_fontVariant) && RCTTextAttributesCompareOthers(_allowFontScaling) &&
       RCTTextAttributesCompareFloats(_letterSpacing) &&
+      RCTTextAttributesCompareOthers(_dynamicTypeRamp) && RCTTextAttributesCompareOthers(_fontSmoothing) && // [macOS]
       // Paragraph Styles
       RCTTextAttributesCompareFloats(_lineHeight) && RCTTextAttributesCompareFloats(_alignment) &&
       RCTTextAttributesCompareOthers(_baseWritingDirection) && RCTTextAttributesCompareOthers(_lineBreakStrategy) &&

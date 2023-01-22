@@ -388,10 +388,9 @@ RCT_ENUM_CONVERTER(
     NSWritingDirectionNatural,
     integerValue)
 
-#if !TARGET_OS_OSX // [macOS]
 + (NSLineBreakStrategy)NSLineBreakStrategy:(id)json RCT_DYNAMIC
 {
-  if (@available(iOS 14.0, *)) {
+  if (@available(iOS 14.0, macOS 11.0, *)) { // [macOS]
     static NSDictionary *mapping;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -408,6 +407,7 @@ RCT_ENUM_CONVERTER(
   }
 }
 
+#if !TARGET_OS_OSX // [macOS]
 RCT_ENUM_CONVERTER(
     UITextAutocapitalizationType,
     (@{
