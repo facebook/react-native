@@ -81,7 +81,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (nonnull NSCoder *)aDecoder)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                              body:RCTExportedDimensions(self)];
+                                              body:RCTExportedDimensions(self, self.bridge)];
 #pragma clang diagnostic pop
 }
 

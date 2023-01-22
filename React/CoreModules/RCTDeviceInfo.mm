@@ -29,12 +29,8 @@ using namespace facebook::react;
 #if !TARGET_OS_OSX // [macOS]
   UIInterfaceOrientation _currentInterfaceOrientation;
   NSDictionary *_currentInterfaceDimensions;
-<<<<<<< HEAD
-#endif // [macOS]
-||||||| 49f3f47b1e9
-=======
   BOOL _isFullscreen;
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
+#endif // [macOS]
 }
 
 @synthesize bridge = _bridge;
@@ -108,17 +104,11 @@ static BOOL RCTIsIPhoneX()
   return isIPhoneX;
 }
 
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // [macOS]
-static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry)
-#else // [macOS
-NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
-#endif // macOS]
-||||||| 49f3f47b1e9
-static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry)
-=======
 static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RCTBridge *bridge)
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
+#else // [macOS
+NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge)
+#endif // macOS]
 {
   RCTAssertMainQueue();
 
@@ -164,17 +154,11 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
   RCTBridge *bridge = _bridge;
   RCTUnsafeExecuteOnMainQueueSync(^{
     constants = @{
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // [macOS]
-      @"Dimensions" : RCTExportedDimensions(moduleRegistry),
+      @"Dimensions" : RCTExportedDimensions(moduleRegistry, bridge),
 #else // [macOS
       @"Dimensions": RCTExportedDimensions(nil),
 #endif // macOS]
-||||||| 49f3f47b1e9
-      @"Dimensions" : RCTExportedDimensions(moduleRegistry),
-=======
-      @"Dimensions" : RCTExportedDimensions(moduleRegistry, bridge),
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
       // Note:
       // This prop is deprecated and will be removed in a future release.
       // Please use this only for a quick and temporary solution.
