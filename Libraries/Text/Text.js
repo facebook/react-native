@@ -57,21 +57,11 @@ const Text: React.AbstractComponent<
     onResponderTerminationRequest,
     onStartShouldSetResponder,
     pressRetentionOffset,
-<<<<<<< HEAD
-||||||| 49f3f47b1e9
-    suppressHighlighting,
-=======
     role,
     suppressHighlighting,
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
     ...restProps
   } = props;
 
-<<<<<<< HEAD
-||||||| 49f3f47b1e9
-  const [isHighlighted, setHighlighted] = useState(false);
-
-=======
   const [isHighlighted, setHighlighted] = useState(false);
 
   const _accessibilityState = {
@@ -92,7 +82,6 @@ const Text: React.AbstractComponent<
       ? {..._accessibilityState, disabled: _disabled}
       : _accessibilityState;
 
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
   const isPressable =
     (onPress != null ||
       onLongPress != null ||
@@ -108,26 +97,12 @@ const Text: React.AbstractComponent<
             pressRectOffset: pressRetentionOffset,
             onLongPress,
             onPress,
-<<<<<<< HEAD
-            onPressIn(event) {
-||||||| 49f3f47b1e9
-            onPressIn(event) {
-              setHighlighted(!suppressHighlighting);
-=======
             onPressIn(event: PressEvent) {
               setHighlighted(!suppressHighlighting);
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
               onPressIn?.(event);
             },
-<<<<<<< HEAD
-            onPressOut(event) {
-||||||| 49f3f47b1e9
-            onPressOut(event) {
-              setHighlighted(false);
-=======
             onPressOut(event: PressEvent) {
               setHighlighted(false);
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
               onPressOut?.(event);
             },
             onResponderTerminationRequest_DEPRECATED:
@@ -249,16 +224,11 @@ const Text: React.AbstractComponent<
       {...restProps}
       accessibilityState={_accessibilityState}
       {...eventHandlersForText}
-<<<<<<< HEAD
-||||||| 49f3f47b1e9
-      isHighlighted={isHighlighted}
-=======
       accessibilityLabel={ariaLabel ?? accessibilityLabel}
       accessibilityRole={
         role ? getAccessibilityRoleFromRole(role) : accessibilityRole
       }
       isHighlighted={isHighlighted}
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
       isPressable={isPressable}
       selectable={_selectable}
       nativeID={id ?? nativeID}
@@ -286,13 +256,8 @@ const Text: React.AbstractComponent<
         }
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
-<<<<<<< HEAD
-||||||| 49f3f47b1e9
-        isHighlighted={isHighlighted}
-=======
         isHighlighted={isHighlighted}
         nativeID={id ?? nativeID}
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
         numberOfLines={numberOfLines}
         selectionColor={selectionColor}
         style={flattenedStyle}

@@ -20,7 +20,6 @@
 
 using namespace facebook::react;
 
-<<<<<<< HEAD
 @interface RCTActionSheetManager () <
 #if !TARGET_OS_OSX // [macOS]
 UIActionSheetDelegate
@@ -28,35 +27,27 @@ UIActionSheetDelegate
 NSSharingServicePickerDelegate
 #endif // macOS]
 , NativeActionSheetManagerSpec>
-||||||| 49f3f47b1e9
-@interface RCTActionSheetManager () <UIActionSheetDelegate, NativeActionSheetManagerSpec>
-=======
-@interface RCTActionSheetManager () <UIActionSheetDelegate, NativeActionSheetManagerSpec>
 
+#if !TARGET_OS_OSX // [macOS]
 @property (nonatomic, strong) NSMutableArray<UIAlertController *> *alertControllers;
+#endif // [macOS]
 
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 @end
 
-<<<<<<< HEAD
-@implementation RCTActionSheetManager {
+@implementation RCTActionSheetManager
+#if TARGET_OS_OSX // [macOS
+{
   // Use NSMapTable, as UIAlertViews do not implement <NSCopying>
   // which is required for NSDictionary keys
   NSMapTable *_callbacks;
-#if TARGET_OS_OSX // [macOS
   NSArray<NSSharingService*> *_excludedActivities;
   NSString *_sharingSubject;
   RCTResponseSenderBlock _failureCallback;
   RCTResponseSenderBlock _successCallback;
+}
 #endif // macOS]
-||||||| 49f3f47b1e9
-@implementation RCTActionSheetManager {
-  // Use NSMapTable, as UIAlertViews do not implement <NSCopying>
-  // which is required for NSDictionary keys
-  NSMapTable *_callbacks;
-=======
-@implementation RCTActionSheetManager
 
+#if !TARGET_OS_OSX // [macOS]
 - (instancetype)init
 {
   self = [super init];
@@ -69,8 +60,8 @@ NSSharingServicePickerDelegate
 + (BOOL)requiresMainQueueSetup
 {
   return NO;
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 }
+#endif // [macOS]
 
 RCT_EXPORT_MODULE()
 

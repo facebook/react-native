@@ -790,7 +790,6 @@ class AccessibilityActionsExample extends React.Component<{}> {
           />
         </RNTesterBlock>
 
-<<<<<<< HEAD
         {/* [macOS This doesn't work, see https://github.com/facebook/react-native/issues/32616
           <RNTesterBlock title="Text with custom accessibility actions">
             <Text
@@ -813,49 +812,6 @@ class AccessibilityActionsExample extends React.Component<{}> {
             </Text>
           </RNTesterBlock>
         macOS] */}
-||||||| 49f3f47b1e9
-        <RNTesterBlock title="Text with custom accessibility actions">
-          <Text
-            accessible={true}
-            accessibilityActions={[
-              {name: 'activate', label: 'activate label'},
-              {name: 'copy', label: 'copy label'},
-            ]}
-            onAccessibilityAction={event => {
-              switch (event.nativeEvent.actionName) {
-                case 'activate':
-                  Alert.alert('Alert', 'Activate accessiblity action');
-                  break;
-                case 'copy':
-                  Alert.alert('Alert', 'copy action success');
-                  break;
-              }
-            }}>
-            Text
-          </Text>
-        </RNTesterBlock>
-=======
-        <RNTesterBlock title="Text with custom accessibility actions">
-          <Text
-            accessible={true}
-            accessibilityActions={[
-              {name: 'activate', label: 'activate label'},
-              {name: 'copy', label: 'copy label'},
-            ]}
-            onAccessibilityAction={event => {
-              switch (event.nativeEvent.actionName) {
-                case 'activate':
-                  Alert.alert('Alert', 'Activate accessibility action');
-                  break;
-                case 'copy':
-                  Alert.alert('Alert', 'copy action success');
-                  break;
-              }
-            }}>
-            Text
-          </Text>
-        </RNTesterBlock>
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
       </View>
     );
   }
@@ -1451,15 +1407,6 @@ exports.examples = [
     },
   },
   {
-<<<<<<< HEAD
-||||||| 49f3f47b1e9
-    title: 'Fake Slider Example',
-    render(): React.Element<typeof FakeSliderExample> {
-      return <FakeSliderExample />;
-    },
-  },
-  {
-=======
     title: 'Fake Slider Example',
     render(): React.Element<typeof FakeSliderExample> {
       return <FakeSliderExample />;
@@ -1472,7 +1419,6 @@ exports.examples = [
     },
   },
   {
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
     title: 'Check if the display options are enabled',
     render(): React.Element<typeof DisplayOptionsStatusExample> {
       return <DisplayOptionsStatusExample />;

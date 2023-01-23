@@ -273,21 +273,19 @@ const APIs: Array<RNTesterModuleInfo> = [
     module: require('../examples/Dimensions/DimensionsExample'),
     supportsTVOS: true,
   },
+  // [macOS
   {
-<<<<<<< HEAD
     key: 'Focus Ring',
     module: require('../examples/FocusRing/FocusRingExample'),
     supportsTVOS: false,
   },
+  // macOS]
   {
-||||||| 49f3f47b1e9
-=======
     key: 'Keyboard',
     module: require('../examples/Keyboard/KeyboardExample').default,
     supportsTVOS: true,
   },
   {
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
     key: 'LayoutAnimationExample',
     module: require('../examples/Layout/LayoutAnimationExample'),
     supportsTVOS: true,

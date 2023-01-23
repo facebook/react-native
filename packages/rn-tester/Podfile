@@ -18,9 +18,6 @@ end
 def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   project 'RNTesterPods.xcodeproj'
 
-  def pods(options = {})
-  project 'RNTesterPods.xcodeproj'
-
   # [macOS Disable Fabric by default till macOS supports it
   fabric_enabled = false 
   if ENV['USE_FABRIC'] == '1'

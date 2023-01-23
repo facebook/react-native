@@ -78,14 +78,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _fontWeight = textAttributes->_fontWeight ?: _fontWeight;
   _fontStyle = textAttributes->_fontStyle ?: _fontStyle;
   _fontVariant = textAttributes->_fontVariant ?: _fontVariant;
-<<<<<<< HEAD
-  _allowFontScaling = textAttributes->_allowFontScaling || _allowFontScaling;  // *
-  _dynamicTypeRamp = textAttributes->_dynamicTypeRamp != RCTDynamicTypeRampUndefined ? textAttributes->_dynamicTypeRamp : _dynamicTypeRamp; // [macOS]
-||||||| 49f3f47b1e9
-  _allowFontScaling = textAttributes->_allowFontScaling || _allowFontScaling;  // *
-=======
   _allowFontScaling = textAttributes->_allowFontScaling || _allowFontScaling; // *
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
+  _dynamicTypeRamp = textAttributes->_dynamicTypeRamp != RCTDynamicTypeRampUndefined ? textAttributes->_dynamicTypeRamp : _dynamicTypeRamp; // [macOS]
   _letterSpacing = !isnan(textAttributes->_letterSpacing) ? textAttributes->_letterSpacing : _letterSpacing;
   _fontSmoothing = textAttributes->_fontSmoothing != RCTFontSmoothingAuto ? textAttributes->_fontSmoothing : _fontSmoothing; // [macOS]
 
@@ -116,23 +110,14 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   // Special
   _isHighlighted = textAttributes->_isHighlighted || _isHighlighted; // *
   _tag = textAttributes->_tag ?: _tag;
-<<<<<<< HEAD
-  _layoutDirection = textAttributes->_layoutDirection != UIUserInterfaceLayoutDirectionLeftToRight ? textAttributes->_layoutDirection : _layoutDirection;
-  _textTransform = textAttributes->_textTransform != RCTTextTransformUndefined ? textAttributes->_textTransform : _textTransform;
-
-#if TARGET_OS_OSX // [macOS
-  _cursor = textAttributes->_cursor != RCTCursorAuto ? textAttributes->_cursor : _cursor;
-#endif // macOS]
-||||||| 49f3f47b1e9
-  _layoutDirection = textAttributes->_layoutDirection != UIUserInterfaceLayoutDirectionLeftToRight ? textAttributes->_layoutDirection : _layoutDirection;
-  _textTransform = textAttributes->_textTransform != RCTTextTransformUndefined ? textAttributes->_textTransform : _textTransform;
-=======
   _layoutDirection = textAttributes->_layoutDirection != UIUserInterfaceLayoutDirectionLeftToRight
       ? textAttributes->_layoutDirection
       : _layoutDirection;
   _textTransform =
       textAttributes->_textTransform != RCTTextTransformUndefined ? textAttributes->_textTransform : _textTransform;
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
+if TARGET_OS_OSX // [macOS
+  _cursor = textAttributes->_cursor != RCTCursorAuto ? textAttributes->_cursor : _cursor;
+#endif // macOS]
 }
 
 - (NSParagraphStyle *)effectiveParagraphStyle
@@ -310,13 +295,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 - (RCTUIColor *)effectiveBackgroundColor // [macOS]
 {
-<<<<<<< HEAD
-  RCTUIColor *effectiveBackgroundColor = _backgroundColor;// ?: [[UIColor whiteColor] colorWithAlphaComponent:0]; // [macOS]
-||||||| 49f3f47b1e9
-  UIColor *effectiveBackgroundColor = _backgroundColor;// ?: [[UIColor whiteColor] colorWithAlphaComponent:0];
-=======
-  UIColor *effectiveBackgroundColor = _backgroundColor; // ?: [[UIColor whiteColor] colorWithAlphaComponent:0];
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
+  RCTUIColor *effectiveBackgroundColor = _backgroundColor; // ?: [[UIColor whiteColor] colorWithAlphaComponent:0]; // [macOS]
 
   if (effectiveBackgroundColor && !isnan(_opacity)) {
     effectiveBackgroundColor =
@@ -382,73 +361,6 @@ static NSString *capitalizeText(NSString *text)
 #define RCTTextAttributesCompareStrings(a) ((a == textAttributes->a) || [a isEqualToString:textAttributes->a])
 #define RCTTextAttributesCompareOthers(a) (a == textAttributes->a)
 
-<<<<<<< HEAD
-  return
-    RCTTextAttributesCompareObjects(_foregroundColor) &&
-    RCTTextAttributesCompareObjects(_backgroundColor) &&
-    RCTTextAttributesCompareFloats(_opacity) &&
-    // Font
-    RCTTextAttributesCompareObjects(_fontFamily) &&
-    RCTTextAttributesCompareFloats(_fontSize) &&
-    RCTTextAttributesCompareFloats(_fontSizeMultiplier) &&
-    RCTTextAttributesCompareFloats(_maxFontSizeMultiplier) &&
-    RCTTextAttributesCompareStrings(_fontWeight) &&
-    RCTTextAttributesCompareObjects(_fontStyle) &&
-    RCTTextAttributesCompareObjects(_fontVariant) &&
-    RCTTextAttributesCompareOthers(_allowFontScaling) &&
-    RCTTextAttributesCompareOthers(_dynamicTypeRamp) && // [macOS]
-    RCTTextAttributesCompareFloats(_letterSpacing) &&
-    RCTTextAttributesCompareOthers(_fontSmoothing) && // [macOS]
-    // Paragraph Styles
-    RCTTextAttributesCompareFloats(_lineHeight) &&
-    RCTTextAttributesCompareFloats(_alignment) &&
-    RCTTextAttributesCompareOthers(_baseWritingDirection) &&
-    // Decoration
-    RCTTextAttributesCompareObjects(_textDecorationColor) &&
-    RCTTextAttributesCompareOthers(_textDecorationStyle) &&
-    RCTTextAttributesCompareOthers(_textDecorationLine) &&
-    // Shadow
-    RCTTextAttributesCompareSize(_textShadowOffset) &&
-    RCTTextAttributesCompareFloats(_textShadowRadius) &&
-    RCTTextAttributesCompareObjects(_textShadowColor) &&
-    // Special
-    RCTTextAttributesCompareOthers(_isHighlighted) &&
-    RCTTextAttributesCompareObjects(_tag) &&
-    RCTTextAttributesCompareOthers(_layoutDirection) &&
-    RCTTextAttributesCompareOthers(_textTransform);
-||||||| 49f3f47b1e9
-  return
-    RCTTextAttributesCompareObjects(_foregroundColor) &&
-    RCTTextAttributesCompareObjects(_backgroundColor) &&
-    RCTTextAttributesCompareFloats(_opacity) &&
-    // Font
-    RCTTextAttributesCompareObjects(_fontFamily) &&
-    RCTTextAttributesCompareFloats(_fontSize) &&
-    RCTTextAttributesCompareFloats(_fontSizeMultiplier) &&
-    RCTTextAttributesCompareFloats(_maxFontSizeMultiplier) &&
-    RCTTextAttributesCompareStrings(_fontWeight) &&
-    RCTTextAttributesCompareObjects(_fontStyle) &&
-    RCTTextAttributesCompareObjects(_fontVariant) &&
-    RCTTextAttributesCompareOthers(_allowFontScaling) &&
-    RCTTextAttributesCompareFloats(_letterSpacing) &&
-    // Paragraph Styles
-    RCTTextAttributesCompareFloats(_lineHeight) &&
-    RCTTextAttributesCompareFloats(_alignment) &&
-    RCTTextAttributesCompareOthers(_baseWritingDirection) &&
-    // Decoration
-    RCTTextAttributesCompareObjects(_textDecorationColor) &&
-    RCTTextAttributesCompareOthers(_textDecorationStyle) &&
-    RCTTextAttributesCompareOthers(_textDecorationLine) &&
-    // Shadow
-    RCTTextAttributesCompareSize(_textShadowOffset) &&
-    RCTTextAttributesCompareFloats(_textShadowRadius) &&
-    RCTTextAttributesCompareObjects(_textShadowColor) &&
-    // Special
-    RCTTextAttributesCompareOthers(_isHighlighted) &&
-    RCTTextAttributesCompareObjects(_tag) &&
-    RCTTextAttributesCompareOthers(_layoutDirection) &&
-    RCTTextAttributesCompareOthers(_textTransform);
-=======
   return RCTTextAttributesCompareObjects(_foregroundColor) && RCTTextAttributesCompareObjects(_backgroundColor) &&
       RCTTextAttributesCompareFloats(_opacity) &&
       // Font
@@ -470,7 +382,6 @@ static NSString *capitalizeText(NSString *text)
       // Special
       RCTTextAttributesCompareOthers(_isHighlighted) && RCTTextAttributesCompareObjects(_tag) &&
       RCTTextAttributesCompareOthers(_layoutDirection) && RCTTextAttributesCompareOthers(_textTransform);
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 }
 
 // [macOS

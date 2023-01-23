@@ -25,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
                                // Dismisses keyboard if true
 - (void)textInputDidReturn;
 
-<<<<<<< HEAD
 #if TARGET_OS_OSX // [macOS
 - (void)automaticSpellingCorrectionDidChange:(BOOL)enabled;
 - (void)continuousSpellCheckingDidChange:(BOOL)enabled;
@@ -33,11 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)submitOnKeyDownIfNeeded:(NSEvent *)event;
 #endif // macOS]
 
-||||||| 49f3f47b1e9
-=======
 - (BOOL)textInputShouldSubmitOnReturn; // Checks whether to submit when return is pressed and emits an event if true.
 
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 /*
  * Called before any change in the TextInput. The delegate has the opportunity to change the replacement string or
  * reject the change completely. To change the replacement, return the changed version of the `text`. To accept the

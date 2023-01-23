@@ -32,7 +32,11 @@
 
 - (void)show:(BOOL)animated completion:(void (^)(void))completion
 {
-<<<<<<< HEAD
+  if (@available(iOS 13.0, *)) {
+    UIUserInterfaceStyle style =
+        RCTSharedApplication().delegate.window.overrideUserInterfaceStyle ?: UIUserInterfaceStyleUnspecified;
+    self.overrideUserInterfaceStyle = style;
+  }
   // [macOS
   // Call self.alertWindow to ensure that it gets populated
   UIWindow *alertWindow = self.alertWindow;
@@ -48,18 +52,6 @@
     [RCTPresentedViewController() presentViewController:self animated:animated completion:completion];
   }
   // macOS]
-||||||| 49f3f47b1e9
-  [self.alertWindow makeKeyAndVisible];
-  [self.alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
-=======
-  if (@available(iOS 13.0, *)) {
-    UIUserInterfaceStyle style =
-        RCTSharedApplication().delegate.window.overrideUserInterfaceStyle ?: UIUserInterfaceStyleUnspecified;
-    self.overrideUserInterfaceStyle = style;
-  }
-  [self.alertWindow makeKeyAndVisible];
-  [self.alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 }
 
 - (void)hide

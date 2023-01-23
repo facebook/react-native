@@ -18,7 +18,6 @@
 
 #import <React/RCTTextShadowView.h>
 
-<<<<<<< HEAD
 #import <QuartzCore/QuartzCore.h>
 
 #if TARGET_OS_OSX // [macOS
@@ -42,14 +41,7 @@
 
 #endif // macOS]
 
-@implementation RCTTextView
-{
-||||||| 49f3f47b1e9
-@implementation RCTTextView
-{
-=======
 @implementation RCTTextView {
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
   CAShapeLayer *_highlightLayer;
 #if !TARGET_OS_OSX // [macOS]
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
@@ -269,49 +261,16 @@
                   return;
                 }
 
-<<<<<<< HEAD
-      [layoutManager enumerateEnclosingRectsForGlyphRange:range
-                                 withinSelectedGlyphRange:range
-                                          inTextContainer:textContainer
-                                               usingBlock:
-        ^(CGRect enclosingRect, __unused BOOL *anotherStop) {
-#if !TARGET_OS_OSX // [macOS]
-        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) cornerRadius:2];
-#else // [macOS
-        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) xRadius:2 yRadius:2];
-#endif // macOS]
-          if (highlightPath) {
-            UIBezierPathAppendPath(highlightPath, path); // [macOS]
-          } else {
-            highlightPath = path;
-          }
-        }
-      ];
-  }];
-||||||| 49f3f47b1e9
-      [layoutManager enumerateEnclosingRectsForGlyphRange:range
-                                 withinSelectedGlyphRange:range
-                                          inTextContainer:textContainer
-                                               usingBlock:
-        ^(CGRect enclosingRect, __unused BOOL *anotherStop) {
-          UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) cornerRadius:2];
-          if (highlightPath) {
-            [highlightPath appendPath:path];
-          } else {
-            highlightPath = path;
-          }
-        }
-      ];
-  }];
-=======
                 [layoutManager
                     enumerateEnclosingRectsForGlyphRange:range
                                 withinSelectedGlyphRange:range
                                          inTextContainer:textContainer
                                               usingBlock:^(CGRect enclosingRect, __unused BOOL *anotherStop) {
-                                                UIBezierPath *path = [UIBezierPath
-                                                    bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2)
-                                                                 cornerRadius:2];
+                                                // [macOS
+                                                UIBezierPath *path = UIBezierPathWithRoundedRect(
+                                                  CGRectInset(enclosingRect, -2, -2), 
+                                                  2); 
+                                                // [macOS]
                                                 if (highlightPath) {
                                                   [highlightPath appendPath:path];
                                                 } else {
@@ -319,7 +278,6 @@
                                                 }
                                               }];
               }];
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 
   if (highlightPath) {
     if (!_highlightLayer) {

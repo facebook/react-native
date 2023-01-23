@@ -180,23 +180,9 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
-<<<<<<< HEAD
-#if TARGET_OS_OSX // [macOS
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(NSRect)frame)
-#else // [macOS
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
-#endif // macOS]
-||||||| 49f3f47b1e9
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
-
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
-=======
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 
 - (void)updateWithImage:(UIImage *)image
 {
@@ -255,17 +241,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   }
 }
 
-<<<<<<< HEAD
-- (UIImage *)image {
-  return _image ?: _imageView.image; // [macOS]
-||||||| 49f3f47b1e9
-- (UIImage *)image {
-  return _imageView.image;
-=======
 - (UIImage *)image
 {
-  return _imageView.image;
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
+  return _image ?: _imageView.image; // [macOS]
 }
 
 - (void)setBlurRadius:(CGFloat)blurRadius
@@ -583,31 +561,21 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
     [self reloadImage];
   } else if ([self shouldReloadImageSourceAfterResize]) {
     CGSize imageSize = self.image.size;
-<<<<<<< HEAD
     CGFloat imageScale = UIImageGetScale(self.image); // [macOS]
 #if !TARGET_OS_OSX // [macOS]
     CGFloat windowScale = RCTScreenScale();
-    RCTResizeMode resizeMode = (RCTResizeMode)_imageView.contentMode;
 #else // [macOS
     CGFloat windowScale = self.window != nil ? self.window.backingScaleFactor : [NSScreen mainScreen].backingScaleFactor;
     RCTResizeMode resizeMode = self.resizeMode;
-||||||| 49f3f47b1e9
-    CGFloat imageScale = self.image.scale;
-    CGSize idealSize = RCTTargetSize(imageSize, imageScale, frame.size, RCTScreenScale(),
-                                     (RCTResizeMode)self.contentMode, YES);
-=======
-    CGFloat imageScale = self.image.scale;
-    CGSize idealSize =
-        RCTTargetSize(imageSize, imageScale, frame.size, RCTScreenScale(), (RCTResizeMode)self.contentMode, YES);
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 
     // self.contentMode on iOS is translated to RCTResizeModeRepeat in -setResizeMode:
     if (resizeMode == RCTResizeModeRepeat) {
       resizeMode = RCTResizeModeStretch;
     }
 #endif // macOS]
-    CGSize idealSize = RCTTargetSize(imageSize, imageScale, frame.size, windowScale,
-                                     resizeMode, YES); // macOS]
+    CGSize idealSize =
+        RCTTargetSize(imageSize, imageScale, frame.size, windowScale, (RCTResizeMode)self.contentMode, YES); // [macOS]
+
     // Don't reload if the current image or target image size is close enough
     if ((!RCTShouldReloadImageForSizeChange(imageSize, idealSize) ||
          !RCTShouldReloadImageForSizeChange(_targetSize, idealSize)) // [macOS
@@ -686,36 +654,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   }
 }
 
-<<<<<<< HEAD
-#if TARGET_OS_OSX // [macOS
-- (void)windowDidChangeBackingProperties:(NSNotification *)notification
-{
-  [self reloadImage];
-}
-  
-- (RCTPlatformView *)reactAccessibilityElement
-{
-  return _imageView;
-}
-
-- (NSColor *)tintColor
-{
-  return _imageView.contentTintColor;
-}
-
-- (void)setTintColor:(NSColor *)tintColor
-{
-  _imageView.contentTintColor = tintColor;
-}
-#endif // macOS]
-
-- (void)dealloc {
-||||||| 49f3f47b1e9
-- (void)dealloc {
-=======
 - (void)dealloc
 {
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
   [_imageLoader trackURLImageDidDestroy:_loaderRequest];
 }
 
