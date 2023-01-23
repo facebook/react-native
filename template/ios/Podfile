@@ -49,6 +49,8 @@ target 'HelloWorld' do
   post_install do |installer|
     react_native_post_install(
       installer,
+      # Path to React Native. Default is ../node_modules/react-native
+      # "../node_modules/react-native",
       # Set `mac_catalyst_enabled` to `true` in order to apply patches
       # necessary for Mac Catalyst builds
       :mac_catalyst_enabled => false
