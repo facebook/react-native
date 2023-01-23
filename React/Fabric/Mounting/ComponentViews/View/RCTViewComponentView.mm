@@ -414,10 +414,8 @@ using namespace facebook::react;
 
 - (void)announceForAccessibility:(NSString*)announcement
 {
-  if (@available(iOS 11.0, *)) {
-    if ([announcement length] != 0) {
-      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
-    }
+  if ([announcement length] != 0) {
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
   }
 }
 

@@ -148,7 +148,7 @@ using namespace facebook::react;
   }
   
   if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage) {
-    [self _setAccessibilityValueWithError:RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage) text:RCTNSStringFromString(newTextInputProps.text)];
+    [self _setAccessibilityValueWithError:newAccessibilityErrorMessage text:RCTNSStringFromString(newTextInputProps.text)];
   } 
 
   if (newTextInputProps.traits.enablesReturnKeyAutomatically !=
@@ -258,7 +258,7 @@ using namespace facebook::react;
 {
   [super finalizeUpdates:updateMask];
   if (_triggerAccessibilityAnnouncement) {
-    [self announceForAccessibility:self.accessibilityElement.accessibilityValue];
+    [self announceForAccessibility:_backedTextInputView.accessibilityValue];
     _triggerAccessibilityAnnouncement = NO;
   }
 }
@@ -622,8 +622,8 @@ using namespace facebook::react;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
 
-  if (_triggerAccessibilityAnnouncement && [self.accessibilityElement.accessibilityValue length] != 0) {
-    [self announceForAccessibility:self.accessibilityElement.accessibilityValue];
+  if (_triggerAccessibilityAnnouncement && [_backedTextInputView.accessibilityValue length] != 0) {
+    [self announceForAccessibility:_backedTextInputView.accessibilityValue];
     _triggerAccessibilityAnnouncement = NO;
     _skipNextAccessibilityAnnouncement = YES;
   } else if (_skipNextAccessibilityAnnouncement) {
