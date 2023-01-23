@@ -45,6 +45,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollEventThrottle;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.HasSmoothScroll;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
@@ -54,11 +55,14 @@ import java.util.List;
 /** Similar to {@link ReactScrollView} but only supports horizontal scrolling. */
 public class ReactHorizontalScrollView extends HorizontalScrollView
     implements ReactClippingViewGroup,
+        ViewGroup.OnHierarchyChangeListener,
+        View.OnLayoutChangeListener,
         FabricViewStateManager.HasFabricViewStateManager,
         ReactOverflowViewWithInset,
         HasScrollState,
         HasFlingAnimator,
-        HasScrollEventThrottle {
+        HasScrollEventThrottle,
+        HasSmoothScroll {
 
   private static boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;
   private static String TAG = ReactHorizontalScrollView.class.getSimpleName();
@@ -107,6 +111,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private long mLastScrollDispatchTime = 0;
   private int mScrollEventThrottle = 0;
+  private @Nullable View mContentView;
+  private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
 
   private final Rect mTempRect = new Rect();
 
@@ -127,6 +133,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
             I18nUtil.getInstance().isRTL(context)
                 ? ViewCompat.LAYOUT_DIRECTION_RTL
                 : ViewCompat.LAYOUT_DIRECTION_LTR);
+
+    setOnHierarchyChangeListener(this);
   }
 
   public boolean getScrollEnabled() {
@@ -241,6 +249,20 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   public void setOverflow(String overflow) {
     mOverflow = overflow;
     invalidate();
+  }
+
+  public void setMaintainVisibleContentPosition(
+      @Nullable MaintainVisibleScrollPositionHelper.Config config) {
+    if (config != null && mMaintainVisibleContentPositionHelper == null) {
+      mMaintainVisibleContentPositionHelper = new MaintainVisibleScrollPositionHelper(this, true);
+      mMaintainVisibleContentPositionHelper.start();
+    } else if (config == null && mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.stop();
+      mMaintainVisibleContentPositionHelper = null;
+    }
+    if (mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.setConfig(config);
+    }
   }
 
   @Override
@@ -635,6 +657,17 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     if (mRemoveClippedSubviews) {
       updateClippingRect();
     }
+    if (mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.start();
+    }
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    if (mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.stop();
+    }
   }
 
   @Override
@@ -712,6 +745,18 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
+  }
+
+  @Override
+  public void onChildViewAdded(View parent, View child) {
+    mContentView = child;
+    mContentView.addOnLayoutChangeListener(this);
+  }
+
+  @Override
+  public void onChildViewRemoved(View parent, View child) {
+    mContentView.removeOnLayoutChangeListener(this);
+    mContentView = null;
   }
 
   private void enableFpsListener() {
@@ -1234,6 +1279,26 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     } else {
       pendingContentOffsetX = x;
       pendingContentOffsetY = y;
+    }
+  }
+
+  @Override
+  public void onLayoutChange(
+      View v,
+      int left,
+      int top,
+      int right,
+      int bottom,
+      int oldLeft,
+      int oldTop,
+      int oldRight,
+      int oldBottom) {
+    if (mContentView == null) {
+      return;
+    }
+
+    if (mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.updateScrollPosition();
     }
   }
 
