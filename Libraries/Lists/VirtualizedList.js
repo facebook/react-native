@@ -55,33 +55,8 @@ export type {RenderItemProps, RenderItemType, Separators};
 
 const ON_END_REACHED_EPSILON = 0.001;
 
-<<<<<<< HEAD
-export type RenderItemProps<ItemT> = {
-  item: ItemT,
-  index: number,
-  isSelected: ?boolean, // [macOS]
-  separators: Separators,
-  ...
-};
-
-export type RenderItemType<ItemT> = (
-  info: RenderItemProps<ItemT>,
-) => React.Node;
-||||||| 49f3f47b1e9
-export type RenderItemProps<ItemT> = {
-  item: ItemT,
-  index: number,
-  separators: Separators,
-  ...
-};
-
-export type RenderItemType<ItemT> = (
-  info: RenderItemProps<ItemT>,
-) => React.Node;
-=======
 let _usedIndexForKey = false;
 let _keylessItemComponentName: string = '';
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 
 type ViewabilityHelperCallbackTuple = {
   viewabilityHelper: ViewabilityHelper,
@@ -93,546 +68,10 @@ type ViewabilityHelperCallbackTuple = {
   ...
 };
 
-<<<<<<< HEAD
-// [macOS
-export type SelectedRowIndexPathType = {
-  sectionIndex: number,
-  rowIndex: number,
-}; // macOS]
-
-type RequiredProps = {|
-  /**
-   * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
-   * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
-   */
-  data?: any,
-  /**
-   * A generic accessor for extracting an item from any sort of data blob.
-   */
-  getItem: (data: any, index: number) => ?Item,
-  /**
-   * Determines how many items are in the data blob.
-   */
-  getItemCount: (data: any) => number,
-|};
-type OptionalProps = {|
-  renderItem?: ?RenderItemType<Item>,
-  /**
-   * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
-   * implementation, but with a significant perf hit.
-   */
-  debug?: ?boolean,
-  /**
-   * DEPRECATED: Virtualization provides significant performance and memory optimizations, but fully
-   * unmounts react instances that are outside of the render window. You should only need to disable
-   * this for debugging purposes. Defaults to false.
-   */
-  disableVirtualization?: ?boolean,
-  // [macOS
-  /**
-   * Allows you to 'select' a row using arrow keys. The selected row will have the prop `isSelected`
-   * passed in as true to it's renderItem / ListItemComponent. You can also imperatively select a row
-   * using the `selectRowAtIndex` method. You can set the initially selected row using the
-   * `initialSelectedIndex` prop.
-   * Keyboard Behavior:
-   * - ArrowUp: Select row above current selected row
-   * - ArrowDown: Select row below current selected row
-   * - Option+ArrowUp: Select the first row
-   * - Opton+ArrowDown: Select the last 'realized' row
-   * - Home: Scroll to top of list
-   * - End: Scroll to end of list
-   *
-   * @platform macos
-   */
-  enableSelectionOnKeyPress?: ?boolean,
-  // macOS]
-  /**
-   * A marker property for telling the list to re-render (since it implements `PureComponent`). If
-   * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
-   * `data` prop, stick it here and treat it immutably.
-   */
-  extraData?: any,
-  // e.g. height, y
-  getItemLayout?: (
-    data: any,
-    index: number,
-  ) => {
-    length: number,
-    offset: number,
-    index: number,
-    ...
-  },
-  horizontal?: ?boolean,
-  /**
-   * How many items to render in the initial batch. This should be enough to fill the screen but not
-   * much more. Note these items will never be unmounted as part of the windowed rendering in order
-   * to improve perceived performance of scroll-to-top actions.
-   */
-  initialNumToRender?: ?number,
-  /**
-   * Instead of starting at the top with the first item, start at `initialScrollIndex`. This
-   * disables the "scroll to top" optimization that keeps the first `initialNumToRender` items
-   * always rendered and immediately renders the items starting at this initial index. Requires
-   * `getItemLayout` to be implemented.
-   */
-  initialScrollIndex?: ?number,
-  // [macOS
-  /**
-   * The initially selected row, if `enableSelectionOnKeyPress` is set.
-   */
-  initialSelectedIndex?: ?number,
-  // macOS]
-  /**
-   * Reverses the direction of scroll. Uses scale transforms of -1.
-   */
-  inverted?: ?boolean,
-  keyExtractor?: ?(item: Item, index: number) => string,
-  /**
-   * Each cell is rendered using this element. Can be a React Component Class,
-   * or a render function. Defaults to using View.
-   */
-  CellRendererComponent?: ?React.ComponentType<any>,
-  /**
-   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
-   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
-   * which will update the `highlighted` prop, but you can also add custom props with
-   * `separators.updateProps`.
-   */
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
-  /**
-   * Takes an item from `data` and renders it into the list. Example usage:
-   *
-   *     <FlatList
-   *       ItemSeparatorComponent={Platform.OS !== 'android' && ({highlighted}) => (
-   *         <View style={[style.separator, highlighted && {marginLeft: 0}]} />
-   *       )}
-   *       data={[{title: 'Title Text', key: 'item1'}]}
-   *       ListItemComponent={({item, separators}) => (
-   *         <TouchableHighlight
-   *           onPress={() => this._onPress(item)}
-   *           onShowUnderlay={separators.highlight}
-   *           onHideUnderlay={separators.unhighlight}>
-   *           <View style={{backgroundColor: 'white'}}>
-   *             <Text>{item.title}</Text>
-   *           </View>
-   *         </TouchableHighlight>
-   *       )}
-   *     />
-   *
-   * Provides additional metadata like `index` if you need it, as well as a more generic
-   * `separators.updateProps` function which let's you set whatever props you want to change the
-   * rendering of either the leading separator or trailing separator in case the more common
-   * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
-   * your use-case.
-   */
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered when the list is empty. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListEmptyComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Styling for internal View for ListFooterComponent
-   */
-  ListFooterComponentStyle?: ViewStyleProp,
-  /**
-   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Styling for internal View for ListHeaderComponent
-   */
-  ListHeaderComponentStyle?: ViewStyleProp,
-  /**
-   * A unique identifier for this list. If there are multiple VirtualizedLists at the same level of
-   * nesting within another VirtualizedList, this key is necessary for virtualization to
-   * work properly.
-   */
-  listKey?: string,
-  /**
-   * The maximum number of items to render in each incremental render batch. The more rendered at
-   * once, the better the fill rate, but responsiveness may suffer because rendering content may
-   * interfere with responding to button taps or other interactions.
-   */
-  maxToRenderPerBatch?: ?number,
-  /**
-   * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
-   * content.
-   */
-  onEndReached?: ?(info: {distanceFromEnd: number, ...}) => void,
-  /**
-   * How far from the end (in units of visible length of the list) the bottom edge of the
-   * list must be from the end of the content to trigger the `onEndReached` callback.
-   * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
-   * within half the visible length of the list.
-   */
-  onEndReachedThreshold?: ?number,
-  /**
-   * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
-   * sure to also set the `refreshing` prop correctly.
-   */
-  onRefresh?: ?() => void,
-  /**
-   * Used to handle failures when scrolling to an index that has not been measured yet. Recommended
-   * action is to either compute your own offset and `scrollTo` it, or scroll as far as possible and
-   * then try again after more items have been rendered.
-   */
-  onScrollToIndexFailed?: ?(info: {
-    index: number,
-    highestMeasuredFrameIndex: number,
-    averageItemLength: number,
-    ...
-  }) => void,
-  /**
-   * If provided, will be invoked whenever the selection on the list changes. Make sure to set
-   * the property enableSelectionOnKeyPress to true to change selection via keyboard (macOS).
-   *
-   * @platform macos
-   */
-  onSelectionChanged?: ?(info: {
-    previousSelection: number,
-    newSelection: number,
-    item: ?Item,
-  }) => void, // [macOS]
-  /**
-   * If provided, called when 'Enter' key is pressed on an item.
-   *
-   * @platform macos
-   */
-  onSelectionEntered?: ?(item: ?Item) => void, // [macOS]
-
-  sectionIndex?: number, // [macOS]
-  rowIndex?: number, // [macOS]
-
-  /**
-   * Called when the viewability of rows changes, as defined by the
-   * `viewabilityConfig` prop.
-   */
-  onViewableItemsChanged?: ?(info: {
-    viewableItems: Array<ViewToken>,
-    changed: Array<ViewToken>,
-    ...
-  }) => void,
-  persistentScrollbar?: ?boolean,
-  /**
-   * Set this when offset is needed for the loading indicator to show correctly.
-   */
-  progressViewOffset?: number,
-  /**
-   * A custom refresh control element. When set, it overrides the default
-   * <RefreshControl> component built internally. The onRefresh and refreshing
-   * props are also ignored. Only works for vertical VirtualizedList.
-   */
-  refreshControl?: ?React.Element<any>,
-  /**
-   * Set this true while waiting for new data from a refresh.
-   */
-  refreshing?: ?boolean,
-  /**
-   * Note: may have bugs (missing content) in some circumstances - use at your own risk.
-   *
-   * This may improve scroll performance for large lists.
-   */
-  removeClippedSubviews?: boolean,
-  /**
-   * Render a custom scroll component, e.g. with a differently styled `RefreshControl`.
-   */
-  renderScrollComponent?: (props: Object) => React.Element<any>,
-  /**
-   * Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
-   * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
-   */
-  updateCellsBatchingPeriod?: ?number,
-  /**
-   * See `ViewabilityHelper` for flow type and further documentation.
-   */
-  viewabilityConfig?: ViewabilityConfig,
-  /**
-   * List of ViewabilityConfig/onViewableItemsChanged pairs. A specific onViewableItemsChanged
-   * will be called when its corresponding ViewabilityConfig's conditions are met.
-   */
-  viewabilityConfigCallbackPairs?: Array<ViewabilityConfigCallbackPair>,
-  /**
-   * Determines the maximum number of items rendered outside of the visible area, in units of
-   * visible lengths. So if your list fills the screen, then `windowSize={21}` (the default) will
-   * render the visible screen area plus up to 10 screens above and 10 below the viewport. Reducing
-   * this number will reduce memory consumption and may improve performance, but will increase the
-   * chance that fast scrolling may reveal momentary blank areas of unrendered content.
-   */
-  windowSize?: ?number,
-  /**
-   * The legacy implementation is no longer supported.
-   */
-  legacyImplementation?: empty,
-|};
-
-type Props = {|
-  ...React.ElementConfig<typeof ScrollView>,
-  ...RequiredProps,
-  ...OptionalProps,
-|};
-
-let _usedIndexForKey = false;
-let _keylessItemComponentName: string = '';
-
-||||||| 49f3f47b1e9
-type RequiredProps = {|
-  /**
-   * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
-   * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
-   */
-  data?: any,
-  /**
-   * A generic accessor for extracting an item from any sort of data blob.
-   */
-  getItem: (data: any, index: number) => ?Item,
-  /**
-   * Determines how many items are in the data blob.
-   */
-  getItemCount: (data: any) => number,
-|};
-type OptionalProps = {|
-  renderItem?: ?RenderItemType<Item>,
-  /**
-   * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
-   * implementation, but with a significant perf hit.
-   */
-  debug?: ?boolean,
-  /**
-   * DEPRECATED: Virtualization provides significant performance and memory optimizations, but fully
-   * unmounts react instances that are outside of the render window. You should only need to disable
-   * this for debugging purposes. Defaults to false.
-   */
-  disableVirtualization?: ?boolean,
-  /**
-   * A marker property for telling the list to re-render (since it implements `PureComponent`). If
-   * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
-   * `data` prop, stick it here and treat it immutably.
-   */
-  extraData?: any,
-  // e.g. height, y
-  getItemLayout?: (
-    data: any,
-    index: number,
-  ) => {
-    length: number,
-    offset: number,
-    index: number,
-    ...
-  },
-  horizontal?: ?boolean,
-  /**
-   * How many items to render in the initial batch. This should be enough to fill the screen but not
-   * much more. Note these items will never be unmounted as part of the windowed rendering in order
-   * to improve perceived performance of scroll-to-top actions.
-   */
-  initialNumToRender?: ?number,
-  /**
-   * Instead of starting at the top with the first item, start at `initialScrollIndex`. This
-   * disables the "scroll to top" optimization that keeps the first `initialNumToRender` items
-   * always rendered and immediately renders the items starting at this initial index. Requires
-   * `getItemLayout` to be implemented.
-   */
-  initialScrollIndex?: ?number,
-  /**
-   * Reverses the direction of scroll. Uses scale transforms of -1.
-   */
-  inverted?: ?boolean,
-  keyExtractor?: ?(item: Item, index: number) => string,
-  /**
-   * Each cell is rendered using this element. Can be a React Component Class,
-   * or a render function. Defaults to using View.
-   */
-  CellRendererComponent?: ?React.ComponentType<any>,
-  /**
-   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
-   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
-   * which will update the `highlighted` prop, but you can also add custom props with
-   * `separators.updateProps`.
-   */
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
-  /**
-   * Takes an item from `data` and renders it into the list. Example usage:
-   *
-   *     <FlatList
-   *       ItemSeparatorComponent={Platform.OS !== 'android' && ({highlighted}) => (
-   *         <View style={[style.separator, highlighted && {marginLeft: 0}]} />
-   *       )}
-   *       data={[{title: 'Title Text', key: 'item1'}]}
-   *       ListItemComponent={({item, separators}) => (
-   *         <TouchableHighlight
-   *           onPress={() => this._onPress(item)}
-   *           onShowUnderlay={separators.highlight}
-   *           onHideUnderlay={separators.unhighlight}>
-   *           <View style={{backgroundColor: 'white'}}>
-   *             <Text>{item.title}</Text>
-   *           </View>
-   *         </TouchableHighlight>
-   *       )}
-   *     />
-   *
-   * Provides additional metadata like `index` if you need it, as well as a more generic
-   * `separators.updateProps` function which let's you set whatever props you want to change the
-   * rendering of either the leading separator or trailing separator in case the more common
-   * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
-   * your use-case.
-   */
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered when the list is empty. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListEmptyComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Styling for internal View for ListFooterComponent
-   */
-  ListFooterComponentStyle?: ViewStyleProp,
-  /**
-   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Styling for internal View for ListHeaderComponent
-   */
-  ListHeaderComponentStyle?: ViewStyleProp,
-  /**
-   * A unique identifier for this list. If there are multiple VirtualizedLists at the same level of
-   * nesting within another VirtualizedList, this key is necessary for virtualization to
-   * work properly.
-   */
-  listKey?: string,
-  /**
-   * The maximum number of items to render in each incremental render batch. The more rendered at
-   * once, the better the fill rate, but responsiveness may suffer because rendering content may
-   * interfere with responding to button taps or other interactions.
-   */
-  maxToRenderPerBatch?: ?number,
-  /**
-   * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
-   * content.
-   */
-  onEndReached?: ?(info: {distanceFromEnd: number, ...}) => void,
-  /**
-   * How far from the end (in units of visible length of the list) the bottom edge of the
-   * list must be from the end of the content to trigger the `onEndReached` callback.
-   * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
-   * within half the visible length of the list.
-   */
-  onEndReachedThreshold?: ?number,
-  /**
-   * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
-   * sure to also set the `refreshing` prop correctly.
-   */
-  onRefresh?: ?() => void,
-  /**
-   * Used to handle failures when scrolling to an index that has not been measured yet. Recommended
-   * action is to either compute your own offset and `scrollTo` it, or scroll as far as possible and
-   * then try again after more items have been rendered.
-   */
-  onScrollToIndexFailed?: ?(info: {
-    index: number,
-    highestMeasuredFrameIndex: number,
-    averageItemLength: number,
-    ...
-  }) => void,
-  /**
-   * Called when the viewability of rows changes, as defined by the
-   * `viewabilityConfig` prop.
-   */
-  onViewableItemsChanged?: ?(info: {
-    viewableItems: Array<ViewToken>,
-    changed: Array<ViewToken>,
-    ...
-  }) => void,
-  persistentScrollbar?: ?boolean,
-  /**
-   * Set this when offset is needed for the loading indicator to show correctly.
-   */
-  progressViewOffset?: number,
-  /**
-   * A custom refresh control element. When set, it overrides the default
-   * <RefreshControl> component built internally. The onRefresh and refreshing
-   * props are also ignored. Only works for vertical VirtualizedList.
-   */
-  refreshControl?: ?React.Element<any>,
-  /**
-   * Set this true while waiting for new data from a refresh.
-   */
-  refreshing?: ?boolean,
-  /**
-   * Note: may have bugs (missing content) in some circumstances - use at your own risk.
-   *
-   * This may improve scroll performance for large lists.
-   */
-  removeClippedSubviews?: boolean,
-  /**
-   * Render a custom scroll component, e.g. with a differently styled `RefreshControl`.
-   */
-  renderScrollComponent?: (props: Object) => React.Element<any>,
-  /**
-   * Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
-   * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
-   */
-  updateCellsBatchingPeriod?: ?number,
-  /**
-   * See `ViewabilityHelper` for flow type and further documentation.
-   */
-  viewabilityConfig?: ViewabilityConfig,
-  /**
-   * List of ViewabilityConfig/onViewableItemsChanged pairs. A specific onViewableItemsChanged
-   * will be called when its corresponding ViewabilityConfig's conditions are met.
-   */
-  viewabilityConfigCallbackPairs?: Array<ViewabilityConfigCallbackPair>,
-  /**
-   * Determines the maximum number of items rendered outside of the visible area, in units of
-   * visible lengths. So if your list fills the screen, then `windowSize={21}` (the default) will
-   * render the visible screen area plus up to 10 screens above and 10 below the viewport. Reducing
-   * this number will reduce memory consumption and may improve performance, but will increase the
-   * chance that fast scrolling may reveal momentary blank areas of unrendered content.
-   */
-  windowSize?: ?number,
-  /**
-   * The legacy implementation is no longer supported.
-   */
-  legacyImplementation?: empty,
-|};
-
-type Props = {|
-  ...React.ElementConfig<typeof ScrollView>,
-  ...RequiredProps,
-  ...OptionalProps,
-|};
-
-let _usedIndexForKey = false;
-let _keylessItemComponentName: string = '';
-
-=======
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 type State = {
-<<<<<<< HEAD
-  first: number,
-  last: number,
-  selectedRowIndex: number, // [macOS]
-  ...
-||||||| 49f3f47b1e9
-  first: number,
-  last: number,
-=======
   renderMask: CellRenderMask,
   cellsAroundViewport: {first: number, last: number},
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
+  selectedRowIndex: number, // [macOS]
 };
 
 /**
@@ -1258,27 +697,13 @@ export default class VirtualizedList extends StateSafePureComponent<
     );
 
     return {
-<<<<<<< HEAD
-      first: Math.max(
-        0,
-        Math.min(prevState.first, getItemCount(data) - 1 - maxToRenderPerBatch),
-      ),
-      last: Math.max(0, Math.min(prevState.last, getItemCount(data) - 1)),
+      cellsAroundViewport: constrainedCells,
+      renderMask: VirtualizedList._createRenderMask(newProps, constrainedCells),
       // [macOS
       selectedRowIndex: Math.max(
         -1, // Used to indicate no row is selected
         Math.min(prevState.selectedRowIndex, getItemCount(data)),
       ), // macOS]
-||||||| 49f3f47b1e9
-      first: Math.max(
-        0,
-        Math.min(prevState.first, getItemCount(data) - 1 - maxToRenderPerBatch),
-      ),
-      last: Math.max(0, Math.min(prevState.last, getItemCount(data) - 1)),
-=======
-      cellsAroundViewport: constrainedCells,
-      renderMask: VirtualizedList._createRenderMask(newProps, constrainedCells),
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
     };
   }
 
@@ -1421,8 +846,6 @@ export default class VirtualizedList extends StateSafePureComponent<
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
     const {data, horizontal} = this.props;
-<<<<<<< HEAD
-    const isVirtualizationDisabled = this._isVirtualizationDisabled();
     // macOS natively supports inverted lists, thus not needing an inversion style
     const inversionStyle =
       this.props.inverted && Platform.OS !== 'macos' // [macOS]
@@ -1430,23 +853,7 @@ export default class VirtualizedList extends StateSafePureComponent<
           ? styles.horizontallyInverted
           : styles.verticallyInverted
         : null;
-    const cells = [];
-||||||| 49f3f47b1e9
-    const isVirtualizationDisabled = this._isVirtualizationDisabled();
-    const inversionStyle = this.props.inverted
-      ? horizontalOrDefault(this.props.horizontal)
-        ? styles.horizontallyInverted
-        : styles.verticallyInverted
-      : null;
-    const cells = [];
-=======
-    const inversionStyle = this.props.inverted
-      ? horizontalOrDefault(this.props.horizontal)
-        ? styles.horizontallyInverted
-        : styles.verticallyInverted
-      : null;
     const cells: Array<any | React.Node> = [];
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
 
@@ -1777,8 +1184,8 @@ export default class VirtualizedList extends StateSafePureComponent<
       this.props.onPreferredScrollerStyleDidChange;
     const invertedDidChange = this.props.onInvertedDidChange;
 
-    const isFirstRowSelected = this.state.selectedRowIndex === this.state.first;
-    const isLastRowSelected = this.state.selectedRowIndex === this.state.last;
+    const isFirstRowSelected = this.state.selectedRowIndex === this.state.cellsAroundViewport.first;
+    const isLastRowSelected = this.state.selectedRowIndex === this.state.cellsAroundViewport.last;
 
     // Don't pass in ArrowUp/ArrowDown at the top/bottom of the list so that keyboard event can bubble
     let _validKeysDown = ['Home', 'End'];
@@ -1794,6 +1201,7 @@ export default class VirtualizedList extends StateSafePureComponent<
       validKeysDown: _validKeysDown,
       onKeyDown: this._handleKeyDown,
     };
+    
     // macOS]
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
@@ -1832,38 +1240,22 @@ export default class VirtualizedList extends StateSafePureComponent<
         />
       );
     } else {
-<<<<<<< HEAD
-      return (
-        // $FlowFixMe Invalid prop usage
-        <ScrollView
-          // [macOS
-          {...(props.enableSelectionOnKeyPress && keyboardNavigationProps)}
-          onInvertedDidChange={invertedDidChange}
-          onPreferredScrollerStyleDidChange={
-            preferredScrollerStyleDidChangeHandler
-          } // macOS]
-          {...props}
-        />
-      );
-||||||| 49f3f47b1e9
-      // $FlowFixMe[prop-missing] Invalid prop usage
-      return <ScrollView {...props} />;
-=======
       // $FlowFixMe[prop-missing] Invalid prop usage
       // $FlowFixMe[incompatible-use]
-      return <ScrollView {...props} />;
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
+      return (
+        <ScrollView
+        // [macOS
+        {...(props.enableSelectionOnKeyPress && keyboardNavigationProps)}
+        onInvertedDidChange={invertedDidChange}
+        onPreferredScrollerStyleDidChange={
+          preferredScrollerStyleDidChangeHandler
+        } // macOS]
+        {...props}
+      />);
     }
   };
-<<<<<<< HEAD
-  _onCellLayout(e, cellKey, index) {
-||||||| 49f3f47b1e9
-
-  _onCellLayout(e, cellKey, index) {
-=======
 
   _onCellLayout = (e: LayoutEvent, cellKey: string, index: number): void => {
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
     const layout = e.nativeEvent.layout;
     const next = {
       offset: this._selectOffset(layout),
@@ -2010,7 +1402,6 @@ export default class VirtualizedList extends StateSafePureComponent<
     this._headerLength = this._selectLength(e.nativeEvent.layout);
   };
 
-<<<<<<< HEAD
   // [macOS
   _selectRowAtIndex = rowIndex => {
     const prevIndex = this.state.selectedRowIndex;
@@ -2038,7 +1429,7 @@ export default class VirtualizedList extends StateSafePureComponent<
   };
 
   _selectRowBelowIndex = rowIndex => {
-    const rowBelow = rowIndex < this.state.last ? rowIndex + 1 : rowIndex;
+    const rowBelow = rowIndex < this.state.cellsAroundViewport.last ? rowIndex + 1 : rowIndex;
     this._selectRowAtIndex(rowBelow);
   };
 
@@ -2067,7 +1458,7 @@ export default class VirtualizedList extends StateSafePureComponent<
       } else if (key === 'ArrowDown') {
         if (nativeEvent.altKey) {
           // Option+Down selects the last element
-          this._selectRowAtIndex(this.state.last);
+          this._selectRowAtIndex(this.state.cellsAroundViewport.last);
         } else {
           this._selectRowBelowIndex(selectedIndex);
         }
@@ -2087,10 +1478,7 @@ export default class VirtualizedList extends StateSafePureComponent<
   };
   // macOS]
 
-||||||| 49f3f47b1e9
-=======
   // $FlowFixMe[missing-local-annot]
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
   _renderDebugOverlay() {
     const normalize =
       this._scrollMetrics.visibleLength /
@@ -2609,469 +1997,6 @@ export default class VirtualizedList extends StateSafePureComponent<
   }
 }
 
-<<<<<<< HEAD
-type CellRendererProps = {
-  CellRendererComponent?: ?React.ComponentType<any>,
-  ItemSeparatorComponent: ?React.ComponentType<
-    any | {highlighted: boolean, leadingItem: ?Item},
-  >,
-  cellKey: string,
-  fillRateHelper: FillRateHelper,
-  horizontal: ?boolean,
-  index: number,
-  inversionStyle: ViewStyleProp,
-  isSelected: ?boolean, // [macOS]
-  item: Item,
-  // This is extracted by ScrollViewStickyHeader
-  onLayout: (event: Object) => void,
-  onUnmount: (cellKey: string) => void,
-  onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
-  parentProps: {
-    // e.g. height, y,
-    getItemLayout?: (
-      data: any,
-      index: number,
-    ) => {
-      length: number,
-      offset: number,
-      index: number,
-      ...
-    },
-    renderItem?: ?RenderItemType<Item>,
-    ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
-    ...
-  },
-  prevCellKey: ?string,
-  ...
-};
-
-type CellRendererState = {
-  separatorProps: $ReadOnly<{|
-    highlighted: boolean,
-    leadingItem: ?Item,
-  |}>,
-  ...
-};
-
-class CellRenderer extends React.Component<
-  CellRendererProps,
-  CellRendererState,
-> {
-  state = {
-    separatorProps: {
-      highlighted: false,
-      leadingItem: this.props.item,
-    },
-  };
-
-  static getDerivedStateFromProps(
-    props: CellRendererProps,
-    prevState: CellRendererState,
-  ): ?CellRendererState {
-    return {
-      separatorProps: {
-        ...prevState.separatorProps,
-        leadingItem: props.item,
-      },
-    };
-  }
-
-  // TODO: consider factoring separator stuff out of VirtualizedList into FlatList since it's not
-  // reused by SectionList and we can keep VirtualizedList simpler.
-  _separators = {
-    highlight: () => {
-      const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators([cellKey, prevCellKey], {
-        highlighted: true,
-      });
-    },
-    unhighlight: () => {
-      const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators([cellKey, prevCellKey], {
-        highlighted: false,
-      });
-    },
-    updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
-      const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators(
-        [select === 'leading' ? prevCellKey : cellKey],
-        newProps,
-      );
-    },
-  };
-
-  updateSeparatorProps(newProps: Object) {
-    this.setState(state => ({
-      separatorProps: {...state.separatorProps, ...newProps},
-    }));
-  }
-
-  componentWillUnmount() {
-    this.props.onUnmount(this.props.cellKey);
-  }
-
-  _renderElement(
-    renderItem,
-    ListItemComponent,
-    item,
-    index,
-    isSelected, // [macOS]
-  ) {
-    if (renderItem && ListItemComponent) {
-      console.warn(
-        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
-          ' precedence over renderItem.',
-      );
-    }
-
-    if (ListItemComponent) {
-      /* $FlowFixMe[not-a-component] (>=0.108.0 site=react_native_fb) This
-       * comment suppresses an error found when Flow v0.108 was deployed. To
-       * see the error, delete this comment and run Flow. */
-      /* $FlowFixMe[incompatible-type-arg] (>=0.108.0 site=react_native_fb)
-       * This comment suppresses an error found when Flow v0.108 was deployed.
-       * To see the error, delete this comment and run Flow. */
-      return React.createElement(ListItemComponent, {
-        item,
-        index,
-        isSelected,
-        separators: this._separators,
-      });
-    }
-
-    if (renderItem) {
-      return renderItem({
-        item,
-        index,
-        isSelected, // [macOS]
-        separators: this._separators,
-      });
-    }
-
-    invariant(
-      false,
-      'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
-    );
-  }
-
-  render() {
-    const {
-      CellRendererComponent,
-      ItemSeparatorComponent,
-      fillRateHelper,
-      horizontal,
-      item,
-      index,
-      inversionStyle,
-      isSelected, // [macOS]
-      parentProps,
-    } = this.props;
-    const {renderItem, getItemLayout, ListItemComponent} = parentProps;
-    const element = this._renderElement(
-      renderItem,
-      ListItemComponent,
-      item,
-      index,
-      isSelected, // [macOS]
-    );
-
-    const onLayout =
-      /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
-       * suppresses an error found when Flow v0.68 was deployed. To see the
-       * error delete this comment and run Flow. */
-      getItemLayout && !parentProps.debug && !fillRateHelper.enabled()
-        ? undefined
-        : this.props.onLayout;
-    // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
-    // called explicitly by `ScrollViewStickyHeader`.
-    const itemSeparator = ItemSeparatorComponent && (
-      <ItemSeparatorComponent {...this.state.separatorProps} />
-    );
-    const cellStyle = inversionStyle
-      ? horizontal
-        ? [styles.rowReverse, inversionStyle]
-        : [styles.columnReverse, inversionStyle]
-      : horizontal
-      ? [styles.row, inversionStyle]
-      : inversionStyle;
-    const result = !CellRendererComponent ? (
-      /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
-        This comment suppresses an error found when Flow v0.89 was deployed. *
-        To see the error, delete this comment and run Flow. */
-      <View style={cellStyle} onLayout={onLayout}>
-        {element}
-        {itemSeparator}
-      </View>
-    ) : (
-      <CellRendererComponent
-        {...this.props}
-        style={cellStyle}
-        onLayout={onLayout}>
-        {element}
-        {itemSeparator}
-      </CellRendererComponent>
-    );
-
-    return (
-      <VirtualizedListCellContextProvider cellKey={this.props.cellKey}>
-        {result}
-      </VirtualizedListCellContextProvider>
-    );
-  }
-}
-
-function describeNestedLists(childList: {
-  +cellKey: string,
-  +key: string,
-  +ref: VirtualizedList,
-  +parentDebugInfo: ListDebugInfo,
-  +horizontal: boolean,
-  ...
-}) {
-  let trace =
-    'VirtualizedList trace:\n' +
-    `  Child (${childList.horizontal ? 'horizontal' : 'vertical'}):\n` +
-    `    listKey: ${childList.key}\n` +
-    `    cellKey: ${childList.cellKey}`;
-
-  let debugInfo = childList.parentDebugInfo;
-  while (debugInfo) {
-    trace +=
-      `\n  Parent (${debugInfo.horizontal ? 'horizontal' : 'vertical'}):\n` +
-      `    listKey: ${debugInfo.listKey}\n` +
-      `    cellKey: ${debugInfo.cellKey}`;
-    debugInfo = debugInfo.parent;
-  }
-  return trace;
-}
-
-||||||| 49f3f47b1e9
-type CellRendererProps = {
-  CellRendererComponent?: ?React.ComponentType<any>,
-  ItemSeparatorComponent: ?React.ComponentType<
-    any | {highlighted: boolean, leadingItem: ?Item},
-  >,
-  cellKey: string,
-  fillRateHelper: FillRateHelper,
-  horizontal: ?boolean,
-  index: number,
-  inversionStyle: ViewStyleProp,
-  item: Item,
-  // This is extracted by ScrollViewStickyHeader
-  onLayout: (event: Object) => void,
-  onUnmount: (cellKey: string) => void,
-  onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
-  parentProps: {
-    // e.g. height, y,
-    getItemLayout?: (
-      data: any,
-      index: number,
-    ) => {
-      length: number,
-      offset: number,
-      index: number,
-      ...
-    },
-    renderItem?: ?RenderItemType<Item>,
-    ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
-    ...
-  },
-  prevCellKey: ?string,
-  ...
-};
-
-type CellRendererState = {
-  separatorProps: $ReadOnly<{|
-    highlighted: boolean,
-    leadingItem: ?Item,
-  |}>,
-  ...
-};
-
-class CellRenderer extends React.Component<
-  CellRendererProps,
-  CellRendererState,
-> {
-  state = {
-    separatorProps: {
-      highlighted: false,
-      leadingItem: this.props.item,
-    },
-  };
-
-  static getDerivedStateFromProps(
-    props: CellRendererProps,
-    prevState: CellRendererState,
-  ): ?CellRendererState {
-    return {
-      separatorProps: {
-        ...prevState.separatorProps,
-        leadingItem: props.item,
-      },
-    };
-  }
-
-  // TODO: consider factoring separator stuff out of VirtualizedList into FlatList since it's not
-  // reused by SectionList and we can keep VirtualizedList simpler.
-  _separators = {
-    highlight: () => {
-      const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators([cellKey, prevCellKey], {
-        highlighted: true,
-      });
-    },
-    unhighlight: () => {
-      const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators([cellKey, prevCellKey], {
-        highlighted: false,
-      });
-    },
-    updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
-      const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators(
-        [select === 'leading' ? prevCellKey : cellKey],
-        newProps,
-      );
-    },
-  };
-
-  updateSeparatorProps(newProps: Object) {
-    this.setState(state => ({
-      separatorProps: {...state.separatorProps, ...newProps},
-    }));
-  }
-
-  componentWillUnmount() {
-    this.props.onUnmount(this.props.cellKey);
-  }
-
-  _renderElement(renderItem, ListItemComponent, item, index) {
-    if (renderItem && ListItemComponent) {
-      console.warn(
-        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
-          ' precedence over renderItem.',
-      );
-    }
-
-    if (ListItemComponent) {
-      /* $FlowFixMe[not-a-component] (>=0.108.0 site=react_native_fb) This
-       * comment suppresses an error found when Flow v0.108 was deployed. To
-       * see the error, delete this comment and run Flow. */
-      /* $FlowFixMe[incompatible-type-arg] (>=0.108.0 site=react_native_fb)
-       * This comment suppresses an error found when Flow v0.108 was deployed.
-       * To see the error, delete this comment and run Flow. */
-      return React.createElement(ListItemComponent, {
-        item,
-        index,
-        separators: this._separators,
-      });
-    }
-
-    if (renderItem) {
-      return renderItem({
-        item,
-        index,
-        separators: this._separators,
-      });
-    }
-
-    invariant(
-      false,
-      'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
-    );
-  }
-
-  render() {
-    const {
-      CellRendererComponent,
-      ItemSeparatorComponent,
-      fillRateHelper,
-      horizontal,
-      item,
-      index,
-      inversionStyle,
-      parentProps,
-    } = this.props;
-    const {renderItem, getItemLayout, ListItemComponent} = parentProps;
-    const element = this._renderElement(
-      renderItem,
-      ListItemComponent,
-      item,
-      index,
-    );
-
-    const onLayout =
-      /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
-       * suppresses an error found when Flow v0.68 was deployed. To see the
-       * error delete this comment and run Flow. */
-      getItemLayout && !parentProps.debug && !fillRateHelper.enabled()
-        ? undefined
-        : this.props.onLayout;
-    // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
-    // called explicitly by `ScrollViewStickyHeader`.
-    const itemSeparator = ItemSeparatorComponent && (
-      <ItemSeparatorComponent {...this.state.separatorProps} />
-    );
-    const cellStyle = inversionStyle
-      ? horizontal
-        ? [styles.rowReverse, inversionStyle]
-        : [styles.columnReverse, inversionStyle]
-      : horizontal
-      ? [styles.row, inversionStyle]
-      : inversionStyle;
-    const result = !CellRendererComponent ? (
-      /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
-        This comment suppresses an error found when Flow v0.89 was deployed. *
-        To see the error, delete this comment and run Flow. */
-      <View style={cellStyle} onLayout={onLayout}>
-        {element}
-        {itemSeparator}
-      </View>
-    ) : (
-      <CellRendererComponent
-        {...this.props}
-        style={cellStyle}
-        onLayout={onLayout}>
-        {element}
-        {itemSeparator}
-      </CellRendererComponent>
-    );
-
-    return (
-      <VirtualizedListCellContextProvider cellKey={this.props.cellKey}>
-        {result}
-      </VirtualizedListCellContextProvider>
-    );
-  }
-}
-
-function describeNestedLists(childList: {
-  +cellKey: string,
-  +key: string,
-  +ref: VirtualizedList,
-  +parentDebugInfo: ListDebugInfo,
-  +horizontal: boolean,
-  ...
-}) {
-  let trace =
-    'VirtualizedList trace:\n' +
-    `  Child (${childList.horizontal ? 'horizontal' : 'vertical'}):\n` +
-    `    listKey: ${childList.key}\n` +
-    `    cellKey: ${childList.cellKey}`;
-
-  let debugInfo = childList.parentDebugInfo;
-  while (debugInfo) {
-    trace +=
-      `\n  Parent (${debugInfo.horizontal ? 'horizontal' : 'vertical'}):\n` +
-      `    listKey: ${debugInfo.listKey}\n` +
-      `    cellKey: ${debugInfo.cellKey}`;
-    debugInfo = debugInfo.parent;
-  }
-  return trace;
-}
-
-=======
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 const styles = StyleSheet.create({
   verticallyInverted: {
     transform: [{scaleY: -1}],

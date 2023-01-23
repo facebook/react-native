@@ -8,23 +8,10 @@
  * @format
  */
 
-<<<<<<< HEAD
-const Platform = require('../Utilities/Platform'); // [macOS]
-import invariant from 'invariant';
-||||||| 49f3f47b1e9
-import invariant from 'invariant';
-=======
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 import type {ViewToken} from './ViewabilityHelper';
-<<<<<<< HEAD
-import type {SelectedRowIndexPathType} from './VirtualizedList'; // [macOS]
-import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
-||||||| 49f3f47b1e9
-=======
 
 import View from '../Components/View/View';
 import VirtualizedList from './VirtualizedList';
->>>>>>> 890805db9cc639846c93edc0e13eddbf67dbc7af
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
@@ -45,7 +32,6 @@ export type SectionBase<SectionItemT> = {
   renderItem?: ?(info: {
     item: SectionItemT,
     index: number,
-    // isSelected?: boolean, // [macOS]
     section: SectionBase<SectionItemT>,
     separators: {
       highlight: () => void,
@@ -65,21 +51,12 @@ type RequiredProps<SectionT: SectionBase<any>> = {|
 |};
 
 type OptionalProps<SectionT: SectionBase<any>> = {|
-  // [macOS
-  /**
-   * Handles key down events and updates selection based on the key event
-   *
-   * @platform macos
-   */
-  enableSelectionOnKeyPress?: ?boolean,
-  // macOS]
   /**
    * Default renderer for every item in every section.
    */
   renderItem?: (info: {
     item: Item,
     index: number,
-    isSelected?: boolean, // [macOS]
     section: SectionT,
     separators: {
       highlight: () => void,
@@ -118,23 +95,6 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    */
   stickySectionHeadersEnabled?: boolean,
   onEndReached?: ?({distanceFromEnd: number, ...}) => void,
-  /**
-   * If provided, processes key press and mouse click events to update selection state
-   * and invokes the provided function to notify of selection state changes.
-   *
-   * @platform macos
-   */
-  onSelectionChanged?: ?(info: {
-    previousSelection: Object,
-    newSelection: Object,
-    item: ?Item,
-  }) => void, // [macOS]
-  /**
-   * If provided, called when 'Enter' key is pressed on an item.
-   *
-   * @platform macos
-   */
-  onSelectionEntered?: ?(item: ?Item) => void, // [macOS]
 |};
 
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
@@ -159,11 +119,7 @@ export type ScrollToLocationParamsType = {|
   viewPosition?: number,
 |};
 
-// [macOS]
-type State = {
-  selectedRowIndexPath: SelectedRowIndexPathType,
-  ...
-};
+type State = {childProps: VirtualizedListProps, ...};
 
 /**
  * Right now this just flattens everything into one list and uses VirtualizedList under the
@@ -200,14 +156,6 @@ class VirtualizedSectionList<
 
   getListRef(): ?React.ElementRef<typeof VirtualizedList> {
     return this._listRef;
-  }
-
-  // [macOS]
-  constructor(props: Props<SectionT>, context: Object) {
-    super(props, context);
-    this.state = {
-      selectedRowIndexPath: {sectionIndex: 0, rowIndex: -1},
-    };
   }
 
   render(): React.Node {
@@ -257,120 +205,10 @@ class VirtualizedSectionList<
             ? this._onViewableItemsChanged
             : undefined
         }
-        {...this.state.selectedRowIndexPath} // [macOS]
         ref={this._captureRef}
       />
     );
   }
-
-  // [macOS
-  _selectRowAboveIndexPath = rowIndexPath => {
-    let sectionIndex = rowIndexPath.sectionIndex;
-    if (sectionIndex >= this.props.sections.length) {
-      return rowIndexPath;
-    }
-
-    let row = rowIndexPath.rowIndex;
-    let rowAbove = row - 1;
-
-    if (rowAbove < 0) {
-      if (sectionIndex > 0) {
-        sectionIndex = sectionIndex - 1;
-        rowAbove = Math.max(
-          0,
-          this.props.sections[sectionIndex].data.length - 1,
-        );
-      } else {
-        rowAbove = row;
-      }
-    }
-    const nextIndexPath = {sectionIndex: sectionIndex, rowIndex: rowAbove};
-    this.setState(state => {
-      return {selectedRowIndexPath: nextIndexPath};
-    });
-    return nextIndexPath;
-  };
-
-  _selectRowBelowIndexPath = rowIndexPath => {
-    let sectionIndex = rowIndexPath.sectionIndex;
-    if (sectionIndex >= this.props.sections.length) {
-      return rowIndexPath;
-    }
-
-    const count = this.props.sections[sectionIndex].data.length;
-    let row = rowIndexPath.rowIndex;
-    let rowBelow = row + 1;
-
-    if (rowBelow > count - 1) {
-      if (sectionIndex < this.props.sections.length - 1) {
-        sectionIndex = sectionIndex + 1;
-        rowBelow = 0;
-      } else {
-        rowBelow = row;
-      }
-    }
-    const nextIndexPath = {sectionIndex: sectionIndex, rowIndex: rowBelow};
-    this.setState(state => {
-      return {selectedRowIndexPath: nextIndexPath};
-    });
-    return nextIndexPath;
-  };
-
-  _ensureItemAtIndexPathIsVisible = rowIndexPath => {
-    if (this._listRef) {
-      let index = rowIndexPath.rowIndex + 1;
-      for (let ii = 0; ii < rowIndexPath.sectionIndex; ii++) {
-        index += this.props.sections[ii].data.length + 2;
-      }
-      this._listRef.ensureItemAtIndexIsVisible(index);
-    }
-  };
-
-  _handleKeyDown = (e: KeyEvent) => {
-    if (Platform.OS === 'macos') {
-      if (e.defaultPrevented) {
-        return;
-      }
-
-      const event = e.nativeEvent;
-      const key = event.key;
-      let prevIndexPath = this.state.selectedRowIndexPath;
-      let nextIndexPath = null;
-      const sectionIndex = this.state.selectedRowIndexPath.sectionIndex;
-      const rowIndex = this.state.selectedRowIndexPath.rowIndex;
-
-      if (key === 'ArrowDown') {
-        nextIndexPath = this._selectRowBelowIndexPath(prevIndexPath);
-        this._ensureItemAtIndexPathIsVisible(nextIndexPath);
-
-        if (this.props.onSelectionChanged) {
-          const item = this.props.sections[sectionIndex].data[rowIndex];
-          this.props.onSelectionChanged({
-            previousSelection: prevIndexPath,
-            newSelection: nextIndexPath,
-            item: item,
-          });
-        }
-      } else if (key === 'ArrowUp') {
-        nextIndexPath = this._selectRowAboveIndexPath(prevIndexPath);
-        this._ensureItemAtIndexPathIsVisible(nextIndexPath);
-
-        if (this.props.onSelectionChanged) {
-          const item = this.props.sections[sectionIndex].data[rowIndex];
-          this.props.onSelectionChanged({
-            previousSelection: prevIndexPath,
-            newSelection: nextIndexPath,
-            item: item,
-          });
-        }
-      } else if (key === 'Enter') {
-        if (this.props.onSelectionEntered) {
-          const item = this.props.sections[sectionIndex].data[rowIndex];
-          this.props.onSelectionEntered(item);
-        }
-      }
-    }
-  }; // macOS]
 
   _getItem(
     props: Props<SectionT>,
@@ -503,24 +341,6 @@ class VirtualizedSectionList<
     }
   };
 
-  // [macOS
-  _isItemSelected = (item: Item): boolean => {
-    let isSelected = false;
-    if (this.state.selectedRowIndexPath) {
-      const selection = this.state.selectedRowIndexPath;
-      const sections = this.props.sections;
-      if (sections && selection.sectionIndex < sections.length) {
-        const section = sections[selection.sectionIndex];
-        if (selection.rowIndex < section.data.length) {
-          const selectedItem = section.data[selection.rowIndex];
-          isSelected = item === selectedItem;
-        }
-      }
-    }
-    return isSelected;
-  };
-  // macOS]
-
   _renderItem =
     (listItemCount: number): $FlowFixMe =>
     // eslint-disable-next-line react/no-unstable-nested-components
@@ -555,7 +375,6 @@ class VirtualizedSectionList<
             }
             cellKey={info.key}
             index={infoIndex}
-            isSelected={this._isItemSelected(item)} // [macOS]
             item={item}
             leadingItem={info.leadingItem}
             leadingSection={info.leadingSection}
@@ -656,7 +475,6 @@ type ItemWithSeparatorProps = $ReadOnly<{|
   cellKey: string,
   index: number,
   item: Item,
-  isSelected: boolean, // [macOS]
   setSelfHighlightCallback: (
     cellKey: string,
     updateFn: ?(boolean) => void,
@@ -684,7 +502,6 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
     setSelfUpdatePropsCallback,
     updatePropsFor,
     item,
-    isSelected, // [macOS]
     index,
     section,
     inverted,
@@ -759,7 +576,6 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   const element = props.renderItem({
     item,
     index,
-    isSelected, // [macOS]
     section,
     separators,
   });
