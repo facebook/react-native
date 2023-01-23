@@ -64,7 +64,6 @@ RCT_MULTI_ENUM_CONVERTER(
       @"tablist" : @(UIAccessibilityTraitNone),
       @"timer" : @(UIAccessibilityTraitNone),
       @"toolbar" : @(UIAccessibilityTraitNone),
-      @"grid" : @(UIAccessibilityTraitNone),
       @"pager" : @(UIAccessibilityTraitNone),
       @"scrollview" : @(UIAccessibilityTraitNone),
       @"horizontalscrollview" : @(UIAccessibilityTraitNone),
@@ -74,6 +73,7 @@ RCT_MULTI_ENUM_CONVERTER(
       @"slidingdrawer" : @(UIAccessibilityTraitNone),
       @"iconmenu" : @(UIAccessibilityTraitNone),
       @"list" : @(UIAccessibilityTraitNone),
+      @"grid" : @(UIAccessibilityTraitNone),
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
