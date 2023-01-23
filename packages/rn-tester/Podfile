@@ -5,14 +5,15 @@ platform :ios, min_ios_version_supported
 
 prepare_react_native_project!
 
-USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
 IN_CI = ENV['CI'] == 'true'
 
 @prefix_path = "../.."
 
+linkage = ENV['USE_FRAMEWORKS']
+USE_FRAMEWORKS = linkage != nil
 if USE_FRAMEWORKS
-  puts "Installing pods with use_frameworks!"
-  use_frameworks!
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
 end
 
 def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)

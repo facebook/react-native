@@ -145,7 +145,7 @@
     "ws": "^6.2.2"
   },
   "devDependencies": {
-    "flow-bin": "^0.196.3",
+    "flow-bin": "^0.198.1",
     "hermes-eslint": "0.8.0",
     "mock-fs": "^5.1.4",
     "react": "18.2.0",
