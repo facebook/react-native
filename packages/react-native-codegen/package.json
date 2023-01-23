@@ -41,5 +41,8 @@
     "mkdirp": "^0.5.1",
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2"
+  },
+  "peerDependencies": {
+    "@babel/preset-env": "^7.1.6"
   }
 }
