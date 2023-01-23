@@ -74,7 +74,6 @@ RCT_MULTI_ENUM_CONVERTER(
       @"slidingdrawer" : @(UIAccessibilityTraitNone),
       @"iconmenu" : @(UIAccessibilityTraitNone),
       @"list" : @(UIAccessibilityTraitNone),
-      @"grid" : @(UIAccessibilityTraitNone),
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
