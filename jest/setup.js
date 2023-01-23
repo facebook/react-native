@@ -25,7 +25,7 @@ global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
 global.window = global;
 
 global.requestAnimationFrame = function (callback) {
-  return setTimeout(() => callback(performance.now()), 0);
+  return setTimeout(() => callback(jest.now()), 0);
 };
 global.cancelAnimationFrame = function (id) {
   clearTimeout(id);
