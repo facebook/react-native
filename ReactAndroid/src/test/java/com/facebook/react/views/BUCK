@@ -4,6 +4,7 @@ rn_robolectric_test(
     name = "views",
     srcs = glob([
         "text/CustomLineHeightSpanTest.java",
+        "text/ReactAbsoluteSizeSpanTest.java",
         "image/*.java",
         "view/*.java",
     ]),

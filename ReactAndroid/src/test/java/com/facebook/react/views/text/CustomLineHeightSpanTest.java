@@ -8,40 +8,16 @@
 package com.facebook.react.views.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 
 import android.graphics.Paint;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.StaticLayout;
-import android.text.TextPaint;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.robolectric.RobolectricTestRunner;
-import org.w3c.dom.Text;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class CustomLineHeightSpanTest {
-
-  @Test
-  public void defaultTextAlignVerticalDoesNotChangeBaseline() {
-    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(15);
-    TextPaint tp = new TextPaint();
-    absoluteSizeSpan.updateDrawState(tp);
-    assertThat(tp.baselineShift).isEqualTo(0);
-  }
-
-  @Test
-  public void textAlignVerticalTopChangesBaseline() {
-    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(15, "top-child");
-    TextPaint tp = new TextPaint();
-    absoluteSizeSpan.updateSpan(10, 16);
-    absoluteSizeSpan.updateDrawState(tp);
-    assertThat(tp.baselineShift).isEqualTo(2);
-  }
 
   @Test
   public void evenLineHeightShouldIncreaseAllMetricsProportionally() {
