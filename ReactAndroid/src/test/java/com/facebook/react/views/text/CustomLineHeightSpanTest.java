@@ -25,44 +25,13 @@ import org.w3c.dom.Text;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class CustomLineHeightSpanTest {
-  private class MockSpan extends ReactAbsoluteSizeSpan {
-    private TextPaint mTextPaint;
-
-    public MockSpan(int size) {
-      super(size);
-    }
-
-    @Override
-    public void updateDrawState(TextPaint ds) {
-      super.updateDrawState(ds);
-      mTextPaint = ds;
-    }
-
-    public TextPaint getTextPaint() {
-      return mTextPaint;
-    };
-  }
 
   @Test
   public void absoluteSizeSpanChangesFontSize() {
-    // Roboto kerns between "P" and "."
-    final SpannableString text = new SpannableString("P.");
-    // final float origLineWidth = textWidth(text);
-    // Underline just the "P".
-    MockSpan absoluteSizeSpan = new MockSpan(15);
-    text.setSpan(absoluteSizeSpan, 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-    // final float underlinedLineWidth = textWidth(text);
-    assertThat(absoluteSizeSpan.getTextPaint().baselineShift).isEqualTo(0);
-  }
-  
-  // Measures the width of some potentially-spanned text, assuming it's not too wide.
-  private float textWidth(CharSequence text) {
-    final TextPaint tp = new TextPaint();
-    tp.setTextSize(100.0f); // Large enough so that the difference in kerning is visible.
-    final int largeWidth = 10000; // Enough width so the whole text fits in one line.
-    final StaticLayout layout = StaticLayout.Builder.obtain(
-        text, 0, text.length(), tp, largeWidth).build();
-    return layout.getLineWidth(0);
+    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(15);
+    TextPaint tp = new TextPaint();
+    absoluteSizeSpan.updateDrawState(tp);
+    assertThat(tp.baselineShift).isEqualTo(0);
   }
 
   @Test
