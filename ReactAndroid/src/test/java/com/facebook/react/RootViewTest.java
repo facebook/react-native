@@ -243,10 +243,10 @@ public class RootViewTest {
     double screenHeight = 470.0;
     double keyboardHeight = 100.0;
     params.putDouble("duration", 0.0);
-    endCoordinates.putDouble("width", screenHeight - keyboardHeight + 10);
-    endCoordinates.putDouble("screenX", 10.0);
-    endCoordinates.putDouble("height", screenHeight - keyboardHeight + 5);
-    endCoordinates.putDouble("screenY", keyboardHeight - 100);
+    endCoordinates.putDouble("width", screenHeight - keyboardHeight);
+    endCoordinates.putDouble("screenX", 0.0);
+    endCoordinates.putDouble("height", screenHeight - keyboardHeight);
+    endCoordinates.putDouble("screenY", keyboardHeight);
     params.putMap("endCoordinates", endCoordinates);
     params.putString("easing", "keyboard");
 
