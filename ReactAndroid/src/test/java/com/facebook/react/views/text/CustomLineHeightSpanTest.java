@@ -39,7 +39,8 @@ public class CustomLineHeightSpanTest {
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(15, "top-child");
     TextPaint tp = new TextPaint();
     absoluteSizeSpan.updateDrawState(tp);
-    assertThat(tp.baselineShift).isEqualTo(0);
+    absoluteSizeSpan.updateSpan(10, 16);
+    assertThat(tp.baselineShift).isEqualTo(1);
   }
 
   @Test
