@@ -45,6 +45,7 @@ public class ReactAbsoluteSizeSpanTest {
     int fontSize = 12;
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "bottom-child");
     TextPaint tp = new TextPaint();
+    absoluteSizeSpan.updateDrawState(tp);
     FLog.w(
         "React::",
         " tp.getFontMetrics().top: "
@@ -53,7 +54,6 @@ public class ReactAbsoluteSizeSpanTest {
             + (tp.ascent())
             + " tp.descent(): "
             + (tp.descent()));
-    absoluteSizeSpan.updateDrawState(tp);
     assertThat(tp.baselineShift).isEqualTo(2);
   }
 }
