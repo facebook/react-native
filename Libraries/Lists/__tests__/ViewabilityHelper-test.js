@@ -170,6 +170,10 @@ describe('computeViewableItems', function () {
 });
 
 describe('onUpdate', function () {
+  beforeEach(() => {
+    jest.useFakeTimers({legacyFakeTimers: true});
+  });
+
   it('returns 1 visible row as viewable then scrolls away', function () {
     const helper = new ViewabilityHelper();
     rowFrames = {
@@ -440,5 +444,39 @@ describe('onUpdate', function () {
       viewabilityConfig: {viewAreaCoveragePercentThreshold: 0},
       viewableItems: [{isViewable: true, key: 'c'}],
     });
+  });
+
+  it('should call onViewableItemsChanged once in minimumViewTime when onUpdate is called multiple times', function () {
+    const helper = new ViewabilityHelper({
+      minimumViewTime: 1000,
+      itemVisiblePercentThreshold: 90,
+    });
+    const itemHeight = 250;
+    const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    rowFrames = keys.reduce((acc, curVal, i) => {
+      acc[curVal] = {
+        y: itemHeight * i,
+        height: itemHeight,
+      };
+
+      return acc;
+    }, {});
+    data = keys.map(key => ({key}));
+    const onViewableItemsChanged = jest.fn();
+
+    Array.from({length: 4}).forEach((v, i) => {
+      helper.onUpdate(
+        props,
+        150 * i,
+        800,
+        getFrameMetrics,
+        createViewToken,
+        onViewableItemsChanged,
+      );
+    });
+
+    jest.runAllTimers();
+
+    expect(onViewableItemsChanged.mock.calls.length).toBe(1);
   });
 });
