@@ -10,6 +10,7 @@ package com.facebook.react.views.text;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.text.TextPaint;
+import com.facebook.common.logging.FLog;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
