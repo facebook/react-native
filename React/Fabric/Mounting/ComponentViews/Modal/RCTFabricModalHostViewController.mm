@@ -32,6 +32,7 @@
   return self;
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
@@ -81,5 +82,6 @@
   return _supportedInterfaceOrientations;
 }
 #endif // RCT_DEV
+#endif // [macOS]
 
 @end
