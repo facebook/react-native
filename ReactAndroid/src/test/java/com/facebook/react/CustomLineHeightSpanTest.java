@@ -19,10 +19,14 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class CustomLineHeightSpanTest {
+  @Test
+  public void absoluteSizeSpanChangesFontSize() {
+    AbsoluteSizeSpan absoluteSizeSpan = new AbsoluteSizeSpan(25);
+    assertThat(absoluteSizeSpan.getSize()).isEqualTo(25);
+  }
 
   @Test
   public void evenLineHeightShouldIncreaseAllMetricsProportionally() {
-    AbsoluteSizeSpan absoluteSizeSpan = new AbsoluteSizeSpan(25);
     CustomLineHeightSpan customLineHeightSpan = new CustomLineHeightSpan(22);
     Paint.FontMetricsInt fm = new Paint.FontMetricsInt();
     fm.top = -10;
@@ -31,7 +35,6 @@ public class CustomLineHeightSpanTest {
     fm.bottom = 10;
     customLineHeightSpan.chooseHeight("Hi", 0, 2, 0, 0, fm);
     // Since line height is even it should be equally added to top and bottom.
-    assertThat(absoluteSizeSpan.getSize()).isEqualTo(25);
     assertThat(fm.top).isEqualTo(-11);
     assertThat(fm.ascent).isEqualTo(-11);
     assertThat(fm.descent).isEqualTo(11);
