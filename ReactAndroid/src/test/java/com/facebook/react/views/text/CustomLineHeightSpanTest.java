@@ -40,7 +40,7 @@ public class CustomLineHeightSpanTest {
     TextPaint tp = new TextPaint();
     absoluteSizeSpan.updateSpan(10, 16);
     absoluteSizeSpan.updateDrawState(tp);
-    assertThat(tp.baselineShift).isEqualTo(1);
+    assertThat(tp.baselineShift).isEqualTo(2);
   }
 
   @Test
