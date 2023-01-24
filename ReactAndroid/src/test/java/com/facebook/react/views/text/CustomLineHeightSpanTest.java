@@ -8,26 +8,51 @@
 package com.facebook.react.views.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import android.graphics.Paint;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.StaticLayout;
+import android.text.TextPaint;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.robolectric.RobolectricTestRunner;
+import org.w3c.dom.Text;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class CustomLineHeightSpanTest {
-  /*
+  private class MockSpan extends ReactAbsoluteSizeSpan {
+    private TextPaint mTextPaint;
+
+    public MockSpan(int size) {
+      super(size);
+    }
+
+    @Override
+    public void updateDrawState(TextPaint ds) {
+      super.updateDrawState(ds);
+      mTextPaint = ds;
+    }
+
+    public TextPaint getTextPaint() {
+      return mTextPaint;
+    };
+  }
+
   @Test
   public void absoluteSizeSpanChangesFontSize() {
     // Roboto kerns between "P" and "."
     final SpannableString text = new SpannableString("P.");
-    final float origLineWidth = textWidth(text);
+    // final float origLineWidth = textWidth(text);
     // Underline just the "P".
-    text.setSpan(new ReactAbsoluteSizeSpan(15), 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-    final float underlinedLineWidth = textWidth(text);
-    assertEquals(origLineWidth, underlinedLineWidth, 0.0f);
+    MockSpan absoluteSizeSpan = new MockSpan(15);
+    text.setSpan(absoluteSizeSpan, 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+    // final float underlinedLineWidth = textWidth(text);
+    assertThat(absoluteSizeSpan.getTextPaint().baselineShift).isEqualTo(0);
   }
   
   // Measures the width of some potentially-spanned text, assuming it's not too wide.
@@ -39,7 +64,6 @@ public class CustomLineHeightSpanTest {
         text, 0, text.length(), tp, largeWidth).build();
     return layout.getLineWidth(0);
   }
-  */
 
   @Test
   public void evenLineHeightShouldIncreaseAllMetricsProportionally() {
