@@ -39,7 +39,7 @@ Pod::Spec.new do |spec|
   spec.preserve_paths      = '**/*.*'
   spec.source_files        = ''
 
-  spec.xcconfig = {
+  spec.pod_target_xcconfig = {
                     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                     "CLANG_CXX_LIBRARY" => "compiler-default"
                   }.merge!(build_type == :debug ? { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" } : {})
