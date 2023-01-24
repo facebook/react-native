@@ -17,7 +17,7 @@ import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
-public class CustomLineHeightSpanTest {
+public class ReactAbsoluteSizeSpanTest {
 
   @Test
   public void shouldNotChangeBaseline() {
