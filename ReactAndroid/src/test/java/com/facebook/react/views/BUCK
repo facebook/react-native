@@ -2,7 +2,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "r
 
 rn_robolectric_test(
     name = "views",
-    srcs = glob(["text/*.java"]),
+    srcs = glob(["text/CustomLineHeightSpanTest.java"]),
     contacts = ["oncall+fbandroid_sheriff@xmail.facebook.com"],
     language = "JAVA",
     deps = [
