@@ -123,6 +123,11 @@ function getTypeAnnotationForArray<+T>(
         type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
+    case 'DimensionValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'DimensionPrimitive',
+      };
     case 'Stringish':
       return {
         type: 'StringTypeAnnotation',
@@ -302,6 +307,11 @@ function getTypeAnnotation<+T>(
       return {
         type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
+      };
+    case 'DimensionValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'DimensionPrimitive',
       };
     case 'Int32':
       return {
