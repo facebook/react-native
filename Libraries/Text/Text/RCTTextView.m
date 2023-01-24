@@ -17,6 +17,7 @@
 #import <React/RCTFocusChangeEvent.h> // [macOS]
 
 #import <React/RCTTextShadowView.h>
+#import <React/RCTTouchHandler.h>
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -207,7 +208,6 @@
   if (!_textStorage) {
     return;
   }
-
 
   NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
@@ -407,36 +407,65 @@
 }
 #else // [macOS
 
+- (NSView *)hitTest:(NSPoint)point
+{
+  // We will forward mouse click events to the NSTextView ourselves to prevent NSTextView from swallowing events that may be handled in JS (e.g. long press).
+  NSView *hitView = [super hitTest:point];
+  
+  NSEventType eventType = NSApp.currentEvent.type;
+  BOOL isMouseClickEvent = NSEvent.pressedMouseButtons > 0;
+  BOOL isMouseMoveEventType = eventType == NSEventTypeMouseMoved || eventType == NSEventTypeMouseEntered || eventType == NSEventTypeMouseExited || eventType == NSEventTypeCursorUpdate;
+  BOOL isMouseMoveEvent = !isMouseClickEvent && isMouseMoveEventType;
+  BOOL isTextViewClick = (hitView && hitView == _textView) && !isMouseMoveEvent;
+  
+  return isTextViewClick ? self : hitView;
+}
+
 - (void)rightMouseDown:(NSEvent *)event
 {
-  if (_selectable == NO) {
+
+  if (self.selectable == NO) {
     [super rightMouseDown:event];
     return;
   }
-  NSText *fieldEditor = [self.window fieldEditor:YES forObject:self];
-  NSMenu *fieldEditorMenu = [fieldEditor menuForEvent:event];
 
-  RCTAssert(fieldEditorMenu, @"Unable to obtain fieldEditor's context menu");
+  [[RCTTouchHandler touchHandlerForView:self] cancelTouchWithEvent:event];
+  [_textView rightMouseDown:event];
+}
 
-  if (fieldEditorMenu) {
-    NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
+- (void)mouseDown:(NSEvent *)event
+{
+  if (!self.selectable) {
+    [super mouseDown:event];
+    return;
+  }
 
-    for (NSMenuItem *fieldEditorMenuItem in fieldEditorMenu.itemArray) {
-      if (fieldEditorMenuItem.action == @selector(copy:)) {
-        NSMenuItem *item = [fieldEditorMenuItem copy];
+  // Double/triple-clicks should be forwarded to the NSTextView.
+  BOOL shouldForward = event.clickCount > 1;
 
-        item.target = self;
-        [menu addItem:item];
+  if (!shouldForward) {
+    // Peek at next event to know if a selection should begin.
+    NSEvent *nextEvent = [self.window nextEventMatchingMask:NSEventMaskLeftMouseUp | NSEventMaskLeftMouseDragged
+                                                  untilDate:[NSDate distantFuture]
+                                                     inMode:NSEventTrackingRunLoopMode
+                                                    dequeue:NO];
+    shouldForward = nextEvent.type == NSEventTypeLeftMouseDragged;
+  }
 
-        break;
-      }
+  if (shouldForward) {
+    NSView *contentView = self.window.contentView;
+    // -[NSView hitTest:] takes coordinates in a view's superview coordinate system.
+    NSPoint point = [contentView.superview convertPoint:event.locationInWindow fromView:nil];
+
+    // Start selection if we're still selectable and hit-testable.
+    if (self.selectable && [contentView hitTest:point] == self) {
+      [[RCTTouchHandler touchHandlerForView:self] cancelTouchWithEvent:event];
+      [self.window makeFirstResponder:_textView];
+      [_textView mouseDown:event];
     }
-
-    RCTAssert(menu.numberOfItems > 0, @"Unable to create context menu with \"Copy\" item");
-
-    if (menu.numberOfItems > 0) {
-      [NSMenu popUpContextMenu:menu withEvent:event forView:self];
-    }
+  } else {
+    // Clear selection for single clicks.
+    _textView.selectedRange = NSMakeRange(NSNotFound, 0);
   }
 }
 #endif // macOS]
@@ -533,8 +562,6 @@
   UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
   pasteboard.items = @[item];
 #else // [macOS
-  [_textView copy:sender];
-
   NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
   [pasteboard clearContents];
   [pasteboard setData:rtf forType:NSPasteboardTypeRTFD];
