@@ -7,6 +7,7 @@
 
 #import "RCTSurfaceTouchHandler.h"
 
+#import <React/RCTUIKit.h> // [macOS]
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
 
@@ -79,10 +80,11 @@ struct ActiveTouch {
 
 static void UpdateActiveTouchWithUITouch(
     ActiveTouch &activeTouch,
-    UITouch *uiTouch,
+    RCTUITouch *uiTouch, // [macOS]
     RCTUIView *rootComponentView,
     CGPoint rootViewOriginOffset) // [macOS]
 {
+#if !TARGET_OS_OSX // [macOS]
   CGPoint offsetPoint = [uiTouch locationInView:activeTouch.componentView];
   CGPoint screenPoint = [uiTouch locationInView:uiTouch.window];
   CGPoint pagePoint = [uiTouch locationInView:rootComponentView];
@@ -97,12 +99,14 @@ static void UpdateActiveTouchWithUITouch(
   if (RCTForceTouchAvailable()) {
     activeTouch.touch.force = RCTZeroIfNaN(uiTouch.force / uiTouch.maximumPossibleForce);
   }
+#endif // [macOS]
 }
 
-static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, RCTUIView *rootComponentView, CGPoint rootViewOriginOffset) // [macOS]
+static ActiveTouch CreateTouchWithUITouch(RCTUITouch *uiTouch, RCTUIView *rootComponentView, CGPoint rootViewOriginOffset) // [macOS]
 {
   ActiveTouch activeTouch = {};
 
+#if !TARGET_OS_OSX // [macOS]
   // Find closest Fabric-managed touchable view
   RCTUIView *componentView = uiTouch.view; // [macOS]
   while (componentView) {
@@ -117,25 +121,30 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, RCTUIView *rootCompo
   }
 
   UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView, rootViewOriginOffset);
+#endif // [macOS]
   return activeTouch;
 }
 
-static BOOL AllTouchesAreCancelledOrEnded(NSSet<UITouch *> *touches)
+static BOOL AllTouchesAreCancelledOrEnded(NSSet<RCTUITouch *> *touches) // [macOS]
 {
-  for (UITouch *touch in touches) {
+  for (RCTUITouch *touch in touches) { // [macOS]
+#if !TARGET_OS_OSX // [macOS]
     if (touch.phase == UITouchPhaseBegan || touch.phase == UITouchPhaseMoved || touch.phase == UITouchPhaseStationary) {
       return NO;
     }
+#endif // [macOS]
   }
   return YES;
 }
 
-static BOOL AnyTouchesChanged(NSSet<UITouch *> *touches)
+static BOOL AnyTouchesChanged(NSSet<RCTUITouch *> *touches) // [macOS]
 {
-  for (UITouch *touch in touches) {
+  for (RCTUITouch *touch in touches) { // [macOS]
+#if !TARGET_OS_OSX // [macOS]
     if (touch.phase == UITouchPhaseBegan || touch.phase == UITouchPhaseMoved) {
       return YES;
     }
+#endif // [macOS]
   }
   return NO;
 }
@@ -158,8 +167,8 @@ struct PointerHasher {
 @end
 
 @implementation RCTSurfaceTouchHandler {
-  std::unordered_map<__unsafe_unretained UITouch *, ActiveTouch, PointerHasher<__unsafe_unretained UITouch *>>
-      _activeTouches;
+  std::unordered_map<__unsafe_unretained RCTUITouch *, ActiveTouch, PointerHasher<__unsafe_unretained RCTUITouch *>>
+      _activeTouches; // [macOS]
 
   /*
    * We hold the view weakly to prevent a retain cycle.
@@ -175,9 +184,11 @@ struct PointerHasher {
     // to be used as a top level event delegated recognizer.
     // Otherwise, lower-level components not built using React Native,
     // will fail to recognize gestures.
+#if !TARGET_OS_OSX // [macOS]
     self.cancelsTouchesInView = NO;
     self.delaysTouchesBegan = NO; // This is default value.
     self.delaysTouchesEnded = NO;
+#endif // [macOS]
 
     self.delegate = self;
   }
@@ -204,18 +215,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   _rootComponentView = nil;
 }
 
-- (void)_registerTouches:(NSSet<UITouch *> *)touches
+- (void)_registerTouches:(NSSet<RCTUITouch *> *)touches // [macOS]
 {
-  for (UITouch *touch in touches) {
+  for (RCTUITouch *touch in touches) { // [macOS]
     auto activeTouch = CreateTouchWithUITouch(touch, _rootComponentView, _viewOriginOffset);
     activeTouch.touch.identifier = _identifierPool.dequeue();
     _activeTouches.emplace(touch, activeTouch);
   }
 }
 
-- (void)_updateTouches:(NSSet<UITouch *> *)touches
+- (void)_updateTouches:(NSSet<RCTUITouch *> *)touches // [macOS]
 {
-  for (UITouch *touch in touches) {
+  for (RCTUITouch *touch in touches) { // [macOS]
     auto iterator = _activeTouches.find(touch);
     assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
     if (iterator == _activeTouches.end()) {
@@ -226,9 +237,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   }
 }
 
-- (void)_unregisterTouches:(NSSet<UITouch *> *)touches
+- (void)_unregisterTouches:(NSSet<RCTUITouch *> *)touches // [macOS]
 {
-  for (UITouch *touch in touches) {
+  for (RCTUITouch *touch in touches) { // [macOS]
     auto iterator = _activeTouches.find(touch);
     assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
     if (iterator == _activeTouches.end()) {
@@ -240,12 +251,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   }
 }
 
-- (std::vector<ActiveTouch>)_activeTouchesFromTouches:(NSSet<UITouch *> *)touches
+- (std::vector<ActiveTouch>)_activeTouchesFromTouches:(NSSet<RCTUITouch *> *)touches // [macOS]
 {
   std::vector<ActiveTouch> activeTouches;
   activeTouches.reserve(touches.count);
 
-  for (UITouch *touch in touches) {
+  for (RCTUITouch *touch in touches) { // [macOS]
     auto iterator = _activeTouches.find(touch);
     assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
     if (iterator == _activeTouches.end()) {
@@ -314,8 +325,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
 #pragma mark - `UIResponder`-ish touch-delivery methods
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesBegan:(NSSet<RCTUITouch *> *)touches withEvent:(UIEvent *)event // [macOS]
 {
+#if !TARGET_OS_OSX // [macOS]
   [super touchesBegan:touches withEvent:event];
 
   [self _registerTouches:touches];
@@ -326,20 +338,24 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   } else if (self.state == UIGestureRecognizerStateBegan) {
     self.state = UIGestureRecognizerStateChanged;
   }
+#endif // [macOS]
 }
 
-- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesMoved:(NSSet<RCTUITouch *> *)touches withEvent:(UIEvent *)event // [macOS]
 {
+#if !TARGET_OS_OSX // [macOS]
   [super touchesMoved:touches withEvent:event];
 
   [self _updateTouches:touches];
   [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchMove];
 
   self.state = UIGestureRecognizerStateChanged;
+#endif // [macOS]
 }
 
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesEnded:(NSSet<RCTUITouch *> *)touches withEvent:(UIEvent *)event // [macOS]
 {
+#if !TARGET_OS_OSX // [macOS]
   [super touchesEnded:touches withEvent:event];
 
   [self _updateTouches:touches];
@@ -351,10 +367,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   } else if (AnyTouchesChanged(event.allTouches)) {
     self.state = UIGestureRecognizerStateChanged;
   }
+#endif // [macOS]
 }
 
-- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesCancelled:(NSSet<RCTUITouch *> *)touches withEvent:(UIEvent *)event // [macOS]
 {
+#if !TARGET_OS_OSX // [macOS]
   [super touchesCancelled:touches withEvent:event];
 
   [self _updateTouches:touches];
@@ -366,6 +384,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   } else if (AnyTouchesChanged(event.allTouches)) {
     self.state = UIGestureRecognizerStateChanged;
   }
+#endif // [macOS]
 }
 
 - (void)reset
@@ -395,9 +414,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
 - (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
 {
+#if !TARGET_OS_OSX // [macOS]
   // We fail in favour of other external gesture recognizers.
   // iOS will ask `delegate`'s opinion about this gesture recognizer little bit later.
   return ![preventingGestureRecognizer.view isDescendantOfView:self.view];
+#else  // [macOS
+  return NO;
+#endif // macOS]
 }
 
 #pragma mark - UIGestureRecognizerDelegate
