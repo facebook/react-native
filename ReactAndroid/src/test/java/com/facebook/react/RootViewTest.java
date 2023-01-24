@@ -230,7 +230,7 @@ public class RootViewTest {
               outRect.bottom += 100;
               outRect.right += 370;
             } else {
-              outRect.bottom += 370;
+              outRect.bottom += 300;
             }
           }
         };
