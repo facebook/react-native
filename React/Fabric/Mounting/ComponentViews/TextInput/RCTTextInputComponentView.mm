@@ -85,7 +85,9 @@ using namespace facebook::react;
   if (self.window && !_didMoveToWindow) {
     auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
     if (props.autoFocus) {
+#if !TARGET_OS_OSX // [macOS]
       [_backedTextInputView becomeFirstResponder];
+#endif // [macOS]
     }
     _didMoveToWindow = YES;
   }

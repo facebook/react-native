@@ -40,7 +40,9 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
       // Calling this a bit later, when the main thread is probably idle while JavaScript thread is busy.
+#if !TARGET_OS_OSX // [macOS]
       [self preallocateViewComponents];
+#endif // [macOS]
     });
   }
 
