@@ -27,8 +27,16 @@ import org.w3c.dom.Text;
 public class CustomLineHeightSpanTest {
 
   @Test
-  public void absoluteSizeSpanChangesFontSize() {
+  public void defaultTextAlignVerticalDoesNotChangeBaseline() {
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(15);
+    TextPaint tp = new TextPaint();
+    absoluteSizeSpan.updateDrawState(tp);
+    assertThat(tp.baselineShift).isEqualTo(0);
+  }
+
+  @Test
+  public void textAlignVerticalTopChangesBaseline() {
+    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(15, "top-child");
     TextPaint tp = new TextPaint();
     absoluteSizeSpan.updateDrawState(tp);
     assertThat(tp.baselineShift).isEqualTo(0);
