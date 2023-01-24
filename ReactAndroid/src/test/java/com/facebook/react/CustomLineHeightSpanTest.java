@@ -29,11 +29,11 @@ public class CustomLineHeightSpanTest {
     fm.bottom = 10;
     customLineHeightSpan.chooseHeight("Hi", 0, 2, 0, 0, fm);
     // Since line height is even it should be equally added to top and bottom.
-    assertThat(fm.top).isEqualTo(-11);
-    assertThat(fm.ascent).isEqualTo(-11);
-    assertThat(fm.descent).isEqualTo(11);
-    assertThat(fm.bottom).isEqualTo(11);
-    assertThat(fm.bottom - fm.top).isEqualTo(22);
+    assertThat(fm.top).isEqualTo(-1100);
+    assertThat(fm.ascent).isEqualTo(-110);
+    assertThat(fm.descent).isEqualTo(110);
+    assertThat(fm.bottom).isEqualTo(110);
+    assertThat(fm.bottom - fm.top).isEqualTo(220);
   }
 
   @Test
