@@ -48,8 +48,18 @@
         RCTSharedApplication().delegate.window.overrideUserInterfaceStyle ?: UIUserInterfaceStyleUnspecified;
     self.overrideUserInterfaceStyle = style;
   }
-  [self.alertWindow makeKeyAndVisible];
-  [self.alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
+  // Call self.alertWindow to ensure that it gets populated
+  UIWindow *alertWindow = self.alertWindow;
+
+  // If the window is tracked by our application then it will show the alert
+  if ([[[UIApplication sharedApplication] windows] containsObject:alertWindow]) {
+    // On iOS 14, makeKeyAndVisible should only be called if alertWindow is tracked by the application.
+    // Later versions of iOS appear to already do this check for us behind the scenes.
+    [alertWindow makeKeyAndVisible];
+    [alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
+  } else {
+    // When using Scenes, we must present the alert from a view controller associated with a window in the Scene. A fresh window (i.e. _alertWindow) cannot show the alert.
+    [RCTPresentedViewController() presentViewController:self animated:animated completion:completion];
 }
 
 - (void)hide
