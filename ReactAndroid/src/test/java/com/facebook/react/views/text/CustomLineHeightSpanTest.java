@@ -38,8 +38,8 @@ public class CustomLineHeightSpanTest {
   public void textAlignVerticalTopChangesBaseline() {
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(15, "top-child");
     TextPaint tp = new TextPaint();
-    absoluteSizeSpan.updateDrawState(tp);
     absoluteSizeSpan.updateSpan(10, 16);
+    absoluteSizeSpan.updateDrawState(tp);
     assertThat(tp.baselineShift).isEqualTo(1);
   }
 
