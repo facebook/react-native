@@ -20,14 +20,25 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactAbsoluteSizeSpanTest {
-  private class MockAbsolutSpan extends ReactAbsoluteSizeSpan {
-    public MockAbsolutSpan(int size) {
+  private class MockAbsoluteSpan extends ReactAbsoluteSizeSpan {
+    private TextPaint mTextPaint;
+
+    public MockAbsoluteSpan(int size) {
       super(size);
+    }
+
+    public MockAbsoluteSpan(int size, String textAlignVertical) {
+      super(size, textAlignVertical);
     }
 
     @Override
     public void updateDrawState(TextPaint ds) {
       super.updateDrawState(ds);
+      mTextPaint = ds;
+    }
+
+    public TextPaint getTextPaint() {
+      return mTextPaint;
     }
   }
 
@@ -54,19 +65,8 @@ public class ReactAbsoluteSizeSpanTest {
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
     final SpannableString text = new SpannableString("P.");
-    int fontSize = 12;
-    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "bottom-child");
-    text.setSpan(absoluteSizeSpan, 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-    TextPaint tp = new TextPaint();
-    tp.setTextSize(12);
-    tp.getFontMetricsInt().top = -10;
-    tp.getFontMetricsInt().bottom = -5;
-    tp.getFontMetricsInt().descent = 5;
-    tp.getFontMetricsInt().ascent = 10;
-    absoluteSizeSpan.updateDrawState(tp);
-    assertThat(tp.getFontMetrics().top).isEqualTo(99);
-    // assertThat(tp.ascent()).isEqualTo(99);
-    // assertThat(tp.descent()).isEqualTo(99);
-    // assertThat(tp.baselineShift).isEqualTo(2);
+    MockAbsoluteSpan mockAbsoluteSpan = new MockAbsoluteSpan(15, "top-child");
+    text.setSpan(mockAbsoluteSpan, 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+    assertThat(mockAbsoluteSpan.getTextPaint().getFontMetrics().top).isEqualTo(99);
   }
 }
