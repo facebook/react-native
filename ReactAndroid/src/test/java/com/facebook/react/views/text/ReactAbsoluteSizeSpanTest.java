@@ -18,6 +18,49 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactAbsoluteSizeSpanTest {
+  private class MockTextPain extends TextPaint {
+    /**
+     * Allocates a new FontMetrics object, and then calls getFontMetrics(fm) with it, returning the
+     * object.
+     */
+    @Override
+    public FontMetrics getFontMetrics() {
+      String methodName = "getFontMetrics";
+      FontMetrics fm = new FontMetrics();
+      Log.w(
+          "ReactTest:: mocked",
+          methodName
+              + " fm.top: "
+              + (fm.top)
+              + " fm.ascent: "
+              + (fm.ascent)
+              + " fm.bottom: "
+              + (fm.bottom)
+              + " fm.top: "
+              + (fm.top));
+      return fm;
+    }
+
+    public static class FontMetrics {
+      /**
+       * The maximum distance above the baseline for the tallest glyph in the font at a given text
+       * size.
+       */
+      public float top = -15;
+      /** The recommended distance above the baseline for singled spaced text. */
+      public float ascent = -10;
+      /** The recommended distance below the baseline for singled spaced text. */
+      public float descent = 10;
+      /**
+       * The maximum distance below the baseline for the lowest glyph in the font at a given text
+       * size.
+       */
+      public float bottom = 15;
+      /** The recommended additional space to add between lines of text. */
+      public float leading = 0;
+    }
+  }
+
   private class MockAbsoluteSpan extends ReactAbsoluteSizeSpan {
     private TextPaint mTextPaint;
 
@@ -64,7 +107,7 @@ public class ReactAbsoluteSizeSpanTest {
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
     int fontSize = 15;
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
-    TextPaint tp = new TextPaint();
+    TextPaint tp = new MockTextPain();
     int lineHeight = 0;
     int maximumFontSize = 16;
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
