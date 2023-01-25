@@ -1108,10 +1108,6 @@ void LayoutAnimationKeyFrameManager::setClockNow(
   now_ = std::move(now);
 }
 
-void LayoutAnimationKeyFrameManager::enableCrashOnMissingComponentDescriptor() {
-  crashOnMissingComponentDescriptor_ = true;
-}
-
 void LayoutAnimationKeyFrameManager::enableSimulateImagePropsMemoryAccess() {
   simulateImagePropsMemoryAccess_ = true;
 }
@@ -1120,18 +1116,8 @@ void LayoutAnimationKeyFrameManager::enableSimulateImagePropsMemoryAccess() {
 
 bool LayoutAnimationKeyFrameManager::hasComponentDescriptorForShadowView(
     ShadowView const &shadowView) const {
-  auto hasComponentDescriptor =
-      componentDescriptorRegistry_->hasComponentDescriptorAt(
-          shadowView.componentHandle);
-
-  if (crashOnMissingComponentDescriptor_ && !hasComponentDescriptor) {
-    LOG(FATAL) << "Component descriptor with handle: "
-               << shadowView.componentHandle
-               << " doesn't exist. The component name: "
-               << shadowView.componentName;
-  }
-
-  return hasComponentDescriptor;
+  return componentDescriptorRegistry_->hasComponentDescriptorAt(
+      shadowView.componentHandle);
 }
 
 ComponentDescriptor const &

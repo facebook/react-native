@@ -90,8 +90,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void setClockNow(std::function<uint64_t()> now);
 
-  void enableCrashOnMissingComponentDescriptor();
-
   void enableSimulateImagePropsMemoryAccess();
 
  protected:
@@ -151,13 +149,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable butter::set<SurfaceId> surfaceIdsToStop_{};
   bool reduceDeleteCreateMutation_{false};
-
-  /*
-   * Feature flag that forces a crash if component descriptor for shadow view
-   * doesn't exist. This is an unexpected state and we crash to collect extra
-   * logs.
-   */
-  bool crashOnMissingComponentDescriptor_{false};
 
   /*
    * Feature flag that enables simulation of memory access. This is a temporary
