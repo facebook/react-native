@@ -402,6 +402,27 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
   [super layout];
 }
 
+- (NSArray<RCTUIView *> *)reactZIndexSortedSubviews
+{
+  // Check if sorting is required - in most cases it won't be.
+  BOOL sortingRequired = NO;
+  for (RCTUIView *subview in self.subviews) {
+    if (subview.reactZIndex != 0) {
+      sortingRequired = YES;
+      break;
+    }
+  }
+  return sortingRequired ? [self.subviews sortedArrayUsingComparator:^NSComparisonResult(RCTUIView *a, RCTUIView *b) {
+    if (a.reactZIndex > b.reactZIndex) {
+      return NSOrderedDescending;
+    } else {
+      // Ensure sorting is stable by treating equal zIndex as ascending so
+      // that original order is preserved.
+      return NSOrderedAscending;
+    }
+  }] : self.subviews;
+}
+
 - (void)setNeedsDisplay
 {
   self.needsDisplay = YES;

@@ -447,6 +447,7 @@ using namespace facebook::react;
   return _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (RCTUIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event // [macOS]
 {
   // This is a classic textbook implementation of `hitTest:` with a couple of improvements:
@@ -497,6 +498,60 @@ using namespace facebook::react;
       return view != self ? view : nil;
   }
 }
+#else // [macOS
+
+- (RCTUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // [macOS]
+{
+  BOOL canReceiveTouchEvents = ([self isUserInteractionEnabled] && ![self isHidden]);
+  if (!canReceiveTouchEvents) {
+    return nil;
+  }
+
+  // `hitSubview` is the topmost subview which was hit. The hit point can
+  // be outside the bounds of `view` (e.g., if -clipsToBounds is NO).
+  RCTUIView *hitSubview = nil; // [macOS]
+  BOOL isPointInside = [self pointInside:point withEvent:event];
+  BOOL needsHitSubview = !(_props->pointerEvents == PointerEventsMode::None || _props->pointerEvents == PointerEventsMode::BoxOnly);
+  if (needsHitSubview && (![self clipsToBounds] || isPointInside)) {
+    // Take z-index into account when calculating the touch target.
+    NSArray<RCTUIView *> *sortedSubviews = [self reactZIndexSortedSubviews]; // [macOS]
+
+    // The default behaviour of UIKit is that if a view does not contain a point,
+    // then no subviews will be returned from hit testing, even if they contain
+    // the hit point. By doing hit testing directly on the subviews, we bypass
+    // the strict containment policy (i.e., UIKit guarantees that every ancestor
+    // of the hit view will return YES from -pointInside:withEvent:). See:
+    //  - https://developer.apple.com/library/ios/qa/qa2013/qa1812.html
+    for (RCTUIView *subview in [sortedSubviews reverseObjectEnumerator]) { // [macOS]
+      CGPoint pointForHitTest = CGPointZero;
+      if ([subview isKindOfClass:[RCTUIView class]]) { // [macOS]
+        pointForHitTest = [subview convertPoint:point fromView:self];
+      } else {
+        pointForHitTest = point;
+      }
+      hitSubview = (RCTUIView *)[subview hitTest:pointForHitTest]; // [macOS]
+      if (hitSubview != nil) {
+        break;
+      }
+    }
+  }
+
+  RCTUIView *hitView = (isPointInside ? self : nil); // [macOS]
+
+  switch (_props->pointerEvents) {
+    case PointerEventsMode::None:
+      return nil;
+    case PointerEventsMode::Auto:
+      return hitSubview ?: hitView;
+    case PointerEventsMode::BoxOnly:
+      return hitView;
+    case PointerEventsMode::BoxNone:
+      return hitSubview;
+    default:
+      return hitSubview ?: hitView;
+  }
+}
+#endif // macOS]
 
 static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 {

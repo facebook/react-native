@@ -27,6 +27,11 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"target", getDebugDescription(touch.target, options)},
       {"force", getDebugDescription(touch.force, options)},
       {"timestamp", getDebugDescription(touch.timestamp, options)},
+      {"button", getDebugDescription(touch.button, options)}, // [macOS]
+      {"altKey", getDebugDescription(touch.altKey, options)}, // [macOS]
+      {"ctrlKey", getDebugDescription(touch.ctrlKey, options)}, // [macOS]
+      {"shiftKey", getDebugDescription(touch.shiftKey, options)}, // [macOS]
+      {"metaKey", getDebugDescription(touch.metaKey, options)}, // [macOS]
   };
 }
 

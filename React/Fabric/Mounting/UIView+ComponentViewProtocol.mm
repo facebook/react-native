@@ -7,6 +7,8 @@
 
 #import "UIView+ComponentViewProtocol.h"
 
+#import <objc/runtime.h> // [macOS]
+
 #import <React/RCTAssert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
@@ -150,6 +152,16 @@ using namespace facebook::react;
 - (void)setIsJSResponder:(BOOL)isJSResponder
 {
   // Default implementation does nothing.
+}
+
+- (NSNumber *)reactTag
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setReactTag:(NSNumber *)reactTag
+{
+  objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)propKeys
