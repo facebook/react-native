@@ -58,6 +58,10 @@ public class ReactAbsoluteSizeSpanTest {
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "bottom-child");
     text.setSpan(absoluteSizeSpan, 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
     TextPaint tp = new TextPaint();
+    tp.getFontMetricsInt().top = -10;
+    tp.getFontMetricsInt().bottom = -5;
+    tp.getFontMetricsInt().descent = 5;
+    tp.getFontMetricsInt().ascent = 10;
     absoluteSizeSpan.updateDrawState(tp);
     assertThat(tp.getFontMetrics().top).isEqualTo(99);
     // assertThat(tp.ascent()).isEqualTo(99);
