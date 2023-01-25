@@ -1824,7 +1824,7 @@ workflows:
     triggers:
       - schedule:
           <<: *main_only
-          cron: "0 20 * * *"
+          cron: "0 22 * * *"
     jobs:
       - nightly_job
 
