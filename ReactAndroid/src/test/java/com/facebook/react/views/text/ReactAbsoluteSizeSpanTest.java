@@ -20,7 +20,9 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactAbsoluteSizeSpanTest {
-  private class MockTextPain extends TextPaint {
+  private class MockTextPaint extends TextPaint {
+    private static final String TAG = "MockTextPaint";
+
     /**
      * Allocates a new FontMetrics object, and then calls getFontMetrics(fm) with it, returning the
      * object.
@@ -28,9 +30,9 @@ public class ReactAbsoluteSizeSpanTest {
     @Override
     public FontMetrics getFontMetrics() {
       String methodName = "getFontMetrics";
-      FontMetrics fm = new FontMetrics();
+      MockTextPaint.FontMetrics fm = new MockTextPaint.FontMetrics();
       Log.w(
-          "ReactTest:: mocked",
+          "ReactTest:: mocked" + TAG,
           methodName
               + " fm.top: "
               + (fm.top)
@@ -107,9 +109,17 @@ public class ReactAbsoluteSizeSpanTest {
 
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
+    String methodName = "textWithNoLineHeightAlignsBasedOnFontMetrics";
     int fontSize = 15;
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
-    TextPaint tp = new MockTextPain();
+    MockTextPaint tp = new MockTextPaint();
+    Log.w(
+        "ReactTest::",
+        methodName
+            + " tp.getFontMetrics().top: "
+            + (tp.getFontMetrics().top)
+            + " tp.getFontMetrics().bottom: "
+            + (tp.getFontMetrics().bottom));
     int lineHeight = 0;
     int maximumFontSize = 16;
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
