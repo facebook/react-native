@@ -110,15 +110,15 @@ public class ReactAbsoluteSizeSpanTest {
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
     String methodName = "textWithNoLineHeightAlignsBasedOnFontMetrics";
     int fontSize = 15;
-    MockedAbsoluteSpan absoluteSizeSpan = new MockedAbsoluteSpan(fontSize, "top-child");
-    MockedTextPaint tp =
-        new MockedTextPaint() {
+    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
+    TextPaint tp =
+        new TextPaint() {
           @Override
           public FontMetrics getFontMetrics() {
             String methodName = "getFontMetrics";
-            MockedTextPaint.FontMetrics fm = new MockedTextPaint.FontMetrics();
+            FontMetrics fm = new FontMetrics();
             Log.w(
-                "ReactTest:: MockedTextPaint in the instance" + TAG,
+                "ReactTest:: MockedTextPaint in the instance",
                 methodName
                     + " fm.top: "
                     + (fm.top)
@@ -131,7 +131,7 @@ public class ReactAbsoluteSizeSpanTest {
             return fm;
           }
 
-          public class FontMetrics extends Paint.FontMetrics {
+          class FontMetrics extends Paint.FontMetrics {
             /**
              * The maximum distance above the baseline for the tallest glyph in the font at a given
              * text size.
