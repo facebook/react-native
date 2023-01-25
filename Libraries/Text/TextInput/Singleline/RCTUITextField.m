@@ -124,6 +124,9 @@
 #if TARGET_OS_OSX // [macOS
   [self setAttributedText:[[NSAttributedString alloc] initWithString:[self text]
                                                           attributes:[self defaultTextAttributes]]];
+  if([[self text] length] == 0) {
+    self.font = [[self defaultTextAttributes] objectForKey:NSFontAttributeName];
+  }
 #endif // macOS]
 }
 
@@ -322,6 +325,8 @@
 #if TARGET_OS_OSX // [macOS
   [self setAttributedText:[[NSAttributedString alloc] initWithString:[self text]
                                                           attributes:[self defaultTextAttributes]]];
+
+  self.font = [[self defaultTextAttributes] objectForKey:NSFontAttributeName];
 #endif // macOS]
 }
 
