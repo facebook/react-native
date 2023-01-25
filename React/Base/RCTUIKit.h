@@ -508,6 +508,11 @@ NS_ASSUME_NONNULL_END
 typedef UILabel RCTUILabel;
 #else
 @interface RCTUILabel : NSTextField
+NS_ASSUME_NONNULL_BEGIN
+@property(nonatomic, copy) NSString* _Nullable text;
+@property(nonatomic, assign) NSInteger numberOfLines;
+@property(nonatomic, assign) NSTextAlignment textAlignment;
+NS_ASSUME_NONNULL_END
 @end
 #endif
 

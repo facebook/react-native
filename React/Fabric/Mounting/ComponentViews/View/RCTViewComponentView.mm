@@ -455,7 +455,11 @@ using namespace facebook::react;
   //   * Taking `layer.zIndex` field into an account is not required because
   //     lists of `ShadowView`s are already sorted based on `zIndex` prop.
 
+#if !TARGET_OS_OSX // [macOS]
   if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
+#else // [macOS
+  if (!self.userInteractionEnabled || self.hidden) {
+#endif // macOS]
     return nil;
   }
 
