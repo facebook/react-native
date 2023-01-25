@@ -110,7 +110,7 @@ public class ReactAbsoluteSizeSpanTest {
 
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
-    class MockFontMetrics {
+    class MockFontMetrics extends Paint.FontMetrics {
       /**
        * The maximum distance above the baseline for the tallest glyph in the font at a given text
        * size.
