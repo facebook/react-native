@@ -9,6 +9,8 @@ package com.facebook.react.views.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextPaint;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +20,16 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactAbsoluteSizeSpanTest {
+  private class MockAbsolutSpan extends ReactAbsoluteSizeSpan {
+    public MockAbsolutSpan(int size) {
+      super(size);
+    }
+
+    @Override
+    public void updateDrawState(TextPaint ds) {
+      super.updateDrawState(ds);
+    }
+  }
 
   @Test
   public void shouldNotChangeBaseline() {
@@ -41,8 +53,10 @@ public class ReactAbsoluteSizeSpanTest {
 
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
+    final SpannableString text = new SpannableString("P.");
     int fontSize = 12;
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "bottom-child");
+    text.setSpan(absoluteSizeSpan, 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
     TextPaint tp = new TextPaint();
     absoluteSizeSpan.updateDrawState(tp);
     assertThat(tp.getFontMetrics().top).isEqualTo(99);
