@@ -110,25 +110,7 @@ public class ReactAbsoluteSizeSpanTest {
 
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
-    class MockFontMetrics extends Paint.FontMetrics {
-      /**
-       * The maximum distance above the baseline for the tallest glyph in the font at a given text
-       * size.
-       */
-      public float top = -15;
-      /** The recommended distance above the baseline for singled spaced text. */
-      public float ascent = -10;
-      /** The recommended distance below the baseline for singled spaced text. */
-      public float descent = 10;
-      /**
-       * The maximum distance below the baseline for the lowest glyph in the font at a given text
-       * size.
-       */
-      public float bottom = 15;
-      /** The recommended additional space to add between lines of text. */
-      public float leading = 0;
-    }
-    MockFontMetrics fontMetrics = new MockFontMetrics();
+    Paint.FontMetrics fontMetrics = mock(Paint.FontMetrics.class);
     TextPaint tp = mock(TextPaint.class);
 
     when(tp.getFontMetrics()).thenReturn(fontMetrics);
