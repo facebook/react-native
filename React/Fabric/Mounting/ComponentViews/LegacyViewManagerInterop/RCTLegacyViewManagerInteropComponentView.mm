@@ -43,7 +43,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (RCTUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // [macOS]
 {
-  RCTUIView *result = [super hitTest:point withEvent:event]; // [macOS]
+  RCTUIView *result = (RCTUIView *)[super hitTest:point withEvent:event]; // [macOS]
 
   if (result == _adapter.paperView) {
     return self;
@@ -197,9 +197,9 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
   for (NSDictionary *mountInstruction in _viewsToBeMounted) {
     NSNumber *index = mountInstruction[kRCTLegacyInteropChildIndexKey];
-    UIView *childView = mountInstruction[kRCTLegacyInteropChildComponentKey];
+    RCTUIView *childView = mountInstruction[kRCTLegacyInteropChildComponentKey]; // [macOS]
     if ([childView isKindOfClass:[RCTLegacyViewManagerInteropComponentView class]]) {
-      UIView *target = ((RCTLegacyViewManagerInteropComponentView *)childView).contentView;
+      RCTUIView *target = ((RCTLegacyViewManagerInteropComponentView *)childView).contentView; // [macOS]
       [_adapter.paperView insertReactSubview:target atIndex:index.integerValue];
     } else {
       [_adapter.paperView insertReactSubview:childView atIndex:index.integerValue];

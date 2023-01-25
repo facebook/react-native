@@ -13,6 +13,7 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
+#import <React/RCTTouchHandler.h> // [macOS]
 
 #if TARGET_OS_OSX // [macOS
 
@@ -124,6 +125,9 @@
 #if TARGET_OS_OSX // [macOS
   [self setAttributedText:[[NSAttributedString alloc] initWithString:[self text]
                                                           attributes:[self defaultTextAttributes]]];
+  if([[self text] length] == 0) {
+    self.font = [[self defaultTextAttributes] objectForKey:NSFontAttributeName];
+  }
 #endif // macOS]
 }
 
@@ -323,6 +327,8 @@
 #if TARGET_OS_OSX // [macOS
   [self setAttributedText:[[NSAttributedString alloc] initWithString:[self text]
                                                           attributes:[self defaultTextAttributes]]];
+
+  self.font = [[self defaultTextAttributes] objectForKey:NSFontAttributeName];
 #endif // macOS]
 }
 
@@ -438,7 +444,7 @@
   
 #else // [macOS
   
-#pragma mark - NSTextViewDelegate methods
+#pragma mark - NSTextFieldDelegate methods
 
 - (void)textDidChange:(NSNotification *)notification
 {
@@ -475,6 +481,15 @@
   return NO;
 }
   
+- (NSMenu *)textView:(NSTextView *)view menu:(NSMenu *)menu forEvent:(NSEvent *)event atIndex:(NSUInteger)charIndex
+{
+  if (menu) {
+    [[RCTTouchHandler touchHandlerForView:self] willShowMenuWithEvent:event];
+  }
+
+  return menu;
+}
+
 #endif // macOS]
 
 #pragma mark - Overrides

@@ -119,6 +119,9 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
 - (BOOL)isJSResponder;
 - (void)setIsJSResponder:(BOOL)isJSResponder;
 
+- (NSNumber *)reactTag; // [macOS]
+- (void)setReactTag:(NSNumber *)reactTag; // [macOS]
+
 /*
  * This is broken. Do not use.
  */

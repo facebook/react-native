@@ -487,14 +487,24 @@ exports.examples = examples;
 
 // [macOS
 if (Platform.OS === 'macos') {
-  examples.push({
-    title: '<ScrollView> (inverted = true/false)\n',
-    description:
-      "You can display <ScrollView>'s child components in inverted order",
-    render: function (): React.Node {
-      return <InvertedContentExample />;
+  examples.push(
+    {
+      title: '<ScrollView> (inverted = true/false)\n',
+      description:
+        "You can display <ScrollView>'s child components in inverted order",
+      render: function (): React.Node {
+        return <InvertedContentExample />;
+      },
     },
-  });
+    {
+      title: '<ScrollView> (hasOverlayStyleIndicator = true/false)\n',
+      description:
+        "You can display <ScrollView>'s indicator using overlay style",
+      render: function (): React.Node {
+        return <ScrollIndicatorOverlayExample />;
+      },
+    },
+  );
 }
 
 const InvertedContentExample = () => {
@@ -523,6 +533,27 @@ const InvertedContentExample = () => {
         }}
       />
     </>
+  );
+};
+
+const ScrollIndicatorOverlayExample = () => {
+  const [hasOverlayStyleIndicator, setHasOverlayStyleIndicator] =
+    useState(true);
+  return (
+    <View>
+      <ScrollView
+        style={[styles.scrollView, {height: 200}]}
+        hasOverlayStyleIndicator={hasOverlayStyleIndicator}
+        nestedScrollEnabled>
+        {ITEMS.map(createItemRow)}
+      </ScrollView>
+      <Button
+        label={
+          'showsOverlayStyleIndicator: ' + hasOverlayStyleIndicator.toString()
+        }
+        onPress={() => setHasOverlayStyleIndicator(!hasOverlayStyleIndicator)}
+      />
+    </View>
   );
 };
 // macOS]

@@ -51,13 +51,12 @@
   // the contents will overflow causing the scroll indicators to appear unnecessarily.
   NSScrollView *platformScrollView = [scrollView scrollView];
   if ([platformScrollView scrollerStyle] == NSScrollerStyleLegacy) {
-    CGFloat horizontalScrollerHeight = [platformScrollView hasHorizontalScroller] ? NSHeight([[platformScrollView horizontalScroller] frame]) : 0;
+    BOOL contentHasHeight = platformScrollView.contentSize.height > 0;
+    CGFloat horizontalScrollerHeight = ([platformScrollView hasHorizontalScroller] && contentHasHeight) ? NSHeight([[platformScrollView horizontalScroller] frame]) : 0;
     CGFloat verticalScrollerWidth = [platformScrollView hasVerticalScroller] ? NSWidth([[platformScrollView verticalScroller] frame]) : 0;
 
-    RCTScrollContentLocalData *localData =
-      [[RCTScrollContentLocalData alloc]
-      initWithVerticalScrollerWidth:horizontalScrollerHeight
-           horizontalScrollerHeight:verticalScrollerWidth];
+    RCTScrollContentLocalData *localData = [[RCTScrollContentLocalData alloc] initWithVerticalScrollerWidth:verticalScrollerWidth horizontalScrollerHeight:horizontalScrollerHeight];
+
     [[[scrollView bridge] uiManager] setLocalData:localData forView:self];
   }
 

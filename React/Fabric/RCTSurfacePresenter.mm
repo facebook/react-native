@@ -103,10 +103,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
     _scheduler = [self _createScheduler];
 
+#if !TARGET_OS_OSX // [macOS]
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_applicationWillTerminate)
                                                  name:UIApplicationWillTerminateNotification
                                                object:nil];
+#endif // [macOS]
   }
 
   return self;

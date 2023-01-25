@@ -22,7 +22,6 @@ class RCTComponentViewDescriptor final {
    * Associated (and owned) native view instance.
    */
   __strong RCTUIView<RCTComponentViewProtocol> *view = nil; // [macOS]
-
   /*
    * Indicates a requirement to call on the view methods from
    * `RCTMountingTransactionObserving` protocol.

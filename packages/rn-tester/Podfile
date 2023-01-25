@@ -24,11 +24,7 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
     fabric_enabled = true
   end
   # macOS]
-
-  # Hermes is now enabled by default.
-  # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
-  hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
-  puts "Configuring #{target_name} with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
+  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     # Custom fabric component is only supported when using codegen discovery.

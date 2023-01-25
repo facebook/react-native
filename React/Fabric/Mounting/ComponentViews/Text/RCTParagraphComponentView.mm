@@ -268,7 +268,6 @@ using namespace facebook::react;
   return paragraphProps.isSelectable;
 }
 
-#if !TARGET_OS_OSX // [macOS]
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
   auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
@@ -277,9 +276,12 @@ using namespace facebook::react;
     return YES;
   }
 
+#if !TARGET_OS_OSX // [macOS]
   return [self.nextResponder canPerformAction:action withSender:sender];
+#else  // [macOS
+  return NO;
+#endif // macOS]
 }
-#endif // [macOS]
 
 - (void)copy:(id)sender
 {

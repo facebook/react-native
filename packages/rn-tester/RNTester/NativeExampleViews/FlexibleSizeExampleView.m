@@ -61,11 +61,14 @@ RCT_EXPORT_MODULE();
 #ifndef TARGET_OS_TV
     _currentSizeTextView.editable = NO;
 #endif
-#if !TARGET_OS_OSX // [macOS]
-    _currentSizeTextView.text = @"Resizable view has not been resized yet";
-#else // [macOS
-    _currentSizeTextView.string = @"Resizable view has not been resized yet";
+    // [macOS Github#1642: Suppress analyzer error of nonlocalized string
+    NSString *currentSizeTextViewString = NSLocalizedString(@"Resizable view has not been resized yet", nil);
+#if !TARGET_OS_OSX
+    _currentSizeTextView.text = currentSizeTextViewString; // [macOS]
+#else
+    _currentSizeTextView.string = currentSizeTextViewString;
 #endif // macOS]
+#pragma clang diagnostic pop
     _currentSizeTextView.textColor = [RCTUIColor blackColor]; // [macOS]
     _currentSizeTextView.backgroundColor = [RCTUIColor whiteColor]; // [macOS]
     _currentSizeTextView.font = [UIFont boldSystemFontOfSize:10];

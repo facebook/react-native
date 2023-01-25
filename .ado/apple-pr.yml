@@ -16,8 +16,8 @@ pr:
       - '*.md'
 
 jobs:
-  - job: JavaScriptRNPR
-    displayName: JavaScript React Native PR
+  - job: JavaScriptPR
+    displayName: Javascript PR
     pool:
       vmImage: $(VmImageApple)
       demands: ['xcode', 'sh', 'npm']
@@ -27,24 +27,76 @@ jobs:
             slice_name: $(slice_name)
             xcode_version: $(xcode_version)
 
-  - job: AppleRNPR
-    displayName: Apple React Native PR
+  - job: ApplePR
+    displayName: PR
     strategy:
       matrix:
-        ios:
+        'iOS Paper Debug':
           packager_platform: 'ios'
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
+          xcode_configuration: 'Debug'
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
-          xcode_actions_debug: 'build test'
-          xcode_actions_release: 'build'
-        macos:
+          xcode_actions: 'build test'
+          use_fabric: '0'
+        'iOS Paper Release':
+          packager_platform: 'ios'
+          xcode_sdk: iphonesimulator
+          xcode_scheme: 'RNTester'
+          xcode_configuration: 'Release'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_actions: 'build'
+          use_fabric: '0'
+        'iOS Fabric Debug': 
+          packager_platform: 'ios'
+          xcode_sdk: iphonesimulator
+          xcode_scheme: 'RNTester'
+          xcode_configuration: 'Debug'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_actions: 'build test'
+          use_fabric: '1'
+        # Disable failing job
+        # 'iOS Fabric Release': 
+        #   packager_platform: 'ios'
+        #   xcode_sdk: iphonesimulator
+        #   xcode_scheme: 'RNTester'
+        #   xcode_configuration: 'Release'
+        #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+        #   xcode_actions: 'build'
+        #   use_fabric: '1' 
+        'macOS Paper Debug':
           packager_platform: 'macos'
           xcode_sdk: macosx
           xcode_scheme: 'RNTester-macOS'
+          xcode_configuration: 'Debug'
           xcode_destination: 'platform=macOS,arch=x86_64'
-          xcode_actions_debug: 'build test'
-          xcode_actions_release: 'build'
+          xcode_actions: 'build test'
+          use_fabric: '0'
+        'macOS Paper Release':
+          packager_platform: 'macos'
+          xcode_sdk: macosx
+          xcode_scheme: 'RNTester-macOS'
+          xcode_configuration: 'Release'
+          xcode_destination: 'platform=macOS,arch=x86_64'
+          xcode_actions: 'build'
+          use_fabric: '0'
+        'macOS Fabric Debug':
+          packager_platform: 'macos'
+          xcode_sdk: macosx
+          xcode_scheme: 'RNTester-macOS'
+          xcode_configuration: 'Debug'
+          xcode_destination: 'platform=macOS,arch=x86_64'
+          xcode_actions: 'build test'
+          use_fabric: '1'
+        # Disable failing job
+        # 'macOS Fabric Release':
+        #   packager_platform: 'macos'
+        #   xcode_sdk: macosx
+        #   xcode_scheme: 'RNTester-macOS'
+        #   xcode_configuration: 'Release'
+        #   xcode_destination: 'platform=macOS,arch=x86_64'
+        #   xcode_actions: 'build'
+        #   use_fabric: '1'
     pool:
       vmImage: $(VmImageApple)
       demands: ['xcode', 'sh', 'npm']
@@ -57,8 +109,7 @@ jobs:
           xcode_sdk: $(xcode_sdk)
           xcode_configuration: $(xcode_configuration)
           xcode_scheme: $(xcode_scheme)
-          xcode_actions_debug: $(xcode_actions_debug)
-          xcode_actions_release: $(xcode_actions_release)
+          xcode_actions: $(xcode_actions)
           xcode_destination: $(xcode_destination)
           slice_name: $(slice_name)
           xcode_version: $(xcode_version)

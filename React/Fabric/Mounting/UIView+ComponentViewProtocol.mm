@@ -7,6 +7,8 @@
 
 #import "UIView+ComponentViewProtocol.h"
 
+#import <objc/runtime.h> // [macOS]
+
 #import <React/RCTAssert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
@@ -103,16 +105,22 @@ using namespace facebook::react;
     } else {
       // Note: Changing `frame` when `layer.transform` is not the `identity transform` is undefined behavior.
       // Therefore, we must use `center` and `bounds`.
+#if !TARGET_OS_OSX // [macOS]
       self.center = CGPoint{CGRectGetMidX(frame), CGRectGetMidY(frame)};
+#else // [macOS
+      self.frame = frame;
+#endif // macOS]
       self.bounds = CGRect{CGPointZero, frame.size};
     }
   }
 
+#if !TARGET_OS_OSX // [macOS]
   if (forceUpdate || (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection)) {
     self.semanticContentAttribute = layoutMetrics.layoutDirection == LayoutDirection::RightToLeft
         ? UISemanticContentAttributeForceRightToLeft
         : UISemanticContentAttributeForceLeftToRight;
   }
+#endif // [macOS]
 
   if (forceUpdate || (layoutMetrics.displayType != oldLayoutMetrics.displayType)) {
     self.hidden = layoutMetrics.displayType == DisplayType::None;
@@ -144,6 +152,16 @@ using namespace facebook::react;
 - (void)setIsJSResponder:(BOOL)isJSResponder
 {
   // Default implementation does nothing.
+}
+
+- (NSNumber *)reactTag
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setReactTag:(NSNumber *)reactTag
+{
+  objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)propKeys

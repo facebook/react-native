@@ -34,7 +34,11 @@ using namespace facebook::react;
     _label.textAlignment = NSTextAlignmentCenter;
     _label.textColor = [RCTUIColor whiteColor]; // [macOS]
 
+#if !TARGET_OS_OSX // [macOS]
     self.contentView = _label;
+#else // [macOS
+    [self.contentView addSubview:_label];
+#endif // macOS]
   }
 
   return self;

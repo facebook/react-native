@@ -64,7 +64,12 @@ using namespace facebook::react;
     _maximumTrackImageResponseObserverProxy = RCTImageResponseObserverProxy(self);
     _thumbImageResponseObserverProxy = RCTImageResponseObserverProxy(self);
 
+#if !TARGET_OS_OSX // [macOS]
     self.contentView = _sliderView;
+#else // [macOS
+    self.contentView = [RCTUIView new];
+    [self.contentView addSubview:_sliderView];
+#endif // macOS]
   }
 
   return self;

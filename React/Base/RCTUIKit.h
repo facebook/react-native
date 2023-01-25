@@ -61,10 +61,9 @@ UIKIT_STATIC_INLINE CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path)
 //
 
 // UIView
-#define RCTPlatformView         UIView
+#define RCTPlatformView UIView
 #define RCTUIView UIView
 #define RCTUIScrollView UIScrollView
-
 #define RCTPlatformWindow UIWindow
 
 UIKIT_STATIC_INLINE RCTPlatformView *RCTUIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, __unused UIEvent *__nullable event)
@@ -389,6 +388,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 - (void)layoutIfNeeded;
 
 - (void)layoutSubviews;
+- (NSArray<RCTUIView *> *)reactZIndexSortedSubviews; // [macOS]
 
 - (void)setNeedsDisplay;
 
@@ -411,7 +411,10 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
  * Specifies whether focus ring should be drawn when the view has the first responder status.
  */
 @property (nonatomic, assign) BOOL enableFocusRing;
-
+/**
+ * The z-index of the view.
+ */
+@property (nonatomic, assign) NSInteger reactZIndex;
 
 @end
 
@@ -509,6 +512,11 @@ NS_ASSUME_NONNULL_END
 typedef UILabel RCTUILabel;
 #else
 @interface RCTUILabel : NSTextField
+NS_ASSUME_NONNULL_BEGIN
+@property(nonatomic, copy) NSString* _Nullable text;
+@property(nonatomic, assign) NSInteger numberOfLines;
+@property(nonatomic, assign) NSTextAlignment textAlignment;
+NS_ASSUME_NONNULL_END
 @end
 #endif
 
@@ -544,4 +552,13 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 @end
 
+#endif
+
+// RCTUITouch
+
+#if !TARGET_OS_OSX
+typedef UITouch RCTUITouch;
+#else
+@interface RCTUITouch : NSEvent
+@end
 #endif

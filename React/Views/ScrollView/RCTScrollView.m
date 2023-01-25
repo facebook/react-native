@@ -541,6 +541,15 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     _onInvertedDidChange(@{});
   }
 }
+
+- (void)setHasOverlayStyleIndicator:(BOOL)hasOverlayStyle
+{
+  if (hasOverlayStyle == true) {
+    self.scrollView.scrollerStyle = NSScrollerStyleOverlay;
+  } else {
+    self.scrollView.scrollerStyle = NSScrollerStyleLegacy;
+  }
+}
 #endif // macOS]
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)

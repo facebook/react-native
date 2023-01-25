@@ -41,6 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setIsJSResponder:(BOOL)isJSResponder;
 
+- (NSNumber *)reactTag; // [macOS]
+- (void)setReactTag:(NSNumber *)reactTag; // [macOS]
+
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)props;
 - (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 

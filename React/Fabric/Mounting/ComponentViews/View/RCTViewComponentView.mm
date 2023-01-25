@@ -14,6 +14,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTConversions.h>
+#import <React/RCTUtils.h> // [macOS]
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
@@ -452,6 +453,7 @@ using namespace facebook::react;
   return _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (RCTUIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event // [macOS]
 {
   // This is a classic textbook implementation of `hitTest:` with a couple of improvements:
@@ -460,7 +462,11 @@ using namespace facebook::react;
   //   * Taking `layer.zIndex` field into an account is not required because
   //     lists of `ShadowView`s are already sorted based on `zIndex` prop.
 
+#if !TARGET_OS_OSX // [macOS]
   if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
+#else // [macOS
+  if (!self.userInteractionEnabled || self.hidden) {
+#endif // macOS]
     return nil;
   }
 
@@ -498,6 +504,60 @@ using namespace facebook::react;
       return view != self ? view : nil;
   }
 }
+#else // [macOS
+
+- (RCTUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // [macOS]
+{
+  BOOL canReceiveTouchEvents = ([self isUserInteractionEnabled] && ![self isHidden]);
+  if (!canReceiveTouchEvents) {
+    return nil;
+  }
+
+  // `hitSubview` is the topmost subview which was hit. The hit point can
+  // be outside the bounds of `view` (e.g., if -clipsToBounds is NO).
+  RCTUIView *hitSubview = nil; // [macOS]
+  BOOL isPointInside = [self pointInside:point withEvent:event];
+  BOOL needsHitSubview = !(_props->pointerEvents == PointerEventsMode::None || _props->pointerEvents == PointerEventsMode::BoxOnly);
+  if (needsHitSubview && (![self clipsToBounds] || isPointInside)) {
+    // Take z-index into account when calculating the touch target.
+    NSArray<RCTUIView *> *sortedSubviews = [self reactZIndexSortedSubviews]; // [macOS]
+
+    // The default behaviour of UIKit is that if a view does not contain a point,
+    // then no subviews will be returned from hit testing, even if they contain
+    // the hit point. By doing hit testing directly on the subviews, we bypass
+    // the strict containment policy (i.e., UIKit guarantees that every ancestor
+    // of the hit view will return YES from -pointInside:withEvent:). See:
+    //  - https://developer.apple.com/library/ios/qa/qa2013/qa1812.html
+    for (RCTUIView *subview in [sortedSubviews reverseObjectEnumerator]) { // [macOS]
+      CGPoint pointForHitTest = CGPointZero;
+      if ([subview isKindOfClass:[RCTUIView class]]) { // [macOS]
+        pointForHitTest = [subview convertPoint:point fromView:self];
+      } else {
+        pointForHitTest = point;
+      }
+      hitSubview = (RCTUIView *)[subview hitTest:pointForHitTest]; // [macOS]
+      if (hitSubview != nil) {
+        break;
+      }
+    }
+  }
+
+  RCTUIView *hitView = (isPointInside ? self : nil); // [macOS]
+
+  switch (_props->pointerEvents) {
+    case PointerEventsMode::None:
+      return nil;
+    case PointerEventsMode::Auto:
+      return hitSubview ?: hitView;
+    case PointerEventsMode::BoxOnly:
+      return hitView;
+    case PointerEventsMode::BoxNone:
+      return hitSubview;
+    default:
+      return hitSubview ?: hitView;
+  }
+}
+#endif // macOS]
 
 static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 {
@@ -647,9 +707,14 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       CGRect contentsCenter = CGRect{
           CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
           CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
-
-      _borderLayer.contents = (id)image.CGImage;
-      _borderLayer.contentsScale = image.scale;
+        
+#if !TARGET_OS_OSX // [macOS]
+        _borderLayer.contents = (id)image.CGImage;
+        _borderLayer.contentsScale = image.scale;
+#else // [macOS
+        _borderLayer.contents = [image layerContentsForContentsScale:scaleFactor];
+        _borderLayer.contentsScale = RCTScreenScale();
+#endif // macOS]
 
       BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
       if (isResizable) {

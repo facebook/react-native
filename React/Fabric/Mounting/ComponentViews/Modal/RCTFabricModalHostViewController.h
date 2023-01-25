@@ -15,6 +15,8 @@
 
 @property (nonatomic, weak) id<RCTFabricModalHostViewControllerDelegate> delegate;
 
+#if !TARGET_OS_OSX // [macOS]
 @property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations;
+#endif // [macOS]
 
 @end

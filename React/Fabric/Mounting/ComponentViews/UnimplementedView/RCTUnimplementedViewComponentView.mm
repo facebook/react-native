@@ -30,18 +30,14 @@ using namespace facebook::react;
     static auto const defaultProps = std::make_shared<UnimplementedViewProps const>();
     _props = defaultProps;
 
-    _label = [[RCTUILabel alloc] initWithFrame:self.bounds]; // [macOS]
-    _label.backgroundColor = [RCTUIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3]; // [macOS]
+    _label = [[RCTUILabel alloc] initWithFrame:self.bounds];
+    _label.backgroundColor = [RCTUIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3];
     _label.lineBreakMode = NSLineBreakByCharWrapping;
-#if !TARGET_OS_OSX // [macOS]
     _label.numberOfLines = 0;
     _label.textAlignment = NSTextAlignmentCenter;
-#else // [macOS
-    _label.alignment = NSTextAlignmentCenter;
-#endif // macOS]
-    _label.textColor = [RCTUIColor whiteColor]; // [macOS]
-    _label.allowsDefaultTighteningForTruncation = YES;
+    _label.textColor = [RCTUIColor whiteColor];
 #if !TARGET_OS_OSX // [macOS]
+    _label.allowsDefaultTighteningForTruncation = YES;
     _label.adjustsFontSizeToFitWidth = YES;
 #endif // [macOS]
 
