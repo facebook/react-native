@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
+import android.util.Log;
 
 /*
  * Wraps {@link AbsoluteSizeSpan} as a {@link ReactSpan}.
@@ -35,6 +36,9 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
   @Override
   public void updateDrawState(TextPaint ds) {
     super.updateDrawState(ds);
+    Log.w("-----------------------------------------", "");
+    Log.w("updateDrawState is called!!! ----------------------", "");
+    Log.w("-----------------------------------------", "");
     if (mTextAlignVertical == "center-child") {
       return;
     }
