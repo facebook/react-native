@@ -8,6 +8,8 @@
 package com.facebook.react.views.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Paint;
 import android.text.TextPaint;
@@ -108,48 +110,32 @@ public class ReactAbsoluteSizeSpanTest {
 
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
+    class MockFontMetrics {
+      /**
+       * The maximum distance above the baseline for the tallest glyph in the font at a given text
+       * size.
+       */
+      public float top = -15;
+      /** The recommended distance above the baseline for singled spaced text. */
+      public float ascent = -10;
+      /** The recommended distance below the baseline for singled spaced text. */
+      public float descent = 10;
+      /**
+       * The maximum distance below the baseline for the lowest glyph in the font at a given text
+       * size.
+       */
+      public float bottom = 15;
+      /** The recommended additional space to add between lines of text. */
+      public float leading = 0;
+    }
+    MockFontMetrics fontMetrics = new MockFontMetrics();
+    TextPaint tp = mock(TextPaint.class);
+
+    when(tp.getFontMetrics()).thenReturn(fontMetrics);
+
     String methodName = "textWithNoLineHeightAlignsBasedOnFontMetrics";
     int fontSize = 15;
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
-    TextPaint tp =
-        new TextPaint() {
-          @Override
-          public FontMetrics getFontMetrics() {
-            String methodName = "getFontMetrics";
-            FontMetrics fm = new FontMetrics();
-            Log.w(
-                "ReactTest:: MockedTextPaint in the instance",
-                methodName
-                    + " fm.top: "
-                    + (fm.top)
-                    + " fm.ascent: "
-                    + (fm.ascent)
-                    + " fm.bottom: "
-                    + (fm.bottom)
-                    + " fm.top: "
-                    + (fm.top));
-            return fm;
-          }
-
-          class FontMetrics extends Paint.FontMetrics {
-            /**
-             * The maximum distance above the baseline for the tallest glyph in the font at a given
-             * text size.
-             */
-            public float top = -15;
-            /** The recommended distance above the baseline for singled spaced text. */
-            public float ascent = -10;
-            /** The recommended distance below the baseline for singled spaced text. */
-            public float descent = 10;
-            /**
-             * The maximum distance below the baseline for the lowest glyph in the font at a given
-             * text size.
-             */
-            public float bottom = 15;
-            /** The recommended additional space to add between lines of text. */
-            public float leading = 0;
-          }
-        };
     Log.w(
         "ReactTest::",
         methodName
