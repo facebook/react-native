@@ -30,7 +30,11 @@ using namespace facebook::react;
 
 @implementation RCTTextInputComponentView {
   TextInputShadowNode::ConcreteState::Shared _state;
-  RCTUIView<RCTBackedTextInputViewProtocol> *_backedTextInputView; // [macOS]
+#if !TARGET_OS_OSX // [macOS]
+  RCTUIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
+#else // [macOS
+  RCTUITextView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
+#endif // macOS]
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
 
@@ -67,7 +71,11 @@ using namespace facebook::react;
     _props = defaultProps;
     auto &props = *defaultProps;
 
+#if !TARGET_OS_OSX // [macOS]
     _backedTextInputView = props.traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
+#else // [macOS
+    _backedTextInputView = [RCTUITextView new];
+#endif // macOS]
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
@@ -480,25 +488,23 @@ using namespace facebook::react;
 
 - (void)setDefaultInputAccessoryView
 {
+#if !TARGET_OS_OSX // [macOS]
   // InputAccessoryView component sets the inputAccessoryView when inputAccessoryViewID exists
   if (_backedTextInputView.inputAccessoryViewID) {
     if (_backedTextInputView.isFirstResponder) {
-#if !TARGET_OS_OSX // [macOS]
       [_backedTextInputView reloadInputViews];
-#endif // [macOS]
     }
     return;
   }
 
-#if !TARGET_OS_OSX // [macOS]
   UIKeyboardType keyboardType = _backedTextInputView.keyboardType;
 
   // These keyboard types (all are number pads) don't have a "Done" button by default,
   // so we create an `inputAccessoryView` with this button for them.
   BOOL shouldHaveInputAccesoryView =
-      (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
-       keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
-      _backedTextInputView.returnKeyType == UIReturnKeyDone;
+  (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
+   keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
+  _backedTextInputView.returnKeyType == UIReturnKeyDone;
 
   if ((_backedTextInputView.inputAccessoryView != nil) == shouldHaveInputAccesoryView) {
     return;
@@ -508,32 +514,30 @@ using namespace facebook::react;
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
     UIBarButtonItem *flexibleSpace =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     UIBarButtonItem *doneButton =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                      target:self
-                                                      action:@selector(handleInputAccessoryDoneButton)];
+    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                  target:self
+                                                  action:@selector(handleInputAccessoryDoneButton)];
     toolbarView.items = @[ flexibleSpace, doneButton ];
     _backedTextInputView.inputAccessoryView = toolbarView;
   } else {
     _backedTextInputView.inputAccessoryView = nil;
   }
-#endif // [macOS]
-
+  
   if (_backedTextInputView.isFirstResponder) {
-#if !TARGET_OS_OSX // [macOS]
     [_backedTextInputView reloadInputViews];
-#endif // [macOS]
   }
+#endif // [macOS]
 }
 
 - (void)handleInputAccessoryDoneButton
 {
-  if ([self textInputShouldReturn]) {
 #if !TARGET_OS_OSX // [macOS]
+  if ([self textInputShouldReturn]) {
     [_backedTextInputView endEditing:YES];
-#endif // [macOS]
   }
+#endif // [macOS]
 }
 
 #pragma mark - Other
@@ -635,7 +639,11 @@ using namespace facebook::react;
 - (void)_setMultiline:(BOOL)multiline
 {
   [_backedTextInputView removeFromSuperview];
-  RCTUIView<RCTBackedTextInputViewProtocol> *backedTextInputView = multiline ? [RCTUITextView new] : [RCTUITextField new]; // [macOS]
+#if !TARGET_OS_OSX // [macOS]
+  RCTUIView<RCTBackedTextInputViewProtocol> *backedTextInputView = multiline ? [RCTUITextView new] : [RCTUITextField new];
+#else // [macOS
+  RCTUITextView<RCTBackedTextInputViewProtocol> *backedTextInputView = [RCTUITextView new];
+#endif // macOS]
   backedTextInputView.frame = _backedTextInputView.frame;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;
@@ -665,17 +673,19 @@ using namespace facebook::react;
                    }];
 
   BOOL shouldFallbackToBareTextComparison =
-      [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
 #if !TARGET_OS_OSX // [macOS]
-      [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
-      _backedTextInputView.markedTextRange || _backedTextInputView.isSecureTextEntry || fontHasBeenUpdatedBySystem;
+  [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
+  [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
+  _backedTextInputView.markedTextRange ||
+  _backedTextInputView.isSecureTextEntry ||
 #else // [macOS
-    // There are multiple Korean input sources (2-Set, 3-Set, etc). Check substring instead instead
-    [[[self.backedTextInputView inputContext] selectedKeyboardInputSource] containsString:@"com.apple.inputmethod.Korean"] ||
-    [self.backedTextInputView hasMarkedText] ||
-    [self.backedTextInputView isKindOfClass:[NSSecureTextField class]] ||
-    fontHasBeenUpdatedBySystem;
+  // There are multiple Korean input sources (2-Set, 3-Set, etc). Check substring instead instead
+  [[[_backedTextInputView inputContext] selectedKeyboardInputSource] containsString:@"com.apple.inputmethod.Korean"] ||
+  [_backedTextInputView hasMarkedText] ||
+  [_backedTextInputView isKindOfClass:[NSSecureTextField class]] ||
 #endif // macOS]
+  fontHasBeenUpdatedBySystem;
+
   if (shouldFallbackToBareTextComparison) {
     return ([newText.string isEqualToString:oldText.string]);
   } else {
