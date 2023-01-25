@@ -62,7 +62,7 @@ task downloadHermes(type: Download) {
     src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
     onlyIfModified(true)
     overwrite(true)
-    useETag(true)
+    useETag("all")
     dest(new File(downloadsDir, "hermes.tar.gz"))
 }
 
@@ -136,7 +136,6 @@ android {
                 arguments "-DHERMES_IS_ANDROID=True"
                 arguments "-DANDROID_STL=c++_shared"
                 arguments "-DANDROID_PIE=True"
-                arguments "-DANDROID_LD=lld"
                 arguments "-DIMPORT_HERMESC=${new File(hermesBuildDir, "ImportHermesc.cmake").toString()}"
                 arguments "-DJSI_DIR=${jsiDir}"
                 arguments "-DHERMES_SLOW_DEBUG=False"
