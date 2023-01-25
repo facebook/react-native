@@ -36,6 +36,7 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
   @Override
   public void updateDrawState(TextPaint ds) {
     super.updateDrawState(ds);
+    String methodName = "updateDrawState";
     Log.w("-----------------------------------------", "");
     Log.w("updateDrawState is called!!! ----------------------", "");
     Log.w("-----------------------------------------", "");
@@ -47,18 +48,70 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
       // https://stackoverflow.com/a/27631737/7295772
       if (mTextAlignVertical == "top-child") {
         ds.baselineShift += ds.getFontMetrics().top - ds.ascent() - ds.descent();
+        Log.w(
+            "ReactTest::",
+            methodName
+                + " ds.baselineShift: "
+                + (ds.baselineShift)
+                + " ds.getFontMetrics().top: "
+                + (ds.getFontMetrics().top)
+                + " ds.getFontMetrics().bottom: "
+                + (ds.getFontMetrics().bottom)
+                + " ds.ascent(): "
+                + (ds.ascent())
+                + " ds.descent(): "
+                + (ds.descent()));
       }
       if (mTextAlignVertical == "bottom-child") {
         ds.baselineShift += ds.getFontMetrics().bottom - ds.descent();
+        Log.w(
+            "ReactTest::",
+            methodName
+                + " ds.baselineShift: "
+                + (ds.baselineShift)
+                + " ds.getFontMetrics().top: "
+                + (ds.getFontMetrics().top)
+                + " ds.getFontMetrics().bottom: "
+                + (ds.getFontMetrics().bottom)
+                + " ds.ascent(): "
+                + (ds.ascent())
+                + " ds.descent(): "
+                + (ds.descent()));
       }
     } else {
       if (mHighestFontSize == getSize()) {
         // aligns text vertically in the lineHeight
         if (mTextAlignVertical == "top-child") {
           ds.baselineShift -= mHighestLineHeight / 2 - getSize() / 2;
+          Log.w(
+              "ReactTest::",
+              methodName
+                  + " ds.baselineShift: "
+                  + (ds.baselineShift)
+                  + " ds.getFontMetrics().top: "
+                  + (ds.getFontMetrics().top)
+                  + " ds.getFontMetrics().bottom: "
+                  + (ds.getFontMetrics().bottom)
+                  + " ds.ascent(): "
+                  + (ds.ascent())
+                  + " ds.descent(): "
+                  + (ds.descent()));
         }
         if (mTextAlignVertical == "bottom-child") {
           ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2 - ds.descent();
+          Log.w(
+              "ReactTest::",
+              methodName
+                  + " ds.baselineShift: "
+                  + (ds.baselineShift)
+                  + " ds.getFontMetrics().top: "
+                  + (ds.getFontMetrics().top)
+                  + " ds.getFontMetrics().bottom: "
+                  + (ds.getFontMetrics().bottom)
+                  + " ds.ascent(): "
+                  + (ds.ascent())
+                  + " ds.descent(): "
+                  + (ds.descent()));
         }
       } else if (mHighestFontSize != 0) {
         // align correctly text that has smaller font
@@ -68,9 +121,35 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
                   - mHighestFontSize / 2
                   + (mHighestFontSize - getSize())
                   + (ds.getFontMetrics().top - ds.getFontMetrics().ascent);
+          Log.w(
+              "ReactTest::",
+              methodName
+                  + " ds.baselineShift: "
+                  + (ds.baselineShift)
+                  + " ds.getFontMetrics().top: "
+                  + (ds.getFontMetrics().top)
+                  + " ds.getFontMetrics().bottom: "
+                  + (ds.getFontMetrics().bottom)
+                  + " ds.ascent(): "
+                  + (ds.ascent())
+                  + " ds.descent(): "
+                  + (ds.descent()));
         }
         if (mTextAlignVertical == "bottom-child") {
           ds.baselineShift += mHighestLineHeight / 2 - mHighestFontSize / 2 - ds.descent();
+          Log.w(
+              "ReactTest::",
+              methodName
+                  + " ds.baselineShift: "
+                  + (ds.baselineShift)
+                  + " ds.getFontMetrics().top: "
+                  + (ds.getFontMetrics().top)
+                  + " ds.getFontMetrics().bottom: "
+                  + (ds.getFontMetrics().bottom)
+                  + " ds.ascent(): "
+                  + (ds.ascent())
+                  + " ds.descent(): "
+                  + (ds.descent()));
         }
       }
     }
