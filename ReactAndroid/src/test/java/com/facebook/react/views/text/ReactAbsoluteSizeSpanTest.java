@@ -20,7 +20,7 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactAbsoluteSizeSpanTest {
-  private class MockTextPaint extends TextPaint {
+  private class MockedTextPaint extends TextPaint {
     private static final String TAG = "MockTextPaint";
 
     /**
@@ -30,7 +30,7 @@ public class ReactAbsoluteSizeSpanTest {
     @Override
     public FontMetrics getFontMetrics() {
       String methodName = "getFontMetrics";
-      MockTextPaint.FontMetrics fm = new MockTextPaint.FontMetrics();
+      MockedTextPaint.FontMetrics fm = new MockedTextPaint.FontMetrics();
       Log.w(
           "ReactTest:: mocked" + TAG,
           methodName
@@ -65,19 +65,18 @@ public class ReactAbsoluteSizeSpanTest {
     }
   }
 
-  private class MockAbsoluteSpan extends ReactAbsoluteSizeSpan {
+  private class MockedAbsoluteSpan extends ReactAbsoluteSizeSpan {
     private TextPaint mTextPaint;
 
-    public MockAbsoluteSpan(int size) {
+    public MockedAbsoluteSpan(int size) {
       super(size);
     }
 
-    public MockAbsoluteSpan(int size, String textAlignVertical) {
+    public MockedAbsoluteSpan(int size, String textAlignVertical) {
       super(size, textAlignVertical);
     }
 
-    @Override
-    public void updateDrawState(TextPaint ds) {
+    public void updateDrawState(MockedTextPaint ds) {
       super.updateDrawState(ds);
       mTextPaint = ds;
     }
@@ -111,8 +110,8 @@ public class ReactAbsoluteSizeSpanTest {
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
     String methodName = "textWithNoLineHeightAlignsBasedOnFontMetrics";
     int fontSize = 15;
-    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
-    MockTextPaint tp = new MockTextPaint();
+    MockedAbsoluteSpan absoluteSizeSpan = new MockedAbsoluteSpan(fontSize, "top-child");
+    MockedTextPaint tp = new MockedTextPaint();
     Log.w(
         "ReactTest::",
         methodName
