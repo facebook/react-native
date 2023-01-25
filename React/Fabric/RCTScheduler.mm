@@ -115,10 +115,6 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
       _animationDriver = std::make_shared<LayoutAnimationDriver>(
           toolbox.runtimeExecutor, toolbox.contextContainer, _layoutAnimationDelegateProxy.get());
-
-      if (reactNativeConfig->getBool("react_fabric:enable_simulate_image_props_memory_access")) {
-        _animationDriver->enableSimulateImagePropsMemoryAccess();
-      }
       _uiRunLoopObserver =
           toolbox.mainRunLoopObserverFactory(RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
       _uiRunLoopObserver->setDelegate(_layoutAnimationDelegateProxy.get());
