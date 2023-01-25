@@ -10,7 +10,6 @@ package com.facebook.react.views.text;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.text.TextPaint;
-import android.util.Log;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -46,14 +45,9 @@ public class ReactAbsoluteSizeSpanTest {
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "bottom-child");
     TextPaint tp = new TextPaint();
     absoluteSizeSpan.updateDrawState(tp);
-    Log.w(
-        "React::",
-        " tp.getFontMetrics().top: "
-            + (tp.getFontMetrics().top)
-            + " tp.ascent(): "
-            + (tp.ascent())
-            + " tp.descent(): "
-            + (tp.descent()));
+    assertThat(tp.getFontMetrics().top).isEqualTo(99);
+    assertThat(tp.ascent()).isEqualTo(99);
+    assertThat(tp.descent()).isEqualTo(99);
     assertThat(tp.baselineShift).isEqualTo(2);
   }
 }
