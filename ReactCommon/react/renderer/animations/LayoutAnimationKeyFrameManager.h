@@ -90,8 +90,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void setClockNow(std::function<uint64_t()> now);
 
-  void enableSkipInvalidatedKeyFrames();
-
   void enableCrashOnMissingComponentDescriptor();
 
   void enableSimulateImagePropsMemoryAccess();
@@ -152,7 +150,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable butter::set<SurfaceId> surfaceIdsToStop_{};
-  bool skipInvalidatedKeyFrames_{false};
   bool reduceDeleteCreateMutation_{false};
 
   /*

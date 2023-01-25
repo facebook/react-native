@@ -1108,10 +1108,6 @@ void LayoutAnimationKeyFrameManager::setClockNow(
   now_ = std::move(now);
 }
 
-void LayoutAnimationKeyFrameManager::enableSkipInvalidatedKeyFrames() {
-  skipInvalidatedKeyFrames_ = true;
-}
-
 void LayoutAnimationKeyFrameManager::enableCrashOnMissingComponentDescriptor() {
   crashOnMissingComponentDescriptor_ = true;
 }
@@ -1222,9 +1218,6 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     ShadowViewMutation::List &mutationsList,
     bool interrupted,
     const std::string & /*logPrefix*/) const {
-  if (skipInvalidatedKeyFrames_ && keyframe.invalidated) {
-    return;
-  }
   if (!keyframe.finalMutationsForKeyFrame.empty()) {
     // TODO: modularize this segment, it is repeated 2x in KeyFrameManager
     // as well.

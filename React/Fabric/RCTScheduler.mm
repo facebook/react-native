@@ -115,9 +115,6 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
       _animationDriver = std::make_shared<LayoutAnimationDriver>(
           toolbox.runtimeExecutor, toolbox.contextContainer, _layoutAnimationDelegateProxy.get());
-      if (reactNativeConfig->getBool("react_fabric:enabled_skip_invalidated_key_frames_ios")) {
-        _animationDriver->enableSkipInvalidatedKeyFrames();
-      }
       if (reactNativeConfig->getBool("react_fabric:enable_crash_on_missing_component_descriptor")) {
         _animationDriver->enableCrashOnMissingComponentDescriptor();
       }
