@@ -9,8 +9,6 @@ package com.facebook.react.views.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextPaint;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,9 +62,12 @@ public class ReactAbsoluteSizeSpanTest {
 
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
-    final SpannableString text = new SpannableString("P.");
-    MockAbsoluteSpan mockAbsoluteSpan = new MockAbsoluteSpan(15, "top-child");
-    text.setSpan(mockAbsoluteSpan, 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-    assertThat(mockAbsoluteSpan.getTextPaint().getFontMetrics().top).isEqualTo(99);
+    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
+    TextPaint tp = new TextPaint();
+    int lineHeight = 0;
+    int maximumFontSize = 16;
+    absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
+    absoluteSizeSpan.updateDrawState(tp);
+    assertThat(tp.getFontMetrics().top).isEqualTo(99);
   }
 }
