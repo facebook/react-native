@@ -60,6 +60,7 @@
   } else {
     // When using Scenes, we must present the alert from a view controller associated with a window in the Scene. A fresh window (i.e. _alertWindow) cannot show the alert.
     [RCTPresentedViewController() presentViewController:self animated:animated completion:completion];
+  }
 }
 
 - (void)hide
