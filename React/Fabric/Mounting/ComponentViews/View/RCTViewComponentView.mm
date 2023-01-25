@@ -14,6 +14,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTConversions.h>
+#import <React/RCTUtils.h> // [macOS]
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
@@ -626,9 +627,14 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       CGRect contentsCenter = CGRect{
           CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
           CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
-
-      _borderLayer.contents = (id)image.CGImage;
-      _borderLayer.contentsScale = image.scale;
+        
+#if !TARGET_OS_OSX // [macOS]
+        _borderLayer.contents = (id)image.CGImage;
+        _borderLayer.contentsScale = image.scale;
+#else // [macOS
+        _borderLayer.contents = [image layerContentsForContentsScale:scaleFactor];
+        _borderLayer.contentsScale = RCTScreenScale();
+#endif // macOS]
 
       BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
       if (isResizable) {
