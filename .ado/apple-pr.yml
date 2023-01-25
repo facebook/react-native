@@ -80,15 +80,15 @@ jobs:
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build'
           use_fabric: '0'
+        'macOS Fabric Debug':
+          packager_platform: 'macos'
+          xcode_sdk: macosx
+          xcode_scheme: 'RNTester-macOS'
+          xcode_configuration: 'Debug'
+          xcode_destination: 'platform=macOS,arch=x86_64'
+          xcode_actions: 'build test'
+          use_fabric: '1'
         # Disable failing job
-        # 'macOS Fabric Debug':
-        #   packager_platform: 'macos'
-        #   xcode_sdk: macosx
-        #   xcode_scheme: 'RNTester-macOS'
-        #   xcode_configuration: 'Debug'
-        #   xcode_destination: 'platform=macOS,arch=x86_64'
-        #   xcode_actions: 'build test'
-        #   use_fabric: '1'
         # 'macOS Fabric Release':
         #   packager_platform: 'macos'
         #   xcode_sdk: macosx
