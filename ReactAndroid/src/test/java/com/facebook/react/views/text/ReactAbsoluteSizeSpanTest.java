@@ -9,7 +9,9 @@ package com.facebook.react.views.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import android.graphics.Paint;
 import android.text.TextPaint;
+import android.util.Log;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -41,7 +43,7 @@ public class ReactAbsoluteSizeSpanTest {
       return fm;
     }
 
-    public static class FontMetrics {
+    public class FontMetrics extends Paint.FontMetrics {
       /**
        * The maximum distance above the baseline for the tallest glyph in the font at a given text
        * size.
