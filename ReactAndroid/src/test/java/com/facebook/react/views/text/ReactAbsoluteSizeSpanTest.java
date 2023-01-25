@@ -32,7 +32,7 @@ public class ReactAbsoluteSizeSpanTest {
       String methodName = "getFontMetrics";
       MockedTextPaint.FontMetrics fm = new MockedTextPaint.FontMetrics();
       Log.w(
-          "ReactTest:: mocked" + TAG,
+          "ReactTest:: MockedTextPaint" + TAG,
           methodName
               + " fm.top: "
               + (fm.top)
@@ -111,7 +111,45 @@ public class ReactAbsoluteSizeSpanTest {
     String methodName = "textWithNoLineHeightAlignsBasedOnFontMetrics";
     int fontSize = 15;
     MockedAbsoluteSpan absoluteSizeSpan = new MockedAbsoluteSpan(fontSize, "top-child");
-    MockedTextPaint tp = new MockedTextPaint();
+    MockedTextPaint tp =
+        new MockedTextPaint() {
+          @Override
+          public FontMetrics getFontMetrics() {
+            String methodName = "getFontMetrics";
+            MockedTextPaint.FontMetrics fm = new MockedTextPaint.FontMetrics();
+            Log.w(
+                "ReactTest:: MockedTextPaint in the instance" + TAG,
+                methodName
+                    + " fm.top: "
+                    + (fm.top)
+                    + " fm.ascent: "
+                    + (fm.ascent)
+                    + " fm.bottom: "
+                    + (fm.bottom)
+                    + " fm.top: "
+                    + (fm.top));
+            return fm;
+          }
+
+          public class FontMetrics extends Paint.FontMetrics {
+            /**
+             * The maximum distance above the baseline for the tallest glyph in the font at a given
+             * text size.
+             */
+            public float top = -15;
+            /** The recommended distance above the baseline for singled spaced text. */
+            public float ascent = -10;
+            /** The recommended distance below the baseline for singled spaced text. */
+            public float descent = 10;
+            /**
+             * The maximum distance below the baseline for the lowest glyph in the font at a given
+             * text size.
+             */
+            public float bottom = 15;
+            /** The recommended additional space to add between lines of text. */
+            public float leading = 0;
+          }
+        };
     Log.w(
         "ReactTest::",
         methodName
