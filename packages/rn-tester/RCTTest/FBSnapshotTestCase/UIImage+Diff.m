@@ -22,7 +22,7 @@
                                                                                    format:rendererFormat];
 
   return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
-    CGCotextRef context = rendererContext.CGContext;
+    const CGContextRef context = rendererContext.CGContext;
     [self drawInRect:CGRectMake(0, 0, self.size.width, self.size.height)];
     CGContextSetAlpha(context, 0.5f);
     CGContextBeginTransparencyLayer(context, NULL);
