@@ -66,7 +66,7 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
               mHighestLineHeight / 2
                   - mHighestFontSize / 2
                   // smaller font aligns on the baseline of bigger font
-                  // move the baseline of text with smaller font up
+                  // moves the baseline of text with smaller font up
                   // so it aligns on the top of the larger font
                   + (mHighestFontSize - getSize())
                   + (ds.getFontMetrics().top - ds.ascent());
