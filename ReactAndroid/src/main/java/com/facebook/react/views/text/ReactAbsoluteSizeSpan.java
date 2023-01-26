@@ -9,7 +9,6 @@ package com.facebook.react.views.text;
 
 import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
-import android.util.Log;
 
 /*
  * Wraps {@link AbsoluteSizeSpan} as a {@link ReactSpan}.
@@ -37,7 +36,13 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
     }
     if (mHighestLineHeight == 0) {
       // align the text by font metrics
+      // when lineHeight prop is missing
       // https://stackoverflow.com/a/27631737/7295772
+      // top      -------------  -10
+      // ascent   -------------  -5
+      // baseline __my Text____   0
+      // descent  _____________   2
+      // bottom   _____________   5
       if (mTextAlignVertical == "top-child") {
         ds.baselineShift += ds.getFontMetrics().top - ds.ascent() - ds.descent();
       }
@@ -47,6 +52,7 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
     } else {
       if (mHighestFontSize == getSize()) {
         // aligns text vertically in the lineHeight
+        // and adjust their position depending on the fontSize
         if (mTextAlignVertical == "top-child") {
           ds.baselineShift -= mHighestLineHeight / 2 - getSize() / 2;
         }
@@ -56,23 +62,12 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
       } else if (mHighestFontSize != 0) {
         // align correctly text that has smaller font
         if (mTextAlignVertical == "top-child") {
-          String methodName = "updateDrawState";
-          Log.w(
-              "ReactTest::",
-              methodName
-                  + " mHighestLineHeight: "
-                  + (mHighestLineHeight)
-                  + " mHighestFontSize: "
-                  + (mHighestFontSize)
-                  + " getSize(): "
-                  + (getSize())
-                  + " ds.getFontMetrics().top: "
-                  + (ds.getFontMetrics().top)
-                  + " ds.getFontMetrics().ascent(): "
-                  + (ds.ascent()));
           ds.baselineShift -=
               mHighestLineHeight / 2
                   - mHighestFontSize / 2
+                  // smaller font aligns on the baseline of bigger font
+                  // move the baseline of text with smaller font up
+                  // so it aligns on the top of the larger font
                   + (mHighestFontSize - getSize())
                   + (ds.getFontMetrics().top - ds.ascent());
         }

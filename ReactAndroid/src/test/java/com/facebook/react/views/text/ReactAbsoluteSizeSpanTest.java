@@ -28,13 +28,18 @@ public class ReactAbsoluteSizeSpanTest {
   @Before
   public void setUp() {
     // https://stackoverflow.com/a/27631737/7295772
+    // top      -------------  -10
+    // ascent   -------------  -5
+    // baseline __my Text____   0
+    // descent  _____________   2
+    // bottom   _____________   5
     tp = mock(TextPaint.class);
     tp.baselineShift = 0;
     fontMetrics = mock(Paint.FontMetrics.class);
-    fontMetrics.top = 10.0f;
-    fontMetrics.bottom = -5.0f;
-    fontMetrics.ascent = 5.0f;
-    fontMetrics.descent = -2.0f;
+    fontMetrics.top = -10.0f;
+    fontMetrics.ascent = -5.0f;
+    fontMetrics.descent = 2.0f;
+    fontMetrics.bottom = 5.0f;
     when(tp.getFontMetrics()).thenReturn(fontMetrics);
     when(tp.ascent()).thenReturn(fontMetrics.ascent);
     when(tp.descent()).thenReturn(fontMetrics.descent);
@@ -56,17 +61,6 @@ public class ReactAbsoluteSizeSpanTest {
     int maximumFontSize = 16;
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
-    // highestLineHeight 10 highestFontSize 16  top 10 ascent 5 bottom -5 descent -2 fontSize 15
-    // ds.baselineShift -=
-    //     mHighestLineHeight / 2
-    //         - mHighestFontSize / 2
-    //         + (mHighestFontSize - getSize())
-    //         + (ds.getFontMetrics().top - ds.getFontMetrics().ascent);
-    // - (10 / 2 - 16 / 2 + (16 - 15) + (10 - 5))
-    // - (5 - 8 + 1 + 5)
-    // - (-3 + 6)
-    // - (3)
-    // assertThat(tp.baselineShift).isEqualTo(-3);
     int newBaselineShift =
         (int)
             -(lineHeight / 2
@@ -87,10 +81,6 @@ public class ReactAbsoluteSizeSpanTest {
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "bottom-child");
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
-    // highestLineHeight 20 highestFontSize 20  top 10 ascent 5 bottom -5 descent -2 fontSize 20
-    // ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2 - ds.descent();
-    // 20 / 2 - 20 / 2 + 2 = 2
-    // assertThat(tp.baselineShift).isEqualTo(2);
     int newBaselineShift = (int) (lineHeight / 2 - fontSize / 2 - tp.descent());
     assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
   }
@@ -103,9 +93,6 @@ public class ReactAbsoluteSizeSpanTest {
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
-    // highestLineHeight 0 highestFontSize 16  top 10 ascent 5 bottom -5 descent -2 fontSize 15
-    // 10 - 5 + 2 => 7
-    // assertThat(tp.baselineShift).isEqualTo(7);
     int newBaselineShift = (int) (tp.getFontMetrics().top - tp.ascent() - tp.descent());
     assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
   }
