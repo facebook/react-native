@@ -25,6 +25,7 @@ public class ReactAbsoluteSizeSpanTest {
   TextPaint tp;
   Paint.FontMetrics fontMetrics;
 
+  @Before
   public void setUp() {
     tp = mock(TextPaint.class);
     fontMetrics = mock(Paint.FontMetrics.class);
