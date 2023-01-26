@@ -33,9 +33,9 @@ public class ReactAbsoluteSizeSpanTest {
     fontMetrics = mock(Paint.FontMetrics.class);
     fontMetrics.top = 10.0f;
     fontMetrics.bottom = -5.0f;
+    fontMetrics.ascent = 5.0f;
+    fontMetrics.descent = -2.0f;
     when(tp.getFontMetrics()).thenReturn(fontMetrics);
-    when(tp.ascent()).thenReturn(5.0f);
-    when(tp.descent()).thenReturn(-2.0f);
   }
 
   @Test
