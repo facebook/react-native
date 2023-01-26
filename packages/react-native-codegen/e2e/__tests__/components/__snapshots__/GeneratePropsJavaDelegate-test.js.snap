@@ -47,6 +47,9 @@ public class ArrayPropsNativeComponentViewManagerDelegate<T extends View, U exte
       case \\"points\\":
         mViewManager.setPoints(view, (ReadableArray) value);
         break;
+      case \\"edgeInsets\\":
+        mViewManager.setEdgeInsets(view, (ReadableArray) value);
+        break;
       case \\"sizes\\":
         mViewManager.setSizes(view, (ReadableArray) value);
         break;

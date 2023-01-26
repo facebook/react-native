@@ -19,6 +19,7 @@ Object {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Point.h>
+#include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/imagemanager/primitives.h>
 #include <vector>
 
@@ -120,6 +121,7 @@ class JSI_EXPORT ArrayPropsNativeComponentViewProps final : public ViewProps {
   std::vector<SharedColor> colors{};
   std::vector<ImageSource> srcs{};
   std::vector<Point> points{};
+  std::vector<EdgeInsets> edgeInsets{};
   ArrayPropsNativeComponentViewSizesMask sizes{static_cast<ArrayPropsNativeComponentViewSizesMask>(ArrayPropsNativeComponentViewSizes::Small)};
   std::vector<ArrayPropsNativeComponentViewObjectStruct> object{};
 };

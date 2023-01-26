@@ -93,6 +93,8 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
             return j.literal(true);
           case 'PointPrimitive':
             return j.literal(true);
+          case 'EdgeInsetsPrimitive':
+            return j.literal(true);
           default:
             throw new Error(
               `Received unknown array native typeAnnotation: "${typeAnnotation.elementType.name}"`,

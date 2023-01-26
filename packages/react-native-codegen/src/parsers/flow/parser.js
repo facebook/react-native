@@ -96,6 +96,10 @@ class FlowParser implements Parser {
   parseFile(filename: string): SchemaType {
     const contents = fs.readFileSync(filename, 'utf8');
 
+    return this.parseString(contents, filename);
+  }
+
+  parseString(contents: string, filename: ?string): SchemaType {
     return buildSchema(
       contents,
       filename,
@@ -105,6 +109,12 @@ class FlowParser implements Parser {
       Visitor,
       this,
     );
+  }
+
+  parseModuleFixture(filename: string): SchemaType {
+    const contents = fs.readFileSync(filename, 'utf8');
+
+    return this.parseString(contents, 'path/NativeSampleTurboModule.js');
   }
 
   getAst(contents: string): $FlowFixMe {

@@ -15,7 +15,8 @@ import type {
   NativeModuleParamTypeAnnotation,
 } from '../../../../CodegenSchema';
 
-const {parseString} = require('../../index.js');
+const invariant = require('invariant');
+
 const {unwrapNullable} = require('../../../parsers-commons');
 const {
   UnsupportedGenericParserError,
@@ -23,7 +24,9 @@ const {
   UnnamedFunctionParamParserError,
   MissingTypeParameterGenericParserError,
 } = require('../../../errors');
-const invariant = require('invariant');
+const {TypeScriptParser} = require('../../parser');
+
+const typescriptParser = new TypeScriptParser();
 
 type PrimitiveTypeAnnotationType =
   | 'StringTypeAnnotation'
@@ -1228,7 +1231,7 @@ describe('TypeScript Module Parser', () => {
 });
 
 function parseModule(source: string) {
-  const schema = parseString(source, `${MODULE_NAME}.ts`);
+  const schema = typescriptParser.parseString(source, `${MODULE_NAME}.ts`);
   const module = schema.modules.NativeFoo;
   invariant(
     module.type === 'NativeModule',
