@@ -1737,6 +1737,212 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_OB
 }"
 `;
 
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {
+        'SomeObj': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'b',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
+      'spec': {
+        'properties': [
+          {
+            'name': 'getSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'getPartialSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'a',
+                    'optional': true,
+                    'typeAnnotation': {
+                      'type': 'StringTypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'b',
+                    'optional': true,
+                    'typeAnnotation': {
+                      'type': 'BooleanTypeAnnotation'
+                    }
+                  }
+                ]
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'getSomeObjFromPartialSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': [
+                {
+                  'name': 'value',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS_COMPLEX 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {
+        'SomeObj': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'b',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
+      'spec': {
+        'properties': [
+          {
+            'name': 'getPartialPartial',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': [
+                {
+                  'name': 'value1',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  'name': 'value2',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 1`] = `
 "{
   'modules': {
