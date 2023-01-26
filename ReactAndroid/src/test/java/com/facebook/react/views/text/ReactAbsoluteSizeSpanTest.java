@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import android.graphics.Paint;
 import android.text.TextPaint;
+import com.facebook.react.views.text.ReactAbsoluteSizeSpan.TextAlignVertical;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,12 @@ public class ReactAbsoluteSizeSpanTest {
     assertThat(tp.baselineShift).isEqualTo(0);
   }
 
+  // trigger a runtime when wrong type is used
+  @Test
+  public void shouldTriggerRuntimeIfUsingWrongType() {
+    when(new ReactAbsoluteSizeSpan(15, "wrong type")).thenThrow(new RuntimeException());
+  }
+
   // span has a smaller font then others, textAlignVertical top, line height 10
   @Test
   public void textWithSmallerFontSizeAlignsAtTheTopOfTheLineHeight() {
@@ -60,7 +67,7 @@ public class ReactAbsoluteSizeSpanTest {
     int lineHeight = 10;
     int maximumFontSize = 16;
     ReactAbsoluteSizeSpan absoluteSizeSpan =
-        new ReactAbsoluteSizeSpan(fontSize, ReactAbsoluteSizeSpan.TextAlignVertical.TOP);
+        new ReactAbsoluteSizeSpan(fontSize, TextAlignVertical.TOP);
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
     int newBaselineShift =
@@ -84,7 +91,7 @@ public class ReactAbsoluteSizeSpanTest {
     int lineHeight = 20;
     int maximumFontSize = 20;
     ReactAbsoluteSizeSpan absoluteSizeSpan =
-        new ReactAbsoluteSizeSpan(fontSize, ReactAbsoluteSizeSpan.TextAlignVertical.BOTTOM);
+        new ReactAbsoluteSizeSpan(fontSize, TextAlignVertical.BOTTOM);
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
     // aligns text vertically in the lineHeight
@@ -106,7 +113,7 @@ public class ReactAbsoluteSizeSpanTest {
     int lineHeight = 0;
     int maximumFontSize = 16;
     ReactAbsoluteSizeSpan absoluteSizeSpan =
-        new ReactAbsoluteSizeSpan(fontSize, ReactAbsoluteSizeSpan.TextAlignVertical.TOP);
+        new ReactAbsoluteSizeSpan(fontSize, TextAlignVertical.TOP);
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
     // aligns to the top based on the FontMetrics
