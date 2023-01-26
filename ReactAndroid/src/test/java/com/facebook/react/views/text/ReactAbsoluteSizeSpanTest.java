@@ -22,18 +22,18 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactAbsoluteSizeSpanTest {
-  /*
-  @Before
+  TextPaint tp;
+  Paint.FontMetrics fontMetrics;
+
   public void setUp() {
-    TextPaint tp = mock(TextPaint.class);
-    Paint.FontMetrics fontMetrics = mock(Paint.FontMetrics.class);
+    tp = mock(TextPaint.class);
+    fontMetrics = mock(Paint.FontMetrics.class);
     fontMetrics.top = 2.0f;
     fontMetrics.bottom = 3.0f;
     when(tp.getFontMetrics()).thenReturn(fontMetrics);
     when(tp.ascent()).thenReturn(4.0f);
     when(tp.descent()).thenReturn(5.0f);
   }
-  */
 
   @Test
   public void shouldNotChangeBaseline() {
@@ -43,6 +43,7 @@ public class ReactAbsoluteSizeSpanTest {
     assertThat(tp.baselineShift).isEqualTo(0);
   }
 
+  // text smaller font size then other text in the span
   @Test
   public void textWithSmallerFontSizeAlignsAtTheTopOfTheLineHeight() {
     int fontSize = 15;
@@ -55,16 +56,25 @@ public class ReactAbsoluteSizeSpanTest {
     assertThat(tp.baselineShift).isEqualTo(2);
   }
 
+  // text larger font size then other text in the span
+  // aligned bottom
+  /*
+  @Test
+  public void textWithSmallerFontSizeAlignsAtTheTopOfTheLineHeight() {
+    int fontSize = 20;
+    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
+    TextPaint tp = new TextPaint();
+    int lineHeight = 10;
+    int maximumFontSize = 16;
+    absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
+    absoluteSizeSpan.updateDrawState(tp);
+    assertThat(tp.baselineShift).isEqualTo(2);
+  }
+  */
+
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
     String methodName = "textWithNoLineHeightAlignsBasedOnFontMetrics";
-    TextPaint tp = mock(TextPaint.class);
-    Paint.FontMetrics fontMetrics = mock(Paint.FontMetrics.class);
-    fontMetrics.top = 10.0f;
-    fontMetrics.bottom = -10.0f;
-    when(tp.getFontMetrics()).thenReturn(fontMetrics);
-    when(tp.ascent()).thenReturn(5.0f);
-    when(tp.descent()).thenReturn(-5.0f);
     int fontSize = 15;
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
     Log.w(
