@@ -63,19 +63,20 @@ public class ReactAbsoluteSizeSpanTest {
 
   // text larger font size then other text in the span
   // aligned bottom
-  /*
   @Test
   public void textWithSmallerFontSizeAlignsAtTheBottomOfTheLineHeight() {
-    int fontSize = 10;
-    int lineHeight = 20
-    int maximumFontSize = 26;
+    int fontSize = 20;
+    int lineHeight = 20;
+    int maximumFontSize = 20;
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "bottom-child");
     TextPaint tp = new TextPaint();
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
+    // highestLineHeight 20 highestFontSize 20  top 10 ascent 5 bottom -5 descent -2 fontSize 20
+    // ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2 - ds.descent();
+    // 20 / 2 - 20 / 2 + 2 = 2
     assertThat(tp.baselineShift).isEqualTo(2);
   }
-  */
 
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
