@@ -67,14 +67,15 @@ public class ReactAbsoluteSizeSpanTest {
     // - (-3 + 6)
     // - (3)
     // assertThat(tp.baselineShift).isEqualTo(-3);
-    assertThat(tp.baselineShift)
-        .isEqualTo(
-            lineHeight / 2
+    float newBaselineShift =
+        (float)
+            -(lineHeight / 2
                 - maximumFontSize / 2
                 + maximumFontSize
                 - fontSize
                 + tp.getFontMetrics().top
                 - tp.ascent());
+    assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
   }
 
   // text larger font size then other text in the span aligned bottom
@@ -90,7 +91,8 @@ public class ReactAbsoluteSizeSpanTest {
     // ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2 - ds.descent();
     // 20 / 2 - 20 / 2 + 2 = 2
     // assertThat(tp.baselineShift).isEqualTo(2);
-    assertThat(tp.baselineShift).isEqualTo(lineHeight / 2 - fontSize / 2 - tp.descent());
+    float newBaselineShift = (float) lineHeight / 2 - fontSize / 2 - tp.descent();
+    assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
   }
 
   @Test
@@ -104,6 +106,7 @@ public class ReactAbsoluteSizeSpanTest {
     // highestLineHeight 0 highestFontSize 16  top 10 ascent 5 bottom -5 descent -2 fontSize 15
     // 10 - 5 + 2 => 7
     // assertThat(tp.baselineShift).isEqualTo(7);
-    assertThat(tp.baselineShift).isEqualTo(tp.getFontMetrics().top - tp.ascent() - tp.descent());
+    float newBaselineShift = (float) tp.getFontMetrics().top - tp.ascent() - tp.descent();
+    assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
   }
 }
