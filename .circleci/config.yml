@@ -34,10 +34,6 @@ references:
     attach_workspace:
       at: *hermes_workspace_root
 
-  main_only: &main_only
-    filters:
-      branches:
-        only: main
   main_or_stable_only: &main_or_stable_only
     filters:
       branches:
@@ -1559,7 +1555,7 @@ jobs:
 #        PIPELINE PARAMETERS
 # -------------------------
 parameters:
-  run_package_release_workflow_only:
+  run_release_workflow:
     default: false
     type: boolean
 
@@ -1571,18 +1567,32 @@ parameters:
     default: "9999"
     type: string
 
+  run_nightly_workflow:
+    default: false
+    type: boolean
+
 # -------------------------
-#        WORK FLOWS
+#        WORKFLOWS
 #
-#  When creating a new workflow, make sure to include condition `unless: << pipeline.parameters.run_package_release_workflow_only >>`
+#  When creating a new workflow, make sure to include condition:
+#
+#  when:
+#    and:
+#      - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+#      - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
+#
 #  It's setup this way so we can trigger a release via a POST
 #  See limitations: https://support.circleci.com/hc/en-us/articles/360050351292-How-to-trigger-a-workflow-via-CircleCI-API-v2
 # -------------------------
+
 workflows:
   version: 2
 
   tests:
-    unless: << pipeline.parameters.run_package_release_workflow_only >>
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       - prepare_hermes_workspace
       - build_hermesc_linux:
@@ -1737,16 +1747,16 @@ workflows:
 
   # This workflow should only be triggered by release script
   package_release:
-    when: << pipeline.parameters.run_package_release_workflow_only >>
+    when: << pipeline.parameters.run_release_workflow >>
     jobs:
-      # This job will trigger publish_release workflow
+      # This job will push a tag that will trigger the publish_release workflow
       - prepare_package_for_release:
           name: prepare_package_for_release
           version: << pipeline.parameters.release_version >>
           latest : << pipeline.parameters.release_latest >>
 
+  # This job will run only when a tag is published due to all the jobs being filtered.
   publish_release:
-    unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
       - prepare_hermes_workspace:
           filters: *only_release_tags
@@ -1777,6 +1787,10 @@ workflows:
             - build_hermesc_windows
 
   package_and_publish_release_dryrun:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       - prepare_package_for_release:
           name: prepare_package_for_release
@@ -1808,7 +1822,10 @@ workflows:
             - build_hermesc_windows
 
   analysis:
-    unless: << pipeline.parameters.run_package_release_workflow_only >>
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       # Run lints on every commit
       - analyze_code
@@ -1820,14 +1837,9 @@ workflows:
       - js_coverage
 
   nightly:
-    unless: << pipeline.parameters.run_package_release_workflow_only >>
-    triggers:
-      - schedule:
-          <<: *main_only
-          cron: "0 20 * * *"
+    when: << pipeline.parameters.run_nightly_workflow >>
     jobs:
       - nightly_job
-
       - prepare_hermes_workspace
       - build_hermesc_linux:
           requires:
@@ -1849,6 +1861,10 @@ workflows:
             - build_hermesc_windows
 
   publish_bumped_packages:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       - find_and_publish_bumped_packages:
           <<: *main_or_stable_only
