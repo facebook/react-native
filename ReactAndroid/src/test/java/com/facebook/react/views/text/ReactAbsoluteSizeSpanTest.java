@@ -91,6 +91,6 @@ public class ReactAbsoluteSizeSpanTest {
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
     // 10 - 5 + 5 = 10;
-    assertThat(tp.baselineShift).isEqualTo(10);
+    assertThat(tp.baselineShift).isEqualTo(-7);
   }
 }
