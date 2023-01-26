@@ -430,6 +430,74 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+namespace JS {
+  namespace NativePartialAnnotationTurboModule {
+    struct SpecGetSomeObjFromPartialSomeObjValue {
+      NSString *a() const;
+      std::optional<bool> b() const;
+
+      SpecGetSomeObjFromPartialSomeObjValue(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue)
++ (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue:(id)json;
+@end
+namespace JS {
+  namespace NativePartialAnnotationTurboModule {
+    struct SpecGetPartialPartialValue1 {
+      NSString *a() const;
+      std::optional<bool> b() const;
+
+      SpecGetPartialPartialValue1(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetPartialPartialValue1)
++ (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetPartialPartialValue1:(id)json;
+@end
+namespace JS {
+  namespace NativePartialAnnotationTurboModule {
+    struct SpecGetPartialPartialValue2 {
+      NSString *a() const;
+      std::optional<bool> b() const;
+
+      SpecGetPartialPartialValue2(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetPartialPartialValue2)
++ (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetPartialPartialValue2:(id)json;
+@end
+@protocol NativePartialAnnotationTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+
+- (NSDictionary *)getSomeObj;
+- (NSDictionary *)getPartialSomeObj;
+- (NSDictionary *)getSomeObjFromPartialSomeObj:(JS::NativePartialAnnotationTurboModule::SpecGetSomeObjFromPartialSomeObjValue &)value;
+- (NSDictionary *)getPartialPartial:(JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue1 &)value1
+                             value2:(JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2 &)value2;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'NativePartialAnnotationTurboModule'
+     */
+    class JSI_EXPORT NativePartialAnnotationTurboModuleSpecJSI : public ObjCTurboModule {
+    public:
+      NativePartialAnnotationTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+    };
+  } // namespace react
+} // namespace facebook
 
 @protocol NativePromiseTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -1069,6 +1137,36 @@ inline JS::NativeOptionalObjectTurboModule::Constants::Builder::Builder(const In
 inline JS::NativeOptionalObjectTurboModule::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetSomeObjFromPartialSomeObjValue::a() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToOptionalString(p);
+}
+inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetSomeObjFromPartialSomeObjValue::b() const
+{
+  id const p = _v[@\\"b\\"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue1::a() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToOptionalString(p);
+}
+inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue1::b() const
+{
+  id const p = _v[@\\"b\\"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2::a() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToOptionalString(p);
+}
+inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2::b() const
+{
+  id const p = _v[@\\"b\\"];
+  return RCTBridgingToOptionalBool(p);
+}
 
 inline double JS::NativeSampleTurboModule::SpecGetObjectShapeArg::prop() const
 {
@@ -1622,6 +1720,74 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+namespace JS {
+  namespace NativePartialAnnotationTurboModule {
+    struct SpecGetSomeObjFromPartialSomeObjValue {
+      NSString *a() const;
+      std::optional<bool> b() const;
+
+      SpecGetSomeObjFromPartialSomeObjValue(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue)
++ (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue:(id)json;
+@end
+namespace JS {
+  namespace NativePartialAnnotationTurboModule {
+    struct SpecGetPartialPartialValue1 {
+      NSString *a() const;
+      std::optional<bool> b() const;
+
+      SpecGetPartialPartialValue1(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetPartialPartialValue1)
++ (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetPartialPartialValue1:(id)json;
+@end
+namespace JS {
+  namespace NativePartialAnnotationTurboModule {
+    struct SpecGetPartialPartialValue2 {
+      NSString *a() const;
+      std::optional<bool> b() const;
+
+      SpecGetPartialPartialValue2(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetPartialPartialValue2)
++ (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetPartialPartialValue2:(id)json;
+@end
+@protocol NativePartialAnnotationTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+
+- (NSDictionary *)getSomeObj;
+- (NSDictionary *)getPartialSomeObj;
+- (NSDictionary *)getSomeObjFromPartialSomeObj:(JS::NativePartialAnnotationTurboModule::SpecGetSomeObjFromPartialSomeObjValue &)value;
+- (NSDictionary *)getPartialPartial:(JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue1 &)value1
+                             value2:(JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2 &)value2;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'NativePartialAnnotationTurboModule'
+     */
+    class JSI_EXPORT NativePartialAnnotationTurboModuleSpecJSI : public ObjCTurboModule {
+    public:
+      NativePartialAnnotationTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+    };
+  } // namespace react
+} // namespace facebook
 
 @protocol NativePromiseTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
@@ -2261,6 +2427,36 @@ inline JS::NativeOptionalObjectTurboModule::Constants::Builder::Builder(const In
 inline JS::NativeOptionalObjectTurboModule::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetSomeObjFromPartialSomeObjValue::a() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToOptionalString(p);
+}
+inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetSomeObjFromPartialSomeObjValue::b() const
+{
+  id const p = _v[@\\"b\\"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue1::a() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToOptionalString(p);
+}
+inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue1::b() const
+{
+  id const p = _v[@\\"b\\"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline NSString *JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2::a() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToOptionalString(p);
+}
+inline std::optional<bool> JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2::b() const
+{
+  id const p = _v[@\\"b\\"];
+  return RCTBridgingToOptionalBool(p);
+}
 
 inline double JS::NativeSampleTurboModule::SpecGetObjectShapeArg::prop() const
 {
@@ -2617,6 +2813,61 @@ namespace facebook {
         
         methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeOptionalObjectTurboModuleSpecJSI_getConstants};
         
+    }
+  } // namespace react
+} // namespace facebook
+@implementation RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue)
++ (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue:(id)json
+{
+  return facebook::react::managedPointer<JS::NativePartialAnnotationTurboModule::SpecGetSomeObjFromPartialSomeObjValue>(json);
+}
+@end
+@implementation RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetPartialPartialValue1)
++ (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetPartialPartialValue1:(id)json
+{
+  return facebook::react::managedPointer<JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue1>(json);
+}
+@end
+@implementation RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetPartialPartialValue2)
++ (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetPartialPartialValue2:(id)json
+{
+  return facebook::react::managedPointer<JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2>(json);
+}
+@end
+namespace facebook {
+  namespace react {
+    
+    static facebook::jsi::Value __hostFunction_NativePartialAnnotationTurboModuleSpecJSI_getSomeObj(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getSomeObj\\", @selector(getSomeObj), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePartialAnnotationTurboModuleSpecJSI_getPartialSomeObj(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getPartialSomeObj\\", @selector(getPartialSomeObj), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePartialAnnotationTurboModuleSpecJSI_getSomeObjFromPartialSomeObj(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getSomeObjFromPartialSomeObj\\", @selector(getSomeObjFromPartialSomeObj:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePartialAnnotationTurboModuleSpecJSI_getPartialPartial(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getPartialPartial\\", @selector(getPartialPartial:value2:), args, count);
+    }
+
+    NativePartialAnnotationTurboModuleSpecJSI::NativePartialAnnotationTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+      : ObjCTurboModule(params) {
+        
+        methodMap_[\\"getSomeObj\\"] = MethodMetadata {0, __hostFunction_NativePartialAnnotationTurboModuleSpecJSI_getSomeObj};
+        
+        
+        methodMap_[\\"getPartialSomeObj\\"] = MethodMetadata {0, __hostFunction_NativePartialAnnotationTurboModuleSpecJSI_getPartialSomeObj};
+        
+        
+        methodMap_[\\"getSomeObjFromPartialSomeObj\\"] = MethodMetadata {1, __hostFunction_NativePartialAnnotationTurboModuleSpecJSI_getSomeObjFromPartialSomeObj};
+        setMethodArgConversionSelector(@\\"getSomeObjFromPartialSomeObj\\", 0, @\\"JS_NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue:\\");
+        
+        methodMap_[\\"getPartialPartial\\"] = MethodMetadata {2, __hostFunction_NativePartialAnnotationTurboModuleSpecJSI_getPartialPartial};
+        setMethodArgConversionSelector(@\\"getPartialPartial\\", 0, @\\"JS_NativePartialAnnotationTurboModule_SpecGetPartialPartialValue1:\\");
+        setMethodArgConversionSelector(@\\"getPartialPartial\\", 1, @\\"JS_NativePartialAnnotationTurboModule_SpecGetPartialPartialValue2:\\");
     }
   } // namespace react
 } // namespace facebook
