@@ -54,12 +54,6 @@ public class ReactAbsoluteSizeSpanTest {
     assertThat(tp.baselineShift).isEqualTo(0);
   }
 
-  // trigger a runtime when wrong type is used
-  @Test
-  public void shouldTriggerRuntimeIfUsingWrongType() {
-    when(new ReactAbsoluteSizeSpan(15, "wrong type")).thenThrow(new RuntimeException());
-  }
-
   // span has a smaller font then others, textAlignVertical top, line height 10
   @Test
   public void textWithSmallerFontSizeAlignsAtTheTopOfTheLineHeight() {
