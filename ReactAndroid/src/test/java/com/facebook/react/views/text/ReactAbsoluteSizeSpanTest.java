@@ -22,71 +22,18 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactAbsoluteSizeSpanTest {
-  private class MockedTextPaint extends TextPaint {
-    private static final String TAG = "MockTextPaint";
-
-    /**
-     * Allocates a new FontMetrics object, and then calls getFontMetrics(fm) with it, returning the
-     * object.
-     */
-    @Override
-    public FontMetrics getFontMetrics() {
-      String methodName = "getFontMetrics";
-      MockedTextPaint.FontMetrics fm = new MockedTextPaint.FontMetrics();
-      Log.w(
-          "ReactTest:: MockedTextPaint" + TAG,
-          methodName
-              + " fm.top: "
-              + (fm.top)
-              + " fm.ascent: "
-              + (fm.ascent)
-              + " fm.bottom: "
-              + (fm.bottom)
-              + " fm.top: "
-              + (fm.top));
-      return fm;
-    }
-
-    public class FontMetrics extends Paint.FontMetrics {
-      /**
-       * The maximum distance above the baseline for the tallest glyph in the font at a given text
-       * size.
-       */
-      public float top = -15;
-      /** The recommended distance above the baseline for singled spaced text. */
-      public float ascent = -10;
-      /** The recommended distance below the baseline for singled spaced text. */
-      public float descent = 10;
-      /**
-       * The maximum distance below the baseline for the lowest glyph in the font at a given text
-       * size.
-       */
-      public float bottom = 15;
-      /** The recommended additional space to add between lines of text. */
-      public float leading = 0;
-    }
+  /*
+  @Before
+  public void setUp() {
+    TextPaint tp = mock(TextPaint.class);
+    Paint.FontMetrics fontMetrics = mock(Paint.FontMetrics.class);
+    fontMetrics.top = 2.0f;
+    fontMetrics.bottom = 3.0f;
+    when(tp.getFontMetrics()).thenReturn(fontMetrics);
+    when(tp.ascent()).thenReturn(4.0f);
+    when(tp.descent()).thenReturn(5.0f);
   }
-
-  private class MockedAbsoluteSpan extends ReactAbsoluteSizeSpan {
-    private TextPaint mTextPaint;
-
-    public MockedAbsoluteSpan(int size) {
-      super(size);
-    }
-
-    public MockedAbsoluteSpan(int size, String textAlignVertical) {
-      super(size, textAlignVertical);
-    }
-
-    public void updateDrawState(MockedTextPaint ds) {
-      super.updateDrawState(ds);
-      mTextPaint = ds;
-    }
-
-    public TextPaint getTextPaint() {
-      return mTextPaint;
-    }
-  }
+  */
 
   @Test
   public void shouldNotChangeBaseline() {
@@ -113,11 +60,11 @@ public class ReactAbsoluteSizeSpanTest {
     String methodName = "textWithNoLineHeightAlignsBasedOnFontMetrics";
     TextPaint tp = mock(TextPaint.class);
     Paint.FontMetrics fontMetrics = mock(Paint.FontMetrics.class);
-    fontMetrics.top = 2.0f;
-    fontMetrics.bottom = 3.0f;
+    fontMetrics.top = 10.0f;
+    fontMetrics.bottom = -10.0f;
     when(tp.getFontMetrics()).thenReturn(fontMetrics);
-    when(tp.ascent()).thenReturn(4.0f);
-    when(tp.descent()).thenReturn(5.0f);
+    when(tp.ascent()).thenReturn(5.0f);
+    when(tp.descent()).thenReturn(-5.0f);
     int fontSize = 15;
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
     Log.w(
@@ -131,6 +78,7 @@ public class ReactAbsoluteSizeSpanTest {
     int maximumFontSize = 16;
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
-    assertThat(tp.getFontMetrics().top).isEqualTo(99);
+    // 10 - 5 + 5 = 10;
+    assertThat(tp.baselineShift).isEqualTo(10);
   }
 }
