@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import android.graphics.Paint;
 import android.text.TextPaint;
 import android.util.Log;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
