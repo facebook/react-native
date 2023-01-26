@@ -37,6 +37,7 @@ type NativeProps = $ReadOnly<{|
   edgeInsets?: $ReadOnlyArray<EdgeInsetsValue>,
   sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
   object?: $ReadOnlyArray<$ReadOnly<{|prop: string|}>>,
+  arrayOfObjects?: $ReadOnlyArray<$ReadOnly<{|prop1: Float, prop2: Int32|}>>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(

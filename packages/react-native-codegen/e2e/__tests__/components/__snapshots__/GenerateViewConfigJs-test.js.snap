@@ -39,6 +39,7 @@ export const __INTERNAL_VIEW_CONFIG = {
     edgeInsets: true,
     sizes: true,
     object: true,
+    arrayOfObjects: true,
   },
 };
 
