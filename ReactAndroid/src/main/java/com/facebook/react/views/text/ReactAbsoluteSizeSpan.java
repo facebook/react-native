@@ -35,7 +35,7 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
       return;
     }
     if (mHighestLineHeight == 0) {
-      // align the text by font metrics
+      // aligns the text by font metrics
       // when lineHeight prop is missing
       // https://stackoverflow.com/a/27631737/7295772
       // top      -------------  -10
@@ -60,7 +60,7 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
           ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2 - ds.descent();
         }
       } else if (mHighestFontSize != 0) {
-        // align correctly text that has smaller font
+        // aligns correctly text that has smaller font
         if (mTextAlignVertical == "top-child") {
           ds.baselineShift -=
               mHighestLineHeight / 2
