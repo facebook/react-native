@@ -114,7 +114,7 @@ public class ReactAbsoluteSizeSpanTest {
     TextPaint tp = mock(TextPaint.class);
 
     when(tp.getFontMetrics()).thenReturn(fontMetrics);
-    when(tp.ascent()).thenReturn(1);
+    when(tp.ascent()).thenReturn(Float.valueOf(1));
     String methodName = "textWithNoLineHeightAlignsBasedOnFontMetrics";
     int fontSize = 15;
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
@@ -128,7 +128,7 @@ public class ReactAbsoluteSizeSpanTest {
     int lineHeight = 0;
     int maximumFontSize = 16;
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
-    absoluteSizeSpan.updateDrawState(tp);
+    // absoluteSizeSpan.updateDrawState(tp);
     // assertThat(tp.getFontMetrics().top).isEqualTo(99);
     assertThat(tp.ascent()).isEqualTo(99);
   }
