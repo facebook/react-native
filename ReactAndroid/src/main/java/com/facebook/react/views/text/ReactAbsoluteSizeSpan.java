@@ -15,15 +15,21 @@ import android.text.style.AbsoluteSizeSpan;
  */
 public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan {
   private static final String TAG = "ReactAbsoluteSizeSpan";
-  private String mTextAlignVertical = "center-child";
+  private TextAlignVertical mTextAlignVertical = TextAlignVertical.CENTER;
   private int mHighestLineHeight = 0;
   private int mHighestFontSize = 0;
+
+  public enum TextAlignVertical {
+    TOP,
+    BOTTOM,
+    CENTER,
+  }
 
   public ReactAbsoluteSizeSpan(int size) {
     super(size);
   }
 
-  public ReactAbsoluteSizeSpan(int size, String textAlignVertical) {
+  public ReactAbsoluteSizeSpan(int size, TextAlignVertical textAlignVertical) {
     this(size);
     mTextAlignVertical = textAlignVertical;
   }
@@ -31,7 +37,7 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
   @Override
   public void updateDrawState(TextPaint ds) {
     super.updateDrawState(ds);
-    if (mTextAlignVertical == "center-child") {
+    if (mTextAlignVertical == TextAlignVertical.CENTER) {
       return;
     }
     if (mHighestLineHeight == 0) {
@@ -43,25 +49,25 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
       // baseline __my Text____   0
       // descent  _____________   2
       // bottom   _____________   5
-      if (mTextAlignVertical == "top-child") {
+      if (mTextAlignVertical == TextAlignVertical.TOP) {
         ds.baselineShift += ds.getFontMetrics().top - ds.ascent() - ds.descent();
       }
-      if (mTextAlignVertical == "bottom-child") {
+      if (mTextAlignVertical == TextAlignVertical.BOTTOM) {
         ds.baselineShift += ds.getFontMetrics().bottom - ds.descent();
       }
     } else {
       if (mHighestFontSize == getSize()) {
         // aligns text vertically in the lineHeight
         // and adjust their position depending on the fontSize
-        if (mTextAlignVertical == "top-child") {
+        if (mTextAlignVertical == TextAlignVertical.TOP) {
           ds.baselineShift -= mHighestLineHeight / 2 - getSize() / 2;
         }
-        if (mTextAlignVertical == "bottom-child") {
+        if (mTextAlignVertical == TextAlignVertical.BOTTOM) {
           ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2 - ds.descent();
         }
       } else if (mHighestFontSize != 0) {
         // aligns correctly text that has smaller font
-        if (mTextAlignVertical == "top-child") {
+        if (mTextAlignVertical == TextAlignVertical.TOP) {
           ds.baselineShift -=
               mHighestLineHeight / 2
                   - mHighestFontSize / 2
@@ -71,7 +77,7 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
                   + (mHighestFontSize - getSize())
                   + (ds.getFontMetrics().top - ds.ascent());
         }
-        if (mTextAlignVertical == "bottom-child") {
+        if (mTextAlignVertical == TextAlignVertical.BOTTOM) {
           ds.baselineShift += mHighestLineHeight / 2 - mHighestFontSize / 2 - ds.descent();
         }
       }

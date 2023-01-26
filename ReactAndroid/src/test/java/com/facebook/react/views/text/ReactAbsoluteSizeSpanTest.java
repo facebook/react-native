@@ -59,7 +59,8 @@ public class ReactAbsoluteSizeSpanTest {
     int fontSize = 15;
     int lineHeight = 10;
     int maximumFontSize = 16;
-    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
+    ReactAbsoluteSizeSpan absoluteSizeSpan =
+        new ReactAbsoluteSizeSpan(fontSize, ReactAbsoluteSizeSpan.TextAlignVertical.TOP);
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
     int newBaselineShift =
@@ -82,7 +83,8 @@ public class ReactAbsoluteSizeSpanTest {
     int fontSize = 20;
     int lineHeight = 20;
     int maximumFontSize = 20;
-    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "bottom-child");
+    ReactAbsoluteSizeSpan absoluteSizeSpan =
+        new ReactAbsoluteSizeSpan(fontSize, ReactAbsoluteSizeSpan.TextAlignVertical.BOTTOM);
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
     // aligns text vertically in the lineHeight
@@ -103,7 +105,8 @@ public class ReactAbsoluteSizeSpanTest {
     int fontSize = 15;
     int lineHeight = 0;
     int maximumFontSize = 16;
-    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
+    ReactAbsoluteSizeSpan absoluteSizeSpan =
+        new ReactAbsoluteSizeSpan(fontSize, ReactAbsoluteSizeSpan.TextAlignVertical.TOP);
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
     // aligns to the top based on the FontMetrics
