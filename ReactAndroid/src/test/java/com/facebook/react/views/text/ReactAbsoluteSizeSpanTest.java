@@ -39,6 +39,7 @@ public class ReactAbsoluteSizeSpanTest {
 
   @Test
   public void shouldNotChangeBaseline() {
+    tp.baselineShift = 0;
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(15);
     TextPaint tp = new TextPaint();
     absoluteSizeSpan.updateDrawState(tp);
@@ -48,6 +49,7 @@ public class ReactAbsoluteSizeSpanTest {
   // text smaller font size then other text in the span
   @Test
   public void textWithSmallerFontSizeAlignsAtTheTopOfTheLineHeight() {
+    tp.baselineShift = 0;
     int fontSize = 15;
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
     TextPaint tp = new TextPaint();
@@ -55,42 +57,38 @@ public class ReactAbsoluteSizeSpanTest {
     int maximumFontSize = 16;
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
+    // highestLineHeight 10 highestFontSize 16  top 10 ascent 5 bottom -5 descent -2 fontSize 15
+    // 5 - 8 + 1 + 2 - 4
+    // -4
     assertThat(tp.baselineShift).isEqualTo(2);
   }
 
   // text larger font size then other text in the span
   // aligned bottom
-  /*
   @Test
-  public void textWithSmallerFontSizeAlignsAtTheTopOfTheLineHeight() {
-    int fontSize = 20;
-    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
+  public void textWithSmallerFontSizeAlignsAtTheBottomOfTheLineHeight() {
+    tp.baselineShift = 0;
+    int fontSize = 10;
+    int lineHeight = 20
+    int maximumFontSize = 26;
+    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "bottom-child");
     TextPaint tp = new TextPaint();
-    int lineHeight = 10;
-    int maximumFontSize = 16;
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
     assertThat(tp.baselineShift).isEqualTo(2);
   }
-  */
 
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
-    String methodName = "textWithNoLineHeightAlignsBasedOnFontMetrics";
+    tp.baselineShift = 0;
     int fontSize = 15;
-    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
-    Log.w(
-        "ReactTest::",
-        methodName
-            + " tp.getFontMetrics().top: "
-            + (tp.getFontMetrics().top)
-            + " tp.getFontMetrics().bottom: "
-            + (tp.getFontMetrics().bottom));
     int lineHeight = 0;
     int maximumFontSize = 16;
+    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "top-child");
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
-    // 10 - 5 + 5 = 10;
-    assertThat(tp.baselineShift).isEqualTo(-7);
+    // highestLineHeight 0 highestFontSize 16  top 10 ascent 5 bottom -5 descent -2 fontSize 15
+    // 10 - 5 + 5 => 10
+    assertThat(tp.baselineShift).isEqualTo(7);
   }
 }
