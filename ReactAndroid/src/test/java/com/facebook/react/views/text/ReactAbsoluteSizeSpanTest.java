@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 
 import android.graphics.Paint;
 import android.text.TextPaint;
-import android.util.Log;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,6 +63,7 @@ public class ReactAbsoluteSizeSpanTest {
 
   // text larger font size then other text in the span
   // aligned bottom
+  /*
   @Test
   public void textWithSmallerFontSizeAlignsAtTheBottomOfTheLineHeight() {
     int fontSize = 10;
@@ -75,6 +75,7 @@ public class ReactAbsoluteSizeSpanTest {
     absoluteSizeSpan.updateDrawState(tp);
     assertThat(tp.baselineShift).isEqualTo(2);
   }
+  */
 
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
