@@ -51,8 +51,8 @@ references:
   # -------------------------
   dependency_versions:
     xcode_version: &xcode_version "14.0.1"
-    nodelts_image: &nodelts_image "cimg/node:16.14"
-    nodeprevlts_image: &nodeprevlts_image "cimg/node:14.19"
+    nodelts_image: &nodelts_image "cimg/node:18.12.1"
+    nodeprevlts_image: &nodeprevlts_image "cimg/node:16.18.1"
 
   # -------------------------
   #        Cache Key Anchors
@@ -612,7 +612,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@18/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - run:
@@ -1496,10 +1496,6 @@ jobs:
               - equal: [ "nightly", << parameters.release_type >> ]
           steps:
             - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-            - run: |
-                git config --global user.email "react-native-bot@users.noreply.github.com"
-                git config --global user.name "npm Deployment Script"
-                echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
       # END: Stables and nightlies
 
       - run: node ./scripts/publish-npm.js --<< parameters.release_type >>
