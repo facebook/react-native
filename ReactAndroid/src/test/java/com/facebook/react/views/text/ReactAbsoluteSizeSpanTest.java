@@ -45,6 +45,8 @@ public class ReactAbsoluteSizeSpanTest {
     when(tp.descent()).thenReturn(fontMetrics.descent);
   }
 
+  // the span with no vertical text align or text align center
+  // uses the default alignment
   @Test
   public void shouldNotChangeBaseline() {
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(15);
@@ -52,7 +54,7 @@ public class ReactAbsoluteSizeSpanTest {
     assertThat(tp.baselineShift).isEqualTo(0);
   }
 
-  // text with smaller font size then other spans
+  // span has a smaller font then others
   @Test
   public void textWithSmallerFontSizeAlignsAtTheTopOfTheLineHeight() {
     int fontSize = 15;
@@ -65,6 +67,9 @@ public class ReactAbsoluteSizeSpanTest {
         (int)
             -(lineHeight / 2
                 - maximumFontSize / 2
+                // smaller font aligns on the baseline of bigger font
+                // move the baseline of text with smaller font up
+                // so it aligns on the top of the larger font
                 + maximumFontSize
                 - fontSize
                 + tp.getFontMetrics().top
@@ -72,7 +77,7 @@ public class ReactAbsoluteSizeSpanTest {
     assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
   }
 
-  // text larger font size then other text in the span aligned bottom
+  // span has a larger font then others
   @Test
   public void textWithLargerFontSizeAlignsAtTheBottomOfTheLineHeight() {
     int fontSize = 20;
@@ -81,10 +86,19 @@ public class ReactAbsoluteSizeSpanTest {
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(fontSize, "bottom-child");
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
+    // aligns text vertically in the lineHeight
+    // and adjust their position depending on the fontSize
     int newBaselineShift = (int) (lineHeight / 2 - fontSize / 2 - tp.descent());
     assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
   }
 
+  // align the text by font metrics when lineHeight prop is missing
+  // https://stackoverflow.com/a/27631737/7295772
+  // top      -------------  -10
+  // ascent   -------------  -5
+  // baseline __my Text____   0
+  // descent  _____________   2
+  // bottom   _____________   5
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
     int fontSize = 15;
