@@ -636,9 +636,21 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
+    // Sometimes the range of accessibleTextSpan seems to not match the actual text, possibly
+    // by incorrect virtualViewId being passed in. In this case, we return an "empty" node to
+    // prevent the app from crashing.
+    final Rect boundsInParent;
+    try {
+      boundsInParent = getBoundsInParent(accessibleTextSpan);
+    } catch (IndexOutOfBoundsException e) {
+      node.setContentDescription("");
+      node.setBoundsInParent(new Rect(0, 0, 1, 1));
+      return;
+    }
+
     node.setContentDescription(accessibleTextSpan.description);
     node.addAction(AccessibilityNodeInfoCompat.ACTION_CLICK);
-    node.setBoundsInParent(getBoundsInParent(accessibleTextSpan));
+    node.setBoundsInParent(boundsInParent);
     node.setRoleDescription(mView.getResources().getString(R.string.link_description));
     node.setClassName(AccessibilityRole.getValue(AccessibilityRole.BUTTON));
   }
