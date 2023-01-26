@@ -128,7 +128,7 @@ public class ReactAbsoluteSizeSpanTest {
     int lineHeight = 0;
     int maximumFontSize = 16;
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
-    // absoluteSizeSpan.updateDrawState(tp);
+    absoluteSizeSpan.updateDrawState(tp);
     // assertThat(tp.getFontMetrics().top).isEqualTo(99);
     assertThat(tp.ascent()).isEqualTo(99);
   }
