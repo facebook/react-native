@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
+import android.util.Log;
 
 /*
  * Wraps {@link AbsoluteSizeSpan} as a {@link ReactSpan}.
@@ -59,11 +60,25 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
       } else if (mHighestFontSize != 0) {
         // align correctly text that has smaller font
         if (mTextAlignVertical == "top-child") {
+          String methodName = "updateDrawState";
+          Log.w(
+              "ReactTest::",
+              methodName
+                  + " mHighestLineHeight: "
+                  + (mHighestLineHeight)
+                  + " mHighestFontSize: "
+                  + (mHighestFontSize)
+                  + " getSize(): "
+                  + (getSize())
+                  + " ds.getFontMetrics().top: "
+                  + (ds.getFontMetrics().top)
+                  + " ds.getFontMetrics().ascent(): "
+                  + (ds.ascent()));
           ds.baselineShift -=
               mHighestLineHeight / 2
                   - mHighestFontSize / 2
                   + (mHighestFontSize - getSize())
-                  + (ds.getFontMetrics().top - ds.getFontMetrics().ascent);
+                  + (ds.getFontMetrics().top - ds.ascent());
         }
         if (mTextAlignVertical == "bottom-child") {
           ds.baselineShift += mHighestLineHeight / 2 - mHighestFontSize / 2 - ds.descent();
