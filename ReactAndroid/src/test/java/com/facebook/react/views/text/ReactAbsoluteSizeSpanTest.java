@@ -28,10 +28,10 @@ public class ReactAbsoluteSizeSpanTest {
   @Before
   public void setUp() {
     tp = mock(TextPaint.class);
+    tp.baselineShift = 0;
     fontMetrics = mock(Paint.FontMetrics.class);
     fontMetrics.top = 10.0f;
     fontMetrics.bottom = -5.0f;
-    fontMetrics.baselineShift = 0;
     when(tp.getFontMetrics()).thenReturn(fontMetrics);
     when(tp.ascent()).thenReturn(5.0f);
     when(tp.descent()).thenReturn(-2.0f);
