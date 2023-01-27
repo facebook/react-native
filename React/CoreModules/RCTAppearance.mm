@@ -85,9 +85,6 @@ RCT_ENUM_CONVERTER(
 @interface RCTAppearance () <NativeAppearanceSpec>
 @end
 
-@interface RCTAppearance () <NativeAppearanceSpec>
-@end
-
 @implementation RCTAppearance {
   NSString *_currentColorScheme;
 }
