@@ -15,6 +15,7 @@ load(
     "MACOSX",
     "WINDOWS",
     "YOGA_CXX_TARGET",
+    "YOGA_TARGET",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
@@ -40,19 +41,19 @@ def rn_codegen_cli():
             name = "write_to_json",
             main = "src/cli/combine/combine-js-to-schema-cli.js",
             root = "//xplat/js:workspace",
+            visibility = ["PUBLIC"],
             deps = [
                 ":yarn-workspace",
             ],
-            visibility = ["PUBLIC"],
         )
         yarn_workspace_binary(
             name = "generate_all_from_schema",
             main = "src/cli/generators/generate-all.js",
             root = "//xplat/js:workspace",
+            visibility = ["PUBLIC"],
             deps = [
                 ":yarn-workspace",
             ],
-            visibility = ["PUBLIC"],
         )
     else:
         # OSS setup, assumes yarn and node (v12.0.0+) are installed.
@@ -114,14 +115,14 @@ def rn_codegen_modules(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {generator_script}) $(location {schema_target}) {library_name} $OUT {android_package_name} {ios_assume_nonnull}".format(
-            generator_script = react_native_root_target("packages/react-native-codegen:generate_all_from_schema"),
-            schema_target = schema_target,
-            library_name = name,
-            android_package_name = android_package_name,
-            ios_assume_nonnull = ios_assume_nonnull,
-        ),
         out = "codegenfiles-{}".format(name),
+        cmd = "$(exe {generator_script}) $(location {schema_target}) {library_name} $OUT {android_package_name} {ios_assume_nonnull}".format(
+            android_package_name = android_package_name,
+            generator_script = react_native_root_target("packages/react-native-codegen:generate_all_from_schema"),
+            ios_assume_nonnull = ios_assume_nonnull,
+            library_name = name,
+            schema_target = schema_target,
+        ),
         labels = ["codegen_rule", "uses_local_filesystem_abspaths"],
     )
 
@@ -130,11 +131,11 @@ def rn_codegen_modules(
     ##################
     fb_native.genrule(
         name = generate_module_java_name,
-        cmd = "mkdir -p $OUT/{spec_path} && cp -r $(location {generator_target})/java/{spec_path}/* $OUT/{spec_path}/".format(
-            spec_path = android_package_name.replace(".", "/"),
-            generator_target = ":" + generate_fixtures_rule_name,
-        ),
         out = "src",
+        cmd = "mkdir -p $OUT/{spec_path} && cp -r $(location {generator_target})/java/{spec_path}/* $OUT/{spec_path}/".format(
+            generator_target = ":" + generate_fixtures_rule_name,
+            spec_path = android_package_name.replace(".", "/"),
+        ),
         labels = ["codegen_rule"],
     )
 
@@ -147,15 +148,15 @@ def rn_codegen_modules(
 
     fb_native.genrule(
         name = generate_module_jni_h_name,
-        cmd = "cp $(location :{})/jni/{}.h $OUT".format(generate_fixtures_rule_name, name),
         out = "{}.h".format(name),
+        cmd = "cp $(location :{})/jni/{}.h $OUT".format(generate_fixtures_rule_name, name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_module_jni_cpp_name,
-        cmd = "cp $(location :{})/jni/{}-generated.cpp $OUT".format(generate_fixtures_rule_name, name),
         out = "{}-generated.cpp".format(name),
+        cmd = "cp $(location :{})/jni/{}-generated.cpp $OUT".format(generate_fixtures_rule_name, name),
         labels = ["codegen_rule"],
     )
 
@@ -185,14 +186,16 @@ def rn_codegen_modules(
         srcs = [
             ":{}".format(generate_module_jni_cpp_name),
         ],
-        header_namespace = "",
         headers = [
             ":{}".format(generate_module_jni_h_name),
         ],
+        header_namespace = "",
         exported_headers = {
             "{}/{}.h".format(name, name): ":{}".format(generate_module_jni_h_name),
         },
         force_static = True,
+        labels = library_labels + ["codegen_rule"],
+        platforms = (ANDROID,),
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",
             "-DWITH_FBSYSTRACE=1",
@@ -205,8 +208,6 @@ def rn_codegen_modules(
             react_native_xplat_shared_library_target("jsi:jsi"),
             react_native_xplat_target("react/nativemodule/core:core"),
         ],
-        platforms = (ANDROID,),
-        labels = library_labels + ["codegen_rule"],
     )
 
     ##############
@@ -216,48 +217,48 @@ def rn_codegen_modules(
         # iOS Buck build isn't fully working in OSS, so let's skip it for OSS for now.
         fb_native.genrule(
             name = generate_module_hobjcpp_name,
-            cmd = "cp $(location :{})/{}/{}.h $OUT".format(generate_fixtures_rule_name, name, name),
             out = "{}.h".format(name),
+            cmd = "cp $(location :{})/{}/{}.h $OUT".format(generate_fixtures_rule_name, name, name),
             labels = ["codegen_rule"],
         )
 
         fb_native.genrule(
             name = generate_module_mm_name,
-            cmd = "cp $(location :{})/{}/{}-generated.mm $OUT".format(generate_fixtures_rule_name, name, name),
             out = "{}-generated.mm".format(name),
+            cmd = "cp $(location :{})/{}/{}-generated.mm $OUT".format(generate_fixtures_rule_name, name, name),
             labels = ["codegen_rule"],
         )
 
         rn_apple_library(
             name = "{}Apple".format(name),
-            extension_api_only = True,
-            header_namespace = "",
-            sdks = (IOS, MACOSX),
-            compiler_flags = [
-                "-Wno-unused-private-field",
-            ],
-            exported_headers = {
-                "{}/{}.h".format(name, name): ":{}".format(generate_module_hobjcpp_name),
-            },
-            headers = [
-                ":{}".format(generate_module_hobjcpp_name),
-            ],
             srcs = [
                 ":{}".format(generate_module_mm_name),
             ],
+            headers = [
+                ":{}".format(generate_module_hobjcpp_name),
+            ],
+            header_namespace = "",
+            exported_headers = {
+                "{}/{}.h".format(name, name): ":{}".format(generate_module_hobjcpp_name),
+            },
             autoglob = False,
-            labels = library_labels + ["codegen_rule"],
-            visibility = ["PUBLIC"],
+            compiler_flags = [
+                "-Wno-unused-private-field",
+            ],
+            extension_api_only = True,
             ios_exported_deps = [
                 "//xplat/js/react-native-github:RCTTypeSafety",
                 "//xplat/js/react-native-github/Libraries/RCTRequired:RCTRequired",
                 react_native_xplat_target_apple("react/nativemodule/core:core"),
             ],
+            labels = library_labels + ["codegen_rule"],
             macosx_exported_deps = [
                 react_native_desktop_root_target(":RCTTypeSafetyAppleMac"),
                 react_native_desktop_root_target(":RCTRequiredAppleMac"),
                 react_native_desktop_root_target(":nativemoduleAppleMac"),
             ],
+            sdks = (IOS, MACOSX),
+            visibility = ["PUBLIC"],
         )
 
 def rn_codegen_components(
@@ -284,88 +285,88 @@ def rn_codegen_components(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {}) $(location {}) {} $OUT".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name),
         out = "codegenfiles-{}".format(name),
+        cmd = "$(exe {}) $(location {}) {} $OUT".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name),
         labels = ["codegen_rule", "uses_local_filesystem_abspaths"],
     )
 
     fb_native.genrule(
         name = generate_component_descriptor_h_name,
-        cmd = "cp $(location :{})/ComponentDescriptors.h $OUT".format(generate_fixtures_rule_name),
         out = "ComponentDescriptors.h",
+        cmd = "cp $(location :{})/ComponentDescriptors.h $OUT".format(generate_fixtures_rule_name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_component_hobjcpp_name,
-        cmd = "cp $(location :{})/RCTComponentViewHelpers.h $OUT".format(generate_fixtures_rule_name),
         out = "RCTComponentViewHelpers.h",
+        cmd = "cp $(location :{})/RCTComponentViewHelpers.h $OUT".format(generate_fixtures_rule_name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_event_emitter_cpp_name,
-        cmd = "cp $(location :{})/EventEmitters.cpp $OUT".format(generate_fixtures_rule_name),
         out = "EventEmitters.cpp",
+        cmd = "cp $(location :{})/EventEmitters.cpp $OUT".format(generate_fixtures_rule_name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_event_emitter_h_name,
-        cmd = "cp $(location :{})/EventEmitters.h $OUT".format(generate_fixtures_rule_name),
         out = "EventEmitters.h",
+        cmd = "cp $(location :{})/EventEmitters.h $OUT".format(generate_fixtures_rule_name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_props_cpp_name,
-        cmd = "cp $(location :{})/Props.cpp $OUT".format(generate_fixtures_rule_name),
         out = "Props.cpp",
+        cmd = "cp $(location :{})/Props.cpp $OUT".format(generate_fixtures_rule_name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_state_cpp_name,
-        cmd = "cp $(location :{})/States.cpp $OUT".format(generate_fixtures_rule_name),
         out = "States.cpp",
+        cmd = "cp $(location :{})/States.cpp $OUT".format(generate_fixtures_rule_name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_tests_cpp_name,
-        cmd = "cp $(location :{})/Tests.cpp $OUT".format(generate_fixtures_rule_name),
         out = "Tests.cpp",
+        cmd = "cp $(location :{})/Tests.cpp $OUT".format(generate_fixtures_rule_name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_props_h_name,
-        cmd = "cp $(location :{})/Props.h $OUT".format(generate_fixtures_rule_name),
         out = "Props.h",
+        cmd = "cp $(location :{})/Props.h $OUT".format(generate_fixtures_rule_name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_state_h_name,
-        cmd = "cp $(location :{})/States.h $OUT".format(generate_fixtures_rule_name),
         out = "States.h",
+        cmd = "cp $(location :{})/States.h $OUT".format(generate_fixtures_rule_name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = copy_generated_java_files,
+        out = "java",
         # TODO: support different package name internally.
         # Right now, it's hardcoded to `com.facebook.react.viewmanagers`.
         cmd = "mkdir -p $OUT/com/facebook/react/viewmanagers && cp -R $(location :{})/java/com/facebook/react/viewmanagers/* $OUT/com/facebook/react/viewmanagers".format(generate_fixtures_rule_name),
-        out = "java",
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = copy_generated_cxx_files,
+        out = "cxx",
         # The command below is filtering C++ iOS files, this will be refactored when C++ codegen is finished.
         cmd = "mkdir -p $OUT && find $(location :{}) -not -path '*/rncore*' -not -path '*Tests*' -not -path '*NativeModules*' -not -path '*RCTComponentViewHelpers*' -type f \\( -iname \\*.h -o -iname \\*.cpp \\) -print0 -exec cp {{}} $OUT \\;".format(generate_fixtures_rule_name),
-        out = "cxx",
         labels = ["codegen_rule"],
     )
 
@@ -373,29 +374,29 @@ def rn_codegen_components(
         name = zip_generated_cxx_files,
         srcs = [":{}".format(copy_generated_cxx_files)],
         out = "{}.src.zip".format(zip_generated_cxx_files),
-        visibility = ["PUBLIC"],
         labels = ["codegen_rule"],
+        visibility = ["PUBLIC"],
     )
 
     fb_native.zip_file(
         name = zip_generated_java_files,
         srcs = [":{}".format(copy_generated_java_files)],
         out = "{}.src.zip".format(zip_generated_java_files),
-        visibility = ["PUBLIC"],
         labels = ["codegen_rule"],
+        visibility = ["PUBLIC"],
     )
 
     fb_native.genrule(
         name = generate_shadow_node_cpp_name,
-        cmd = "cp $(location :{})/ShadowNodes.cpp $OUT".format(generate_fixtures_rule_name),
         out = "ShadowNodes.cpp",
+        cmd = "cp $(location :{})/ShadowNodes.cpp $OUT".format(generate_fixtures_rule_name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_shadow_node_h_name,
-        cmd = "cp $(location :{})/ShadowNodes.h $OUT".format(generate_fixtures_rule_name),
         out = "ShadowNodes.h",
+        cmd = "cp $(location :{})/ShadowNodes.h $OUT".format(generate_fixtures_rule_name),
         labels = ["codegen_rule"],
     )
 
@@ -465,7 +466,6 @@ def rn_codegen_components(
                 ":{}".format(generate_tests_cpp_name),
             ],
             apple_sdks = (IOS, MACOSX),
-            fbandroid_use_instrumentation_test = True,
             compiler_flags = [
                 "-fexceptions",
                 "-frtti",
@@ -473,6 +473,7 @@ def rn_codegen_components(
                 "-Wall",
             ],
             contacts = ["oncall+react_native@xmail.facebook.com"],
+            fbandroid_use_instrumentation_test = True,
             labels = library_labels + ["codegen_rule"],
             platforms = (ANDROID, APPLE, CXX),
             deps = [
@@ -494,11 +495,12 @@ def rn_codegen_components(
             srcs = [
                 ":{}".format(zip_generated_java_files),
             ],
-            language = "JAVA",
             autoglob = False,
             labels = library_labels + ["codegen_rule"],
+            language = "JAVA",
             visibility = ["PUBLIC"],
             deps = [
+                YOGA_TARGET,
                 react_native_dep("third-party/android/androidx:annotation"),
                 react_native_target("java/com/facebook/react/bridge:bridge"),
                 react_native_target("java/com/facebook/react/uimanager:interfaces"),
@@ -510,9 +512,9 @@ def rn_codegen_components(
             srcs = [
                 ":{}".format(zip_generated_cxx_files),
             ],
-            language = "JAVA",
             autoglob = False,
             labels = library_labels + ["codegen_rule"],
+            language = "JAVA",
             visibility = ["PUBLIC"],
             deps = [
                 react_native_dep("third-party/android/androidx:annotation"),
@@ -534,24 +536,24 @@ def rn_codegen_cxx_modules(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name, name),
         out = "codegenfiles-{}".format(name),
+        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name, name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_module_h_name,
+        out = "{}JSI.h".format(name),
         cmd = "cp $(location :{})/{}JSI.h $OUT".format(generate_fixtures_rule_name, name),
         cmd_exe = "copy $(location :{})\\{}JSI.h $OUT".format(generate_fixtures_rule_name, name),
-        out = "{}JSI.h".format(name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_module_cpp_name,
+        out = "{}JSI-generated.cpp".format(name),
         cmd = "cp $(location :{})/{}JSI-generated.cpp $OUT".format(generate_fixtures_rule_name, name),
         cmd_exe = "copy $(location :{})\\{}JSI-generated.cpp $OUT".format(generate_fixtures_rule_name, name),
-        out = "{}JSI-generated.cpp".format(name),
         labels = ["codegen_rule"],
     )
 
@@ -570,24 +572,24 @@ def rn_codegen_cxx_modules(
             exported_headers = {
                 "{}/{}JSI.h".format(name, name): ":{}".format(generate_module_h_name),
             },
+            fbandroid_exported_deps = [
+                react_native_xplat_target("react/nativemodule/core:core"),
+            ],
             fbobjc_compiler_flags = get_apple_compiler_flags(),
             fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+            ios_exported_deps = [
+                react_native_xplat_target("react/nativemodule/core:core"),
+            ],
             labels = library_labels + ["codegen_rule"],
+            macosx_exported_deps = [
+                react_native_desktop_root_target(":bridging"),
+            ],
             platforms = (ANDROID, APPLE, CXX, WINDOWS),
             preprocessor_flags = [
                 "-DLOG_TAG=\"ReactNative\"",
                 "-DWITH_FBSYSTRACE=1",
             ],
             visibility = ["PUBLIC"],
-            fbandroid_exported_deps = [
-                react_native_xplat_target("react/nativemodule/core:core"),
-            ],
-            ios_exported_deps = [
-                react_native_xplat_target("react/nativemodule/core:core"),
-            ],
-            macosx_exported_deps = [
-                react_native_desktop_root_target(":bridging"),
-            ],
             windows_exported_deps = [
                 react_native_desktop_root_target(":bridging"),
             ],

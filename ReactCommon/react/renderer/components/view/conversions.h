@@ -412,6 +412,15 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
+    YGValue &result) {
+  YGStyle::ValueRepr ygValue{};
+  fromRawValue(context, value, ygValue);
+  result = ygValue;
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
     YGFloatOptional &result) {
   if (value.hasType<float>()) {
     result = YGFloatOptional((float)value);

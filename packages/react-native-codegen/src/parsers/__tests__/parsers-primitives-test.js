@@ -21,6 +21,7 @@ const {
   emitNumber,
   emitInt32,
   emitObject,
+  emitPartial,
   emitPromise,
   emitRootTag,
   emitVoid,
@@ -454,30 +455,94 @@ describe('emitObject', () => {
       expect(result).toEqual(expected);
     });
   });
+});
 
-  describe('emitFloat', () => {
-    describe('when nullable is true', () => {
-      it('returns nullable type annotation', () => {
-        const result = emitFloat(true);
-        const expected = {
-          type: 'NullableTypeAnnotation',
+describe('emitPartial', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const props = [
+        {
+          name: 'a',
+          optional: true,
           typeAnnotation: {
-            type: 'FloatTypeAnnotation',
+            type: 'StringTypeAnnotation',
           },
-        };
+        },
+        {
+          name: 'b',
+          optional: true,
+          typeAnnotation: {
+            type: 'BooleanTypeAnnotation',
+          },
+        },
+      ];
 
-        expect(result).toEqual(expected);
-      });
+      const result = emitPartial(true, props);
+
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'ObjectTypeAnnotation',
+          properties: props,
+        },
+      };
+
+      expect(result).toEqual(expected);
     });
-    describe('when nullable is false', () => {
-      it('returns non nullable type annotation', () => {
-        const result = emitFloat(false);
-        const expected = {
-          type: 'FloatTypeAnnotation',
-        };
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const props = [
+        {
+          name: 'a',
+          optional: true,
+          typeAnnotation: {
+            type: 'StringTypeAnnotation',
+          },
+        },
+        {
+          name: 'b',
+          optional: true,
+          typeAnnotation: {
+            type: 'BooleanTypeAnnotation',
+          },
+        },
+      ];
 
-        expect(result).toEqual(expected);
-      });
+      const result = emitPartial(false, props);
+
+      const expected = {
+        type: 'ObjectTypeAnnotation',
+        properties: props,
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitFloat', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitFloat(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'FloatTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitFloat(false);
+      const expected = {
+        type: 'FloatTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
     });
   });
 });

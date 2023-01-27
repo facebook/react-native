@@ -183,7 +183,8 @@ export type ReservedPropTypeAnnotation = $ReadOnly<{
     | 'ImageSourcePrimitive'
     | 'PointPrimitive'
     | 'EdgeInsetsPrimitive'
-    | 'ImageRequestPrimitive',
+    | 'ImageRequestPrimitive'
+    | 'DimensionPrimitive',
 }>;
 
 export type CommandTypeAnnotation = FunctionTypeAnnotation<
