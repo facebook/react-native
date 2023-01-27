@@ -65,7 +65,7 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
         if (mTextAlignVertical == TextAlignVertical.BOTTOM) {
           ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2 - ds.descent();
         }
-      } else if (mHighestFontSize != 0) {
+      } else if (mHighestFontSize != 0 && getSize() < mHighestFontSize) {
         // aligns correctly text that has smaller font
         if (mTextAlignVertical == TextAlignVertical.TOP) {
           ds.baselineShift -=

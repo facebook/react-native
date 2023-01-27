@@ -46,11 +46,12 @@ public class ReactAbsoluteSizeSpanTest {
     when(tp.descent()).thenReturn(fontMetrics.descent);
   }
 
-  // the span with no text align vertical uses the default alignment
+  // span with no text align vertical or text align vertical center
   @Test
   public void shouldNotChangeBaseline() {
     ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(15);
     absoluteSizeSpan.updateDrawState(tp);
+    // uses the default alignment (baseline)
     assertThat(tp.baselineShift).isEqualTo(0);
   }
 
@@ -64,6 +65,7 @@ public class ReactAbsoluteSizeSpanTest {
         new ReactAbsoluteSizeSpan(fontSize, TextAlignVertical.TOP);
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
+    // aligns correctly text that has smaller font
     int newBaselineShift =
         (int)
             -(lineHeight / 2
@@ -105,7 +107,7 @@ public class ReactAbsoluteSizeSpanTest {
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
     int fontSize = 15;
     int lineHeight = 0;
-    int maximumFontSize = 16;
+    int maximumFontSize = 15;
     ReactAbsoluteSizeSpan absoluteSizeSpan =
         new ReactAbsoluteSizeSpan(fontSize, TextAlignVertical.TOP);
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
