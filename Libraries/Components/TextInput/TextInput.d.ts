@@ -45,6 +45,16 @@ export type KeyboardTypeOptions =
   | KeyboardTypeAndroid
   | KeyboardTypeIOS;
 
+export type InputModeOptions =
+  | 'none'
+  | 'text'
+  | 'decimal'
+  | 'numeric'
+  | 'tel'
+  | 'search'
+  | 'email'
+  | 'url';
+
 export type ReturnKeyType = 'done' | 'go' | 'next' | 'search' | 'send';
 export type ReturnKeyTypeAndroid = 'none' | 'previous';
 export type ReturnKeyTypeIOS =
@@ -587,6 +597,11 @@ export interface TextInputProps
    * The following values work on Android: - visible-password
    */
   keyboardType?: KeyboardTypeOptions | undefined;
+
+  /**
+   * Works like the inputmode attribute in HTML, it determines which keyboard to open, e.g. numeric and has precedence over keyboardType.
+   */
+  inputMode?: InputModeOptions | undefined;
 
   /**
    * Limits the maximum number of characters that can be entered.
