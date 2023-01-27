@@ -597,7 +597,7 @@ export interface TextInputProps
    * The following values work on Android: - visible-password
    */
   keyboardType?: KeyboardTypeOptions | undefined;
-      
+
   /**
    * Works like the inputmode attribute in HTML, it determines which keyboard to open, e.g. numeric and has precedence over keyboardType.
    */
