@@ -40,6 +40,7 @@ export const __INTERNAL_VIEW_CONFIG = {
     dimensions: true,
     sizes: true,
     object: true,
+    arrayOfObjects: true,
   },
 };
 

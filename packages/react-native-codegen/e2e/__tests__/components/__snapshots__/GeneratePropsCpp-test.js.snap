@@ -36,7 +36,8 @@ ArrayPropsNativeComponentViewProps::ArrayPropsNativeComponentViewProps(
     edgeInsets(convertRawProp(context, rawProps, \\"edgeInsets\\", sourceProps.edgeInsets, {})),
     dimensions(convertRawProp(context, rawProps, \\"dimensions\\", sourceProps.dimensions, {})),
     sizes(convertRawProp(context, rawProps, \\"sizes\\", sourceProps.sizes, {static_cast<ArrayPropsNativeComponentViewSizesMask>(ArrayPropsNativeComponentViewSizes::Small)})),
-    object(convertRawProp(context, rawProps, \\"object\\", sourceProps.object, {}))
+    object(convertRawProp(context, rawProps, \\"object\\", sourceProps.object, {})),
+    arrayOfObjects(convertRawProp(context, rawProps, \\"arrayOfObjects\\", sourceProps.arrayOfObjects, {}))
       {}
 
 } // namespace react
