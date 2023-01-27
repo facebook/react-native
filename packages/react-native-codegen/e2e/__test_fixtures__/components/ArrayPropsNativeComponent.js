@@ -9,6 +9,7 @@
  */
 
 import type {
+  DimensionValue,
   EdgeInsetsValue,
   PointValue,
 } from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
@@ -35,6 +36,7 @@ type NativeProps = $ReadOnly<{|
   srcs?: $ReadOnlyArray<ImageSource>,
   points?: $ReadOnlyArray<PointValue>,
   edgeInsets?: $ReadOnlyArray<EdgeInsetsValue>,
+  dimensions?: $ReadOnlyArray<DimensionValue>,
   sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
   object?: $ReadOnlyArray<$ReadOnly<{|prop: string|}>>,
 |}>;

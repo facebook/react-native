@@ -228,6 +228,11 @@ function getCommonTypeAnnotation<T>(
         type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
+    case 'DimensionValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'DimensionPrimitive',
+      };
     case 'TSUnionType':
       return getUnionOfLiterals(
         name,

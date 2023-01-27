@@ -209,6 +209,42 @@ function translateTypeAnnotation(
 
           return emitPartial(nullable, properties);
         }
+        case 'Partial': {
+          if (typeAnnotation.typeParameters.params.length !== 1) {
+            throw new Error(
+              'Partials only support annotating exactly one parameter.',
+            );
+          }
+
+          const annotatedElement =
+            types[typeAnnotation.typeParameters.params[0].typeName.name];
+
+          if (!annotatedElement) {
+            throw new Error(
+              'Partials only support annotating a type parameter.',
+            );
+          }
+
+          const properties = annotatedElement.typeAnnotation.members.map(
+            member => {
+              return {
+                name: member.key.name,
+                optional: true,
+                typeAnnotation: translateTypeAnnotation(
+                  hasteModuleName,
+                  member.typeAnnotation.typeAnnotation,
+                  types,
+                  aliasMap,
+                  tryParse,
+                  cxxOnly,
+                  parser,
+                ),
+              };
+            },
+          );
+
+          return emitPartial(nullable, properties);
+        }
         default: {
           return translateDefault(
             hasteModuleName,

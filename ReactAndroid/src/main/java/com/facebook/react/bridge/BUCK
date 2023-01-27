@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "IS_OSS_BUILD", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "IS_OSS_BUILD", "YOGA_TARGET", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_android_library")
 
 INTERFACES = [
     "Dynamic.java",
@@ -34,6 +34,7 @@ rn_android_library(
         "PUBLIC",
     ],
     deps = [
+        YOGA_TARGET,
         react_native_dep("java/com/facebook/debug/debugoverlay/model:model"),
         react_native_dep("java/com/facebook/systrace:systrace"),
         react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
