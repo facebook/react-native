@@ -68,6 +68,23 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
   return RCTAppearanceColorSchemeLight;
 }
 
+@implementation RCTConvert (UIUserInterfaceStyle)
+
+RCT_ENUM_CONVERTER(
+    UIUserInterfaceStyle,
+    (@{
+        @"light" : @(UIUserInterfaceStyleLight),
+        @"dark" : @(UIUserInterfaceStyleDark),
+        @"unspecified" : @(UIUserInterfaceStyleUnspecified)
+    }),
+    UIUserInterfaceStyleUnspecified,
+    integerValue);
+
+@end
+
+@interface RCTAppearance () <NativeAppearanceSpec>
+@end
+
 @interface RCTAppearance () <NativeAppearanceSpec>
 @end
 
@@ -90,6 +107,17 @@ RCT_EXPORT_MODULE(Appearance)
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<NativeAppearanceSpecJSI>(params);
+}
+
+RCT_EXPORT_METHOD(setColorScheme : (NSString *)style) {
+  UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:style];
+  NSArray<__kindof UIWindow*>* windows = [[UIApplication sharedApplication] windows];
+  if (@available(iOS 13.0, *)) {
+    for (UIWindow *window in windows)
+    {
+      window.overrideUserInterfaceStyle = userInterfaceStyle;
+    }
+  }
 }
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
