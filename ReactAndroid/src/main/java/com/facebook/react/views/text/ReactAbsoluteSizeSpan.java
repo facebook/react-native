@@ -35,8 +35,8 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
   }
 
   @Override
-  public void updateDrawState(TextPaint tp) {
-    super.updateDrawState(tp);
+  public void updateDrawState(TextPaint ds) {
+    super.updateDrawState(ds);
     if (mTextAlignVertical == TextAlignVertical.CENTER) {
       return;
     }
@@ -50,35 +50,35 @@ public class ReactAbsoluteSizeSpan extends AbsoluteSizeSpan implements ReactSpan
       // descent  _____________   2
       // bottom   _____________   5
       if (mTextAlignVertical == TextAlignVertical.TOP) {
-        tp.baselineShift += tp.getFontMetrics().top - tp.ascent() - tp.descent();
+        ds.baselineShift += ds.getFontMetrics().top - ds.ascent() - ds.descent();
       }
       if (mTextAlignVertical == TextAlignVertical.BOTTOM) {
-        tp.baselineShift += tp.getFontMetrics().bottom - tp.descent();
+        ds.baselineShift += ds.getFontMetrics().bottom - ds.descent();
       }
     } else {
       if (mHighestFontSize == getSize()) {
         // aligns text vertically in the lineHeight
         // and adjust their position depending on the fontSize
         if (mTextAlignVertical == TextAlignVertical.TOP) {
-          tp.baselineShift -= mHighestLineHeight / 2 - getSize() / 2;
+          ds.baselineShift -= mHighestLineHeight / 2 - getSize() / 2;
         }
         if (mTextAlignVertical == TextAlignVertical.BOTTOM) {
-          tp.baselineShift += mHighestLineHeight / 2 - getSize() / 2 - tp.descent();
+          ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2 - ds.descent();
         }
       } else if (mHighestFontSize != 0) {
         // aligns correctly text that has smaller font
         if (mTextAlignVertical == TextAlignVertical.TOP) {
-          tp.baselineShift -=
+          ds.baselineShift -=
               mHighestLineHeight / 2
                   - mHighestFontSize / 2
                   // smaller font aligns on the baseline of bigger font
                   // moves the baseline of text with smaller font up
                   // so it aligns on the top of the larger font
                   + (mHighestFontSize - getSize())
-                  + (tp.getFontMetrics().top - tp.ascent());
+                  + (ds.getFontMetrics().top - ds.ascent());
         }
         if (mTextAlignVertical == TextAlignVertical.BOTTOM) {
-          tp.baselineShift += mHighestLineHeight / 2 - mHighestFontSize / 2 - tp.descent();
+          ds.baselineShift += mHighestLineHeight / 2 - mHighestFontSize / 2 - ds.descent();
         }
       }
     }
