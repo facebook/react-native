@@ -78,6 +78,8 @@ function getNativeTypeFromAnnotation(
           return 'Point';
         case 'EdgeInsetsPrimitive':
           return 'EdgeInsets';
+        case 'DimensionPrimitive':
+          return 'YGValue';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown ReservedPropTypeAnnotation');
@@ -221,7 +223,8 @@ function getLocalImports(
       | 'EdgeInsetsPrimitive'
       | 'ImageSourcePrimitive'
       | 'PointPrimitive'
-      | 'ImageRequestPrimitive',
+      | 'ImageRequestPrimitive'
+      | 'DimensionPrimitive',
   ) {
     switch (name) {
       case 'ColorPrimitive':
@@ -238,6 +241,9 @@ function getLocalImports(
         return;
       case 'EdgeInsetsPrimitive':
         imports.add('#include <react/renderer/graphics/RectangleEdges.h>');
+        return;
+      case 'DimensionPrimitive':
+        imports.add('#include <yoga/Yoga.h>');
         return;
       default:
         (name: empty);

@@ -539,6 +539,38 @@ exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`
                 'type': 'ReservedPropTypeAnnotation',
                 'name': 'EdgeInsetsPrimitive'
               }
+            },
+            {
+              'name': 'dimension_required',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ReservedPropTypeAnnotation',
+                'name': 'DimensionPrimitive'
+              }
+            },
+            {
+              'name': 'dimension_optional_key',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ReservedPropTypeAnnotation',
+                'name': 'DimensionPrimitive'
+              }
+            },
+            {
+              'name': 'dimension_optional_value',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ReservedPropTypeAnnotation',
+                'name': 'DimensionPrimitive'
+              }
+            },
+            {
+              'name': 'dimension_optional_both',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ReservedPropTypeAnnotation',
+                'name': 'DimensionPrimitive'
+              }
             }
           ],
           'commands': []
@@ -967,6 +999,50 @@ exports[`RN Codegen Flow Parser can generate fixture ARRAY_PROP_TYPES_NO_EVENTS 
                 'elementType': {
                   'type': 'ReservedPropTypeAnnotation',
                   'name': 'EdgeInsetsPrimitive'
+                }
+              }
+            },
+            {
+              'name': 'array_dimension_required',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'ReservedPropTypeAnnotation',
+                  'name': 'DimensionPrimitive'
+                }
+              }
+            },
+            {
+              'name': 'array_dimension_optional_key',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'ReservedPropTypeAnnotation',
+                  'name': 'DimensionPrimitive'
+                }
+              }
+            },
+            {
+              'name': 'array_dimension_optional_value',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'ReservedPropTypeAnnotation',
+                  'name': 'DimensionPrimitive'
+                }
+              }
+            },
+            {
+              'name': 'array_dimension_optional_both',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'ReservedPropTypeAnnotation',
+                  'name': 'DimensionPrimitive'
                 }
               }
             },
@@ -7501,6 +7577,74 @@ exports[`RN Codegen Flow Parser can generate fixture OBJECT_PROP_TYPES_NO_EVENTS
                     'typeAnnotation': {
                       'type': 'ReservedPropTypeAnnotation',
                       'name': 'EdgeInsetsPrimitive'
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              'name': 'dimension_required',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'prop',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ReservedPropTypeAnnotation',
+                      'name': 'DimensionPrimitive'
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              'name': 'dimension_optional_key',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'prop',
+                    'optional': true,
+                    'typeAnnotation': {
+                      'type': 'ReservedPropTypeAnnotation',
+                      'name': 'DimensionPrimitive'
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              'name': 'dimension_optional_value',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'prop',
+                    'optional': true,
+                    'typeAnnotation': {
+                      'type': 'ReservedPropTypeAnnotation',
+                      'name': 'DimensionPrimitive'
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              'name': 'dimension_optional_both',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'prop',
+                    'optional': true,
+                    'typeAnnotation': {
+                      'type': 'ReservedPropTypeAnnotation',
+                      'name': 'DimensionPrimitive'
                     }
                   }
                 ]
