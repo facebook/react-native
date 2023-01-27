@@ -1,5 +1,5 @@
 {
-  "version": "0.71.1",
+  "version": "0.71.2",
   "name": "@react-native/babel-plugin-codegen",
   "description": "Babel plugin to generate native module and view manager code for React Native.",
   "repository": {
