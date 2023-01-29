@@ -85,7 +85,7 @@ module.exports = {
     return nativeColorScheme;
   },
 
-  setColorScheme(colorScheme: string): void {
+  setColorScheme(colorScheme: ?ColorSchemeName): void {
     const nativeColorScheme: ?string =
       colorScheme == null ? 'unspecified' : colorScheme;
 
