@@ -738,4 +738,29 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Border Color',
+    render(): React.Node {
+      return (
+        <View style={{rowGap: 10}}>
+          <View style={{position: 'relative', height: 65, borderWidth: 1}}>
+            <View
+              style={{
+                borderBlockEndColor: 'green',
+                borderBlockStartColor: 'purple',
+                borderWidth: 5,
+                position: 'absolute',
+                top: 10,
+                bottom: 10,
+                left: 10,
+                right: 10,
+              }}>
+              <Text style={{fontSize: 11}}>borderBlockStartColor purple</Text>
+              <Text style={{fontSize: 11}}>borderBlockEndColor green</Text>
+            </View>
+          </View>
+        </View>
+      );
+    },
+  },
 ];

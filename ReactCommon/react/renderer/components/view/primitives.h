@@ -99,6 +99,9 @@ struct CascadedRectangleEdges {
   OptionalT horizontal{};
   OptionalT vertical{};
   OptionalT all{};
+  OptionalT block{};
+  OptionalT blockStart{};
+  OptionalT blockEnd{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
     const auto leadingEdge = isRTL ? end : start;
