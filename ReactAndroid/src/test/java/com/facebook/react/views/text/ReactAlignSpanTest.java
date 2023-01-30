@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 
 import android.graphics.Paint;
 import android.text.TextPaint;
-import com.facebook.react.views.text.ReactAbsoluteSizeSpan.TextAlignVertical;
+import com.facebook.react.views.text.ReactAlignSpan.TextAlignVertical;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +22,7 @@ import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
-public class ReactAbsoluteSizeSpanTest {
+public class ReactAlignSpanTest {
   TextPaint tp;
   Paint.FontMetrics fontMetrics;
 
@@ -49,7 +49,7 @@ public class ReactAbsoluteSizeSpanTest {
   // span with no text align vertical or text align vertical center
   @Test
   public void shouldNotChangeBaseline() {
-    ReactAbsoluteSizeSpan absoluteSizeSpan = new ReactAbsoluteSizeSpan(15);
+    ReactAlignSpan absoluteSizeSpan = new ReactAlignSpan(15);
     absoluteSizeSpan.updateDrawState(tp);
     // uses the default alignment (baseline)
     assertThat(tp.baselineShift).isEqualTo(0);
@@ -61,8 +61,7 @@ public class ReactAbsoluteSizeSpanTest {
     int fontSize = 15;
     int lineHeight = 10;
     int maximumFontSize = 16;
-    ReactAbsoluteSizeSpan absoluteSizeSpan =
-        new ReactAbsoluteSizeSpan(fontSize, TextAlignVertical.TOP);
+    ReactAlignSpan absoluteSizeSpan = new ReactAlignSpan(fontSize, TextAlignVertical.TOP);
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
     // aligns correctly text that has smaller font
@@ -86,8 +85,7 @@ public class ReactAbsoluteSizeSpanTest {
     int fontSize = 20;
     int lineHeight = 20;
     int maximumFontSize = 20;
-    ReactAbsoluteSizeSpan absoluteSizeSpan =
-        new ReactAbsoluteSizeSpan(fontSize, TextAlignVertical.BOTTOM);
+    ReactAlignSpan absoluteSizeSpan = new ReactAlignSpan(fontSize, TextAlignVertical.BOTTOM);
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
     // aligns text vertically in the lineHeight
@@ -108,8 +106,7 @@ public class ReactAbsoluteSizeSpanTest {
     int fontSize = 15;
     int lineHeight = 0;
     int maximumFontSize = 15;
-    ReactAbsoluteSizeSpan absoluteSizeSpan =
-        new ReactAbsoluteSizeSpan(fontSize, TextAlignVertical.TOP);
+    ReactAlignSpan absoluteSizeSpan = new ReactAlignSpan(fontSize, TextAlignVertical.TOP);
     absoluteSizeSpan.updateSpan(lineHeight, maximumFontSize);
     absoluteSizeSpan.updateDrawState(tp);
     // aligns to the top based on the FontMetrics
