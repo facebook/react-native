@@ -739,7 +739,7 @@ exports.examples = [
     },
   },
   {
-    title: 'Border Color',
+    title: 'Logical Border Color',
     render(): React.Node {
       return (
         <View style={{rowGap: 10}}>
