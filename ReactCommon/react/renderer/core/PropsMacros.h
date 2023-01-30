@@ -19,7 +19,7 @@
 
 // Get hash at compile-time. sizeof(str) - 1 == strlen
 #define CONSTEXPR_RAW_PROPS_KEY_HASH(s)                   \
-  ([]() constexpr->RawPropsPropNameHash {                 \
+  ([]() constexpr -> RawPropsPropNameHash {               \
     CLANG_PRAGMA("clang diagnostic push")                 \
     CLANG_PRAGMA("clang diagnostic ignored \"-Wshadow\"") \
     return folly::hash::fnv32_buf(s, sizeof(s) - 1);      \
@@ -99,7 +99,13 @@
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
       struct, vertical, prefix "Vertical" suffix, rawValue)            \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, all, prefix "" suffix, rawValue)
+      struct, all, prefix "" suffix, rawValue)                         \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
+      struct, block, prefix "Block" suffix, rawValue)                  \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
+      struct, blockEnd, prefix "BlockEnd" suffix, rawValue)            \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
+      struct, blockStart, prefix "BlockStart" suffix, rawValue)
 
 // Rebuild a type that contains multiple fields from a single field value
 #define REBUILD_FIELD_SWITCH_CASE(                  \
