@@ -42,7 +42,7 @@ const {
   emitNumber,
   emitInt32,
   emitGenericObject,
-  emitPartial,
+  emitObject,
   emitPromise,
   emitRootTag,
   emitVoid,
@@ -207,7 +207,7 @@ function translateTypeAnnotation(
             },
           );
 
-          return emitPartial(nullable, properties);
+          return emitObject(nullable, properties);
         }
         default: {
           return translateDefault(
