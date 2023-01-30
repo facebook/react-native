@@ -11,7 +11,7 @@ import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
 
 /*
- * Wraps {@link AbsoluteSizeSpan} as a {@link ReactSpan}.
+ * Uses {@link AbsoluteSizeSpan} to change text baseline based on fontSize and lineHeight {@link ReactSpan}.
  */
 public class ReactAlignSpan extends AbsoluteSizeSpan implements ReactSpan {
   private static final String TAG = "ReactAlignSpan";
@@ -32,10 +32,6 @@ public class ReactAlignSpan extends AbsoluteSizeSpan implements ReactSpan {
   public ReactAlignSpan(int size, TextAlignVertical textAlignVertical) {
     this(size);
     mTextAlignVertical = textAlignVertical;
-  }
-
-  public TextAlignVertical getTextAlignVertical() {
-    return mTextAlignVertical;
   }
 
   @Override
