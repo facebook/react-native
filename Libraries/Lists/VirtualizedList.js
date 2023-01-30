@@ -1823,7 +1823,7 @@ export default class VirtualizedList extends StateSafePureComponent<
     );
     const item = getItem(data, index);
     const frame =
-      item != null
+      item !== undefined
         ? this._frames[this._keyExtractor(item, index, props)]
         : undefined;
     if (!frame || frame.index !== index) {
