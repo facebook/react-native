@@ -221,6 +221,20 @@ function translateTypeAnnotation(
       }
     }
     case 'TSInterfaceDeclaration': {
+      const baseTypes = (typeAnnotation.extends ?? []).map((extend)=>extend.expression.name);
+      for(const baseType of baseTypes) {
+        // ensure base types exist and appear in aliasMap
+        translateTypeAnnotation(
+          hasteModuleName,
+          {type:'TSTypeReference',typeName:{type:'Identifier',name:baseType}},
+          types,
+          aliasMap,
+          tryParse,
+          cxxOnly,
+          parser,
+        );
+      }
+
       const objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         // $FlowFixMe[missing-type-arg]
