@@ -114,4 +114,8 @@ Pod::Spec.new do |s|
   s.dependency "React-jsiexecutor", version
   s.dependency "Yoga"
   s.dependency "glog"
+
+  if ENV['USE_HERMES'] == "0"
+    s.dependency 'React-jsc'
+  end
 end
