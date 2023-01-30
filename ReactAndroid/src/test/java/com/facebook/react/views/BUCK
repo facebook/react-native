@@ -6,7 +6,7 @@ rn_robolectric_test(
     # srcs = glob(['**/*.java']),
     srcs = glob([
         "text/CustomLineHeightSpanTest.java",
-        "text/ReactAbsoluteSizeSpanTest.java",
+        "text/ReactAlignSpanTest.java",
         "image/*.java",
         "view/*.java",
     ]),
