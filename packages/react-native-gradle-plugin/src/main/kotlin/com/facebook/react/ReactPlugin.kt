@@ -110,6 +110,15 @@ class ReactPlugin : Plugin<Project> {
     // First, we set up the output dir for the codegen.
     val generatedSrcDir = File(project.buildDir, "generated/source/codegen")
 
+    // We specify the default value (convention) for jsRootDir.
+    // It's the root folder for apps (so ../../ from the Gradle project)
+    // and the package folder for library (so ../ from the Gradle project)
+    if (isLibrary) {
+      extension.jsRootDir.convention(project.layout.projectDirectory.dir("../"))
+    } else {
+      extension.jsRootDir.convention(extension.root)
+    }
+
     val buildCodegenTask =
         project.tasks.register("buildCodegenCLI", BuildCodegenCLITask::class.java) {
           it.codegenDir.set(extension.codegenDir)
