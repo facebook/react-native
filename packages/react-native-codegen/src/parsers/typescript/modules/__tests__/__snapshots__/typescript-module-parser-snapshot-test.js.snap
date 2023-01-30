@@ -1566,6 +1566,9 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
                 'name': 'Bar'
               }
             }
+          ],
+          'baseTypes': [
+            'Base2'
           ]
         },
         'Foo': {
@@ -1603,6 +1606,10 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
                 'name': 'Bar'
               }
             }
+          ],
+          'baseTypes': [
+            'Base1',
+            'Base3'
           ]
         }
       },

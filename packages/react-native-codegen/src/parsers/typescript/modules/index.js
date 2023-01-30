@@ -235,7 +235,7 @@ function translateTypeAnnotation(
         );
       }
 
-      const objectTypeAnnotation = {
+      let objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         // $FlowFixMe[missing-type-arg]
         properties: (flattenProperties(
@@ -261,6 +261,10 @@ function translateTypeAnnotation(
           )
           .filter(Boolean),
       };
+
+      if(baseTypes.length>0){
+        objectTypeAnnotation.baseTypes = baseTypes;
+      }
 
       return typeAliasResolution(
         typeAliasResolutionStatus,
