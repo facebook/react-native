@@ -853,7 +853,7 @@ jobs:
         default: "StaticLibraries"
         description: Which kind of option we want to use for `use_frameworks!`
         type: enum
-        enum: ["StaticLibraries", "StaticFrameworks"] #TODO: Add "DynamicFrameworks"
+        enum: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -906,6 +906,8 @@ jobs:
 
             if [[ << parameters.use_frameworks >> == "StaticFrameworks" ]]; then
               export USE_FRAMEWORKS=static
+            elif [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
+              export USE_FRAMEWORKS=dynamic
             fi
 
             bundle exec pod install
@@ -1636,7 +1638,7 @@ workflows:
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
               flipper: ["WithFlipper", "WithoutFlipper"]
-              use_frameworks: [ "StaticLibraries", "StaticFrameworks" ] #TODO: make it works with DynamicFrameworks
+              use_frameworks: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
             exclude:
               - architecture: "NewArch"
                 flavor: "Release"
@@ -1651,8 +1653,18 @@ workflows:
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
                 flipper: "WithoutFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
@@ -1666,8 +1678,18 @@ workflows:
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
                 flipper: "WithoutFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
               - architecture: "OldArch"
                 flavor: "Release"
                 jsengine: "Hermes"
@@ -1680,6 +1702,11 @@ workflows:
                 use_frameworks: "StaticFrameworks"
               - architecture: "OldArch"
                 flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "OldArch"
+                flavor: "Release"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticLibraries"
@@ -1688,6 +1715,11 @@ workflows:
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "OldArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Debug"
                 jsengine: "Hermes"
@@ -1718,6 +1750,36 @@ workflows:
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "OldArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "OldArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
