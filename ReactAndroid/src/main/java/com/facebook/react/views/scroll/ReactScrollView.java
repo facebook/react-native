@@ -286,14 +286,17 @@ public class ReactScrollView extends ScrollView
 
   @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
-    // Call with the present values in order to re-layout if necessary
-    // If a "pending" content offset value has been set, we restore that value.
-    // Upon call to scrollTo, the "pending" values will be re-set.
-    int scrollToX =
-        pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
-    int scrollToY =
-        pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
-    scrollTo(scrollToX, scrollToY);
+    // Apply pending contentOffset in case it was set before the view was laid out.
+    if (isContentReady()) {
+      // If a "pending" content offset value has been set, we restore that value.
+      // Upon call to scrollTo, the "pending" values will be re-set.
+      int scrollToX =
+          pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
+      int scrollToY =
+          pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
+      scrollTo(scrollToX, scrollToY);
+    }
+
     ReactScrollViewHelper.emitLayoutEvent(this);
   }
 
