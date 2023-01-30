@@ -112,6 +112,7 @@ Pod::Spec.new do |s|
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
   s.dependency "React-jsiexecutor", version
+  s.dependency "React-#{use_hermes ? "hermes" : "jsc"}", version
   s.dependency "Yoga"
   s.dependency "glog"
 end
