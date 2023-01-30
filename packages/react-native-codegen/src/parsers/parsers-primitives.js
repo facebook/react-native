@@ -236,7 +236,7 @@ function emitPromise(
   }
 }
 
-function emitObject(
+function emitGenericObject(
   nullable: boolean,
 ): Nullable<NativeModuleGenericObjectTypeAnnotation> {
   return wrapNullable(nullable, {
@@ -380,7 +380,7 @@ module.exports = {
   emitFunction,
   emitInt32,
   emitNumber,
-  emitObject,
+  emitGenericObject,
   emitPartial,
   emitPromise,
   emitRootTag,
