@@ -41,7 +41,7 @@ const {
   emitFunction,
   emitNumber,
   emitInt32,
-  emitObject,
+  emitGenericObject,
   emitPartial,
   emitPromise,
   emitRootTag,
@@ -171,7 +171,7 @@ function translateTypeAnnotation(
         }
         case 'UnsafeObject':
         case 'Object': {
-          return emitObject(nullable);
+          return emitGenericObject(nullable);
         }
         case 'Partial': {
           if (typeAnnotation.typeParameters.params.length !== 1) {
@@ -275,7 +275,7 @@ function translateTypeAnnotation(
             parser,
           );
           // no need to do further checking
-          return emitObject(nullable);
+          return emitGenericObject(nullable);
         }
       }
 
