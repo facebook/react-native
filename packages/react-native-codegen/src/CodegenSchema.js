@@ -53,6 +53,7 @@ export type VoidTypeAnnotation = $ReadOnly<{
 export type ObjectTypeAnnotation<+T> = $ReadOnly<{
   type: 'ObjectTypeAnnotation',
   properties: $ReadOnlyArray<NamedShape<T>>,
+  baseTypes?: $ReadOnlyArray<string>,
 }>;
 
 type FunctionTypeAnnotation<+P, +R> = $ReadOnly<{
