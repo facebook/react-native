@@ -244,7 +244,7 @@ function emitGenericObject(
   });
 }
 
-function emitPartial(
+function emitObject(
   nullable: boolean,
   properties: Array<$FlowFixMe>,
 ): Nullable<NativeModuleObjectTypeAnnotation> {
@@ -381,7 +381,7 @@ module.exports = {
   emitInt32,
   emitNumber,
   emitGenericObject,
-  emitPartial,
+  emitObject,
   emitPromise,
   emitRootTag,
   emitVoid,

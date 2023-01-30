@@ -21,7 +21,7 @@ const {
   emitNumber,
   emitInt32,
   emitGenericObject,
-  emitPartial,
+  emitObject,
   emitPromise,
   emitRootTag,
   emitVoid,
@@ -457,7 +457,7 @@ describe('emitGenericObject', () => {
   });
 });
 
-describe('emitPartial', () => {
+describe('emitObject', () => {
   describe('when nullable is true', () => {
     it('returns nullable type annotation', () => {
       const props = [
@@ -477,7 +477,7 @@ describe('emitPartial', () => {
         },
       ];
 
-      const result = emitPartial(true, props);
+      const result = emitObject(true, props);
 
       const expected = {
         type: 'NullableTypeAnnotation',
@@ -509,7 +509,7 @@ describe('emitPartial', () => {
         },
       ];
 
-      const result = emitPartial(false, props);
+      const result = emitObject(false, props);
 
       const expected = {
         type: 'ObjectTypeAnnotation',
