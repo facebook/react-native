@@ -48,15 +48,15 @@ public class Spacing {
    */
   public static final int ALL = 8;
   /**
-   * Spacing type that represents all directions (left, top, right, bottom). E.g. {@code margin}.
+   * Spacing type that represents block directions (top, bottom). E.g. {@code marginBlock}.
    */
   public static final int BLOCK = 9;
   /**
-   * Spacing type that represents all directions (left, top, right, bottom). E.g. {@code margin}.
+   * Spacing type that represents the block end direction (bottom). E.g. {@code marginBlockEnd}.
    */
   public static final int BLOCK_END = 10;
   /**
-   * Spacing type that represents all directions (left, top, right, bottom). E.g. {@code margin}.
+   * Spacing type that represents the block start direction (top). E.g. {@code marginBlockStart}.
    */
   public static final int BLOCK_START = 11;
 
