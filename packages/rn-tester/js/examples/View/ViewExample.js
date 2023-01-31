@@ -809,6 +809,36 @@ exports.examples = [
               <Text style={{fontSize: 11}}>borderBlockEndColor green</Text>
             </View>
           </View>
+          <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View
+              style={{
+                borderInlineColor: 'orange',
+                borderWidth: 5,
+                position: 'absolute',
+                top: 10,
+                bottom: 10,
+                left: 10,
+                right: 10,
+              }}>
+              <Text style={{fontSize: 11}}>borderInlineColor orange</Text>
+            </View>
+          </View>
+          <View style={{position: 'relative', height: 65, borderWidth: 1}}>
+            <View
+              style={{
+                borderInlineEndColor: 'green',
+                borderInlineStartColor: 'purple',
+                borderWidth: 5,
+                position: 'absolute',
+                top: 10,
+                bottom: 10,
+                left: 10,
+                right: 10,
+              }}>
+              <Text style={{fontSize: 11}}>borderInlineStartColor purple</Text>
+              <Text style={{fontSize: 11}}>borderInlineEndColor green</Text>
+            </View>
+          </View>
         </View>
       );
     },

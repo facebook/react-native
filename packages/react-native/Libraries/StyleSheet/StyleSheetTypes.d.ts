@@ -245,6 +245,9 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderBlockColor?: ColorValue | undefined;
   borderBlockEndColor?: ColorValue | undefined;
   borderBlockStartColor?: ColorValue | undefined;
+  borderInlineColor?: ColorValue | undefined;
+  borderInlineEndColor?: ColorValue | undefined;
+  borderInlineStartColor?: ColorValue | undefined;
   borderBottomColor?: ColorValue | undefined;
   borderBottomEndRadius?: AnimatableNumericValue | undefined;
   borderBottomLeftRadius?: AnimatableNumericValue | undefined;
