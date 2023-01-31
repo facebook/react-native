@@ -268,7 +268,7 @@ function translateTypeAnnotation(
         baseTypes,
       };
 
-      if (objectTypeAnnotation.baseTypes.length == 0) {
+      if (objectTypeAnnotation.baseTypes.length === 0) {
         // The flow checker does not allow adding a member after an object literal is created
         // so here I do it in a reverse way
         delete objectTypeAnnotation.baseTypes;
