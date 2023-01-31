@@ -232,6 +232,9 @@ export interface TransformsStyle {
 export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   backfaceVisibility?: 'visible' | 'hidden' | undefined;
   backgroundColor?: ColorValue | undefined;
+  borderBlockColor?: ColorValue | undefined;
+  borderBlockEndColor?: ColorValue | undefined;
+  borderBlockStartColor?: ColorValue | undefined;
   borderBottomColor?: ColorValue | undefined;
   borderBottomEndRadius?: number | undefined;
   borderBottomLeftRadius?: number | undefined;

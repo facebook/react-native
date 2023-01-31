@@ -99,7 +99,13 @@
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
       struct, vertical, prefix "Vertical" suffix, rawValue)            \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, all, prefix "" suffix, rawValue)
+      struct, all, prefix "" suffix, rawValue)                         \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
+      struct, block, prefix "Block" suffix, rawValue)                  \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
+      struct, blockEnd, prefix "BlockEnd" suffix, rawValue)            \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
+      struct, blockStart, prefix "BlockStart" suffix, rawValue)
 
 // Rebuild a type that contains multiple fields from a single field value
 #define REBUILD_FIELD_SWITCH_CASE(                  \
