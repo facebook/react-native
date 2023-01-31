@@ -1521,6 +1521,56 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
             }
           ]
         },
+        'Base1': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'bar1',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            }
+          ]
+        },
+        'Base2': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'bar2',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            }
+          ]
+        },
+        'Base3': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'bar2',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar3',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            }
+          ],
+          'baseTypes': [
+            'Base2'
+          ]
+        },
         'Foo': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1556,6 +1606,10 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
                 'name': 'Bar'
               }
             }
+          ],
+          'baseTypes': [
+            'Base1',
+            'Base3'
           ]
         }
       },

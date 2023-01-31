@@ -221,7 +221,26 @@ function translateTypeAnnotation(
       }
     }
     case 'TSInterfaceDeclaration': {
-      const objectTypeAnnotation = {
+      const baseTypes = (typeAnnotation.extends ?? []).map(
+        extend => extend.expression.name,
+      );
+      for (const baseType of baseTypes) {
+        // ensure base types exist and appear in aliasMap
+        translateTypeAnnotation(
+          hasteModuleName,
+          {
+            type: 'TSTypeReference',
+            typeName: {type: 'Identifier', name: baseType},
+          },
+          types,
+          aliasMap,
+          tryParse,
+          cxxOnly,
+          parser,
+        );
+      }
+
+      let objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         // $FlowFixMe[missing-type-arg]
         properties: (flattenProperties(
@@ -246,7 +265,14 @@ function translateTypeAnnotation(
             },
           )
           .filter(Boolean),
+        baseTypes,
       };
+
+      if (objectTypeAnnotation.baseTypes.length === 0) {
+        // The flow checker does not allow adding a member after an object literal is created
+        // so here I do it in a reverse way
+        delete objectTypeAnnotation.baseTypes;
+      }
 
       return typeAliasResolution(
         typeAliasResolutionStatus,
