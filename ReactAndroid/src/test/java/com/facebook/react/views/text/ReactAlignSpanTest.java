@@ -49,7 +49,7 @@ public class ReactAlignSpanTest {
   // span with no text align vertical or text align vertical center
   @Test
   public void shouldNotChangeBaseline() {
-    ReactAlignSpan absoluteSizeSpan = new ReactAlignSpan(15);
+    ReactAlignSpan absoluteSizeSpan = new ReactAlignSpan(15, TextAlignVertical.CENTER);
     absoluteSizeSpan.updateDrawState(tp);
     // uses the default alignment (baseline)
     assertThat(tp.baselineShift).isEqualTo(0);

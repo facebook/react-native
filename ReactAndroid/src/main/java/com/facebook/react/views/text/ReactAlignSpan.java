@@ -8,16 +8,19 @@
 package com.facebook.react.views.text;
 
 import android.text.TextPaint;
-import android.text.style.AbsoluteSizeSpan;
+import android.text.style.MetricAffectingSpan;
+
+import androidx.annotation.NonNull;
 
 /*
  * Uses {@link AbsoluteSizeSpan} to change text baseline based on fontSize and lineHeight {@link ReactSpan}.
  */
-public class ReactAlignSpan extends AbsoluteSizeSpan implements ReactSpan {
+public class ReactAlignSpan extends MetricAffectingSpan implements ReactSpan {
   private static final String TAG = "ReactAlignSpan";
   private TextAlignVertical mTextAlignVertical = TextAlignVertical.CENTER;
   private int mHighestLineHeight = 0;
   private int mHighestFontSize = 0;
+  private final int mSize;
 
   public enum TextAlignVertical {
     TOP,
@@ -25,18 +28,15 @@ public class ReactAlignSpan extends AbsoluteSizeSpan implements ReactSpan {
     CENTER,
   }
 
-  public ReactAlignSpan(int size) {
-    super(size);
-  }
-
   public ReactAlignSpan(int size, TextAlignVertical textAlignVertical) {
-    this(size);
+    mSize = size;
     mTextAlignVertical = textAlignVertical;
   }
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    super.updateDrawState(ds);
+    TextPaint textPaintCopy = new TextPaint();
+    textPaintCopy.setTextSize(mSize);
     if (mTextAlignVertical == TextAlignVertical.CENTER) {
       return;
     }
@@ -50,22 +50,23 @@ public class ReactAlignSpan extends AbsoluteSizeSpan implements ReactSpan {
       // descent  _____________   2
       // bottom   _____________   5
       if (mTextAlignVertical == TextAlignVertical.TOP) {
-        ds.baselineShift += ds.getFontMetrics().top - ds.ascent() - ds.descent();
+        ds.baselineShift +=
+            textPaintCopy.getFontMetrics().top - textPaintCopy.ascent() - textPaintCopy.descent();
       }
       if (mTextAlignVertical == TextAlignVertical.BOTTOM) {
-        ds.baselineShift += ds.getFontMetrics().bottom - ds.descent();
+        ds.baselineShift += textPaintCopy.getFontMetrics().bottom - textPaintCopy.descent();
       }
     } else {
-      if (mHighestFontSize == getSize()) {
+      if (mHighestFontSize == mSize) {
         // aligns text vertically in the lineHeight
         // and adjust their position depending on the fontSize
         if (mTextAlignVertical == TextAlignVertical.TOP) {
-          ds.baselineShift -= mHighestLineHeight / 2 - getSize() / 2;
+          ds.baselineShift -= mHighestLineHeight / 2 - mSize / 2;
         }
         if (mTextAlignVertical == TextAlignVertical.BOTTOM) {
-          ds.baselineShift += mHighestLineHeight / 2 - getSize() / 2 - ds.descent();
+          ds.baselineShift += mHighestLineHeight / 2 - mSize / 2 - textPaintCopy.descent();
         }
-      } else if (mHighestFontSize != 0 && getSize() < mHighestFontSize) {
+      } else if (mHighestFontSize != 0 && mSize < mHighestFontSize) {
         // aligns correctly text that has smaller font
         if (mTextAlignVertical == TextAlignVertical.TOP) {
           ds.baselineShift -=
@@ -74,14 +75,20 @@ public class ReactAlignSpan extends AbsoluteSizeSpan implements ReactSpan {
                   // smaller font aligns on the baseline of bigger font
                   // moves the baseline of text with smaller font up
                   // so it aligns on the top of the larger font
-                  + (mHighestFontSize - getSize())
-                  + (ds.getFontMetrics().top - ds.ascent());
+                  + (mHighestFontSize - mSize)
+                  + (textPaintCopy.getFontMetrics().top - textPaintCopy.ascent());
         }
         if (mTextAlignVertical == TextAlignVertical.BOTTOM) {
-          ds.baselineShift += mHighestLineHeight / 2 - mHighestFontSize / 2 - ds.descent();
+          ds.baselineShift +=
+              mHighestLineHeight / 2 - mHighestFontSize / 2 - textPaintCopy.descent();
         }
       }
     }
+  }
+
+  @Override
+  public void updateMeasureState(@NonNull TextPaint ds) {
+    // do nothing
   }
 
   public void updateSpan(int highestLineHeight, int highestFontSize) {
