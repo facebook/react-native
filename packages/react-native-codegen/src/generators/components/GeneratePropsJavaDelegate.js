@@ -128,6 +128,8 @@ function getJavaValueForProp(
           return '(ReadableMap) value';
         case 'EdgeInsetsPrimitive':
           return '(ReadableMap) value';
+        case 'DimensionPrimitive':
+          return 'DimensionPropConverter.getDimension(value)';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown ReservedPropTypeAnnotation');

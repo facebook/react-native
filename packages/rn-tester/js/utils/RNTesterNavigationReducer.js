@@ -32,7 +32,8 @@ const getUpdatedBookmarks = ({
 }) => {
   const updatedBookmarks = bookmarks
     ? {...bookmarks}
-    : {components: [], apis: []};
+    : // $FlowFixMe[missing-empty-array-annot]
+      {components: [], apis: []};
 
   if (!exampleType || !key) {
     return null;
@@ -43,6 +44,7 @@ const getUpdatedBookmarks = ({
       k => k !== key,
     );
   } else {
+    // $FlowFixMe[incompatible-call]
     updatedBookmarks[exampleType].push(key);
   }
 
@@ -60,7 +62,8 @@ const getUpdatedRecentlyUsed = ({
 }) => {
   const updatedRecentlyUsed = recentlyUsed
     ? {...recentlyUsed}
-    : {components: [], apis: []};
+    : // $FlowFixMe[missing-empty-array-annot]
+      {components: [], apis: []};
 
   if (!exampleType || !key) {
     return updatedRecentlyUsed;
@@ -71,6 +74,7 @@ const getUpdatedRecentlyUsed = ({
   if (existingKeys.includes(key)) {
     existingKeys = existingKeys.filter(k => k !== key);
   }
+  // $FlowFixMe[incompatible-call]
   existingKeys.unshift(key);
 
   updatedRecentlyUsed[exampleType] = existingKeys.slice(0, 5);
@@ -102,6 +106,7 @@ export const RNTesterNavigationReducer = (
         activeModuleKey: key,
         activeModuleTitle: title,
         activeModuleExampleKey: null,
+        // $FlowFixMe[incompatible-return]
         recentlyUsed: getUpdatedRecentlyUsed({
           exampleType: exampleType,
           key: key,
@@ -118,6 +123,7 @@ export const RNTesterNavigationReducer = (
     case RNTesterNavigationActionsType.BOOKMARK_PRESS:
       return {
         ...state,
+        // $FlowFixMe[incompatible-return]
         bookmarks: getUpdatedBookmarks({
           exampleType: exampleType,
           key: key,

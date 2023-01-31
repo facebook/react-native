@@ -22,12 +22,8 @@ struct YGLayout {
 
 private:
   static constexpr size_t directionOffset = 0;
-  static constexpr size_t didUseLegacyFlagOffset =
-      directionOffset + facebook::yoga::detail::bitWidthFn<YGDirection>();
-  static constexpr size_t doesLegacyStretchFlagAffectsLayoutOffset =
-      didUseLegacyFlagOffset + 1;
   static constexpr size_t hadOverflowOffset =
-      doesLegacyStretchFlagAffectsLayoutOffset + 1;
+      directionOffset + facebook::yoga::detail::bitWidthFn<YGDirection>();
   uint8_t flags = 0;
 
 public:
@@ -54,25 +50,6 @@ public:
   void setDirection(YGDirection direction) {
     facebook::yoga::detail::setEnumData<YGDirection>(
         flags, directionOffset, direction);
-  }
-
-  bool didUseLegacyFlag() const {
-    return facebook::yoga::detail::getBooleanData(
-        flags, didUseLegacyFlagOffset);
-  }
-
-  void setDidUseLegacyFlag(bool val) {
-    facebook::yoga::detail::setBooleanData(flags, didUseLegacyFlagOffset, val);
-  }
-
-  bool doesLegacyStretchFlagAffectsLayout() const {
-    return facebook::yoga::detail::getBooleanData(
-        flags, doesLegacyStretchFlagAffectsLayoutOffset);
-  }
-
-  void setDoesLegacyStretchFlagAffectsLayout(bool val) {
-    facebook::yoga::detail::setBooleanData(
-        flags, doesLegacyStretchFlagAffectsLayoutOffset, val);
   }
 
   bool hadOverflow() const {

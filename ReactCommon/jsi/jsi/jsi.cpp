@@ -427,11 +427,9 @@ JSError::JSError(Runtime& rt, std::string msg) : message_(std::move(msg)) {
     setValue(
         rt,
         callGlobalFunction(rt, "Error", String::createFromUtf8(rt, message_)));
-  } catch (const std::exception& ex) {
+  } catch (const JSIException& ex) {
     message_ = std::string(ex.what()) + " (while raising " + message_ + ")";
     setValue(rt, String::createFromUtf8(rt, message_));
-  } catch (...) {
-    setValue(rt, Value());
   }
 }
 
@@ -442,10 +440,8 @@ JSError::JSError(Runtime& rt, std::string msg, std::string stack)
     e.setProperty(rt, "message", String::createFromUtf8(rt, message_));
     e.setProperty(rt, "stack", String::createFromUtf8(rt, stack_));
     setValue(rt, std::move(e));
-  } catch (const std::exception& ex) {
+  } catch (const JSIException& ex) {
     setValue(rt, String::createFromUtf8(rt, ex.what()));
-  } catch (...) {
-    setValue(rt, Value());
   }
 }
 
@@ -457,74 +453,68 @@ JSError::JSError(std::string what, Runtime& rt, Value&& value)
 void JSError::setValue(Runtime& rt, Value&& value) {
   value_ = std::make_shared<Value>(std::move(value));
 
-  try {
-    if ((message_.empty() || stack_.empty()) && value_->isObject()) {
-      auto obj = value_->getObject(rt);
-
-      if (message_.empty()) {
-        try {
-          Value message = obj.getProperty(rt, "message");
-          if (!message.isUndefined() && !message.isString()) {
-            message = callGlobalFunction(rt, "String", message);
-          }
-          if (message.isString()) {
-            message_ = message.getString(rt).utf8(rt);
-          } else if (!message.isUndefined()) {
-            message_ = "String(e.message) is a " + kindToString(message, &rt);
-          }
-        } catch (const std::exception& ex) {
-          message_ = std::string("[Exception while creating message string: ") +
-              ex.what() + "]";
-        }
-      }
-
-      if (stack_.empty()) {
-        try {
-          Value stack = obj.getProperty(rt, "stack");
-          if (!stack.isUndefined() && !stack.isString()) {
-            stack = callGlobalFunction(rt, "String", stack);
-          }
-          if (stack.isString()) {
-            stack_ = stack.getString(rt).utf8(rt);
-          } else if (!stack.isUndefined()) {
-            stack_ = "String(e.stack) is a " + kindToString(stack, &rt);
-          }
-        } catch (const std::exception& ex) {
-          message_ = std::string("[Exception while creating stack string: ") +
-              ex.what() + "]";
-        }
-      }
-    }
+  if ((message_.empty() || stack_.empty()) && value_->isObject()) {
+    auto obj = value_->getObject(rt);
 
     if (message_.empty()) {
       try {
-        if (value_->isString()) {
-          message_ = value_->getString(rt).utf8(rt);
-        } else {
-          Value message = callGlobalFunction(rt, "String", *value_);
-          if (message.isString()) {
-            message_ = message.getString(rt).utf8(rt);
-          } else {
-            message_ = "String(e) is a " + kindToString(message, &rt);
-          }
+        Value message = obj.getProperty(rt, "message");
+        if (!message.isUndefined() && !message.isString()) {
+          message = callGlobalFunction(rt, "String", message);
         }
-      } catch (const std::exception& ex) {
+        if (message.isString()) {
+          message_ = message.getString(rt).utf8(rt);
+        } else if (!message.isUndefined()) {
+          message_ = "String(e.message) is a " + kindToString(message, &rt);
+        }
+      } catch (const JSIException& ex) {
         message_ = std::string("[Exception while creating message string: ") +
             ex.what() + "]";
       }
     }
 
     if (stack_.empty()) {
-      stack_ = "no stack";
+      try {
+        Value stack = obj.getProperty(rt, "stack");
+        if (!stack.isUndefined() && !stack.isString()) {
+          stack = callGlobalFunction(rt, "String", stack);
+        }
+        if (stack.isString()) {
+          stack_ = stack.getString(rt).utf8(rt);
+        } else if (!stack.isUndefined()) {
+          stack_ = "String(e.stack) is a " + kindToString(stack, &rt);
+        }
+      } catch (const JSIException& ex) {
+        message_ = std::string("[Exception while creating stack string: ") +
+            ex.what() + "]";
+      }
     }
+  }
 
-    if (what_.empty()) {
-      what_ = message_ + "\n\n" + stack_;
+  if (message_.empty()) {
+    try {
+      if (value_->isString()) {
+        message_ = value_->getString(rt).utf8(rt);
+      } else {
+        Value message = callGlobalFunction(rt, "String", *value_);
+        if (message.isString()) {
+          message_ = message.getString(rt).utf8(rt);
+        } else {
+          message_ = "String(e) is a " + kindToString(message, &rt);
+        }
+      }
+    } catch (const JSIException& ex) {
+      message_ = std::string("[Exception while creating message string: ") +
+          ex.what() + "]";
     }
-  } catch (...) {
-    message_ = "[Exception caught creating message string]";
-    stack_ = "[Exception caught creating stack string]";
-    what_ = "[Exception caught getting value fields]";
+  }
+
+  if (stack_.empty()) {
+    stack_ = "no stack";
+  }
+
+  if (what_.empty()) {
+    what_ = message_ + "\n\n" + stack_;
   }
 }
 

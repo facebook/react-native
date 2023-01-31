@@ -251,6 +251,12 @@ export interface AccessibilityPropsAndroid {
     | 'no'
     | 'no-hide-descendants'
     | undefined;
+
+  /**
+   * A reference to another element `nativeID` used to build complex forms. The value of `accessibilityLabelledBy` should match the `nativeID` of the related element.
+   * @platform android
+   */
+  accessibilityLabelledBy?: string | string[] | undefined;
 }
 
 export interface AccessibilityPropsIOS {
@@ -290,6 +296,13 @@ export interface AccessibilityPropsIOS {
    * @platform ios
    */
   accessibilityIgnoresInvertColors?: boolean | undefined;
+
+  /**
+   * By using the accessibilityLanguage property, the screen reader will understand which language to use while reading the element's label, value and hint. The provided string value must follow the BCP 47 specification (https://www.rfc-editor.org/info/bcp47).
+   * https://reactnative.dev/docs/accessibility#accessibilitylanguage-ios
+   * @platform ios
+   */
+  accessibilityLanguage?: string | undefined;
 }
 
 export type Role =

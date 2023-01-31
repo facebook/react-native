@@ -238,9 +238,11 @@ class StatusBar extends React.Component<Props> {
   });
 
   // Timer for updating the native module values at the end of the frame.
+  // $FlowFixMe[missing-local-annot]
   static _updateImmediate = null;
 
   // The current merged values from the props stack.
+  // $FlowFixMe[missing-local-annot]
   static _currentValues = null;
 
   // TODO(janic): Provide a real API to deal with status bar height. See the
@@ -387,6 +389,7 @@ class StatusBar extends React.Component<Props> {
     return newEntry;
   }
 
+  // $FlowFixMe[missing-local-annot]
   _stackEntry = null;
 
   componentDidMount() {

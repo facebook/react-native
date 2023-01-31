@@ -42,6 +42,7 @@ const {
   emitNumber,
   emitInt32,
   emitObject,
+  emitPartial,
   emitPromise,
   emitRootTag,
   emitVoid,
@@ -154,6 +155,40 @@ function translateTypeAnnotation(
         case 'UnsafeObject':
         case 'Object': {
           return emitObject(nullable);
+        }
+        case '$Partial': {
+          if (typeAnnotation.typeParameters.params.length !== 1) {
+            throw new Error(
+              'Partials only support annotating exactly one parameter.',
+            );
+          }
+
+          const annotatedElement =
+            types[typeAnnotation.typeParameters.params[0].id.name];
+
+          if (!annotatedElement) {
+            throw new Error(
+              'Partials only support annotating a type parameter.',
+            );
+          }
+
+          const properties = annotatedElement.right.properties.map(prop => {
+            return {
+              name: prop.key.name,
+              optional: true,
+              typeAnnotation: translateTypeAnnotation(
+                hasteModuleName,
+                prop.value,
+                types,
+                aliasMap,
+                tryParse,
+                cxxOnly,
+                parser,
+              ),
+            };
+          });
+
+          return emitPartial(nullable, properties);
         }
         default: {
           return translateDefault(
