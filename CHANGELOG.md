@@ -456,6 +456,24 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
 
+## v0.70.7
+
+### Fixed
+
+#### Android specific
+
+- Mitigation for Samsung TextInput Hangs ([be69c8b5a7](https://github.com/facebook/react-native/commit/be69c8b5a77ae60cced1b2af64e48b90d9955be5) by [@NickGerleman](https://github.com/NickGerleman))
+
+#### iOS Specific
+
+- Fix the potential race condition when dismissing and presenting modal ([279fb52e03](https://github.com/facebook/react-native/commit/279fb52e033daba60393e400e1ee585e7d067090) by [@wood1986](https://github.com/wood1986))
+
+### Added
+
+#### Android Specific
+
+- Add `POST_NOTIFICATIONS` and deprecate `POST_NOTIFICATION` ([b5280bbc93](https://github.com/facebook/react-native/commit/b5280bbc93218bd15e2166b8689c1689200bb92c) by [@dcangulo](https://github.com/dcangulo))
+
 ## v0.70.6
 
 ### Fixed
