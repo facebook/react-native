@@ -9,7 +9,6 @@ package com.facebook.react.views.text;
 
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
-
 import androidx.annotation.NonNull;
 
 /*
@@ -36,6 +35,7 @@ public class ReactAlignSpan extends MetricAffectingSpan implements ReactSpan {
   @Override
   public void updateDrawState(TextPaint ds) {
     TextPaint textPaintCopy = new TextPaint();
+    textPaintCopy.set(ds);
     textPaintCopy.setTextSize(mSize);
     if (mTextAlignVertical == TextAlignVertical.CENTER) {
       return;
