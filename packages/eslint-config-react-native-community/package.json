@@ -13,7 +13,7 @@
   "dependencies": {
     "@babel/core": "^7.14.0",
     "@babel/eslint-parser": "^7.18.2",
-    "@react-native-community/eslint-plugin": "^1.1.0",
+    "@react-native-community/eslint-plugin": "^1.3.0",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
     "eslint-config-prettier": "^8.5.0",
