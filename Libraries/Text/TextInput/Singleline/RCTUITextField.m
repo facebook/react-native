@@ -12,7 +12,7 @@
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 #import <React/RCTBackedTextInputDelegate.h> // [macOS]
 #import <React/RCTTextAttributes.h>
-#import <React/RCTTouchHandler.h> // [TODO(macOS GH#774)
+#import <React/RCTTouchHandler.h> // [macOS]
 
 #if TARGET_OS_OSX // [macOS
 
