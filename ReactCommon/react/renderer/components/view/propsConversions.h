@@ -539,6 +539,30 @@ static inline CascadedRectangleEdges<T> convertRawProp(
       defaultValue.blockStart,
       prefix,
       suffix);
+  result.inline = convertRawProp(
+      context,
+      rawProps,
+      "Inline",
+      sourceValue.inline,
+      defaultValue.inline,
+      prefix,
+      suffix);
+  result.inlineEnd = convertRawProp(
+      context,
+      rawProps,
+      "InlineEnd",
+      sourceValue.inlineEnd,
+      defaultValue.inlineEnd,
+      prefix,
+      suffix);
+  result.inlineStart = convertRawProp(
+      context,
+      rawProps,
+      "InlineStart",
+      sourceValue.inlineStart,
+      defaultValue.inlineStart,
+      prefix,
+      suffix);
 
   result.all = convertRawProp(
       context, rawProps, "", sourceValue.all, defaultValue.all, prefix, suffix);

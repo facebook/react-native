@@ -361,6 +361,9 @@ RCT_VIEW_BORDER_PROPERTY(End)
 RCT_VIEW_BORDER_PROPERTY(Block)
 RCT_VIEW_BORDER_PROPERTY(BlockEnd)
 RCT_VIEW_BORDER_PROPERTY(BlockStart)
+RCT_VIEW_BORDER_PROPERTY(Inline)
+RCT_VIEW_BORDER_PROPERTY(InlineEnd)
+RCT_VIEW_BORDER_PROPERTY(InlineStart)
 
 #define RCT_VIEW_BORDER_RADIUS_PROPERTY(SIDE)                                                          \
   RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTView)                                     \
