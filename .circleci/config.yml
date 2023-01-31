@@ -1454,9 +1454,7 @@ jobs:
       - download_gradle_dependencies
 
       # START: Stables and nightlies
-      # This conditional step sets up the necessary credentials for publishing react-native to npm,
-      # and for interacting with GitHub as the react-native-bot account. Important: these steps
-      # should not be allowed to run on commits from pull requests.
+      # This conditional step sets up the necessary credentials for publishing react-native to npm.
       - when:
           condition:
             or:
@@ -1840,7 +1838,6 @@ workflows:
       # This job will trigger when a version tag is pushed (by package_release)
       - build_npm_package:
           name: build_and_publish_npm_package
-          context: react-native-bot
           release_type: "release"
           filters: *only_release_tags
           requires:
@@ -1876,7 +1873,6 @@ workflows:
             - prepare_hermes_workspace
       - build_npm_package:
           name: build_and_publish_npm_package
-          context: react-native-bot
           release_type: "dry-run"
           requires:
             - build_hermesc_linux
