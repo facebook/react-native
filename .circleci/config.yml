@@ -254,7 +254,7 @@ commands:
     steps:
       - run:
           name: "Run Tests: << parameters.platform >> End-to-End Tests"
-          command: node ./scripts/run-ci-e2e-tests.js --<< parameters.platform >> --retries << parameters.retries >>
+          command: yarn ts-node ./scripts/run-ci-e2e-tests.js --<< parameters.platform >> --retries << parameters.retries >>
 
   report_bundle_size:
     parameters:
