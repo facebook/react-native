@@ -90,9 +90,9 @@ module.exports = {
       colorScheme == null ? 'unspecified' : colorScheme;
 
     invariant(
-      nativeColorScheme === 'dark' ||
-        nativeColorScheme === 'light' ||
-        nativeColorScheme == null,
+      colorScheme === 'dark' ||
+        colorScheme === 'light' ||
+        colorScheme == null,
       "Unrecognized color scheme. Did you mean 'dark', 'light' or null?",
     );
 
