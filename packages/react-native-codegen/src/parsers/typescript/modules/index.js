@@ -527,7 +527,7 @@ function buildModuleSchema(
       (moduleSchema: NativeModuleSchema, {aliasMap, propertyShape}) => {
         return {
           type: 'NativeModule',
-          aliases: {...moduleSchema.aliases, ...aliasMap},
+          aliasMap: {...moduleSchema.aliasMap, ...aliasMap},
           spec: {
             properties: [...moduleSchema.spec.properties, propertyShape],
           },
@@ -537,7 +537,7 @@ function buildModuleSchema(
       },
       {
         type: 'NativeModule',
-        aliases: {},
+        aliasMap: {},
         spec: {properties: []},
         moduleName: moduleName,
         excludedPlatforms:

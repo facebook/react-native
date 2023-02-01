@@ -438,10 +438,10 @@ module.exports = {
       .sort()
       .map(hasteModuleName => {
         const {
-          aliases,
+          aliasMap,
           spec: {properties},
         } = nativeModules[hasteModuleName];
-        const resolveAlias = createAliasResolver(aliases);
+        const resolveAlias = createAliasResolver(aliasMap);
 
         const translatedMethods = properties
           .map(property =>
