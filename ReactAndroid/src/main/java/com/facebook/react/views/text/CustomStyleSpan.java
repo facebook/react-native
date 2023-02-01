@@ -8,7 +8,6 @@
 package com.facebook.react.views.text;
 
 import android.content.res.AssetManager;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
@@ -18,6 +17,7 @@ import com.facebook.infer.annotation.Nullsafe;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
+  private static final String TAG = "CustomStyleSpan";
   /**
    * A {@link MetricAffectingSpan} that allows to change the style of the displayed font.
    * CustomStyleSpan will try to load the fontFamily with the right style and weight from the
@@ -35,6 +35,10 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   private final int mWeight;
   private final @Nullable String mFeatureSettings;
   private final @Nullable String mFontFamily;
+  private int mSize = 0;
+  private TextAlignVertical mTextAlignVertical = TextAlignVertical.CENTER;
+  private int mHighestLineHeight = 0;
+  private int mHighestFontSize = 0;
 
   public CustomStyleSpan(
       int fontStyle,
@@ -49,14 +53,61 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     mAssetManager = assetManager;
   }
 
+  public CustomStyleSpan(
+      int fontStyle,
+      int fontWeight,
+      @Nullable String fontFeatureSettings,
+      @Nullable String fontFamily,
+      TextAlignVertical textAlignVertical,
+      int textSize,
+      AssetManager assetManager) {
+    this(fontStyle, fontWeight, fontFeatureSettings, fontFamily, assetManager);
+    mTextAlignVertical = textAlignVertical;
+    mSize = textSize;
+  }
+
+  public enum TextAlignVertical {
+    TOP,
+    BOTTOM,
+    CENTER,
+  }
+
+  public TextAlignVertical getTextAlignVertical() {
+    return mTextAlignVertical;
+  }
+
+  public int getSize() {
+    return mSize;
+  }
+
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(ds, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
+    apply(
+        ds,
+        mStyle,
+        mWeight,
+        mFeatureSettings,
+        mFontFamily,
+        mAssetManager,
+        mTextAlignVertical,
+        mSize,
+        mHighestLineHeight,
+        mHighestFontSize);
   }
 
   @Override
   public void updateMeasureState(TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
+    apply(
+        paint,
+        mStyle,
+        mWeight,
+        mFeatureSettings,
+        mFontFamily,
+        mAssetManager,
+        mTextAlignVertical,
+        mSize,
+        mHighestLineHeight,
+        mHighestFontSize);
   }
 
   public int getStyle() {
@@ -72,16 +123,79 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   private static void apply(
-      Paint paint,
+      TextPaint ds,
       int style,
       int weight,
       @Nullable String fontFeatureSettings,
       @Nullable String family,
-      AssetManager assetManager) {
+      AssetManager assetManager,
+      TextAlignVertical textAlignVertical,
+      int textSize,
+      int highestLineHeight,
+      int highestFontSize) {
     Typeface typeface =
-        ReactTypefaceUtils.applyStyles(paint.getTypeface(), style, weight, family, assetManager);
-    paint.setFontFeatureSettings(fontFeatureSettings);
-    paint.setTypeface(typeface);
-    paint.setSubpixelText(true);
+        ReactTypefaceUtils.applyStyles(ds.getTypeface(), style, weight, family, assetManager);
+    ds.setFontFeatureSettings(fontFeatureSettings);
+    ds.setTypeface(typeface);
+    ds.setSubpixelText(true);
+
+    if (textAlignVertical == TextAlignVertical.CENTER) {
+      return;
+    }
+
+    TextPaint textPaintCopy = new TextPaint();
+    textPaintCopy.set(ds);
+    if (textSize > 0) {
+      textPaintCopy.setTextSize(textSize);
+    }
+    if (highestLineHeight == 0) {
+      // aligns the text by font metrics
+      // when lineHeight prop is missing
+      // https://stackoverflow.com/a/27631737/7295772
+      // top      -------------  -10
+      // ascent   -------------  -5
+      // baseline __my Text____   0
+      // descent  _____________   2
+      // bottom   _____________   5
+      if (textAlignVertical == TextAlignVertical.TOP) {
+        ds.baselineShift +=
+            textPaintCopy.getFontMetrics().top - textPaintCopy.ascent() - textPaintCopy.descent();
+      }
+      if (textAlignVertical == TextAlignVertical.BOTTOM) {
+        ds.baselineShift += textPaintCopy.getFontMetrics().bottom - textPaintCopy.descent();
+      }
+    } else {
+      if (textSize == highestFontSize) {
+        // aligns text vertically in the lineHeight
+        // and adjust their position depending on the fontSize
+        if (textAlignVertical == TextAlignVertical.TOP) {
+          ds.baselineShift -= highestLineHeight / 2 - textPaintCopy.getTextSize() / 2;
+        }
+        if (textAlignVertical == TextAlignVertical.BOTTOM) {
+          ds.baselineShift +=
+              highestLineHeight / 2 - textPaintCopy.getTextSize() / 2 - textPaintCopy.descent();
+        }
+      } else if (highestFontSize != 0 && textSize < highestFontSize) {
+        // aligns correctly text that has smaller font
+        if (textAlignVertical == TextAlignVertical.TOP) {
+          ds.baselineShift -=
+              highestLineHeight / 2
+                  - highestFontSize / 2
+                  // smaller font aligns on the baseline of bigger font
+                  // moves the baseline of text with smaller font up
+                  // so it aligns on the top of the larger font
+                  + (highestFontSize - textSize)
+                  + (textPaintCopy.getFontMetrics().top - textPaintCopy.ascent());
+        }
+        if (textAlignVertical == TextAlignVertical.BOTTOM) {
+          ds.baselineShift += highestLineHeight / 2 - highestFontSize / 2 - textPaintCopy.descent();
+        }
+      }
+    }
+  }
+
+  public void updateSpan(int highestLineHeight, int highestFontSize) {
+    mHighestLineHeight = highestLineHeight;
+    mHighestFontSize = highestFontSize;
   }
 }
