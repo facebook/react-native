@@ -172,7 +172,6 @@ public class TextLayoutManagerMapBuffer {
           if (textAttributes.mTextAlignVertical == "bottom-child") {
             textAlignVertical = CustomStyleSpan.TextAlignVertical.BOTTOM;
           }
-          String currentText = String.valueOf(sb.subSequence(start, end));
           ops.add(
               new SetSpanOperation(
                   start,
@@ -184,8 +183,7 @@ public class TextLayoutManagerMapBuffer {
                       textAttributes.mFontFamily,
                       textAlignVertical,
                       textAttributes.mFontSize,
-                      context.getAssets(),
-                      currentText)));
+                      context.getAssets())));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
           ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));

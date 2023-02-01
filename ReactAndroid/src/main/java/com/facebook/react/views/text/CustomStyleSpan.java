@@ -39,7 +39,6 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   private TextAlignVertical mTextAlignVertical = TextAlignVertical.CENTER;
   private int mHighestLineHeight = 0;
   private int mHighestFontSize = 0;
-  private String mCurrentText;
 
   public CustomStyleSpan(
       int fontStyle,
@@ -61,12 +60,10 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       @Nullable String fontFamily,
       TextAlignVertical textAlignVertical,
       int textSize,
-      AssetManager assetManager,
-      String currentText) {
+      AssetManager assetManager) {
     this(fontStyle, fontWeight, fontFeatureSettings, fontFamily, assetManager);
     mTextAlignVertical = textAlignVertical;
     mSize = textSize;
-    mCurrentText = currentText;
   }
 
   public enum TextAlignVertical {
@@ -95,8 +92,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
         mTextAlignVertical,
         mSize,
         mHighestLineHeight,
-        mHighestFontSize,
-        mCurrentText);
+        mHighestFontSize);
   }
 
   @Override
@@ -111,8 +107,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
         mTextAlignVertical,
         mSize,
         mHighestLineHeight,
-        mHighestFontSize,
-        mCurrentText);
+        mHighestFontSize);
   }
 
   public int getStyle() {
@@ -137,8 +132,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       TextAlignVertical textAlignVertical,
       int textSize,
       int highestLineHeight,
-      int highestFontSize,
-      String currentText) {
+      int highestFontSize) {
     Typeface typeface =
         ReactTypefaceUtils.applyStyles(ds.getTypeface(), style, weight, family, assetManager);
     ds.setFontFeatureSettings(fontFeatureSettings);
