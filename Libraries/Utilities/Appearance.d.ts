@@ -34,7 +34,7 @@ export namespace Appearance {
    * appearance of the system UI, only the appearance of the app.
    * Only available on iOS 13+ and Android 10+.
    */
-  export function setColorScheme(scheme: ColorSchemeName): void;
+  export function setColorScheme(scheme: ColorSchemeName | null | undefined): void;
 
   /**
    * Add an event handler that is fired when appearance preferences change.
