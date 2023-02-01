@@ -65,9 +65,18 @@ try {
     throw Error(exitCode);
   }
 
-  describe('Test: TypeScript tests');
-  if (exec(`${YARN_BINARY} run test-typescript-offline`).code) {
+  describe('Test: TypeScript');
+  if (exec(`${YARN_BINARY} run test-typescript`).code) {
     echo('Failed to run TypeScript tests.');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+
+  describe('Test: TypeScript Type Definition tests');
+  if (
+    exec(`${YARN_BINARY} run test-typescript-type-definitions-offline`).code
+  ) {
+    echo('Failed to run TypeScript Type Definition tests.');
     exitCode = 1;
     throw Error(exitCode);
   }
