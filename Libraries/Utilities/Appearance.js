@@ -86,13 +86,10 @@ module.exports = {
   },
 
   setColorScheme(colorScheme: ?ColorSchemeName): void {
-    const nativeColorScheme =
-      colorScheme == null ? 'unspecified' : colorScheme;
+    const nativeColorScheme = colorScheme == null ? 'unspecified' : colorScheme;
 
     invariant(
-      colorScheme === 'dark' ||
-        colorScheme === 'light' ||
-        colorScheme == null,
+      colorScheme === 'dark' || colorScheme === 'light' || colorScheme == null,
       "Unrecognized color scheme. Did you mean 'dark', 'light' or null?",
     );
 
