@@ -10,6 +10,7 @@ package com.facebook.react.views.text;
 import android.content.res.AssetManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.text.ParcelableSpan;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 import androidx.annotation.Nullable;
@@ -83,5 +84,11 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     paint.setFontFeatureSettings(fontFeatureSettings);
     paint.setTypeface(typeface);
     paint.setSubpixelText(true);
+  }
+
+  @Nullable
+  @Override
+  public ParcelableSpan asParcelable() {
+    return null;
   }
 }

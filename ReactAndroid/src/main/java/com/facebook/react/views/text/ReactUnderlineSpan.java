@@ -7,9 +7,31 @@
 
 package com.facebook.react.views.text;
 
+import android.text.ParcelableSpan;
+import android.text.TextPaint;
+import android.text.style.CharacterStyle;
 import android.text.style.UnderlineSpan;
+import android.text.style.UpdateAppearance;
+import androidx.annotation.NonNull;
 
 /*
  * Wraps {@link UnderlineSpan} as a {@link ReactSpan}.
  */
-public class ReactUnderlineSpan extends UnderlineSpan implements ReactSpan {}
+public class ReactUnderlineSpan extends CharacterStyle implements ReactSpan, UpdateAppearance {
+  private UnderlineSpan mSpan;
+
+  ReactUnderlineSpan() {
+    mSpan = new UnderlineSpan();
+  }
+
+  @Override
+  public void updateDrawState(TextPaint textPaint) {
+    mSpan.updateDrawState(textPaint);
+  }
+
+  @NonNull
+  @Override
+  public ParcelableSpan asParcelable() {
+    return mSpan;
+  }
+}

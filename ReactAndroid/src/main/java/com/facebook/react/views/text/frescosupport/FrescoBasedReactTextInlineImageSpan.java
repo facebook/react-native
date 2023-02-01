@@ -13,6 +13,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.text.ParcelableSpan;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
@@ -180,5 +181,11 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
   @Override
   public int getHeight() {
     return mHeight;
+  }
+
+  @Nullable
+  @Override
+  public ParcelableSpan asParcelable() {
+    return null;
   }
 }

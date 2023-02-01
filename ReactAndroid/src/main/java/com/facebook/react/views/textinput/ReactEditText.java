@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.ParcelableSpan;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -586,9 +587,6 @@ public class ReactEditText extends AppCompatEditText
 
     manageSpans(spannableStringBuilder, reactTextUpdate.mContainsMultipleFragments);
 
-    // Mitigation for https://github.com/facebook/react-native/issues/35936 (S318090)
-    stripAbsoluteSizeSpans(spannableStringBuilder);
-
     mContainsImages = reactTextUpdate.containsImages();
 
     // When we update text, we trigger onChangeText code that will
@@ -659,27 +657,6 @@ public class ReactEditText extends AppCompatEditText
     // impact the whole Spannable, because that would override "local" styles per-fragment
     if (!skipAddSpansForMeasurements) {
       addSpansForMeasurement(getText());
-    }
-  }
-
-  private void stripAbsoluteSizeSpans(SpannableStringBuilder sb) {
-    // We have already set a font size on the EditText itself. We can safely remove sizing spans
-    // which are the same as the set font size, and not otherwise overlapped.
-    final int effectiveFontSize = mTextAttributes.getEffectiveFontSize();
-    ReactAbsoluteSizeSpan[] spans = sb.getSpans(0, sb.length(), ReactAbsoluteSizeSpan.class);
-
-    outerLoop:
-    for (ReactAbsoluteSizeSpan span : spans) {
-      ReactAbsoluteSizeSpan[] overlappingSpans =
-          sb.getSpans(sb.getSpanStart(span), sb.getSpanEnd(span), ReactAbsoluteSizeSpan.class);
-
-      for (ReactAbsoluteSizeSpan overlappingSpan : overlappingSpans) {
-        if (span.getSize() != effectiveFontSize) {
-          continue outerLoop;
-        }
-      }
-
-      sb.removeSpan(span);
     }
   }
 
@@ -966,6 +943,42 @@ public class ReactEditText extends AppCompatEditText
   @Override
   public void setBackgroundColor(int color) {
     mReactBackgroundManager.setBackgroundColor(color);
+  }
+
+  @Override
+  public boolean onTextContextMenuItem(int id) {
+    switch (id) {
+      case android.R.id.copy:
+      case android.R.id.cut:
+        Iterable<ParcelableSpan> addedSpans = inflateParcelableSpans();
+        boolean ret = super.onTextContextMenuItem(id);
+        for (ParcelableSpan span : addedSpans) {
+          getText().removeSpan(span);
+        }
+        return ret;
+      default:
+        return super.onTextContextMenuItem(id);
+    }
+  }
+
+  private Iterable<ParcelableSpan> inflateParcelableSpans() {
+    ReactSpan[] reactSpans = getText().getSpans(0, getText().length(), ReactSpan.class);
+
+    ArrayList<ParcelableSpan> parcelableSpans = new ArrayList<>();
+    for (ReactSpan span : reactSpans) {
+      ParcelableSpan parcelableSpan = span.asParcelable();
+      if (parcelableSpan != null) {
+        parcelableSpans.add(parcelableSpan);
+        getText()
+            .setSpan(
+                parcelableSpan,
+                getText().getSpanStart(span),
+                getText().getSpanEnd(span),
+                getText().getSpanFlags(span));
+      }
+    }
+
+    return parcelableSpans;
   }
 
   public void setBorderWidth(int position, float width) {

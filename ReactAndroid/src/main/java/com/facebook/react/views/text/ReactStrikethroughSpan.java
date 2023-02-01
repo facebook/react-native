@@ -7,9 +7,31 @@
 
 package com.facebook.react.views.text;
 
+import android.text.ParcelableSpan;
+import android.text.TextPaint;
+import android.text.style.CharacterStyle;
 import android.text.style.StrikethroughSpan;
+import android.text.style.UpdateAppearance;
+import androidx.annotation.NonNull;
 
 /*
  * Wraps {@link StrikethroughSpan} as a {@link ReactSpan}.
  */
-public class ReactStrikethroughSpan extends StrikethroughSpan implements ReactSpan {}
+public class ReactStrikethroughSpan extends CharacterStyle implements ReactSpan, UpdateAppearance {
+  private StrikethroughSpan mSpan;
+
+  public ReactStrikethroughSpan() {
+    mSpan = new StrikethroughSpan();
+  }
+
+  @Override
+  public void updateDrawState(TextPaint textPaint) {
+    mSpan.updateDrawState(textPaint);
+  }
+
+  @NonNull
+  @Override
+  public ParcelableSpan asParcelable() {
+    return mSpan;
+  }
+}

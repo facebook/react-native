@@ -9,8 +9,10 @@ package com.facebook.react.views.text;
 
 import android.annotation.TargetApi;
 import android.os.Build;
+import android.text.ParcelableSpan;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
+import androidx.annotation.Nullable;
 
 /**
  * A {@link MetricAffectingSpan} that allows to set the letter spacing on the selected text span.
@@ -41,5 +43,11 @@ public class CustomLetterSpacingSpan extends MetricAffectingSpan implements Reac
     if (!Float.isNaN(mLetterSpacing)) {
       paint.setLetterSpacing(mLetterSpacing);
     }
+  }
+
+  @Nullable
+  @Override
+  public ParcelableSpan asParcelable() {
+    return null;
   }
 }

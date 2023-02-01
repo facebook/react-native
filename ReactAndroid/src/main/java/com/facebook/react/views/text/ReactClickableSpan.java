@@ -7,10 +7,12 @@
 
 package com.facebook.react.views.text;
 
+import android.text.ParcelableSpan;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -63,5 +65,11 @@ class ReactClickableSpan extends ClickableSpan implements ReactSpan {
 
   public int getReactTag() {
     return mReactTag;
+  }
+
+  @Nullable
+  @Override
+  public ParcelableSpan asParcelable() {
+    return null;
   }
 }

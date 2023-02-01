@@ -15,6 +15,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.text.style.AbsoluteSizeSpan;
 import android.view.Gravity;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
@@ -90,12 +91,11 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               currentFontSize = currentFontSize - (int) PixelUtil.toPixelFromDIP(1);
 
               float ratio = (float) currentFontSize / (float) initialFontSize;
-              ReactAbsoluteSizeSpan[] sizeSpans =
-                  text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
-              for (ReactAbsoluteSizeSpan span : sizeSpans) {
+              AbsoluteSizeSpan[] sizeSpans =
+                  text.getSpans(0, text.length(), AbsoluteSizeSpan.class);
+              for (AbsoluteSizeSpan span : sizeSpans) {
                 text.setSpan(
-                    new ReactAbsoluteSizeSpan(
-                        (int) Math.max((span.getSize() * ratio), minimumFontSize)),
+                    new AbsoluteSizeSpan((int) Math.max((span.getSize() * ratio), minimumFontSize)),
                     text.getSpanStart(span),
                     text.getSpanEnd(span),
                     text.getSpanFlags(span));

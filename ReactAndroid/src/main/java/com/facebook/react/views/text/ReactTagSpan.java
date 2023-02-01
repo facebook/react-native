@@ -7,6 +7,9 @@
 
 package com.facebook.react.views.text;
 
+import android.text.ParcelableSpan;
+import androidx.annotation.Nullable;
+
 /**
  * Instances of this class are used to place reactTag information of nested text react nodes into
  * spannable text rendered by single {@link TextView}
@@ -21,5 +24,11 @@ public class ReactTagSpan implements ReactSpan {
 
   public int getReactTag() {
     return mReactTag;
+  }
+
+  @Nullable
+  @Override
+  public ParcelableSpan asParcelable() {
+    return null;
   }
 }

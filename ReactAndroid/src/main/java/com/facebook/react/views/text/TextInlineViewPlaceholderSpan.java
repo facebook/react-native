@@ -9,7 +9,9 @@ package com.facebook.react.views.text;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.text.ParcelableSpan;
 import android.text.style.ReplacementSpan;
+import androidx.annotation.Nullable;
 
 /**
  * TextInlineViewPlaceholderSpan is a span for inlined views that are inside <Text/>. It computes
@@ -64,4 +66,10 @@ public class TextInlineViewPlaceholderSpan extends ReplacementSpan implements Re
       int y,
       int bottom,
       Paint paint) {}
+
+  @Nullable
+  @Override
+  public ParcelableSpan asParcelable() {
+    return null;
+  }
 }

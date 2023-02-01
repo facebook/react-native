@@ -8,7 +8,9 @@
 package com.facebook.react.views.text;
 
 import android.graphics.Paint;
+import android.text.ParcelableSpan;
 import android.text.style.LineHeightSpan;
+import androidx.annotation.Nullable;
 
 /**
  * We use a custom {@link LineHeightSpan}, because `lineSpacingExtra` is broken. Details here:
@@ -59,5 +61,10 @@ public class CustomLineHeightSpan implements LineHeightSpan, ReactSpan {
       fm.ascent = fm.top;
       fm.descent = fm.bottom;
     }
+  }
+
+  @Override
+  public @Nullable ParcelableSpan asParcelable() {
+    return null;
   }
 }

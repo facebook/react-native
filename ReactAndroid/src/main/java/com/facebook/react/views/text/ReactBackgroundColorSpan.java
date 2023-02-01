@@ -7,13 +7,32 @@
 
 package com.facebook.react.views.text;
 
+import android.text.ParcelableSpan;
+import android.text.TextPaint;
 import android.text.style.BackgroundColorSpan;
+import android.text.style.CharacterStyle;
+import android.text.style.UpdateAppearance;
+import androidx.annotation.NonNull;
 
 /*
  * Wraps {@link BackgroundColorSpan} as a {@link ReactSpan}.
  */
-public class ReactBackgroundColorSpan extends BackgroundColorSpan implements ReactSpan {
+public class ReactBackgroundColorSpan extends CharacterStyle
+    implements ReactSpan, UpdateAppearance {
+  private BackgroundColorSpan mSpan;
+
   public ReactBackgroundColorSpan(int color) {
-    super(color);
+    mSpan = new BackgroundColorSpan(color);
+  }
+
+  @NonNull
+  @Override
+  public ParcelableSpan asParcelable() {
+    return mSpan;
+  }
+
+  @Override
+  public void updateDrawState(TextPaint textPaint) {
+    mSpan.updateDrawState(textPaint);
   }
 }

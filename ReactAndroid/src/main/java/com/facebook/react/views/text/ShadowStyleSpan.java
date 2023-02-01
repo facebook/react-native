@@ -7,10 +7,13 @@
 
 package com.facebook.react.views.text;
 
+import android.text.ParcelableSpan;
 import android.text.TextPaint;
 import android.text.style.CharacterStyle;
+import android.text.style.UpdateAppearance;
+import androidx.annotation.Nullable;
 
-public class ShadowStyleSpan extends CharacterStyle implements ReactSpan {
+public class ShadowStyleSpan extends CharacterStyle implements ReactSpan, UpdateAppearance {
   private final float mDx, mDy, mRadius;
   private final int mColor;
 
@@ -24,5 +27,11 @@ public class ShadowStyleSpan extends CharacterStyle implements ReactSpan {
   @Override
   public void updateDrawState(TextPaint textPaint) {
     textPaint.setShadowLayer(mRadius, mDx, mDy, mColor);
+  }
+
+  @Nullable
+  @Override
+  public ParcelableSpan asParcelable() {
+    return null;
   }
 }

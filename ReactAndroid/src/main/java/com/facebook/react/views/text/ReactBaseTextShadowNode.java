@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
+import android.text.ParcelableSpan;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -73,6 +74,13 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     protected ReactSpan what;
 
     SetSpanOperation(int start, int end, ReactSpan what) {
+      // Avoid making ReactSpans Parcelable by default to prevent the Samsung
+      // keyboard from infinitely cloning them.
+      // See https://github.com/facebook/react-native/issues/35936 (S318090)
+      if (what instanceof ParcelableSpan) {
+        throw new IllegalArgumentException("ReactSpans should not be Parcelable");
+      }
+
       this.start = start;
       this.end = end;
       this.what = what;
