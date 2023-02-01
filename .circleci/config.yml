@@ -326,7 +326,7 @@ commands:
                     exit 0
                   fi
 
-                  TARBALL_FILENAME=$(node ~/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>")
+                  TARBALL_FILENAME=$(yarn --silent ts-node ~/react-native/scripts/hermes/get-tarball-name.ts --buildType "<< parameters.flavor >>")
                   TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
 
                   echo "Looking for $TARBALL_FILENAME in $HERMES_TARBALL_ARTIFACTS_DIR"
@@ -343,7 +343,7 @@ commands:
           name: Print Hermes version
           command: |
               HERMES_TARBALL_ARTIFACTS_DIR=<< parameters.hermes_tarball_artifacts_dir >>
-              TARBALL_FILENAME=$(node ~/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>")
+              TARBALL_FILENAME=$(yarn --silent ts-node ~/react-native/scripts/hermes/get-tarball-name.ts --buildType "<< parameters.flavor >>")
               TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
               if [[ -e $TARBALL_PATH ]]; then
                 tar -xf $TARBALL_PATH
@@ -871,7 +871,7 @@ jobs:
                 name: Set HERMES_ENGINE_TARBALL_PATH
                 command: |
                   BUILD_TYPE="<< parameters.flavor >>"
-                  TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
+                  TARBALL_FILENAME=$(yarn --silent ts-node ./scripts/hermes/get-tarball-name.ts --buildType "$BUILD_TYPE")
                   echo "export HERMES_ENGINE_TARBALL_PATH=$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME" >> $BASH_ENV
       - run:
           name: Create iOS template project
@@ -1142,7 +1142,7 @@ jobs:
       - run:
           name: Download Hermes tarball
           command: |
-            node scripts/hermes/prepare-hermes-for-build $CIRCLE_PULL_REQUEST
+            yarn ts-node scripts/hermes/prepare-hermes-for-build $CIRCLE_PULL_REQUEST
             cp sdks/download/* $HERMES_WS_DIR/download/.
             cp -r sdks/hermes/* $HERMES_WS_DIR/hermes/.
 
@@ -1265,11 +1265,11 @@ jobs:
 
                   TARBALL_OUTPUT_DIR=$(mktemp -d /tmp/hermes-tarball-output-XXXXXXXX)
 
-                  TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
+                  TARBALL_FILENAME=$(yarn --silent ts-node ./scripts/hermes/get-tarball-name.ts --buildType "$BUILD_TYPE")
 
                   echo "Packaging Hermes Apple frameworks for $BUILD_TYPE build type"
 
-                  TARBALL_OUTPUT_PATH=$(node ./scripts/hermes/create-tarball.js \
+                  TARBALL_OUTPUT_PATH=$(yarn --silent ts-node ./scripts/hermes/create-tarball.ts \
                     --inputDir ./sdks/hermes \
                     --buildType "$BUILD_TYPE" \
                     --outputDir $TARBALL_OUTPUT_DIR)
@@ -1409,7 +1409,7 @@ jobs:
               echo "Using the version from the package.json: $VERSION"
             fi
 
-            node ./scripts/prepare-package-for-release.js -v "$VERSION" -l << parameters.latest >> --dry-run << parameters.dryrun >>
+            yarn ts-node ./scripts/prepare-package-for-release.js -v "$VERSION" -l << parameters.latest >> --dry-run << parameters.dryrun >>
 
   build_npm_package:
     parameters:
@@ -1464,7 +1464,7 @@ jobs:
             - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
       # END: Stables and nightlies
 
-      - run: node ./scripts/publish-npm.js --<< parameters.release_type >>
+      - run: yarn ts-node ./scripts/publish-npm.js --<< parameters.release_type >>
       - run:
           name: Zip Hermes Native Symbols
           command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
@@ -1490,7 +1490,12 @@ jobs:
                 name: Build release package as a job artifact
                 command: |
                   mkdir -p build
-                  FILENAME=$(npm pack)
+
+                  # Run prepack script manually, instead of providing --unsafe-perm option to npm
+                  yarn prepack
+
+                  FILENAME=$(npm pack | tail -1)
+
                   mv $FILENAME build/
                   echo $FILENAME > build/react-native-package-version
             - store_artifacts:

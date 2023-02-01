@@ -31,6 +31,9 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
     pod 'MyNativeView', :path => "NativeComponentExample"
   end
 
+  # Because RN-Tester uses react-native from source, we first need to transpile TS scripts to JS
+  system("cd %{path}; yarn build:ts" % {path: @prefix_path})
+
   use_react_native!(
     path: @prefix_path,
     fabric_enabled: fabric_enabled,

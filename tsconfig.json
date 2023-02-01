@@ -1,0 +1,17 @@
+{
+    "extends": "@tsconfig/node14/tsconfig.json",
+
+    "compilerOptions": {
+      "noImplicitAny": true,
+      "noImplicitThis": true,
+      "strictFunctionTypes": true,
+      "strictNullChecks": true,
+      "esModuleInterop": true,
+      "allowJs": true,
+      "noEmitOnError": true
+    },
+
+    "include": [
+      "scripts/**/*.ts"
+    ]
+}

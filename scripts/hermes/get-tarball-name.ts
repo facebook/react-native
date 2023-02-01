@@ -7,28 +7,27 @@
  * @format
  */
 
-'use strict';
-
 /**
  * This script returns the filename that would be used for a
  * Hermes tarball for the given build type and release version.
  */
-const yargs = require('yargs');
-const {getHermesPrebuiltArtifactsTarballName} = require('./hermes-utils');
+import yargs from 'yargs';
+import {getHermesPrebuiltArtifactsTarballName} from './hermes-utils';
 
-let argv = yargs.option('b', {
-  alias: 'buildType',
-  type: 'string',
-  describe: 'Specifies whether Hermes was built for Debug or Release.',
-  default: 'Debug',
-}).argv;
+const argv = yargs
+  .option('buildType', {
+    alias: 'b',
+    type: 'string',
+    describe: 'Specifies whether Hermes was built for Debug or Release.',
+    default: 'Debug',
+  })
+  .parseSync();
 
-async function main() {
+function main() {
   const tarballName = getHermesPrebuiltArtifactsTarballName(argv.buildType);
   console.log(tarballName);
+
   return tarballName;
 }
 
-main().then(() => {
-  process.exit(0);
-});
+main();

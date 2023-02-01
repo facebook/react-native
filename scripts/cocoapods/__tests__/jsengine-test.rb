@@ -75,7 +75,7 @@ class JSEngineTests < Test::Unit::TestCase
         }
 
         # Assert
-        assert_equal(Open3.collected_commands, ["node scripts/hermes/prepare-hermes-for-build"])
+        assert_equal(Open3.collected_commands, ["node scripts/hermes/prepare-hermes-for-build.js"])
         assert_equal(Open3.collected_dirs, ["Pods/../.."])
         assert_equal(Pod::UI.collected_infoes, ["This test", "should fail"])
         assert_equal($podInvocationCount, 0)
@@ -93,7 +93,7 @@ class JSEngineTests < Test::Unit::TestCase
         setup_hermes!(:react_native_path => @react_native_path, :fabric_enabled => fabric_enabled)
 
         # Assert
-        assert_equal(Open3.collected_commands, ["node scripts/hermes/prepare-hermes-for-build"])
+        assert_equal(Open3.collected_commands, ["node scripts/hermes/prepare-hermes-for-build.js"])
         assert_equal(Open3.collected_dirs, ["Pods/../.."])
         assert_equal(Pod::UI.collected_infoes, [
             "This is",

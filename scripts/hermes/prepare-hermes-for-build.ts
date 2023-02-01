@@ -7,13 +7,11 @@
  * @format
  */
 
-'use strict';
-
 /**
  * This script prepares Hermes to be built as part of the
  * iOS build pipeline on macOS.
  */
-const {
+import {
   configureMakeForPrebuiltHermesC,
   copyBuildScripts,
   copyPodSpec,
@@ -21,13 +19,14 @@ const {
   expandHermesSourceTarball,
   shouldUsePrebuiltHermesC,
   shouldBuildHermesFromSource,
-} = require('./hermes-utils');
+} from './hermes-utils';
 
-async function main(isInCI) {
+function main(isInCI: boolean) {
   if (!shouldBuildHermesFromSource(isInCI)) {
     copyPodSpec();
     return;
   }
+
   downloadHermesSourceTarball();
   expandHermesSourceTarball();
   copyPodSpec();
@@ -41,6 +40,4 @@ async function main(isInCI) {
 
 const isInCI = process.env.CI === 'true';
 
-main(isInCI).then(() => {
-  process.exit(0);
-});
+main(isInCI);

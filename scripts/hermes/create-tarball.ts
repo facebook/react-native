@@ -7,44 +7,45 @@
  * @format
  */
 
-'use strict';
-
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 
 /**
  * This script creates a Hermes prebuilt artifacts tarball.
  * Must be invoked after Hermes has been built.
  */
-const yargs = require('yargs');
-const {createHermesPrebuiltArtifactsTarball} = require('./hermes-utils');
+import yargs from 'yargs';
+import {createHermesPrebuiltArtifactsTarball} from './hermes-utils';
 
-let argv = yargs
-  .option('i', {
-    alias: 'inputDir',
+const argv = yargs
+  .option('inputDir', {
+    alias: 'i',
+    type: 'string',
     describe: 'Path to directory where Hermes build artifacts were generated.',
   })
-  .option('b', {
-    alias: 'buildType',
+  .option('buildType', {
+    alias: 'b',
     type: 'string',
     describe: 'Specifies whether Hermes was built for Debug or Release.',
     default: 'Debug',
   })
-  .option('o', {
-    alias: 'outputDir',
+  .option('outputDir', {
+    alias: 'o',
+    type: 'string',
     describe: 'Location where the tarball will be saved to.',
   })
-  .option('exclude-debug-symbols', {
+  .option('excludeDebugSymbols', {
+    alias: 'exclude-debug-symbols',
     describe: 'Whether dSYMs should be excluded from the tarball.',
     type: 'boolean',
     default: true,
-  }).argv;
+  })
+  .parseSync();
 
-async function main() {
-  const hermesDir = argv.inputDir;
-  const buildType = argv.buildType;
-  const excludeDebugSymbols = argv.excludeDebugSymbols;
+function main() {
+  const {inputDir: hermesDir, buildType, excludeDebugSymbols} = argv;
+
   let tarballOutputDir = argv.outputDir;
 
   if (!tarballOutputDir) {
@@ -59,16 +60,19 @@ async function main() {
     }
   }
 
+  if (!hermesDir) {
+    throw new Error('hermesDir is not specified');
+  }
+
   const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
     hermesDir,
     buildType,
-    tarballOutputDir,
+    tarballOutputDir!,
     excludeDebugSymbols,
   );
   console.log(tarballOutputPath);
+
   return tarballOutputPath;
 }
 
-main().then(() => {
-  process.exit(0);
-});
+main();

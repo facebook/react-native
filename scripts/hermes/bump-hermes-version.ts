@@ -8,26 +8,28 @@
  * @format
  */
 
-'use strict';
-
 /**
  * This script walks a releaser through bumping the Hermes version for a release.
  * It needs be executed on a release branch.
  */
-const {exit} = require('shelljs');
-const yargs = require('yargs');
-const inquirer = require('inquirer');
-const {setHermesTag} = require('./hermes-utils');
+import {exit} from 'shelljs';
+import yargs from 'yargs';
+import inquirer from 'inquirer';
+import {setHermesTag} from './hermes-utils';
 
-let argv = yargs.option('t', {
-  alias: 'tag',
-  describe:
-    'Hermes release tag to use for this React Native release, ex. hermes-2022-02-21-RNv0.68.0',
-  required: true,
-}).argv;
+const argv = yargs
+  .option('tag', {
+    alias: 't',
+    type: 'string',
+    describe:
+      'Hermes release tag to use for this React Native release, ex. hermes-2022-02-21-RNv0.68.0',
+    required: true,
+  })
+  .parseSync();
 
 async function main() {
-  const hermesTag = argv.tag;
+  const {tag: hermesTag} = argv;
+
   const {confirmHermesTag} = await inquirer.prompt({
     type: 'confirm',
     name: 'confirmHermesTag',

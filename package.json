@@ -100,7 +100,9 @@
     "test-typescript": "dtslint types",
     "test-typescript-offline": "dtslint --localTs node_modules/typescript/lib types",
     "bump-all-updated-packages": "node ./scripts/monorepo/bump-all-updated-packages",
-    "align-package-versions": "node ./scripts/monorepo/align-package-versions.js"
+    "align-package-versions": "node ./scripts/monorepo/align-package-versions.js",
+    "build:ts": "tsc",
+    "prepack": "yarn build:ts"
   },
   "workspaces": [
     "packages/*",

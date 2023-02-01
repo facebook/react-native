@@ -7,12 +7,10 @@
  * @format
  */
 
-'use strict';
-
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const {execSync, spawnSync} = require('child_process');
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import {execSync, spawnSync, SpawnSyncOptions} from 'child_process';
 
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
 const HERMES_DIR = path.join(SDKS_DIR, 'hermes');
@@ -34,11 +32,15 @@ const MACOS_IMPORT_HERMESC_PATH = path.join(
  * @param args Array of arguments pass to the command.
  * @param options child process options.
  */
-function delegateSync(command, args, options) {
+function delegateSync(
+  command: string,
+  args?: string[],
+  options: SpawnSyncOptions = {},
+) {
   return spawnSync(command, args, {stdio: 'inherit', ...options});
 }
 
-function readHermesTag() {
+export const readHermesTag = () => {
   if (fs.existsSync(HERMES_TAG_FILE_PATH)) {
     const data = fs
       .readFileSync(HERMES_TAG_FILE_PATH, {
@@ -55,9 +57,9 @@ function readHermesTag() {
   }
 
   return 'main';
-}
+};
 
-function setHermesTag(hermesTag) {
+export const setHermesTag = (hermesTag: string) => {
   if (readHermesTag() === hermesTag) {
     // No need to update.
     return;
@@ -68,22 +70,22 @@ function setHermesTag(hermesTag) {
   }
   fs.writeFileSync(HERMES_TAG_FILE_PATH, hermesTag.trim());
   console.log('Hermes tag has been updated. Please commit your changes.');
-}
+};
 
-function getHermesTagSHA(hermesTag) {
+export const getHermesTagSHA = (hermesTag: string) => {
   return execSync(
     `git ls-remote https://github.com/facebook/hermes ${hermesTag} | cut -f 1`,
   )
     .toString()
     .trim();
-}
+};
 
-function getHermesTarballDownloadPath(hermesTag) {
+export const getHermesTarballDownloadPath = (hermesTag: string) => {
   const hermesTagSHA = getHermesTagSHA(hermesTag);
   return path.join(HERMES_TARBALL_DOWNLOAD_DIR, `hermes-${hermesTagSHA}.tgz`);
-}
+};
 
-function downloadHermesSourceTarball() {
+export const downloadHermesSourceTarball = () => {
   const hermesTag = readHermesTag();
   const hermesTagSHA = getHermesTagSHA(hermesTag);
   const hermesTarballDownloadPath = getHermesTarballDownloadPath(hermesTag);
@@ -105,9 +107,9 @@ function downloadHermesSourceTarball() {
   } catch (error) {
     throw new Error(`[Hermes] Failed to download Hermes tarball. ${error}`);
   }
-}
+};
 
-function expandHermesSourceTarball() {
+export const expandHermesSourceTarball = () => {
   const hermesTag = readHermesTag();
   const hermesTagSHA = getHermesTagSHA(hermesTag);
   const hermesTarballDownloadPath = getHermesTarballDownloadPath(hermesTag);
@@ -131,9 +133,9 @@ function expandHermesSourceTarball() {
   } catch (error) {
     throw new Error('[Hermes] Failed to expand Hermes tarball.');
   }
-}
+};
 
-function copyBuildScripts() {
+export const copyBuildScripts = () => {
   if (!fs.existsSync(SDKS_DIR)) {
     throw new Error(
       '[Hermes] Failed to copy Hermes build scripts, no SDKs directory found.',
@@ -156,9 +158,9 @@ function copyBuildScripts() {
     path.join(SDKS_DIR, 'hermes-engine', 'utils', 'build-mac-framework.sh'),
     path.join(HERMES_DIR, 'utils', 'build-mac-framework.sh'),
   );
-}
+};
 
-function copyPodSpec() {
+export const copyPodSpec = () => {
   if (!fs.existsSync(SDKS_DIR)) {
     throw new Error(
       '[Hermes] Failed to copy Hermes Podspec, no SDKs directory found.',
@@ -178,25 +180,25 @@ function copyPodSpec() {
     path.join(SDKS_DIR, 'hermes-engine', utils),
     path.join(HERMES_DIR, utils),
   );
-}
+};
 
 function isTestingAgainstLocalHermesTarball() {
   return 'HERMES_ENGINE_TARBALL_PATH' in process.env;
 }
 
-function shouldBuildHermesFromSource(isInCI) {
+export const shouldBuildHermesFromSource = (isInCI: boolean) => {
   return !isTestingAgainstLocalHermesTarball() && isInCI;
-}
+};
 
-function shouldUsePrebuiltHermesC(platform) {
+export const shouldUsePrebuiltHermesC = (platform: string) => {
   if (platform === 'macos') {
     return fs.existsSync(MACOS_HERMESC_PATH);
   }
 
   return false;
-}
+};
 
-function configureMakeForPrebuiltHermesC() {
+export const configureMakeForPrebuiltHermesC = () => {
   const IMPORT_HERMESC_TEMPLATE = `add_executable(native-hermesc IMPORTED)
 set_target_properties(native-hermesc PROPERTIES
   IMPORTED_LOCATION "${MACOS_HERMESC_PATH}"
@@ -210,29 +212,32 @@ set_target_properties(native-hermesc PROPERTIES
       `[Hermes] Re-compiling hermesc. Unable to configure make: ${error}`,
     );
   }
-}
+};
 
-function getHermesPrebuiltArtifactsTarballName(buildType) {
+export const getHermesPrebuiltArtifactsTarballName = (buildType: string) => {
   if (!buildType) {
     throw Error('Did not specify build type.');
   }
   return `hermes-ios-${buildType.toLowerCase()}.tar.gz`;
-}
+};
 
 /**
  * Creates a tarball with the contents of the supplied directory.
  */
-function createTarballFromDirectory(directory, filename) {
+export const createTarballFromDirectory = (
+  directory: string,
+  filename: string,
+) => {
   const args = ['-C', directory, '-czvf', filename, '.'];
   delegateSync('tar', args);
-}
+};
 
-function createHermesPrebuiltArtifactsTarball(
-  hermesDir,
-  buildType,
-  tarballOutputDir,
-  excludeDebugSymbols,
-) {
+export const createHermesPrebuiltArtifactsTarball = (
+  hermesDir: string,
+  buildType: string,
+  tarballOutputDir: string,
+  excludeDebugSymbols: boolean,
+) => {
   validateHermesFrameworksExist(path.join(hermesDir, 'destroot'));
 
   if (!fs.existsSync(tarballOutputDir)) {
@@ -280,9 +285,9 @@ function createHermesPrebuiltArtifactsTarball(
   }
 
   return tarballFilename;
-}
+};
 
-function validateHermesFrameworksExist(destrootDir) {
+function validateHermesFrameworksExist(destrootDir: string) {
   if (
     !fs.existsSync(
       path.join(destrootDir, 'Library/Frameworks/macosx/hermes.framework'),
@@ -302,20 +307,3 @@ function validateHermesFrameworksExist(destrootDir) {
     );
   }
 }
-
-module.exports = {
-  configureMakeForPrebuiltHermesC,
-  copyBuildScripts,
-  copyPodSpec,
-  createHermesPrebuiltArtifactsTarball,
-  createTarballFromDirectory,
-  downloadHermesSourceTarball,
-  expandHermesSourceTarball,
-  getHermesTagSHA,
-  getHermesTarballDownloadPath,
-  getHermesPrebuiltArtifactsTarballName,
-  readHermesTag,
-  setHermesTag,
-  shouldBuildHermesFromSource,
-  shouldUsePrebuiltHermesC,
-};
