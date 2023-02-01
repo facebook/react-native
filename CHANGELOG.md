@@ -1,5 +1,35 @@
 # Changelog
 
+## v0.71.2
+
+### Added
+
+- Added AlertOptions argument to the type definition for Alert.prompt to bring it into parity with the js code. ([305ca337c0](https://github.com/facebook/react-native/commit/305ca337c0471c61cb74216bd93ae3f1a232a89f) by [@paulmand3l](https://github.com/paulmand3l))
+- Added missing `accessibilityLabelledBy` TypeScript type ([e162b07982](https://github.com/facebook/react-native/commit/e162b07982cf9481038de71f5dd7bd9b45387f0a) by [@DimitarNestorov](https://github.com/DimitarNestorov))
+- Added missing `accessibilityLanguage` TypeScript type ([71c4f57baf](https://github.com/facebook/react-native/commit/71c4f57baf6683ea4304e15c040d6b6c3b3d2b73) by [@DimitarNestorov](https://github.com/DimitarNestorov))
+
+### Changed
+
+- Bump `react-native-gradle-plugin` to `^0.71.14` in core, `@react-native-community/eslint-config` to `^3.2.0` in starting template ([785bc8d97b](https://github.com/facebook/react-native/commit/785bc8d97b824a2af86ffe46f321471f4952764c) by [@kelset](https://github.com/kelset))
+
+### Fixed
+
+- Add `TextInput`'s `inputMode` TypeScript types ([fac7859863](https://github.com/facebook/react-native/commit/fac7859863c7130740aacc95d0e62417bd8f789e) by [@eps1lon](https://github.com/eps1lon))
+- Fix crash by conditional value of aspectRatio style value ([a8166bd75b](https://github.com/facebook/react-native/commit/a8166bd75b221f967a859d5cc25b3394c4d35301) by [@mym0404](https://github.com/mym0404))
+- Fix TurboModuleRegistry TS type ([c289442848](https://github.com/facebook/react-native/commit/c28944284894a3188b97e3d8bb5b489755852160) by [@janicduplessis](https://github.com/janicduplessis))
+- Fix invariant violation when nesting VirtualizedList inside ListEmptyComponent ([1fef376812](https://github.com/facebook/react-native/commit/1fef37681298c828a07febcd0d975a32f6bc4403) by [@NickGerleman](https://github.com/NickGerleman))
+
+#### Android specific
+
+- [RNGP] Properly set the `jsRootDir` default value ([c0004092f9](https://github.com/facebook/react-native/commit/c0004092f935ad892d4a1acf38fb184f1140bfd2) by [@cortinico](https://github.com/cortinico))
+- Do not use WindowInsetsCompat for Keyboard Events ([32f54877ff](https://github.com/facebook/react-native/commit/32f54877ff788240d24528d208c704ee78e4e761) by [@NickGerleman](https://github.com/NickGerleman))
+- Mitigation for Samsung TextInput Hangs ([4650ef3](https://github.com/facebook/react-native/commit/4650ef36e3d63df6e6a31f00fcf323c53daff2d6) by [@NickGerleman](https://github.com/NickGerleman))
+
+#### iOS specific
+
+- Add Back dynamic framework support for the Old Architecture with Hermes ([b3040ec624](https://github.com/facebook/react-native/commit/b3040ec6244da6ea274654abfd84516de4f5bf52) by [@cipolleschi](https://github.com/cipolleschi))
+- Add Back dynamic framework support for the old architecture ([da270d038c](https://github.com/facebook/react-native/commit/da270d038c271d6b82de568621b49e38739372c6) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.71.1
 
 ### Added
