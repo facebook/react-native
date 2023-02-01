@@ -23,6 +23,7 @@
 
 - [RNGP] Properly set the `jsRootDir` default value ([c0004092f9](https://github.com/facebook/react-native/commit/c0004092f935ad892d4a1acf38fb184f1140bfd2) by [@cortinico](https://github.com/cortinico))
 - Do not use WindowInsetsCompat for Keyboard Events ([32f54877ff](https://github.com/facebook/react-native/commit/32f54877ff788240d24528d208c704ee78e4e761) by [@NickGerleman](https://github.com/NickGerleman))
+- Mitigation for Samsung TextInput Hangs ([4650ef3](https://github.com/facebook/react-native/commit/4650ef36e3d63df6e6a31f00fcf323c53daff2d6) by [@NickGerleman](https://github.com/NickGerleman))
 
 #### iOS specific
 
