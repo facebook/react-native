@@ -7,13 +7,13 @@
  * @format
  */
 
-'use strict';
-
 const yargs = require('yargs');
 const {execSync, spawnSync} = require('child_process');
 
 const forEachPackage = require('../monorepo/for-each-package');
 const setupVerdaccio = require('../setup-verdaccio');
+
+import {PackageManifest} from '../../types/private/PackageManifest';
 
 const {argv} = yargs
   .option('r', {
@@ -51,7 +51,11 @@ function install() {
 
   process.stdout.write('Starting to publish every package...\n');
   forEachPackage(
-    (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
+    (
+      packageAbsolutePath: string,
+      packageRelativePathFromRoot: string,
+      packageManifest: PackageManifest,
+    ) => {
       if (packageManifest.private) {
         return;
       }
