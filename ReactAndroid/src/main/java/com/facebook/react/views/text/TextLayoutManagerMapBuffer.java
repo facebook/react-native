@@ -159,14 +159,19 @@ public class TextLayoutManagerMapBuffer {
                   start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
         }
         ops.add(
-            new SetSpanOperation(
-                start,
-                end,
-                new ReactAbsoluteSizeSpan(
-                    textAttributes.mFontSize, textAttributes.mTextAlignVertical)));
+            new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
         if (textAttributes.mFontStyle != UNSET
             || textAttributes.mFontWeight != UNSET
-            || textAttributes.mFontFamily != null) {
+            || textAttributes.mFontFamily != null
+            || textAttributes.mTextAlignVertical != "center-child") {
+          CustomStyleSpan.TextAlignVertical textAlignVertical =
+              CustomStyleSpan.TextAlignVertical.CENTER;
+          if (textAttributes.mTextAlignVertical == "top-child") {
+            textAlignVertical = CustomStyleSpan.TextAlignVertical.TOP;
+          }
+          if (textAttributes.mTextAlignVertical == "bottom-child") {
+            textAlignVertical = CustomStyleSpan.TextAlignVertical.BOTTOM;
+          }
           ops.add(
               new SetSpanOperation(
                   start,
@@ -176,6 +181,8 @@ public class TextLayoutManagerMapBuffer {
                       textAttributes.mFontWeight,
                       textAttributes.mFontFeatureSettings,
                       textAttributes.mFontFamily,
+                      textAlignVertical,
+                      textAttributes.mFontSize,
                       context.getAssets())));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {

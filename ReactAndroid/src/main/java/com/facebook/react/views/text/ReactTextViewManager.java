@@ -104,9 +104,9 @@ public class ReactTextViewManager
 
     CustomLineHeightSpan[] customLineHeightSpans =
         spannable.getSpans(0, spannable.length(), CustomLineHeightSpan.class);
-    ReactAbsoluteSizeSpan[] absoluteSizeSpans =
-        spannable.getSpans(0, spannable.length(), ReactAbsoluteSizeSpan.class);
-    if (customLineHeightSpans.length > 0 && absoluteSizeSpans.length > 0) {
+    CustomStyleSpan[] customStyleSpans =
+      spannable.getSpans(0, spannable.length(), CustomStyleSpan.class);
+    if (customLineHeightSpans.length > 0 && customStyleSpans.length > 0) {
       int highestLineHeight = 0;
       for (CustomLineHeightSpan span : customLineHeightSpans) {
         if (highestLineHeight == 0 || span.getLineHeight() > highestLineHeight) {
@@ -114,21 +114,11 @@ public class ReactTextViewManager
         }
       }
 
-      int highestFontSize = 0;
       boolean textAlignVerticalSet = false;
       if (highestLineHeight != 0) {
-        for (ReactAbsoluteSizeSpan span : absoluteSizeSpans) {
-          if (highestFontSize == 0 || span.getSize() > highestFontSize) {
-            highestFontSize = span.getSize();
-          }
-          if (span.getTextAlignVertical() != "center-child") {
-            textAlignVerticalSet = true;
-          }
-        }
-
-        if (textAlignVerticalSet) {
-          for (ReactAbsoluteSizeSpan span : absoluteSizeSpans) {
-            span.updateSpan(highestLineHeight, highestFontSize);
+        for (CustomStyleSpan span : customStyleSpans) {
+          if (span.getTextAlignVertical() != CustomStyleSpan.TextAlignVertical.CENTER) {
+            span.updateSpan(highestLineHeight);
           }
         }
       }

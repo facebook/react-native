@@ -8,7 +8,6 @@
 package com.facebook.react.views.text;
 
 import android.content.res.AssetManager;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
@@ -35,6 +34,9 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   private final int mWeight;
   private final @Nullable String mFeatureSettings;
   private final @Nullable String mFontFamily;
+  private int mSize = 0;
+  private TextAlignVertical mTextAlignVertical = TextAlignVertical.CENTER;
+  private int mHighestLineHeight = 0;
 
   public CustomStyleSpan(
       int fontStyle,
@@ -49,14 +51,55 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     mAssetManager = assetManager;
   }
 
+  public CustomStyleSpan(
+      int fontStyle,
+      int fontWeight,
+      @Nullable String fontFeatureSettings,
+      @Nullable String fontFamily,
+      TextAlignVertical textAlignVertical,
+      int textSize,
+      AssetManager assetManager) {
+    this(fontStyle, fontWeight, fontFeatureSettings, fontFamily, assetManager);
+    mTextAlignVertical = textAlignVertical;
+    mSize = textSize;
+  }
+
+  public enum TextAlignVertical {
+    TOP,
+    BOTTOM,
+    CENTER,
+  }
+
+  public TextAlignVertical getTextAlignVertical() {
+    return mTextAlignVertical;
+  }
+
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(ds, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
+    apply(
+        ds,
+        mStyle,
+        mWeight,
+        mFeatureSettings,
+        mFontFamily,
+        mAssetManager,
+        mTextAlignVertical,
+        mSize,
+        mHighestLineHeight);
   }
 
   @Override
   public void updateMeasureState(TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
+    apply(
+        paint,
+        mStyle,
+        mWeight,
+        mFeatureSettings,
+        mFontFamily,
+        mAssetManager,
+        mTextAlignVertical,
+        mSize,
+        mHighestLineHeight);
   }
 
   public int getStyle() {
@@ -72,16 +115,39 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   private static void apply(
-      Paint paint,
+      TextPaint ds,
       int style,
       int weight,
       @Nullable String fontFeatureSettings,
       @Nullable String family,
-      AssetManager assetManager) {
+      AssetManager assetManager,
+      TextAlignVertical textAlignVertical,
+      int textSize,
+      int highestLineHeight) {
     Typeface typeface =
-        ReactTypefaceUtils.applyStyles(paint.getTypeface(), style, weight, family, assetManager);
-    paint.setFontFeatureSettings(fontFeatureSettings);
-    paint.setTypeface(typeface);
-    paint.setSubpixelText(true);
+        ReactTypefaceUtils.applyStyles(ds.getTypeface(), style, weight, family, assetManager);
+    ds.setFontFeatureSettings(fontFeatureSettings);
+    ds.setTypeface(typeface);
+    ds.setSubpixelText(true);
+    if (textAlignVertical == TextAlignVertical.CENTER) {
+      return;
+    }
+    if (highestLineHeight != 0 && textSize != 0) {
+      TextPaint textPaintCopy = new TextPaint();
+      textPaintCopy.set(ds);
+      textPaintCopy.setTextSize(textSize);
+      // aligns text vertically in the lineHeight
+      // and adjust their position depending on the fontSize
+      if (textAlignVertical == TextAlignVertical.TOP) {
+        ds.baselineShift -= highestLineHeight / 2 - textPaintCopy.getTextSize() / 2;
+      }
+      if (textAlignVertical == TextAlignVertical.BOTTOM) {
+        ds.baselineShift += highestLineHeight / 2 - textPaintCopy.getTextSize() / 2 - textPaintCopy.descent();
+      }
+    }
+  }
+
+  public void updateSpan(int highestLineHeight) {
+    mHighestLineHeight = highestLineHeight;
   }
 }
