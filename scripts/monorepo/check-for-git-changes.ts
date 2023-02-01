@@ -7,12 +7,12 @@
  * @format
  */
 
-const {spawnSync} = require('child_process');
-const path = require('path');
+import path from 'path';
+import {spawnSync} from 'child_process';
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 
-const checkForGitChanges = () => {
+export const checkForGitChanges = (): boolean => {
   const {stdout: thereIsSomethingToCommit, stderr} = spawnSync(
     'git',
     ['status', '--porcelain'],
@@ -36,4 +36,4 @@ const checkForGitChanges = () => {
   return Boolean(thereIsSomethingToCommit);
 };
 
-module.exports = checkForGitChanges;
+export default checkForGitChanges;

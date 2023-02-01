@@ -7,10 +7,14 @@
  * @format
  */
 
-const {writeFileSync} = require('fs');
-const path = require('path');
+import path from 'path';
+import {writeFileSync} from 'fs';
 
-const getIncrementedVersion = (version, increment) =>
+import {PackageManifest} from '../../../types/private/PackageManifest';
+
+type VersionIncrement = 'minor' | 'patch';
+
+const getIncrementedVersion = (version: string, increment: VersionIncrement) =>
   version
     .split('.')
     .map((token, index) => {
@@ -29,10 +33,10 @@ const getIncrementedVersion = (version, increment) =>
     .join('.');
 
 const bumpPackageVersion = (
-  packageAbsolutePath,
-  packageManifest,
-  increment = 'patch',
-) => {
+  packageAbsolutePath: string,
+  packageManifest: PackageManifest,
+  increment: VersionIncrement,
+): string => {
   const updatedVersion = getIncrementedVersion(
     packageManifest.version,
     increment,
@@ -43,10 +47,18 @@ const bumpPackageVersion = (
     path.join(packageAbsolutePath, 'package.json'),
     JSON.stringify({...packageManifest, version: updatedVersion}, null, 2) +
       '\n',
-    'utf-8',
+    {encoding: 'utf-8'},
   );
 
   return updatedVersion;
 };
 
-module.exports = bumpPackageVersion;
+export const bumpPackageMinorVersion = (
+  packageAbsolutePath: string,
+  packageManifest: PackageManifest,
+): string => bumpPackageVersion(packageAbsolutePath, packageManifest, 'minor');
+
+export const bumpPackagePatchVersion = (
+  packageAbsolutePath: string,
+  packageManifest: PackageManifest,
+): string => bumpPackageVersion(packageAbsolutePath, packageManifest, 'patch');

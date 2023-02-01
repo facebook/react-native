@@ -7,30 +7,39 @@
  * @format
  */
 
-const chalk = require('chalk');
-const inquirer = require('inquirer');
-const path = require('path');
-const {echo, exec, exit} = require('shelljs');
-const yargs = require('yargs');
+import chalk from 'chalk';
+import inquirer from 'inquirer';
+import path from 'path';
+import {echo, exec, exit} from 'shelljs';
+import yargs from 'yargs';
 
-const {BUMP_COMMIT_MESSAGE} = require('../constants');
+import {BUMP_COMMIT_MESSAGE} from '../constants';
 const forEachPackage = require('../for-each-package');
-const checkForGitChanges = require('../check-for-git-changes');
-const bumpPackageVersion = require('./bump-package-version');
+import checkForGitChanges from '../check-for-git-changes';
+import {
+  bumpPackageMinorVersion,
+  bumpPackagePatchVersion,
+} from './bump-package-version';
+
+import {PackageManifest} from '../../../types/private/PackageManifest';
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..', '..');
 
-const {
-  argv: {releaseBranchCutoff},
-} = yargs
-  .option('release-branch-cutoff', {
+const {releaseBranchCutoff} = yargs
+  .option('releaseBranchCutoff', {
+    alias: 'release-branch-cutoff',
     type: 'boolean',
     describe: 'Should force bump minor version for each public package',
   })
-  .strict();
+  .strict()
+  .parseSync();
 
 const buildExecutor =
-  (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) =>
+  (
+    packageAbsolutePath: string,
+    packageRelativePathFromRoot: string,
+    packageManifest: PackageManifest,
+  ) =>
   async () => {
     const {name: packageName} = packageManifest;
     if (packageManifest.private) {
@@ -40,10 +49,9 @@ const buildExecutor =
     }
 
     if (releaseBranchCutoff) {
-      const updatedVersion = bumpPackageVersion(
+      const updatedVersion = bumpPackageMinorVersion(
         packageAbsolutePath,
         packageManifest,
-        'minor',
       );
       echo(
         `\u2705 Successfully bumped ${chalk.green(
@@ -84,15 +92,13 @@ const buildExecutor =
     echo();
 
     await inquirer
-      .prompt([
-        {
-          type: 'list',
-          name: 'shouldBumpPackage',
-          message: `Do you want to bump ${packageName}?`,
-          choices: ['Yes', 'No'],
-          filter: val => val === 'Yes',
-        },
-      ])
+      .prompt<{shouldBumpPackage: boolean}>({
+        type: 'list',
+        name: 'shouldBumpPackage',
+        message: `Do you want to bump ${packageName}?`,
+        choices: ['Yes', 'No'],
+        filter: (val?: string): boolean => val === 'Yes',
+      })
       .then(({shouldBumpPackage}) => {
         if (!shouldBumpPackage) {
           echo(`Skipping bump for ${packageName}`);
@@ -100,20 +106,18 @@ const buildExecutor =
         }
 
         return inquirer
-          .prompt([
-            {
-              type: 'list',
-              name: 'increment',
-              message: 'Which version you want to increment?',
-              choices: ['patch', 'minor'],
-            },
-          ])
+          .prompt<{increment: 'minor' | 'patch'}>({
+            type: 'list',
+            name: 'increment',
+            message: 'Which version you want to increment?',
+            choices: ['patch', 'minor'],
+          })
           .then(({increment}) => {
-            const updatedVersion = bumpPackageVersion(
-              packageAbsolutePath,
-              packageManifest,
-              increment,
-            );
+            const updatedVersion =
+              increment === 'minor'
+                ? bumpPackageMinorVersion(packageAbsolutePath, packageManifest)
+                : bumpPackagePatchVersion(packageAbsolutePath, packageManifest);
+
             echo(
               `\u2705 Successfully bumped ${chalk.green(
                 packageName,
@@ -124,11 +128,23 @@ const buildExecutor =
   };
 
 const buildAllExecutors = () => {
-  const executors = [];
+  const executors: (() => Promise<any>)[] = [];
 
-  forEachPackage((...params) => {
-    executors.push(buildExecutor(...params));
-  });
+  forEachPackage(
+    (
+      packageAbsolutePath: string,
+      packageRelativePathFromRoot: string,
+      packageManifest: PackageManifest,
+    ) => {
+      executors.push(
+        buildExecutor(
+          packageAbsolutePath,
+          packageRelativePathFromRoot,
+          packageManifest,
+        ),
+      );
+    },
+  );
 
   return executors;
 };
@@ -152,15 +168,13 @@ const main = async () => {
 
   if (checkForGitChanges()) {
     await inquirer
-      .prompt([
-        {
-          type: 'list',
-          name: 'shouldSubmitCommit',
-          message: 'Do you want to submit a commit with these changes?',
-          choices: ['Yes', 'No'],
-          filter: val => val === 'Yes',
-        },
-      ])
+      .prompt<{shouldSubmitCommit: boolean}>({
+        type: 'list',
+        name: 'shouldSubmitCommit',
+        message: 'Do you want to submit a commit with these changes?',
+        choices: ['Yes', 'No'],
+        filter: (val?: string): boolean => val === 'Yes',
+      })
       .then(({shouldSubmitCommit}) => {
         if (!shouldSubmitCommit) {
           echo('Not submitting a commit, but keeping all changes');

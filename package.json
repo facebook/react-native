@@ -99,11 +99,11 @@
     "test-ios": "./scripts/objc-test.sh test",
     "test-typescript-type-definitions": "dtslint types",
     "test-typescript-type-definitions-offline": "dtslint --localTs node_modules/typescript/lib types",
-    "bump-all-updated-packages": "node ./scripts/monorepo/bump-all-updated-packages",
-    "align-package-versions": "node ./scripts/monorepo/align-package-versions.js",
+    "bump-all-updated-packages": "ts-node ./scripts/monorepo/bump-all-updated-packages",
+    "align-package-versions": "ts-node ./scripts/monorepo/align-package-versions",
+    "test:ts": "tsc --noEmit",
     "build:ts": "tsc",
-    "prepack": "yarn build:ts",
-    "test-typescript": "tsc --noEmit"
+    "prepack": "yarn build:ts"
   },
   "workspaces": [
     "packages/*",

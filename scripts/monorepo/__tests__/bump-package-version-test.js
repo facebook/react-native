@@ -10,7 +10,9 @@
 const path = require('path');
 const {writeFileSync} = require('fs');
 
-const bumpPackageVersion = require('../bump-all-updated-packages/bump-package-version');
+const {
+  bumpPackagePatchVersion,
+} = require('../bump-all-updated-packages/bump-package-version');
 
 jest.mock('fs', () => ({
   writeFileSync: jest.fn(),
@@ -27,13 +29,13 @@ describe('bumpPackageVersionTest', () => {
       version: '1.2.3',
     };
 
-    bumpPackageVersion(mockedPackageLocation, mockedPackageManifest);
+    bumpPackagePatchVersion(mockedPackageLocation, mockedPackageManifest);
 
     expect(writeFileSync).toHaveBeenCalledWith(
       path.join(mockedPackageLocation, 'package.json'),
       JSON.stringify({...mockedPackageManifest, version: '1.2.4'}, null, 2) +
         '\n',
-      'utf-8',
+      {encoding: 'utf-8'},
     );
   });
 });

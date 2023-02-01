@@ -66,7 +66,7 @@ try {
   }
 
   describe('Test: TypeScript');
-  if (exec(`${YARN_BINARY} run test-typescript`).code) {
+  if (exec(`${YARN_BINARY} run test:ts`).code) {
     echo('Failed to run TypeScript tests.');
     exitCode = 1;
     throw Error(exitCode);

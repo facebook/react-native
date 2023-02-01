@@ -7,23 +7,26 @@
  * @format
  */
 
-const {spawnSync} = require('child_process');
-const {writeFileSync, readFileSync} = require('fs');
-const path = require('path');
+import {spawnSync} from 'child_process';
+import {writeFileSync, readFileSync} from 'fs';
+import path from 'path';
 
-const checkForGitChanges = require('./check-for-git-changes');
+import checkForGitChanges from './check-for-git-changes';
 const forEachPackage = require('./for-each-package');
+
+import {PackageManifest} from '../../types/private/PackageManifest';
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const TEMPLATE_LOCATION = path.join(ROOT_LOCATION, 'template');
 const REPO_CONFIG_LOCATION = path.join(ROOT_LOCATION, 'repo-config');
 
-const readJSONFile = pathToFile => JSON.parse(readFileSync(pathToFile));
+const readJSONFile = (pathToFile: string) =>
+  JSON.parse(readFileSync(pathToFile).toString());
 
 const checkIfShouldUpdateDependencyPackageVersion = (
-  consumerPackageAbsolutePath,
-  updatedPackageName,
-  updatedPackageVersion,
+  consumerPackageAbsolutePath: string,
+  updatedPackageName: string,
+  updatedPackageVersion: string,
 ) => {
   const consumerPackageManifestPath = path.join(
     consumerPackageAbsolutePath,
@@ -55,7 +58,7 @@ const checkIfShouldUpdateDependencyPackageVersion = (
       writeFileSync(
         consumerPackageManifestPath,
         JSON.stringify(updatedPackageManifest, null, 2) + '\n',
-        'utf-8',
+        {encoding: 'utf-8'},
       );
     }
   }
@@ -84,7 +87,7 @@ const checkIfShouldUpdateDependencyPackageVersion = (
       writeFileSync(
         consumerPackageManifestPath,
         JSON.stringify(updatedPackageManifest, null, 2) + '\n',
-        'utf-8',
+        {encoding: 'utf-8'},
       );
     }
   }
@@ -99,33 +102,39 @@ const alignPackageVersions = () => {
     process.exit(1);
   }
 
-  forEachPackage((packageAbsolutePath, _, packageManifest) => {
-    checkIfShouldUpdateDependencyPackageVersion(
-      ROOT_LOCATION,
-      packageManifest.name,
-      packageManifest.version,
-    );
-
-    checkIfShouldUpdateDependencyPackageVersion(
-      TEMPLATE_LOCATION,
-      packageManifest.name,
-      packageManifest.version,
-    );
-
-    checkIfShouldUpdateDependencyPackageVersion(
-      REPO_CONFIG_LOCATION,
-      packageManifest.name,
-      packageManifest.version,
-    );
-
-    forEachPackage(pathToPackage =>
+  forEachPackage(
+    (
+      _packageAbsolutePath: string,
+      _: string,
+      packageManifest: PackageManifest,
+    ) => {
       checkIfShouldUpdateDependencyPackageVersion(
-        pathToPackage,
+        ROOT_LOCATION,
         packageManifest.name,
         packageManifest.version,
-      ),
-    );
-  });
+      );
+
+      checkIfShouldUpdateDependencyPackageVersion(
+        TEMPLATE_LOCATION,
+        packageManifest.name,
+        packageManifest.version,
+      );
+
+      checkIfShouldUpdateDependencyPackageVersion(
+        REPO_CONFIG_LOCATION,
+        packageManifest.name,
+        packageManifest.version,
+      );
+
+      forEachPackage((pathToPackage: string) =>
+        checkIfShouldUpdateDependencyPackageVersion(
+          pathToPackage,
+          packageManifest.name,
+          packageManifest.version,
+        ),
+      );
+    },
+  );
 
   if (!checkForGitChanges()) {
     console.log(

@@ -499,7 +499,7 @@ jobs:
 
       - run:
           name: Run TypeScript tests
-          command: yarn test-typescript
+          command: yarn test:ts
           when: always
 
       - run:
