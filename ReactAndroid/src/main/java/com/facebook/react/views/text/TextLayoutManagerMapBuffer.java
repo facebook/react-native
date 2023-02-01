@@ -163,7 +163,7 @@ public class TextLayoutManagerMapBuffer {
         if (textAttributes.mFontStyle != UNSET
             || textAttributes.mFontWeight != UNSET
             || textAttributes.mFontFamily != null
-            || textAttributes.mTextAlignVertical != "center-child") {
+            || textAttributes.mTextAlignVertical != null) {
           CustomStyleSpan.TextAlignVertical textAlignVertical =
               CustomStyleSpan.TextAlignVertical.CENTER;
           if (textAttributes.mTextAlignVertical == "top-child") {
@@ -172,6 +172,7 @@ public class TextLayoutManagerMapBuffer {
           if (textAttributes.mTextAlignVertical == "bottom-child") {
             textAlignVertical = CustomStyleSpan.TextAlignVertical.BOTTOM;
           }
+          String currentText = String.valueOf(sb.subSequence(start, end));
           ops.add(
               new SetSpanOperation(
                   start,
@@ -183,7 +184,8 @@ public class TextLayoutManagerMapBuffer {
                       textAttributes.mFontFamily,
                       textAlignVertical,
                       textAttributes.mFontSize,
-                      context.getAssets())));
+                      context.getAssets(),
+                      currentText)));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
           ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));

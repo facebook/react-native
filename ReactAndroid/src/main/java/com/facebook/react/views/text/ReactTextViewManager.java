@@ -43,6 +43,7 @@ public class ReactTextViewManager
   private static final short TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
 
   @VisibleForTesting public static final String REACT_CLASS = "RCTText";
+  private static final String TAG = "ReactTextViewManager";
 
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
 
@@ -105,7 +106,7 @@ public class ReactTextViewManager
     CustomLineHeightSpan[] customLineHeightSpans =
         spannable.getSpans(0, spannable.length(), CustomLineHeightSpan.class);
     CustomStyleSpan[] customStyleSpans =
-      spannable.getSpans(0, spannable.length(), CustomStyleSpan.class);
+        spannable.getSpans(0, spannable.length(), CustomStyleSpan.class);
     if (customLineHeightSpans.length > 0 && customStyleSpans.length > 0) {
       int highestLineHeight = 0;
       for (CustomLineHeightSpan span : customLineHeightSpans) {
@@ -114,12 +115,15 @@ public class ReactTextViewManager
         }
       }
 
-      boolean textAlignVerticalSet = false;
+      int highestFontSize = 0;
       if (highestLineHeight != 0) {
         for (CustomStyleSpan span : customStyleSpans) {
-          if (span.getTextAlignVertical() != CustomStyleSpan.TextAlignVertical.CENTER) {
-            span.updateSpan(highestLineHeight);
+          if (highestFontSize == 0 || span.getSize() > highestFontSize) {
+            highestFontSize = span.getSize();
           }
+        }
+        for (CustomStyleSpan span : customStyleSpans) {
+          span.updateSpan(highestLineHeight, highestFontSize);
         }
       }
     }
