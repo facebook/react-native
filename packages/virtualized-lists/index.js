@@ -16,9 +16,11 @@ import typeof VirtualizedList from './Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Lists/VirtualizedSectionList';
 import {typeof VirtualizedListContextResetter} from './Lists/VirtualizedListContext';
 import typeof ViewabilityHelper from './Lists/ViewabilityHelper';
+import typeof FillRateHelper from './Lists/FillRateHelper';
 
 export type {
   ViewToken,
+  ViewabilityConfig,
   ViewabilityConfigCallbackPair,
 } from './Lists/ViewabilityHelper';
 export type {
@@ -31,6 +33,7 @@ export type {
   ScrollToLocationParamsType,
   SectionBase,
 } from './Lists/VirtualizedSectionList';
+export type {FillRateInfo} from './Lists/FillRateHelper';
 
 module.exports = {
   keyExtractor,
@@ -47,5 +50,8 @@ module.exports = {
   },
   get ViewabilityHelper(): ViewabilityHelper {
     return require('./Lists/ViewabilityHelper');
+  },
+  get FillRateHelper(): FillRateHelper {
+    return require('./Lists/FillRateHelper');
   },
 };
