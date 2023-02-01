@@ -32,8 +32,8 @@ public class CustomStyleSpanTest {
 
   @Before
   public void setUp() {
-    fontStyle = mock(int.class);
-    fontWeight = mock(int.class);
+    fontStyle = 0;
+    fontWeight = 0;
     assetManager = mock(AssetManager.class);
     // https://stackoverflow.com/a/27631737/7295772
     // top      -------------  -10
