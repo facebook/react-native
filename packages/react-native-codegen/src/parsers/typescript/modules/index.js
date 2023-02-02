@@ -324,7 +324,7 @@ function translateTypeAnnotation(
         hasteModuleName,
         nullable,
         (flattenProperties(
-          flattenIntersectionType(typeAnnotation,types),
+          flattenIntersectionType(typeAnnotation, types),
           types,
         ): $ReadOnlyArray<$FlowFixMe>),
         typeAliasResolutionStatus,
