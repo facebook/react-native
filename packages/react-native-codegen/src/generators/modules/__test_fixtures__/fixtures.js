@@ -16,7 +16,7 @@ const EMPTY_NATIVE_MODULES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
       spec: {
         properties: [],
       },
@@ -29,7 +29,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
       spec: {
         properties: [
           {
@@ -341,7 +341,7 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
       spec: {
         properties: [
           {
@@ -361,7 +361,7 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
     },
     NativeSampleTurboModule2: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
       spec: {
         properties: [
           {
@@ -398,7 +398,7 @@ const COMPLEX_OBJECTS: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
       spec: {
         properties: [
           {
@@ -764,7 +764,7 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
   modules: {
     AliasTurboModule: {
       type: 'NativeModule',
-      aliases: {
+      aliasMap: {
         Options: {
           type: 'ObjectTypeAnnotation',
           properties: [
@@ -899,7 +899,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
   modules: {
     NativeCameraRollManager: {
       type: 'NativeModule',
-      aliases: {
+      aliasMap: {
         PhotoIdentifierImage: {
           type: 'ObjectTypeAnnotation',
           properties: [
@@ -1226,7 +1226,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
     },
     NativeExceptionsManager: {
       type: 'NativeModule',
-      aliases: {
+      aliasMap: {
         StackFrame: {
           properties: [
             {
@@ -1494,7 +1494,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {
+      aliasMap: {
         ObjectAlias: {
           type: 'ObjectTypeAnnotation',
           properties: [
@@ -1648,7 +1648,7 @@ const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
       spec: {
         properties: [],
       },

@@ -19,7 +19,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture ANDROID_ONLY_NATIVE_M
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': []
       },
@@ -37,7 +37,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -218,7 +218,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EMPTY_NATIVE_MODULE 1
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': []
       },
@@ -233,7 +233,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -296,7 +296,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AL
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'ObjectAlias': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -493,7 +493,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -534,7 +534,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -569,7 +569,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -610,7 +610,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -645,7 +645,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -711,7 +711,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -777,7 +777,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -869,7 +869,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CA
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -929,7 +929,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -988,7 +988,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -1047,7 +1047,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -1259,7 +1259,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -1363,7 +1363,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_FL
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -1417,7 +1417,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'Bar': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1508,7 +1508,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'Bar': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1669,7 +1669,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NU
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -1707,7 +1707,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_OB
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'DisplayMetricsAndroid': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1796,7 +1796,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PA
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'SomeObj': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1907,7 +1907,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PA
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'SomeObj': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -2002,7 +2002,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PR
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'SomeObj': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -2074,7 +2074,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_RO
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -2111,7 +2111,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_SI
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -2146,7 +2146,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {
@@ -2207,7 +2207,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
       'spec': {
         'properties': [
           {

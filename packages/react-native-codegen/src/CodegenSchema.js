@@ -222,7 +222,7 @@ export type NullableTypeAnnotation<+T: NativeModuleTypeAnnotation> = $ReadOnly<{
 
 export type NativeModuleSchema = $ReadOnly<{
   type: 'NativeModule',
-  aliases: NativeModuleAliasMap,
+  aliasMap: NativeModuleAliasMap,
   spec: NativeModuleSpec,
   moduleName: string,
   // Use for modules that are not used on other platforms.

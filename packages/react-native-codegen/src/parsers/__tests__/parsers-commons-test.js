@@ -374,7 +374,7 @@ describe('buildSchemaFromConfigType', () => {
 
   const moduleSchemaMock = {
     type: 'NativeModule',
-    aliases: {},
+    aliasMap: {},
     spec: {properties: []},
     moduleName: '',
   };
@@ -657,13 +657,13 @@ describe('buildSchema', () => {
     const contents = `
       import type {ViewProps} from 'ViewPropTypes';
       import type {HostComponent} from 'react-native';
-      
+
       const codegenNativeComponent = require('codegenNativeComponent');
-      
+
       export type ModuleProps = $ReadOnly<{|
         ...ViewProps,
       |}>;
-      
+
       export default (codegenNativeComponent<ModuleProps>(
         'Module',
       ): HostComponent<ModuleProps>);
@@ -712,11 +712,11 @@ describe('buildSchema', () => {
     const contents = `
       import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
       import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
-      
+
       export interface Spec extends TurboModule {
         +getArray: (a: Array<any>) => Array<string>;
       }
-      
+
       export default (TurboModuleRegistry.getEnforcing<Spec>(
         'SampleTurboModule',
       ): Spec);
@@ -742,7 +742,7 @@ describe('buildSchema', () => {
         modules: {
           fileName: {
             type: 'NativeModule',
-            aliases: {},
+            aliasMap: {},
             spec: {
               properties: [
                 {
