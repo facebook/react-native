@@ -1,5 +1,5 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "IOS", "IS_OSS_BUILD", "react_native_root_target", "react_native_target", "rn_android_library", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "IOS", "IS_OSS_BUILD", "YOGA_TARGET", "react_native_root_target", "react_native_target", "rn_android_library", "rn_xplat_cxx_library")
 load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 load(":DEFS.bzl", "rn_codegen_cli", "rn_codegen_components", "rn_codegen_modules")
 
@@ -44,6 +44,7 @@ rn_android_library(
         "PUBLIC",
     ],
     deps = [
+        YOGA_TARGET,
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/views/view:view"),

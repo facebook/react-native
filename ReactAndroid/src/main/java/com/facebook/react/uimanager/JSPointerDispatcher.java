@@ -22,8 +22,10 @@ import com.facebook.react.uimanager.events.PointerEventHelper.EVENT;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * JSPointerDispatcher handles dispatching pointer events to JS from RootViews. If you implement
@@ -38,6 +40,7 @@ public class JSPointerDispatcher {
 
   private Map<Integer, List<ViewTarget>> mLastHitPathByPointerId;
   private Map<Integer, float[]> mLastEventCoordinatesByPointerId;
+  private Set<Integer> mHoveringPointerIds = new HashSet<>();
 
   private int mChildHandlingNativeGesture = -1;
   private int mPrimaryPointerId = UNSET_POINTER_ID;
@@ -75,10 +78,9 @@ public class JSPointerDispatcher {
       MotionEvent motionEvent,
       EventDispatcher eventDispatcher) {
 
-    List<ViewTarget> activeHitPath =
-        eventState.getHitPathByPointerId().get(eventState.getActivePointerId());
+    int activePointerId = eventState.getActivePointerId();
+    List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
 
-    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
     boolean listeningForUp =
         isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.UP, EVENT.UP_CAPTURE);
     if (listeningForUp) {
@@ -86,6 +88,8 @@ public class JSPointerDispatcher {
           PointerEvent.obtain(
               PointerEventHelper.POINTER_UP, activeTargetTag, eventState, motionEvent));
     }
+
+    boolean supportsHover = mHoveringPointerIds.contains(activePointerId);
 
     if (!supportsHover) {
       boolean listeningForOut =
@@ -111,6 +115,7 @@ public class JSPointerDispatcher {
     if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
       mPrimaryPointerId = UNSET_POINTER_ID;
     }
+    mHoveringPointerIds.remove(activePointerId);
   }
 
   private void incrementCoalescingKey() {
@@ -131,7 +136,7 @@ public class JSPointerDispatcher {
         eventState.getHitPathByPointerId().get(eventState.getActivePointerId());
 
     incrementCoalescingKey();
-    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
+    boolean supportsHover = mHoveringPointerIds.contains(eventState.getActivePointerId());
     if (!supportsHover) {
       // Indirect OVER event dispatches before ENTER
       boolean listeningForOver =
@@ -164,9 +169,7 @@ public class JSPointerDispatcher {
     }
   }
 
-  private PointerEventState createEventState(MotionEvent motionEvent) {
-    int activeIndex = motionEvent.getActionIndex();
-
+  private PointerEventState createEventState(int activePointerId, MotionEvent motionEvent) {
     Map<Integer, float[]> offsetByPointerId = new HashMap<Integer, float[]>();
     Map<Integer, List<ViewTarget>> hitPathByPointerId = new HashMap<Integer, List<ViewTarget>>();
     Map<Integer, float[]> eventCoordinatesByPointerId = new HashMap<Integer, float[]>();
@@ -183,7 +186,6 @@ public class JSPointerDispatcher {
       eventCoordinatesByPointerId.put(pointerId, eventCoordinates);
     }
 
-    int activePointerId = motionEvent.getPointerId(activeIndex);
     int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
 
     return new PointerEventState(
@@ -193,7 +195,8 @@ public class JSPointerDispatcher {
         surfaceId,
         offsetByPointerId,
         hitPathByPointerId,
-        eventCoordinatesByPointerId);
+        eventCoordinatesByPointerId,
+        mHoveringPointerIds); // Creates a copy of hovering pointer ids, as they may be updated
   }
 
   public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
@@ -203,11 +206,14 @@ public class JSPointerDispatcher {
     }
 
     int action = motionEvent.getActionMasked();
+    int activePointerId = motionEvent.getPointerId(motionEvent.getActionIndex());
     if (action == MotionEvent.ACTION_DOWN) {
       mPrimaryPointerId = motionEvent.getPointerId(0);
+    } else if (action == MotionEvent.ACTION_HOVER_MOVE) {
+      mHoveringPointerIds.add(activePointerId);
     }
 
-    PointerEventState eventState = createEventState(motionEvent);
+    PointerEventState eventState = createEventState(activePointerId, motionEvent);
     List<ViewTarget> activeHitPath =
         eventState.getHitPathByPointerId().get(eventState.getActivePointerId());
 
@@ -264,6 +270,10 @@ public class JSPointerDispatcher {
     mLastHitPathByPointerId = eventState.getHitPathByPointerId();
     mLastEventCoordinatesByPointerId = eventState.getEventCoordinatesByPointerId();
     mLastButtonState = motionEvent.getButtonState();
+
+    // Clean up any stale pointerIds
+    Set<Integer> allPointerIds = mLastEventCoordinatesByPointerId.keySet();
+    mHoveringPointerIds.retainAll(allPointerIds);
   }
 
   private static boolean isAnyoneListeningForBubblingEvent(
@@ -464,7 +474,9 @@ public class JSPointerDispatcher {
         mChildHandlingNativeGesture == -1,
         "Expected to not have already sent a cancel for this gesture");
 
-    PointerEventState eventState = createEventState(motionEvent);
+    int activeIndex = motionEvent.getActionIndex();
+    int activePointerId = motionEvent.getPointerId(activeIndex);
+    PointerEventState eventState = createEventState(activePointerId, motionEvent);
     dispatchCancelEvent(eventState, motionEvent, eventDispatcher);
   }
 
@@ -477,8 +489,8 @@ public class JSPointerDispatcher {
         mChildHandlingNativeGesture == -1,
         "Expected to not have already sent a cancel for this gesture");
 
-    List<ViewTarget> activeHitPath =
-        eventState.getHitPathByPointerId().get(eventState.getActivePointerId());
+    int activePointerId = eventState.getActivePointerId();
+    List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
 
     if (!activeHitPath.isEmpty()) {
       boolean listeningForCancel =
@@ -505,6 +517,8 @@ public class JSPointerDispatcher {
           eventDispatcher);
 
       incrementCoalescingKey();
+      mHoveringPointerIds.remove(mPrimaryPointerId);
+      mHoveringPointerIds.remove(activePointerId);
       mPrimaryPointerId = UNSET_POINTER_ID;
     }
   }

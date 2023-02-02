@@ -38,7 +38,12 @@ let argv = yargs
 
 const buildType = argv.buildType;
 const version = argv.toVersion;
-validateBuildType(buildType);
+
+try {
+  validateBuildType(buildType);
+} catch (e) {
+  throw e;
+}
 
 let major,
   minor,
@@ -47,8 +52,7 @@ let major,
 try {
   ({major, minor, patch, prerelease} = parseVersion(version, buildType));
 } catch (e) {
-  echo(e.message);
-  exit(1);
+  throw e;
 }
 
 const tmpVersioningFolder = fs.mkdtempSync(

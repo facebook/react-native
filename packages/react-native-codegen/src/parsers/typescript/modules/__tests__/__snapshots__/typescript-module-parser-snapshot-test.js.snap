@@ -1503,6 +1503,113 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
 }"
 `;
 
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NESTED_INTERFACES 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {
+        'Bar': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'z',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            }
+          ]
+        },
+        'Foo': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'bar1',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar2',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar3',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar4',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            }
+          ]
+        }
+      },
+      'spec': {
+        'properties': [
+          {
+            'name': 'foo1',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Foo'
+              },
+              'params': [
+                {
+                  'name': 'x',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'Foo'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'foo2',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'x',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'Foo'
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE_PARAM 1`] = `
 "{
   'modules': {
@@ -1620,6 +1727,212 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_OB
                 ]
               },
               'params': []
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {
+        'SomeObj': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'b',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
+      'spec': {
+        'properties': [
+          {
+            'name': 'getSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'getPartialSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'a',
+                    'optional': true,
+                    'typeAnnotation': {
+                      'type': 'StringTypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'b',
+                    'optional': true,
+                    'typeAnnotation': {
+                      'type': 'BooleanTypeAnnotation'
+                    }
+                  }
+                ]
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'getSomeObjFromPartialSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': [
+                {
+                  'name': 'value',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS_COMPLEX 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {
+        'SomeObj': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'b',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
+      'spec': {
+        'properties': [
+          {
+            'name': 'getPartialPartial',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': [
+                {
+                  'name': 'value1',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  'name': 'value2',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
             }
           }
         ]

@@ -12,10 +12,7 @@ import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps} from './ImageProps';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
-import type {
-  HostComponent,
-  PartialViewConfig,
-} from '../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {
   ColorValue,
   DangerouslyImpreciseStyle,

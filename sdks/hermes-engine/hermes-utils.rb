@@ -36,7 +36,7 @@ def compute_hermes_source(build_from_source, hermestag_file, git, version, build
     if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
         use_tarball(source)
     elsif build_from_source
-        if File.exists?(hermestag_file)
+        if File.exist?(hermestag_file)
             build_from_tagfile(source, git, hermestag_file)
         else
             build_hermes_from_source(source, git)

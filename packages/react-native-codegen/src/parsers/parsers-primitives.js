@@ -30,6 +30,7 @@ import type {
   ReservedTypeAnnotation,
   StringTypeAnnotation,
   VoidTypeAnnotation,
+  NativeModuleObjectTypeAnnotation,
 } from '../CodegenSchema';
 import type {Parser} from './parser';
 import type {
@@ -243,6 +244,16 @@ function emitObject(
   });
 }
 
+function emitPartial(
+  nullable: boolean,
+  properties: Array<$FlowFixMe>,
+): Nullable<NativeModuleObjectTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'ObjectTypeAnnotation',
+    properties,
+  });
+}
+
 function emitFloat(
   nullable: boolean,
 ): Nullable<NativeModuleFloatTypeAnnotation> {
@@ -370,6 +381,7 @@ module.exports = {
   emitInt32,
   emitNumber,
   emitObject,
+  emitPartial,
   emitPromise,
   emitRootTag,
   emitVoid,

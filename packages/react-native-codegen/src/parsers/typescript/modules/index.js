@@ -22,6 +22,7 @@ import type {
 
 import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
+const {flattenProperties} = require('../components/componentsUtils');
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
 const {resolveTypeAnnotation, getTypes} = require('../utils');
@@ -41,6 +42,7 @@ const {
   emitNumber,
   emitInt32,
   emitObject,
+  emitPartial,
   emitPromise,
   emitRootTag,
   emitVoid,
@@ -171,6 +173,42 @@ function translateTypeAnnotation(
         case 'Object': {
           return emitObject(nullable);
         }
+        case 'Partial': {
+          if (typeAnnotation.typeParameters.params.length !== 1) {
+            throw new Error(
+              'Partials only support annotating exactly one parameter.',
+            );
+          }
+
+          const annotatedElement =
+            types[typeAnnotation.typeParameters.params[0].typeName.name];
+
+          if (!annotatedElement) {
+            throw new Error(
+              'Partials only support annotating a type parameter.',
+            );
+          }
+
+          const properties = annotatedElement.typeAnnotation.members.map(
+            member => {
+              return {
+                name: member.key.name,
+                optional: true,
+                typeAnnotation: translateTypeAnnotation(
+                  hasteModuleName,
+                  member.typeAnnotation.typeAnnotation,
+                  types,
+                  aliasMap,
+                  tryParse,
+                  cxxOnly,
+                  parser,
+                ),
+              };
+            },
+          );
+
+          return emitPartial(nullable, properties);
+        }
         default: {
           return translateDefault(
             hasteModuleName,
@@ -181,6 +219,41 @@ function translateTypeAnnotation(
           );
         }
       }
+    }
+    case 'TSInterfaceDeclaration': {
+      const objectTypeAnnotation = {
+        type: 'ObjectTypeAnnotation',
+        // $FlowFixMe[missing-type-arg]
+        properties: (flattenProperties(
+          [typeAnnotation],
+          types,
+        ): $ReadOnlyArray<$FlowFixMe>)
+          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
+            property => {
+              return tryParse(() => {
+                return parseObjectProperty(
+                  property,
+                  hasteModuleName,
+                  types,
+                  aliasMap,
+                  tryParse,
+                  cxxOnly,
+                  nullable,
+                  translateTypeAnnotation,
+                  parser,
+                );
+              });
+            },
+          )
+          .filter(Boolean),
+      };
+
+      return typeAliasResolution(
+        typeAliasResolutionStatus,
+        objectTypeAnnotation,
+        aliasMap,
+        nullable,
+      );
     }
     case 'TSTypeLiteral': {
       // if there is TSIndexSignature, then it is a dictionary
