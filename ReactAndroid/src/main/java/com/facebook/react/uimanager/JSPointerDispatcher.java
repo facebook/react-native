@@ -231,7 +231,10 @@ public class JSPointerDispatcher {
 
     List<ViewTarget> activeHitPath;
     if (isExitFromRoot) {
-      List<ViewTarget> lastHitPath = mLastHitPathByPointerId.get(eventState.getActivePointerId());
+      List<ViewTarget> lastHitPath =
+          mLastHitPathByPointerId != null
+              ? mLastHitPathByPointerId.get(eventState.getActivePointerId())
+              : null;
       if (lastHitPath == null || lastHitPath.isEmpty()) {
         return;
       }
