@@ -30,26 +30,27 @@ import org.robolectric.RobolectricTestRunner;
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class CustomStyleSpanTest {
   @Rule public PowerMockRule rule = new PowerMockRule();
-  TextPaint tp;
-  Paint.FontMetrics fontMetrics;
-  AssetManager assetManager;
-  int fontStyle;
-  int fontWeight;
+  TextPaint tp = mock(TextPaint.class);
+  Paint.FontMetrics fontMetrics = mock(Paint.FontMetrics.class);
+  AssetManager assetManager = mock(AssetManager.class);
+  int fontStyle = 0;
+  int fontWeight = 0;
+  private int mFontSize;
 
   @Before
   public void setUp() throws Exception {
-    fontStyle = 0;
-    fontWeight = 0;
-    assetManager = mock(AssetManager.class);
+    setTextPaintMock();
+    setFontSize(15);
+  }
+
+  private void setTextPaintMock() throws Exception {
     // https://stackoverflow.com/a/27631737/7295772
     // top      -------------  -10
     // ascent   -------------  -5
     // baseline __my Text____   0
     // descent  _____________   2
     // bottom   _____________   5
-    tp = mock(TextPaint.class);
     tp.baselineShift = 0;
-    fontMetrics = mock(Paint.FontMetrics.class);
     fontMetrics.top = -10.0f;
     fontMetrics.ascent = -5.0f;
     fontMetrics.descent = 2.0f;
@@ -60,12 +61,17 @@ public class CustomStyleSpanTest {
     PowerMockito.whenNew(TextPaint.class).withNoArguments().thenReturn(tp);
   }
 
+  private void setFontSize(int fontSize) {
+    PowerMockito.when(tp.getTextSize()).thenReturn((float) fontSize);
+    mFontSize = fontSize;
+  }
+
   // span with no text align vertical or text align vertical center
   @Test
   public void shouldNotChangeBaseline() {
     CustomStyleSpan customStyleSpan =
         new CustomStyleSpan(
-            fontStyle, fontWeight, null, null, TextAlignVertical.CENTER, 15, assetManager);
+            fontStyle, fontWeight, null, null, TextAlignVertical.CENTER, mFontSize, assetManager);
     customStyleSpan.updateDrawState(tp);
     // uses the default alignment (baseline)
     assertThat(tp.baselineShift).isEqualTo(0);
@@ -74,12 +80,11 @@ public class CustomStyleSpanTest {
   // span has a smaller font then others, textAlignVertical top, line height 10
   @Test
   public void textWithSmallerFontSizeAlignsAtTheTopOfTheLineHeight() {
-    int fontSize = 15;
     int lineHeight = 10;
     int maximumFontSize = 16;
     CustomStyleSpan customStyleSpan =
         new CustomStyleSpan(
-            fontStyle, fontWeight, null, null, TextAlignVertical.TOP, fontSize, assetManager);
+            fontStyle, fontWeight, null, null, TextAlignVertical.TOP, mFontSize, assetManager);
     customStyleSpan.updateSpan(lineHeight, maximumFontSize);
     customStyleSpan.updateDrawState(tp);
     // aligns correctly text that has smaller font
@@ -91,7 +96,7 @@ public class CustomStyleSpanTest {
                 // move the baseline of text with smaller font up
                 // so it aligns on the top of the larger font
                 + maximumFontSize
-                - fontSize
+                - mFontSize
                 + tp.getFontMetrics().top
                 - tp.ascent());
     assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
@@ -100,18 +105,17 @@ public class CustomStyleSpanTest {
   // span has a larger font then others, textAlignVertical bottom, line height 20
   @Test
   public void textWithLargerFontSizeAlignsAtTheBottomOfTheLineHeight() {
-    int fontSize = 20;
-    PowerMockito.when(tp.getTextSize()).thenReturn((float) fontSize);
+    setFontSize(20);
     int lineHeight = 20;
     int maximumFontSize = 20;
     CustomStyleSpan customStyleSpan =
         new CustomStyleSpan(
-            fontStyle, fontWeight, null, null, TextAlignVertical.BOTTOM, fontSize, assetManager);
+            fontStyle, fontWeight, null, null, TextAlignVertical.BOTTOM, mFontSize, assetManager);
     customStyleSpan.updateSpan(lineHeight, maximumFontSize);
     customStyleSpan.updateDrawState(tp);
     // aligns text vertically in the lineHeight
     // and adjust their position depending on the fontSize
-    int newBaselineShift = (int) (lineHeight / 2 - fontSize / 2 - tp.descent());
+    int newBaselineShift = (int) (lineHeight / 2 - mFontSize / 2 - tp.descent());
     assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
   }
 
@@ -124,12 +128,11 @@ public class CustomStyleSpanTest {
   // bottom   _____________   5
   @Test
   public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
-    int fontSize = 15;
     int lineHeight = 0;
     int maximumFontSize = 15;
     CustomStyleSpan customStyleSpan =
         new CustomStyleSpan(
-            fontStyle, fontWeight, null, null, TextAlignVertical.TOP, fontSize, assetManager);
+            fontStyle, fontWeight, null, null, TextAlignVertical.TOP, mFontSize, assetManager);
     customStyleSpan.updateSpan(lineHeight, maximumFontSize);
     customStyleSpan.updateDrawState(tp);
     // aligns to the top based on the FontMetrics
