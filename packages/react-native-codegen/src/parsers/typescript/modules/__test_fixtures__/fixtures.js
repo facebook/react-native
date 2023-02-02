@@ -239,6 +239,50 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
+const NATIVE_MODULE_WITH_INTERSECTION_TYPES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+type Bar  = {
+  z: number
+};
+
+type Base1 = {
+  bar1: Bar,
+}
+
+type Base2 = {
+  bar2: Bar,
+}
+
+type Base3 = Base2 & {
+  bar3: Bar,
+}
+
+type Foo = Base1 & Base3 & {
+  bar4: Bar,
+};
+
+export interface Spec extends TurboModule {
+  // Exported methods.
+  foo1: (x: Foo) => Foo;
+  foo2: (x: Foo) => void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 const NATIVE_MODULE_WITH_FLOAT_AND_INT32 = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -803,6 +847,7 @@ module.exports = {
   NATIVE_MODULE_WITH_ALIASES,
   NATIVE_MODULE_WITH_NESTED_ALIASES,
   NATIVE_MODULE_WITH_NESTED_INTERFACES,
+  NATIVE_MODULE_WITH_INTERSECTION_TYPES,
   NATIVE_MODULE_WITH_PROMISE,
   NATIVE_MODULE_WITH_COMPLEX_OBJECTS,
   NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY,
