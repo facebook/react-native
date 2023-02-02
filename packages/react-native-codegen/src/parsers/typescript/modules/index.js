@@ -94,41 +94,47 @@ function translateObjectTypeAnnotation(
   cxxOnly: boolean,
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
-  let objectTypeAnnotation = {
-    type: 'ObjectTypeAnnotation',
-    // $FlowFixMe[missing-type-arg]
-    properties: objectMembers
-      .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(property => {
-        return tryParse(() => {
-          return parseObjectProperty(
-            property,
-            hasteModuleName,
-            types,
-            aliasMap,
-            tryParse,
-            cxxOnly,
-            nullable,
-            translateTypeAnnotation,
-            parser,
-          );
-        });
-      })
-      .filter(Boolean),
-    baseTypes,
-  };
+  // $FlowFixMe[missing-type-arg]
+  const properties = objectMembers
+    .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(property => {
+      return tryParse(() => {
+        return parseObjectProperty(
+          property,
+          hasteModuleName,
+          types,
+          aliasMap,
+          tryParse,
+          cxxOnly,
+          nullable,
+          translateTypeAnnotation,
+          parser,
+        );
+      });
+    })
+    .filter(Boolean);
 
-  if (objectTypeAnnotation.baseTypes.length === 0) {
-    // The flow checker does not allow adding a member after an object literal is created
-    // so here I do it in a reverse way
-    delete objectTypeAnnotation.baseTypes;
+  if (baseTypes.length === 0) {
+    return typeAliasResolution(
+      typeResolutionStatus,
+      {
+        type: 'ObjectTypeAnnotation',
+        properties,
+      },
+      aliasMap,
+      nullable,
+    );
+  } else {
+    return typeAliasResolution(
+      typeResolutionStatus,
+      {
+        type: 'ObjectTypeAnnotation',
+        properties,
+        baseTypes,
+      },
+      aliasMap,
+      nullable,
+    );
   }
-
-  return typeAliasResolution(
-    typeResolutionStatus,
-    objectTypeAnnotation,
-    aliasMap,
-    nullable,
-  );
 }
 
 function translateTypeAnnotation(
@@ -306,10 +312,7 @@ function translateTypeAnnotation(
       return translateObjectTypeAnnotation(
         hasteModuleName,
         nullable,
-        (flattenProperties(
-          [typeAnnotation],
-          types,
-        ): $ReadOnlyArray<$FlowFixMe>),
+        flattenProperties([typeAnnotation], types),
         typeResolutionStatus,
         baseTypes,
         types,
@@ -323,11 +326,11 @@ function translateTypeAnnotation(
       return translateObjectTypeAnnotation(
         hasteModuleName,
         nullable,
-        (flattenProperties(
+        flattenProperties(
           flattenIntersectionType(typeAnnotation, types),
           types,
-        ): $ReadOnlyArray<$FlowFixMe>),
-        typeAliasResolutionStatus,
+        ),
+        typeResolutionStatus,
         [],
         types,
         aliasMap,
