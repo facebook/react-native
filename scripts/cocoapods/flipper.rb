@@ -70,7 +70,7 @@ end
 #
 # @parameter installer: the installer object used to install the pods.
 def flipper_post_install(installer)
-    installer.pods_project.targets.each do |target|
+    installer.generated_projects.flat_map { |p| p.targets }.each do |target|
         if target.name == 'YogaKit'
             target.build_configurations.each do |config|
                 config.build_settings['SWIFT_VERSION'] = '4.1'

@@ -14,15 +14,14 @@ class NewArchitectureHelper
 
     def self.set_clang_cxx_language_standard_if_needed(installer)
         language_standard = nil
-
-        installer.pods_project.targets.each do |target|
+        installer.generated_projects.flat_map { |p| p.targets }.each do |target|
             if target.name == 'React-Core'
                 language_standard = target.resolved_build_setting("CLANG_CXX_LANGUAGE_STANDARD", resolve_against_xcconfig: true).values[0]
             end
         end
 
         unless language_standard.nil?
-            projects = installer.aggregate_targets
+            projects = installer.generated_aggregate_targets
                 .map{ |t| t.user_project }
                 .uniq{ |p| p.path }
 
@@ -44,7 +43,7 @@ class NewArchitectureHelper
         end
 
         # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
-        installer.aggregate_targets.each do |aggregate_target|
+        installer.generated_aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
                 config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
                 xcconfig_path = aggregate_target.xcconfig_path(config_name)

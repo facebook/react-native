@@ -36,7 +36,7 @@ class ReactNativePodsUtils
     end
 
     def self.has_pod(installer, name)
-        installer.pods_project.pod_group(name) != nil
+        installer.pod_targets.any? { |pod| pod.name == name }
     end
 
     def self.turn_off_resource_bundle_react_core(installer)
@@ -54,11 +54,10 @@ class ReactNativePodsUtils
     end
 
     def self.exclude_i386_architecture_while_using_hermes(installer)
-        projects = installer.aggregate_targets
+        projects = installer.generated_aggregate_targets
             .map{ |t| t.user_project }
             .uniq{ |p| p.path }
-            .push(installer.pods_project)
-
+            .concat(installer.generated_projects)
 
         # Hermes does not support `i386` architecture
         excluded_archs_default = ReactNativePodsUtils.has_pod(installer, 'hermes-engine') ? "i386" : ""
@@ -74,10 +73,10 @@ class ReactNativePodsUtils
 
     def self.set_node_modules_user_settings(installer, react_native_path)
         Pod::UI.puts("Setting REACT_NATIVE build settings")
-        projects = installer.aggregate_targets
+        projects = installer.generated_aggregate_targets
             .map{ |t| t.user_project }
             .uniq{ |p| p.path }
-            .push(installer.pods_project)
+            .concat(installer.generated_projects)
 
         projects.each do |project|
             project.build_configurations.each do |config|
@@ -89,10 +88,10 @@ class ReactNativePodsUtils
     end
 
     def self.fix_library_search_paths(installer)
-        projects = installer.aggregate_targets
+        projects = installer.generated_aggregate_targets
             .map{ |t| t.user_project }
             .uniq{ |p| p.path }
-            .push(installer.pods_project)
+            .concat(installer.generated_projects)
 
         projects.each do |project|
             project.build_configurations.each do |config|
@@ -109,7 +108,7 @@ class ReactNativePodsUtils
 
     def self.apply_mac_catalyst_patches(installer)
         # Fix bundle signing issues
-        installer.pods_project.targets.each do |target|
+        installer.generated_projects.flat_map { |p| p.targets }.each do |target|
             if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
                 target.build_configurations.each do |config|
                     config.build_settings['CODE_SIGN_IDENTITY[sdk=macosx*]'] = '-'
@@ -117,7 +116,7 @@ class ReactNativePodsUtils
             end
         end
 
-        installer.aggregate_targets.each do |aggregate_target|
+        installer.generated_aggregate_targets.each do |aggregate_target|
             aggregate_target.user_project.native_targets.each do |target|
                 target.build_configurations.each do |config|
                     # Explicitly set dead code stripping flags
