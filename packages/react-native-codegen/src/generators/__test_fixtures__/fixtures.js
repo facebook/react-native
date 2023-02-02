@@ -41,7 +41,7 @@ const SCHEMA_WITH_TM_AND_FC: SchemaType = {
     },
     NativeCalculator: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
       spec: {
         properties: [
           {

@@ -452,7 +452,7 @@ function buildModuleSchema(
     .reduce(
       (moduleSchema: NativeModuleSchema, {aliasMap, propertyShape}) => ({
         type: 'NativeModule',
-        aliases: {...moduleSchema.aliases, ...aliasMap},
+        aliasMap: {...moduleSchema.aliasMap, ...aliasMap},
         spec: {
           properties: [...moduleSchema.spec.properties, propertyShape],
         },
@@ -461,7 +461,7 @@ function buildModuleSchema(
       }),
       {
         type: 'NativeModule',
-        aliases: {},
+        aliasMap: {},
         spec: {properties: []},
         moduleName,
         excludedPlatforms:

@@ -447,7 +447,7 @@ module.exports = {
 
     Object.keys(nativeModules).forEach(hasteModuleName => {
       const {
-        aliases,
+        aliasMap,
         excludedPlatforms,
         moduleName,
         spec: {properties},
@@ -455,7 +455,7 @@ module.exports = {
       if (excludedPlatforms != null && excludedPlatforms.includes('android')) {
         return;
       }
-      const resolveAlias = createAliasResolver(aliases);
+      const resolveAlias = createAliasResolver(aliasMap);
       const className = `${hasteModuleName}Spec`;
 
       const imports: Set<string> = new Set([
