@@ -119,8 +119,6 @@ inline void fromRawValue(
   }
 }
 
-#if RN_DEBUG_STRING_CONVERTIBLE
-
 inline std::string toString(const ScrollViewSnapToAlignment &value) {
   switch (value) {
     case ScrollViewSnapToAlignment::Start:
@@ -131,6 +129,8 @@ inline std::string toString(const ScrollViewSnapToAlignment &value) {
       return "end";
   }
 }
+
+#if RN_DEBUG_STRING_CONVERTIBLE
 
 inline std::string toString(const ScrollViewIndicatorStyle &value) {
   switch (value) {
