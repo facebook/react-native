@@ -262,14 +262,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (shouldDispatchJSTouchEvent(ev)) {
       dispatchJSTouchEvent(ev);
     }
-    dispatchJSPointerEvent(ev);
+    dispatchJSPointerEvent(ev, true);
     return super.onInterceptTouchEvent(ev);
-  }
-
-  @Override
-  public boolean onInterceptHoverEvent(MotionEvent ev) {
-    dispatchJSPointerEvent(ev);
-    return super.onInterceptHoverEvent(ev);
   }
 
   @Override
@@ -277,7 +271,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (shouldDispatchJSTouchEvent(ev)) {
       dispatchJSTouchEvent(ev);
     }
-    dispatchJSPointerEvent(ev);
+    dispatchJSPointerEvent(ev, false);
     super.onTouchEvent(ev);
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture
@@ -285,8 +279,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
+  public boolean onInterceptHoverEvent(MotionEvent ev) {
+    dispatchJSPointerEvent(ev, true);
+    return super.onInterceptHoverEvent(ev);
+  }
+
+  @Override
   public boolean onHoverEvent(MotionEvent ev) {
-    dispatchJSPointerEvent(ev);
+    dispatchJSPointerEvent(ev, false);
     return super.onHoverEvent(ev);
   }
 
@@ -343,7 +343,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     super.requestChildFocus(child, focused);
   }
 
-  protected void dispatchJSPointerEvent(MotionEvent event) {
+  protected void dispatchJSPointerEvent(MotionEvent event, boolean isCapture) {
     if (mReactInstanceManager == null
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {
@@ -362,7 +362,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
-      mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher);
+      mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher, isCapture);
     }
   }
 
