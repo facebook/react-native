@@ -16,14 +16,20 @@ import android.graphics.Paint;
 import android.text.TextPaint;
 import com.facebook.react.views.text.CustomStyleSpan.TextAlignVertical;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
+@PrepareForTest({CustomStyleSpan.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class CustomStyleSpanTest {
+  @Rule public PowerMockRule rule = new PowerMockRule();
   TextPaint tp;
   Paint.FontMetrics fontMetrics;
   AssetManager assetManager;
@@ -31,7 +37,7 @@ public class CustomStyleSpanTest {
   int fontWeight;
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
     fontStyle = 0;
     fontWeight = 0;
     assetManager = mock(AssetManager.class);
@@ -51,6 +57,7 @@ public class CustomStyleSpanTest {
     when(tp.getFontMetrics()).thenReturn(fontMetrics);
     when(tp.ascent()).thenReturn(fontMetrics.ascent);
     when(tp.descent()).thenReturn(fontMetrics.descent);
+    PowerMockito.whenNew(TextPaint.class).withNoArguments().thenReturn(tp);
   }
 
   // span with no text align vertical or text align vertical center
@@ -65,13 +72,14 @@ public class CustomStyleSpanTest {
   }
 
   // span has a smaller font then others, textAlignVertical top, line height 10
-  /*
   @Test
   public void textWithSmallerFontSizeAlignsAtTheTopOfTheLineHeight() {
     int fontSize = 15;
     int lineHeight = 10;
     int maximumFontSize = 16;
-    CustomStyleSpan customStyleSpan = new CustomStyleSpan(fontSize, TextAlignVertical.TOP);
+    CustomStyleSpan customStyleSpan =
+        new CustomStyleSpan(
+            fontStyle, fontWeight, null, null, TextAlignVertical.TOP, fontSize, assetManager);
     customStyleSpan.updateSpan(lineHeight, maximumFontSize);
     customStyleSpan.updateDrawState(tp);
     // aligns correctly text that has smaller font
@@ -93,9 +101,12 @@ public class CustomStyleSpanTest {
   @Test
   public void textWithLargerFontSizeAlignsAtTheBottomOfTheLineHeight() {
     int fontSize = 20;
+    PowerMockito.when(tp.getTextSize()).thenReturn((float) fontSize);
     int lineHeight = 20;
     int maximumFontSize = 20;
-    CustomStyleSpan customStyleSpan = new CustomStyleSpan(fontSize, TextAlignVertical.BOTTOM);
+    CustomStyleSpan customStyleSpan =
+        new CustomStyleSpan(
+            fontStyle, fontWeight, null, null, TextAlignVertical.BOTTOM, fontSize, assetManager);
     customStyleSpan.updateSpan(lineHeight, maximumFontSize);
     customStyleSpan.updateDrawState(tp);
     // aligns text vertically in the lineHeight
@@ -116,12 +127,13 @@ public class CustomStyleSpanTest {
     int fontSize = 15;
     int lineHeight = 0;
     int maximumFontSize = 15;
-    CustomStyleSpan customStyleSpan = new CustomStyleSpan(fontSize, TextAlignVertical.TOP);
+    CustomStyleSpan customStyleSpan =
+        new CustomStyleSpan(
+            fontStyle, fontWeight, null, null, TextAlignVertical.TOP, fontSize, assetManager);
     customStyleSpan.updateSpan(lineHeight, maximumFontSize);
     customStyleSpan.updateDrawState(tp);
     // aligns to the top based on the FontMetrics
     int newBaselineShift = (int) (tp.getFontMetrics().top - tp.ascent() - tp.descent());
     assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
   }
-   */
 }
