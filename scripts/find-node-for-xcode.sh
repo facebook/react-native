@@ -58,11 +58,9 @@ if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
 fi
 
 # Set up asdf-vm if present
-if [[ -f "$HOME/.asdf/asdf.sh" ]]; then
-  # shellcheck source=/dev/null
-  . "$HOME/.asdf/asdf.sh"
+if [[ -f "$ASDF_DIR/asdf.sh" ]]; then
+  . "$ASDF_DIR/asdf.sh"
 elif [[ -x "$(command -v brew)" && -f "$(brew --prefix asdf)/asdf.sh" ]]; then
-  # shellcheck source=/dev/null
   . "$(brew --prefix asdf)/asdf.sh"
 fi
 
