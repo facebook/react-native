@@ -27,6 +27,7 @@ import type {
   TypeAliasResolutionStatus,
   TypeDeclarationMap,
 } from '../../utils';
+const {flattenIntersectionType} = require('../parseTopLevelType');
 const {flattenProperties} = require('../components/componentsUtils');
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
@@ -311,6 +312,23 @@ function translateTypeAnnotation(
         ): $ReadOnlyArray<$FlowFixMe>),
         typeResolutionStatus,
         baseTypes,
+        types,
+        aliasMap,
+        tryParse,
+        cxxOnly,
+        parser,
+      );
+    }
+    case 'TSIntersectionType': {
+      return translateObjectTypeAnnotation(
+        hasteModuleName,
+        nullable,
+        (flattenProperties(
+          flattenIntersectionType(typeAnnotation,types),
+          types,
+        ): $ReadOnlyArray<$FlowFixMe>),
+        typeAliasResolutionStatus,
+        [],
         types,
         aliasMap,
         tryParse,
