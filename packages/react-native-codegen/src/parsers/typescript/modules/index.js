@@ -113,28 +113,26 @@ function translateObjectTypeAnnotation(
     })
     .filter(Boolean);
 
+  let objectTypeAnnotation;
   if (baseTypes.length === 0) {
-    return typeAliasResolution(
-      typeResolutionStatus,
-      {
-        type: 'ObjectTypeAnnotation',
-        properties,
-      },
-      aliasMap,
-      nullable,
-    );
+    objectTypeAnnotation = {
+      type: 'ObjectTypeAnnotation',
+      properties,
+    };
   } else {
-    return typeAliasResolution(
-      typeResolutionStatus,
-      {
-        type: 'ObjectTypeAnnotation',
-        properties,
-        baseTypes,
-      },
-      aliasMap,
-      nullable,
-    );
+    objectTypeAnnotation = {
+      type: 'ObjectTypeAnnotation',
+      properties,
+      baseTypes,
+    };
   }
+
+  return typeAliasResolution(
+    typeResolutionStatus,
+    objectTypeAnnotation,
+    aliasMap,
+    nullable,
+  );
 }
 
 function translateTypeAnnotation(
