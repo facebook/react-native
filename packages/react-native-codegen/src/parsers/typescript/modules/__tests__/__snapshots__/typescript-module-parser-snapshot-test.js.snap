@@ -1577,7 +1577,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_IN
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'Bar': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1628,6 +1628,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_IN
           ]
         }
       },
+      'enumMap': {},
       'spec': {
         'properties': [
           {

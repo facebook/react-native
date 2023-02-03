@@ -24,7 +24,7 @@ import type {
 import type {Parser} from '../../parser';
 import type {
   ParserErrorCapturer,
-  TypeAliasResolutionStatus,
+  TypeResolutionStatus,
   TypeDeclarationMap,
 } from '../../utils';
 const {flattenIntersectionType} = require('../parseTopLevelType');
@@ -86,10 +86,11 @@ function translateObjectTypeAnnotation(
    */
   nullable: boolean,
   objectMembers: $ReadOnlyArray<$FlowFixMe>,
-  typeResolutionStatus: TypeAliasResolutionStatus,
+  typeResolutionStatus: TypeResolutionStatus,
   baseTypes: $ReadOnlyArray<string>,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   parser: Parser,
@@ -103,6 +104,7 @@ function translateObjectTypeAnnotation(
           hasteModuleName,
           types,
           aliasMap,
+          enumMap,
           tryParse,
           cxxOnly,
           nullable,
@@ -315,6 +317,7 @@ function translateTypeAnnotation(
         baseTypes,
         types,
         aliasMap,
+        enumMap,
         tryParse,
         cxxOnly,
         parser,
@@ -332,6 +335,7 @@ function translateTypeAnnotation(
         [],
         types,
         aliasMap,
+        enumMap,
         tryParse,
         cxxOnly,
         parser,
@@ -370,6 +374,7 @@ function translateTypeAnnotation(
         [],
         types,
         aliasMap,
+        enumMap,
         tryParse,
         cxxOnly,
         parser,
