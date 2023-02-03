@@ -90,6 +90,9 @@ object ReactMapBufferPropSetter {
   private const val EDGE_BLOCK = 7
   private const val EDGE_BLOCK_END = 8
   private const val EDGE_BLOCK_START = 9
+  private const val EDGE_INLINE = 10
+  private const val EDGE_INLINE_END = 11
+  private const val EDGE_INLINE_START = 12
 
   private const val CORNER_TOP_LEFT = 0
   private const val CORNER_TOP_RIGHT = 1
@@ -355,6 +358,9 @@ object ReactMapBufferPropSetter {
             EDGE_BLOCK -> 7
             EDGE_BLOCK_END -> 8
             EDGE_BLOCK_START -> 9
+            EDGE_INLINE -> 10
+            EDGE_INLINE_END -> 11
+            EDGE_INLINE_START -> 12
             else -> throw IllegalArgumentException("Unknown key for border color: $key")
           }
       val colorValue = entry.intValue

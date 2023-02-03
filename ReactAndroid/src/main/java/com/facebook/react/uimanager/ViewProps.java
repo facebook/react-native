@@ -138,6 +138,9 @@ public class ViewProps {
   public static final String BORDER_BLOCK_COLOR = "borderBlockColor";
   public static final String BORDER_BLOCK_END_COLOR = "borderBlockEndColor";
   public static final String BORDER_BLOCK_START_COLOR = "borderBlockStartColor";
+  public static final String BORDER_INLINE_COLOR = "borderInlineColor";
+  public static final String BORDER_INLINE_END_COLOR = "borderInlineEndColor";
+  public static final String BORDER_INLINE_START_COLOR = "borderInlineStartColor";
   public static final String BORDER_TOP_START_RADIUS = "borderTopStartRadius";
   public static final String BORDER_TOP_END_RADIUS = "borderTopEndRadius";
   public static final String BORDER_BOTTOM_START_RADIUS = "borderBottomStartRadius";
@@ -311,6 +314,15 @@ public class ViewProps {
       case BORDER_BLOCK_START_COLOR:
         return map.getType(BORDER_BLOCK_START_COLOR) == ReadableType.Number
             && map.getInt(BORDER_BLOCK_START_COLOR) == Color.TRANSPARENT;
+      case BORDER_INLINE_COLOR:
+        return map.getType(BORDER_INLINE_COLOR) == ReadableType.Number
+            && map.getInt(BORDER_INLINE_COLOR) == Color.TRANSPARENT;
+      case BORDER_INLINE_END_COLOR:
+        return map.getType(BORDER_INLINE_END_COLOR) == ReadableType.Number
+            && map.getInt(BORDER_INLINE_END_COLOR) == Color.TRANSPARENT;
+      case BORDER_INLINE_START_COLOR:
+        return map.getType(BORDER_INLINE_START_COLOR) == ReadableType.Number
+            && map.getInt(BORDER_INLINE_START_COLOR) == Color.TRANSPARENT;
       case BORDER_WIDTH:
         return map.isNull(BORDER_WIDTH) || map.getDouble(BORDER_WIDTH) == 0d;
       case BORDER_LEFT_WIDTH:

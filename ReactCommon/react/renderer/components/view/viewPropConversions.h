@@ -101,35 +101,36 @@ inline void putOptionalColor(
 
 inline MapBuffer convertBorderColors(CascadedBorderColors const &colors) {
   MapBufferBuilder builder(7);
-  putOptionalColor(builder, EDGE_TOP, colors.top);
-  putOptionalColor(builder, EDGE_RIGHT, colors.right);
-  putOptionalColor(builder, EDGE_BOTTOM, colors.bottom);
-  putOptionalColor(builder, EDGE_LEFT, colors.left);
-  putOptionalColor(builder, EDGE_START, colors.start);
-  putOptionalColor(builder, EDGE_END, colors.end);
-  putOptionalColor(builder, EDGE_ALL, colors.all);
+  putOptionalColor(builder, EDGE_TOP, colors.topEdge);
+  putOptionalColor(builder, EDGE_RIGHT, colors.rightEdge);
+  putOptionalColor(builder, EDGE_BOTTOM, colors.bottomEdge);
+  putOptionalColor(builder, EDGE_LEFT, colors.leftEdge);
+  putOptionalColor(builder, EDGE_START, colors.startEdge);
+  putOptionalColor(builder, EDGE_END, colors.endEdge);
+  putOptionalColor(builder, EDGE_ALL, colors.allEdges);
   return builder.build();
 }
 
 template <typename T>
 MapBuffer convertCascadedEdges(CascadedRectangleEdges<T> const &edges) {
   MapBufferBuilder builder(13);
-  putOptionalFloat(builder, EDGE_TOP, optionalFromValue(edges.top));
-  putOptionalFloat(builder, EDGE_RIGHT, optionalFromValue(edges.right));
-  putOptionalFloat(builder, EDGE_BOTTOM, optionalFromValue(edges.bottom));
-  putOptionalFloat(builder, EDGE_LEFT, optionalFromValue(edges.left));
-  putOptionalFloat(builder, EDGE_START, optionalFromValue(edges.start));
-  putOptionalFloat(builder, EDGE_END, optionalFromValue(edges.end));
-  putOptionalFloat(builder, EDGE_BLOCK, optionalFromValue(edges.block));
-  putOptionalFloat(builder, EDGE_BLOCK_END, optionalFromValue(edges.blockEnd));
+  putOptionalFloat(builder, EDGE_TOP, optionalFromValue(edges.topEdge));
+  putOptionalFloat(builder, EDGE_RIGHT, optionalFromValue(edges.rightEdge));
+  putOptionalFloat(builder, EDGE_BOTTOM, optionalFromValue(edges.bottomEdge));
+  putOptionalFloat(builder, EDGE_LEFT, optionalFromValue(edges.leftEdge));
+  putOptionalFloat(builder, EDGE_START, optionalFromValue(edges.startEdge));
+  putOptionalFloat(builder, EDGE_END, optionalFromValue(edges.endEdge));
+  putOptionalFloat(builder, EDGE_BLOCK, optionalFromValue(edges.blockEdges));
   putOptionalFloat(
-      builder, EDGE_BLOCK_START, optionalFromValue(edges.blockStart));
-  putOptionalFloat(builder, EDGE_INLINE, optionalFromValue(edges.inline));
+      builder, EDGE_BLOCK_END, optionalFromValue(edges.blockEndEdge));
   putOptionalFloat(
-      builder, EDGE_INLINE_END, optionalFromValue(edges.inlineEnd));
+      builder, EDGE_BLOCK_START, optionalFromValue(edges.blockStartEdge));
+  putOptionalFloat(builder, EDGE_INLINE, optionalFromValue(edges.inlineEdges));
   putOptionalFloat(
-      builder, EDGE_INLINE_START, optionalFromValue(edges.inlineStart));
-  putOptionalFloat(builder, EDGE_ALL, optionalFromValue(edges.all));
+      builder, EDGE_INLINE_END, optionalFromValue(edges.inlineEndEdge));
+  putOptionalFloat(
+      builder, EDGE_INLINE_START, optionalFromValue(edges.inlineStartEdge));
+  putOptionalFloat(builder, EDGE_ALL, optionalFromValue(edges.allEdges));
   return builder.build();
 }
 
