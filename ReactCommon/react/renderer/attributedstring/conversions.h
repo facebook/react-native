@@ -786,6 +786,89 @@ inline void fromRawValue(
   result = AccessibilityRole::None;
 }
 
+inline std::string toString(const AccessibilitySpan &accessibilityRole) {
+  switch (accessibilityRole) {
+    case AccessibilitySpan::Cardinal:
+      return "cardinal";
+    case AccessibilitySpan::Ordinal:
+      return "ordinal";
+    case AccessibilitySpan::Decimal:
+      return "decimal";
+    case AccessibilitySpan::Fraction:
+      return "fraction";
+    case AccessibilitySpan::Measure:
+      return "measure";
+    case AccessibilitySpan::Time:
+      return "time";
+    case AccessibilitySpan::Date:
+      return "date";
+    case AccessibilitySpan::Telephone:
+      return "telephone";
+    case AccessibilitySpan::Electronic:
+      return "electronic";
+    case AccessibilitySpan::Money:
+      return "money";
+    case AccessibilitySpan::Digits:
+      return "digits";
+    case AccessibilitySpan::Verbatim:
+      return "verbatim";
+    case AccessibilitySpan::None:
+      return "none";
+  }
+
+  LOG(ERROR) << "Unsupported AccessibilitySpan value";
+  react_native_assert(false);
+  // sane default for prod
+  // fix this
+  return "none";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    AccessibilitySpan &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "cardinal") {
+      result = AccessibilitySpan::Cardinal;
+    } else if (string == "ordinal") {
+      result = AccessibilitySpan::Ordinal;
+    } else if (string == "decimal") {
+      result = AccessibilitySpan::Decimal;
+    } else if (string == "fraction") {
+      result = AccessibilitySpan::Fraction;
+    } else if (string == "measure") {
+      result = AccessibilitySpan::Measure;
+    } else if (string == "time") {
+      result = AccessibilitySpan::Time;
+    } else if (string == "date") {
+      result = AccessibilitySpan::Date;
+    } else if (string == "telephone") {
+      result = AccessibilitySpan::Telephone;
+    } else if (string == "electronic") {
+      result = AccessibilitySpan::Electronic;
+    } else if (string == "money") {
+      result = AccessibilitySpan::Money;
+    } else if (string == "digits") {
+      result = AccessibilitySpan::Digits;
+    } else if (string == "verbatim") {
+      result = AccessibilitySpan::Verbatim;
+    } else {
+      LOG(ERROR) << "Unsupported AccessibilitySpan value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = AccessibilitySpan::None;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported AccessibilitySpan type";
+  react_native_assert(false);
+  // sane default for prod
+  result = AccessibilitySpan::None;
+}
+
 inline std::string toString(const HyphenationFrequency &hyphenationFrequency) {
   switch (hyphenationFrequency) {
     case HyphenationFrequency::None:
@@ -1036,9 +1119,9 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "accessibilityRole", toString(*textAttributes.accessibilityRole));
   }
-  if (!textAttributes.accessibilitySpan.empty()) {
+  if (!textAttributes.accessibilitySpan.has_value()) {
     _textAttributes(
-        "accessibilitySpan", textAttributes.accessibilitySpan);
+        "accessibilitySpan", toString(*textAttributes.accessibilitySpan));
   }
   if (!textAttributes.accessibilityUnit.empty()) {
     _textAttributes(
@@ -1266,9 +1349,9 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
     builder.putString(
         TA_KEY_ACCESSIBILITY_ROLE, toString(*textAttributes.accessibilityRole));
   }
-  if (!textAttributes.accessibilitySpan.empty()) {
+  if (!textAttributes.accessibilitySpan.has_value()) {
     builder.putString(
-        TA_KEY_ACCESSIBILITY_SPAN, textAttributes.accessibilitySpan);
+        TA_KEY_ACCESSIBILITY_SPAN, toString(*textAttributes.accessibilitySpan));
   }
   if (!textAttributes.accessibilityUnit.empty()) {
     builder.putString(
