@@ -10,7 +10,6 @@ package com.facebook.react.views.text;
 import android.os.Build;
 import android.text.Layout;
 import android.text.TextUtils;
-import android.text.style.TtsSpan;
 import android.util.LayoutDirection;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
@@ -23,11 +22,8 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 // TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
 // TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
@@ -77,23 +73,6 @@ public class TextAttributeProps {
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
   private static final int DEFAULT_HYPHENATION_FREQUENCY =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
-  private static final String[] SUPPORTED_TYPES_VALUES = {
-    TtsSpan.TYPE_CARDINAL,
-    TtsSpan.TYPE_ORDINAL,
-    TtsSpan.TYPE_DECIMAL,
-    TtsSpan.TYPE_FRACTION,
-    TtsSpan.TYPE_MEASURE,
-    TtsSpan.TYPE_TIME,
-    TtsSpan.TYPE_DATE,
-    TtsSpan.TYPE_TELEPHONE,
-    TtsSpan.TYPE_ELECTRONIC,
-    TtsSpan.TYPE_MONEY,
-    TtsSpan.TYPE_DIGITS,
-    TtsSpan.TYPE_VERBATIM,
-  };
-
-  private static final Set<String> SUPPORTED_TYPES_SET =
-      new HashSet<String>(Arrays.asList(SUPPORTED_TYPES_VALUES));
 
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
@@ -636,11 +615,6 @@ public class TextAttributeProps {
       mIsAccessibilityRoleSet = true;
       mAccessibilityRole = AccessibilityRole.fromValue(accessibilityRole);
       mIsAccessibilityLink = mAccessibilityRole.equals(AccessibilityRole.LINK);
-      String roleClassName =
-          AccessibilityRole.getValue(AccessibilityRole.fromValue(accessibilityRole));
-      mIsAccessibilityTtsSpan =
-          TextAttributeProps.SUPPORTED_TYPES_SET.contains(roleClassName)
-              && Build.VERSION.SDK_INT >= 21;
     }
   }
 

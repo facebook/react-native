@@ -19,7 +19,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
-import android.text.style.TtsSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -109,18 +108,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     DROPDOWNLIST,
     TOGGLEBUTTON,
     LINK,
-    CARDINAL,
-    ORDINAL,
-    DECIMAL,
-    FRACTION,
-    MEASURE,
-    TIME,
-    DATE,
-    TELEPHONE,
-    ELECTRONIC,
-    MONEY,
-    DIGITS,
-    VERBATIM,
     SEARCH,
     IMAGE,
     IMAGEBUTTON,
@@ -188,30 +175,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.AbsListView";
         case GRID:
           return "android.widget.GridView";
-        case ORDINAL:
-          return TtsSpan.TYPE_ORDINAL;
-        case DECIMAL:
-          return TtsSpan.TYPE_DECIMAL;
-        case FRACTION:
-          return TtsSpan.TYPE_FRACTION;
-        case CARDINAL:
-          return TtsSpan.TYPE_CARDINAL;
-        case MEASURE:
-          return TtsSpan.TYPE_MEASURE;
-        case TIME:
-          return TtsSpan.TYPE_TIME;
-        case DATE:
-          return TtsSpan.TYPE_DATE;
-        case TELEPHONE:
-          return TtsSpan.TYPE_TELEPHONE;
-        case ELECTRONIC:
-          return TtsSpan.TYPE_ELECTRONIC;
-        case MONEY:
-          return TtsSpan.TYPE_MONEY;
-        case DIGITS:
-          return TtsSpan.TYPE_DIGITS;
-        case VERBATIM:
-          return TtsSpan.TYPE_VERBATIM;
         case SCROLLVIEW:
           return "android.widget.ScrollView";
         case HORIZONTALSCROLLVIEW:

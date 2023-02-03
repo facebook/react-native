@@ -35,18 +35,6 @@ enum class AccessibilityTraits : uint32_t {
   Header = (1 << 15),
   Switch = (1 << 16),
   TabBar = (1 << 17),
-  Cardinal = (1 << 18),
-  Ordinal = (1 << 19),
-  Decimal = (1 << 20),
-  Fraction = (1 << 21),
-  Measure = (1 << 22),
-  Time = (1 << 23),
-  Date = (1 << 24),
-  Telephone = (1 << 25),
-  Electronic = (1 << 26),
-  Money = (1 << 27),
-  Digits = (1 << 28),
-  Verbatim = (1 << 29),
 };
 
 constexpr enum AccessibilityTraits operator|(

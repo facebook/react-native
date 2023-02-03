@@ -102,54 +102,6 @@ inline void fromString(const std::string &string, AccessibilityTraits &result) {
     result = AccessibilityTraits::UpdatesFrequently;
     return;
   }
-  if (string == "cardinal") {
-    result = AccessibilityTraits::Cardinal;
-    return;
-  }
-  if (string == "ordinal") {
-    result = AccessibilityTraits::Ordinal;
-    return;
-  }
-  if (string == "decimal") {
-    result = AccessibilityTraits::Decimal;
-    return;
-  }
-  if (string == "fraction") {
-    result = AccessibilityTraits::Fraction;
-    return;
-  }
-  if (string == "measure") {
-    result = AccessibilityTraits::Measure;
-    return;
-  }
-  if (string == "time") {
-    result = AccessibilityTraits::Time;
-    return;
-  }
-  if (string == "date") {
-    result = AccessibilityTraits::Date;
-    return;
-  }
-  if (string == "telephone") {
-    result = AccessibilityTraits::Telephone;
-    return;
-  }
-  if (string == "electronic") {
-    result = AccessibilityTraits::Electronic;
-    return;
-  }
-  if (string == "money") {
-    result = AccessibilityTraits::Money;
-    return;
-  }
-  if (string == "digits") {
-    result = AccessibilityTraits::Digits;
-    return;
-  }
-  if (string == "verbatim") {
-    result = AccessibilityTraits::Verbatim;
-    return;
-  }
   result = AccessibilityTraits::None;
 }
 

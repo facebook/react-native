@@ -10,10 +10,7 @@ package com.facebook.react.views.text;
 import android.os.Parcel;
 import android.os.PersistableBundle;
 import android.text.style.TtsSpan;
-import com.facebook.common.logging.FLog;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import java.util.Arrays;
-import java.util.Currency;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -64,7 +61,9 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       mType = type;
     }
 
-    public Builder(AccessibilityRole type, @Nullable String accessibilityUnit) {
+    public Builder(String type, @Nullable String accessibilityUnit) {
+      mType = type;
+      /*
       String typeConvertedToString = AccessibilityRole.getValue(type);
       mType = typeConvertedToString;
       String roleClassName = AccessibilityRole.getValue(type);
@@ -101,6 +100,7 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
                 + "Error: "
                 + e);
       }
+      */
     }
 
     public ReactTtsSpan build() {
