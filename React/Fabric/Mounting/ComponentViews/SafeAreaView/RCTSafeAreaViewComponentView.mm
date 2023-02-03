@@ -29,6 +29,15 @@ using namespace facebook::react;
   return self;
 }
 
+- (UIEdgeInsets)_safeAreaInsets
+{
+  if (@available(iOS 11.0, *)) {
+    return self.safeAreaInsets;
+  }
+
+  return UIEdgeInsetsZero;
+}
+
 #if !TARGET_OS_OSX // [macOS]
 - (void)safeAreaInsetsDidChange
 {
@@ -44,7 +53,7 @@ using namespace facebook::react;
     return;
   }
 
-  UIEdgeInsets insets = self.safeAreaInsets;
+  UIEdgeInsets insets = [self _safeAreaInsets];
 #if !TARGET_OS_OSX // [macOS]
   insets.left = RCTRoundPixelValue(insets.left);
   insets.top = RCTRoundPixelValue(insets.top);

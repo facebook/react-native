@@ -83,7 +83,7 @@ inline UIEdgeInsets RCTUIEdgeInsetsFromEdgeInsets(const facebook::react::EdgeIns
   return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
 }
 
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [macOS]
 UIAccessibilityTraits const AccessibilityTraitSwitch = 0x20000000000001;
 
 inline UIAccessibilityTraits RCTUIAccessibilityTraitsFromAccessibilityTraits(
@@ -147,7 +147,7 @@ inline UIAccessibilityTraits RCTUIAccessibilityTraitsFromAccessibilityTraits(
   }
   return result;
 };
-#endif // TODO(macOS GH#774)
+#endif // [macOS]
 
 inline CATransform3D RCTCATransform3DFromTransformMatrix(const facebook::react::Transform &transformMatrix)
 {

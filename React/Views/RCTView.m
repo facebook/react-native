@@ -454,7 +454,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     for (NSString *state in [self accessibilityState]) {
       id val = [self accessibilityState][state];
       if (val != nil) {
-        if ([state isEqualToString:@"checked"]) {
+        if ([state isEqualToString:@"checked"] || [state isEqualToString:@"selected"]) {
           if ([val isKindOfClass:[NSNumber class]]) {
             accessibilityValue = @([val boolValue]);
           } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {

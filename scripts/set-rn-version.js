@@ -70,7 +70,11 @@ if (!version) {
     const currentCommit = exec('git rev-parse HEAD', {
       silent: true,
     }).stdout.trim();
-    version = `0.0.0-${currentCommit.slice(0, 9)}`;
+    const calvar = exec(
+      `git show -s --format=%cd --date=format:%Y%m%d ${currentCommit}`,
+      {silent: true},
+    ).stdout.trim();
+    version = `0.0.0-${calvar}-${currentCommit.slice(0, 9)}`;
     // macOS]
   } else {
     echo('You must specify a version using -v');

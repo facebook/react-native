@@ -91,7 +91,7 @@
     _textStorage = _textView.textStorage;
     [self addSubview:_textView];
 #endif // macOS]
-    RCTUIViewSetContentModeRedraw(self); // TODO(macOS GH#774) and TODO(macOS ISS#3536887)
+    RCTUIViewSetContentModeRedraw(self); // [macOS]
   }
   return self;
 }
