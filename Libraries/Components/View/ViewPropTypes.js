@@ -501,15 +501,6 @@ export type ViewProps = $ReadOnly<{|
    * Indicates to accessibility services that UI Component is in a specific State.
    */
   accessibilityState?: ?AccessibilityState,
-
-  /**
-   * Used with nested Text and accessibilityRole measure, money or telephone to specify the unit to announce.
-   * Measure refer to https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
-   * Currency refer to https://developer.android.com/reference/android/text/style/TtsSpan#ARG_CURRENCY
-   * Telephone refer to  https://developer.android.com/reference/android/text/style/TtsSpan#ARG_NUMBER_PARTS
-   */
-  accessibilityUnit?: ?Stringish,
-
   accessibilityValue?: ?AccessibilityValue,
 
   /**

@@ -36,15 +36,6 @@ AccessibilityProps::AccessibilityProps(
                     "accessibilityState",
                     sourceProps.accessibilityState,
                     {})),
-      accessibilityUnit(
-          CoreFeatures::enablePropIteratorSetter
-              ? sourceProps.accessibilityUnit
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "accessibilityUnit",
-                    sourceProps.accessibilityUnit,
-                    {})),
       accessibilityLabel(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.accessibilityLabel
@@ -220,7 +211,6 @@ void AccessibilityProps::setProp(
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessible, false);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityState, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityUnit, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLabel, std::string{""});
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLabelledBy, {});
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityHint, std::string{""});
