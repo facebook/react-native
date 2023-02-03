@@ -17,6 +17,7 @@ const EMPTY_NATIVE_MODULES: SchemaType = {
     NativeSampleTurboModule: {
       type: 'NativeModule',
       aliasMap: {},
+      enumMap: {},
       spec: {
         properties: [],
       },
@@ -30,6 +31,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
     NativeSampleTurboModule: {
       type: 'NativeModule',
       aliasMap: {},
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -342,6 +344,7 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
     NativeSampleTurboModule: {
       type: 'NativeModule',
       aliasMap: {},
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -362,6 +365,7 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
     NativeSampleTurboModule2: {
       type: 'NativeModule',
       aliasMap: {},
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -399,6 +403,7 @@ const COMPLEX_OBJECTS: SchemaType = {
     NativeSampleTurboModule: {
       type: 'NativeModule',
       aliasMap: {},
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -854,6 +859,7 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
           ],
         },
       },
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -1138,6 +1144,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
           ],
         },
       },
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -1333,6 +1340,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
           type: 'ObjectTypeAnnotation',
         },
       },
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -1508,6 +1516,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           ],
         },
       },
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -1648,6 +1657,7 @@ const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
+      enumMap: {},
       aliasMap: {},
       spec: {
         properties: [],

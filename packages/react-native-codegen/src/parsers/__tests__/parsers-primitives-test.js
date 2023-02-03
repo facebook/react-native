@@ -29,6 +29,7 @@ const {
   emitStringish,
   emitMixed,
   typeAliasResolution,
+  typeEnumResolution,
 } = require('../parsers-primitives.js');
 const {MockedParser} = require('../parserMock');
 const {emitUnion} = require('../parsers-primitives');
@@ -264,14 +265,14 @@ describe('typeAliasResolution', () => {
     ],
   };
 
-  describe('when typeAliasResolutionStatus is successful', () => {
-    const typeAliasResolutionStatus = {successful: true, aliasName: 'Foo'};
+  describe('when typeResolution is successful', () => {
+    const typeResolution = {successful: true, type: 'alias', name: 'Foo'};
 
     describe('when nullable is true', () => {
       it('returns nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          typeAliasResolutionStatus,
+          typeResolution,
           objectTypeAnnotation,
           aliasMap,
           true,
@@ -292,7 +293,7 @@ describe('typeAliasResolution', () => {
       it('returns non nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          typeAliasResolutionStatus,
+          typeResolution,
           objectTypeAnnotation,
           aliasMap,
           false,
@@ -307,14 +308,14 @@ describe('typeAliasResolution', () => {
     });
   });
 
-  describe('when typeAliasResolutionStatus is not successful', () => {
-    const typeAliasResolutionStatus = {successful: false};
+  describe('when typeResolution is not successful', () => {
+    const typeResolution = {successful: false};
 
     describe('when nullable is true', () => {
       it('returns nullable ObjectTypeAnnotation', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          typeAliasResolutionStatus,
+          typeResolution,
           objectTypeAnnotation,
           aliasMap,
           true,
@@ -332,7 +333,7 @@ describe('typeAliasResolution', () => {
       it('returns non nullable ObjectTypeAnnotation', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          typeAliasResolutionStatus,
+          typeResolution,
           objectTypeAnnotation,
           aliasMap,
           false,
@@ -340,6 +341,98 @@ describe('typeAliasResolution', () => {
 
         expect(aliasMap).toEqual({});
         expect(result).toEqual(objectTypeAnnotation);
+      });
+    });
+  });
+});
+
+describe('typeEnumResolution', () => {
+  describe('when typeResolution is successful', () => {
+    describe('when nullable is true', () => {
+      it('returns nullable EnumDeclaration and map it in enumMap', () => {
+        const enumMap = {};
+        const mockTypeAnnotation = {type: 'StringTypeAnnotation'};
+
+        const result = typeEnumResolution(
+          mockTypeAnnotation,
+          {successful: true, type: 'enum', name: 'Foo'},
+          true /* nullable */,
+          'SomeModule' /* name */,
+          'Flow',
+          enumMap,
+          parser,
+        );
+
+        expect(enumMap).toEqual({
+          Foo: {
+            type: 'EnumDeclarationWithMembers',
+            name: 'Foo',
+            memberType: 'StringTypeAnnotation',
+            members: [
+              {
+                name: 'Hello',
+                value: 'hello',
+              },
+              {
+                name: 'Goodbye',
+                value: 'goodbye',
+              },
+            ],
+          },
+        });
+
+        expect(result).toEqual({
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: {
+            name: 'Foo',
+            type: 'EnumDeclaration',
+            memberType: 'StringTypeAnnotation',
+          },
+        });
+      });
+    });
+
+    describe('when nullable is false', () => {
+      it('returns non nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
+        const enumMap = {};
+        const mockTypeAnnotation = {type: 'NumberTypeAnnotation'};
+
+        const result = typeEnumResolution(
+          mockTypeAnnotation,
+          {successful: true, type: 'enum', name: 'Foo'},
+          true /* nullable */,
+          'SomeModule' /* name */,
+          'Flow',
+          enumMap,
+          parser,
+        );
+
+        expect(enumMap).toEqual({
+          Foo: {
+            type: 'EnumDeclarationWithMembers',
+            name: 'Foo',
+            memberType: 'NumberTypeAnnotation',
+            members: [
+              {
+                name: 'On',
+                value: '1',
+              },
+              {
+                name: 'Off',
+                value: '0',
+              },
+            ],
+          },
+        });
+
+        expect(result).toEqual({
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: {
+            name: 'Foo',
+            type: 'EnumDeclaration',
+            memberType: 'NumberTypeAnnotation',
+          },
+        });
       });
     });
   });
@@ -361,6 +454,8 @@ describe('emitPromise', () => {
       /* types: TypeDeclarationMap */
       {},
       /* aliasMap: {...NativeModuleAliasMap} */
+      {},
+      /* enumMap: {...NativeModuleEnumMap} */
       {},
       /* tryParse: ParserErrorCapturer */
       // $FlowFixMe[missing-local-annot]
@@ -990,6 +1085,8 @@ describe('emitArrayType', () => {
       /* types: TypeDeclarationMap */
       {},
       /* aliasMap: {...NativeModuleAliasMap} */
+      {},
+      /* enumMap: {...NativeModuleEnumMap} */
       {},
       /* cxxOnly: boolean */
       false,

@@ -277,6 +277,7 @@ describe('parseObjectProperty', () => {
   const moduleName = 'testModuleName';
   const types = {['wrongName']: 'wrongType'};
   const aliasMap = {};
+  const enumMap = {};
   const tryParse = () => null;
   const cxxOnly = false;
   const nullable = true;
@@ -305,6 +306,7 @@ describe('parseObjectProperty', () => {
           moduleName,
           types,
           aliasMap,
+          enumMap,
           tryParse,
           cxxOnly,
           nullable,
@@ -338,6 +340,7 @@ describe('parseObjectProperty', () => {
           moduleName,
           types,
           aliasMap,
+          enumMap,
           tryParse,
           cxxOnly,
           nullable,
@@ -375,6 +378,7 @@ describe('buildSchemaFromConfigType', () => {
   const moduleSchemaMock = {
     type: 'NativeModule',
     aliasMap: {},
+    enumMap: {},
     spec: {properties: []},
     moduleName: '',
   };
@@ -743,6 +747,7 @@ describe('buildSchema', () => {
           fileName: {
             type: 'NativeModule',
             aliasMap: {},
+            enumMap: {},
             spec: {
               properties: [
                 {

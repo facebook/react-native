@@ -13,6 +13,7 @@
 import type {
   NamedShape,
   NativeModuleAliasMap,
+  NativeModuleEnumMap,
   NativeModuleBaseTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleTypeAnnotation,
@@ -29,9 +30,9 @@ const {resolveTypeAnnotation, getTypes} = require('../utils');
 
 const {
   parseObjectProperty,
-  translateDefault,
   buildPropertySchema,
 } = require('../../parsers-commons');
+const {typeEnumResolution} = require('../../parsers-primitives');
 
 const {
   emitArrayType,
@@ -81,11 +82,12 @@ function translateTypeAnnotation(
   typeScriptTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
-  const {nullable, typeAnnotation, typeAliasResolutionStatus} =
+  const {nullable, typeAnnotation, typeResolutionStatus} =
     resolveTypeAnnotation(typeScriptTypeAnnotation, types);
 
   switch (typeAnnotation.type) {
@@ -94,6 +96,7 @@ function translateTypeAnnotation(
         hasteModuleName,
         types,
         aliasMap,
+        enumMap,
         cxxOnly,
         'Array',
         typeAnnotation.elementType,
@@ -111,6 +114,7 @@ function translateTypeAnnotation(
           hasteModuleName,
           types,
           aliasMap,
+          enumMap,
           cxxOnly,
           'ReadonlyArray',
           typeAnnotation.typeAnnotation.elementType,
@@ -139,6 +143,7 @@ function translateTypeAnnotation(
             nullable,
             types,
             aliasMap,
+            enumMap,
             tryParse,
             cxxOnly,
             translateTypeAnnotation,
@@ -152,6 +157,7 @@ function translateTypeAnnotation(
             parser,
             types,
             aliasMap,
+            enumMap,
             cxxOnly,
             nullable,
             translateTypeAnnotation,
@@ -199,6 +205,7 @@ function translateTypeAnnotation(
                   member.typeAnnotation.typeAnnotation,
                   types,
                   aliasMap,
+                  enumMap,
                   tryParse,
                   cxxOnly,
                   parser,
@@ -210,11 +217,9 @@ function translateTypeAnnotation(
           return emitObject(nullable, properties);
         }
         default: {
-          return translateDefault(
+          throw new UnsupportedGenericParserError(
             hasteModuleName,
             typeAnnotation,
-            types,
-            nullable,
             parser,
           );
         }
@@ -234,6 +239,7 @@ function translateTypeAnnotation(
           },
           types,
           aliasMap,
+          enumMap,
           tryParse,
           cxxOnly,
           parser,
@@ -255,6 +261,7 @@ function translateTypeAnnotation(
                   hasteModuleName,
                   types,
                   aliasMap,
+                  enumMap,
                   tryParse,
                   cxxOnly,
                   nullable,
@@ -275,7 +282,7 @@ function translateTypeAnnotation(
       }
 
       return typeAliasResolution(
-        typeAliasResolutionStatus,
+        typeResolutionStatus,
         objectTypeAnnotation,
         aliasMap,
         nullable,
@@ -296,6 +303,7 @@ function translateTypeAnnotation(
             propertyType,
             types,
             aliasMap,
+            enumMap,
             tryParse,
             cxxOnly,
             parser,
@@ -317,6 +325,7 @@ function translateTypeAnnotation(
                   hasteModuleName,
                   types,
                   aliasMap,
+                  enumMap,
                   tryParse,
                   cxxOnly,
                   nullable,
@@ -330,10 +339,21 @@ function translateTypeAnnotation(
       };
 
       return typeAliasResolution(
-        typeAliasResolutionStatus,
+        typeResolutionStatus,
         objectTypeAnnotation,
         aliasMap,
         nullable,
+      );
+    }
+    case 'TSEnumDeclaration': {
+      return typeEnumResolution(
+        typeAnnotation,
+        typeResolutionStatus,
+        nullable,
+        hasteModuleName,
+        language,
+        enumMap,
+        parser,
       );
     }
     case 'TSBooleanKeyword': {
@@ -355,6 +375,7 @@ function translateTypeAnnotation(
         typeAnnotation,
         types,
         aliasMap,
+        enumMap,
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
@@ -503,17 +524,21 @@ function buildModuleSchema(
     )
     .map<?{
       aliasMap: NativeModuleAliasMap,
+      enumMap: NativeModuleEnumMap,
       propertyShape: NativeModulePropertyShape,
     }>(property => {
       const aliasMap: {...NativeModuleAliasMap} = {};
+      const enumMap: {...NativeModuleEnumMap} = {};
 
       return tryParse(() => ({
         aliasMap: aliasMap,
+        enumMap: enumMap,
         propertyShape: buildPropertySchema(
           hasteModuleName,
           property,
           types,
           aliasMap,
+          enumMap,
           tryParse,
           cxxOnly,
           resolveTypeAnnotation,
@@ -524,10 +549,14 @@ function buildModuleSchema(
     })
     .filter(Boolean)
     .reduce(
-      (moduleSchema: NativeModuleSchema, {aliasMap, propertyShape}) => {
+      (
+        moduleSchema: NativeModuleSchema,
+        {aliasMap, enumMap, propertyShape},
+      ) => {
         return {
           type: 'NativeModule',
           aliasMap: {...moduleSchema.aliasMap, ...aliasMap},
+          enumMap: {...moduleSchema.enumMap, ...enumMap},
           spec: {
             properties: [...moduleSchema.spec.properties, propertyShape],
           },
@@ -538,6 +567,7 @@ function buildModuleSchema(
       {
         type: 'NativeModule',
         aliasMap: {},
+        enumMap: {},
         spec: {properties: []},
         moduleName: moduleName,
         excludedPlatforms:

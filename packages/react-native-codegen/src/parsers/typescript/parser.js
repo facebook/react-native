@@ -16,6 +16,8 @@ import type {
   NamedShape,
   Nullable,
   NativeModuleParamTypeAnnotation,
+  NativeModuleEnumMembers,
+  NativeModuleEnumMemberType,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
@@ -52,20 +54,6 @@ class TypeScriptParser implements Parser {
       );
     }
     return property.key.name;
-  }
-
-  getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
-    if (maybeEnumDeclaration.members[0].initializer) {
-      return maybeEnumDeclaration.members[0].initializer.type
-        .replace('NumericLiteral', 'NumberTypeAnnotation')
-        .replace('StringLiteral', 'StringTypeAnnotation');
-    }
-
-    return 'StringTypeAnnotation';
-  }
-
-  isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean {
-    return maybeEnumDeclaration.type === 'TSEnumDeclaration';
   }
 
   language(): ParserType {
@@ -154,6 +142,55 @@ class TypeScriptParser implements Parser {
     functionTypeAnnotation: $FlowFixMe,
   ): $FlowFixMe {
     return functionTypeAnnotation.typeAnnotation.typeAnnotation;
+  }
+
+  parseEnumMembersType(typeAnnotation: $FlowFixMe): NativeModuleEnumMemberType {
+    const enumInitializer = typeAnnotation.members[0]?.initializer;
+    const enumMembersType: ?NativeModuleEnumMemberType =
+      !enumInitializer || enumInitializer.type === 'StringLiteral'
+        ? 'StringTypeAnnotation'
+        : enumInitializer.type === 'NumericLiteral'
+        ? 'NumberTypeAnnotation'
+        : null;
+    if (!enumMembersType) {
+      throw new Error(
+        'Enum values must be either blank, number, or string values.',
+      );
+    }
+    return enumMembersType;
+  }
+
+  validateEnumMembersSupported(
+    typeAnnotation: $FlowFixMe,
+    enumMembersType: NativeModuleEnumMemberType,
+  ): void {
+    if (!typeAnnotation.members || typeAnnotation.members.length === 0) {
+      throw new Error('Enums should have at least one member.');
+    }
+
+    const enumInitializerType =
+      enumMembersType === 'StringTypeAnnotation'
+        ? 'StringLiteral'
+        : enumMembersType === 'NumberTypeAnnotation'
+        ? 'NumericLiteral'
+        : null;
+
+    typeAnnotation.members.forEach(member => {
+      if (
+        (member.initializer?.type ?? 'StringLiteral') !== enumInitializerType
+      ) {
+        throw new Error(
+          'Enum values can not be mixed. They all must be either blank, number, or string values.',
+        );
+      }
+    });
+  }
+
+  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers {
+    return typeAnnotation.members.map(member => ({
+      name: member.id.name,
+      value: member.initializer?.value ?? member.id.name,
+    }));
   }
 }
 module.exports = {
