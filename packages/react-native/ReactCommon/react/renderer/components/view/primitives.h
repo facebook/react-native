@@ -107,6 +107,9 @@ struct CascadedRectangleEdges {
   OptionalT inlineEndEdge{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
+    const auto inlineLeadingEdge = isRTL ? inlineEndEdge : inlineStartEdge;
+    const auto inlineTrailingEdge = isRTL ? inlineStartEdge : inlineEndEdge;
+
     const auto leadingEdge = isRTL ? endEdge : startEdge;
     const auto trailingEdge = isRTL ? startEdge : endEdge;
     const auto horizontalOrAllOrDefault =
@@ -116,12 +119,14 @@ struct CascadedRectangleEdges {
 
     return {
         /* .left = */
-        leftEdge.value_or(leadingEdge.value_or(horizontalOrAllOrDefault)),
+        leftEdge.value_or(inlineLeadingEdge.value_or(leadingEdge.value_or(
+            inlineEdges.value_or(horizontalOrAllOrDefault)))),
         /* .top = */
         blockStartEdge.value_or(
             blockEdges.value_or(topEdge.value_or(verticalOrAllOrDefault))),
         /* .right = */
-        rightEdge.value_or(trailingEdge.value_or(horizontalOrAllOrDefault)),
+        rightEdge.value_or(inlineTrailingEdge.value_or(trailingEdge.value_or(
+            inlineEdges.value_or(horizontalOrAllOrDefault)))),
         /* .bottom = */
         blockEndEdge.value_or(
             blockEdges.value_or(bottomEdge.value_or(verticalOrAllOrDefault))),
@@ -141,7 +146,10 @@ struct CascadedRectangleEdges {
                this->allEdges,
                this->blockEdges,
                this->blockStartEdge,
-               this->blockEndEdge) ==
+               this->blockEndEdge,
+               this->inlineEdges,
+               this->inlineStartEdge,
+               this->inlineEndEdge) ==
         std::tie(
                rhs.leftEdge,
                rhs.topEdge,
@@ -154,7 +162,10 @@ struct CascadedRectangleEdges {
                rhs.allEdges,
                rhs.blockEdges,
                rhs.blockStartEdge,
-               rhs.blockEndEdge);
+               rhs.blockEndEdge,
+               rhs.inlineEdges,
+               rhs.inlineStartEdge,
+               rhs.inlineEndEdge);
   }
 
   bool operator!=(const CascadedRectangleEdges<T> &rhs) const {
