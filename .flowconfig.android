@@ -29,6 +29,8 @@ interface.js
 flow/
 
 [options]
+enums=true
+
 emoji=true
 
 exact_by_default=true
