@@ -450,122 +450,128 @@ static inline CascadedRectangleEdges<T> convertRawProp(
     CascadedRectangleEdges<T> const &defaultValue) {
   CascadedRectangleEdges<T> result;
 
-  result.left = convertRawProp(
+  result.leftEdge = convertRawProp(
       context,
       rawProps,
       "Left",
-      sourceValue.left,
-      defaultValue.left,
+      sourceValue.leftEdge,
+      defaultValue.leftEdge,
       prefix,
       suffix);
-  result.right = convertRawProp(
+  result.rightEdge = convertRawProp(
       context,
       rawProps,
       "Right",
-      sourceValue.right,
-      defaultValue.right,
+      sourceValue.rightEdge,
+      defaultValue.rightEdge,
       prefix,
       suffix);
-  result.top = convertRawProp(
+  result.topEdge = convertRawProp(
       context,
       rawProps,
       "Top",
-      sourceValue.top,
-      defaultValue.top,
+      sourceValue.topEdge,
+      defaultValue.topEdge,
       prefix,
       suffix);
-  result.bottom = convertRawProp(
+  result.bottomEdge = convertRawProp(
       context,
       rawProps,
       "Bottom",
-      sourceValue.bottom,
-      defaultValue.bottom,
+      sourceValue.bottomEdge,
+      defaultValue.bottomEdge,
       prefix,
       suffix);
 
-  result.start = convertRawProp(
+  result.startEdge = convertRawProp(
       context,
       rawProps,
       "Start",
-      sourceValue.start,
-      defaultValue.start,
+      sourceValue.startEdge,
+      defaultValue.startEdge,
       prefix,
       suffix);
-  result.end = convertRawProp(
+  result.endEdge = convertRawProp(
       context,
       rawProps,
       "End",
-      sourceValue.end,
-      defaultValue.end,
+      sourceValue.endEdge,
+      defaultValue.endEdge,
       prefix,
       suffix);
-  result.horizontal = convertRawProp(
+  result.horizontalEdges = convertRawProp(
       context,
       rawProps,
       "Horizontal",
-      sourceValue.horizontal,
-      defaultValue.horizontal,
+      sourceValue.horizontalEdges,
+      defaultValue.horizontalEdges,
       prefix,
       suffix);
-  result.vertical = convertRawProp(
+  result.verticalEdges = convertRawProp(
       context,
       rawProps,
       "Vertical",
-      sourceValue.vertical,
-      defaultValue.vertical,
+      sourceValue.verticalEdges,
+      defaultValue.verticalEdges,
       prefix,
       suffix);
-  result.block = convertRawProp(
+  result.blockEdges = convertRawProp(
       context,
       rawProps,
       "Block",
-      sourceValue.block,
-      defaultValue.block,
+      sourceValue.blockEdges,
+      defaultValue.blockEdges,
       prefix,
       suffix);
-  result.blockEnd = convertRawProp(
+  result.blockEndEdge = convertRawProp(
       context,
       rawProps,
       "BlockEnd",
-      sourceValue.blockEnd,
-      defaultValue.blockEnd,
+      sourceValue.blockEndEdge,
+      defaultValue.blockEndEdge,
       prefix,
       suffix);
-  result.blockStart = convertRawProp(
+  result.blockStartEdge = convertRawProp(
       context,
       rawProps,
       "BlockStart",
-      sourceValue.blockStart,
-      defaultValue.blockStart,
+      sourceValue.blockStartEdge,
+      defaultValue.blockStartEdge,
       prefix,
       suffix);
-  result.inline = convertRawProp(
+  result.inlineEdges = convertRawProp(
       context,
       rawProps,
       "Inline",
-      sourceValue.inline,
-      defaultValue.inline,
+      sourceValue.inlineEdges,
+      defaultValue.inlineEdges,
       prefix,
       suffix);
-  result.inlineEnd = convertRawProp(
+  result.inlineEndEdge = convertRawProp(
       context,
       rawProps,
       "InlineEnd",
-      sourceValue.inlineEnd,
-      defaultValue.inlineEnd,
+      sourceValue.inlineEndEdge,
+      defaultValue.inlineEndEdge,
       prefix,
       suffix);
-  result.inlineStart = convertRawProp(
+  result.inlineStartEdge = convertRawProp(
       context,
       rawProps,
       "InlineStart",
-      sourceValue.inlineStart,
-      defaultValue.inlineStart,
+      sourceValue.inlineStartEdge,
+      defaultValue.inlineStartEdge,
       prefix,
       suffix);
 
-  result.all = convertRawProp(
-      context, rawProps, "", sourceValue.all, defaultValue.all, prefix, suffix);
+  result.allEdges = convertRawProp(
+      context,
+      rawProps,
+      "",
+      sourceValue.allEdges,
+      defaultValue.allEdges,
+      prefix,
+      suffix);
 
   return result;
 }

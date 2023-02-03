@@ -90,68 +90,71 @@ struct CascadedRectangleEdges {
   using Counterpart = RectangleEdges<T>;
   using OptionalT = std::optional<T>;
 
-  OptionalT left{};
-  OptionalT top{};
-  OptionalT right{};
-  OptionalT bottom{};
-  OptionalT start{};
-  OptionalT end{};
-  OptionalT horizontal{};
-  OptionalT vertical{};
-  OptionalT all{};
-  OptionalT block{};
-  OptionalT blockStart{};
-  OptionalT blockEnd{};
+  OptionalT leftEdge{};
+  OptionalT topEdge{};
+  OptionalT rightEdge{};
+  OptionalT bottomEdge{};
+  OptionalT startEdge{};
+  OptionalT endEdge{};
+  OptionalT horizontalEdges{};
+  OptionalT verticalEdges{};
+  OptionalT allEdges{};
+  OptionalT blockEdges{};
+  OptionalT blockStartEdge{};
+  OptionalT blockEndEdge{};
+  OptionalT inlineEdges{};
+  OptionalT inlineStartEdge{};
+  OptionalT inlineEndEdge{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
-    const auto leadingEdge = isRTL ? end : start;
-    const auto trailingEdge = isRTL ? start : end;
+    const auto leadingEdge = isRTL ? endEdge : startEdge;
+    const auto trailingEdge = isRTL ? startEdge : endEdge;
     const auto horizontalOrAllOrDefault =
-        horizontal.value_or(all.value_or(defaults));
+        horizontalEdges.value_or(allEdges.value_or(defaults));
     const auto verticalOrAllOrDefault =
-        vertical.value_or(all.value_or(defaults));
+        verticalEdges.value_or(allEdges.value_or(defaults));
 
     return {
         /* .left = */
-        left.value_or(leadingEdge.value_or(horizontalOrAllOrDefault)),
+        leftEdge.value_or(leadingEdge.value_or(horizontalOrAllOrDefault)),
         /* .top = */
-        blockStart.value_or(
-            block.value_or(top.value_or(verticalOrAllOrDefault))),
+        blockStartEdge.value_or(
+            blockEdges.value_or(topEdge.value_or(verticalOrAllOrDefault))),
         /* .right = */
-        right.value_or(trailingEdge.value_or(horizontalOrAllOrDefault)),
+        rightEdge.value_or(trailingEdge.value_or(horizontalOrAllOrDefault)),
         /* .bottom = */
-        blockEnd.value_or(
-            block.value_or(bottom.value_or(verticalOrAllOrDefault))),
+        blockEndEdge.value_or(
+            blockEdges.value_or(bottomEdge.value_or(verticalOrAllOrDefault))),
     };
   }
 
   bool operator==(const CascadedRectangleEdges<T> &rhs) const {
     return std::tie(
-               this->left,
-               this->top,
-               this->right,
-               this->bottom,
-               this->start,
-               this->end,
-               this->horizontal,
-               this->vertical,
-               this->all,
-               this->block,
-               this->blockStart,
-               this->blockEnd) ==
+               this->leftEdge,
+               this->topEdge,
+               this->rightEdge,
+               this->bottomEdge,
+               this->startEdge,
+               this->endEdge,
+               this->horizontalEdges,
+               this->verticalEdges,
+               this->allEdges,
+               this->blockEdges,
+               this->blockStartEdge,
+               this->blockEndEdge) ==
         std::tie(
-               rhs.left,
-               rhs.top,
-               rhs.right,
-               rhs.bottom,
-               rhs.start,
-               rhs.end,
-               rhs.horizontal,
-               rhs.vertical,
-               rhs.all,
-               rhs.block,
-               rhs.blockStart,
-               rhs.blockEnd);
+               rhs.leftEdge,
+               rhs.topEdge,
+               rhs.rightEdge,
+               rhs.bottomEdge,
+               rhs.startEdge,
+               rhs.endEdge,
+               rhs.horizontalEdges,
+               rhs.verticalEdges,
+               rhs.allEdges,
+               rhs.blockEdges,
+               rhs.blockStartEdge,
+               rhs.blockEndEdge);
   }
 
   bool operator!=(const CascadedRectangleEdges<T> &rhs) const {

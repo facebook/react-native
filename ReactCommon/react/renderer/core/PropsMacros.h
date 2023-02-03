@@ -83,35 +83,35 @@
 
 #define SET_CASCADED_RECTANGLE_EDGES(struct, prefix, suffix, rawValue) \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, left, prefix "Left" suffix, rawValue)                    \
+      struct, leftEdge, prefix "Left" suffix, rawValue)                \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, right, prefix "Right" suffix, rawValue)                  \
+      struct, rightEdge, prefix "Right" suffix, rawValue)              \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, top, prefix "Top" suffix, rawValue)                      \
+      struct, topEdge, prefix "Top" suffix, rawValue)                  \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, bottom, prefix "Bottom" suffix, rawValue)                \
+      struct, bottomEdge, prefix "Bottom" suffix, rawValue)            \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, start, prefix "Start" suffix, rawValue)                  \
+      struct, startEdge, prefix "Start" suffix, rawValue)              \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, end, prefix "End" suffix, rawValue)                      \
+      struct, endEdge, prefix "End" suffix, rawValue)                  \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, horizontal, prefix "Horizontal" suffix, rawValue)        \
+      struct, horizontalEdges, prefix "Horizontal" suffix, rawValue)   \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, vertical, prefix "Vertical" suffix, rawValue)            \
+      struct, verticalEdges, prefix "Vertical" suffix, rawValue)       \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, all, prefix "" suffix, rawValue)                         \
+      struct, allEdges, prefix "" suffix, rawValue)                    \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, block, prefix "Block" suffix, rawValue)                  \
+      struct, blockEdges, prefix "Block" suffix, rawValue)             \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, blockEnd, prefix "BlockEnd" suffix, rawValue)            \
+      struct, blockEndEdge, prefix "BlockEnd" suffix, rawValue)        \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, blockStart, prefix "BlockStart" suffix, rawValue)        \
+      struct, blockStartEdge, prefix "BlockStart" suffix, rawValue)    \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, inline, prefix "Inline" suffix, rawValue)                \
+      struct, inlineEdges, prefix "Inline" suffix, rawValue)           \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, inlineEnd, prefix "InlineEnd" suffix, rawValue)          \
+      struct, inlineEndEdge, prefix "InlineEnd" suffix, rawValue)      \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, inlineStart, prefix "InlineStart" suffix, rawValue)
+      struct, inlineStartEdge, prefix "InlineStart" suffix, rawValue)
 
 // Rebuild a type that contains multiple fields from a single field value
 #define REBUILD_FIELD_SWITCH_CASE(                  \

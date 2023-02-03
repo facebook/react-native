@@ -793,24 +793,24 @@ void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
     props.borderRadii.bottomRight.reset();
   }
 
-  if (props.borderColors.left.has_value()) {
-    props.borderColors.start = props.borderColors.left;
-    props.borderColors.left.reset();
+  if (props.borderColors.leftEdge.has_value()) {
+    props.borderColors.startEdge = props.borderColors.leftEdge;
+    props.borderColors.leftEdge.reset();
   }
 
-  if (props.borderColors.right.has_value()) {
-    props.borderColors.end = props.borderColors.right;
-    props.borderColors.right.reset();
+  if (props.borderColors.rightEdge.has_value()) {
+    props.borderColors.endEdge = props.borderColors.rightEdge;
+    props.borderColors.rightEdge.reset();
   }
 
-  if (props.borderStyles.left.has_value()) {
-    props.borderStyles.start = props.borderStyles.left;
-    props.borderStyles.left.reset();
+  if (props.borderStyles.leftEdge.has_value()) {
+    props.borderStyles.startEdge = props.borderStyles.leftEdge;
+    props.borderStyles.leftEdge.reset();
   }
 
-  if (props.borderStyles.right.has_value()) {
-    props.borderStyles.end = props.borderStyles.right;
-    props.borderStyles.right.reset();
+  if (props.borderStyles.rightEdge.has_value()) {
+    props.borderStyles.endEdge = props.borderStyles.rightEdge;
+    props.borderStyles.rightEdge.reset();
   }
 
   YGStyle::Edges const &border = props.yogaStyle.border();
