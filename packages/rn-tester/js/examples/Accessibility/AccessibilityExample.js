@@ -291,10 +291,7 @@ class TtsSpanExamples extends React.Component<{}> {
         <RNTesterBlock title="Text with child Text and accessibilityRole='verbatim'">
           <Text accessible={true}>
             Verbatim spells as
-            <Text
-              accessibilitySpan="verbatim"
-              accessible={true}
-              style={styles.redBackground}>
+            <Text accessible={true} style={styles.redBackground}>
               react-native
             </Text>
           </Text>
@@ -302,10 +299,7 @@ class TtsSpanExamples extends React.Component<{}> {
         <RNTesterBlock title="Text with child Text and accessibilityRole='date'">
           <Text accessible={true}>
             Dates are spelled as
-            <Text
-              accessibilitySpan="date"
-              accessible={true}
-              style={styles.redBackground}>
+            <Text accessible={true} style={styles.redBackground}>
               02/07/1987
             </Text>
           </Text>
@@ -341,10 +335,7 @@ class TtsSpanExamples extends React.Component<{}> {
         <RNTesterBlock title="Text with child Text and accessibilitySpan='fraction'">
           <Text accessible={true}>
             Fraction is spelled as
-            <Text
-              accessibilitySpan="fraction"
-              accessible={true}
-              style={styles.redBackground}>
+            <Text accessible={true} style={styles.redBackground}>
               1/2
             </Text>
           </Text>
@@ -352,10 +343,7 @@ class TtsSpanExamples extends React.Component<{}> {
         <RNTesterBlock title="Text with child Text and accessibilitySpan='decimal'">
           <Text accessible={true}>
             Decimal number is spelled as
-            <Text
-              accessibilitySpan="decimal"
-              accessible={true}
-              style={styles.redBackground}>
+            <Text accessible={true} style={styles.redBackground}>
               10.20
             </Text>
           </Text>
@@ -375,10 +363,7 @@ class TtsSpanExamples extends React.Component<{}> {
         <RNTesterBlock title="Text with child Text and accessibilitySpan='time' and accessibilityUnit='10:30'">
           <Text accessible={true}>
             The time is
-            <Text
-              accessibilitySpan="time"
-              accessible={true}
-              style={styles.redBackground}>
+            <Text accessible={true} style={styles.redBackground}>
               10:30
             </Text>
           </Text>

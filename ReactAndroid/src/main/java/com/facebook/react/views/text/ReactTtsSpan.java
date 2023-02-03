@@ -10,7 +10,9 @@ package com.facebook.react.views.text;
 import android.os.Parcel;
 import android.os.PersistableBundle;
 import android.text.style.TtsSpan;
+import com.facebook.common.logging.FLog;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -44,6 +46,7 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
 
   private static final Set<String> SUPPORTED_UNIT_SET =
       new HashSet<String>(Arrays.asList(SUPPORTED_UNIT_VALUES));
+  public static Object AccessibilityUnit;
 
   public ReactTtsSpan(String type, PersistableBundle args) {
     super(type, args);
@@ -51,6 +54,41 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
 
   public ReactTtsSpan(Parcel src) {
     super(src);
+  }
+
+  /**
+   * These roles are defined by Google's TalkBack screen reader, and this list should be kept up to
+   * date with their implementation. Details can be seen in their source code here:
+   *
+   * <p>https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java
+   */
+  public enum AccessibilitySpan {
+    MONEY,
+    TELEPHONE,
+    MEASURE;
+
+    public static String getValue(AccessibilitySpan accessibilitySpan) {
+      switch (accessibilitySpan) {
+        case MONEY:
+          return ReactTtsSpan.TYPE_MONEY;
+        case TELEPHONE:
+          return ReactTtsSpan.TYPE_TELEPHONE;
+        case MEASURE:
+          return ReactTtsSpan.TYPE_MEASURE;
+        default:
+          throw new IllegalArgumentException(
+              "Invalid accessibility span value: " + accessibilitySpan);
+      }
+    }
+
+    public static AccessibilitySpan fromValue(@androidx.annotation.Nullable String value) {
+      for (AccessibilitySpan accessibilitySpan : AccessibilitySpan.values()) {
+        if (accessibilitySpan.name().equalsIgnoreCase(value)) {
+          return accessibilitySpan;
+        }
+      }
+      throw new IllegalArgumentException("Invalid accessibility role value: " + value);
+    }
   }
 
   public static class Builder<C extends Builder<?>> {
@@ -61,37 +99,39 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       mType = type;
     }
 
-    public Builder(String type, @Nullable String accessibilityUnit) {
-      mType = type;
-      /*
-      String typeConvertedToString = AccessibilityRole.getValue(type);
+    public Builder(AccessibilitySpan type, @Nullable String accessibilityUnit) {
+      String typeConvertedToString = AccessibilitySpan.getValue(type);
       mType = typeConvertedToString;
-      String roleClassName = AccessibilityRole.getValue(type);
       String warningMessage = "";
       Set<String> supportedTypes = new HashSet<String>();
-      if (accessibilityUnit == null || !ReactTtsSpan.SUPPORTED_UNIT_SET.contains(roleClassName)) {
+      /*
+      if (accessibilityUnit == null || !SUPPORTED_UNIT_SET.contains(roleClassName)) {
+        return;
+      }
+      */
+      if (accessibilityUnit == null) {
         return;
       }
       try {
-        if (roleClassName == ReactTtsSpan.TYPE_MONEY) {
-          warningMessage = ReactTtsSpan.TYPE_MONEY_WARNING_MSG;
+        if (type == AccessibilitySpan.MONEY) {
+          warningMessage = TYPE_MONEY_WARNING_MSG;
           Currency.getInstance(accessibilityUnit);
-          setStringArgument(ReactTtsSpan.ARG_INTEGER_PART, "");
-          setStringArgument(ReactTtsSpan.ARG_CURRENCY, accessibilityUnit);
+          setStringArgument(ARG_INTEGER_PART, "");
+          setStringArgument(ARG_CURRENCY, accessibilityUnit);
         }
-        if (roleClassName == ReactTtsSpan.TYPE_TELEPHONE) {
-          warningMessage = ReactTtsSpan.TYPE_TELEPHONE_WARNING_MSG;
-          setStringArgument(ReactTtsSpan.ARG_NUMBER_PARTS, accessibilityUnit);
+        if (type == AccessibilitySpan.TELEPHONE) {
+          warningMessage = TYPE_TELEPHONE_WARNING_MSG;
+          setStringArgument(ARG_NUMBER_PARTS, accessibilityUnit);
         }
         // https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
-        if (roleClassName == ReactTtsSpan.TYPE_MEASURE) {
-          warningMessage = ReactTtsSpan.TYPE_MEASURE_WARNING_MSG;
-          setStringArgument(ReactTtsSpan.ARG_UNIT, accessibilityUnit);
+        if (type == AccessibilitySpan.MEASURE) {
+          warningMessage = TYPE_MEASURE_WARNING_MSG;
+          setStringArgument(ARG_UNIT, accessibilityUnit);
         }
       } catch (Exception e) {
         FLog.e(
             TAG,
-            "Failed to create ReactTtsSpan.Builder with params type: "
+            "Failed to create Builder with params type: "
                 + type
                 + " and accessibilityUnit: "
                 + accessibilityUnit
@@ -100,7 +140,6 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
                 + "Error: "
                 + e);
       }
-      */
     }
 
     public ReactTtsSpan build() {

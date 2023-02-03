@@ -104,7 +104,7 @@ public class TextAttributeProps {
 
   protected @Nullable AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
-  protected @Nullable String mAccessibilitySpan = null;
+  protected @Nullable ReactTtsSpan.AccessibilitySpan mAccessibilitySpan = null;
   protected @Nullable String mAccessibilityUnit = null;
   protected boolean mIsAccessibilityLink = false;
   protected boolean mIsAccessibilityTtsSpan = false;
@@ -620,7 +620,7 @@ public class TextAttributeProps {
 
   private void setAccessibilitySpan(@Nullable String accessibilitySpan) {
     if (accessibilitySpan != null) {
-      mAccessibilitySpan = accessibilitySpan;
+      mAccessibilitySpan = ReactTtsSpan.AccessibilitySpan.fromValue(accessibilitySpan);
     }
   }
 

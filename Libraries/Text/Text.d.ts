@@ -56,6 +56,8 @@ export interface TextPropsIOS {
 }
 
 export interface TextPropsAndroid {
+  accessibilitySpan?: 'money' | 'telephone' | 'measure';
+
   /**
    * Specifies the disabled state of the text view for testing purposes.
    */

@@ -52,6 +52,7 @@ export type TextProps = $ReadOnly<{|
    */
   accessible?: ?boolean,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  accessibilitySpan?: ?('money' | 'telephone' | 'measure'),
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityHint?: ?Stringish,
   accessibilityLanguage?: ?Stringish,
@@ -202,7 +203,7 @@ export type TextProps = $ReadOnly<{|
 
   /**
    */
-  accessibilitySpan?: ?string,
+  accessibilitySpan?: ?AccessibilitySpan,
 
   /**
    * Used with nested Text and accessibilityRole measure, money or telephone to specify the unit to announce.
