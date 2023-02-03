@@ -13,6 +13,8 @@ import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
+
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -73,6 +75,7 @@ public class TextAttributeProps {
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
   private static final int DEFAULT_HYPHENATION_FREQUENCY =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
+  private static final String TAG = "TextAttributeProps";
 
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
@@ -621,6 +624,12 @@ public class TextAttributeProps {
   private void setAccessibilitySpan(@Nullable String accessibilitySpan) {
     if (accessibilitySpan != null) {
       mAccessibilitySpan = ReactTtsSpan.AccessibilitySpan.fromValue(accessibilitySpan);
+      FLog.w(
+          "React::" + TAG,
+          " accessibilitySpan: "
+              + (accessibilitySpan)
+              + " mAccessibilitySpan: "
+              + (mAccessibilitySpan));
     }
   }
 

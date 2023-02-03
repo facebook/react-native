@@ -143,8 +143,7 @@ public class TextLayoutManagerMapBuffer {
         if (textAttributes.mIsAccessibilityLink) {
           ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
         }
-        if (textAttributes.mAccessibilityUnit != null
-            && textAttributes.mAccessibilitySpan != null) {
+        if (textAttributes.mAccessibilitySpan != null) {
           ReactTtsSpan.Builder builder =
               new ReactTtsSpan.Builder(
                   textAttributes.mAccessibilitySpan, textAttributes.mAccessibilityUnit);
