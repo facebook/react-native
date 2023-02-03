@@ -291,23 +291,25 @@ void ViewProps::setProp(
   YogaStylableProps::setProp(context, hash, propName, value);
   AccessibilityProps::setProp(context, hash, propName, value);
 
+  static auto defaults = ViewProps{};
+
   switch (hash) {
-    RAW_SET_PROP_SWITCH_CASE_BASIC(opacity, (Float)1.0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(foregroundColor, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(backgroundColor, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowColor, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOffset, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOpacity, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowRadius, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(transform, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(backfaceVisibility, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(shouldRasterize, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(zIndex, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(pointerEvents, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(hitSlop, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(onLayout, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(collapsable, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews, false);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(opacity);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(foregroundColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(backgroundColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOffset);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOpacity);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shadowRadius);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(transform);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(backfaceVisibility);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shouldRasterize);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(zIndex);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(pointerEvents);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(hitSlop);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(onLayout);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(collapsable);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews);
     // events field
     VIEW_EVENT_CASE(PointerEnter);
     VIEW_EVENT_CASE(PointerEnterCapture);
@@ -335,13 +337,13 @@ void ViewProps::setProp(
     VIEW_EVENT_CASE(TouchEnd);
     VIEW_EVENT_CASE(TouchCancel);
 #ifdef ANDROID
-    RAW_SET_PROP_SWITCH_CASE_BASIC(elevation, {});
-    RAW_SET_PROP_SWITCH_CASE(nativeBackground, "nativeBackgroundAndroid", {});
-    RAW_SET_PROP_SWITCH_CASE(nativeForeground, "nativeForegroundAndroid", {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(focusable, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(hasTVPreferredFocus, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(needsOffscreenAlphaCompositing, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(renderToHardwareTextureAndroid, false);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(elevation);
+    RAW_SET_PROP_SWITCH_CASE(nativeBackground, "nativeBackgroundAndroid");
+    RAW_SET_PROP_SWITCH_CASE(nativeForeground, "nativeForegroundAndroid");
+    RAW_SET_PROP_SWITCH_CASE_BASIC(focusable);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(hasTVPreferredFocus);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(needsOffscreenAlphaCompositing);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(renderToHardwareTextureAndroid);
 #endif
     // BorderRadii
     SET_CASCADED_RECTANGLE_CORNERS(borderRadii, "border", "Radius", value);
