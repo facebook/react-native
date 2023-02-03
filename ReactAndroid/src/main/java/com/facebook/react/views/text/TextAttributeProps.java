@@ -57,7 +57,8 @@ public class TextAttributeProps {
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 22;
-  public static final short TA_KEY_ACCESSIBILITY_UNIT = 24;
+  public static final short TA_KEY_ACCESSIBILITY_SPAN = 24;
+  public static final short TA_KEY_ACCESSIBILITY_UNIT = 25;
 
   public static final int UNSET = -1;
 
@@ -124,6 +125,7 @@ public class TextAttributeProps {
 
   protected @Nullable AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
+  protected @Nullable String mAccessibilitySpan = null;
   protected @Nullable String mAccessibilityUnit = null;
   protected boolean mIsAccessibilityLink = false;
   protected boolean mIsAccessibilityTtsSpan = false;
@@ -228,6 +230,9 @@ public class TextAttributeProps {
           break;
         case TA_KEY_ACCESSIBILITY_ROLE:
           result.setAccessibilityRole(entry.getStringValue());
+          break;
+        case TA_KEY_ACCESSIBILITY_SPAN:
+          result.setAccessibilitySpan(entry.getStringValue());
           break;
         case TA_KEY_ACCESSIBILITY_UNIT:
           result.setAccessibilityUnit(entry.getStringValue());
@@ -636,6 +641,12 @@ public class TextAttributeProps {
       mIsAccessibilityTtsSpan =
           TextAttributeProps.SUPPORTED_TYPES_SET.contains(roleClassName)
               && Build.VERSION.SDK_INT >= 21;
+    }
+  }
+
+  private void setAccessibilitySpan(@Nullable String accessibilitySpan) {
+    if (accessibilitySpan != null) {
+      mAccessibilitySpan = accessibilitySpan;
     }
   }
 

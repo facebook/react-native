@@ -183,6 +183,13 @@ static TextAttributes convertRawProp(
       sourceTextAttributes.accessibilityRole,
       defaultTextAttributes.accessibilityRole);
 
+  textAttributes.accessibilitySpan = convertRawProp(
+      context,
+      rawProps,
+      "accessibilitySpan",
+      sourceTextAttributes.accessibilitySpan,
+      defaultTextAttributes.accessibilitySpan);
+
   textAttributes.accessibilityUnit = convertRawProp(
       context,
       rawProps,
@@ -300,6 +307,12 @@ void BaseTextProps::setProp(
         textAttributes,
         accessibilityRole,
         "accessibilityRole");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        accessibilitySpan,
+        "accessibilitySpan");
     REBUILD_FIELD_SWITCH_CASE(
         defaults,
         value,

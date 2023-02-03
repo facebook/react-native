@@ -81,6 +81,7 @@ class TextAttributes : public DebugStringConvertible {
   // construction.
   std::optional<LayoutDirection> layoutDirection{};
   std::optional<AccessibilityRole> accessibilityRole{};
+  std::string accessibilitySpan{};
   std::string accessibilityUnit{};
 
 #pragma mark - Operations
@@ -135,6 +136,7 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.isHighlighted,
         textAttributes.layoutDirection,
         textAttributes.accessibilityRole,
+        textAttributes.accessibilitySpan,
         textAttributes.accessibilityUnit);
   }
 };
