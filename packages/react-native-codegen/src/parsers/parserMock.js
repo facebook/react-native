@@ -18,6 +18,8 @@ import type {
   NamedShape,
   Nullable,
   NativeModuleParamTypeAnnotation,
+  NativeModuleEnumMemberType,
+  NativeModuleEnumMembers,
 } from '../CodegenSchema';
 
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
@@ -59,16 +61,6 @@ export class MockedParser implements Parser {
       );
     }
     return property.key.name;
-  }
-
-  getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
-    return maybeEnumDeclaration.body.type
-      .replace('EnumNumberBody', 'NumberTypeAnnotation')
-      .replace('EnumStringBody', 'StringTypeAnnotation');
-  }
-
-  isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean {
-    return maybeEnumDeclaration.type === 'EnumDeclaration';
   }
 
   language(): ParserType {
@@ -131,5 +123,40 @@ export class MockedParser implements Parser {
     functionTypeAnnotation: $FlowFixMe,
   ): $FlowFixMe {
     return functionTypeAnnotation.returnType;
+  }
+
+  parseEnumMembersType(typeAnnotation: $FlowFixMe): NativeModuleEnumMemberType {
+    return typeAnnotation.type;
+  }
+
+  validateEnumMembersSupported(
+    typeAnnotation: $FlowFixMe,
+    enumMembersType: NativeModuleEnumMemberType,
+  ): void {
+    return;
+  }
+
+  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers {
+    return typeAnnotation.type === 'StringTypeAnnotation'
+      ? [
+          {
+            name: 'Hello',
+            value: 'hello',
+          },
+          {
+            name: 'Goodbye',
+            value: 'goodbye',
+          },
+        ]
+      : [
+          {
+            name: 'On',
+            value: '1',
+          },
+          {
+            name: 'Off',
+            value: '0',
+          },
+        ];
   }
 }

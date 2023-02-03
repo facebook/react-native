@@ -16,10 +16,11 @@ const path = require('path');
 
 export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
-export type TypeAliasResolutionStatus =
+export type TypeResolutionStatus =
   | $ReadOnly<{
+      type: 'alias' | 'enum',
       successful: true,
-      aliasName: string,
+      name: string,
     }>
   | $ReadOnly<{
       successful: false,

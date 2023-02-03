@@ -223,6 +223,7 @@ export type NullableTypeAnnotation<+T: NativeModuleTypeAnnotation> = $ReadOnly<{
 export type NativeModuleSchema = $ReadOnly<{
   type: 'NativeModule',
   aliasMap: NativeModuleAliasMap,
+  enumMap: NativeModuleEnumMap,
   spec: NativeModuleSpec,
   moduleName: string,
   // Use for modules that are not used on other platforms.
@@ -238,6 +239,10 @@ type NativeModuleSpec = $ReadOnly<{
 export type NativeModulePropertyShape = NamedShape<
   Nullable<NativeModuleFunctionTypeAnnotation>,
 >;
+
+export type NativeModuleEnumMap = $ReadOnly<{
+  [enumName: string]: NativeModuleEnumDeclarationWithMembers,
+}>;
 
 export type NativeModuleAliasMap = $ReadOnly<{
   [aliasName: string]: NativeModuleObjectTypeAnnotation,
@@ -287,10 +292,29 @@ export type NativeModuleBooleanTypeAnnotation = $ReadOnly<{
   type: 'BooleanTypeAnnotation',
 }>;
 
+export type NativeModuleEnumMembers = $ReadOnlyArray<
+  $ReadOnly<{
+    name: string,
+    value: string,
+  }>,
+>;
+
+export type NativeModuleEnumMemberType =
+  | 'NumberTypeAnnotation'
+  | 'StringTypeAnnotation';
+
 export type NativeModuleEnumDeclaration = $ReadOnly<{
+  name: string,
   type: 'EnumDeclaration',
-  memberType: 'NumberTypeAnnotation' | 'StringTypeAnnotation',
+  memberType: NativeModuleEnumMemberType,
 }>;
+
+export type NativeModuleEnumDeclarationWithMembers = {
+  name: string,
+  type: 'EnumDeclarationWithMembers',
+  memberType: NativeModuleEnumMemberType,
+  members: NativeModuleEnumMembers,
+};
 
 export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{
   type: 'GenericObjectTypeAnnotation',
