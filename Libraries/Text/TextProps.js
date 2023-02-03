@@ -52,7 +52,20 @@ export type TextProps = $ReadOnly<{|
    */
   accessible?: ?boolean,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
-  accessibilitySpan?: ?('money' | 'telephone' | 'measure'),
+  accessibilitySpan?: ?(
+    | 'cardinal'
+    | 'ordinal'
+    | 'decimal'
+    | 'fraction'
+    | 'measure'
+    | 'time'
+    | 'date'
+    | 'telephone'
+    | 'electronic'
+    | 'money'
+    | 'digits'
+    | 'verbatim'
+  ),
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityHint?: ?Stringish,
   accessibilityLanguage?: ?Stringish,

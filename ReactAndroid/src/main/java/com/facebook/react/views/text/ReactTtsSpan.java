@@ -56,25 +56,47 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
     super(src);
   }
 
-  /**
-   * These roles are defined by Google's TalkBack screen reader, and this list should be kept up to
-   * date with their implementation. Details can be seen in their source code here:
-   *
-   * <p>https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java
-   */
+  // https://developer.android.com/reference/android/text/style/TtsSpan
   public enum AccessibilitySpan {
-    MONEY,
+    CARDINAL,
+    ORDINAL,
+    DECIMAL,
+    FRACTION,
+    MEASURE,
+    TIME,
+    DATE,
     TELEPHONE,
-    MEASURE;
+    ELECTRONIC,
+    MONEY,
+    DIGITS,
+    VERBATIM;
 
     public static String getValue(AccessibilitySpan accessibilitySpan) {
       switch (accessibilitySpan) {
-        case MONEY:
-          return ReactTtsSpan.TYPE_MONEY;
-        case TELEPHONE:
-          return ReactTtsSpan.TYPE_TELEPHONE;
+        case CARDINAL:
+          return ReactTtsSpan.TYPE_CARDINAL;
+        case ORDINAL:
+          return ReactTtsSpan.TYPE_ORDINAL;
+        case DECIMAL:
+          return ReactTtsSpan.TYPE_DECIMAL;
+        case FRACTION:
+          return ReactTtsSpan.TYPE_FRACTION;
         case MEASURE:
           return ReactTtsSpan.TYPE_MEASURE;
+        case TIME:
+          return ReactTtsSpan.TYPE_TIME;
+        case DATE:
+          return ReactTtsSpan.TYPE_DATE;
+        case TELEPHONE:
+          return ReactTtsSpan.TYPE_TELEPHONE;
+        case ELECTRONIC:
+          return ReactTtsSpan.TYPE_ELECTRONIC;
+        case MONEY:
+          return ReactTtsSpan.TYPE_MONEY;
+        case DIGITS:
+          return ReactTtsSpan.TYPE_DIGITS;
+        case VERBATIM:
+          return ReactTtsSpan.TYPE_VERBATIM;
         default:
           throw new IllegalArgumentException(
               "Invalid accessibility span value: " + accessibilitySpan);
@@ -101,14 +123,10 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
 
     public Builder(AccessibilitySpan type, @Nullable String accessibilityUnit) {
       String typeConvertedToString = AccessibilitySpan.getValue(type);
+      FLog.w("React::" + TAG, " typeConvertedToString: " + (typeConvertedToString));
       mType = typeConvertedToString;
       String warningMessage = "";
       Set<String> supportedTypes = new HashSet<String>();
-      /*
-      if (accessibilityUnit == null || !SUPPORTED_UNIT_SET.contains(roleClassName)) {
-        return;
-      }
-      */
       if (accessibilityUnit == null) {
         return;
       }

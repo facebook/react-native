@@ -56,7 +56,19 @@ export interface TextPropsIOS {
 }
 
 export interface TextPropsAndroid {
-  accessibilitySpan?: 'money' | 'telephone' | 'measure';
+  accessibilitySpan?:
+    | 'cardinal'
+    | 'ordinal'
+    | 'decimal'
+    | 'fraction'
+    | 'measure'
+    | 'time'
+    | 'date'
+    | 'telephone'
+    | 'electronic'
+    | 'money'
+    | 'digits'
+    | 'verbatim';
 
   /**
    * Specifies the disabled state of the text view for testing purposes.
