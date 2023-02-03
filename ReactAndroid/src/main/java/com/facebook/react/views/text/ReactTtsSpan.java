@@ -61,7 +61,8 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
     ELECTRONIC,
     MONEY,
     DIGITS,
-    VERBATIM;
+    VERBATIM,
+    NONE;
 
     public static String getValue(AccessibilitySpan accessibilitySpan) {
       switch (accessibilitySpan) {

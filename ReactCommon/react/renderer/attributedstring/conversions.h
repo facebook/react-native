@@ -786,8 +786,8 @@ inline void fromRawValue(
   result = AccessibilityRole::None;
 }
 
-inline std::string toString(const AccessibilitySpan &accessibilityRole) {
-  switch (accessibilityRole) {
+inline std::string toString(const AccessibilitySpan &accessibilitySpan) {
+  switch (accessibilitySpan) {
     case AccessibilitySpan::Cardinal:
       return "cardinal";
     case AccessibilitySpan::Ordinal:

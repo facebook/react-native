@@ -249,6 +249,13 @@ struct hash<facebook::react::AccessibilityRole> {
 };
 
 template <>
+struct hash<facebook::react::AccessibilitySpan> {
+  size_t operator()(const facebook::react::AccessibilitySpan &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
 struct hash<facebook::react::TextTransform> {
   size_t operator()(const facebook::react::TextTransform &v) const {
     return hash<int>()(static_cast<int>(v));
