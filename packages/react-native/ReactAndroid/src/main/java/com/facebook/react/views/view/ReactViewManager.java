@@ -51,7 +51,10 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
     Spacing.END,
     Spacing.BLOCK,
     Spacing.BLOCK_END,
-    Spacing.BLOCK_START
+    Spacing.BLOCK_START,
+    Spacing.INLINE,
+    Spacing.INLINE_END,
+    Spacing.INLINE_START
   };
   private static final int CMD_HOTSPOT_UPDATE = 1;
   private static final int CMD_SET_PRESSED = 2;
@@ -246,7 +249,10 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         ViewProps.BORDER_END_COLOR,
         ViewProps.BORDER_BLOCK_COLOR,
         ViewProps.BORDER_BLOCK_END_COLOR,
-        ViewProps.BORDER_BLOCK_START_COLOR
+        ViewProps.BORDER_BLOCK_START_COLOR,
+        ViewProps.BORDER_INLINE_COLOR,
+        ViewProps.BORDER_INLINE_END_COLOR,
+        ViewProps.BORDER_INLINE_START_COLOR
       },
       customType = "Color")
   public void setBorderColor(ReactViewGroup view, int index, Integer color) {
