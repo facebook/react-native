@@ -59,7 +59,7 @@ class ItemComponent extends React.PureComponent<{
   onShowUnderlay?: () => void,
   onHideUnderlay?: () => void,
   textSelectable?: ?boolean,
-  isSelected?: ?Boolean, // [macOS]
+  isSelected?: ?boolean, // [macOS]
   ...
 }> {
   _onPress = () => {

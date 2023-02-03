@@ -12,9 +12,10 @@ import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {
   BlurEvent,
   FocusEvent,
+  KeyEvent,
   MouseEvent,
   PressEvent,
-  KeyEvent, // [macOS]
+  // [macOS]
 } from '../Types/CoreEventTypes';
 
 import SoundManager from '../Components/Sound/SoundManager';
@@ -90,22 +91,22 @@ export type PressabilityConfig = $ReadOnly<{|
   /**
    * Called after the element loses focus.
    */
-  onBlur?: ?(event: BlurEvent) => mixed,
+  onBlur?: ?(event: BlurEvent) => void,
 
   /**
    * Called after the element is focused.
    */
-  onFocus?: ?(event: FocusEvent) => mixed,
+  onFocus?: ?(event: FocusEvent) => void,
 
   /*
    * Called after a key down event is detected.
    */
-  onKeyDown?: ?(event: KeyEvent) => mixed,
+  onKeyDown?: ?(event: KeyEvent) => void,
 
   /*
    * Called after a key up event is detected.
    */
-  onKeyUp?: ?(event: KeyEvent) => mixed,
+  onKeyUp?: ?(event: KeyEvent) => void,
 
   /*
    * Array of keys to receive key down events for

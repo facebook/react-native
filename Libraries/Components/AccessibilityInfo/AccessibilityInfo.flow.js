@@ -26,9 +26,17 @@ type AccessibilityEventDefinitionsIOS = {
   reduceTransparencyChanged: [boolean],
 };
 
+// [macOS
+// Events that are only supported on macOS.
+type AccessibilityEventDefinitionsMacOS = {
+  highContrastChanged: [boolean], // [macOS] highContrastChanged is used on macOS
+};
+// macOS]
+
 type AccessibilityEventDefinitions = {
   ...AccessibilityEventDefinitionsAndroid,
   ...AccessibilityEventDefinitionsIOS,
+  ...AccessibilityEventDefinitionsMacOS, // [macOS]
   change: [boolean], // screenReaderChanged
   reduceMotionChanged: [boolean],
   screenReaderChanged: [boolean],
@@ -64,6 +72,13 @@ export type AccessibilityInfoType = {
    * See https://reactnative.dev/docs/accessibilityinfo#isGrayscaleEnabled
    */
   isGrayscaleEnabled: () => Promise<boolean>,
+
+  // [macOS
+  /**
+   * macOS only
+   */
+  isHighContrastEnabled: () => Promise<boolean>,
+  // macOS]
 
   /**
    * Query whether inverted colors are currently enabled.

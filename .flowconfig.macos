@@ -7,7 +7,7 @@
 <PROJECT_ROOT>/template/.*
 
 ; Ignore the Dangerfile
-<PROJECT_ROOT>/bots/dangerfile.js
+<PROJECT_ROOT>/packages/react-native-bots/dangerfile.js
 
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
@@ -18,8 +18,7 @@
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
 
-; Ignore everything in android-patches
-<PROJECT_ROOT>/android-patches/.*
+.*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
 
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
@@ -57,6 +56,8 @@ suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
+inference_mode=constrain_writes
+
 [lints]
 sketchy-null-number=warn
 sketchy-null-mixed=warn
@@ -66,7 +67,6 @@ nonstrict-import=warn
 deprecated-type=error
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
-signature-verification-failure=warn
 
 [strict]
 deprecated-type
@@ -78,4 +78,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.171.0
+^0.191.0

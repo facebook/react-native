@@ -130,8 +130,13 @@ class TouchableBounce extends React.Component<Props, State> {
   render(): React.Node {
     // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
     // adopting `Pressability`, so preserve that behavior.
-    const {onBlur, onFocus, onMouseEnter, onMouseLeave...eventHandlersWithoutBlurAndFocus} = // [macOS]
-      this.state.pressability.getEventHandlers();
+    const {
+      onBlur,
+      onFocus,
+      onMouseEnter,
+      onMouseLeave,
+      ...eventHandlersWithoutBlurAndFocus
+    } = this.state.pressability.getEventHandlers(); // [macOS]
     const accessibilityLiveRegion =
       this.props['aria-live'] === 'off'
         ? 'none'

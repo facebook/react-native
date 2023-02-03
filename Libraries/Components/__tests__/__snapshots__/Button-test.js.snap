@@ -212,6 +212,7 @@ exports[`<Button /> should be disabled when disabled={true} and accessibilitySta
 
 exports[`<Button /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no} 1`] = `
 <View
+  acceptsFirstMouse={true}
   accessibilityRole="button"
   accessibilityState={
     Object {
@@ -232,9 +233,12 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
   }
   accessible={true}
   collapsable={false}
-  focusable={false}
+  enableFocusRing={true}
+  focusable={true}
   importantForAccessibility="no-hide-descendants"
   onClick={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -274,6 +278,7 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
 
 exports[`<Button /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants} 1`] = `
 <View
+  acceptsFirstMouse={true}
   accessibilityRole="button"
   accessibilityState={
     Object {
@@ -294,9 +299,12 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
   }
   accessible={true}
   collapsable={false}
-  focusable={false}
+  enableFocusRing={true}
+  focusable={true}
   importantForAccessibility="no-hide-descendants"
   onClick={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}

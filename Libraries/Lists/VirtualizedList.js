@@ -11,6 +11,7 @@
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {LayoutEvent, ScrollEvent} from '../Types/CoreEventTypes';
+import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   FrameMetricProps,
@@ -20,9 +21,7 @@ import type {
   RenderItemType,
   Separators,
 } from './VirtualizedListProps';
-import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
 
-const Platform = require('../Utilities/Platform'); // [macOS]
 import RefreshControl from '../Components/RefreshControl/RefreshControl';
 import ScrollView from '../Components/ScrollView/ScrollView';
 import View from '../Components/View/View';
@@ -49,6 +48,7 @@ import {
 } from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
+
 const Platform = require('../Utilities/Platform'); // [macOS]
 
 export type {RenderItemProps, RenderItemType, Separators};
@@ -316,7 +316,7 @@ export default class VirtualizedList extends StateSafePureComponent<
 
   // [macOS
   ensureItemAtIndexIsVisible(rowIndex: number) {
-    const frame = this.__getFrameMetricsApprox(rowIndex);
+    const frame = this.__getFrameMetricsApprox(rowIndex, this.props);
     const visTop = this._scrollMetrics.offset;
     const visLen = this._scrollMetrics.visibleLength;
     const visEnd = visTop + visLen;
@@ -481,6 +481,7 @@ export default class VirtualizedList extends StateSafePureComponent<
     this.state = {
       cellsAroundViewport: initialRenderRegion,
       renderMask: VirtualizedList._createRenderMask(props, initialRenderRegion),
+      selectedRowIndex: this.props.initialSelectedIndex ?? -1, // [macOS]
     };
   }
 
@@ -539,7 +540,6 @@ export default class VirtualizedList extends StateSafePureComponent<
           itemCount,
           scrollIndex + initialNumToRenderOrDefault(props.initialNumToRender),
         ) - 1,
-      selectedRowIndex: this.props.initialSelectedIndex ?? -1, // [macOS]
     };
   }
 
@@ -702,7 +702,7 @@ export default class VirtualizedList extends StateSafePureComponent<
       // [macOS
       selectedRowIndex: Math.max(
         -1, // Used to indicate no row is selected
-        Math.min(prevState.selectedRowIndex, getItemCount(data)),
+        Math.min(prevState.selectedRowIndex, itemCount),
       ), // macOS]
     };
   }
@@ -1184,8 +1184,10 @@ export default class VirtualizedList extends StateSafePureComponent<
       this.props.onPreferredScrollerStyleDidChange;
     const invertedDidChange = this.props.onInvertedDidChange;
 
-    const isFirstRowSelected = this.state.selectedRowIndex === this.state.cellsAroundViewport.first;
-    const isLastRowSelected = this.state.selectedRowIndex === this.state.cellsAroundViewport.last;
+    const isFirstRowSelected =
+      this.state.selectedRowIndex === this.state.cellsAroundViewport.first;
+    const isLastRowSelected =
+      this.state.selectedRowIndex === this.state.cellsAroundViewport.last;
 
     // Don't pass in ArrowUp/ArrowDown at the top/bottom of the list so that keyboard event can bubble
     let _validKeysDown = ['Home', 'End'];
@@ -1201,7 +1203,7 @@ export default class VirtualizedList extends StateSafePureComponent<
       validKeysDown: _validKeysDown,
       onKeyDown: this._handleKeyDown,
     };
-    
+
     // macOS]
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
@@ -1223,8 +1225,9 @@ export default class VirtualizedList extends StateSafePureComponent<
           onInvertedDidChange={invertedDidChange}
           onPreferredScrollerStyleDidChange={
             preferredScrollerStyleDidChangeHandler
-          } // macOS]
+          }
           {...props}
+          // macOS]
           refreshControl={
             props.refreshControl == null ? (
               <RefreshControl
@@ -1240,18 +1243,19 @@ export default class VirtualizedList extends StateSafePureComponent<
         />
       );
     } else {
-      // $FlowFixMe[prop-missing] Invalid prop usage
-      // $FlowFixMe[incompatible-use]
       return (
+        // $FlowFixMe[prop-missing] Invalid prop usage
+        // $FlowFixMe[incompatible-use]
         <ScrollView
-        // [macOS
-        {...(props.enableSelectionOnKeyPress && keyboardNavigationProps)}
-        onInvertedDidChange={invertedDidChange}
-        onPreferredScrollerStyleDidChange={
-          preferredScrollerStyleDidChangeHandler
-        } // macOS]
-        {...props}
-      />);
+          // [macOS
+          {...(props.enableSelectionOnKeyPress && keyboardNavigationProps)}
+          onInvertedDidChange={invertedDidChange}
+          onPreferredScrollerStyleDidChange={
+            preferredScrollerStyleDidChangeHandler
+          } // macOS]
+          {...props}
+        />
+      );
     }
   };
 
@@ -1403,7 +1407,7 @@ export default class VirtualizedList extends StateSafePureComponent<
   };
 
   // [macOS
-  _selectRowAtIndex = rowIndex => {
+  _selectRowAtIndex = (rowIndex: number) => {
     const prevIndex = this.state.selectedRowIndex;
     const newIndex = rowIndex;
     this.setState({selectedRowIndex: newIndex});
@@ -1419,17 +1423,16 @@ export default class VirtualizedList extends StateSafePureComponent<
         });
       }
     }
-
-    return newIndex;
   };
 
-  _selectRowAboveIndex = rowIndex => {
+  _selectRowAboveIndex = (rowIndex: number) => {
     const rowAbove = rowIndex > 0 ? rowIndex - 1 : rowIndex;
     this._selectRowAtIndex(rowAbove);
   };
 
-  _selectRowBelowIndex = rowIndex => {
-    const rowBelow = rowIndex < this.state.cellsAroundViewport.last ? rowIndex + 1 : rowIndex;
+  _selectRowBelowIndex = (rowIndex: number) => {
+    const rowBelow =
+      rowIndex < this.state.cellsAroundViewport.last ? rowIndex + 1 : rowIndex;
     this._selectRowAtIndex(rowBelow);
   };
 

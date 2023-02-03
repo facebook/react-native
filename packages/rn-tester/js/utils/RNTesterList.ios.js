@@ -27,16 +27,6 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'UI',
     supportsTVOS: true,
   },
-  // [macOS
-  {
-    key: 'DarkModeExample',
-    module: require('../examples/DarkModeExample/DarkModeExample'),
-  }, // macOS]
-  // [macOS
-  {
-    key: 'DatePickerMacOSExample',
-    module: require('../examples/DatePicker/DatePickerMacOSExample'),
-  }, // macOS]
   {
     key: 'FlatListExampleIndex',
     module: require('../examples/FlatList/FlatListExampleIndex').default,

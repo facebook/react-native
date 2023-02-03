@@ -101,8 +101,6 @@ export type PartialViewConfig = $ReadOnly<{
 export type NativeMethods = $ReadOnly<{
   blur(): void,
   focus(): void,
-  onKeyDown(): void,
-  onKeyUp(): void,
   measure(callback: MeasureOnSuccessCallback): void,
   measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
   measureLayout(

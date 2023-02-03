@@ -11,8 +11,8 @@
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {
-  DirectEventHandler,
   BubblingEventHandler,
+  DirectEventHandler,
   Int32,
   WithDefault,
 } from '../Types/CodegenTypes';

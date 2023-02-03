@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 
@@ -22,8 +23,6 @@ import Platform from '../../Utilities/Platform';
 import {Commands} from '../View/ViewNativeComponent';
 import invariant from 'invariant';
 import * as React from 'react';
-
-import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 
 type Props = $ReadOnly<{|
   ...React.ElementConfig<TouchableWithoutFeedback>,

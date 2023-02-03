@@ -26,7 +26,8 @@ let exported: React.AbstractComponent<ViewProps, React.ElementRef<typeof View>>;
  * limitation of the screen, such as rounded corners or camera notches (aka
  * sensor housing area on iPhone X).
  */
-if (Platform.OS !== 'ios') { // [macOS]
+if (Platform.OS !== 'ios') {
+  // [macOS]
   exported = View;
 } else {
   exported = require('./RCTSafeAreaViewNativeComponent').default;

@@ -28,9 +28,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  rowIndex={-1}
   scrollEventThrottle={50}
-  sectionIndex={0}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -72,9 +70,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
         renderItem={[Function]}
-        rowIndex={-1}
         scrollEventThrottle={50}
-        sectionIndex={0}
         stickyHeaderIndices={Array []}
       >
         <View
@@ -140,9 +136,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
         renderItem={[Function]}
-        rowIndex={-1}
         scrollEventThrottle={50}
-        sectionIndex={0}
         stickyHeaderIndices={Array []}
       >
         <View>
@@ -245,9 +239,7 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  rowIndex={-1}
   scrollEventThrottle={50}
-  sectionIndex={0}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -385,9 +377,7 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  rowIndex={-1}
   scrollEventThrottle={50}
-  sectionIndex={0}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -525,9 +515,7 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  rowIndex={-1}
   scrollEventThrottle={50}
-  sectionIndex={0}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -666,9 +654,7 @@ exports[`VirtualizedSectionList handles separators correctly 4`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  rowIndex={-1}
   scrollEventThrottle={50}
-  sectionIndex={0}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -827,9 +813,7 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   }
   refreshing={false}
   renderItem={[Function]}
-  rowIndex={-1}
   scrollEventThrottle={50}
-  sectionIndex={0}
   stickyHeaderIndices={Array []}
   style={
     Array [
@@ -1043,9 +1027,7 @@ exports[`VirtualizedSectionList renders empty list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  rowIndex={-1}
   scrollEventThrottle={50}
-  sectionIndex={0}
   stickyHeaderIndices={Array []}
 >
   <View />
@@ -1069,9 +1051,7 @@ exports[`VirtualizedSectionList renders empty list with empty component 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  rowIndex={-1}
   scrollEventThrottle={50}
-  sectionIndex={0}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -1116,9 +1096,7 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  rowIndex={-1}
   scrollEventThrottle={50}
-  sectionIndex={0}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -1176,9 +1154,7 @@ exports[`VirtualizedSectionList renders simple list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  rowIndex={-1}
   scrollEventThrottle={50}
-  sectionIndex={0}
   stickyHeaderIndices={Array []}
 >
   <View>

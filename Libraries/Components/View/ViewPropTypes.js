@@ -15,14 +15,17 @@ import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BlurEvent,
   FocusEvent,
+  // [macOS]
+  KeyEvent,
   Layout,
   LayoutEvent,
   MouseEvent,
   PointerEvent,
   PressEvent,
-  ScrollEvent, // [macOS]
-  KeyEvent, // [macOS]
+  ScrollEvent,
+  // [macOS]
 } from '../../Types/CoreEventTypes';
+import type {DraggedTypesType} from '../View/DraggedType'; // [macOS]
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
@@ -31,7 +34,6 @@ import type {
   AccessibilityValue,
   Role,
 } from './ViewAccessibility';
-import type {DraggedTypesType} from '../View/DraggedType'; // [macOS]
 import type {Node} from 'react';
 
 export type ViewLayout = Layout;
@@ -105,8 +107,8 @@ type DirectEventProps = $ReadOnly<{|
 
 // [macOS
 type KeyboardEventProps = $ReadOnly<{|
-  onKeyDown?: ?(event: KeyEvent) => mixed,
-  onKeyUp?: ?(event: KeyEvent) => mixed,
+  onKeyDown?: ?(event: KeyEvent) => void,
+  onKeyUp?: ?(event: KeyEvent) => void,
   /**
    * Array of keys to receive key down events for
    *
@@ -537,7 +539,7 @@ type MacOSViewProps = $ReadOnly<{|
    */
   inverted?: ?boolean,
 
-  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed,
+  onDoubleClick?: ?(event: MouseEvent) => mixed,
 |}>;
 // macOS]
 
@@ -548,9 +550,9 @@ export type ViewProps = $ReadOnly<{|
   ...PointerEventProps,
   ...FocusEventProps,
   ...TouchEventProps,
+  ...KeyboardEventProps, // [macOS]
   ...AndroidViewProps,
   ...IOSViewProps,
-  ...KeyboardEventProp, // [macOS]
   ...MacOSViewProps, // [macOS]
 
   children?: Node,

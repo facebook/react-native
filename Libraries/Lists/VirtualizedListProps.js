@@ -308,7 +308,6 @@ type MacOSProps = {|
 
   sectionIndex?: number,
   rowIndex?: number,
-
 |};
 // macOS]
 

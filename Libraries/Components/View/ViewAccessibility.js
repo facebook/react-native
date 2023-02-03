@@ -44,8 +44,8 @@ export type AccessibilityRole =
   | 'timer'
   | 'list'
   | 'toolbar'
+  | 'grid'
   | 'menubutton'; // [macOS]
-  | 'grid';
 
 // Role types for web
 export type Role =

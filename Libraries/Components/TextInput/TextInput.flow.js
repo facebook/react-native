@@ -94,6 +94,42 @@ export type EditingEvent = SyntheticEvent<
   |}>,
 >;
 
+// [macOS macOS-only
+export type SettingChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    enabled: boolean,
+  |}>,
+>;
+
+export type PasteEvent = SyntheticEvent<
+  $ReadOnly<{|
+    dataTransfer: {|
+      files: $ReadOnlyArray<{|
+        height: number,
+        size: number,
+        type: string,
+        uri: string,
+        width: number,
+      |}>,
+      items: $ReadOnlyArray<{|
+        kind: string,
+        type: string,
+      |}>,
+      types: $ReadOnlyArray<string>,
+    |},
+  |}>,
+>;
+
+export type SubmitKeyEvent = $ReadOnly<{|
+  key: string,
+  altKey?: ?boolean,
+  ctrlKey?: ?boolean,
+  metaKey?: ?boolean,
+  shiftKey?: ?boolean,
+  functionKey?: ?boolean,
+|}>;
+// macOS]
+
 type DataDetectorTypesType =
   | 'phoneNumber'
   | 'link'
@@ -327,6 +363,95 @@ type IOSProps = $ReadOnly<{|
   lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
 |}>;
 
+// [macOS
+type MacOSProps = $ReadOnly<{|
+  /**
+   * If `true`, clears the text field synchronously before `onSubmitEditing` is emitted.
+   *
+   * @platform macos
+   */
+  clearTextOnSubmit?: ?boolean,
+
+  /**
+   * If `false`, disables grammar-check.
+   *
+   * @platform macos
+   */
+  grammarCheck?: ?boolean,
+
+  /**
+   * If `true`, hide vertical scrollbar on the underlying multiline scrollview
+   * The default value is `false`.
+   *
+   * @platform macos
+   */
+  hideVerticalScrollIndicator?: ?boolean,
+
+  /**
+   * Fired when a supported element is pasted
+   *
+   * @platform macos
+   */
+  onPaste?: (event: PasteEvent) => void,
+
+  /**
+   * Callback that is called when the text input's autoCorrect setting changes.
+   * This will be called with
+   * `{ nativeEvent: { enabled } }`.
+   * Does only work with 'multiline={true}'.
+   *
+   * @platform macos
+   */
+  onAutoCorrectChange?: ?(e: SettingChangeEvent) => mixed,
+
+  /**
+   * Callback that is called when the text input's spellCheck setting changes.
+   * This will be called with
+   * `{ nativeEvent: { enabled } }`.
+   * Does only work with 'multiline={true}'.
+   *
+   * @platform macos
+   */
+  onSpellCheckChange?: ?(e: SettingChangeEvent) => mixed,
+
+  /**
+   * Callback that is called when the text input's grammarCheck setting changes.
+   * This will be called with
+   * `{ nativeEvent: { enabled } }`.
+   * Does only work with 'multiline={true}'.
+   *
+   * @platform macos
+   */
+  onGrammarCheckChange?: ?(e: SettingChangeEvent) => mixed,
+
+  /**
+   * Enables Paste support for certain types of pasted types
+   *
+   * Possible values for `pastedTypes` are:
+   *
+   * - `'fileUrl'`
+   * - `'image'`
+   * - `'string'`
+   *
+   * @platform macos
+   */
+  pastedTypes?: PastedTypesType,
+
+  /**
+   * Configures keys that can be used to submit editing for the TextInput. Defaults to 'Enter' key.
+   * @platform macos
+   */
+  submitKeyEvents?: ?$ReadOnlyArray<SubmitKeyEvent>,
+
+  /**
+   * Specifies the tooltip.
+   *
+   * @platform macos
+   */
+  tooltip?: ?string,
+|}>;
+// macOS]
+
 type AndroidProps = $ReadOnly<{|
   /**
    * Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
@@ -518,10 +643,14 @@ type AndroidProps = $ReadOnly<{|
   underlineColorAndroid?: ?ColorValue,
 |}>;
 
+export type PasteType = 'fileUrl' | 'image' | 'string'; // [macOS]
+export type PastedTypesType = PasteType | $ReadOnlyArray<PasteType>; // [macOS]
+
 export type Props = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSProps,
   ...AndroidProps,
+  ...MacOSProps, // [macOS]
 
   /**
    * Can tell `TextInput` to automatically capitalize certain characters.
@@ -721,7 +850,7 @@ export type Props = $ReadOnly<{|
   /**
    * Callback that is called when the text input is focused.
    */
-  onFocus?: ?(e: FocusEvent) => mixed,
+  onFocus?: ?(e: FocusEvent) => void, // [macOS]
 
   /**
    * Callback that is called when a key is pressed.

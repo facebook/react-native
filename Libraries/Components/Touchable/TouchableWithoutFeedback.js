@@ -21,12 +21,13 @@ import type {
   FocusEvent,
   KeyEvent,
   LayoutEvent,
+  MouseEvent,
   PressEvent,
-  MouseEvent, // [macOS]
+  // [macOS]
 } from '../../Types/CoreEventTypes';
-
 // [macOS
 import type {DraggedTypesType} from '../View/DraggedType';
+
 // macOS]
 import View from '../../Components/View/View';
 import Pressability, {
@@ -77,12 +78,8 @@ type Props = $ReadOnly<{|
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   nativeID?: ?string,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
-  onBlur?: ?(event: BlurEvent) => mixed,
-  onFocus?: ?(event: FocusEvent) => mixed,
-  onKeyDown?: ?(event: KeyEvent) => mixed,
-  onKeyUp?: ?(event: KeyEvent) => mixed,
-  validKeysDown?: ?Array<string>,
-  validKeysUp?: ?Array<string>,
+  onBlur?: ?(event: BlurEvent) => void, // [macOS]
+  onFocus?: ?(event: FocusEvent) => void, // [macOS]
   onLayout?: ?(event: LayoutEvent) => mixed,
   onLongPress?: ?(event: PressEvent) => mixed,
   onPress?: ?(event: PressEvent) => mixed,
@@ -98,6 +95,10 @@ type Props = $ReadOnly<{|
   onDragLeave?: (event: MouseEvent) => void,
   onDrop?: (event: MouseEvent) => void,
   draggedTypes?: ?DraggedTypesType,
+  onKeyDown?: ?(event: KeyEvent) => void,
+  onKeyUp?: ?(event: KeyEvent) => void,
+  validKeysDown?: ?Array<string>,
+  validKeysUp?: ?Array<string>,
   // macOS]
   pressRetentionOffset?: ?EdgeInsetsProp,
   rejectResponderTermination?: ?boolean,

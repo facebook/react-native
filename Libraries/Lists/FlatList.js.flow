@@ -104,6 +104,14 @@ declare class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    * @platform ios
    */
   flashScrollIndicators(): void;
+  // [macOS
+  /**
+   * Move selection to the specified index
+   *
+   * @platform macos
+   */
+  selectRowAtIndex(index: number): void;
+  // macOS]
   getScrollResponder(): ?ScrollResponderType;
   getNativeScrollRef():
     | ?React.ElementRef<typeof View>

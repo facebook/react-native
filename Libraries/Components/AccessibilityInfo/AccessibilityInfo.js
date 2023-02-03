@@ -34,10 +34,12 @@ type AccessibilityEventDefinitionsIOS = {
   reduceTransparencyChanged: [boolean],
 };
 
-// Events that are only supported on iOS.
+// [macOS
+// Events that are only supported on macOS.
 type AccessibilityEventDefinitionsMacOS = {
   highContrastChanged: [boolean], // [macOS] highContrastChanged is used on macOS
 };
+// macOS]
 
 type AccessibilityEventDefinitions = {
   ...AccessibilityEventDefinitionsAndroid,
@@ -137,10 +139,10 @@ const AccessibilityInfo: AccessibilityInfoType = {
     // macOS]
   },
 
+  // [macOS
   /**
    * macOS only
    */
-  // [macOS
   isHighContrastEnabled: function (): Promise<boolean> {
     if (Platform.OS === 'macos') {
       return new Promise((resolve, reject) => {
@@ -229,10 +231,11 @@ const AccessibilityInfo: AccessibilityInfoType = {
         return Promise.resolve(false);
       } else {
         if (
-          NativeAccessibilityManagerIOS?.getCurrentPrefersCrossFadeTransitionsState !=
+          NativeAccessibilityManagerApple?.getCurrentPrefersCrossFadeTransitionsState != // [macOS]
           null
         ) {
-          NativeAccessibilityManagerIOS.getCurrentPrefersCrossFadeTransitionsState(
+          // [macOS]
+          NativeAccessibilityManagerApple.getCurrentPrefersCrossFadeTransitionsState(
             resolve,
             reject,
           );
@@ -405,7 +408,7 @@ const AccessibilityInfo: AccessibilityInfoType = {
     if (Platform.OS === 'android') {
       NativeAccessibilityInfoAndroid?.announceForAccessibility(announcement);
     } else {
-      NativeAccessibilityManagerApple?.announceForAccessibility(announcement);
+      NativeAccessibilityManagerApple?.announceForAccessibility(announcement); // [macOS]
     }
   },
 
@@ -422,7 +425,7 @@ const AccessibilityInfo: AccessibilityInfoType = {
     if (Platform.OS === 'android') {
       NativeAccessibilityInfoAndroid?.announceForAccessibility(announcement);
     } else {
-      // [macOS NativeAccessibilityManagerIOS -> NativeAccessibilityManagerApple
+      // [macOS NativeAccessibilityManagerApple -> NativeAccessibilityManagerApple
       if (
         NativeAccessibilityManagerApple?.announceForAccessibilityWithOptions
       ) {

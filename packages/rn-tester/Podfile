@@ -15,7 +15,7 @@ if USE_FRAMEWORKS
   use_frameworks!
 end
 
-def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
+def pods(options = {})
   project 'RNTesterPods.xcodeproj'
 
   # [macOS Disable Fabric by default till macOS supports it
@@ -26,6 +26,11 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   # macOS]
   puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
 
+  # Hermes is now enabled by default.
+  # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
+  hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
+  puts "Configuring RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
+
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     # Custom fabric component is only supported when using codegen discovery.
     pod 'MyNativeView', :path => "NativeComponentExample"
@@ -35,7 +40,7 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
     path: @prefix_path,
     fabric_enabled: fabric_enabled,
     hermes_enabled: hermes_enabled,
-    flipper_configuration: use_flipper ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
+    flipper_configuration: FlipperConfiguration.disabled,
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
     production: !ENV['PRODUCTION'].nil?
@@ -45,12 +50,12 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   # Additional Pods which aren't included in the default Podfile
   pod 'React-RCTPushNotification', :path => "#{@prefix_path}/Libraries/PushNotificationIOS"
   pod 'Yoga', :path => "#{@prefix_path}/ReactCommon/yoga", :modular_headers => true
-  pod 'React-TurboModuleCxx-WinRTPort', :path => "#{@prefix_path}/ReactTurboModuleCxx" # [macOS]
-  pod 'React-TurboModuleCxx-RNW', :podspec => "#{@prefix_path}/ReactTurboModuleCxx/React-TurboModuleCxx-RNW.podspec" # [macOS]
+  # pod 'React-TurboModuleCxx-WinRTPort', :path => "#{@prefix_path}/ReactTurboModuleCxx" # [macOS]
+  # pod 'React-TurboModuleCxx-RNW', :podspec => "#{@prefix_path}/ReactTurboModuleCxx/React-TurboModuleCxx-RNW.podspec" # [macOS]
   # Additional Pods which are classed as unstable
 
   # RNTester native modules and components
-  pod 'ScreenshotManager', :path => "NativeModuleExample"
+  # pod 'ScreenshotManager', :path => "NativeModuleExample"
 end
 
 target 'RNTester' do
@@ -68,23 +73,23 @@ target 'RNTesterIntegrationTests' do
   pod 'React-RCTTest', :path => "./RCTTest"
 end
 
-target 'RNTester-macOS' do
-  platform :osx, '10.15'
-  pods()
-end
+# target 'RNTester-macOS' do
+#   platform :osx, '10.15'
+#   pods()
+# end
 
-target 'RNTester-macOSUnitTests' do
-  platform :osx, '10.15'
-  pods()
-  pod 'React-RCTTest', :path => "./RCTTest"
-  pod 'OCMock', '~> 3.9.1'
-end
+# target 'RNTester-macOSUnitTests' do
+#   platform :osx, '10.15'
+#   pods()
+#   pod 'React-RCTTest', :path => "./RCTTest"
+#   pod 'OCMock', '~> 3.9.1'
+# end
 
-target 'RNTester-macOSIntegrationTests' do
-  platform :osx, '10.15'
-  pods()
-  pod 'React-RCTTest', :path => "./RCTTest"
-end
+# target 'RNTester-macOSIntegrationTests' do
+#   platform :osx, '10.15'
+#   pods()
+#   pod 'React-RCTTest', :path => "./RCTTest"
+# end
 
 post_install do |installer|
   react_native_post_install(installer, @prefix_path, :mac_catalyst_enabled => false)

@@ -12,9 +12,13 @@
 'use strict';
 
 import type {PressEvent} from '../Types/CoreEventTypes';
+import type {BlurEvent, FocusEvent, KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
+  // [macOS
+  AccessibilityRole,
+  // macOS]
   AccessibilityState,
 } from './View/ViewAccessibility';
 
@@ -150,6 +154,55 @@ type ButtonProps = $ReadOnly<{|
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   accessibilityHint?: ?string,
   accessibilityLanguage?: ?Stringish,
+
+  // [macOS
+  /**
+   * Custom accessibility role -- otherwise we use button
+   */
+  accessibilityRole?: ?AccessibilityRole,
+
+  /**
+   * Accessibility action handlers
+   */
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+
+  /**
+   * Handler to be called when the button receives key focus
+   */
+  onBlur?: ?(e: BlurEvent) => void,
+
+  /**
+   * Handler to be called when the button loses key focus
+   */
+  onFocus?: ?(e: FocusEvent) => void,
+
+  /**
+   * Handler to be called when a key down press is detected
+   */
+  onKeyDown?: ?(e: KeyEvent) => void,
+
+  /**
+   * Handler to be called when a key up press is detected
+   */
+  onKeyUp?: ?(e: KeyEvent) => void,
+
+  /*
+   * Array of keys to receive key down events for
+   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+   */
+  validKeysDown?: ?Array<string>,
+
+  /*
+   * Array of keys to receive key up events for
+   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+   */
+  validKeysUp?: ?Array<string>,
+
+  /*
+   * Specifies the Tooltip for the view
+   */
+  tooltip?: string,
+  // macOS]
 |}>;
 
 /**

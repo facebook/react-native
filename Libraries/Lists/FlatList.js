@@ -659,6 +659,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
                 // $FlowFixMe[incompatible-call]
                 item: it,
                 index: index * cols + kk,
+                isSelected: info.isSelected, // [macOS]
                 separators: info.separators,
               });
               return element != null ? (

@@ -334,7 +334,11 @@ class FlatListExample extends React.PureComponent<Props, State> {
   _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
   // $FlowFixMe[missing-local-annot]
   _renderItemComponent = () => {
-    const renderProp = ({item, separators, isSelected}: RenderItemProps<Item>) => { // [macOS]
+    const renderProp = ({
+      item,
+      separators,
+      isSelected, // [macOS]
+    }: RenderItemProps<Item>) => {
       return (
         <ItemComponent
           item={item}

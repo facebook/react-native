@@ -179,15 +179,14 @@ const styles = StyleSheet.create({
     ...Platform.select({
       // [macOS
       macos: {
-        backgroundColor: {
-          semantic: 'unemphasizedSelectedContentBackgroundColor',
-        },
+        backgroundColor: PlatformColor(
+          'unemphasizedSelectedContentBackgroundColor',
+        ),
+
         color: PlatformColor('headerTextColor'),
       },
       ios: {
-        backgroundColor: {
-          semantic: 'systemGroupedBackgroundColor',
-        },
+        backgroundColor: PlatformColor('systemGroupedBackgroundColor'),
         color: PlatformColor('secondaryLabelColor'),
       },
       default: {

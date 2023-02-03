@@ -47,7 +47,6 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
   renderItem?: (info: {
     item: Item,
     index: number,
-    isSelected?: boolean, // [macOS]
     section: SectionT,
     separators: {
       highlight: () => void,

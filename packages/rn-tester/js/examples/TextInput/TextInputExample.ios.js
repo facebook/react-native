@@ -25,11 +25,12 @@ const {
   Switch,
   Alert,
 } = require('react-native');
+// [macOS
 import type {
   KeyboardType,
   SettingChangeEvent,
   PasteEvent,
-} from 'react-native/Libraries/Components/TextInput/TextInput'; // [macOS
+} from 'react-native/Libraries/Components/TextInput/TextInput'; // macOS]
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 

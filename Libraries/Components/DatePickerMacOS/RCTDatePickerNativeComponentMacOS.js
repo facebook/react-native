@@ -12,11 +12,11 @@
 
 'use strict';
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 type Event = SyntheticEvent<
   $ReadOnly<{|

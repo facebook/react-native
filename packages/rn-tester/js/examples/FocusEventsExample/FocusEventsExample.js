@@ -24,7 +24,7 @@ class FocusEventExample extends React.Component<{}, State> {
     eventStream: '',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text>

@@ -13,11 +13,12 @@
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
+/* $FlowFixMe allow macOS to share iOS file */
+import PlatformBaseViewConfigIos from './BaseViewConfig.ios';
 import {
   ConditionallyIgnoredEventHandlers,
   DynamicallyInjectedByGestureHandler,
 } from './ViewConfigIgnore';
-import PlatformBaseViewConfigIos from './BaseViewConfig.ios'; // [macOS]
 
 const bubblingEventTypes = {
   ...PlatformBaseViewConfigIos.bubblingEventTypes,

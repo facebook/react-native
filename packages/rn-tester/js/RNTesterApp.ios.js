@@ -61,7 +61,7 @@ RNTesterList.Components.concat(RNTesterList.APIs).forEach(
         });
       }
 
-      render() {
+      render(): Node {
         return <RNTesterModuleContainer module={ExampleModule} />;
       }
     }
@@ -76,7 +76,7 @@ RNTesterList.Components.concat(RNTesterList.APIs).forEach(
 
 // [macOS
 class EnumerateExamplePages extends React.Component<{}> {
-  render() {
+  render(): Node {
     RNTesterList.Components.concat(RNTesterList.APIs).forEach(
       (Example: RNTesterModuleInfo) => {
         let skipTest = false;

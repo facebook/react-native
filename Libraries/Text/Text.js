@@ -120,6 +120,7 @@ const Text: React.AbstractComponent<
       onPressOut,
       onResponderTerminationRequest,
       onStartShouldSetResponder,
+      suppressHighlighting,
     ],
   );
 

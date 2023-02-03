@@ -21,6 +21,13 @@ export type Buttons = Array<{
   style?: AlertButtonStyle,
   ...
 }>;
+// [macOS
+export type DefaultInputsArray = Array<{
+  default?: string,
+  placeholder?: string,
+  style?: AlertButtonStyle,
+}>;
+// macOS]
 type Options = {
   cancelable?: ?boolean,
   userInterfaceStyle?: 'unspecified' | 'light' | 'dark',
@@ -43,6 +50,15 @@ declare class Alert {
     defaultValue?: string,
     keyboardType?: string,
     options?: Options,
+  ): void;
+  static promptMacOS(
+    title: ?string,
+    message?: ?string,
+    callbackOrButtons?: ?((text: string) => void) | Buttons,
+    type?: ?AlertType,
+    defaultInputs?: DefaultInputsArray,
+    modal?: ?boolean,
+    critical?: ?boolean,
   ): void;
 }
 

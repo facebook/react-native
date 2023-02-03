@@ -152,6 +152,15 @@ export type PasteEvent = SyntheticEvent<
     |},
   |}>,
 >;
+
+export type SubmitKeyEvent = $ReadOnly<{|
+  key: string,
+  altKey?: ?boolean,
+  ctrlKey?: ?boolean,
+  metaKey?: ?boolean,
+  shiftKey?: ?boolean,
+  functionKey?: ?boolean,
+|}>;
 // macOS]
 
 type DataDetectorTypesType =
@@ -400,15 +409,6 @@ type IOSProps = $ReadOnly<{|
 |}>;
 
 // [macOS
-export type SubmitKeyEvent = $ReadOnly<{|
-  key: string,
-  altKey?: ?boolean,
-  ctrlKey?: ?boolean,
-  metaKey?: ?boolean,
-  shiftKey?: ?boolean,
-  functionKey?: ?boolean,
-|}>;
-
 type MacOSProps = $ReadOnly<{|
   /**
    * If `true`, clears the text field synchronously before `onSubmitEditing` is emitted.
@@ -895,7 +895,7 @@ export type Props = $ReadOnly<{|
   /**
    * Callback that is called when the text input is focused.
    */
-  onFocus?: ?(e: FocusEvent) => mixed,
+  onFocus?: ?(e: FocusEvent) => void, // [macOS]
 
   /**
    * Callback that is called when a key is pressed.
@@ -1556,7 +1556,8 @@ function InternalTextInput(props: Props): React.Node {
     selected: props['aria-selected'] ?? props.accessibilityState?.selected,
   };
 
-  if (Platform.OS === 'ios' || Platform.OS === 'macos') { // [macOS]
+  if (Platform.OS === 'ios' || Platform.OS === 'macos') {
+    // [macOS]
     const RCTTextInputView =
       props.multiline === true
         ? RCTMultilineTextInputView

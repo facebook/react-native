@@ -67,7 +67,7 @@ class Alert {
         undefined,
         options,
       );
-    // [macOS
+      // [macOS
     } else if (Platform.OS === 'macos') {
       Alert.promptMacOS(
         title,
@@ -78,7 +78,7 @@ class Alert {
         options?.modal,
         options?.critical,
       );
-    // macOS]
+      // macOS]
     } else if (Platform.OS === 'android') {
       const NativeDialogManagerAndroid =
         require('../NativeModules/specs/NativeDialogManagerAndroid').default;
@@ -263,7 +263,7 @@ class Alert {
       callbackOrButtons.forEach((btn, index) => {
         callbacks[index] = btn.onPress;
         if (btn.text || index < (callbackOrButtons || []).length - 1) {
-          const btnDef = {};
+          const btnDef: {[number]: string} = {};
           btnDef[index] = btn.text || '';
           buttons.push(btnDef);
         }

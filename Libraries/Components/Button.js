@@ -12,10 +12,15 @@
 'use strict';
 
 import type {PressEvent} from '../Types/CoreEventTypes';
+import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
 import type {Button as ButtonType} from './Button.flow';
+import type {BlurEvent, FocusEvent} from './TextInput/TextInput'; // [macOS]
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
+  // [macOS
+  AccessibilityRole,
+  // macOS]
   AccessibilityState,
 } from './View/ViewAccessibility';
 
@@ -27,8 +32,6 @@ import TouchableOpacity from './Touchable/TouchableOpacity';
 import View from './View/View';
 import invariant from 'invariant';
 import * as React from 'react';
-import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
-import type {FocusEvent, BlurEvent} from './TextInput/TextInput'; // [macOS]
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -129,18 +132,6 @@ type ButtonProps = $ReadOnly<{|
    */
   accessibilityLabel?: ?string,
 
-  // [macOS
-  /**
-   * Custom accessibility role -- otherwise we use button
-   */
-  accessibilityRole?: ?AccessibilityRole,
-
-  /**
-   * Accessibility action handlers
-   */
-  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
-  // macOS]
-
   /**
    * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
    * https://github.com/facebook/react-native/issues/34424
@@ -159,6 +150,16 @@ type ButtonProps = $ReadOnly<{|
   testID?: ?string,
 
   // [macOS
+  /**
+   * Custom accessibility role -- otherwise we use button
+   */
+  accessibilityRole?: ?AccessibilityRole,
+
+  /**
+   * Accessibility action handlers
+   */
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+
   /**
    * Handler to be called when the button receives key focus
    */
@@ -364,7 +365,7 @@ class Button extends React.Component<ButtonProps> {
       onKeyUp,
       validKeysDown,
       validKeysUp, // macOS]
-      tooltip,
+      tooltip, // [macOS]
       accessible,
       accessibilityActions,
       accessibilityHint,
@@ -446,7 +447,7 @@ class Button extends React.Component<ButtonProps> {
         onKeyUp={onKeyUp}
         validKeysDown={validKeysDown}
         validKeysUp={validKeysUp}
-        tooltip={tooltip}
+        tooltip={tooltip} // [macOS]
         touchSoundDisabled={touchSoundDisabled}>
         <View style={buttonStyles}>
           <Text style={textStyles} disabled={disabled}>

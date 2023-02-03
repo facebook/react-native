@@ -9,13 +9,13 @@
  */
 
 import type {
+  BlurEvent,
+  // [macOS
+  FocusEvent,
+  KeyEvent,
   LayoutEvent,
   MouseEvent,
   PressEvent,
-  // [macOS
-  FocusEvent,
-  BlurEvent,
-  KeyEvent,
   // macOS]
 } from '../../Types/CoreEventTypes';
 import type {DraggedTypesType} from '../View/DraggedType'; // [macOS]
@@ -167,22 +167,22 @@ type Props = $ReadOnly<{|
   /**
    * Called after the element is focused.
    */
-  onFocus?: ?(event: FocusEvent) => mixed,
+  onFocus?: ?(event: FocusEvent) => void,
 
   /**
    * Called after the element loses focus.
    */
-  onBlur?: ?(event: BlurEvent) => mixed,
+  onBlur?: ?(event: BlurEvent) => void,
 
   /**
    * Called after a key down event is detected.
    */
-  onKeyDown?: ?(event: KeyEvent) => mixed,
+  onKeyDown?: ?(event: KeyEvent) => void,
 
   /**
    * Called after a key up event is detected.
    */
-  onKeyUp?: ?(event: KeyEvent) => mixed,
+  onKeyUp?: ?(event: KeyEvent) => void,
 
   /**
    * Array of keys to receive key down events for

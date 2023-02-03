@@ -23,16 +23,10 @@ module.exports = {
     extraNodeModules: {
       'react-native': __dirname,
     },
+    platforms: ['ios', 'macos', 'android'],
   },
   serializer: {
     getPolyfills,
-  },
-  resolver: {
-    platforms: ['ios', 'macos', 'android'],
-    extraNodeModules: {
-      'react-native': __dirname,
-    },
-    blockList: [/android-patches\/.*/],
   },
   transformer: {},
 };

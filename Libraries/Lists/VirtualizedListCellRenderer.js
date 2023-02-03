@@ -139,7 +139,7 @@ export default class CellRenderer<ItemT> extends React.Component<
     ListItemComponent: any,
     item: ItemT,
     index: number,
-    isSelected, // [macOS]
+    isSelected: ?boolean, // [macOS]
   ): React.Node {
     if (renderItem && ListItemComponent) {
       console.warn(
