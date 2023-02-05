@@ -16,6 +16,7 @@ target_include_directories(jscexecutor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(jscexecutor
         jsireact
         jscruntime
+        unwind # static link libunwind.a from NDK >= 23 to fix undefined `_Unwind_Resume` runtime error
         fb
         fbjni
         folly_runtime
