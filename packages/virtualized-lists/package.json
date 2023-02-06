@@ -8,6 +8,9 @@
     "directory": "packages/virtualized-lists"
   },
   "license": "MIT",
+  "dependencies": {
+    "invariant": "^2.2.4"
+  },
   "devDependencies": {
     "react-test-renderer": "18.2.0"
   },
