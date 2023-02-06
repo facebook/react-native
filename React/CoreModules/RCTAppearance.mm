@@ -10,6 +10,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConstants.h>
 #import <React/RCTEventEmitter.h>
+#import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -108,7 +109,7 @@ RCT_EXPORT_MODULE(Appearance)
 
 RCT_EXPORT_METHOD(setColorScheme : (NSString *)style) {
   UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:style];
-  NSArray<__kindof UIWindow*>* windows = [[UIApplication sharedApplication] windows];
+  NSArray<__kindof UIWindow*>* windows = RCTSharedApplication().windows;
   if (@available(iOS 13.0, *)) {
     for (UIWindow *window in windows)
     {
