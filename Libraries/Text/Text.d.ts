@@ -57,6 +57,7 @@ export interface TextPropsIOS {
 
 export interface TextPropsAndroid {
   accessibilitySpan?:
+    | 'none'
     | 'cardinal'
     | 'ordinal'
     | 'decimal'

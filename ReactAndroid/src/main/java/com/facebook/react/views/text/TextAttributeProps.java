@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -22,6 +21,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.views.text.ReactTtsSpan.AccessibilitySpan;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -106,7 +106,7 @@ public class TextAttributeProps {
 
   protected @Nullable AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
-  protected @Nullable ReactTtsSpan.AccessibilitySpan mAccessibilitySpan = null;
+  protected @Nullable AccessibilitySpan mAccessibilitySpan = null;
   protected @Nullable String mAccessibilityUnit = null;
   protected boolean mIsAccessibilityLink = false;
   protected boolean mIsAccessibilityTtsSpan = false;
@@ -622,13 +622,7 @@ public class TextAttributeProps {
 
   private void setAccessibilitySpan(@Nullable String accessibilitySpan) {
     if (accessibilitySpan != null) {
-      mAccessibilitySpan = ReactTtsSpan.AccessibilitySpan.fromValue(accessibilitySpan);
-      FLog.w(
-          "React::" + TAG,
-          " accessibilitySpan: "
-              + (accessibilitySpan)
-              + " mAccessibilitySpan: "
-              + (mAccessibilitySpan));
+      mAccessibilitySpan = AccessibilitySpan.fromValue(accessibilitySpan);
     }
   }
 

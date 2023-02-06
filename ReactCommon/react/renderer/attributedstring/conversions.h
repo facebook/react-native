@@ -819,7 +819,6 @@ inline std::string toString(const AccessibilitySpan &accessibilitySpan) {
   LOG(ERROR) << "Unsupported AccessibilitySpan value";
   react_native_assert(false);
   // sane default for prod
-  // fix this
   return "none";
 }
 

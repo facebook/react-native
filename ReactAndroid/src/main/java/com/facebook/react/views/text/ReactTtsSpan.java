@@ -96,7 +96,7 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       }
     }
 
-    public static AccessibilitySpan fromValue(@androidx.annotation.Nullable String value) {
+    public static AccessibilitySpan fromValue(@Nullable String value) {
       for (AccessibilitySpan accessibilitySpan : AccessibilitySpan.values()) {
         if (accessibilitySpan.name().equalsIgnoreCase(value)) {
           return accessibilitySpan;

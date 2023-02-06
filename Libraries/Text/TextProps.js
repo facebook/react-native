@@ -53,6 +53,7 @@ export type TextProps = $ReadOnly<{|
   accessible?: ?boolean,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   accessibilitySpan?: ?(
+    | 'none'
     | 'cardinal'
     | 'ordinal'
     | 'decimal'

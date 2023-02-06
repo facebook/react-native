@@ -30,6 +30,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.views.text.ReactTtsSpan.AccessibilitySpan;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -144,7 +145,7 @@ public class TextLayoutManagerMapBuffer {
           ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
         }
         if (textAttributes.mAccessibilitySpan != null
-            && textAttributes.mAccessibilitySpan != ReactTtsSpan.AccessibilitySpan.NONE) {
+            && textAttributes.mAccessibilitySpan != AccessibilitySpan.NONE) {
           ReactTtsSpan.Builder builder =
               new ReactTtsSpan.Builder(
                   textAttributes.mAccessibilitySpan, textAttributes.mAccessibilityUnit);
