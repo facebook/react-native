@@ -25,12 +25,6 @@
 
 using namespace facebook::react;
 
-struct PendingOffset {
-  bool isPending;
-  CGPoint offset;
-  CGPoint lastOffset;
-};
-
 static CGFloat const kClippingLeeway = 44.0;
 
 static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(ScrollViewProps const &props)
@@ -105,8 +99,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   BOOL _shouldUpdateContentInsetAdjustmentBehavior;
 
   CGPoint _contentOffsetWhenClipped;
-
-  PendingOffset _pendingOffset;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -180,12 +172,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
     _containerView.transform = transform;
     _scrollView.transform = transform;
-  }
-
-  // If there is a pending offset, apply it
-  if (_pendingOffset.isPending) {
-    [self scrollTo:_pendingOffset.offset.x y:_pendingOffset.offset.y animated:false];
-    _pendingOffset.isPending = false;
   }
 }
 
@@ -435,13 +421,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     [self _updateStateWithContentOffset];
   }
 
-  // If the view is hidden, then set as pending offset. Apply it later on
-  // updateLayoutMetrics.
-  if (_scrollView.window == nil && !_pendingOffset.isPending) {
-    _pendingOffset.offset = _pendingOffset.lastOffset;
-    _pendingOffset.isPending = true;
-  }
-
   NSTimeInterval now = CACurrentMediaTime();
   if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
     _lastScrollEventDispatchTime = now;
@@ -451,8 +430,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
     RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag);
   }
-
-  _pendingOffset.lastOffset = _scrollView.contentOffset;
 
   [self _remountChildrenIfNeeded];
 }
