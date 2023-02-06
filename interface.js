@@ -11,7 +11,7 @@
 'use strict';
 
 // NOTE: Hmm... I don't think declaring variables within this module actually
-// accomplishes anything besides documenting that these globals are exepcted to
+// accomplishes anything besides documenting that these globals are expected to
 // exist. So I think the correct "fix" to this lint warning is to delete this
 // entire file. But in lieu of doing that... no harm for now in keeping this
 // file around, even if it is only for documentation purposes. ¯\_(ツ)_/¯

@@ -106,6 +106,9 @@ function getJavaValueForProp(
         case 'EdgeInsetsPrimitive':
           addNullable(imports);
           return '@Nullable ReadableMap value';
+        case 'DimensionPrimitive':
+          addNullable(imports);
+          return '@Nullable YogaValue value';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown ReservedPropTypeAnnotation');

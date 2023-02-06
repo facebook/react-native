@@ -116,7 +116,7 @@ async function main() {
   const parameters = {
     release_version: version,
     release_latest: latest,
-    run_package_release_workflow_only: true,
+    run_release_workflow: true,
   };
 
   const options = {

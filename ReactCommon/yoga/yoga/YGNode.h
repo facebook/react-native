@@ -327,8 +327,6 @@ public:
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
-  void setLayoutDoesLegacyFlagAffectsLayout(bool doesLegacyFlagAffectsLayout);
-  void setLayoutDidUseLegacyFlag(bool didUseLegacyFlag);
   void markDirtyAndPropogateDownwards();
 
   // Other methods
@@ -351,8 +349,6 @@ public:
   float resolveFlexGrow() const;
   float resolveFlexShrink() const;
   bool isNodeFlexible();
-  bool didUseLegacyFlag();
-  bool isLayoutTreeEqualToNode(const YGNode& node) const;
   void reset();
 };
 

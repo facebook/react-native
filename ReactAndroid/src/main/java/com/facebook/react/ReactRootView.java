@@ -15,6 +15,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Insets;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
@@ -33,8 +34,6 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.graphics.Insets;
-import androidx.core.view.WindowInsetsCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -263,14 +262,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (shouldDispatchJSTouchEvent(ev)) {
       dispatchJSTouchEvent(ev);
     }
-    dispatchJSPointerEvent(ev);
+    dispatchJSPointerEvent(ev, true);
     return super.onInterceptTouchEvent(ev);
-  }
-
-  @Override
-  public boolean onInterceptHoverEvent(MotionEvent ev) {
-    dispatchJSPointerEvent(ev);
-    return super.onInterceptHoverEvent(ev);
   }
 
   @Override
@@ -278,7 +271,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (shouldDispatchJSTouchEvent(ev)) {
       dispatchJSTouchEvent(ev);
     }
-    dispatchJSPointerEvent(ev);
+    dispatchJSPointerEvent(ev, false);
     super.onTouchEvent(ev);
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture
@@ -286,8 +279,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
+  public boolean onInterceptHoverEvent(MotionEvent ev) {
+    dispatchJSPointerEvent(ev, true);
+    return super.onInterceptHoverEvent(ev);
+  }
+
+  @Override
   public boolean onHoverEvent(MotionEvent ev) {
-    dispatchJSPointerEvent(ev);
+    dispatchJSPointerEvent(ev, false);
     return super.onHoverEvent(ev);
   }
 
@@ -344,7 +343,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     super.requestChildFocus(child, focused);
   }
 
-  protected void dispatchJSPointerEvent(MotionEvent event) {
+  protected void dispatchJSPointerEvent(MotionEvent event, boolean isCapture) {
     if (mReactInstanceManager == null
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {
@@ -363,7 +362,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
-      mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher);
+      mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher, isCapture);
     }
   }
 
@@ -776,7 +775,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @VisibleForTesting
   /* package */ void simulateCheckForKeyboardForTesting() {
-    if (Build.VERSION.SDK_INT >= 23) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       getCustomGlobalLayoutListener().checkForKeyboardEvents();
     } else {
       getCustomGlobalLayoutListener().checkForKeyboardEventsLegacy();
@@ -907,9 +906,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         return;
       }
 
-      // WindowInsetsCompat IME measurement is reliable for API level 23+.
-      // https://developer.android.com/jetpack/androidx/releases/core#1.5.0-alpha02
-      if (Build.VERSION.SDK_INT >= 23) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         checkForKeyboardEvents();
       } else {
         checkForKeyboardEventsLegacy();
@@ -919,19 +916,21 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       checkForDeviceDimensionsChanges();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    @RequiresApi(api = Build.VERSION_CODES.R)
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
       WindowInsets rootInsets = getRootView().getRootWindowInsets();
-      WindowInsetsCompat compatRootInsets = WindowInsetsCompat.toWindowInsetsCompat(rootInsets);
+      if (rootInsets == null) {
+        return;
+      }
 
-      boolean keyboardIsVisible = compatRootInsets.isVisible(WindowInsetsCompat.Type.ime());
+      boolean keyboardIsVisible = rootInsets.isVisible(WindowInsets.Type.ime());
       if (keyboardIsVisible != mKeyboardIsVisible) {
         mKeyboardIsVisible = keyboardIsVisible;
 
         if (keyboardIsVisible) {
-          Insets imeInsets = compatRootInsets.getInsets(WindowInsetsCompat.Type.ime());
-          Insets barInsets = compatRootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+          Insets imeInsets = rootInsets.getInsets(WindowInsets.Type.ime());
+          Insets barInsets = rootInsets.getInsets(WindowInsets.Type.systemBars());
           int height = imeInsets.bottom - barInsets.bottom;
 
           int softInputMode = ((Activity) getContext()).getWindow().getAttributes().softInputMode;

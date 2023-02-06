@@ -13,6 +13,7 @@
 import type {
   NamedShape,
   NativeModuleAliasMap,
+  NativeModuleEnumMap,
   NativeModuleBaseTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleTypeAnnotation,
@@ -22,15 +23,16 @@ import type {
 
 import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
+const {flattenProperties} = require('../components/componentsUtils');
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
 const {resolveTypeAnnotation, getTypes} = require('../utils');
 
 const {
   parseObjectProperty,
-  translateDefault,
   buildPropertySchema,
 } = require('../../parsers-commons');
+const {typeEnumResolution} = require('../../parsers-primitives');
 
 const {
   emitArrayType,
@@ -40,6 +42,7 @@ const {
   emitFunction,
   emitNumber,
   emitInt32,
+  emitGenericObject,
   emitObject,
   emitPromise,
   emitRootTag,
@@ -79,11 +82,12 @@ function translateTypeAnnotation(
   typeScriptTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
-  const {nullable, typeAnnotation, typeAliasResolutionStatus} =
+  const {nullable, typeAnnotation, typeResolutionStatus} =
     resolveTypeAnnotation(typeScriptTypeAnnotation, types);
 
   switch (typeAnnotation.type) {
@@ -92,6 +96,7 @@ function translateTypeAnnotation(
         hasteModuleName,
         types,
         aliasMap,
+        enumMap,
         cxxOnly,
         'Array',
         typeAnnotation.elementType,
@@ -109,6 +114,7 @@ function translateTypeAnnotation(
           hasteModuleName,
           types,
           aliasMap,
+          enumMap,
           cxxOnly,
           'ReadonlyArray',
           typeAnnotation.typeAnnotation.elementType,
@@ -137,6 +143,7 @@ function translateTypeAnnotation(
             nullable,
             types,
             aliasMap,
+            enumMap,
             tryParse,
             cxxOnly,
             translateTypeAnnotation,
@@ -150,6 +157,7 @@ function translateTypeAnnotation(
             parser,
             types,
             aliasMap,
+            enumMap,
             cxxOnly,
             nullable,
             translateTypeAnnotation,
@@ -169,18 +177,116 @@ function translateTypeAnnotation(
         }
         case 'UnsafeObject':
         case 'Object': {
-          return emitObject(nullable);
+          return emitGenericObject(nullable);
+        }
+        case 'Partial': {
+          if (typeAnnotation.typeParameters.params.length !== 1) {
+            throw new Error(
+              'Partials only support annotating exactly one parameter.',
+            );
+          }
+
+          const annotatedElement =
+            types[typeAnnotation.typeParameters.params[0].typeName.name];
+
+          if (!annotatedElement) {
+            throw new Error(
+              'Partials only support annotating a type parameter.',
+            );
+          }
+
+          const properties = annotatedElement.typeAnnotation.members.map(
+            member => {
+              return {
+                name: member.key.name,
+                optional: true,
+                typeAnnotation: translateTypeAnnotation(
+                  hasteModuleName,
+                  member.typeAnnotation.typeAnnotation,
+                  types,
+                  aliasMap,
+                  enumMap,
+                  tryParse,
+                  cxxOnly,
+                  parser,
+                ),
+              };
+            },
+          );
+
+          return emitObject(nullable, properties);
         }
         default: {
-          return translateDefault(
+          throw new UnsupportedGenericParserError(
             hasteModuleName,
             typeAnnotation,
-            types,
-            nullable,
             parser,
           );
         }
       }
+    }
+    case 'TSInterfaceDeclaration': {
+      const baseTypes = (typeAnnotation.extends ?? []).map(
+        extend => extend.expression.name,
+      );
+      for (const baseType of baseTypes) {
+        // ensure base types exist and appear in aliasMap
+        translateTypeAnnotation(
+          hasteModuleName,
+          {
+            type: 'TSTypeReference',
+            typeName: {type: 'Identifier', name: baseType},
+          },
+          types,
+          aliasMap,
+          enumMap,
+          tryParse,
+          cxxOnly,
+          parser,
+        );
+      }
+
+      let objectTypeAnnotation = {
+        type: 'ObjectTypeAnnotation',
+        // $FlowFixMe[missing-type-arg]
+        properties: (flattenProperties(
+          [typeAnnotation],
+          types,
+        ): $ReadOnlyArray<$FlowFixMe>)
+          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
+            property => {
+              return tryParse(() => {
+                return parseObjectProperty(
+                  property,
+                  hasteModuleName,
+                  types,
+                  aliasMap,
+                  enumMap,
+                  tryParse,
+                  cxxOnly,
+                  nullable,
+                  translateTypeAnnotation,
+                  parser,
+                );
+              });
+            },
+          )
+          .filter(Boolean),
+        baseTypes,
+      };
+
+      if (objectTypeAnnotation.baseTypes.length === 0) {
+        // The flow checker does not allow adding a member after an object literal is created
+        // so here I do it in a reverse way
+        delete objectTypeAnnotation.baseTypes;
+      }
+
+      return typeAliasResolution(
+        typeResolutionStatus,
+        objectTypeAnnotation,
+        aliasMap,
+        nullable,
+      );
     }
     case 'TSTypeLiteral': {
       // if there is TSIndexSignature, then it is a dictionary
@@ -197,12 +303,13 @@ function translateTypeAnnotation(
             propertyType,
             types,
             aliasMap,
+            enumMap,
             tryParse,
             cxxOnly,
             parser,
           );
           // no need to do further checking
-          return emitObject(nullable);
+          return emitGenericObject(nullable);
         }
       }
 
@@ -218,6 +325,7 @@ function translateTypeAnnotation(
                   hasteModuleName,
                   types,
                   aliasMap,
+                  enumMap,
                   tryParse,
                   cxxOnly,
                   nullable,
@@ -231,10 +339,21 @@ function translateTypeAnnotation(
       };
 
       return typeAliasResolution(
-        typeAliasResolutionStatus,
+        typeResolutionStatus,
         objectTypeAnnotation,
         aliasMap,
         nullable,
+      );
+    }
+    case 'TSEnumDeclaration': {
+      return typeEnumResolution(
+        typeAnnotation,
+        typeResolutionStatus,
+        nullable,
+        hasteModuleName,
+        language,
+        enumMap,
+        parser,
       );
     }
     case 'TSBooleanKeyword': {
@@ -256,6 +375,7 @@ function translateTypeAnnotation(
         typeAnnotation,
         types,
         aliasMap,
+        enumMap,
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
@@ -404,17 +524,21 @@ function buildModuleSchema(
     )
     .map<?{
       aliasMap: NativeModuleAliasMap,
+      enumMap: NativeModuleEnumMap,
       propertyShape: NativeModulePropertyShape,
     }>(property => {
       const aliasMap: {...NativeModuleAliasMap} = {};
+      const enumMap: {...NativeModuleEnumMap} = {};
 
       return tryParse(() => ({
         aliasMap: aliasMap,
+        enumMap: enumMap,
         propertyShape: buildPropertySchema(
           hasteModuleName,
           property,
           types,
           aliasMap,
+          enumMap,
           tryParse,
           cxxOnly,
           resolveTypeAnnotation,
@@ -425,10 +549,14 @@ function buildModuleSchema(
     })
     .filter(Boolean)
     .reduce(
-      (moduleSchema: NativeModuleSchema, {aliasMap, propertyShape}) => {
+      (
+        moduleSchema: NativeModuleSchema,
+        {aliasMap, enumMap, propertyShape},
+      ) => {
         return {
           type: 'NativeModule',
-          aliases: {...moduleSchema.aliases, ...aliasMap},
+          aliasMap: {...moduleSchema.aliasMap, ...aliasMap},
+          enumMap: {...moduleSchema.enumMap, ...enumMap},
           spec: {
             properties: [...moduleSchema.spec.properties, propertyShape],
           },
@@ -438,7 +566,8 @@ function buildModuleSchema(
       },
       {
         type: 'NativeModule',
-        aliases: {},
+        aliasMap: {},
+        enumMap: {},
         spec: {properties: []},
         moduleName: moduleName,
         excludedPlatforms:

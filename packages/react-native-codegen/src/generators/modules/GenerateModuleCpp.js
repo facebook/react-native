@@ -238,11 +238,11 @@ module.exports = {
       .map((hasteModuleName: string) => {
         const nativeModule = nativeModules[hasteModuleName];
         const {
-          aliases,
+          aliasMap,
           spec: {properties},
           moduleName,
         } = nativeModule;
-        const resolveAlias = createAliasResolver(aliases);
+        const resolveAlias = createAliasResolver(aliasMap);
         const hostFunctions = properties.map(property =>
           serializePropertyIntoHostFunction(
             hasteModuleName,

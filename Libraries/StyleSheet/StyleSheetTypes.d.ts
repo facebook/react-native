@@ -232,6 +232,9 @@ export interface TransformsStyle {
 export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   backfaceVisibility?: 'visible' | 'hidden' | undefined;
   backgroundColor?: ColorValue | undefined;
+  borderBlockColor?: ColorValue | undefined;
+  borderBlockEndColor?: ColorValue | undefined;
+  borderBlockStartColor?: ColorValue | undefined;
   borderBottomColor?: ColorValue | undefined;
   borderBottomEndRadius?: number | undefined;
   borderBottomLeftRadius?: number | undefined;
@@ -239,6 +242,11 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderBottomStartRadius?: number | undefined;
   borderBottomWidth?: number | undefined;
   borderColor?: ColorValue | undefined;
+  /**
+   * On iOS 13+, it is possible to change the corner curve of borders.
+   * @platform ios
+   */
+  borderCurve?: 'circular' | 'continuous' | undefined;
   borderEndColor?: ColorValue | undefined;
   borderEndEndRadius?: number | undefined;
   borderEndStartRadius?: number | undefined;
@@ -268,6 +276,10 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
    * @platform android
    */
   elevation?: number | undefined;
+  /**
+   * Controls whether the View can be the target of touch events.
+   */
+  pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto' | undefined;
 }
 
 export type FontVariant =

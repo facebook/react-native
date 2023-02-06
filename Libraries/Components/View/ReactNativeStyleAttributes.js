@@ -117,6 +117,9 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
    */
   backfaceVisibility: true,
   backgroundColor: colorAttributes,
+  borderBlockColor: colorAttributes,
+  borderBlockEndColor: colorAttributes,
+  borderBlockStartColor: colorAttributes,
   borderBottomColor: colorAttributes,
   borderBottomEndRadius: true,
   borderBottomLeftRadius: true,

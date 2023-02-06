@@ -50,7 +50,6 @@ target_link_libraries(
         rrc_progressbar
         rrc_root
         rrc_scrollview
-        rrc_slider
         rrc_switch
         rrc_text
         rrc_textinput

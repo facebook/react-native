@@ -8,8 +8,17 @@
  * @format
  */
 
-import Performance from '../WebPerformance/Performance';
-
 if (!global.performance) {
-  global.performance = new Performance();
+  global.performance = ({}: {now?: () => number});
+}
+
+/**
+ * Returns a double, measured in milliseconds.
+ * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+ */
+if (typeof global.performance.now !== 'function') {
+  global.performance.now = function () {
+    const performanceNow = global.nativePerformanceNow || Date.now;
+    return performanceNow();
+  };
 }

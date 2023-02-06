@@ -43,4 +43,13 @@ internal object ProjectUtils {
   internal fun Project.needsCodegenFromPackageJson(model: ModelPackageJson?): Boolean {
     return model?.codegenConfig != null
   }
+
+  internal fun Project.getReactNativeArchitectures(): List<String> {
+    val architectures = mutableListOf<String>()
+    if (project.hasProperty("reactNativeArchitectures")) {
+      val architecturesString = project.property("reactNativeArchitectures").toString()
+      architectures.addAll(architecturesString.split(",").filter { it.isNotBlank() })
+    }
+    return architectures
+  }
 }
