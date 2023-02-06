@@ -47,4 +47,16 @@
   return module;
 }
 
+- (NSArray *)modulesConformingToProtocol:(Protocol *)protocol
+{
+  NSMutableArray *modules = [NSMutableArray new];
+  RCTBridge *bridge = _bridge;
+  if (bridge) {
+    [modules addObjectsFromArray:[bridge modulesConformingToProtocol:protocol]];
+  }
+
+  // TODO: find a way to get the same information of turboModules
+  return [modules copy];
+}
+
 @end

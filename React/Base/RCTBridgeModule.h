@@ -390,6 +390,7 @@ RCT_EXTERN_C_END
 
 - (id)moduleForName:(const char *)moduleName;
 - (id)moduleForName:(const char *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad;
+- (NSArray *)modulesConformingToProtocol:(Protocol *)protocol;
 @end
 
 typedef UIView * (^RCTBridgelessComponentViewProvider)(NSNumber *);
