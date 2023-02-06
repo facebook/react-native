@@ -1119,7 +1119,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "accessibilityRole", toString(*textAttributes.accessibilityRole));
   }
-  if (!textAttributes.accessibilitySpan.has_value()) {
+  if (textAttributes.accessibilitySpan.has_value()) {
     _textAttributes(
         "accessibilitySpan", toString(*textAttributes.accessibilitySpan));
   }
@@ -1349,7 +1349,7 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
     builder.putString(
         TA_KEY_ACCESSIBILITY_ROLE, toString(*textAttributes.accessibilityRole));
   }
-  if (!textAttributes.accessibilitySpan.has_value()) {
+  if (textAttributes.accessibilitySpan.has_value()) {
     builder.putString(
         TA_KEY_ACCESSIBILITY_SPAN, toString(*textAttributes.accessibilitySpan));
   }

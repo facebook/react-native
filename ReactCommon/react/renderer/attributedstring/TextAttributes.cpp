@@ -101,7 +101,7 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   accessibilityRole = textAttributes.accessibilityRole.has_value()
       ? textAttributes.accessibilityRole
       : accessibilityRole;
-  accessibilitySpan = !textAttributes.accessibilitySpan.has_value() ? textAttributes.accessibilitySpan
+  accessibilitySpan = textAttributes.accessibilitySpan.has_value() ? textAttributes.accessibilitySpan
                                                   : accessibilitySpan;
   accessibilityUnit = !textAttributes.accessibilityUnit.empty() ? textAttributes.accessibilityUnit
                                                   : accessibilityUnit;
