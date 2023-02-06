@@ -15,4 +15,8 @@ import {typeof VirtualizedSectionList as VirtualizedSectionListType} from '@reac
 const VirtualizedSectionList: VirtualizedSectionListType =
   require('@react-native/virtualized-lists').VirtualizedSectionList;
 
+export type {
+  SectionBase,
+  ScrollToLocationParamsType,
+} from '@react-native/virtualized-lists';
 module.exports = VirtualizedSectionList;
