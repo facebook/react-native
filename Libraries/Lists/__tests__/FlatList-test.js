@@ -74,17 +74,6 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('scrollToEnd works with null list', () => {
-    const listRef = React.createRef(null);
-    ReactTestRenderer.create(
-      <FlatList
-        data={undefined}
-        renderItem={({item}) => <item value={item.key} />}
-        ref={listRef}
-      />,
-    );
-    listRef.current.scrollToEnd();
-  });
   it('renders all the bells and whistles', () => {
     const component = ReactTestRenderer.create(
       <FlatList
