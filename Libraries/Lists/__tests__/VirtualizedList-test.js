@@ -137,6 +137,20 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('scrollToEnd works with null list', () => {
+    const listRef = React.createRef(null);
+    ReactTestRenderer.create(
+      <VirtualizedList
+        data={undefined}
+        renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => 0}
+        ref={listRef}
+      />,
+    );
+    listRef.current.scrollToEnd();
+  });
+
   it('renders empty list with empty component', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList

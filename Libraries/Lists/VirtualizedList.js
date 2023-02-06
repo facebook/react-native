@@ -157,6 +157,9 @@ export default class VirtualizedList extends StateSafePureComponent<
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
+    if (veryLast < 0) {
+      return;
+    }
     const frame = this.__getFrameMetricsApprox(veryLast, this.props);
     const offset = Math.max(
       0,
