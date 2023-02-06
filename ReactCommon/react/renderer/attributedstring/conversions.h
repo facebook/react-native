@@ -853,6 +853,8 @@ inline void fromRawValue(
       result = AccessibilitySpan::Digits;
     } else if (string == "verbatim") {
       result = AccessibilitySpan::Verbatim;
+    } else if (string == "none") {
+      result = AccessibilitySpan::None;
     } else {
       LOG(ERROR) << "Unsupported AccessibilitySpan value: " << string;
       react_native_assert(false);

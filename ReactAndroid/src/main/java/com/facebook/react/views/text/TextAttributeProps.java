@@ -74,7 +74,6 @@ public class TextAttributeProps {
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
   private static final int DEFAULT_HYPHENATION_FREQUENCY =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
-  private static final String TAG = "TextAttributeProps";
 
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
@@ -109,7 +108,6 @@ public class TextAttributeProps {
   protected @Nullable AccessibilitySpan mAccessibilitySpan = null;
   protected @Nullable String mAccessibilityUnit = null;
   protected boolean mIsAccessibilityLink = false;
-  protected boolean mIsAccessibilityTtsSpan = false;
 
   protected int mFontStyle = UNSET;
   protected int mFontWeight = UNSET;

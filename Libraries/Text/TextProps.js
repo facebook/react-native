@@ -52,21 +52,6 @@ export type TextProps = $ReadOnly<{|
    */
   accessible?: ?boolean,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
-  accessibilitySpan?: ?(
-    | 'none'
-    | 'cardinal'
-    | 'ordinal'
-    | 'decimal'
-    | 'fraction'
-    | 'measure'
-    | 'time'
-    | 'date'
-    | 'telephone'
-    | 'electronic'
-    | 'money'
-    | 'digits'
-    | 'verbatim'
-  ),
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityHint?: ?Stringish,
   accessibilityLanguage?: ?Stringish,
@@ -217,7 +202,21 @@ export type TextProps = $ReadOnly<{|
 
   /**
    */
-  accessibilitySpan?: ?AccessibilitySpan,
+  accessibilitySpan?: ?(
+    | 'none'
+    | 'cardinal'
+    | 'ordinal'
+    | 'decimal'
+    | 'fraction'
+    | 'measure'
+    | 'time'
+    | 'date'
+    | 'telephone'
+    | 'electronic'
+    | 'money'
+    | 'digits'
+    | 'verbatim'
+  ),
 
   /**
    * Used with nested Text and accessibilityRole measure, money or telephone to specify the unit to announce.

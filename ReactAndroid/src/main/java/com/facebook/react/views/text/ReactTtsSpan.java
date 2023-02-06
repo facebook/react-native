@@ -7,14 +7,13 @@
 
 package com.facebook.react.views.text;
 
-import android.os.Parcel;
 import android.os.PersistableBundle;
 import android.text.style.TtsSpan;
+
+import androidx.annotation.Nullable;
+
 import com.facebook.common.logging.FLog;
 import java.util.Currency;
-import java.util.HashSet;
-import java.util.Set;
-import javax.annotation.Nullable;
 
 /*
  * Wraps {@link TtsSpan} as a {@link ReactSpan}.
@@ -44,12 +43,9 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
     super(type, args);
   }
 
-  public ReactTtsSpan(Parcel src) {
-    super(src);
-  }
-
   // https://developer.android.com/reference/android/text/style/TtsSpan
   public enum AccessibilitySpan {
+    NONE,
     CARDINAL,
     ORDINAL,
     DECIMAL,
@@ -61,8 +57,7 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
     ELECTRONIC,
     MONEY,
     DIGITS,
-    VERBATIM,
-    NONE;
+    VERBATIM;
 
     public static String getValue(AccessibilitySpan accessibilitySpan) {
       switch (accessibilitySpan) {
@@ -90,6 +85,8 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
           return ReactTtsSpan.TYPE_DIGITS;
         case VERBATIM:
           return ReactTtsSpan.TYPE_VERBATIM;
+          // case NONE:
+          //  return ReactTtsSpan.TYPE_TEXT;
         default:
           throw new IllegalArgumentException(
               "Invalid accessibility span value: " + accessibilitySpan);
@@ -108,18 +105,15 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
 
   public static class Builder<C extends Builder<?>> {
     private final String mType;
-    private PersistableBundle mArgs = new PersistableBundle();
+    private final PersistableBundle mArgs = new PersistableBundle();
 
     public Builder(String type) {
       mType = type;
     }
 
     public Builder(AccessibilitySpan type, @Nullable String accessibilityUnit) {
-      String typeConvertedToString = AccessibilitySpan.getValue(type);
-      FLog.w("React::" + TAG, " typeConvertedToString: " + (typeConvertedToString));
-      mType = typeConvertedToString;
+      mType = AccessibilitySpan.getValue(type);
       String warningMessage = "";
-      Set<String> supportedTypes = new HashSet<String>();
       if (accessibilityUnit == null) {
         return;
       }
@@ -157,14 +151,8 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
       return new ReactTtsSpan(mType, mArgs);
     }
 
-    public C setIntArgument(String arg, int value) {
-      mArgs.putInt(arg, value);
-      return (C) this;
-    }
-
-    public C setStringArgument(String arg, String value) {
+    public void setStringArgument(String arg, String value) {
       mArgs.putString(arg, value);
-      return (C) this;
     }
   }
 }
