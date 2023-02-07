@@ -1124,9 +1124,9 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "accessibilitySpan", toString(*textAttributes.accessibilitySpan));
   }
-  if (!textAttributes.accessibilityUnit.empty()) {
+  if (!textAttributes.accessibilityLabel.empty()) {
     _textAttributes(
-        "accessibilityUnit", textAttributes.accessibilityUnit);
+        "accessibilityLabel", textAttributes.accessibilityLabel);
   }
   return _textAttributes;
 }
@@ -1354,9 +1354,9 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
     builder.putString(
         TA_KEY_ACCESSIBILITY_SPAN, toString(*textAttributes.accessibilitySpan));
   }
-  if (!textAttributes.accessibilityUnit.empty()) {
+  if (!textAttributes.accessibilityLabel.empty()) {
     builder.putString(
-        TA_KEY_ACCESSIBILITY_UNIT, textAttributes.accessibilityUnit);
+        TA_KEY_ACCESSIBILITY_UNIT, textAttributes.accessibilityLabel);
   }
   return builder.build();
 }

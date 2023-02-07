@@ -103,8 +103,8 @@ void TextAttributes::apply(TextAttributes textAttributes) {
       : accessibilityRole;
   accessibilitySpan = textAttributes.accessibilitySpan.has_value() ? textAttributes.accessibilitySpan
                                                   : accessibilitySpan;
-  accessibilityUnit = !textAttributes.accessibilityUnit.empty() ? textAttributes.accessibilityUnit
-                                                  : accessibilityUnit;
+  accessibilityLabel = !textAttributes.accessibilityLabel.empty() ? textAttributes.accessibilityLabel
+                                                  : accessibilityLabel;
 }
 
 #pragma mark - Operators
@@ -131,7 +131,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              layoutDirection,
              accessibilityRole,
              accessibilitySpan,
-             accessibilityUnit,
+             accessibilityLabel,
              textTransform) ==
       std::tie(
              rhs.foregroundColor,
@@ -154,7 +154,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              rhs.layoutDirection,
              rhs.accessibilityRole,
              rhs.accessibilitySpan,
-             rhs.accessibilityUnit,
+             rhs.accessibilityLabel,
              rhs.textTransform) &&
       floatEquality(opacity, rhs.opacity) &&
       floatEquality(fontSize, rhs.fontSize) &&
@@ -224,7 +224,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem("layoutDirection", layoutDirection),
       debugStringConvertibleItem("accessibilityRole", accessibilityRole),
       debugStringConvertibleItem("accessibilitySpan", accessibilitySpan),
-      debugStringConvertibleItem("accessibilityUnit", accessibilityUnit),
+      debugStringConvertibleItem("accessibilityLabel", accessibilityLabel),
   };
 }
 #endif

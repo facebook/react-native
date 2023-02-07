@@ -9,9 +9,7 @@ package com.facebook.react.views.text;
 
 import android.os.PersistableBundle;
 import android.text.style.TtsSpan;
-
 import androidx.annotation.Nullable;
-
 import com.facebook.common.logging.FLog;
 import java.util.Currency;
 
@@ -32,7 +30,7 @@ import java.util.Currency;
 public class ReactTtsSpan extends TtsSpan implements ReactSpan {
   private static final String TAG = ReactTtsSpan.class.getSimpleName();
   private static final String TYPE_MONEY_WARNING_MSG =
-      "The accessibilityUnit format may not be compatible"
+      "The accessibilityLabel format may not be compatible"
           + " with the format supported ISO 4217 (for example 'USD').";
   private static final String TYPE_TELEPHONE_WARNING_MSG =
       "Failed to retrieve telephone number (for example '0112123432').";
@@ -85,8 +83,8 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
           return ReactTtsSpan.TYPE_DIGITS;
         case VERBATIM:
           return ReactTtsSpan.TYPE_VERBATIM;
-          // case NONE:
-          //  return ReactTtsSpan.TYPE_TEXT;
+        case NONE:
+          return ReactTtsSpan.TYPE_TEXT;
         default:
           throw new IllegalArgumentException(
               "Invalid accessibility span value: " + accessibilitySpan);
@@ -104,42 +102,49 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
   }
 
   public static class Builder<C extends Builder<?>> {
-    private final String mType;
+    private String mType;
     private final PersistableBundle mArgs = new PersistableBundle();
 
     public Builder(String type) {
       mType = type;
     }
 
-    public Builder(AccessibilitySpan type, @Nullable String accessibilityUnit) {
+    public Builder(AccessibilitySpan type, @Nullable String accessibilityLabel) {
       mType = AccessibilitySpan.getValue(type);
       String warningMessage = "";
-      if (accessibilityUnit == null) {
+      if (accessibilityLabel == null) {
         return;
       }
       try {
-        if (type == AccessibilitySpan.MONEY) {
-          warningMessage = TYPE_MONEY_WARNING_MSG;
-          Currency.getInstance(accessibilityUnit);
-          setStringArgument(ARG_INTEGER_PART, "");
-          setStringArgument(ARG_CURRENCY, accessibilityUnit);
+        if (mType == TYPE_TEXT) {
+          setStringArgument(ARG_TEXT, accessibilityLabel);
         }
-        if (type == AccessibilitySpan.TELEPHONE) {
+        if (mType == TYPE_MONEY) {
+          warningMessage = TYPE_MONEY_WARNING_MSG;
+          Currency.getInstance(accessibilityLabel);
+          setStringArgument(ARG_INTEGER_PART, "");
+          setStringArgument(ARG_CURRENCY, accessibilityLabel);
+        }
+        if (mType == TYPE_TELEPHONE) {
           warningMessage = TYPE_TELEPHONE_WARNING_MSG;
-          setStringArgument(ARG_NUMBER_PARTS, accessibilityUnit);
+          setStringArgument(ARG_NUMBER_PARTS, accessibilityLabel);
         }
         // https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
-        if (type == AccessibilitySpan.MEASURE) {
+        if (mType == TYPE_MEASURE) {
           warningMessage = TYPE_MEASURE_WARNING_MSG;
-          setStringArgument(ARG_UNIT, accessibilityUnit);
+          setStringArgument(ARG_UNIT, accessibilityLabel);
         }
       } catch (Exception e) {
-        FLog.e(
+        if (mType != TYPE_TEXT) {
+          mType = TYPE_TEXT;
+          setStringArgument(ARG_TEXT, accessibilityLabel);
+        }
+        FLog.w(
             TAG,
             "Failed to create Builder with params type: "
                 + type
-                + " and accessibilityUnit: "
-                + accessibilityUnit
+                + " and accessibilityLabel: "
+                + accessibilityLabel
                 + " "
                 + warningMessage
                 + "Error: "

@@ -55,7 +55,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 22;
   public static final short TA_KEY_ACCESSIBILITY_SPAN = 24;
-  public static final short TA_KEY_ACCESSIBILITY_UNIT = 25;
+  public static final short TA_KEY_ACCESSIBILITY_LABEL = 25;
 
   public static final int UNSET = -1;
 
@@ -105,8 +105,8 @@ public class TextAttributeProps {
 
   protected @Nullable AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
-  protected @Nullable AccessibilitySpan mAccessibilitySpan = null;
-  protected @Nullable String mAccessibilityUnit = null;
+  protected AccessibilitySpan mAccessibilitySpan = AccessibilitySpan.NONE;
+  protected @Nullable String mAccessibilityLabel = null;
   protected boolean mIsAccessibilityLink = false;
 
   protected int mFontStyle = UNSET;
@@ -213,8 +213,8 @@ public class TextAttributeProps {
         case TA_KEY_ACCESSIBILITY_SPAN:
           result.setAccessibilitySpan(entry.getStringValue());
           break;
-        case TA_KEY_ACCESSIBILITY_UNIT:
-          result.setAccessibilityUnit(entry.getStringValue());
+        case TA_KEY_ACCESSIBILITY_LABEL:
+          result.setAccessibilityLabel(entry.getStringValue());
           break;
       }
     }
@@ -619,14 +619,12 @@ public class TextAttributeProps {
   }
 
   private void setAccessibilitySpan(@Nullable String accessibilitySpan) {
-    if (accessibilitySpan != null) {
-      mAccessibilitySpan = AccessibilitySpan.fromValue(accessibilitySpan);
-    }
+    mAccessibilitySpan = AccessibilitySpan.fromValue(accessibilitySpan);
   }
 
-  private void setAccessibilityUnit(@Nullable String accessibilityUnit) {
-    if (accessibilityUnit != null) {
-      mAccessibilityUnit = accessibilityUnit;
+  private void setAccessibilityLabel(@Nullable String accessibilityLabel) {
+    if (accessibilityLabel != null) {
+      mAccessibilityLabel = accessibilityLabel;
     }
   }
 

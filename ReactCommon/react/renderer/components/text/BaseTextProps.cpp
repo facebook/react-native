@@ -190,12 +190,12 @@ static TextAttributes convertRawProp(
       sourceTextAttributes.accessibilitySpan,
       defaultTextAttributes.accessibilitySpan);
 
-  textAttributes.accessibilityUnit = convertRawProp(
+  textAttributes.accessibilityLabel = convertRawProp(
       context,
       rawProps,
-      "accessibilityUnit",
-      sourceTextAttributes.accessibilityUnit,
-      defaultTextAttributes.accessibilityUnit);
+      "accessibilityLabel",
+      sourceTextAttributes.accessibilityLabel,
+      defaultTextAttributes.accessibilityLabel);
 
   // Color (accessed in this order by ViewProps)
   textAttributes.opacity = convertRawProp(
@@ -317,8 +317,8 @@ void BaseTextProps::setProp(
         defaults,
         value,
         textAttributes,
-        accessibilityUnit,
-        "accessibilityUnit");
+        accessibilityLabel,
+        "accessibilityLabel");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, opacity, "opacity");
     REBUILD_FIELD_SWITCH_CASE(
