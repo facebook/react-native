@@ -126,7 +126,7 @@
     "event-target-shim": "^5.0.1",
     "invariant": "^2.2.4",
     "jest-environment-node": "^29.2.1",
-    "jsc-android": "^250230.2.1",
+    "jsc-android": "^250231.0.0",
     "memoize-one": "^5.0.0",
     "metro-react-native-babel-transformer": "0.73.5",
     "metro-runtime": "0.73.5",
