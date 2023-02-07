@@ -40,7 +40,9 @@ FabricMountingManager::FabricMountingManager(
     std::shared_ptr<const ReactNativeConfig> &config,
     global_ref<jobject> &javaUIManager)
     : javaUIManager_(javaUIManager),
-      useOverflowInset_(getFeatureFlagValue("useOverflowInset")) {
+      useOverflowInset_(getFeatureFlagValue("useOverflowInset")),
+      reduceDeleteCreateMutation_(
+          getFeatureFlagValue("reduceDeleteCreateMutation")) {
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
 }
 
@@ -314,9 +316,33 @@ void FabricMountingManager::executeMount(
       bool isVirtual = mutation.mutatedViewIsVirtual();
       switch (mutationType) {
         case ShadowViewMutation::Create: {
-          bool allocationCheck =
+          bool shouldCreateView =
               !allocatedViewTags.contains(newChildShadowView.tag);
-          bool shouldCreateView = allocationCheck;
+          if (reduceDeleteCreateMutation_) {
+            // Detect DELETE...CREATE situation on the same node and do NOT push
+            // back to the mount items. This is an edge case that may happen
+            // when for example animation runs while commit happened, and we
+            // want to filter them out here to capture all possible sources of
+            // such mutations. The re-ordering logic here assumes no
+            // DELETE...CREATE in the mutations, as we will re-order mutations
+            // and batch all DELETE instructions in the end.
+            auto it = std::remove_if(
+                cppDeleteMountItems.begin(),
+                cppDeleteMountItems.end(),
+                [&](auto &deletedMountItem) -> bool {
+                  return deletedMountItem.oldChildShadowView.tag ==
+                      newChildShadowView.tag;
+                });
+            bool hasDeletedViewsWithSameTag = it != cppDeleteMountItems.end();
+            cppDeleteMountItems.erase(it, cppDeleteMountItems.end());
+
+            if (hasDeletedViewsWithSameTag) {
+              shouldCreateView = false;
+              LOG(ERROR)
+                  << "XIN: Detect DELETE...CREATE on the same tag from mutations in the same batch. The DELETE and CREATE mutations are removed before sending to the native platforms";
+            }
+          }
+
           if (shouldCreateView) {
             cppCommonMountItems.push_back(
                 CppMountItem::CreateMountItem(newChildShadowView));

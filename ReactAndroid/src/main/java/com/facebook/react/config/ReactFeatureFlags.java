@@ -115,4 +115,10 @@ public class ReactFeatureFlags {
    * state in Fabric SurfaceMountingManager.
    */
   public static boolean reduceDeleteCreateMutationLayoutAnimation = true;
+
+  /**
+   * Allow fix to drop delete...create mutations which could cause missing view state in Fabric
+   * SurfaceMountingManager.
+   */
+  public static boolean reduceDeleteCreateMutation = false;
 }
