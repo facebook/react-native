@@ -20,7 +20,9 @@ import {
   RootTagContext,
 } from 'react-native';
 import * as React from 'react';
-import NativeCxxModuleExample /*EnumInt,*/ from '../../../NativeCxxModuleExample/NativeCxxModuleExample';
+import NativeCxxModuleExample, {
+  EnumInt,
+} from '../../../NativeCxxModuleExample/NativeCxxModuleExample';
 
 type State = {|
   testResults: {
@@ -72,7 +74,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       ]),
     getBool: () => NativeCxxModuleExample?.getBool(true),
     getConstants: () => NativeCxxModuleExample?.getConstants(),
-    getEnum: () => NativeCxxModuleExample?.getEnum(/*EnumInt.A*/ 2),
+    getEnum: () => NativeCxxModuleExample?.getEnum(EnumInt.A),
     getMap: () => NativeCxxModuleExample?.getMap({a: 1, b: null, c: 3}),
     getNumber: () => NativeCxxModuleExample?.getNumber(99.95),
     getObject: () =>

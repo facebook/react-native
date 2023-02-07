@@ -12,12 +12,10 @@ import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 
 import {TurboModuleRegistry} from 'react-native';
 
-/** FIXME: Enable flow-enum support
 export enum EnumInt {
   A = 23,
   B = 42,
 }
-*/
 
 export type UnionFloat = 1.44 | 2.88 | 5.76;
 export type UnionString = 'One' | 'Two' | 'Three';
@@ -45,8 +43,7 @@ export interface Spec extends TurboModule {
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
   +getConstants: () => ConstantsStruct;
-  // FIXME: Enable flow-enum support
-  +getEnum: (arg: number /*EnumInt*/) => number /*EnumInt*/;
+  +getEnum: (arg: EnumInt) => EnumInt;
   +getMap: (arg: {[key: string]: ?number}) => {[key: string]: ?number};
   +getNumber: (arg: number) => number;
   +getObject: (arg: ObjectStruct) => ObjectStruct;
