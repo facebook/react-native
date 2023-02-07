@@ -21,16 +21,14 @@ module.exports = async (github, context) => {
     }
 
     // Ensure the version matches one we support
-    // TODO REPLACE THIS HARDCODED STUFF WITH REAL VALUES
     const recentReleases = (await github.rest.repos.listReleases({
-        owner: 'facebook',
-        repo: 'react-native',
+        owner: context.repo.owner,
+        repo: context.repo.repo,
     })).data.map(release => release.name);
 
-    // TODO REPLACE THIS HARDCODED STUFF WITH REAL VALUES
     const latestRelease = (await github.rest.repos.getLatestRelease({
-        owner: 'facebook',
-        repo: 'react-native',
+        owner: context.repo.owner,
+        repo: context.repo.repo,
     })).data;
     const latestVersion = parseVersionFromString(latestRelease.name);
 
