@@ -9,7 +9,6 @@
 
 #include <climits>
 #include <memory>
-#include <optional>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -98,14 +97,6 @@ std::string toString(bool const &value);
 std::string toString(float const &value);
 std::string toString(double const &value);
 std::string toString(void const *value);
-
-template <typename T>
-std::string toString(const std::optional<T> &value) {
-  if (!value) {
-    return "null";
-  }
-  return toString(value.value());
-}
 
 /*
  * *Informal* `DebugStringConvertible` interface.
