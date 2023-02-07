@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks
 
+import com.facebook.react.utils.Os.cliPath
 import com.facebook.react.utils.detectOSAwareHermesCommand
 import com.facebook.react.utils.moveTo
 import com.facebook.react.utils.windowsAwareCommandLine
@@ -89,7 +90,10 @@ abstract class BundleHermesCTask : DefaultTask() {
     runCommand(bundleCommand)
 
     if (hermesEnabled.get()) {
-      val detectedHermesCommand = detectOSAwareHermesCommand(root.get().asFile, hermesCommand.get())
+      val detectedHermesCommand =
+          File(detectOSAwareHermesCommand(root.get().asFile, hermesCommand.get()))
+              .relativeTo(root.get().asFile)
+              .path
       val bytecodeFile = File("${bundleFile}.hbc")
       val outputSourceMap = resolveOutputSourceMap(bundleAssetFilename)
       val compilerSourceMap = resolveCompilerSourceMap(bundleAssetFilename)
@@ -135,8 +139,9 @@ abstract class BundleHermesCTask : DefaultTask() {
   internal fun getBundleCommand(bundleFile: File, sourceMapFile: File): List<Any> =
       windowsAwareCommandLine(
           buildList {
+            val rootFile = root.get().asFile
             addAll(nodeExecutableAndArgs.get())
-            add(cliFile.get().asFile.absolutePath)
+            add(cliFile.get().asFile.cliPath(rootFile))
             add(bundleCommand.get())
             add("--platform")
             add("android")
@@ -144,16 +149,16 @@ abstract class BundleHermesCTask : DefaultTask() {
             add(devEnabled.get().toString())
             add("--reset-cache")
             add("--entry-file")
-            add(entryFile.get().asFile.toString())
+            add(entryFile.get().asFile.cliPath(rootFile))
             add("--bundle-output")
-            add(bundleFile.toString())
+            add(bundleFile.cliPath(rootFile))
             add("--assets-dest")
-            add(resourcesDir.get().asFile.toString())
+            add(resourcesDir.get().asFile.cliPath(rootFile))
             add("--sourcemap-output")
-            add(sourceMapFile.toString())
+            add(sourceMapFile.cliPath(rootFile))
             if (bundleConfig.isPresent) {
               add("--config")
-              add(bundleConfig.get().asFile.absolutePath)
+              add(bundleConfig.get().asFile.cliPath(rootFile))
             }
             add("--minify")
             add(minifyEnabled.get().toString())
@@ -165,26 +170,30 @@ abstract class BundleHermesCTask : DefaultTask() {
       hermesCommand: String,
       bytecodeFile: File,
       bundleFile: File
-  ): List<Any> =
-      windowsAwareCommandLine(
-          hermesCommand,
-          "-emit-binary",
-          "-out",
-          bytecodeFile.absolutePath,
-          bundleFile.absolutePath,
-          *hermesFlags.get().toTypedArray())
+  ): List<Any> {
+    val rootFile = root.get().asFile
+    return windowsAwareCommandLine(
+        hermesCommand,
+        "-emit-binary",
+        "-out",
+        bytecodeFile.cliPath(rootFile),
+        bundleFile.cliPath(rootFile),
+        *hermesFlags.get().toTypedArray())
+  }
 
   internal fun getComposeSourceMapsCommand(
       composeScript: File,
       packagerSourceMap: File,
       compilerSourceMap: File,
       outputSourceMap: File
-  ): List<Any> =
-      windowsAwareCommandLine(
-          *nodeExecutableAndArgs.get().toTypedArray(),
-          composeScript.absolutePath,
-          packagerSourceMap.toString(),
-          compilerSourceMap.toString(),
-          "-o",
-          outputSourceMap.toString())
+  ): List<Any> {
+    val rootFile = root.get().asFile
+    return windowsAwareCommandLine(
+        *nodeExecutableAndArgs.get().toTypedArray(),
+        composeScript.cliPath(rootFile),
+        packagerSourceMap.cliPath(rootFile),
+        compilerSourceMap.cliPath(rootFile),
+        "-o",
+        outputSourceMap.cliPath(rootFile))
+  }
 }
