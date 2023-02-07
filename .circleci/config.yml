@@ -888,7 +888,7 @@ jobs:
           command: |
             cd /tmp/$PROJECT_NAME/ios
 
-            bundle install
+            bundle install --path vendor/bundle --clean
 
             if [[ << parameters.flavor >> == "Release" ]]; then
               export PRODUCTION=1
