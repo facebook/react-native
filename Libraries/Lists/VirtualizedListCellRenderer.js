@@ -8,15 +8,13 @@
  * @format
  */
 
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
-import type {
-  FocusEvent,
-  LayoutEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {FocusEvent, LayoutEvent} from '../Types/CoreEventTypes';
 import type FillRateHelper from './FillRateHelper';
 import type {RenderItemType} from './VirtualizedListProps';
 
-import {View, StyleSheet} from 'react-native';
+import View from '../Components/View/View';
+import StyleSheet from '../StyleSheet/StyleSheet';
 import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
 import invariant from 'invariant';
 import * as React from 'react';

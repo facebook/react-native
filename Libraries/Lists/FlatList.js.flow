@@ -14,13 +14,8 @@ const View = require('../Components/View/View');
 import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
-import type {
-  RenderItemType,
-  RenderItemProps,
-  ViewToken,
-  ViewabilityConfigCallbackPair,
-} from '@react-native/virtualized-lists';
-import {typeof VirtualizedList} from '@react-native/virtualized-lists';
+import type {RenderItemType} from './VirtualizedList';
+import typeof VirtualizedList from './VirtualizedList';
 
 type RequiredProps<ItemT> = {|
   /**

@@ -11,17 +11,14 @@
 import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
-  RenderItemProps,
-  RenderItemType,
   ViewabilityConfigCallbackPair,
   ViewToken,
-} from '@react-native/virtualized-lists';
+} from './ViewabilityHelper';
+import type {RenderItemProps, RenderItemType} from './VirtualizedList';
 
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
-import {
-  VirtualizedList,
-  keyExtractor as defaultKeyExtractor,
-} from '@react-native/virtualized-lists';
+import VirtualizedList from './VirtualizedList';
+import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import memoizeOne from 'memoize-one';
 
 const View = require('../Components/View/View');
