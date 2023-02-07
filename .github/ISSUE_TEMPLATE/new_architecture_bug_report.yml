@@ -21,7 +21,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Version
+      label: React Native Version
       description: What react-native version does this appear on? Please test against the latest stable version. Bug reports against older versions are more likely to stall.
       placeholder: ex. 0.68.0
     validations:
