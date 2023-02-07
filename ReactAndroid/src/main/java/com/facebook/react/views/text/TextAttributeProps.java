@@ -18,7 +18,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.text.ReactTtsSpan.AccessibilitySpan;
@@ -103,7 +103,7 @@ public class TextAttributeProps {
   protected boolean mIsLineThroughTextDecorationSet = false;
   protected boolean mIncludeFontPadding = true;
 
-  protected @Nullable AccessibilityRole mAccessibilityRole = null;
+  protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
   protected AccessibilitySpan mAccessibilitySpan = AccessibilitySpan.NONE;
   protected @Nullable String mAccessibilityLabel = null;
@@ -613,13 +613,17 @@ public class TextAttributeProps {
   private void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (accessibilityRole != null) {
       mIsAccessibilityRoleSet = true;
-      mAccessibilityRole = AccessibilityRole.fromValue(accessibilityRole);
-      mIsAccessibilityLink = mAccessibilityRole.equals(AccessibilityRole.LINK);
+      mAccessibilityRole =
+          ReactAccessibilityDelegate.AccessibilityRole.fromValue(accessibilityRole);
+      mIsAccessibilityLink =
+          mAccessibilityRole.equals(ReactAccessibilityDelegate.AccessibilityRole.LINK);
     }
   }
 
   private void setAccessibilitySpan(@Nullable String accessibilitySpan) {
-    mAccessibilitySpan = AccessibilitySpan.fromValue(accessibilitySpan);
+    if (accessibilitySpan != null) {
+      mAccessibilitySpan = AccessibilitySpan.fromValue(accessibilitySpan);
+    }
   }
 
   private void setAccessibilityLabel(@Nullable String accessibilityLabel) {
