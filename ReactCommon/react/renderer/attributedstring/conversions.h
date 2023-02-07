@@ -1175,7 +1175,7 @@ constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
 constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 22;
 constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 23;
 constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_SPAN = 24;
-constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_UNIT = 25;
+constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_LABEL = 25;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1328,7 +1328,7 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   }
   if (!textAttributes.accessibilityLabel.empty()) {
     builder.putString(
-        TA_KEY_ACCESSIBILITY_UNIT, textAttributes.accessibilityLabel);
+        TA_KEY_ACCESSIBILITY_LABEL, textAttributes.accessibilityLabel);
   }
   return builder.build();
 }

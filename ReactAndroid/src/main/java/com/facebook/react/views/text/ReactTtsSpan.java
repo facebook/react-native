@@ -107,6 +107,7 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
           setStringArgument(ARG_NUMBER, accessibilityLabel);
         }
       } catch (Exception e) {
+        // fallback and use accessibilityLabel as text
         if (mType != TYPE_TEXT) {
           mType = TYPE_TEXT;
           setStringArgument(ARG_TEXT, accessibilityLabel);
