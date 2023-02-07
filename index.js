@@ -191,7 +191,7 @@ module.exports = {
     return require('./Libraries/Components/View/View');
   },
   get VirtualizedList(): VirtualizedList {
-    return require('./Libraries/Lists/VirtualizedList').default;
+    return require('./Libraries/Lists/VirtualizedList');
   },
   get VirtualizedSectionList(): VirtualizedSectionList {
     return require('./Libraries/Lists/VirtualizedSectionList');

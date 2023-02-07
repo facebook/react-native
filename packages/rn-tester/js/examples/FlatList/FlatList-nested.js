@@ -9,8 +9,8 @@
  */
 
 'use strict';
-import type {ViewToken} from '../../../../../Libraries/Lists/ViewabilityHelper';
-import type {RenderItemProps} from '../../../../../Libraries/Lists/VirtualizedListProps';
+import type {ViewToken} from 'react-native/Libraries/Lists/ViewabilityHelper';
+import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterPage from '../../components/RNTesterPage';
