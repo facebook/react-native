@@ -792,24 +792,10 @@ inline std::string toString(const AccessibilitySpan &accessibilitySpan) {
       return "cardinal";
     case AccessibilitySpan::Ordinal:
       return "ordinal";
-    case AccessibilitySpan::Decimal:
-      return "decimal";
-    case AccessibilitySpan::Fraction:
-      return "fraction";
     case AccessibilitySpan::Measure:
       return "measure";
-    case AccessibilitySpan::Time:
-      return "time";
-    case AccessibilitySpan::Date:
-      return "date";
     case AccessibilitySpan::Telephone:
       return "telephone";
-    case AccessibilitySpan::Electronic:
-      return "electronic";
-    case AccessibilitySpan::Money:
-      return "money";
-    case AccessibilitySpan::Digits:
-      return "digits";
     case AccessibilitySpan::Verbatim:
       return "verbatim";
     case AccessibilitySpan::None:
@@ -833,24 +819,10 @@ inline void fromRawValue(
       result = AccessibilitySpan::Cardinal;
     } else if (string == "ordinal") {
       result = AccessibilitySpan::Ordinal;
-    } else if (string == "decimal") {
-      result = AccessibilitySpan::Decimal;
-    } else if (string == "fraction") {
-      result = AccessibilitySpan::Fraction;
     } else if (string == "measure") {
       result = AccessibilitySpan::Measure;
-    } else if (string == "time") {
-      result = AccessibilitySpan::Time;
-    } else if (string == "date") {
-      result = AccessibilitySpan::Date;
     } else if (string == "telephone") {
       result = AccessibilitySpan::Telephone;
-    } else if (string == "electronic") {
-      result = AccessibilitySpan::Electronic;
-    } else if (string == "money") {
-      result = AccessibilitySpan::Money;
-    } else if (string == "digits") {
-      result = AccessibilitySpan::Digits;
     } else if (string == "verbatim") {
       result = AccessibilitySpan::Verbatim;
     } else if (string == "none") {

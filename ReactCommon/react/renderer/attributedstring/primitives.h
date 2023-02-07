@@ -141,15 +141,8 @@ enum class AccessibilitySpan {
   None,
   Cardinal,
   Ordinal,
-  Decimal,
-  Fraction,
   Measure,
-  Time,
-  Date,
   Telephone,
-  Electronic,
-  Money,
-  Digits,
   Verbatim,
 };
 

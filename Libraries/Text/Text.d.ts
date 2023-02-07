@@ -60,15 +60,8 @@ export interface TextPropsAndroid {
     | 'none'
     | 'cardinal'
     | 'ordinal'
-    | 'decimal'
-    | 'fraction'
     | 'measure'
-    | 'time'
-    | 'date'
     | 'telephone'
-    | 'electronic'
-    | 'money'
-    | 'digits'
     | 'verbatim';
 
   /**

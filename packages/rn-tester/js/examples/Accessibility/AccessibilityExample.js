@@ -288,9 +288,9 @@ class TtsSpanExamples extends React.Component<{}> {
   render(): React.Node {
     return (
       <>
-        <RNTesterBlock title="Text with child Text and accessibilityLabel='a test label'">
+        <RNTesterBlock title="Reads the accessibilityLabel">
           <Text accessible={true}>
-            This text spells as
+            This text spells as{' '}
             <Text
               accessibilityLabel="a test label"
               accessible={true}
@@ -299,9 +299,9 @@ class TtsSpanExamples extends React.Component<{}> {
             </Text>
           </Text>
         </RNTesterBlock>
-        <RNTesterBlock title="Text with child Text and accessibilityRole='verbatim'">
+        <RNTesterBlock title="Verbatim">
           <Text accessible={true}>
-            Verbatim spells as
+            Verbatim spells as{' '}
             <Text
               accessibilitySpan="verbatim"
               accessible={true}
@@ -310,18 +310,15 @@ class TtsSpanExamples extends React.Component<{}> {
             </Text>
           </Text>
         </RNTesterBlock>
-        <RNTesterBlock title="Text with child Text and accessibilityRole='date'">
+        <RNTesterBlock title="Date">
           <Text accessible={true}>
-            Dates are spelled as
-            <Text
-              accessibilitySpan="date"
-              accessible={true}
-              style={styles.redBackground}>
+            Dates are spelled as{' '}
+            <Text accessible={true} style={styles.redBackground}>
               02/07/1987
             </Text>
           </Text>
         </RNTesterBlock>
-        <RNTesterBlock title="Text with child Text and accessibilityRole='measure'">
+        <RNTesterBlock title="Different type of measurement">
           <Text accessible={true}>
             Unit of Measure like meters are spelled as 60
             <Text
@@ -349,7 +346,7 @@ class TtsSpanExamples extends React.Component<{}> {
             </Text>
           </Text>
         </RNTesterBlock>
-        <RNTesterBlock title="Text with child Text and accessibilitySpan='fraction'">
+        <RNTesterBlock title="fraction">
           <Text accessible={true}>
             Fraction is spelled as
             <Text accessible={true} style={styles.redBackground}>
@@ -357,62 +354,68 @@ class TtsSpanExamples extends React.Component<{}> {
             </Text>
           </Text>
         </RNTesterBlock>
-        <RNTesterBlock title="Text with child Text and accessibilitySpan='decimal'">
+        <RNTesterBlock title="cardinal">
           <Text accessible={true}>
-            Decimal number is spelled as
+            Cardinal number is spelled as{' '}
             <Text
-              accessibilitySpan="decimal"
+              accessibilitySpan="cardinal"
+              accessibilityLabel="1"
               accessible={true}
               style={styles.redBackground}>
-              10.20
+              1
             </Text>
           </Text>
         </RNTesterBlock>
-        <RNTesterBlock title="Text with child Text and accessibilitySpan='money' and accessibilityUnit='1, USD'">
+        <RNTesterBlock title="ordinal">
           <Text accessible={true}>
-            Money is spelled with the currency 1
+            Ordinal number is spelled as{' '}
             <Text
-              accessibilitySpan="money"
-              accessibilityLabel="USD"
+              accessibilitySpan="ordinal"
+              accessibilityLabel="1"
               accessible={true}
               style={styles.redBackground}>
-              US
+              1
             </Text>
           </Text>
         </RNTesterBlock>
-        <RNTesterBlock title="Text with child Text and accessibilitySpan='time' and accessibilityLabel='10:30'">
+        <RNTesterBlock title="Digits">
           <Text accessible={true}>
-            The time is
+            Digits is spelled as{' '}
             <Text
-              accessibilitySpan="time"
+              accessibilityLabel="1 2 3 4 5 0"
               accessible={true}
               style={styles.redBackground}>
-              10:30
+              123450
+            </Text>
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Money">
+          <Text accessible={true}>
+            Money is spelled{' '}
+            <Text
+              accessibilityLabel="one million rupias"
+              accessible={true}
+              style={styles.redBackground}>
+              1.000.000 IDR
+            </Text>
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Time">
+          <Text accessible={true}>
+            Time is spelled{' '}
+            <Text accessible={true} style={styles.redBackground}>
+              11:30
             </Text>
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Text with child Text and accessibilitySpan='telephone'">
           <Text accessible={true}>
-            The telephone is
+            The telephone is{' '}
             <Text
               accessibilitySpan="telephone"
               accessibilityLabel="0118888888"
               style={styles.redBackground}>
               0118888888
-            </Text>
-          </Text>
-        </RNTesterBlock>
-        <RNTesterBlock title="accessibilityLabel is not correct and logcat includes debug log">
-          <Text accessible={true}>
-            Text with accessibilitySpan of type money, but accessibilityLabel
-            USA does not correspond to a valid currency. TtsSpan defaults to
-            TYPE_TEXT and reads the accessibilityLabel
-            <Text
-              accessibilitySpan="money"
-              accessibilityLabel="USA"
-              accessible={true}
-              style={styles.redBackground}>
-              Some Text
             </Text>
           </Text>
         </RNTesterBlock>

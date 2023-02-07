@@ -11,7 +11,6 @@ import android.os.PersistableBundle;
 import android.text.style.TtsSpan;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
-import java.util.Currency;
 
 /*
  * Wraps {@link TtsSpan} as a {@link ReactSpan}.
@@ -29,9 +28,6 @@ import java.util.Currency;
  */
 public class ReactTtsSpan extends TtsSpan implements ReactSpan {
   private static final String TAG = ReactTtsSpan.class.getSimpleName();
-  private static final String TYPE_MONEY_WARNING_MSG =
-      "The accessibilityLabel format may not be compatible"
-          + " with the format supported ISO 4217 (for example 'USD').";
   private static final String TYPE_TELEPHONE_WARNING_MSG =
       "Failed to retrieve telephone number (for example '0112123432').";
   private static final String TYPE_MEASURE_WARNING_MSG =
@@ -46,15 +42,8 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
     NONE,
     CARDINAL,
     ORDINAL,
-    DECIMAL,
-    FRACTION,
     MEASURE,
-    TIME,
-    DATE,
     TELEPHONE,
-    ELECTRONIC,
-    MONEY,
-    DIGITS,
     VERBATIM;
 
     public static String getValue(AccessibilitySpan accessibilitySpan) {
@@ -63,24 +52,10 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
           return ReactTtsSpan.TYPE_CARDINAL;
         case ORDINAL:
           return ReactTtsSpan.TYPE_ORDINAL;
-        case DECIMAL:
-          return ReactTtsSpan.TYPE_DECIMAL;
-        case FRACTION:
-          return ReactTtsSpan.TYPE_FRACTION;
         case MEASURE:
           return ReactTtsSpan.TYPE_MEASURE;
-        case TIME:
-          return ReactTtsSpan.TYPE_TIME;
-        case DATE:
-          return ReactTtsSpan.TYPE_DATE;
         case TELEPHONE:
           return ReactTtsSpan.TYPE_TELEPHONE;
-        case ELECTRONIC:
-          return ReactTtsSpan.TYPE_ELECTRONIC;
-        case MONEY:
-          return ReactTtsSpan.TYPE_MONEY;
-        case DIGITS:
-          return ReactTtsSpan.TYPE_DIGITS;
         case VERBATIM:
           return ReactTtsSpan.TYPE_VERBATIM;
         case NONE:
@@ -119,12 +94,6 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
         if (mType == TYPE_TEXT) {
           setStringArgument(ARG_TEXT, accessibilityLabel);
         }
-        if (mType == TYPE_MONEY) {
-          warningMessage = TYPE_MONEY_WARNING_MSG;
-          Currency.getInstance(accessibilityLabel);
-          setStringArgument(ARG_INTEGER_PART, "");
-          setStringArgument(ARG_CURRENCY, accessibilityLabel);
-        }
         if (mType == TYPE_TELEPHONE) {
           warningMessage = TYPE_TELEPHONE_WARNING_MSG;
           setStringArgument(ARG_NUMBER_PARTS, accessibilityLabel);
@@ -133,6 +102,9 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
         if (mType == TYPE_MEASURE) {
           warningMessage = TYPE_MEASURE_WARNING_MSG;
           setStringArgument(ARG_UNIT, accessibilityLabel);
+        }
+        if (mType == TYPE_CARDINAL || mType == TYPE_ORDINAL) {
+          setStringArgument(ARG_NUMBER, accessibilityLabel);
         }
       } catch (Exception e) {
         if (mType != TYPE_TEXT) {
