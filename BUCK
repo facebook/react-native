@@ -724,6 +724,8 @@ rn_library(
             "Libraries/**/*.js",
             "Libraries/NewAppScreen/**/*.png",
             "Libraries/LogBox/**/*.png",
+            "packages/virtualized-lists/**/*.js",
+            "packages/virtualized-lists/**/*.json",
         ],
         exclude = [
             "**/__*__/**",
