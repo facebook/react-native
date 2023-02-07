@@ -11,6 +11,7 @@ package com.facebook.react.utils
 
 import com.facebook.react.ReactExtension
 import com.facebook.react.model.ModelPackageJson
+import com.facebook.react.utils.Os.cliPath
 import java.io.File
 import org.gradle.api.Project
 
@@ -130,7 +131,7 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
   val builtHermesc =
       getBuiltHermescFile(projectRoot, System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR"))
   if (builtHermesc.exists()) {
-    return builtHermesc.absolutePath
+    return builtHermesc.cliPath(projectRoot)
   }
 
   // 3. If the react-native contains a pre-built hermesc, use it.
@@ -142,7 +143,7 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
 
   val prebuiltHermes = File(projectRoot, prebuiltHermesPath)
   if (prebuiltHermes.exists()) {
-    return prebuiltHermes.absolutePath
+    return prebuiltHermes.cliPath(projectRoot)
   }
 
   error(
