@@ -1572,6 +1572,114 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_FL
 }"
 `;
 
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_INTERSECTION_TYPES 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {
+        'Bar': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'z',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            }
+          ]
+        },
+        'Foo': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'bar1',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar2',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar3',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar4',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            }
+          ]
+        }
+      },
+      'enumMap': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'foo1',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Foo'
+              },
+              'params': [
+                {
+                  'name': 'x',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'Foo'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'foo2',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'x',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'Foo'
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NESTED_ALIASES 1`] = `
 "{
   'modules': {
