@@ -40,7 +40,6 @@ FabricMountingManager::FabricMountingManager(
     std::shared_ptr<const ReactNativeConfig> &config,
     global_ref<jobject> &javaUIManager)
     : javaUIManager_(javaUIManager),
-      useOverflowInset_(getFeatureFlagValue("useOverflowInset")),
       reduceDeleteCreateMutation_(
           getFeatureFlagValue("reduceDeleteCreateMutation")) {
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
@@ -404,8 +403,7 @@ void FabricMountingManager::executeMount(
             // children of the current view. The layout of current view may not
             // change, and we separate this part from layout mount items to not
             // pack too much data there.
-            if (useOverflowInset_ &&
-                (oldChildShadowView.layoutMetrics.overflowInset !=
+            if ((oldChildShadowView.layoutMetrics.overflowInset !=
                  newChildShadowView.layoutMetrics.overflowInset)) {
               cppUpdateOverflowInsetMountItems.push_back(
                   CppMountItem::UpdateOverflowInsetMountItem(
@@ -461,9 +459,8 @@ void FabricMountingManager::executeMount(
             // children of the current view. The layout of current view may not
             // change, and we separate this part from layout mount items to not
             // pack too much data there.
-            if (useOverflowInset_ &&
-                newChildShadowView.layoutMetrics.overflowInset !=
-                    EdgeInsets::ZERO) {
+            if (newChildShadowView.layoutMetrics.overflowInset !=
+                EdgeInsets::ZERO) {
               cppUpdateOverflowInsetMountItems.push_back(
                   CppMountItem::UpdateOverflowInsetMountItem(
                       newChildShadowView));
