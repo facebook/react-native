@@ -43,6 +43,7 @@ void RCTCopyBackedTextInput(
   toTextInput.secureTextEntry = fromTextInput.secureTextEntry;
   toTextInput.keyboardType = fromTextInput.keyboardType;
   toTextInput.textContentType = fromTextInput.textContentType;
+  toTextInput.smartInsertDeleteType = fromTextInput.smartInsertDeleteType;
 
   toTextInput.passwordRules = fromTextInput.passwordRules;
 
@@ -225,4 +226,10 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
 UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(std::string const &passwordRules)
 {
   return [UITextInputPasswordRules passwordRulesWithDescriptor:RCTNSStringFromStringNilIfEmpty(passwordRules)];
+}
+
+UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::optional<bool> smartInsertDelete)
+{
+  return smartInsertDelete.has_value() ? (*smartInsertDelete ? UITextSmartInsertDeleteTypeYes : UITextSmartInsertDeleteTypeNo)
+                                       : UITextSmartInsertDeleteTypeDefault;
 }
