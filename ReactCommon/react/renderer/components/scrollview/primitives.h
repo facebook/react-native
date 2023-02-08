@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <optional>
+
 namespace facebook {
 namespace react {
 
@@ -21,6 +23,21 @@ enum class ContentInsetAdjustmentBehavior {
   Automatic,
   ScrollableAxes,
   Always
+};
+
+class ScrollViewMaintainVisibleContentPosition final {
+ public:
+  int minIndexForVisible{0};
+  std::optional<int> autoscrollToTopThreshold{};
+
+  bool operator==(const ScrollViewMaintainVisibleContentPosition &rhs) const {
+    return std::tie(this->minIndexForVisible, this->autoscrollToTopThreshold) ==
+        std::tie(rhs.minIndexForVisible, rhs.autoscrollToTopThreshold);
+  }
+
+  bool operator!=(const ScrollViewMaintainVisibleContentPosition &rhs) const {
+    return !(*this == rhs);
+  }
 };
 
 } // namespace react
