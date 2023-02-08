@@ -76,7 +76,7 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
     }
   }
 
-  public static class Builder<C extends Builder<?>> {
+  public static class Builder {
     private String mType;
     private final PersistableBundle mArgs = new PersistableBundle();
 
@@ -91,19 +91,19 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
         return;
       }
       try {
-        if (mType == TYPE_TEXT) {
+        if (mType.equals(TYPE_TEXT)) {
           setStringArgument(ARG_TEXT, accessibilityLabel);
         }
-        if (mType == TYPE_TELEPHONE) {
+        if (mType.equals(TYPE_TELEPHONE)) {
           warningMessage = TYPE_TELEPHONE_WARNING_MSG;
           setStringArgument(ARG_NUMBER_PARTS, accessibilityLabel);
         }
         // https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
-        if (mType == TYPE_MEASURE) {
+        if (mType.equals(TYPE_MEASURE)) {
           warningMessage = TYPE_MEASURE_WARNING_MSG;
           setStringArgument(ARG_UNIT, accessibilityLabel);
         }
-        if (mType == TYPE_CARDINAL || mType == TYPE_ORDINAL) {
+        if (mType.equals(TYPE_CARDINAL) || mType.equals(TYPE_ORDINAL)) {
           setStringArgument(ARG_NUMBER, accessibilityLabel);
         }
       } catch (Exception e) {

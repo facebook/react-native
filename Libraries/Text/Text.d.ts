@@ -58,8 +58,10 @@ export interface TextPropsIOS {
 export interface TextPropsAndroid {
   /**
    * Used with nested Text and accessibilityRole measure, money or telephone to specify the unit to announce.
-   * Measure refer to https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
-   * Telephone refer to  https://developer.android.com/reference/android/text/style/TtsSpan#ARG_NUMBER_PARTS
+   * Ordinal and Cardinal https://developer.android.com/reference/android/text/style/TtsSpan#ARG_NUMBER
+   * Measure refer to  https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
+   * Telephone refer to https://developer.android.com/reference/android/text/style/TtsSpan#ARG_NUMBER_PARTS
+   * Verbatim refer to https://developer.android.com/reference/android/text/style/TtsSpan#ARG_VERBATIM
    */
   accessibilitySpan?:
     | 'none'
