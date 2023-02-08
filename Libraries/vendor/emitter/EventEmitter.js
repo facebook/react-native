@@ -105,7 +105,7 @@ export default class EventEmitter<TEventToArgsMap: {...}>
     > = this._registry[eventType];
     if (registrations != null) {
       for (const registration of [...registrations]) {
-        registration.listener.apply(registration.context, args);
+        registration.listener?.apply(registration.context, args);
       }
     }
   }
