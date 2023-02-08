@@ -141,6 +141,9 @@ def use_react_native! (
   if fabric_enabled
     checkAndGenerateEmptyThirdPartyProvider!(prefix, new_arch_enabled, $CODEGEN_OUTPUT_DIR)
     setup_fabric!(:react_native_path => prefix)
+  else
+    relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+    build_codegen!(prefix, relative_installation_root)
   end
 
   # CocoaPods `configurations` option ensures that the target is copied only for the specified configurations,
