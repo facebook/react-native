@@ -888,7 +888,7 @@ jobs:
           command: |
             cd /tmp/$PROJECT_NAME/ios
 
-            bundle install --path vendor/bundle --clean
+            bundle install
 
             if [[ << parameters.flavor >> == "Release" ]]; then
               export PRODUCTION=1
@@ -967,7 +967,9 @@ jobs:
                     export USE_HERMES=0
                   fi
 
-                  cd packages/rn-tester && bundle exec pod install
+                  ls -l vendor/bundle/ruby
+                  ls -l vendor/bundle/ruby/3.1.0/bin
+                  cd packages/rn-tester && rbenv versions && bundle exec pod install
 
       - run:
           name: Build RNTester
