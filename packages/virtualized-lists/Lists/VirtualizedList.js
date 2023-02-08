@@ -1229,18 +1229,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   _onCellFocusCapture(cellKey: string) {
     this._lastFocusedCellKey = cellKey;
-    const renderMask = VirtualizedList._createRenderMask(
-      this.props,
-      this.state.cellsAroundViewport,
-      this._getNonViewportRenderRegions(this.props),
-    );
-
-    this.setState(state => {
-      if (!renderMask.equals(state.renderMask)) {
-        return {renderMask};
-      }
-      return null;
-    });
+    this._updateCellsToRender();
   }
 
   _onCellUnmount = (cellKey: string) => {
