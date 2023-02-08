@@ -681,7 +681,7 @@ jobs:
 
       - run:
           name: Download Dependencies Using Buck
-          command: ./scripts/circleci/buck_fetch.sh
+          command: ./scripts/buck/buck_fetch.sh
 
       - run:
           name: Build & Test React Native using Buck
@@ -753,6 +753,18 @@ jobs:
             - run: echo "Failing tests may be moved here temporarily."
             - run_e2e:
                 platform: android
+
+  # -------------------------
+  #    JOBS: Test Android Docker Image
+  # -------------------------
+  test_android_docker_image:
+    machine:
+      image: ubuntu-2004:202010-01
+    steps:
+      - checkout
+      - run:
+          name: Try to build React Native inside the Docker Container
+          command: npm run docker-build-android
 
   # -------------------------
   #    JOBS: Test Android Template
@@ -1603,6 +1615,7 @@ workflows:
           run_disabled_tests: false
       - test_android:
           run_disabled_tests: false
+      - test_android_docker_image
       - test_android_template:
           requires:
             - build_npm_package

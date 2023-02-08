@@ -44,7 +44,7 @@ function retry {
 
 CURRENT_DIR=$(pwd)
 export KOTLIN_HOME="$CURRENT_DIR/third-party/kotlin"
-retry 3 scripts/download-kotlin-compiler-with-buck.sh
+retry 3 scripts/buck/download-kotlin-compiler-with-buck.sh
 
 retry 3 buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
 retry 3 buck fetch ReactAndroid/src/main/java/com/facebook/react
