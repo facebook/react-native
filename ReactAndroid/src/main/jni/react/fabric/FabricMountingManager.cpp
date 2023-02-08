@@ -263,7 +263,7 @@ local_ref<jobject> FabricMountingManager::getProps(
 }
 
 void FabricMountingManager::executeMount(
-    MountingCoordinator::Shared const &mountingCoordinator) {
+    MountingCoordinator::Shared mountingCoordinator) {
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
 
   SystraceSection s(

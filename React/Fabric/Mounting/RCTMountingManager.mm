@@ -196,21 +196,20 @@ static void RCTPerformMountInstructions(
                                           componentViewDescriptor:rootViewDescriptor];
 }
 
-- (void)scheduleTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
+- (void)scheduleTransaction:(MountingCoordinator::Shared)mountingCoordinator
 {
   if (RCTIsMainQueue()) {
     // Already on the proper thread, so:
     // * No need to do a thread jump;
     // * No need to do expensive copy of all mutations;
     // * No need to allocate a block.
-    [self initiateTransaction:mountingCoordinator];
+    [self initiateTransaction:std::move(mountingCoordinator)];
     return;
   }
 
-  auto mountingCoordinatorCopy = mountingCoordinator;
   RCTExecuteOnMainQueue(^{
     RCTAssertMainQueue();
-    [self initiateTransaction:mountingCoordinatorCopy];
+    [self initiateTransaction:std::move(mountingCoordinator)];
   });
 }
 
@@ -244,7 +243,7 @@ static void RCTPerformMountInstructions(
   });
 }
 
-- (void)initiateTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
+- (void)initiateTransaction:(MountingCoordinator::Shared)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager initiateTransaction:]");
   RCTAssertMainQueue();

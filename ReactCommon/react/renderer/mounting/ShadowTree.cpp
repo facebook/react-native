@@ -415,7 +415,7 @@ ShadowTreeRevision ShadowTree::getCurrentRevision() const {
 
 void ShadowTree::mount(ShadowTreeRevision const &revision) const {
   mountingCoordinator_->push(revision);
-  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
+  delegate_.shadowTreeDidFinishTransaction(mountingCoordinator_);
 }
 
 void ShadowTree::commitEmptyTree() const {
@@ -458,7 +458,7 @@ void ShadowTree::emitLayoutEvents(
 }
 
 void ShadowTree::notifyDelegatesOfUpdates() const {
-  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
+  delegate_.shadowTreeDidFinishTransaction(mountingCoordinator_);
 }
 
 } // namespace facebook::react

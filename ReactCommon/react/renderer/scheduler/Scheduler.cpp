@@ -299,11 +299,11 @@ void Scheduler::animationTick() const {
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(
-    MountingCoordinator::Shared const &mountingCoordinator) {
+    MountingCoordinator::Shared mountingCoordinator) {
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_ != nullptr) {
-    delegate_->schedulerDidFinishTransaction(mountingCoordinator);
+    delegate_->schedulerDidFinishTransaction(std::move(mountingCoordinator));
   }
 }
 void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {
