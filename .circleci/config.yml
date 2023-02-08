@@ -762,7 +762,6 @@ jobs:
       image: ubuntu-2004:202010-01
     steps:
       - checkout
-      - run_yarn
       - run:
           name: Try to build React Native inside the Docker Container
           command: npm run docker-build-android
