@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTCustomPullToRefreshViewProtocol.h>
 #import <React/RCTViewComponentView.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
  * This view is designed to only serve ViewController-like purpose for the actual `UIRefreshControl` view which is being
  * attached to some `UIScrollView` (not to this view).
  */
-@interface RCTPullToRefreshViewComponentView : RCTViewComponentView
+@interface RCTPullToRefreshViewComponentView : RCTViewComponentView <RCTCustomPullToRefreshViewProtocol>
 
 @end
 
