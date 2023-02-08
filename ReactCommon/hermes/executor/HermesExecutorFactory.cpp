@@ -27,12 +27,6 @@ namespace react {
 
 namespace {
 
-std::unique_ptr<HermesRuntime> makeHermesRuntimeSystraced(
-    const ::hermes::vm::RuntimeConfig &runtimeConfig) {
-  SystraceSection s("HermesExecutorFactory::makeHermesRuntimeSystraced");
-  return hermes::makeHermesRuntime(runtimeConfig);
-}
-
 class HermesExecutorRuntimeAdapter
     : public facebook::hermes::inspector::RuntimeAdapter {
  public:
@@ -189,8 +183,12 @@ void HermesExecutorFactory::setDebuggerName(const std::string &debuggerName) {
 std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue) {
-  std::unique_ptr<HermesRuntime> hermesRuntime =
-      makeHermesRuntimeSystraced(runtimeConfig_);
+  std::unique_ptr<HermesRuntime> hermesRuntime;
+  {
+    SystraceSection s("makeHermesRuntime");
+    hermesRuntime = hermes::makeHermesRuntime(runtimeConfig_);
+  }
+
   HermesRuntime &hermesRuntimeRef = *hermesRuntime;
   auto decoratedRuntime = std::make_shared<DecoratedRuntime>(
       std::move(hermesRuntime),
