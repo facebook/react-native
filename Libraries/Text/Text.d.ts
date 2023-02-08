@@ -57,11 +57,31 @@ export interface TextPropsIOS {
 
 export interface TextPropsAndroid {
   /**
-   * Used with nested Text and accessibilityRole measure, money or telephone to specify the unit to announce.
+   * Used for nested Text accessibility announcements.
+   * The nested text accessibilityLabel should set to the values of:
+   *
    * Ordinal and Cardinal https://developer.android.com/reference/android/text/style/TtsSpan#ARG_NUMBER
+   * Argument used to specify a whole number.
+   * The value can be a string of digits of any size optionally prefixed with a - or +.
+   * Can be used with TYPE_CARDINAL and TYPE_ORDINAL.
+   *
    * Measure refer to  https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
+   * Argument used to specify the unit of a measure.
+   * The unit should always be specified in English singular form.
+   * Prefixes may be used. Engines will do their best to pronounce them correctly in the language used.
+   * Engines are expected to at least support the most common ones like "meter",
+   * "second", "degree celsius" and "degree fahrenheit" with some common prefixes like "milli" and "kilo".
+   * Can be used with TYPE_MEASURE.
+   *
    * Telephone refer to https://developer.android.com/reference/android/text/style/TtsSpan#ARG_NUMBER_PARTS
+   * Argument used to specify the main number part of a telephone number.
+   * Can be a string of digits where the different parts of the telephone
+   * number can be separated with a space, '-', '/' or '.'.
+   * Can be used with TYPE_TELEPHONE.
+   *
    * Verbatim refer to https://developer.android.com/reference/android/text/style/TtsSpan#ARG_VERBATIM
+   * Argument used to specify a string where the characters are read verbatim, except whitespace.
+   * Can be used with TYPE_VERBATIM.
    */
   accessibilitySpan?:
     | 'none'

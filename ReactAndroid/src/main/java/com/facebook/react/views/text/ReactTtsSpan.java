@@ -25,6 +25,8 @@ import com.facebook.common.logging.FLog;
  *
  * The inner classes are there for convenience and provide builders for each
  * TtsSpan type.
+ *
+ * Used for nested Text accessibility announcements.
  */
 public class ReactTtsSpan extends TtsSpan implements ReactSpan {
   private static final String TAG = ReactTtsSpan.class.getSimpleName();
@@ -94,15 +96,39 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
         if (mType.equals(TYPE_TEXT)) {
           setStringArgument(ARG_TEXT, accessibilityLabel);
         }
+        /*
+         * <p>Telephone refer to
+         * https://developer.android.com/reference/android/text/style/TtsSpan#ARG_NUMBER_PARTS
+         *
+         * <p>Argument used to specify the main number part of a telephone number. Can be a string of
+         * digits where the different parts of the telephone number can be separated with a space, '-',
+         * '/' or '.'. Can be used with TYPE_TELEPHONE.
+         */
         if (mType.equals(TYPE_TELEPHONE)) {
           warningMessage = TYPE_TELEPHONE_WARNING_MSG;
           setStringArgument(ARG_NUMBER_PARTS, accessibilityLabel);
         }
-        // https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
+        /*
+         * <p>Measure refer to
+         * https://developer.android.com/reference/android/text/style/TtsSpan#ARG_UNIT
+         *
+         * <p>Argument used to specify the unit of a measure. The unit should always be specified in
+         * English singular form. Prefixes may be used. Engines will do their best to pronounce them
+         * correctly in the language used. Engines are expected to at least support the most common ones
+         * like "meter", "second", "degree celsius" and "degree fahrenheit" with some common prefixes
+         * like "milli" and "kilo". Can be used with TYPE_MEASURE.
+         */
         if (mType.equals(TYPE_MEASURE)) {
           warningMessage = TYPE_MEASURE_WARNING_MSG;
           setStringArgument(ARG_UNIT, accessibilityLabel);
         }
+        /*
+         * <p>Ordinal and Cardinal
+         * https://developer.android.com/reference/android/text/style/TtsSpan#ARG_NUMBER
+         *
+         * <p>Argument used to specify a whole number. The value can be a string of digits of any size
+         * optionally prefixed with a - or +. Can be used with TYPE_CARDINAL and TYPE_ORDINAL.
+         */
         if (mType.equals(TYPE_CARDINAL) || mType.equals(TYPE_ORDINAL)) {
           setStringArgument(ARG_NUMBER, accessibilityLabel);
         }
