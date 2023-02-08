@@ -264,7 +264,8 @@ void Scheduler::renderTemplateToSurface(
                         std::make_shared<ShadowNode::ListOfShared>(
                             ShadowNode::ListOfShared{tree}),
                     });
-              });
+              },
+              {/* default commit options */});
         });
   } catch (const std::exception &e) {
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "

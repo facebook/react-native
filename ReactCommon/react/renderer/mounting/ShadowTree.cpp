@@ -427,7 +427,8 @@ void ShadowTree::commitEmptyTree() const {
                 /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                 /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
             });
-      });
+      },
+      {/* default commit options */});
 }
 
 void ShadowTree::emitLayoutEvents(

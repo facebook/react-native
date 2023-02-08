@@ -96,14 +96,14 @@ class ShadowTree final {
    */
   CommitStatus tryCommit(
       const ShadowTreeCommitTransaction &transaction,
-      const CommitOptions &commitOptions = {false}) const;
+      const CommitOptions &commitOptions) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
   CommitStatus commit(
       const ShadowTreeCommitTransaction &transaction,
-      const CommitOptions &commitOptions = {false}) const;
+      const CommitOptions &commitOptions) const;
 
   /*
    * Returns a `ShadowTreeRevision` representing the momentary state of
