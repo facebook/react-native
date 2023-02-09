@@ -75,12 +75,20 @@ Pod::Spec.new do |s|
 
   s.subspec "Default" do |ss|
     ss.source_files           = "React/**/*.{c,h,m,mm,S,cpp}"
-    ss.exclude_files          = "React/CoreModules/**/*",
-                                "React/DevSupport/**/*",
-                                "React/Fabric/**/*",
-                                "React/FBReactNativeSpec/**/*",
-                                "React/Tests/**/*",
-                                "React/Inspector/**/*"
+    exclude_files = [
+      "React/CoreModules/**/*",
+      "React/DevSupport/**/*",
+      "React/Fabric/**/*",
+      "React/FBReactNativeSpec/**/*",
+      "React/Tests/**/*",
+      "React/Inspector/**/*"
+    ]
+    # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
+    # So we have to exclude the JSCExecutorFactory
+    if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+      exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
+    end
+    ss.exclude_files = exclude_files
     ss.private_header_files   = "React/Cxx*/*.h"
   end
 
@@ -114,4 +122,11 @@ Pod::Spec.new do |s|
   s.dependency "React-jsiexecutor", version
   s.dependency "Yoga"
   s.dependency "glog"
+
+  if ENV['USE_HERMES'] == "0"
+    s.dependency 'React-jsc'
+  else
+    s.dependency 'React-hermes'
+    s.dependency 'hermes-engine'
+  end
 end

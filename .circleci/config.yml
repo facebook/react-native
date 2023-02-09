@@ -111,7 +111,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:6.2
+      - image: reactnativecommunity/react-native-android:7.0
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
@@ -448,24 +448,9 @@ jobs:
     steps:
       - checkout
       - run_yarn
-
-
-      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
-      - run:
-          name: Install additional GitHub bot dependencies
-          # TEMP: Added workaround from https://github.com/nodesource/distributions/issues/1266#issuecomment-932583579
-          command: |
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt update && apt install -y shellcheck jq
-            apt-get -y install openssl ca-certificates
-            update-ca-certificates
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt update && apt install -y shellcheck jq
-
       - run:
           name: Run linters against modified files (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" yarn lint-ci
-          when: always
 
   # -------------------------
   #    JOBS: Analyze Code
@@ -853,7 +838,7 @@ jobs:
         default: "StaticLibraries"
         description: Which kind of option we want to use for `use_frameworks!`
         type: enum
-        enum: ["StaticLibraries", "StaticFrameworks"] #TODO: Add "DynamicFrameworks"
+        enum: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -906,6 +891,8 @@ jobs:
 
             if [[ << parameters.use_frameworks >> == "StaticFrameworks" ]]; then
               export USE_FRAMEWORKS=static
+            elif [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
+              export USE_FRAMEWORKS=dynamic
             fi
 
             bundle exec pod install
@@ -1452,9 +1439,7 @@ jobs:
       - download_gradle_dependencies
 
       # START: Stables and nightlies
-      # This conditional step sets up the necessary credentials for publishing react-native to npm,
-      # and for interacting with GitHub as the react-native-bot account. Important: these steps
-      # should not be allowed to run on commits from pull requests.
+      # This conditional step sets up the necessary credentials for publishing react-native to npm.
       - when:
           condition:
             or:
@@ -1636,7 +1621,7 @@ workflows:
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
               flipper: ["WithFlipper", "WithoutFlipper"]
-              use_frameworks: [ "StaticLibraries", "StaticFrameworks" ] #TODO: make it works with DynamicFrameworks
+              use_frameworks: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
             exclude:
               - architecture: "NewArch"
                 flavor: "Release"
@@ -1651,8 +1636,18 @@ workflows:
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
                 flipper: "WithoutFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
@@ -1666,8 +1661,18 @@ workflows:
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
                 flipper: "WithoutFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
               - architecture: "OldArch"
                 flavor: "Release"
                 jsengine: "Hermes"
@@ -1680,6 +1685,11 @@ workflows:
                 use_frameworks: "StaticFrameworks"
               - architecture: "OldArch"
                 flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "OldArch"
+                flavor: "Release"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticLibraries"
@@ -1688,6 +1698,11 @@ workflows:
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "OldArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Debug"
                 jsengine: "Hermes"
@@ -1718,6 +1733,36 @@ workflows:
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "OldArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "OldArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
@@ -1778,7 +1823,6 @@ workflows:
       # This job will trigger when a version tag is pushed (by package_release)
       - build_npm_package:
           name: build_and_publish_npm_package
-          context: react-native-bot
           release_type: "release"
           filters: *only_release_tags
           requires:
@@ -1814,7 +1858,6 @@ workflows:
             - prepare_hermes_workspace
       - build_npm_package:
           name: build_and_publish_npm_package
-          context: react-native-bot
           release_type: "dry-run"
           requires:
             - build_hermesc_linux

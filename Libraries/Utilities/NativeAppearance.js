@@ -26,6 +26,7 @@ export interface Spec extends TurboModule {
   // types.
   /* 'light' | 'dark' */
   +getColorScheme: () => ?string;
+  +setColorScheme?: (colorScheme: string) => void;
 
   // RCTEventEmitter
   +addListener: (eventName: string) => void;

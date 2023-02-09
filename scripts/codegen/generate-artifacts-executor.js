@@ -22,9 +22,9 @@ const os = require('os');
 const path = require('path');
 
 const RN_ROOT = path.join(__dirname, '../..');
-
+const CODEGEN_DEPENDENCY_NAME = '@react-native/codegen';
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
-const CODEGEN_NPM_PATH = `${RN_ROOT}/../@react-native/codegen`;
+const CODEGEN_NPM_PATH = `${RN_ROOT}/../${CODEGEN_DEPENDENCY_NAME}`;
 const CORE_LIBRARIES = new Set(['rncore', 'FBReactNativeSpec']);
 const REACT_NATIVE_DEPENDENCY_NAME = 'react-native';
 
@@ -293,7 +293,7 @@ function getCodeGenCliPath() {
   } else if (fs.existsSync(CODEGEN_NPM_PATH)) {
     codegenCliPath = CODEGEN_NPM_PATH;
   } else {
-    throw "error: Could not determine react-native-codegen location. Try running 'yarn install' or 'npm install' in your project root.";
+    throw `error: Could not determine ${CODEGEN_DEPENDENCY_NAME} location. Try running 'yarn install' or 'npm install' in your project root.`;
   }
   return codegenCliPath;
 }

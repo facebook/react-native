@@ -141,15 +141,6 @@ describe('version-utils', () => {
       expect(prerelease).toBe('rc.4');
     });
 
-    it('should reject pre-release version with patch != 0', () => {
-      function testInvalidVersion() {
-        parseVersion('0.66.3-rc.4', 'release');
-      }
-      expect(testInvalidVersion).toThrowErrorMatchingInlineSnapshot(
-        `"Version 0.66.3-rc.4 is not valid for Release"`,
-      );
-    });
-
     it('should reject pre-release version from tag with random prerelease pattern', () => {
       function testInvalidVersion() {
         parseVersion('v0.66.0-something_invalid', 'release');
@@ -233,15 +224,6 @@ describe('version-utils', () => {
       expect(prerelease).toBe('rc.0');
     });
 
-    it('should reject dryrun with prerelease . version with patch different from 0', () => {
-      function testInvalidFunction() {
-        parseVersion('0.20.3-rc.0', 'dry-run');
-      }
-      expect(testInvalidFunction).toThrowErrorMatchingInlineSnapshot(
-        `"Version 0.20.3-rc.0 is not valid for dry-runs"`,
-      );
-    });
-
     it('should parse dryrun with prerelease - version', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         '0.20.0-rc-0',
@@ -252,15 +234,6 @@ describe('version-utils', () => {
       expect(minor).toBe('20');
       expect(patch).toBe('0');
       expect(prerelease).toBe('rc-0');
-    });
-
-    it('should reject dryrun with prerelease - version with patch different from 0', () => {
-      function testInvalidFunction() {
-        parseVersion('0.20.3-rc-0', 'dry-run');
-      }
-      expect(testInvalidFunction).toThrowErrorMatchingInlineSnapshot(
-        `"Version 0.20.3-rc-0 is not valid for dry-runs"`,
-      );
     });
 
     it('should parse dryrun with main version', () => {

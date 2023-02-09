@@ -69,7 +69,7 @@ class FabricMountingManager final {
   butter::map<SurfaceId, butter::set<Tag>> allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
 
-  bool const useOverflowInset_{false};
+  bool const reduceDeleteCreateMutation_{false};
 
   jni::local_ref<jobject> getProps(
       ShadowView const &oldShadowView,
