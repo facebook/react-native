@@ -144,9 +144,12 @@ public class TextLayoutManagerMapBuffer {
         if (textAttributes.mIsAccessibilityLink) {
           ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
         }
-        if ((textAttributes.mAccessibilitySpan != null
-                && textAttributes.mAccessibilitySpan != AccessibilitySpan.NONE)
-            || textAttributes.mAccessibilityLabel != null) {
+        boolean hasAccessibilitySpan =
+            textAttributes.mAccessibilitySpan != null
+                && textAttributes.mAccessibilitySpan != AccessibilitySpan.NONE;
+        boolean hasAccessibilityLabel =
+            textAttributes.mAccessibilitySpan != null && textAttributes.mAccessibilityLabel != null;
+        if (hasAccessibilitySpan || hasAccessibilityLabel) {
           ReactTtsSpan.Builder builder =
               new ReactTtsSpan.Builder(
                   textAttributes.mAccessibilitySpan, textAttributes.mAccessibilityLabel);

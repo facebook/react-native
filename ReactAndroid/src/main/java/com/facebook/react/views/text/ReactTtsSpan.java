@@ -13,6 +13,9 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 
 /*
+ * Used for nested Text accessibility announcements with
+ * props accessiblitySpan and accessibilityLabel.
+ *
  * Wraps {@link TtsSpan} as a {@link ReactSpan}.
  * A span that supplies additional meta-data for the associated text intended
  * for text-to-speech engines. If the text is being processed by a
@@ -25,8 +28,6 @@ import com.facebook.common.logging.FLog;
  *
  * The inner classes are there for convenience and provide builders for each
  * TtsSpan type.
- *
- * Used for nested Text accessibility announcements.
  */
 public class ReactTtsSpan extends TtsSpan implements ReactSpan {
   private static final String TAG = ReactTtsSpan.class.getSimpleName();
