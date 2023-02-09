@@ -967,9 +967,10 @@ jobs:
                     export USE_HERMES=0
                   fi
 
-                  ls -l vendor/bundle/ruby
-                  ls -l vendor/bundle/ruby/3.1.0/bin
-                  cd packages/rn-tester && rbenv versions && bundle exec pod install
+                  ls -l
+                  pwd
+                  rbenv versions
+                  cd packages/rn-tester && bundle exec pod install
 
       - run:
           name: Build RNTester
