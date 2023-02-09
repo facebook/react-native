@@ -243,6 +243,7 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
 }
 
@@ -257,6 +258,7 @@ task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Down
     src("https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz"))
 }
 
@@ -273,6 +275,7 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
 }
 
@@ -289,6 +292,7 @@ task downloadFmt(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/fmtlib/fmt/archive/${FMT_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz"))
 }
 
@@ -305,6 +309,7 @@ task downloadLibevent(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable/libevent-${LIBEVENT_VERSION}-stable.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "libevent-${LIBEVENT_VERSION}.tar.gz"))
 }
 
@@ -320,6 +325,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
 }
 
