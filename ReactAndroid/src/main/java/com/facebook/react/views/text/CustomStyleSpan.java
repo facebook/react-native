@@ -17,7 +17,6 @@ import com.facebook.infer.annotation.Nullsafe;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
-  private static final String TAG = "CustomStyleSpan";
   /**
    * A {@link MetricAffectingSpan} that allows to change the style of the displayed font.
    * CustomStyleSpan will try to load the fontFamily with the right style and weight from the
@@ -58,9 +57,9 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       int fontWeight,
       @Nullable String fontFeatureSettings,
       @Nullable String fontFamily,
+      AssetManager assetManager,
       TextAlignVertical textAlignVertical,
-      int textSize,
-      AssetManager assetManager) {
+      int textSize) {
     this(fontStyle, fontWeight, fontFeatureSettings, fontFamily, assetManager);
     mTextAlignVertical = textAlignVertical;
     mSize = textSize;

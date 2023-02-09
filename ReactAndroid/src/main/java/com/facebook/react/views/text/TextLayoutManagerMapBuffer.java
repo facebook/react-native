@@ -181,9 +181,9 @@ public class TextLayoutManagerMapBuffer {
                       textAttributes.mFontWeight,
                       textAttributes.mFontFeatureSettings,
                       textAttributes.mFontFamily,
+                      context.getAssets(),
                       textAlignVertical,
-                      textAttributes.mFontSize,
-                      context.getAssets())));
+                      textAttributes.mFontSize)));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
           ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));
