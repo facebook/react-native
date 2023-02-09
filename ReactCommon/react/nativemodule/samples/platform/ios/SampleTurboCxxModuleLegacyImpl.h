@@ -27,6 +27,7 @@ class SampleTurboCxxModuleLegacyImpl
   // API
   void voidFunc();
   bool getBool(bool arg);
+  double getEnum(double arg);
   double getNumber(double arg);
   std::string getString(const std::string &arg);
   folly::dynamic getArray(const folly::dynamic &arg);
