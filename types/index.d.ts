@@ -147,7 +147,6 @@ export * from '../Libraries/Utilities/Platform';
 export * from '../Libraries/Vibration/Vibration';
 export * from '../Libraries/YellowBox/YellowBoxDeprecated';
 export * from '../Libraries/vendor/core/ErrorUtils';
-export * from '../Libraries/vendor/emitter/EventEmitter';
 
 export * from './public/DeprecatedPropertiesAlias';
 export * from './public/Insets';
