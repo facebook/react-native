@@ -58,4 +58,10 @@ void NativePerformanceObserver::setOnPerformanceEntryCallback(
   PerformanceEntryReporter::getInstance().setReportingCallback(callback);
 }
 
+void NativePerformanceObserver::logRawEntry(
+    jsi::Runtime &rt,
+    RawPerformanceEntry entry) {
+  PerformanceEntryReporter::getInstance().logEntry(entry);
+}
+
 } // namespace facebook::react

@@ -11,6 +11,7 @@
 import type {TurboModule} from '../TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+import NativePerformanceObserverRef from './NativePerformanceObserverRef';
 
 export const RawPerformanceEntryTypeValues = {
   UNDEFINED: 0,
@@ -42,8 +43,8 @@ export interface Spec extends TurboModule {
   +stopReporting: (entryType: string) => void;
   +popPendingEntries: () => GetPendingEntriesResult;
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
+  +logRawEntry: (entry: RawPerformanceEntry) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>(
-  'NativePerformanceObserverCxx',
-): ?Spec);
+export default (TurboModuleRegistry.get<Spec>('NativePerformanceObserverCxx') ??
+  NativePerformanceObserverRef: ?Spec);
