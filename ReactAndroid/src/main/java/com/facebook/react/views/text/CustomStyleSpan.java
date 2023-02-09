@@ -138,7 +138,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     ds.setTypeface(typeface);
     ds.setSubpixelText(true);
 
-    if (textAlignVertical == TextAlignVertical.CENTER) {
+    if (textAlignVertical == TextAlignVertical.CENTER || highestLineHeight == 0) {
       return;
     }
 
@@ -147,48 +147,27 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     if (textSize > 0) {
       textPaintCopy.setTextSize(textSize);
     }
-    if (highestLineHeight == 0) {
-      // aligns the text by font metrics
-      // when lineHeight prop is missing
-      // https://stackoverflow.com/a/27631737/7295772
-      // top      -------------  -10
-      // ascent   -------------  -5
-      // baseline __my Text____   0
-      // descent  _____________   2
-      // bottom   _____________   5
+    if (textSize == highestFontSize) {
+      // aligns text vertically in the lineHeight
+      // and adjust their position depending on the fontSize
       if (textAlignVertical == TextAlignVertical.TOP) {
-        ds.baselineShift +=
-            textPaintCopy.getFontMetrics().top - textPaintCopy.ascent() - textPaintCopy.descent();
+        ds.baselineShift -= highestLineHeight / 2 - textPaintCopy.getTextSize() / 2;
       }
       if (textAlignVertical == TextAlignVertical.BOTTOM) {
-        ds.baselineShift += textPaintCopy.getFontMetrics().bottom - textPaintCopy.descent();
+        ds.baselineShift +=
+            highestLineHeight / 2 - textPaintCopy.getTextSize() / 2 - textPaintCopy.descent();
       }
-    } else {
-      if (textSize == highestFontSize) {
-        // aligns text vertically in the lineHeight
-        // and adjust their position depending on the fontSize
-        if (textAlignVertical == TextAlignVertical.TOP) {
-          ds.baselineShift -= highestLineHeight / 2 - textPaintCopy.getTextSize() / 2;
-        }
-        if (textAlignVertical == TextAlignVertical.BOTTOM) {
-          ds.baselineShift +=
-              highestLineHeight / 2 - textPaintCopy.getTextSize() / 2 - textPaintCopy.descent();
-        }
-      } else if (highestFontSize != 0 && textSize < highestFontSize) {
-        // aligns correctly text that has smaller font
-        if (textAlignVertical == TextAlignVertical.TOP) {
-          ds.baselineShift -=
-              highestLineHeight / 2
-                  - highestFontSize / 2
-                  // smaller font aligns on the baseline of bigger font
-                  // moves the baseline of text with smaller font up
-                  // so it aligns on the top of the larger font
-                  + (highestFontSize - textSize)
-                  + (textPaintCopy.getFontMetrics().top - textPaintCopy.ascent());
-        }
-        if (textAlignVertical == TextAlignVertical.BOTTOM) {
-          ds.baselineShift += highestLineHeight / 2 - highestFontSize / 2 - textPaintCopy.descent();
-        }
+    } else if (highestFontSize != 0 && textSize < highestFontSize) {
+      // aligns correctly text that has smaller font
+      if (textAlignVertical == TextAlignVertical.TOP) {
+        ds.baselineShift -=
+            highestLineHeight / 2
+                - highestFontSize / 2
+                + (highestFontSize - textSize)
+                + (textPaintCopy.getFontMetrics().top - textPaintCopy.ascent());
+      }
+      if (textAlignVertical == TextAlignVertical.BOTTOM) {
+        ds.baselineShift += highestLineHeight / 2 - highestFontSize / 2 - textPaintCopy.descent();
       }
     }
   }
