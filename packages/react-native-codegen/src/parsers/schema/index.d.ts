@@ -5,6 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export type ParserType = 'Flow' | 'TypeScript';
+import type { SchemaType } from "../../CodegenSchema";
 
-export declare class ParserError extends Error {}
+export declare function parse(filename: string): SchemaType | undefined;
