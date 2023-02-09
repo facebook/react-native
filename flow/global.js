@@ -80,6 +80,10 @@ declare var global: {
   +__DEV__?: boolean,
   +RN$Bridgeless?: boolean,
 
+  // setupDOM
+  +DOMRect: typeof DOMRect,
+  +DOMRectReadOnly: typeof DOMRectReadOnly,
+
   // Undeclared properties are implicitly `any`.
   [string | symbol]: any,
 };
