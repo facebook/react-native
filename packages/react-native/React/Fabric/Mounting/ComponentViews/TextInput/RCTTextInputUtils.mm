@@ -43,7 +43,10 @@ void RCTCopyBackedTextInput(
   toTextInput.secureTextEntry = fromTextInput.secureTextEntry;
   toTextInput.keyboardType = fromTextInput.keyboardType;
   toTextInput.textContentType = fromTextInput.textContentType;
-  toTextInput.smartInsertDeleteType = fromTextInput.smartInsertDeleteType;
+
+  if (@available(iOS 11.0, *)) {
+    toTextInput.smartInsertDeleteType = fromTextInput.smartInsertDeleteType;
+  }
 
   toTextInput.passwordRules = fromTextInput.passwordRules;
 
