@@ -500,6 +500,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   CFStreamCreatePairWithSocketToHost(NULL, (__bridge CFStringRef)host, port, &readStream, &writeStream);
 
+  CFDictionaryRef proxySettings = CFNetworkCopySystemProxySettings();
+  if (CFDictionaryContainsKey(proxySettings, kCFStreamPropertySOCKSProxyHost)) {
+    CFReadStreamSetProperty(readStream, kCFStreamPropertySOCKSProxy, proxySettings);
+    CFWriteStreamSetProperty(writeStream, kCFStreamPropertySOCKSProxy, proxySettings);
+  }
+
   _outputStream = CFBridgingRelease(writeStream);
   _inputStream = CFBridgingRelease(readStream);
 
