@@ -58,9 +58,8 @@ esac
 
 # Path to react-native folder inside node_modules
 REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-# The project should be located next to where react-native is installed
-# in node_modules.
-PROJECT_ROOT=${PROJECT_ROOT:-"$REACT_NATIVE_DIR/../.."}
+# Most projects have their project root, one level up from their Xcode project dir (the "ios" directory)
+PROJECT_ROOT=${PROJECT_ROOT:-"$PROJECT_DIR/.."}
 
 cd "$PROJECT_ROOT" || exit
 

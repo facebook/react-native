@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {TypeAliasResolutionStatus, TypeDeclarationMap} from '../utils';
+import type {TypeResolutionStatus, TypeDeclarationMap} from '../utils';
 
 /**
  * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
@@ -61,7 +61,7 @@ function resolveTypeAnnotation(
 ): {
   nullable: boolean,
   typeAnnotation: $FlowFixMe,
-  typeAliasResolutionStatus: TypeAliasResolutionStatus,
+  typeResolutionStatus: TypeResolutionStatus,
 } {
   invariant(
     typeAnnotation != null,
@@ -70,7 +70,7 @@ function resolveTypeAnnotation(
 
   let node = typeAnnotation;
   let nullable = false;
-  let typeAliasResolutionStatus: TypeAliasResolutionStatus = {
+  let typeResolutionStatus: TypeResolutionStatus = {
     successful: false,
   };
 
@@ -78,34 +78,49 @@ function resolveTypeAnnotation(
     if (node.type === 'NullableTypeAnnotation') {
       nullable = true;
       node = node.typeAnnotation;
-    } else if (node.type === 'GenericTypeAnnotation') {
-      typeAliasResolutionStatus = {
-        successful: true,
-        aliasName: node.id.name,
-      };
-      const resolvedTypeAnnotation = types[node.id.name];
-      if (
-        resolvedTypeAnnotation == null ||
-        resolvedTypeAnnotation.type === 'EnumDeclaration'
-      ) {
+      continue;
+    }
+
+    if (node.type !== 'GenericTypeAnnotation') {
+      break;
+    }
+
+    const resolvedTypeAnnotation = types[node.id.name];
+    if (resolvedTypeAnnotation == null) {
+      break;
+    }
+
+    switch (resolvedTypeAnnotation.type) {
+      case 'TypeAlias': {
+        typeResolutionStatus = {
+          successful: true,
+          type: 'alias',
+          name: node.id.name,
+        };
+        node = resolvedTypeAnnotation.right;
         break;
       }
-
-      invariant(
-        resolvedTypeAnnotation.type === 'TypeAlias',
-        `GenericTypeAnnotation '${node.id.name}' must resolve to a TypeAlias. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
-      );
-
-      node = resolvedTypeAnnotation.right;
-    } else {
-      break;
+      case 'EnumDeclaration': {
+        typeResolutionStatus = {
+          successful: true,
+          type: 'enum',
+          name: node.id.name,
+        };
+        node = resolvedTypeAnnotation.body;
+        break;
+      }
+      default: {
+        throw new TypeError(
+          `A non GenericTypeAnnotation must be a type declaration ('TypeAlias') or enum ('EnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+        );
+      }
     }
   }
 
   return {
     nullable: nullable,
     typeAnnotation: node,
-    typeAliasResolutionStatus,
+    typeResolutionStatus,
   };
 }
 

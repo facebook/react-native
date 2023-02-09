@@ -20,6 +20,7 @@ if (
 ) {
   const constants = NativeBlobModule.getConstants();
   // $FlowFixMe[incompatible-type] asserted above
+  // $FlowFixMe[unsafe-addition]
   BLOB_URL_PREFIX = constants.BLOB_URI_SCHEME + ':';
   if (typeof constants.BLOB_URI_HOST === 'string') {
     BLOB_URL_PREFIX += `//${constants.BLOB_URI_HOST}/`;

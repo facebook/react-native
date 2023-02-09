@@ -90,14 +90,6 @@ public class PointerEventHelper {
     return -1;
   }
 
-  public static boolean isPrimary(int pointerId, int primaryPointerId, MotionEvent event) {
-    if (supportsHover(event)) {
-      return true;
-    }
-
-    return pointerId == primaryPointerId;
-  }
-
   public static String getW3CPointerType(final int toolType) {
     // https://www.w3.org/TR/pointerevents3/#dom-pointerevent-pointertype
     switch (toolType) {

@@ -22,8 +22,10 @@ import com.facebook.react.uimanager.events.PointerEventHelper.EVENT;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * JSPointerDispatcher handles dispatching pointer events to JS from RootViews. If you implement
@@ -38,6 +40,7 @@ public class JSPointerDispatcher {
 
   private Map<Integer, List<ViewTarget>> mLastHitPathByPointerId;
   private Map<Integer, float[]> mLastEventCoordinatesByPointerId;
+  private Set<Integer> mHoveringPointerIds = new HashSet<>();
 
   private int mChildHandlingNativeGesture = -1;
   private int mPrimaryPointerId = UNSET_POINTER_ID;
@@ -75,10 +78,9 @@ public class JSPointerDispatcher {
       MotionEvent motionEvent,
       EventDispatcher eventDispatcher) {
 
-    List<ViewTarget> activeHitPath =
-        eventState.getHitPathByPointerId().get(eventState.getActivePointerId());
+    int activePointerId = eventState.getActivePointerId();
+    List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
 
-    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
     boolean listeningForUp =
         isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.UP, EVENT.UP_CAPTURE);
     if (listeningForUp) {
@@ -86,6 +88,8 @@ public class JSPointerDispatcher {
           PointerEvent.obtain(
               PointerEventHelper.POINTER_UP, activeTargetTag, eventState, motionEvent));
     }
+
+    boolean supportsHover = mHoveringPointerIds.contains(activePointerId);
 
     if (!supportsHover) {
       boolean listeningForOut =
@@ -111,6 +115,7 @@ public class JSPointerDispatcher {
     if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
       mPrimaryPointerId = UNSET_POINTER_ID;
     }
+    mHoveringPointerIds.remove(activePointerId);
   }
 
   private void incrementCoalescingKey() {
@@ -131,7 +136,7 @@ public class JSPointerDispatcher {
         eventState.getHitPathByPointerId().get(eventState.getActivePointerId());
 
     incrementCoalescingKey();
-    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
+    boolean supportsHover = mHoveringPointerIds.contains(eventState.getActivePointerId());
     if (!supportsHover) {
       // Indirect OVER event dispatches before ENTER
       boolean listeningForOver =
@@ -164,9 +169,7 @@ public class JSPointerDispatcher {
     }
   }
 
-  private PointerEventState createEventState(MotionEvent motionEvent) {
-    int activeIndex = motionEvent.getActionIndex();
-
+  private PointerEventState createEventState(int activePointerId, MotionEvent motionEvent) {
     Map<Integer, float[]> offsetByPointerId = new HashMap<Integer, float[]>();
     Map<Integer, List<ViewTarget>> hitPathByPointerId = new HashMap<Integer, List<ViewTarget>>();
     Map<Integer, float[]> eventCoordinatesByPointerId = new HashMap<Integer, float[]>();
@@ -183,7 +186,6 @@ public class JSPointerDispatcher {
       eventCoordinatesByPointerId.put(pointerId, eventCoordinates);
     }
 
-    int activePointerId = motionEvent.getPointerId(activeIndex);
     int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
 
     return new PointerEventState(
@@ -193,31 +195,64 @@ public class JSPointerDispatcher {
         surfaceId,
         offsetByPointerId,
         hitPathByPointerId,
-        eventCoordinatesByPointerId);
+        eventCoordinatesByPointerId,
+        mHoveringPointerIds); // Creates a copy of hovering pointer ids, as they may be updated
   }
 
-  public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
+  public void handleMotionEvent(
+      MotionEvent motionEvent, EventDispatcher eventDispatcher, boolean isCapture) {
     // Don't fire any pointer events if child view is handling native gesture
     if (mChildHandlingNativeGesture != -1) {
       return;
     }
 
     int action = motionEvent.getActionMasked();
+    int activePointerId = motionEvent.getPointerId(motionEvent.getActionIndex());
     if (action == MotionEvent.ACTION_DOWN) {
       mPrimaryPointerId = motionEvent.getPointerId(0);
+    } else if (action == MotionEvent.ACTION_HOVER_MOVE) {
+      mHoveringPointerIds.add(activePointerId);
     }
 
-    PointerEventState eventState = createEventState(motionEvent);
-    List<ViewTarget> activeHitPath =
-        eventState.getHitPathByPointerId().get(eventState.getActivePointerId());
+    PointerEventState eventState = createEventState(activePointerId, motionEvent);
 
-    if (activeHitPath == null || activeHitPath.isEmpty()) {
-      return;
+    // We've empirically determined that when we get a ACTION_HOVER_EXIT from the root view on the
+    // `onInterceptHoverEvent`, this means we've exited the root view.
+    // This logic may be wrong but reasoning about the dispatch sequence for HOVER_ENTER/HOVER_EXIT
+    // doesn't follow the capture/bubbling sequence like other MotionEvents. See:
+    // https://developer.android.com/reference/android/view/MotionEvent#ACTION_HOVER_ENTER
+    // https://suragch.medium.com/how-touch-events-are-delivered-in-android-eee3b607b038
+    boolean isExitFromRoot =
+        isCapture && motionEvent.getActionMasked() == MotionEvent.ACTION_HOVER_EXIT;
+
+    // Calculate the targetTag, with special handling for when we exit the root view. In that case,
+    // we use the root viewId of the last event
+    int activeTargetTag;
+
+    List<ViewTarget> activeHitPath;
+    if (isExitFromRoot) {
+      List<ViewTarget> lastHitPath =
+          mLastHitPathByPointerId != null
+              ? mLastHitPathByPointerId.get(eventState.getActivePointerId())
+              : null;
+      if (lastHitPath == null || lastHitPath.isEmpty()) {
+        return;
+      }
+      activeTargetTag = lastHitPath.get(lastHitPath.size() - 1).getViewId();
+
+      // Explicitly make the hit path for this cursor empty
+      activeHitPath = new ArrayList<>();
+      eventState.getHitPathByPointerId().put(activePointerId, activeHitPath);
+    } else {
+      activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
+      if (activeHitPath == null || activeHitPath.isEmpty()) {
+        return;
+      }
+      activeTargetTag = activeHitPath.get(0).getViewId();
     }
 
-    TouchTargetHelper.ViewTarget activeViewTarget = activeHitPath.get(0);
-    int activeTargetTag = activeViewTarget.getViewId();
-
+    // Dispatch pointer events from the MotionEvents. When we want to ignore an event, we need to
+    // exit early so we don't record anything about this MotionEvent.
     switch (action) {
       case MotionEvent.ACTION_DOWN:
       case MotionEvent.ACTION_POINTER_DOWN:
@@ -225,7 +260,18 @@ public class JSPointerDispatcher {
         break;
       case MotionEvent.ACTION_HOVER_MOVE:
         // TODO(luwe) - converge this with ACTION_MOVE
-        // HOVER_MOVE may occur before DOWN. Add its downTime as a coalescing key
+
+        // If we don't move enough, ignore this event.
+        float[] eventCoordinates = eventState.getEventCoordinatesByPointerId().get(activePointerId);
+        float[] lastEventCoordinates =
+            mLastEventCoordinatesByPointerId != null
+                    && mLastEventCoordinatesByPointerId.containsKey(activePointerId)
+                ? mLastEventCoordinatesByPointerId.get(activePointerId)
+                : new float[] {0, 0};
+        if (!qualifiedMove(eventCoordinates, lastEventCoordinates)) {
+          return;
+        }
+
         onMove(activeTargetTag, eventState, motionEvent, eventDispatcher);
         break;
       case MotionEvent.ACTION_MOVE:
@@ -251,8 +297,15 @@ public class JSPointerDispatcher {
         dispatchCancelEvent(eventState, motionEvent, eventDispatcher);
         break;
       case MotionEvent.ACTION_HOVER_ENTER:
+        // Ignore these events as enters will be calculated from HOVER_MOVE
+        return;
       case MotionEvent.ACTION_HOVER_EXIT:
-        // These are handled by HOVER_MOVE
+        // For root exits, we need to update our stored eventState to reflect this exit because we
+        // won't receive future HOVER_MOVE events when cursor is outside root view
+        if (isExitFromRoot) {
+          // We've set the hit path for this pointer to be empty to calculate all exits
+          onMove(activeTargetTag, eventState, motionEvent, eventDispatcher);
+        }
         break;
       default:
         FLog.w(
@@ -261,9 +314,14 @@ public class JSPointerDispatcher {
         return;
     }
 
+    // Caching the event state so we have a new "last"
     mLastHitPathByPointerId = eventState.getHitPathByPointerId();
     mLastEventCoordinatesByPointerId = eventState.getEventCoordinatesByPointerId();
     mLastButtonState = motionEvent.getButtonState();
+
+    // Clean up any stale pointerIds
+    Set<Integer> allPointerIds = mLastEventCoordinatesByPointerId.keySet();
+    mHoveringPointerIds.retainAll(allPointerIds);
   }
 
   private static boolean isAnyoneListeningForBubblingEvent(
@@ -325,7 +383,11 @@ public class JSPointerDispatcher {
     }
   }
 
-  // called on hover_move motion events only
+  private boolean qualifiedMove(float[] eventCoordinates, float[] lastEventCoordinates) {
+    return (Math.abs(lastEventCoordinates[0] - eventCoordinates[0]) > ONMOVE_EPSILON
+        || Math.abs(lastEventCoordinates[1] - eventCoordinates[1]) > ONMOVE_EPSILON);
+  }
+
   private void onMove(
       int targetTag,
       PointerEventState eventState,
@@ -333,28 +395,12 @@ public class JSPointerDispatcher {
       EventDispatcher eventDispatcher) {
 
     int activePointerId = eventState.getActivePointerId();
-    float[] eventCoordinates = eventState.getEventCoordinatesByPointerId().get(activePointerId);
     List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
 
     List<ViewTarget> lastHitPath =
         mLastHitPathByPointerId != null && mLastHitPathByPointerId.containsKey(activePointerId)
             ? mLastHitPathByPointerId.get(activePointerId)
             : new ArrayList<ViewTarget>();
-
-    float[] lastEventCoordinates =
-        mLastEventCoordinatesByPointerId != null
-                && mLastEventCoordinatesByPointerId.containsKey(activePointerId)
-            ? mLastEventCoordinatesByPointerId.get(activePointerId)
-            : new float[] {0, 0};
-
-    boolean qualifiedMove =
-        (Math.abs(lastEventCoordinates[0] - eventCoordinates[0]) > ONMOVE_EPSILON
-            || Math.abs(lastEventCoordinates[1] - eventCoordinates[1]) > ONMOVE_EPSILON);
-
-    // Early exit if active pointer has not moved enough
-    if (!qualifiedMove) {
-      return;
-    }
 
     // hitState is list ordered from inner child -> parent tag
     // Traverse hitState back-to-front to find the first divergence with lastHitPath
@@ -464,7 +510,9 @@ public class JSPointerDispatcher {
         mChildHandlingNativeGesture == -1,
         "Expected to not have already sent a cancel for this gesture");
 
-    PointerEventState eventState = createEventState(motionEvent);
+    int activeIndex = motionEvent.getActionIndex();
+    int activePointerId = motionEvent.getPointerId(activeIndex);
+    PointerEventState eventState = createEventState(activePointerId, motionEvent);
     dispatchCancelEvent(eventState, motionEvent, eventDispatcher);
   }
 
@@ -477,8 +525,8 @@ public class JSPointerDispatcher {
         mChildHandlingNativeGesture == -1,
         "Expected to not have already sent a cancel for this gesture");
 
-    List<ViewTarget> activeHitPath =
-        eventState.getHitPathByPointerId().get(eventState.getActivePointerId());
+    int activePointerId = eventState.getActivePointerId();
+    List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
 
     if (!activeHitPath.isEmpty()) {
       boolean listeningForCancel =
@@ -505,6 +553,8 @@ public class JSPointerDispatcher {
           eventDispatcher);
 
       incrementCoalescingKey();
+      mHoveringPointerIds.remove(mPrimaryPointerId);
+      mHoveringPointerIds.remove(activePointerId);
       mPrimaryPointerId = UNSET_POINTER_ID;
     }
   }

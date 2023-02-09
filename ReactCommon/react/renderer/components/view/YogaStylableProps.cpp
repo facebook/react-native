@@ -48,10 +48,10 @@ static inline T const getFieldValue(
   return defaultValue;
 }
 
-#define REBUILD_FIELD_SWITCH_CASE2(field, fieldName)                     \
-  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                        \
-    yogaStyle.field() = getFieldValue(context, value, defaults.field()); \
-    return;                                                              \
+#define REBUILD_FIELD_SWITCH_CASE2(field, fieldName)                       \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                          \
+    yogaStyle.field() = getFieldValue(context, value, ygDefaults.field()); \
+    return;                                                                \
   }
 
 // @lint-ignore CLANGTIDY cppcoreguidelines-macro-usage
@@ -61,7 +61,7 @@ static inline T const getFieldValue(
 #define REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, index, fieldName) \
   case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                     \
     yogaStyle.field()[index] =                                        \
-        getFieldValue(context, value, defaults.field()[index]);       \
+        getFieldValue(context, value, ygDefaults.field()[index]);     \
     return;                                                           \
   }
 
@@ -104,7 +104,7 @@ void YogaStylableProps::setProp(
     RawPropsPropNameHash hash,
     const char *propName,
     RawValue const &value) {
-  static const auto defaults = YGStyle{};
+  static const auto ygDefaults = YGStyle{};
 
   Props::setProp(context, hash, propName, value);
 
@@ -133,44 +133,28 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_YG_EDGES(padding, "padding", "");
     REBUILD_FIELD_YG_EDGES(border, "border", "Width");
 
+    static const auto defaults = YogaStylableProps{};
+
     // Aliases
-    RAW_SET_PROP_SWITCH_CASE(inset, "inset", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        insetBlock, "insetBlock", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        insetBlockEnd, "insetBlockEnd", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        insetBlockStart, "insetBlockStart", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        insetInline, "insetInline", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        insetInlineEnd, "insetInlineEnd", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        insetInlineStart, "insetInlineStart", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        marginInline, "marginInline", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        marginInlineStart, "marginInlineStart", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        marginInlineEnd, "marginInlineEnd", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        marginBlock, "marginBlock", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        marginBlockStart, "marginBlockStart", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        marginBlockEnd, "marginBlockEnd", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        paddingInline, "paddingInline", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        paddingInlineStart, "paddingInlineStart", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        paddingInlineEnd, "paddingInlineEnd", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        paddingBlock, "paddingBlock", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        paddingBlockStart, "paddingBlockStart", CompactValue::ofUndefined());
-    RAW_SET_PROP_SWITCH_CASE(
-        paddingBlockEnd, "paddingBlockEnd", CompactValue::ofUndefined());
+    RAW_SET_PROP_SWITCH_CASE(inset, "inset");
+    RAW_SET_PROP_SWITCH_CASE(insetBlock, "insetBlock");
+    RAW_SET_PROP_SWITCH_CASE(insetBlockEnd, "insetBlockEnd");
+    RAW_SET_PROP_SWITCH_CASE(insetBlockStart, "insetBlockStart");
+    RAW_SET_PROP_SWITCH_CASE(insetInline, "insetInline");
+    RAW_SET_PROP_SWITCH_CASE(insetInlineEnd, "insetInlineEnd");
+    RAW_SET_PROP_SWITCH_CASE(insetInlineStart, "insetInlineStart");
+    RAW_SET_PROP_SWITCH_CASE(marginInline, "marginInline");
+    RAW_SET_PROP_SWITCH_CASE(marginInlineStart, "marginInlineStart");
+    RAW_SET_PROP_SWITCH_CASE(marginInlineEnd, "marginInlineEnd");
+    RAW_SET_PROP_SWITCH_CASE(marginBlock, "marginBlock");
+    RAW_SET_PROP_SWITCH_CASE(marginBlockStart, "marginBlockStart");
+    RAW_SET_PROP_SWITCH_CASE(marginBlockEnd, "marginBlockEnd");
+    RAW_SET_PROP_SWITCH_CASE(paddingInline, "paddingInline");
+    RAW_SET_PROP_SWITCH_CASE(paddingInlineStart, "paddingInlineStart");
+    RAW_SET_PROP_SWITCH_CASE(paddingInlineEnd, "paddingInlineEnd");
+    RAW_SET_PROP_SWITCH_CASE(paddingBlock, "paddingBlock");
+    RAW_SET_PROP_SWITCH_CASE(paddingBlockStart, "paddingBlockStart");
+    RAW_SET_PROP_SWITCH_CASE(paddingBlockEnd, "paddingBlockEnd");
   }
 }
 

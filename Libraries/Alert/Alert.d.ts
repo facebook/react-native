@@ -77,6 +77,7 @@ export interface AlertStatic {
     type?: AlertType,
     defaultValue?: string,
     keyboardType?: string,
+    options?: AlertOptions,
   ) => void;
 }
 

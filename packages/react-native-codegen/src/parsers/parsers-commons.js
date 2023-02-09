@@ -15,7 +15,6 @@ import type {
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleEnumDeclaration,
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
@@ -45,12 +44,11 @@ const {
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
-  UnsupportedEnumDeclarationParserError,
-  UnsupportedGenericParserError,
   UnnamedFunctionParamParserError,
 } = require('./errors');
 
 const invariant = require('invariant');
+import type {NativeModuleEnumMap} from '../CodegenSchema';
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -135,6 +133,7 @@ function parseObjectProperty(
   hasteModuleName: string,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   nullable: boolean,
@@ -157,6 +156,7 @@ function parseObjectProperty(
         languageTypeAnnotation,
         types,
         aliasMap,
+        enumMap,
         tryParse,
         cxxOnly,
         parser,
@@ -183,43 +183,6 @@ function parseObjectProperty(
   };
 }
 
-function translateDefault(
-  hasteModuleName: string,
-  typeAnnotation: $FlowFixMe,
-  types: TypeDeclarationMap,
-  nullable: boolean,
-  parser: Parser,
-): Nullable<NativeModuleEnumDeclaration> {
-  const maybeEnumDeclaration =
-    types[parser.nameForGenericTypeAnnotation(typeAnnotation)];
-
-  if (maybeEnumDeclaration && parser.isEnumDeclaration(maybeEnumDeclaration)) {
-    const memberType = parser.getMaybeEnumMemberType(maybeEnumDeclaration);
-
-    if (
-      memberType === 'NumberTypeAnnotation' ||
-      memberType === 'StringTypeAnnotation'
-    ) {
-      return wrapNullable(nullable, {
-        type: 'EnumDeclaration',
-        memberType: memberType,
-      });
-    } else {
-      throw new UnsupportedEnumDeclarationParserError(
-        hasteModuleName,
-        typeAnnotation,
-        memberType,
-      );
-    }
-  }
-
-  throw new UnsupportedGenericParserError(
-    hasteModuleName,
-    typeAnnotation,
-    parser,
-  );
-}
-
 function translateFunctionTypeAnnotation(
   hasteModuleName: string,
   // TODO(T108222691): Use flow-types for @babel/parser
@@ -227,6 +190,7 @@ function translateFunctionTypeAnnotation(
   functionTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   translateTypeAnnotation: $FlowFixMe,
@@ -252,6 +216,7 @@ function translateFunctionTypeAnnotation(
             parser.getParameterTypeAnnotation(param),
             types,
             aliasMap,
+            enumMap,
             tryParse,
             cxxOnly,
             parser,
@@ -292,6 +257,7 @@ function translateFunctionTypeAnnotation(
         parser.getFunctionTypeAnnotationReturnType(functionTypeAnnotation),
         types,
         aliasMap,
+        enumMap,
         tryParse,
         cxxOnly,
         parser,
@@ -326,6 +292,7 @@ function buildPropertySchema(
   property: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   resolveTypeAnnotation: $FlowFixMe,
@@ -363,6 +330,7 @@ function buildPropertySchema(
         value,
         types,
         aliasMap,
+        enumMap,
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
@@ -471,7 +439,6 @@ module.exports = {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   isObjectProperty,
   parseObjectProperty,
-  translateDefault,
   translateFunctionTypeAnnotation,
   buildPropertySchema,
   buildSchemaFromConfigType,

@@ -137,6 +137,20 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('scrollToEnd works with null list', () => {
+    const listRef = React.createRef(null);
+    ReactTestRenderer.create(
+      <VirtualizedList
+        data={undefined}
+        renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => 0}
+        ref={listRef}
+      />,
+    );
+    listRef.current.scrollToEnd();
+  });
+
   it('renders empty list with empty component', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
@@ -243,6 +257,32 @@ describe('VirtualizedList', () => {
       />,
     );
     expect(component).toMatchSnapshot();
+  });
+
+  it('handles nested list in ListEmptyComponent', () => {
+    const ListEmptyComponent = (
+      <VirtualizedList {...baseItemProps(generateItems(1))} />
+    );
+
+    let component;
+
+    ReactTestRenderer.act(() => {
+      component = ReactTestRenderer.create(
+        <VirtualizedList
+          {...baseItemProps([])}
+          ListEmptyComponent={ListEmptyComponent}
+        />,
+      );
+    });
+
+    ReactTestRenderer.act(() => {
+      component.update(
+        <VirtualizedList
+          {...baseItemProps(generateItems(5))}
+          ListEmptyComponent={ListEmptyComponent}
+        />,
+      );
+    });
   });
 
   it('returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data', () => {

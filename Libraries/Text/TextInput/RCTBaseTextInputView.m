@@ -458,7 +458,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
   if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
-  } else {
+  } else if (text != nil) {
     _predictedText = [backedTextInputView.attributedText.string stringByReplacingCharactersInRange:range
                                                                                         withString:text];
   }

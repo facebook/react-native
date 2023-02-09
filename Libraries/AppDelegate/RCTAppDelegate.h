@@ -55,6 +55,7 @@
 @property (nonatomic, strong) UIWindow *window;
 @property (nonatomic, strong) RCTBridge *bridge;
 @property (nonatomic, strong) NSString *moduleName;
+@property (nonatomic, strong) NSDictionary *initialProps;
 
 /**
  * It creates a `RCTBridge` using a delegate and some launch options.

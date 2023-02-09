@@ -64,7 +64,6 @@ RCT_MULTI_ENUM_CONVERTER(
       @"tablist" : @(UIAccessibilityTraitNone),
       @"timer" : @(UIAccessibilityTraitNone),
       @"toolbar" : @(UIAccessibilityTraitNone),
-      @"grid" : @(UIAccessibilityTraitNone),
       @"pager" : @(UIAccessibilityTraitNone),
       @"scrollview" : @(UIAccessibilityTraitNone),
       @"horizontalscrollview" : @(UIAccessibilityTraitNone),
@@ -359,6 +358,9 @@ RCT_VIEW_BORDER_PROPERTY(Bottom)
 RCT_VIEW_BORDER_PROPERTY(Left)
 RCT_VIEW_BORDER_PROPERTY(Start)
 RCT_VIEW_BORDER_PROPERTY(End)
+RCT_VIEW_BORDER_PROPERTY(Block)
+RCT_VIEW_BORDER_PROPERTY(BlockEnd)
+RCT_VIEW_BORDER_PROPERTY(BlockStart)
 
 #define RCT_VIEW_BORDER_RADIUS_PROPERTY(SIDE)                                                          \
   RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTView)                                     \

@@ -19,7 +19,6 @@
     "@babel/runtime": "^7.12.5",
     "@react-native/eslint-config": "^0.72.1",
     "@tsconfig/react-native": "^2.0.2",
-    "@types/jest": "^29.2.1",
     "@types/react": "^18.0.24",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.2.1",
@@ -29,8 +28,5 @@
     "prettier": "^2.4.1",
     "react-test-renderer": "18.2.0",
     "typescript": "4.8.4"
-  },
-  "jest": {
-    "preset": "react-native"
   }
 }

@@ -1,5 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`RN Codegen TypeScript Parser Fails with error message EMPTY_ENUM_NATIVE_MODULE 1`] = `"Module NativeSampleTurboModule: Failed parsing the enum SomeEnum in NativeSampleTurboModule with the error: Enums should have at least one member."`;
+
+exports[`RN Codegen TypeScript Parser Fails with error message MIXED_VALUES_ENUM_NATIVE_MODULE 1`] = `"Module NativeSampleTurboModule: Failed parsing the enum SomeEnum in NativeSampleTurboModule with the error: Enum values can not be mixed. They all must be either blank, number, or string values."`;
+
 exports[`RN Codegen TypeScript Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
 
 exports[`RN Codegen TypeScript Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
@@ -19,7 +23,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture ANDROID_ONLY_NATIVE_M
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': []
       },
@@ -37,7 +42,73 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {
+        'Quality': {
+          'name': 'Quality',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'StringTypeAnnotation',
+          'members': [
+            {
+              'name': 'SD',
+              'value': 'SD'
+            },
+            {
+              'name': 'HD',
+              'value': 'HD'
+            }
+          ]
+        },
+        'Resolution': {
+          'name': 'Resolution',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'NumberTypeAnnotation',
+          'members': [
+            {
+              'name': 'Low',
+              'value': 720
+            },
+            {
+              'name': 'High',
+              'value': 1080
+            }
+          ]
+        },
+        'Floppy': {
+          'name': 'Floppy',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'NumberTypeAnnotation',
+          'members': [
+            {
+              'name': 'LowDensity',
+              'value': 0.72
+            },
+            {
+              'name': 'HighDensity',
+              'value': 1.44
+            }
+          ]
+        },
+        'StringOptions': {
+          'name': 'StringOptions',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'StringTypeAnnotation',
+          'members': [
+            {
+              'name': 'One',
+              'value': 'one'
+            },
+            {
+              'name': 'Two',
+              'value': 'two'
+            },
+            {
+              'name': 'Three',
+              'value': 'three'
+            }
+          ]
+        }
+      },
       'spec': {
         'properties': [
           {
@@ -87,6 +158,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
                   'name': 'quality',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'Quality',
                     'type': 'EnumDeclaration',
                     'memberType': 'StringTypeAnnotation'
                   }
@@ -95,6 +167,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
                   'name': 'resolution',
                   'optional': true,
                   'typeAnnotation': {
+                    'name': 'Resolution',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -103,6 +176,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
                   'name': 'floppy',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'Floppy',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -111,6 +185,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
                   'name': 'stringOptions',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'StringOptions',
                     'type': 'EnumDeclaration',
                     'memberType': 'StringTypeAnnotation'
                   }
@@ -218,7 +293,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture EMPTY_NATIVE_MODULE 1
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': []
       },
@@ -233,7 +309,73 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {
+        'Quality': {
+          'name': 'Quality',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'StringTypeAnnotation',
+          'members': [
+            {
+              'name': 'SD',
+              'value': 'SD'
+            },
+            {
+              'name': 'HD',
+              'value': 'HD'
+            }
+          ]
+        },
+        'Resolution': {
+          'name': 'Resolution',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'NumberTypeAnnotation',
+          'members': [
+            {
+              'name': 'Low',
+              'value': 720
+            },
+            {
+              'name': 'High',
+              'value': 1080
+            }
+          ]
+        },
+        'Floppy': {
+          'name': 'Floppy',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'NumberTypeAnnotation',
+          'members': [
+            {
+              'name': 'LowDensity',
+              'value': 0.72
+            },
+            {
+              'name': 'HighDensity',
+              'value': 1.44
+            }
+          ]
+        },
+        'StringOptions': {
+          'name': 'StringOptions',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'StringTypeAnnotation',
+          'members': [
+            {
+              'name': 'One',
+              'value': 'one'
+            },
+            {
+              'name': 'Two',
+              'value': 'two'
+            },
+            {
+              'name': 'Three',
+              'value': 'three'
+            }
+          ]
+        }
+      },
       'spec': {
         'properties': [
           {
@@ -249,6 +391,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
                   'name': 'quality',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'Quality',
                     'type': 'EnumDeclaration',
                     'memberType': 'StringTypeAnnotation'
                   }
@@ -257,6 +400,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
                   'name': 'resolution',
                   'optional': true,
                   'typeAnnotation': {
+                    'name': 'Resolution',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -265,6 +409,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
                   'name': 'floppy',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'Floppy',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -273,6 +418,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
                   'name': 'stringOptions',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'StringOptions',
                     'type': 'EnumDeclaration',
                     'memberType': 'StringTypeAnnotation'
                   }
@@ -296,7 +442,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AL
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'ObjectAlias': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -331,6 +477,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AL
           ]
         }
       },
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -493,7 +640,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -534,7 +682,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -569,7 +718,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -610,7 +760,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -645,7 +796,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -711,7 +863,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -777,7 +930,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -869,7 +1023,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CA
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -929,7 +1084,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -988,7 +1144,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1047,7 +1204,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1259,7 +1417,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CO
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1363,7 +1522,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_FL
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1412,12 +1572,120 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_FL
 }"
 `;
 
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_INTERSECTION_TYPES 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {
+        'Bar': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'z',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            }
+          ]
+        },
+        'Foo': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'bar1',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar2',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar3',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar4',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            }
+          ]
+        }
+      },
+      'enumMap': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'foo1',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Foo'
+              },
+              'params': [
+                {
+                  'name': 'x',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'Foo'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'foo2',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'x',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'Foo'
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NESTED_ALIASES 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'Bar': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1452,6 +1720,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
           ]
         }
       },
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1508,7 +1777,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'Bar': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1519,6 +1788,56 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
                 'type': 'NumberTypeAnnotation'
               }
             }
+          ]
+        },
+        'Base1': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'bar1',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            }
+          ]
+        },
+        'Base2': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'bar2',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            }
+          ]
+        },
+        'Base3': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'bar2',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            },
+            {
+              'name': 'bar3',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'Bar'
+              }
+            }
+          ],
+          'baseTypes': [
+            'Base2'
           ]
         },
         'Foo': {
@@ -1556,9 +1875,14 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NE
                 'name': 'Bar'
               }
             }
+          ],
+          'baseTypes': [
+            'Base1',
+            'Base3'
           ]
         }
       },
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1615,7 +1939,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NU
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1653,7 +1978,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_OB
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'DisplayMetricsAndroid': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1667,6 +1992,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_OB
           ]
         }
       },
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1737,12 +2063,220 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_OB
 }"
 `;
 
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {
+        'SomeObj': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'b',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
+      'enumMap': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'getPartialSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'a',
+                    'optional': true,
+                    'typeAnnotation': {
+                      'type': 'StringTypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'b',
+                    'optional': true,
+                    'typeAnnotation': {
+                      'type': 'BooleanTypeAnnotation'
+                    }
+                  }
+                ]
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'getSomeObjFromPartialSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': [
+                {
+                  'name': 'value',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS_COMPLEX 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {
+        'SomeObj': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'b',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
+      'enumMap': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getPartialPartial',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': [
+                {
+                  'name': 'value1',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  'name': 'value2',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'SomeObj': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1756,6 +2290,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PR
           ]
         }
       },
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1814,7 +2349,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_RO
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1851,7 +2387,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_SI
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1886,7 +2423,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1947,7 +2485,8 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {

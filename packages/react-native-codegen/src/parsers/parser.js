@@ -16,6 +16,8 @@ import type {
   NamedShape,
   Nullable,
   NativeModuleParamTypeAnnotation,
+  NativeModuleEnumMemberType,
+  NativeModuleEnumMembers,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 
@@ -42,18 +44,6 @@ export interface Parser {
    */
   getKeyName(property: $FlowFixMe, hasteModuleName: string): string;
   /**
-   * Given a type declaration, it possibly returns the name of the Enum type.
-   * @parameter maybeEnumDeclaration: an object possibly containing an Enum declaration.
-   * @returns: the name of the Enum type.
-   */
-  getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string;
-  /**
-   * Given a type declaration, it returns a boolean specifying if is an Enum declaration.
-   * @parameter maybeEnumDeclaration: an object possibly containing an Enum declaration.
-   * @returns: a boolean specifying if is an Enum declaration.
-   */
-  isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean;
-  /**
    * @returns: the Parser language.
    */
   language(): ParserType;
@@ -78,11 +68,24 @@ export interface Parser {
     types: $FlowFixMe,
   ): UnionTypeAnnotationMemberType[];
   /**
-   * Given the content of a file and options, it returns an AST.
-   * @parameter contents: the content of the file.
-   * @returns: the AST of the file (given in program property for typescript).
+   * Given the name of a file, it returns a Schema.
+   * @parameter filename: the name of the file.
+   * @returns: the Schema of the file.
    */
   parseFile(filename: string): SchemaType;
+  /**
+   * Given the content of a file, it returns a Schema.
+   * @parameter contents: the content of the file.
+   * @parameter filename: the name of the file.
+   * @returns: the Schema of the file.
+   */
+  parseString(contents: string, filename: ?string): SchemaType;
+  /**
+   * Given the name of a file, it returns a Schema.
+   * @parameter filename: the name of the file.
+   * @returns: the Schema of the file.
+   */
+  parseModuleFixture(filename: string): SchemaType;
 
   /**
    * Given the content of a file, it returns an AST.
@@ -131,4 +134,22 @@ export interface Parser {
   getFunctionTypeAnnotationReturnType(
     functionTypeAnnotation: $FlowFixMe,
   ): $FlowFixMe;
+
+  /**
+   * Calculates an enum's members type
+   */
+  parseEnumMembersType(typeAnnotation: $FlowFixMe): NativeModuleEnumMemberType;
+
+  /**
+   * Throws if enum mebers are not supported
+   */
+  validateEnumMembersSupported(
+    typeAnnotation: $FlowFixMe,
+    enumMembersType: NativeModuleEnumMemberType,
+  ): void;
+
+  /**
+   * Calculates enum's members
+   */
+  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers;
 }

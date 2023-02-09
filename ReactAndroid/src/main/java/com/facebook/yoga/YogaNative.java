@@ -25,7 +25,6 @@ public class YogaNative {
   static native void jni_YGConfigSetPrintTreeFlagJNI(long nativePointer, boolean enable);
   static native void jni_YGConfigSetPointScaleFactorJNI(long nativePointer, float pixelsInPoint);
   static native void jni_YGConfigSetUseLegacyStretchBehaviourJNI(long nativePointer, boolean useLegacyStretchBehaviour);
-  static native void jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI(long nativePointer, boolean shouldDiffLayoutWithoutLegacyStretchBehaviour);
   static native void jni_YGConfigSetLoggerJNI(long nativePointer, YogaLogger logger);
 
   // YGNode related

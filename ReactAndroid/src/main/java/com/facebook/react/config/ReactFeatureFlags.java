@@ -67,9 +67,6 @@ public class ReactFeatureFlags {
   /** Enables or disables calculation of Transformed Frames */
   public static boolean calculateTransformedFramesEnabled = false;
 
-  /** Feature Flag to use overflowInset values provided by Yoga */
-  public static boolean useOverflowInset = false;
-
   public static boolean dispatchPointerEvents = false;
 
   /** Feature Flag to enable the pending event queue in fabric before mounting views */
@@ -115,4 +112,10 @@ public class ReactFeatureFlags {
    * state in Fabric SurfaceMountingManager.
    */
   public static boolean reduceDeleteCreateMutationLayoutAnimation = true;
+
+  /**
+   * Allow fix to drop delete...create mutations which could cause missing view state in Fabric
+   * SurfaceMountingManager.
+   */
+  public static boolean reduceDeleteCreateMutation = false;
 }
