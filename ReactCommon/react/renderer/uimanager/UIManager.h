@@ -103,7 +103,8 @@ class UIManager final : public ShadowTreeDelegate {
 #pragma mark - ShadowTreeDelegate
 
   void shadowTreeDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator) const override;
+      MountingCoordinator::Shared mountingCoordinator,
+      bool mountSynchronously) const override;
 
   RootShadowNode::Unshared shadowTreeWillCommit(
       ShadowTree const &shadowTree,

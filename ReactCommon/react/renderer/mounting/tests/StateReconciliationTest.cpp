@@ -32,7 +32,8 @@ class DummyShadowTreeDelegate : public ShadowTreeDelegate {
   };
 
   void shadowTreeDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator) const override{};
+      MountingCoordinator::Shared mountingCoordinator,
+      bool mountSynchronously) const override{};
 };
 
 inline ShadowNode const *findDescendantNode(

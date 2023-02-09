@@ -203,13 +203,13 @@ static void RCTPerformMountInstructions(
     // * No need to do a thread jump;
     // * No need to do expensive copy of all mutations;
     // * No need to allocate a block.
-    [self initiateTransaction:std::move(mountingCoordinator)];
+    [self initiateTransaction:*mountingCoordinator];
     return;
   }
 
   RCTExecuteOnMainQueue(^{
     RCTAssertMainQueue();
-    [self initiateTransaction:std::move(mountingCoordinator)];
+    [self initiateTransaction:*mountingCoordinator];
   });
 }
 
@@ -243,7 +243,7 @@ static void RCTPerformMountInstructions(
   });
 }
 
-- (void)initiateTransaction:(MountingCoordinator::Shared)mountingCoordinator
+- (void)initiateTransaction:(MountingCoordinator const &)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager initiateTransaction:]");
   RCTAssertMainQueue();
@@ -261,14 +261,14 @@ static void RCTPerformMountInstructions(
   } while (_followUpTransactionRequired);
 }
 
-- (void)performTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
+- (void)performTransaction:(MountingCoordinator const &)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager performTransaction:]");
   RCTAssertMainQueue();
 
-  auto surfaceId = mountingCoordinator->getSurfaceId();
+  auto surfaceId = mountingCoordinator.getSurfaceId();
 
-  mountingCoordinator->getTelemetryController().pullTransaction(
+  mountingCoordinator.getTelemetryController().pullTransaction(
       [&](MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry) {
         [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
         _observerCoordinator.notifyObserversMountingTransactionWillMount(transaction, surfaceTelemetry);

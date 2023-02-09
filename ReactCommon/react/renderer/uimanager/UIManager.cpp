@@ -532,11 +532,13 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
 }
 
 void UIManager::shadowTreeDidFinishTransaction(
-    MountingCoordinator::Shared mountingCoordinator) const {
+    MountingCoordinator::Shared mountingCoordinator,
+    bool mountSynchronously) const {
   SystraceSection s("UIManager::shadowTreeDidFinishTransaction");
 
   if (delegate_ != nullptr) {
-    delegate_->uiManagerDidFinishTransaction(std::move(mountingCoordinator));
+    delegate_->uiManagerDidFinishTransaction(
+        std::move(mountingCoordinator), mountSynchronously);
   }
 }
 

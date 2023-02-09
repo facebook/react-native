@@ -403,7 +403,11 @@ jsi::Value UIManagerBinding::get(
             auto shadowNodeList =
                 shadowNodeListFromWeakList(weakShadowNodeList);
             if (shadowNodeList) {
-              uiManager->completeSurface(surfaceId, shadowNodeList, {true});
+              uiManager->completeSurface(
+                  surfaceId,
+                  shadowNodeList,
+                  {/* .enableStateReconciliation = */ true,
+                   /* .mountSynchronously = */ false});
             }
           } else {
             auto weakShadowNodeList =
@@ -429,7 +433,11 @@ jsi::Value UIManagerBinding::get(
                   auto strongUIManager = weakUIManager.lock();
                   if (shadowNodeList && strongUIManager) {
                     strongUIManager->completeSurface(
-                        surfaceId, shadowNodeList, {true, shouldYield});
+                        surfaceId,
+                        shadowNodeList,
+                        {/* .enableStateReconciliation = */ true,
+                         /* .mountSynchronously = */ false,
+                         /* .shouldYield = */ shouldYield});
                   }
                 });
           }
