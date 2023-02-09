@@ -59,7 +59,7 @@ public class CustomStyleSpanTest {
     int fontWeight = 0;
     PowerMockito.when(tp.getTextSize()).thenReturn((float) fontSize);
     return new CustomStyleSpan(
-        fontStyle, fontWeight, null, null, textAlignVertical, fontSize, assetManager);
+        fontStyle, fontWeight, null, null, assetManager, textAlignVertical, fontSize);
   }
 
   // span with no text align vertical or text align vertical center
