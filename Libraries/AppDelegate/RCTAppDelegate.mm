@@ -75,19 +75,12 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return nil;
 }
 
-- (BOOL)concurrentRootEnabled
-{
-  [NSException raise:@"concurrentRootEnabled not implemented"
-              format:@"Subclasses must implement a valid concurrentRootEnabled method"];
-  return true;
-}
-
 - (NSDictionary *)prepareInitialProps
 {
   NSMutableDictionary *initProps = self.initialProps ? [self.initialProps mutableCopy] : [NSMutableDictionary new];
 
 #ifdef RCT_NEW_ARCH_ENABLED
-  initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);
+  initProps[kRNConcurrentRoot] = @([self fabricEnabled]);
 #endif
 
   return initProps;
