@@ -7,4 +7,4 @@
 
 import type {Parser} from '../parser';
 
-export class FlowParser implements Parser{}
+export declare class FlowParser implements Parser{}

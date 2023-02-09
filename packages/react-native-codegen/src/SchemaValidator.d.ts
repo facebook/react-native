@@ -7,5 +7,5 @@
 
 import type { SchemaType } from "./CodegenSchema";
 
-export function getErrors(schema: SchemaType): readonly string[];
-export function validate(schema: SchemaType): void;
+export declare function getErrors(schema: SchemaType): readonly string[];
+export declare function validate(schema: SchemaType): void;

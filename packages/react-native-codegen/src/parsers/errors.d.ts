@@ -9,4 +9,4 @@ import type { Parser } from './parser';
 
 export type ParserType = 'Flow' | 'TypeScript';
 
-export class ParserError extends Error {}
+export declare class ParserError extends Error {}

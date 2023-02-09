@@ -7,4 +7,4 @@
 
 import type {Parser} from '../parser';
 
-export class TypeScriptParser implements Parser{}
+export declare class TypeScriptParser implements Parser{}
