@@ -93,6 +93,9 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     // Layout metrics of a node computed relatively to the same node are equal
     // to `transform`-ed layout metrics of the node with zero `origin`.
     auto layoutMetrics = ancestorNode.getLayoutMetrics();
+    if (layoutMetrics.displayType == DisplayType::None) {
+      return EmptyLayoutMetrics;
+    }
     if (policy.includeTransform) {
       layoutMetrics.frame = layoutMetrics.frame * ancestorNode.getTransform();
     }
@@ -177,6 +180,12 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
         traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
 
     if (currentShadowNode == nullptr) {
+      return EmptyLayoutMetrics;
+    }
+
+    // Descendants of display: none don't have relative layout metrics.
+    if (currentShadowNode->getLayoutMetrics().displayType ==
+        DisplayType::None) {
       return EmptyLayoutMetrics;
     }
 
