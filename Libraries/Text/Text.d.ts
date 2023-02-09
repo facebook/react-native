@@ -60,6 +60,16 @@ export interface TextPropsAndroid {
    * Used for nested Text accessibility announcements.
    * The nested text accessibilityLabel should set to the values of:
    *
+   * None https://developer.android.com/reference/android/text/style/TtsSpan#TYPE_TEXT
+   * The default type used when accessibilitySpan prop is not set (AccessibilitySpan.NONE)
+   * Adds the accessibilityLabel announcement on a Nested Text.
+   * This span type can be used to add morphosyntactic features to the text it spans over,
+   * or synthesize a something else than the spanned text.
+   * Use the argument ARG_TEXT to set a different text.
+   * https://developer.android.com/reference/android/text/style/TtsSpan#ARG_TEXT
+   * String supplying the text to be synthesized.
+   * The synthesizer is free to decide how to interpret the text. Can be used with TYPE_TEXT.
+   *
    * Ordinal and Cardinal https://developer.android.com/reference/android/text/style/TtsSpan#ARG_NUMBER
    * Argument used to specify a whole number.
    * The value can be a string of digits of any size optionally prefixed with a - or +.

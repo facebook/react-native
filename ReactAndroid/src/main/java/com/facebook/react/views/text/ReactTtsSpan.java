@@ -93,6 +93,19 @@ public class ReactTtsSpan extends TtsSpan implements ReactSpan {
         return;
       }
       try {
+        /*
+         * The default type used when accessibilitySpan prop is not set (AccessibilitySpan.NONE)
+         * Adds the accessibilityLabel announcement on a Nested Text.
+         *
+         * https://developer.android.com/reference/android/text/style/TtsSpan#TYPE_TEXT
+         * This span type can be used to add morphosyntactic features to the text it spans over,
+         * or synthesize a something else than the spanned text.
+         * Use the argument ARG_TEXT to set a different text.
+         *
+         * https://developer.android.com/reference/android/text/style/TtsSpan#ARG_TEXT
+         * String supplying the text to be synthesized.
+         * The synthesizer is free to decide how to interpret the text. Can be used with TYPE_TEXT.
+         */
         if (mType.equals(TYPE_TEXT)) {
           setStringArgument(ARG_TEXT, accessibilityLabel);
         }
