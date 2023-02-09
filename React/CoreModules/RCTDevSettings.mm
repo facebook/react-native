@@ -225,6 +225,27 @@ RCT_EXPORT_MODULE()
   }
 #endif
 
+#if RCT_DEV_MENU
+  if (self.bridge) {
+    RCTBridge *__weak weakBridge = self.bridge;
+    _bridgeExecutorOverrideToken = [[RCTPackagerConnection sharedPackagerConnection]
+        addNotificationHandler:^(id params) {
+          if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
+            weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
+          }
+        }
+                         queue:dispatch_get_main_queue()
+                     forMethod:@"devMenu"];
+  }
+    
+  reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
+      addNotificationHandler:^(id params) {
+          [self.bridge.devMenu show];
+      }
+                        queue:dispatch_get_main_queue()
+                    forMethod:@"devMenu"];
+#endif
+    
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     [weakSelf _synchronizeAllSettings];
