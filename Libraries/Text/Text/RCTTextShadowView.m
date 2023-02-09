@@ -141,7 +141,7 @@
     return;
   }
 
-  [attributedText beginEditing];
+    __block CGFloat maximumFontLineHeight = 0;
 
   [attributedText enumerateAttribute:NSFontAttributeName
                              inRange:NSMakeRange(0, attributedText.length)
@@ -152,18 +152,19 @@
                             }
 
                             if (maximumFontLineHeight <= UIFontLineHeight(font)) { // [macOS]
-                              maximumFontLineHeight = font.lineHeight;
+                              maximumFontLineHeight = UIFontLineHeight(font); // [macOS]
                             }
                           }];
 
-      CGFloat baseLineOffset = maximumLineHeight / 2.0 - UIFontLineHeight(font) / 2.0; // [macOS]
+  if (maximumLineHeight < maximumFontLineHeight) {
+    return;
+  }
 
-      [attributedText addAttribute:NSBaselineOffsetAttributeName
-                             value:@(baseLineOffset)
-                             range:range];
-     }];
-  
-  [attributedText endEditing];
+  CGFloat baseLineOffset = maximumLineHeight / 2.0 - maximumFontLineHeight / 2.0;
+
+  [attributedText addAttribute:NSBaselineOffsetAttributeName
+                          value:@(baseLineOffset)
+                          range:NSMakeRange(0, attributedText.length)];
 }
 
 - (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize)size
@@ -403,8 +404,8 @@ RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
 #if !TARGET_OS_OSX // [macOS]
       MIN(RCTCeilPixelValue(size.width), maximumSize.width), MIN(RCTCeilPixelValue(size.height), maximumSize.height)};
 #else // [macOS
-    MIN(RCTCeilPixelValue(size.width, shadowTextView.scale), maximumSize.width),
-    MIN(RCTCeilPixelValue(size.height, shadowTextView.scale), maximumSize.height)
+      MIN(RCTCeilPixelValue(size.width, shadowTextView.scale), maximumSize.width),
+      MIN(RCTCeilPixelValue(size.height, shadowTextView.scale), maximumSize.height)};
 #endif // macOS]
 
   // Adding epsilon value illuminates problems with converting values from

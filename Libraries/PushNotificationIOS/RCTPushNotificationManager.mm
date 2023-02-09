@@ -306,9 +306,9 @@ RCT_EXPORT_MODULE()
 
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
-#if !TARGET_OS_OSX // [macOS]
   NSMutableDictionary *remoteNotification =
       [NSMutableDictionary dictionaryWithDictionary:notification.userInfo[@"notification"]];
+#if !TARGET_OS_OSX // [macOS]
   RCTRemoteNotificationCallback completionHandler = notification.userInfo[@"completionHandler"];
 #endif // [macOS]
   NSString *notificationId = [[NSUUID UUID] UUIDString];
@@ -401,6 +401,7 @@ RCT_EXPORT_METHOD(requestPermissions
   // Add a listener to make sure that startObserving has been called
   [self addListener:@"remoteNotificationsRegistered"];
 
+#if !TARGET_OS_OSX // [macOS
   UIUserNotificationType types = UIUserNotificationTypeNone;
 
   if (permissions.alert()) {
@@ -412,7 +413,19 @@ RCT_EXPORT_METHOD(requestPermissions
   if (permissions.sound()) {
     types |= UIUserNotificationTypeSound;
   }
+#else
+    NSRemoteNotificationType types = NSRemoteNotificationTypeNone;
 
+    if (permissions.alert()) {
+      types |= NSRemoteNotificationTypeAlert;
+    }
+    if (permissions.badge()) {
+      types |= NSRemoteNotificationTypeBadge;
+    }
+    if (permissions.sound()) {
+      types |= NSRemoteNotificationTypeSound;
+    }
+#endif // macOS]
   [UNUserNotificationCenter.currentNotificationCenter
       requestAuthorizationWithOptions:types
                     completionHandler:^(BOOL granted, NSError *_Nullable error) {
@@ -626,6 +639,11 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications : (RCTResponseSenderBlock)callb
   for (UILocalNotification *notification in scheduledLocalNotifications) {
     [formattedScheduledLocalNotifications addObject:RCTFormatLocalNotification(notification)];
   }
+#else // [macOS
+	for (NSUserNotification *notification in [NSUserNotificationCenter defaultUserNotificationCenter].scheduledNotifications) {
+		[formattedScheduledLocalNotifications addObject:RCTFormatUserNotification(notification)];
+	}
+#endif // macOS]
   callback(@[ formattedScheduledLocalNotifications ]);
 }
 

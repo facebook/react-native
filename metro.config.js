@@ -16,7 +16,8 @@ const getPolyfills = require('./rn-get-polyfills');
  * This cli config is needed for development purposes, e.g. for running
  * integration tests during local development or on CI services.
  */
-module.exports = {
+const config = {
+  // [macOS] Move object to variable so we can modify it below
   resolver: {
     // $FlowFixMe[signature-verification-failure] Can't infer RegExp type.
     blockList: [/buck-out/, /sdks\/hermes/],
@@ -31,6 +32,7 @@ module.exports = {
   transformer: {},
 };
 
+// [macOS Github#1728: Investigate removing this diff
 // In scripts/run-ci-e2e-tests.js this file gets copied to a new app, in which
 // case these settings do not apply.
 if (!process.env.REACT_NATIVE_RUNNING_E2E_TESTS) {
@@ -41,3 +43,4 @@ if (!process.env.REACT_NATIVE_RUNNING_E2E_TESTS) {
 }
 
 module.exports = config;
+// macOS]

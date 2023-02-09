@@ -157,7 +157,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge
 #if !TARGET_OS_OSX // [macOS]
       @"Dimensions" : RCTExportedDimensions(moduleRegistry, bridge),
 #else // [macOS
-      @"Dimensions": RCTExportedDimensions(nil),
+      @"Dimensions": RCTExportedDimensions(nil, bridge),
 #endif // macOS]
       // Note:
       // This prop is deprecated and will be removed in a future release.
@@ -183,7 +183,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge
 #if !TARGET_OS_OSX // [macOS]
                            body:RCTExportedDimensions(moduleRegistry, bridge)];
 #else // [macOS
-                           body:RCTExportedDimensions(nil)];
+                           body:RCTExportedDimensions(nil, bridge)];
 #endif // macOS]
 #pragma clang diagnostic pop
   });

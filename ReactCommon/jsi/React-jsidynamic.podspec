@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "12.4" }
+  s.platforms              = { :ios => "12.4", :osx => "10.15" }
   s.source                 = source
   s.source_files           = "jsi/JSIDynamic.{cpp,h}"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags

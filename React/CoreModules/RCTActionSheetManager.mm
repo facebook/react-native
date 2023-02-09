@@ -272,6 +272,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
 
 RCT_EXPORT_METHOD(dismissActionSheet)
 {
+#if !TARGET_OS_OSX // [macOS]
   if (_alertControllers.count == 0) {
     RCTLogWarn(@"Unable to dismiss action sheet");
   }
@@ -279,6 +280,7 @@ RCT_EXPORT_METHOD(dismissActionSheet)
   id _alertController = [_alertControllers lastObject];
   [_alertController dismissViewControllerAnimated:YES completion:nil];
   [_alertControllers removeLastObject];
+#endif // [macOS]
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions

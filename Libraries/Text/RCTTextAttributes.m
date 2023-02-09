@@ -115,7 +115,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
       : _layoutDirection;
   _textTransform =
       textAttributes->_textTransform != RCTTextTransformUndefined ? textAttributes->_textTransform : _textTransform;
-if TARGET_OS_OSX // [macOS
+#if TARGET_OS_OSX // [macOS
   _cursor = textAttributes->_cursor != RCTCursorAuto ? textAttributes->_cursor : _cursor;
 #endif // macOS]
 }

@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "12.4" }
+  s.platforms              = { :ios => "12.4", :osx => "10.15" }
   s.source                 = source
   s.source_files           = "JSCRuntime.{cpp,h}"
   s.exclude_files          = "**/test/*"

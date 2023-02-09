@@ -15,20 +15,17 @@ if USE_FRAMEWORKS
   use_frameworks!
 end
 
-def pods(options = {})
+def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   project 'RNTesterPods.xcodeproj'
 
   # [macOS Disable Fabric by default till macOS supports it
-  fabric_enabled = false 
-  if ENV['USE_FABRIC'] == '1'
-    fabric_enabled = true
-  end
+  fabric_enabled = ENV['USE_FABRIC'] == '1' 
   # macOS]
-  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
 
   # Hermes is now enabled by default.
   # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
-  hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
+  # [macOS] Make hermes disabled by default for our fork
+  hermes_enabled = ENV['USE_HERMES'] == '1'
   puts "Configuring RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
@@ -50,12 +47,15 @@ def pods(options = {})
   # Additional Pods which aren't included in the default Podfile
   pod 'React-RCTPushNotification', :path => "#{@prefix_path}/Libraries/PushNotificationIOS"
   pod 'Yoga', :path => "#{@prefix_path}/ReactCommon/yoga", :modular_headers => true
-  # pod 'React-TurboModuleCxx-WinRTPort', :path => "#{@prefix_path}/ReactTurboModuleCxx" # [macOS]
-  # pod 'React-TurboModuleCxx-RNW', :podspec => "#{@prefix_path}/ReactTurboModuleCxx/React-TurboModuleCxx-RNW.podspec" # [macOS]
+  pod 'React-TurboModuleCxx-WinRTPort', :path => "#{@prefix_path}/ReactTurboModuleCxx" # [macOS]
+  pod 'React-TurboModuleCxx-RNW', :podspec => "#{@prefix_path}/ReactTurboModuleCxx/React-TurboModuleCxx-RNW.podspec" # [macOS]
   # Additional Pods which are classed as unstable
 
   # RNTester native modules and components
-  # pod 'ScreenshotManager', :path => "NativeModuleExample"
+  pod 'ScreenshotManager', :path => "NativeModuleExample"
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+    pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
+  end 
 end
 
 target 'RNTester' do
@@ -75,19 +75,19 @@ end
 
 # target 'RNTester-macOS' do
 #   platform :osx, '10.15'
-#   pods()
+#   pods('RNTester-macOS')
 # end
 
 # target 'RNTester-macOSUnitTests' do
 #   platform :osx, '10.15'
-#   pods()
+#   pods('RNTester-macOSUnitTests')
 #   pod 'React-RCTTest', :path => "./RCTTest"
 #   pod 'OCMock', '~> 3.9.1'
 # end
 
 # target 'RNTester-macOSIntegrationTests' do
 #   platform :osx, '10.15'
-#   pods()
+#   pods('RNTester-macOSIntegrationTests')
 #   pod 'React-RCTTest', :path => "./RCTTest"
 # end
 

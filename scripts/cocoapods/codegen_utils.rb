@@ -85,7 +85,8 @@ class CodegenUtils
           'source' => { :git => '' },
           'header_mappings_dir' => './',
           'platforms' => {
-            'ios' => '11.0',
+            'ios' => '12.4',
+            'osx' => '10.15'
           },
           'source_files' => "**/*.{h,mm,cpp}",
           'pod_target_xcconfig' => { "HEADER_SEARCH_PATHS" =>

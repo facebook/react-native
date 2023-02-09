@@ -49,19 +49,31 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #endif
 
   NSDictionary *initProps = [self prepareInitialProps];
-  UIView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
+  RCTPlatformView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps]; // [macOS]
 
+#if !TARGET_OS_OSX // [macOS]
   if (@available(iOS 13.0, *)) {
     rootView.backgroundColor = [UIColor systemBackgroundColor];
   } else {
     rootView.backgroundColor = [UIColor whiteColor];
   }
+#else // [macOS
+  rootView.layer.backgroundColor = [[NSColor windowBackgroundColor] CGColor];
+#endif // macOS]
 
+#if !TARGET_OS_OSX // [macOS
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+#else // [macOS
+  self.window = [[NSWindow alloc] init];
+  NSViewController *rootViewController = [self createRootViewController];
+  rootViewController.view = rootView;
+  self.window.contentViewController = rootViewController;
+  [self.window makeKeyAndOrderFront:self];
+#endif // macOS]
   return YES;
 }
 
@@ -95,7 +107,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return [[RCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
 }
 
-- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
+- (RCTPlatformView *)createRootViewWithBridge:(RCTBridge *)bridge // [macOS]
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
 {
@@ -106,10 +118,17 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
 }
 
+#if !TARGET_OS_OSX
 - (UIViewController *)createRootViewController
 {
   return [UIViewController new];
 }
+#else // [macOS
+- (NSViewController *)createRootViewController
+{
+  return [NSViewController new];
+}
+#endif // macOS]
 
 #if RCT_NEW_ARCH_ENABLED
 #pragma mark - RCTCxxBridgeDelegate

@@ -1185,5 +1185,9 @@ RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(
 
 BOOL RCTIsAppActive(void)
 {
+#if !TARGET_OS_OSX // [macOS]
   return [RCTSharedApplication() applicationState] == UIApplicationStateActive;
+#else // [macOS
+  return [RCTSharedApplication() isActive];
+#endif // macOS]
 }

@@ -183,13 +183,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
                                           initialProperties:initialProperties];
 }
 
-- (UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag
-{
-  return [[RCTFabricSurface alloc] initWithSurfacePresenter:self
-                                                 moduleName:moduleName
-                                          initialProperties:initialProperties];
-}
-
 - (RCTUIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag // [macOS]
 {
   RCTUIView<RCTComponentViewProtocol> *componentView =

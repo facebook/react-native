@@ -44,7 +44,7 @@
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
+
 
 - (RCTUIView<RCTBackedTextInputViewProtocol> *)backedTextInputView // [macOS]
 {

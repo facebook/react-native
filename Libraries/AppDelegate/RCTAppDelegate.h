@@ -7,7 +7,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeDelegate.h>
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 #if RCT_NEW_ARCH_ENABLED
 // When the new architecture is enabled, the RCTAppDelegate imports some additional headers
@@ -54,10 +54,13 @@
                                                          (const facebook::react::ObjCTurboModule::InitParams &)params
  *   - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
  */
+#if !TARGET_OS_OSX // [macOS]
 @interface RCTAppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
-
+#else // [macOS
+@interface RCTAppDelegate : NSResponder <NSApplicationDelegate, RCTBridgeDelegate>
+#endif // macOS]
 /// The window object, used to render the UViewControllers
-@property (nonatomic, strong) UIWindow *window;
+@property (nonatomic, strong) RCTPlatformWindow *window; // [macOS]
 @property (nonatomic, strong) RCTBridge *bridge;
 @property (nonatomic, strong) NSString *moduleName;
 
@@ -85,9 +88,9 @@
  *
  * @returns: a UIView properly configured with a bridge for React Native.
  */
-- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
-                          moduleName:(NSString *)moduleName
-                           initProps:(NSDictionary *)initProps;
+- (RCTPlatformView *)createRootViewWithBridge:(RCTBridge *)bridge // [macOS]
+                                   moduleName:(NSString *)moduleName
+                                    initProps:(NSDictionary *)initProps;
 
 /**
  * It creates the RootViewController.

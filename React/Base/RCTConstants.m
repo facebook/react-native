@@ -81,18 +81,3 @@ void RCTSetParseUnhandledJSErrorStackNatively(BOOL value)
 {
   RCTParseUnhandledJSErrorStackNatively = value;
 }
-
-/*
- * W3C Pointer Events
- */
-static BOOL RCTDispatchW3CPointerEvents = NO;
-
-BOOL RCTGetDispatchW3CPointerEvents()
-{
-  return RCTDispatchW3CPointerEvents;
-}
-
-void RCTSetDispatchW3CPointerEvents(BOOL value)
-{
-  RCTDispatchW3CPointerEvents = value;
-}

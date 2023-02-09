@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "12.4" }
+  s.platforms              = { :ios => "12.4", :osx => "10.15" }
   s.source                 = source
   s.source_files           = "react/bridging/**/*.{cpp,h}"
   s.exclude_files          = "react/bridging/tests"

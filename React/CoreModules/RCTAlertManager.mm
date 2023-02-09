@@ -34,6 +34,7 @@ RCT_ENUM_CONVERTER(
 
 @implementation RCTConvert (UIUserInterfaceStyle)
 
+#if !TARGET_OS_OSX // [macOS]
 RCT_ENUM_CONVERTER(
     UIUserInterfaceStyle,
     (@{
@@ -43,7 +44,7 @@ RCT_ENUM_CONVERTER(
     }),
     UIUserInterfaceStyleUnspecified,
     integerValue)
-
+#endif // macOS]
 @end
 
 @interface RCTAlertManager () <NativeAlertManagerSpec>

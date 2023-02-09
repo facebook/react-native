@@ -23,7 +23,7 @@
                                                                                    format:rendererFormat];
 
   return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
-    CGCotextRef context = context.CGContext; // [macOS] Pull out the underlying CGContextRef
+		const CGContextRef context = rendererContext.CGContext;
 #else // [macOS
   UIGraphicsBeginImageContextWithOptions(imageSize, YES, 0.0);
   CGContextRef context = UIGraphicsGetCurrentContext();
@@ -31,13 +31,13 @@
   {
 #endif // macOS]
     [self drawInRect:CGRectMake(0, 0, self.size.width, self.size.height)];
-    CGContextSetAlpha(context, 0.5f); // [macOS]
-    CGContextBeginTransparencyLayer(context, NULL); // [macOS]
+    CGContextSetAlpha(context, 0.5f);
+    CGContextBeginTransparencyLayer(context, NULL);
     [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-    CGContextSetBlendMode(context, kCGBlendModeDifference); // [macOS]
-    CGContextSetFillColorWithColor(context, [RCTUIColor whiteColor].CGColor); // [macOS]
-    CGContextFillRect(context, CGRectMake(0, 0, self.size.width, self.size.height)); // [macOS]
-    CGContextEndTransparencyLayer(context); // [macOS]
+    CGContextSetBlendMode(context, kCGBlendModeDifference);
+    CGContextSetFillColorWithColor(context, [RCTUIColor whiteColor].CGColor);
+    CGContextFillRect(context, CGRectMake(0, 0, self.size.width, self.size.height));
+    CGContextEndTransparencyLayer(context);
 #if !TARGET_OS_OSX // [macOS]
   }];
 #else // [macOS

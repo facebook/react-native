@@ -582,10 +582,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   }
 }
 
-- (void)_registerTouches:(NSSet<RCTUITouch *> *)touches // [macOS]
+- (void)_registerTouches:(NSSet<RCTUITouch *> *)touches withEvent:(UIEvent *)event // [macOS]
 {
   for (RCTUITouch *touch in touches) { // [macOS]
-    auto activeTouch = CreateTouchWithUITouch(touch, _rootComponentView, _viewOriginOffset);
+		auto activeTouch = CreateTouchWithUITouch(touch, event, _rootComponentView, _viewOriginOffset);
     activeTouch.touch.identifier = _identifierPool.dequeue();
 #if !TARGET_OS_OSX // [macOS]
     _activeTouches.emplace(touch, activeTouch);
@@ -839,7 +839,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   {
     NSSet* touches = [NSSet setWithObject:event];
-    [self _registerTouches:touches];
+    [self _registerTouches:touches withEvent:event];
     [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchStart];
 
     if (self.state == NSGestureRecognizerStatePossible) {
@@ -856,7 +856,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   {
     NSSet* touches = [NSSet setWithObject:event];
-    [self _registerTouches:touches];
+		[self _registerTouches:touches withEvent:event];
     [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchStart];
 
     if (self.state == NSGestureRecognizerStatePossible) {
