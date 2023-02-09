@@ -587,7 +587,7 @@ public class ReactEditText extends AppCompatEditText
     manageSpans(spannableStringBuilder, reactTextUpdate.mContainsMultipleFragments);
 
     // Mitigation for https://github.com/facebook/react-native/issues/35936 (S318090)
-    stripAbsoluteSizeSpans(spannableStringBuilder);
+    stripAtributeEquivalentSpans(spannableStringBuilder);
 
     mContainsImages = reactTextUpdate.containsImages();
 
@@ -662,7 +662,7 @@ public class ReactEditText extends AppCompatEditText
     }
   }
 
-  private void stripAbsoluteSizeSpans(SpannableStringBuilder sb) {
+  private void stripAtributeEquivalentSpans(SpannableStringBuilder sb) {
     // We have already set a font size on the EditText itself. We can safely remove sizing spans
     // which are the same as the set font size, and not otherwise overlapped.
     final int effectiveFontSize = mTextAttributes.getEffectiveFontSize();
@@ -680,6 +680,31 @@ public class ReactEditText extends AppCompatEditText
       }
 
       sb.removeSpan(span);
+    }
+  }
+
+  private void unstripAttributeEquivalentSpans(
+      SpannableStringBuilder workingText, Spannable originalText) {
+    // We must add spans back for Fabric to be able to measure, at lower precedence than any
+    // existing spans. Remove all spans, add the attributes, then re-add the spans over
+    workingText.append(originalText);
+
+    for (Object span : workingText.getSpans(0, workingText.length(), Object.class)) {
+      workingText.removeSpan(span);
+    }
+
+    workingText.setSpan(
+        new ReactAbsoluteSizeSpan(mTextAttributes.getEffectiveFontSize()),
+        0,
+        workingText.length(),
+        Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+    for (Object span : originalText.getSpans(0, originalText.length(), Object.class)) {
+      workingText.setSpan(
+          span,
+          originalText.getSpanStart(span),
+          originalText.getSpanEnd(span),
+          originalText.getSpanFlags(span));
     }
   }
 
@@ -1102,7 +1127,8 @@ public class ReactEditText extends AppCompatEditText
       // ...
       // - android.app.Activity.dispatchKeyEvent (Activity.java:3447)
       try {
-        sb.append(currentText.subSequence(0, currentText.length()));
+        Spannable text = (Spannable) currentText.subSequence(0, currentText.length());
+        unstripAttributeEquivalentSpans(sb, text);
       } catch (IndexOutOfBoundsException e) {
         ReactSoftExceptionLogger.logSoftException(TAG, e);
       }
