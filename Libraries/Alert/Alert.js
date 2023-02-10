@@ -46,6 +46,11 @@ class Alert {
     buttons?: Buttons,
     options?: Options,
   ): void {
+    if (title && typeof title !== 'string')
+      throw new TypeError('TypeError: title is not a string');
+    if (message && typeof message !== 'string')
+      throw new TypeError('TypeError: message is not a string');
+
     if (Platform.OS === 'ios') {
       Alert.prompt(
         title,
@@ -123,6 +128,11 @@ class Alert {
     options?: Options,
   ): void {
     if (Platform.OS === 'ios') {
+      if (title && typeof title !== 'string')
+        throw new TypeError('TypeError: title is not a string');
+      if (message && typeof message !== 'string')
+        throw new TypeError('TypeError: message is not a string');
+
       let callbacks: Array<?any> = [];
       const buttons = [];
       let cancelButtonKey;
