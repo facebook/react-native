@@ -27,7 +27,7 @@ export interface TextPropsIOS {
   adjustsFontSizeToFit?: boolean | undefined;
 
   /**
-   * The Dynamic Text scale ramp to apply to this element on iOS.
+   * The Dynamic Type scale ramp to apply to this element on iOS.
    */
   dynamicTypeRamp?:
     | 'caption2'
