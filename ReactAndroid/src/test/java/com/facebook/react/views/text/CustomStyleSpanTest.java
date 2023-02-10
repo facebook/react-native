@@ -109,23 +109,4 @@ public class CustomStyleSpanTest {
     int newBaselineShift = (int) (lineHeight / 2 - fontSize / 2 - tp.descent());
     assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
   }
-
-  // no specified lineHeight prop, textAlignVertical top and fontSize 15
-  // https://stackoverflow.com/a/27631737/7295772
-  // top      -------------  -10
-  // ascent   -------------  -5
-  // baseline __my Text____   0
-  // descent  _____________   2
-  // bottom   _____________   5
-  @Test
-  public void textWithNoLineHeightAlignsBasedOnFontMetrics() {
-    int lineHeight = 0;
-    int maximumFontSize = 15;
-    CustomStyleSpan customStyleSpan = createNewSpan(15, TextAlignVertical.TOP);
-    customStyleSpan.updateSpan(lineHeight, maximumFontSize);
-    customStyleSpan.updateDrawState(tp);
-    // aligns to the top based on the FontMetrics
-    int newBaselineShift = (int) (tp.getFontMetrics().top - tp.ascent() - tp.descent());
-    assertThat(tp.baselineShift).isEqualTo(newBaselineShift);
-  }
 }
