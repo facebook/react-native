@@ -16,6 +16,8 @@ import type {
   NamedShape,
   Nullable,
   NativeModuleParamTypeAnnotation,
+  NativeModuleEnumMemberType,
+  NativeModuleEnumMembers,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 
@@ -41,18 +43,6 @@ export interface Parser {
    * @throws if property does not contain a property declaration.
    */
   getKeyName(property: $FlowFixMe, hasteModuleName: string): string;
-  /**
-   * Given a type declaration, it possibly returns the name of the Enum type.
-   * @parameter maybeEnumDeclaration: an object possibly containing an Enum declaration.
-   * @returns: the name of the Enum type.
-   */
-  getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string;
-  /**
-   * Given a type declaration, it returns a boolean specifying if is an Enum declaration.
-   * @parameter maybeEnumDeclaration: an object possibly containing an Enum declaration.
-   * @returns: a boolean specifying if is an Enum declaration.
-   */
-  isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean;
   /**
    * @returns: the Parser language.
    */
@@ -144,4 +134,22 @@ export interface Parser {
   getFunctionTypeAnnotationReturnType(
     functionTypeAnnotation: $FlowFixMe,
   ): $FlowFixMe;
+
+  /**
+   * Calculates an enum's members type
+   */
+  parseEnumMembersType(typeAnnotation: $FlowFixMe): NativeModuleEnumMemberType;
+
+  /**
+   * Throws if enum mebers are not supported
+   */
+  validateEnumMembersSupported(
+    typeAnnotation: $FlowFixMe,
+    enumMembersType: NativeModuleEnumMemberType,
+  ): void;
+
+  /**
+   * Calculates enum's members
+   */
+  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers;
 }

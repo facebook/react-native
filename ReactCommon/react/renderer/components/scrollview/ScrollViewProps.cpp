@@ -322,42 +322,42 @@ void ScrollViewProps::setProp(
   // reuse the same values.
   ViewProps::setProp(context, hash, propName, value);
 
+  static auto defaults = ScrollViewProps{};
+
   switch (hash) {
-    RAW_SET_PROP_SWITCH_CASE_BASIC(alwaysBounceHorizontal, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(alwaysBounceVertical, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(bounces, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(bouncesZoom, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(canCancelContentTouches, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(centerContent, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(automaticallyAdjustContentInsets, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(
-        automaticallyAdjustsScrollIndicatorInsets, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(decelerationRate, (Float)0.998);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(directionalLockEnabled, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(indicatorStyle, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(keyboardDismissMode, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(maximumZoomScale, (Float)1.0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(minimumZoomScale, (Float)1.0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(scrollEnabled, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(pagingEnabled, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(pinchGestureEnabled, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(scrollsToTop, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(showsHorizontalScrollIndicator, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(showsVerticalScrollIndicator, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(scrollEventThrottle, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(zoomScale, (Float)1.0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(contentInset, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(contentOffset, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(scrollIndicatorInsets, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(snapToInterval, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(snapToAlignment, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(disableIntervalMomentum, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(snapToOffsets, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(snapToStart, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(snapToEnd, true);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(
-        contentInsetAdjustmentBehavior, ContentInsetAdjustmentBehavior::Never);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(scrollToOverflowEnabled, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(alwaysBounceHorizontal);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(alwaysBounceVertical);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(bounces);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(bouncesZoom);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(canCancelContentTouches);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(centerContent);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(automaticallyAdjustContentInsets);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(automaticallyAdjustsScrollIndicatorInsets);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(decelerationRate);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(directionalLockEnabled);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(indicatorStyle);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(keyboardDismissMode);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(maximumZoomScale);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(minimumZoomScale);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(scrollEnabled);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(pagingEnabled);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(pinchGestureEnabled);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(scrollsToTop);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(showsHorizontalScrollIndicator);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(showsVerticalScrollIndicator);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(scrollEventThrottle);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(zoomScale);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(contentInset);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(contentOffset);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(scrollIndicatorInsets);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(snapToInterval);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(snapToAlignment);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(disableIntervalMomentum);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(snapToOffsets);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(snapToStart);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(snapToEnd);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(contentInsetAdjustmentBehavior);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(scrollToOverflowEnabled);
   }
 }
 

@@ -31,15 +31,15 @@
 // Convenience for building setProps switch statements.
 // This injects `fromRawValue` into source; each file that uses
 // this macro must import the proper, respective headers required.
-#define RAW_SET_PROP_SWITCH_CASE(field, jsPropName, defaultValue) \
-  case CONSTEXPR_RAW_PROPS_KEY_HASH(jsPropName):                  \
-    fromRawValue(context, value, field, defaultValue);            \
+#define RAW_SET_PROP_SWITCH_CASE(field, jsPropName)      \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(jsPropName):         \
+    fromRawValue(context, value, field, defaults.field); \
     return;
 
 // Convenience for building setProps switch statements where the field name is
 // the same as the string identifier
-#define RAW_SET_PROP_SWITCH_CASE_BASIC(field, defaultValue) \
-  RAW_SET_PROP_SWITCH_CASE(field, #field, defaultValue)
+#define RAW_SET_PROP_SWITCH_CASE_BASIC(field) \
+  RAW_SET_PROP_SWITCH_CASE(field, #field)
 
 #define CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(         \
     struct, field, fieldNameString, value)              \
@@ -99,7 +99,13 @@
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
       struct, vertical, prefix "Vertical" suffix, rawValue)            \
   CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
-      struct, all, prefix "" suffix, rawValue)
+      struct, all, prefix "" suffix, rawValue)                         \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
+      struct, block, prefix "Block" suffix, rawValue)                  \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
+      struct, blockEnd, prefix "BlockEnd" suffix, rawValue)            \
+  CASE_STATEMENT_SET_FIELD_VALUE_INDEXED(                              \
+      struct, blockStart, prefix "BlockStart" suffix, rawValue)
 
 // Rebuild a type that contains multiple fields from a single field value
 #define REBUILD_FIELD_SWITCH_CASE(                  \
