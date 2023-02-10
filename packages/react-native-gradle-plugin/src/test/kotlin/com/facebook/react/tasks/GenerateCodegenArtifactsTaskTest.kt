@@ -25,7 +25,6 @@ class GenerateCodegenArtifactsTaskTest {
 
   @Test
   fun generateCodegenSchema_inputFiles_areSetCorrectly() {
-    val codegenDir = tempFolder.newFolder("codegen")
     val outputDir = tempFolder.newFolder("output")
 
     val task = createTestTask<GenerateCodegenArtifactsTask> { it.generatedSrcDir.set(outputDir) }
