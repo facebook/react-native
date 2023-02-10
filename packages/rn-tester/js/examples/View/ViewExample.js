@@ -431,7 +431,7 @@ exports.examples = [
     title: 'Rounded Borders',
     render(): React.Node {
       return (
-        <View style={{ flexDirection: 'row', flexWrap: "wrap" }}>
+        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
           <View
             style={{
               width: 50,
@@ -480,7 +480,7 @@ exports.examples = [
               height: 50,
               borderLeftWidth: 6,
               borderTopWidth: 6,
-              borderTopLeftRadius: 20
+              borderTopLeftRadius: 20,
             }}
           />
           <View
@@ -489,7 +489,7 @@ exports.examples = [
               height: 50,
               borderRightWidth: 6,
               borderTopWidth: 6,
-              borderTopRightRadius: 20
+              borderTopRightRadius: 20,
             }}
           />
           <View
@@ -498,7 +498,7 @@ exports.examples = [
               height: 50,
               borderBottomWidth: 6,
               borderLeftWidth: 6,
-              borderBottomLeftRadius: 20
+              borderBottomLeftRadius: 20,
             }}
           />
           <View
@@ -507,7 +507,7 @@ exports.examples = [
               height: 50,
               borderBottomWidth: 6,
               borderRightWidth: 6,
-              borderBottomRightRadius: 20
+              borderBottomRightRadius: 20,
             }}
           />
         </View>
