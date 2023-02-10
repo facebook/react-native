@@ -117,9 +117,8 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
 static RCTHandlerToken reloadToken;
-static RCTHandlerToken reloadTokenDevMenu;
+static RCTHandlerToken devMenuToken;
 static std::atomic<int> numInitializedModules{0};
-static std::atomic<int> numInitializedDevMenuModules{0};
 #endif
 
 @interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec, RCTDevSettingsInspectable> {
@@ -187,44 +186,39 @@ RCT_EXPORT_MODULE()
     _bridgeExecutorOverrideToken = [[RCTPackagerConnection sharedPackagerConnection]
         addNotificationHandler:^(id params) {
           if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
-              weakBridge.executorClass = self.executorClass;
+              weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
           }
         }
                          queue:dispatch_get_main_queue()
                      forMethod:@"reload"];
+    #if RCT_DEV_MENU
+       _bridgeExecutorOverrideTokenDevMenu = [[RCTPackagerConnection sharedPackagerConnection]
+           addNotificationHandler:^(id params) {
+             if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
+                 weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
+             }
+           }
+                            queue:dispatch_get_main_queue()
+                        forMethod:@"devMenu"];
+    #endif
   }
 
-  if (numInitializedModules++ == 0) {
-    reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
-        addNotificationHandler:^(id params) {
-          RCTTriggerReloadCommandListeners(@"Global hotkey");
-        }
-                         queue:dispatch_get_main_queue()
-                     forMethod:@"reload"];
-  }
-    
-#if RCT_DEV_MENU
-  if (self.bridge) {
-    RCTBridge *__weak weakBridge = self.bridge;
-    _bridgeExecutorOverrideTokenDevMenu = [[RCTPackagerConnection sharedPackagerConnection]
-        addNotificationHandler:^(id params) {
-          if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
-              weakBridge.executorClass = self.executorClass;
+    if (numInitializedModules++ == 0) {
+      reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
+          addNotificationHandler:^(id params) {
+            RCTTriggerReloadCommandListeners(@"Global hotkey");
           }
-        }
-                         queue:dispatch_get_main_queue()
-                     forMethod:@"devMenu"];
-  }
-
-  if (numInitializedDevMenuModules++ == 0) {
-    reloadTokenDevMenu = [[RCTPackagerConnection sharedPackagerConnection]
-        addNotificationHandler:^(id params) {
-            [self.bridge.devMenu show];
-        }
-                        queue:dispatch_get_main_queue()
-                    forMethod:@"devMenu"];
-  }
-#endif
+                           queue:dispatch_get_main_queue()
+                       forMethod:@"reload"];
+      #if RCT_DEV_MENU
+        devMenuToken = [[RCTPackagerConnection sharedPackagerConnection]
+            addNotificationHandler:^(id params) {
+                [self.bridge.devMenu show];
+            }
+                            queue:dispatch_get_main_queue()
+                        forMethod:@"devMenu"];
+      #endif
+    }
 #endif
 
 #if RCT_ENABLE_INSPECTOR
@@ -271,21 +265,17 @@ RCT_EXPORT_MODULE()
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   if (self.bridge) {
     [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_bridgeExecutorOverrideToken];
+    #if RCT_DEV_MENU
+      [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_bridgeExecutorOverrideTokenDevMenu];
+    #endif
   }
 
   if (--numInitializedModules == 0) {
     [[RCTPackagerConnection sharedPackagerConnection] removeHandler:reloadToken];
+    #if RCT_DEV_MENU
+      [[RCTPackagerConnection sharedPackagerConnection] removeHandler:devMenuToken];
+    #endif
   }
-    
-#if RCT_DEV_MENU
-    if (self.bridge) {
-      [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_bridgeExecutorOverrideTokenDevMenu];
-    }
-
-    if (--numInitializedDevMenuModules == 0) {
-      [[RCTPackagerConnection sharedPackagerConnection] removeHandler:reloadTokenDevMenu];
-    }
-#endif
 #endif
 }
 
