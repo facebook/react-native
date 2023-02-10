@@ -129,11 +129,19 @@ function create_universal_framework {
   echo "Creating universal framework for platforms: ${platforms[*]}"
 
   for i in "${!platforms[@]}"; do
-    local hermes_framework_path="${platforms[$i]}/hermes.framework"
+    local platform="${platforms[$i]}"
+    local hermes_framework_path="${platform}/hermes.framework"
+    local dSYM_path="${platform}/hermes.framework"
+
+    # TODO: remove this when the hermes team fixes the dSYM issue
+    if [[ "$platform" == "catalyst" ]]; then
+      dSYM_path="${platform}/0"
+    fi
+
     args+="-framework $hermes_framework_path "
 
     # Path to dSYM must be absolute
-    args+="-debug-symbols $HERMES_PATH/destroot/Library/Frameworks/$hermes_framework_path.dSYM "
+    args+="-debug-symbols $HERMES_PATH/destroot/Library/Frameworks/$dSYM_path.dSYM "
   done
 
   mkdir -p universal
