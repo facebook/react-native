@@ -317,38 +317,6 @@ class NestedTextVerticalAlign extends React.Component<
             </Text>
           </View>
         </RNTesterBlock>
-        <RNTesterBlock title={`without lineHeight ${textAlignVertical}`}>
-          <Text>
-            vertical align is set to{' '}
-            <Text style={{backgroundColor: 'red'}}>{textAlignVertical}</Text>
-          </Text>
-          <Button
-            onPress={this._changeVerticalAlign}
-            title="Set vertical align top or bottom"
-          />
-          <Button
-            onPress={() => this.setState({textAlignVerticalIndex: 0})}
-            title="set vertical align CENTER"
-          />
-          <Button onPress={this._increaseFont} title="increase font" />
-          <View>
-            <Text
-              style={{
-                height: 300,
-                backgroundColor: 'yellow',
-              }}>
-              <Text
-                style={{
-                  fontSize,
-                  textAlignVertical,
-                  backgroundColor: 'green',
-                  color: 'white',
-                }}>
-                CusToM FonTjJYy
-              </Text>
-            </Text>
-          </View>
-        </RNTesterBlock>
       </>
     );
   }
