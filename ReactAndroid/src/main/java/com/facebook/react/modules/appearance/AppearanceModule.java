@@ -69,11 +69,11 @@ public class AppearanceModule extends NativeAppearanceSpec {
 
   @Override
   public void setColorScheme(String style) {
-    if (style == "dark") {
+    if (style.equals("dark")) {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-    } else if (style == "light") {
+    } else if (style.equals("light")) {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-    } else if (style == "unspecified") {
+    } else if (style.equals("unspecified")) {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
     }
   }
