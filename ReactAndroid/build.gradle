@@ -5,17 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-buildscript {
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.hasProperty("kotlinVersion") ? rootProject.ext.kotlinVersion : KOTLIN_VERSION}"
-    }
-}
-
 plugins {
     id("com.android.library")
     id("com.facebook.react")
     id("de.undercouch.download")
     id("maven-publish")
+    id("org.jetbrains.kotlin.android")
 }
 
 import com.facebook.react.tasks.internal.*
