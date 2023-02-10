@@ -41,7 +41,7 @@ class FabricMountingManager final {
 
   void preallocateShadowView(SurfaceId surfaceId, ShadowView const &shadowView);
 
-  void executeMount(MountingCoordinator::Shared const &mountingCoordinator);
+  void executeMount(MountingCoordinator::Shared mountingCoordinator);
 
   void dispatchCommand(
       ShadowView const &shadowView,

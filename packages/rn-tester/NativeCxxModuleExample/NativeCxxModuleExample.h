@@ -53,6 +53,26 @@ struct Bridging<ValueStruct> : NativeCxxModuleExampleCxxBaseValueStructBridging<
                                    std::string,
                                    ObjectStruct> {};
 
+#pragma mark - enums
+enum EnumInt { A = 23, B = 42 };
+
+template <>
+struct Bridging<EnumInt> {
+  static EnumInt fromJs(jsi::Runtime &rt, int32_t value) {
+    if (value == 23) {
+      return EnumInt::A;
+    } else if (value == 42) {
+      return EnumInt::B;
+    } else {
+      throw jsi::JSError(rt, "Invalid enum value");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, EnumInt value) {
+    return bridging::toJs(rt, static_cast<int32_t>(value));
+  }
+};
+
 #pragma mark - implementation
 class NativeCxxModuleExample
     : public NativeCxxModuleExampleCxxSpec<NativeCxxModuleExample> {
@@ -71,7 +91,7 @@ class NativeCxxModuleExample
 
   ConstantsStruct getConstants(jsi::Runtime &rt);
 
-  int32_t getEnum(jsi::Runtime &rt, int32_t arg);
+  EnumInt getEnum(jsi::Runtime &rt, EnumInt arg);
 
   std::map<std::string, std::optional<int32_t>> getMap(
       jsi::Runtime &rt,

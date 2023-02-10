@@ -63,6 +63,7 @@ task downloadHermes(type: Download) {
     onlyIfModified(true)
     overwrite(true)
     useETag("all")
+    retries(5)
     dest(new File(downloadsDir, "hermes.tar.gz"))
 }
 

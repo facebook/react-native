@@ -33,7 +33,7 @@ ConstantsStruct NativeCxxModuleExample::getConstants(jsi::Runtime &rt) {
   return ConstantsStruct{true, 69, "react-native"};
 }
 
-int32_t NativeCxxModuleExample::getEnum(jsi::Runtime &rt, int32_t arg) {
+EnumInt NativeCxxModuleExample::getEnum(jsi::Runtime &rt, EnumInt arg) {
   return arg;
 }
 
