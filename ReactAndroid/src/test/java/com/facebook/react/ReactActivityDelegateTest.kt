@@ -17,10 +17,10 @@ import org.robolectric.RobolectricTestRunner
 class ReactActivityDelegateTest {
 
   @Test
-  fun delegateWithConcurrentRoot_populatesInitialPropsCorrectly() {
+  fun delegateWithFabricEnabled_populatesInitialPropsCorrectly() {
     val delegate =
         object : ReactActivityDelegate(null, "test-delegate") {
-          override fun isConcurrentRootEnabled() = true
+          override fun isFabricEnabled() = true
           public val inspectLaunchOptions: Bundle?
             get() = getLaunchOptions()
         }
@@ -31,10 +31,10 @@ class ReactActivityDelegateTest {
   }
 
   @Test
-  fun delegateWithoutConcurrentRoot_hasNullInitialProperties() {
+  fun delegateWithoutFabricEnabled_hasNullInitialProperties() {
     val delegate =
         object : ReactActivityDelegate(null, "test-delegate") {
-          override fun isConcurrentRootEnabled() = false
+          override fun isFabricEnabled() = false
           public val inspectLaunchOptions: Bundle?
             get() = getLaunchOptions()
         }
@@ -43,10 +43,10 @@ class ReactActivityDelegateTest {
   }
 
   @Test
-  fun delegateWithConcurrentRoot_composesInitialPropertiesCorrectly() {
+  fun delegateWithFabricEnabled_composesInitialPropertiesCorrectly() {
     val delegate =
         object : ReactActivityDelegate(null, "test-delegate") {
-          override fun isConcurrentRootEnabled() = true
+          override fun isFabricEnabled() = true
           override fun getLaunchOptions(): Bundle =
               Bundle().apply { putString("test-property", "test-value") }
           public val inspectLaunchOptions: Bundle?
