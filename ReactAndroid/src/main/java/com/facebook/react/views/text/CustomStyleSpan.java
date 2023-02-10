@@ -142,11 +142,18 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       return;
     }
 
+    // https://stackoverflow.com/a/27631737/7295772
+    // top      -------------  -10
+    // ascent   -------------  -5
+    // baseline __my Text____   0
+    // descent  _____________   2
+    // bottom   _____________   5
     TextPaint textPaintCopy = new TextPaint();
     textPaintCopy.set(ds);
     if (textSize > 0) {
       textPaintCopy.setTextSize(textSize);
     }
+
     if (textSize == highestFontSize) {
       // aligns text vertically in the lineHeight
       // and adjust their position depending on the fontSize
@@ -163,6 +170,9 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
         ds.baselineShift -=
             highestLineHeight / 2
                 - highestFontSize / 2
+                // smaller font aligns on the baseline of bigger font
+                // moves the baseline of text with smaller font up
+                // so it aligns on the top of the larger font
                 + (highestFontSize - textSize)
                 + (textPaintCopy.getFontMetrics().top - textPaintCopy.ascent());
       }
