@@ -10,6 +10,7 @@ package com.facebook.react
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
+import com.facebook.react.internal.PrivateReactExtension
 import com.facebook.react.tasks.BuildCodegenCLITask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
@@ -35,8 +36,22 @@ class ReactPlugin : Plugin<Project> {
     checkJvmVersion(project)
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
 
+    // We register a private extension on the rootProject so that project wide configs
+    // like codegen config can be propagated from app project to libraries.
+    val rootExtension =
+        project.rootProject.extensions.findByType(PrivateReactExtension::class.java)
+            ?: project.rootProject.extensions.create(
+                "privateReact", PrivateReactExtension::class.java, project)
+
     // App Only Configuration
     project.pluginManager.withPlugin("com.android.application") {
+      // We wire the root extension with the values coming from the app (either user populated or
+      // defaults).
+      rootExtension.root.set(extension.root)
+      rootExtension.reactNativeDir.set(extension.reactNativeDir)
+      rootExtension.codegenDir.set(extension.codegenDir)
+      rootExtension.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
+
       project.afterEvaluate {
         val reactNativeDir = extension.reactNativeDir.get().asFile
         val propertiesFile = File(reactNativeDir, "ReactAndroid/gradle.properties")
@@ -73,12 +88,12 @@ class ReactPlugin : Plugin<Project> {
           }
         }
       }
-      configureCodegen(project, extension, isLibrary = false)
+      configureCodegen(project, extension, rootExtension, isLibrary = false)
     }
 
     // Library Only Configuration
     project.pluginManager.withPlugin("com.android.library") {
-      configureCodegen(project, extension, isLibrary = true)
+      configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
   }
 
@@ -101,12 +116,14 @@ class ReactPlugin : Plugin<Project> {
     }
   }
 
-  /**
-   * A plugin to enable react-native-codegen in Gradle environment. See the Gradle API docs for more
-   * information: https://docs.gradle.org/current/javadoc/org/gradle/api/Project.html
-   */
+  /** This function sets up `react-native-codegen` in our Gradle plugin. */
   @Suppress("UnstableApiUsage")
-  private fun configureCodegen(project: Project, extension: ReactExtension, isLibrary: Boolean) {
+  private fun configureCodegen(
+      project: Project,
+      localExtension: ReactExtension,
+      rootExtension: PrivateReactExtension,
+      isLibrary: Boolean
+  ) {
     // First, we set up the output dir for the codegen.
     val generatedSrcDir = File(project.buildDir, "generated/source/codegen")
 
@@ -114,21 +131,21 @@ class ReactPlugin : Plugin<Project> {
     // It's the root folder for apps (so ../../ from the Gradle project)
     // and the package folder for library (so ../ from the Gradle project)
     if (isLibrary) {
-      extension.jsRootDir.convention(project.layout.projectDirectory.dir("../"))
+      localExtension.jsRootDir.convention(project.layout.projectDirectory.dir("../"))
     } else {
-      extension.jsRootDir.convention(extension.root)
+      localExtension.jsRootDir.convention(localExtension.root)
     }
 
     val buildCodegenTask =
         project.tasks.register("buildCodegenCLI", BuildCodegenCLITask::class.java) {
-          it.codegenDir.set(extension.codegenDir)
+          it.codegenDir.set(rootExtension.codegenDir)
           val bashWindowsHome = project.findProperty("REACT_WINDOWS_BASH") as String?
           it.bashWindowsHome.set(bashWindowsHome)
 
           // Please note that appNeedsCodegen is triggering a read of the package.json at
           // configuration time as we need to feed the onlyIf condition of this task.
           // Therefore, the appNeedsCodegen needs to be invoked inside this lambda.
-          val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(extension)
+          val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(rootExtension.root)
           it.onlyIf { isLibrary || needsCodegenFromPackageJson }
         }
 
@@ -137,23 +154,24 @@ class ReactPlugin : Plugin<Project> {
         project.tasks.register(
             "generateCodegenSchemaFromJavaScript", GenerateCodegenSchemaTask::class.java) { it ->
               it.dependsOn(buildCodegenTask)
-              it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
-              it.codegenDir.set(extension.codegenDir)
+              it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
+              it.codegenDir.set(rootExtension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)
 
               // We're reading the package.json at configuration time to properly feed
               // the `jsRootDir` @Input property of this task & the onlyIf. Therefore, the
               // parsePackageJson should be invoked inside this lambda.
-              val packageJson = findPackageJsonFile(project, extension)
+              val packageJson = findPackageJsonFile(project, rootExtension.root)
               val parsedPackageJson = packageJson?.let { JsonUtils.fromCodegenJson(it) }
 
               val jsSrcsDirInPackageJson = parsedPackageJson?.codegenConfig?.jsSrcsDir
               if (jsSrcsDirInPackageJson != null) {
                 it.jsRootDir.set(File(packageJson.parentFile, jsSrcsDirInPackageJson))
               } else {
-                it.jsRootDir.set(extension.jsRootDir)
+                it.jsRootDir.set(localExtension.jsRootDir)
               }
-              val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(extension)
+              val needsCodegenFromPackageJson =
+                  project.needsCodegenFromPackageJson(rootExtension.root)
               it.onlyIf { isLibrary || needsCodegenFromPackageJson }
             }
 
@@ -162,17 +180,18 @@ class ReactPlugin : Plugin<Project> {
         project.tasks.register(
             "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) {
               it.dependsOn(generateCodegenSchemaTask)
-              it.reactNativeDir.set(extension.reactNativeDir)
-              it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
+              it.reactNativeDir.set(rootExtension.reactNativeDir)
+              it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
               it.generatedSrcDir.set(generatedSrcDir)
-              it.packageJsonFile.set(findPackageJsonFile(project, extension))
-              it.codegenJavaPackageName.set(extension.codegenJavaPackageName)
-              it.libraryName.set(extension.libraryName)
+              it.packageJsonFile.set(findPackageJsonFile(project, rootExtension.root))
+              it.codegenJavaPackageName.set(localExtension.codegenJavaPackageName)
+              it.libraryName.set(localExtension.libraryName)
 
               // Please note that appNeedsCodegen is triggering a read of the package.json at
               // configuration time as we need to feed the onlyIf condition of this task.
               // Therefore, the appNeedsCodegen needs to be invoked inside this lambda.
-              val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(extension)
+              val needsCodegenFromPackageJson =
+                  project.needsCodegenFromPackageJson(rootExtension.root)
               it.onlyIf { isLibrary || needsCodegenFromPackageJson }
             }
 

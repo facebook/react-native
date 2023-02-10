@@ -231,7 +231,7 @@ class PathUtilsTest {
     project.plugins.apply("com.facebook.react")
     val extension = project.extensions.getByType(ReactExtension::class.java)
 
-    assertEquals(project.file("../package.json"), findPackageJsonFile(project, extension))
+    assertEquals(project.file("../package.json"), findPackageJsonFile(project, extension.root))
   }
 
   @Test
@@ -245,7 +245,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    assertEquals(localFile, findPackageJsonFile(project, extension))
+    assertEquals(localFile, findPackageJsonFile(project, extension.root))
   }
 
   @Test
@@ -257,7 +257,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    val actual = readPackageJsonFile(project, extension)
+    val actual = readPackageJsonFile(project, extension.root)
 
     assertNull(actual)
   }
@@ -272,7 +272,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    val actual = readPackageJsonFile(project, extension)
+    val actual = readPackageJsonFile(project, extension.root)
 
     assertNotNull(actual)
     assertNull(actual!!.codegenConfig)
@@ -298,7 +298,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    val actual = readPackageJsonFile(project, extension)
+    val actual = readPackageJsonFile(project, extension.root)
 
     assertNotNull(actual)
     assertNotNull(actual!!.codegenConfig)
