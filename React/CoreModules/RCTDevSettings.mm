@@ -181,7 +181,7 @@ RCT_EXPORT_MODULE()
     _bridgeExecutorOverrideToken = [[RCTPackagerConnection sharedPackagerConnection]
         addNotificationHandler:^(id params) {
           if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
-            weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
+              weakBridge.executorClass = self.executorClass;
           }
         }
                          queue:dispatch_get_main_queue()
@@ -203,7 +203,7 @@ RCT_EXPORT_MODULE()
     _bridgeExecutorOverrideToken = [[RCTPackagerConnection sharedPackagerConnection]
         addNotificationHandler:^(id params) {
           if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
-            weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
+              weakBridge.executorClass = self.executorClass;
           }
         }
                          queue:dispatch_get_main_queue()
