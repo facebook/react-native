@@ -62,8 +62,8 @@ import okio.Source;
       }
 
       if (fileContentUriStr.startsWith("data:")) {
-        byte[] decodedDataUrString = Base64.decode(fileContentUriStr.split(",")[1], Base64.DEFAULT);
-        return new ByteArrayInputStream(decodedDataUrString);
+        byte[] decodedDataUriBytes = Base64.decode(fileContentUriStr.split(",")[1], Base64.DEFAULT);
+        return new ByteArrayInputStream(decodedDataUriBytes);
       }
 
       return context.getContentResolver().openInputStream(fileContentUri);
