@@ -32,7 +32,7 @@ fi
 if [ -n "$NODE_BINARY" ]; then
     echo "Node found at: ${NODE_BINARY}"
 else
-      echo '[Warning] You need to configure your node path in the `".xcode.env" file` environment. ' \
+    echo '[Warning] You need to configure your node path in the `".xcode.env" file` environment. ' \
        'You can set it up quickly by running: ' \
        '`echo export NODE_BINARY=$(command -v node) > .xcode.env` ' \
        'in the ios folder. This is needed by React Native to work correctly. ' \
