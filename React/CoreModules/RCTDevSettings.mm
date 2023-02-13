@@ -125,10 +125,6 @@ static std::atomic<int> numInitializedModules{0};
   BOOL _isJSLoaded;
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _bridgeExecutorOverrideToken;
-    
-#if RCT_DEV_MENU
-  RCTHandlerToken _bridgeExecutorOverrideTokenDevMenu;
-#endif
 #endif
 }
 
@@ -191,16 +187,6 @@ RCT_EXPORT_MODULE()
         }
                          queue:dispatch_get_main_queue()
                      forMethod:@"reload"];
-    #if RCT_DEV_MENU
-       _bridgeExecutorOverrideTokenDevMenu = [[RCTPackagerConnection sharedPackagerConnection]
-           addNotificationHandler:^(id params) {
-             if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
-               weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
-             }
-           }
-                            queue:dispatch_get_main_queue()
-                        forMethod:@"devMenu"];
-    #endif
   }
 
     if (numInitializedModules++ == 0) {
@@ -265,9 +251,6 @@ RCT_EXPORT_MODULE()
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   if (self.bridge) {
     [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_bridgeExecutorOverrideToken];
-    #if RCT_DEV_MENU
-      [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_bridgeExecutorOverrideTokenDevMenu];
-    #endif
   }
 
   if (--numInitializedModules == 0) {
