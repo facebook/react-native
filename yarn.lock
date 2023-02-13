@@ -6385,10 +6385,10 @@ react-native-codegen@*:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-codegen@^0.71.4:
-  version "0.71.4"
-  resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.71.4.tgz#082b3d9d137ba2e32da950d07b507753b17dde47"
-  integrity sha512-Jazh/tq3kWOthw5zNt52i0C94tSmJroxwb7/EadaThO/rS92RG1/20RfbSvS29CC4CHNjoMgwGJTEWdFQrExQg==
+react-native-codegen@^0.71.5:
+  version "0.71.5"
+  resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.71.5.tgz#454a42a891cd4ca5fc436440d301044dc1349c14"
+  integrity sha512-rfsuc0zkuUuMjFnrT55I1mDZ+pBRp2zAiRwxck3m6qeGJBGK5OV5JH66eDQ4aa+3m0of316CqrJDRzVlYufzIg==
   dependencies:
     "@babel/parser" "^7.14.0"
     flow-parser "^0.185.0"
