@@ -33,7 +33,26 @@ function rawToPerformanceEntryType(
       return 'event';
     default:
       throw new TypeError(
-        `unexpected performance entry type received: ${type}`,
+        `rawToPerformanceEntryType: unexpected performance entry type received: ${type}`,
+      );
+  }
+}
+
+function performanceEntryTypeToRaw(
+  type: PerformanceEntryType,
+): RawPerformanceEntryType {
+  switch (type) {
+    case 'mark':
+      return RawPerformanceEntryTypeValues.MARK;
+    case 'measure':
+      return RawPerformanceEntryTypeValues.MEASURE;
+    case 'event':
+      return RawPerformanceEntryTypeValues.EVENT;
+    default:
+      // Verify exhaustive check with Flow
+      (type: empty);
+      throw new TypeError(
+        `performanceEntryTypeToRaw: unexpected performance entry type received: ${type}`,
       );
   }
 }
@@ -222,7 +241,9 @@ export default class PerformanceObserver {
       : requestedEntryTypes;
     for (const type of newEntryTypes) {
       if (!observerCountPerEntryType.has(type)) {
-        NativePerformanceObserver.startReporting(type);
+        NativePerformanceObserver.startReporting(
+          performanceEntryTypeToRaw(type),
+        );
       }
       observerCountPerEntryType.set(
         type,
@@ -248,7 +269,9 @@ export default class PerformanceObserver {
         observerCountPerEntryType.get(type) ?? 0;
       if (numberOfObserversForThisType === 1) {
         observerCountPerEntryType.delete(type);
-        NativePerformanceObserver.stopReporting(type);
+        NativePerformanceObserver.stopReporting(
+          performanceEntryTypeToRaw(type),
+        );
       } else if (numberOfObserversForThisType !== 0) {
         observerCountPerEntryType.set(type, numberOfObserversForThisType - 1);
       }

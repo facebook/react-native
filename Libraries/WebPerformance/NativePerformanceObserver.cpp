@@ -10,19 +10,6 @@
 
 namespace facebook::react {
 
-static PerformanceEntryType stringToPerformanceEntryType(
-    const std::string &entryType) {
-  if (entryType == "mark") {
-    return PerformanceEntryType::MARK;
-  } else if (entryType == "measure") {
-    return PerformanceEntryType::MEASURE;
-  } else if (entryType == "event") {
-    return PerformanceEntryType::EVENT;
-  } else {
-    return PerformanceEntryType::UNDEFINED;
-  }
-}
-
 NativePerformanceObserver::NativePerformanceObserver(
     std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {
@@ -35,16 +22,16 @@ NativePerformanceObserver::~NativePerformanceObserver() {
 
 void NativePerformanceObserver::startReporting(
     jsi::Runtime &rt,
-    std::string entryType) {
+    int32_t entryType) {
   PerformanceEntryReporter::getInstance().startReporting(
-      stringToPerformanceEntryType(entryType));
+      static_cast<PerformanceEntryType>(entryType));
 }
 
 void NativePerformanceObserver::stopReporting(
     jsi::Runtime &rt,
-    std::string entryType) {
+    int32_t entryType) {
   PerformanceEntryReporter::getInstance().stopReporting(
-      stringToPerformanceEntryType(entryType));
+      static_cast<PerformanceEntryType>(entryType));
 }
 
 GetPendingEntriesResult NativePerformanceObserver::popPendingEntries(

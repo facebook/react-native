@@ -38,8 +38,8 @@ export type GetPendingEntriesResult = {|
 |};
 
 export interface Spec extends TurboModule {
-  +startReporting: (entryType: string) => void;
-  +stopReporting: (entryType: string) => void;
+  +startReporting: (entryType: RawPerformanceEntryType) => void;
+  +stopReporting: (entryType: RawPerformanceEntryType) => void;
   +popPendingEntries: () => GetPendingEntriesResult;
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
 }
