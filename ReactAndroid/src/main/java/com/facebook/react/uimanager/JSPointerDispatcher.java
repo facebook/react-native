@@ -260,7 +260,6 @@ public class JSPointerDispatcher {
         break;
       case MotionEvent.ACTION_HOVER_MOVE:
         // TODO(luwe) - converge this with ACTION_MOVE
-
         // If we don't move enough, ignore this event.
         float[] eventCoordinates = eventState.getEventCoordinatesByPointerId().get(activePointerId);
         float[] lastEventCoordinates =
@@ -275,18 +274,7 @@ public class JSPointerDispatcher {
         onMove(activeTargetTag, eventState, motionEvent, eventDispatcher);
         break;
       case MotionEvent.ACTION_MOVE:
-        // TODO(luwe) - converge this with ACTION_HOVER_MOVE
-        boolean listeningForMove =
-            isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.MOVE, EVENT.MOVE_CAPTURE);
-        if (listeningForMove) {
-          eventDispatcher.dispatchEvent(
-              PointerEvent.obtain(
-                  PointerEventHelper.POINTER_MOVE,
-                  activeTargetTag,
-                  eventState,
-                  motionEvent,
-                  getCoalescingKey()));
-        }
+        onMove(activeTargetTag, eventState, motionEvent, eventDispatcher);
         break;
       case MotionEvent.ACTION_UP:
       case MotionEvent.ACTION_POINTER_UP:
