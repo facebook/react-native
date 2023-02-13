@@ -9,7 +9,7 @@ steps:
     submodules: false # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
     persistCredentials: false # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-  - template: apple-node-setup.yml
+  - template: apple-tools-setup.yml
 
   # First do a build of the local package, since we point the cli at the local files, it needs to be pre-built
   - task: CmdLine@2
