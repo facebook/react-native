@@ -22,6 +22,7 @@ import {
 import * as React from 'react';
 import NativeCxxModuleExample, {
   EnumInt,
+  EnumNone,
 } from '../../../NativeCxxModuleExample/NativeCxxModuleExample';
 
 type State = {|
@@ -40,7 +41,9 @@ type Examples =
   | 'getArray'
   | 'getBool'
   | 'getConstants'
-  | 'getEnum'
+  | 'getCustomEnum'
+  | 'getNumEnum'
+  | 'getStrEnum'
   | 'getMap'
   | 'getNumber'
   | 'getObject'
@@ -74,8 +77,9 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       ]),
     getBool: () => NativeCxxModuleExample?.getBool(true),
     getConstants: () => NativeCxxModuleExample?.getConstants(),
-    getEnum: () => NativeCxxModuleExample?.getEnum(EnumInt.A),
-    getMap: () => NativeCxxModuleExample?.getMap({a: 1, b: null, c: 3}),
+    getCustomEnum: () => NativeCxxModuleExample?.getCustomEnum(EnumInt.IB),
+    getNumEnum: () => NativeCxxModuleExample?.getNumEnum(EnumInt.IB),
+    getStrEnum: () => NativeCxxModuleExample?.getStrEnum(EnumNone.NB),
     getNumber: () => NativeCxxModuleExample?.getNumber(99.95),
     getObject: () =>
       NativeCxxModuleExample?.getObject({a: 1, b: 'foo', c: null}),

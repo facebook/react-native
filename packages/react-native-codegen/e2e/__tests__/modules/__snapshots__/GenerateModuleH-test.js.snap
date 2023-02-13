@@ -18,7 +18,8 @@ exports[`GenerateModuleH can generate a header file NativeModule specs 1`] = `
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NativeArrayTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeArrayTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeArrayTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -79,7 +80,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeBooleanTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeBooleanTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeBooleanTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -131,7 +133,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeCallbackTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeCallbackTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeCallbackTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -183,7 +186,135 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - NativeEnumTurboModuleBaseStateType
+
+#pragma mark - NativeEnumTurboModuleStatusRegularEnum
+
+enum NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
+  static NativeEnumTurboModuleStatusRegularEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+    std::string value = rawValue.utf8(rt);
+    if (value == \\"Active\\") {
+      return NativeEnumTurboModuleStatusRegularEnum::Active;
+    } else if (value == \\"Paused\\") {
+      return NativeEnumTurboModuleStatusRegularEnum::Paused;
+    } else if (value == \\"Off\\") {
+      return NativeEnumTurboModuleStatusRegularEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusRegularEnum value) {
+    if (value == NativeEnumTurboModuleStatusRegularEnum::Active) {
+      return bridging::toJs(rt, \\"Active\\");
+    } else if (value == NativeEnumTurboModuleStatusRegularEnum::Paused) {
+      return bridging::toJs(rt, \\"Paused\\");
+    } else if (value == NativeEnumTurboModuleStatusRegularEnum::Off) {
+      return bridging::toJs(rt, \\"Off\\");
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
+#pragma mark - NativeEnumTurboModuleStatusStrEnum
+
+enum NativeEnumTurboModuleStatusStrEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
+  static NativeEnumTurboModuleStatusStrEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+    std::string value = rawValue.utf8(rt);
+    if (value == \\"active\\") {
+      return NativeEnumTurboModuleStatusStrEnum::Active;
+    } else if (value == \\"paused\\") {
+      return NativeEnumTurboModuleStatusStrEnum::Paused;
+    } else if (value == \\"off\\") {
+      return NativeEnumTurboModuleStatusStrEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusStrEnum value) {
+    if (value == NativeEnumTurboModuleStatusStrEnum::Active) {
+      return bridging::toJs(rt, \\"active\\");
+    } else if (value == NativeEnumTurboModuleStatusStrEnum::Paused) {
+      return bridging::toJs(rt, \\"paused\\");
+    } else if (value == NativeEnumTurboModuleStatusStrEnum::Off) {
+      return bridging::toJs(rt, \\"off\\");
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
+#pragma mark - NativeEnumTurboModuleStatusNumEnum
+
+enum NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
+  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, int32_t value) {
+    
+    if (value == 2) {
+      return NativeEnumTurboModuleStatusNumEnum::Active;
+    } else if (value == 1) {
+      return NativeEnumTurboModuleStatusNumEnum::Paused;
+    } else if (value == 0) {
+      return NativeEnumTurboModuleStatusNumEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
+    if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
+      return bridging::toJs(rt, 2);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
+      return bridging::toJs(rt, 1);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
+      return bridging::toJs(rt, 0);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
+#pragma mark - NativeEnumTurboModuleStatusFractionEnum
+
+enum NativeEnumTurboModuleStatusFractionEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
+  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, float value) {
+    
+    if (value == 0.2f) {
+      return NativeEnumTurboModuleStatusFractionEnum::Active;
+    } else if (value == 0.1f) {
+      return NativeEnumTurboModuleStatusFractionEnum::Paused;
+    } else if (value == 0f) {
+      return NativeEnumTurboModuleStatusFractionEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value) {
+    if (value == NativeEnumTurboModuleStatusFractionEnum::Active) {
+      return bridging::toJs(rt, 0.2f);
+    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Paused) {
+      return bridging::toJs(rt, 0.1f);
+    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Off) {
+      return bridging::toJs(rt, 0f);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+  #pragma mark - NativeEnumTurboModuleBaseStateType
 
 template <typename P0>
 struct NativeEnumTurboModuleBaseStateType {
@@ -260,7 +391,7 @@ struct NativeEnumTurboModuleBaseStateTypeWithEnumsBridging {
   static jsi::String strToJs(jsi::Runtime &rt, P2 value) {
     return bridging::toJs(rt, value);
   }
-  static double numToJs(jsi::Runtime &rt, P3 value) {
+  static int numToJs(jsi::Runtime &rt, P3 value) {
     return bridging::toJs(rt, value);
   }
   static double fractionToJs(jsi::Runtime &rt, P4 value) {
@@ -289,9 +420,9 @@ protected:
 public:
   virtual jsi::String getStatusRegular(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::String getStatusStr(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual double getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
+  virtual int getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual double getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, double c, double d) = 0;
+  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, int c, double d) = 0;
   virtual jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) = 0;
 
 };
@@ -330,12 +461,12 @@ private:
       return bridging::callFromJs<jsi::String>(
           rt, &T::getStatusStr, jsInvoker_, instance_, std::move(statusProp));
     }
-    double getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) override {
+    int getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) override {
       static_assert(
           bridging::getParameterCount(&T::getStatusNum) == 2,
           \\"Expected getStatusNum(...) to have 2 parameters\\");
 
-      return bridging::callFromJs<double>(
+      return bridging::callFromJs<int>(
           rt, &T::getStatusNum, jsInvoker_, instance_, std::move(statusProp));
     }
     double getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) override {
@@ -346,7 +477,7 @@ private:
       return bridging::callFromJs<double>(
           rt, &T::getStatusFraction, jsInvoker_, instance_, std::move(statusProp));
     }
-    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, double c, double d) override {
+    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, int c, double d) override {
       static_assert(
           bridging::getParameterCount(&T::getStateType) == 5,
           \\"Expected getStateType(...) to have 5 parameters\\");
@@ -370,7 +501,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeNullableTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeNullableTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeNullableTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -458,7 +590,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeNumberTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeNumberTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeNumberTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -510,7 +643,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeObjectTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeObjectTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeObjectTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -589,7 +723,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeOptionalObjectTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeOptionalObjectTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeOptionalObjectTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -632,7 +767,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - NativePartialAnnotationTurboModuleBaseSomeObj
+
+  #pragma mark - NativePartialAnnotationTurboModuleBaseSomeObj
 
 template <typename P0, typename P1>
 struct NativePartialAnnotationTurboModuleBaseSomeObj {
@@ -747,7 +883,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativePromiseTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativePromiseTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativePromiseTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -799,7 +936,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - SampleTurboModuleBaseAnimal
+
+  #pragma mark - SampleTurboModuleBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleBaseAnimal {
@@ -987,7 +1125,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - SampleTurboModuleArraysBaseAnimal
+
+  #pragma mark - SampleTurboModuleArraysBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleArraysBaseAnimal {
@@ -1175,7 +1314,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - SampleTurboModuleNullableBaseAnimal
+
+  #pragma mark - SampleTurboModuleNullableBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleNullableBaseAnimal {
@@ -1363,7 +1503,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - SampleTurboModuleNullableAndOptionalBaseAnimal
+
+  #pragma mark - SampleTurboModuleNullableAndOptionalBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleNullableAndOptionalBaseAnimal {
@@ -1553,7 +1694,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - SampleTurboModuleOptionalBaseAnimal
+
+  #pragma mark - SampleTurboModuleOptionalBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleOptionalBaseAnimal {
@@ -1743,7 +1885,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeStringTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeStringTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeStringTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -1818,7 +1961,8 @@ exports[`GenerateModuleH can generate a header file NativeModule specs with assu
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NativeArrayTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeArrayTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeArrayTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -1879,7 +2023,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeBooleanTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeBooleanTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeBooleanTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -1931,7 +2076,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeCallbackTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeCallbackTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeCallbackTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -1983,7 +2129,135 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - NativeEnumTurboModuleBaseStateType
+
+#pragma mark - NativeEnumTurboModuleStatusRegularEnum
+
+enum NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
+  static NativeEnumTurboModuleStatusRegularEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+    std::string value = rawValue.utf8(rt);
+    if (value == \\"Active\\") {
+      return NativeEnumTurboModuleStatusRegularEnum::Active;
+    } else if (value == \\"Paused\\") {
+      return NativeEnumTurboModuleStatusRegularEnum::Paused;
+    } else if (value == \\"Off\\") {
+      return NativeEnumTurboModuleStatusRegularEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusRegularEnum value) {
+    if (value == NativeEnumTurboModuleStatusRegularEnum::Active) {
+      return bridging::toJs(rt, \\"Active\\");
+    } else if (value == NativeEnumTurboModuleStatusRegularEnum::Paused) {
+      return bridging::toJs(rt, \\"Paused\\");
+    } else if (value == NativeEnumTurboModuleStatusRegularEnum::Off) {
+      return bridging::toJs(rt, \\"Off\\");
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
+#pragma mark - NativeEnumTurboModuleStatusStrEnum
+
+enum NativeEnumTurboModuleStatusStrEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
+  static NativeEnumTurboModuleStatusStrEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+    std::string value = rawValue.utf8(rt);
+    if (value == \\"active\\") {
+      return NativeEnumTurboModuleStatusStrEnum::Active;
+    } else if (value == \\"paused\\") {
+      return NativeEnumTurboModuleStatusStrEnum::Paused;
+    } else if (value == \\"off\\") {
+      return NativeEnumTurboModuleStatusStrEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusStrEnum value) {
+    if (value == NativeEnumTurboModuleStatusStrEnum::Active) {
+      return bridging::toJs(rt, \\"active\\");
+    } else if (value == NativeEnumTurboModuleStatusStrEnum::Paused) {
+      return bridging::toJs(rt, \\"paused\\");
+    } else if (value == NativeEnumTurboModuleStatusStrEnum::Off) {
+      return bridging::toJs(rt, \\"off\\");
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
+#pragma mark - NativeEnumTurboModuleStatusNumEnum
+
+enum NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
+  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, int32_t value) {
+    
+    if (value == 2) {
+      return NativeEnumTurboModuleStatusNumEnum::Active;
+    } else if (value == 1) {
+      return NativeEnumTurboModuleStatusNumEnum::Paused;
+    } else if (value == 0) {
+      return NativeEnumTurboModuleStatusNumEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
+    if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
+      return bridging::toJs(rt, 2);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
+      return bridging::toJs(rt, 1);
+    } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
+      return bridging::toJs(rt, 0);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
+#pragma mark - NativeEnumTurboModuleStatusFractionEnum
+
+enum NativeEnumTurboModuleStatusFractionEnum { Active, Paused, Off };
+
+template <>
+struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
+  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, float value) {
+    
+    if (value == 0.2f) {
+      return NativeEnumTurboModuleStatusFractionEnum::Active;
+    } else if (value == 0.1f) {
+      return NativeEnumTurboModuleStatusFractionEnum::Paused;
+    } else if (value == 0f) {
+      return NativeEnumTurboModuleStatusFractionEnum::Off;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value) {
+    if (value == NativeEnumTurboModuleStatusFractionEnum::Active) {
+      return bridging::toJs(rt, 0.2f);
+    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Paused) {
+      return bridging::toJs(rt, 0.1f);
+    } else if (value == NativeEnumTurboModuleStatusFractionEnum::Off) {
+      return bridging::toJs(rt, 0f);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+  #pragma mark - NativeEnumTurboModuleBaseStateType
 
 template <typename P0>
 struct NativeEnumTurboModuleBaseStateType {
@@ -2060,7 +2334,7 @@ struct NativeEnumTurboModuleBaseStateTypeWithEnumsBridging {
   static jsi::String strToJs(jsi::Runtime &rt, P2 value) {
     return bridging::toJs(rt, value);
   }
-  static double numToJs(jsi::Runtime &rt, P3 value) {
+  static int numToJs(jsi::Runtime &rt, P3 value) {
     return bridging::toJs(rt, value);
   }
   static double fractionToJs(jsi::Runtime &rt, P4 value) {
@@ -2089,9 +2363,9 @@ protected:
 public:
   virtual jsi::String getStatusRegular(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual jsi::String getStatusStr(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual double getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
+  virtual int getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) = 0;
   virtual double getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) = 0;
-  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, double c, double d) = 0;
+  virtual jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, int c, double d) = 0;
   virtual jsi::Object getStateTypeWithEnums(jsi::Runtime &rt, jsi::Object paramOfTypeWithEnums) = 0;
 
 };
@@ -2130,12 +2404,12 @@ private:
       return bridging::callFromJs<jsi::String>(
           rt, &T::getStatusStr, jsInvoker_, instance_, std::move(statusProp));
     }
-    double getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) override {
+    int getStatusNum(jsi::Runtime &rt, jsi::Object statusProp) override {
       static_assert(
           bridging::getParameterCount(&T::getStatusNum) == 2,
           \\"Expected getStatusNum(...) to have 2 parameters\\");
 
-      return bridging::callFromJs<double>(
+      return bridging::callFromJs<int>(
           rt, &T::getStatusNum, jsInvoker_, instance_, std::move(statusProp));
     }
     double getStatusFraction(jsi::Runtime &rt, jsi::Object statusProp) override {
@@ -2146,7 +2420,7 @@ private:
       return bridging::callFromJs<double>(
           rt, &T::getStatusFraction, jsInvoker_, instance_, std::move(statusProp));
     }
-    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, double c, double d) override {
+    jsi::Object getStateType(jsi::Runtime &rt, jsi::String a, jsi::String b, int c, double d) override {
       static_assert(
           bridging::getParameterCount(&T::getStateType) == 5,
           \\"Expected getStateType(...) to have 5 parameters\\");
@@ -2170,7 +2444,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeNullableTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeNullableTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeNullableTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -2258,7 +2533,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeNumberTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeNumberTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeNumberTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -2310,7 +2586,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeObjectTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeObjectTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeObjectTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -2389,7 +2666,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeOptionalObjectTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeOptionalObjectTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeOptionalObjectTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -2432,7 +2710,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - NativePartialAnnotationTurboModuleBaseSomeObj
+
+  #pragma mark - NativePartialAnnotationTurboModuleBaseSomeObj
 
 template <typename P0, typename P1>
 struct NativePartialAnnotationTurboModuleBaseSomeObj {
@@ -2547,7 +2826,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativePromiseTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativePromiseTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativePromiseTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -2599,7 +2879,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - SampleTurboModuleBaseAnimal
+
+  #pragma mark - SampleTurboModuleBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleBaseAnimal {
@@ -2787,7 +3068,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - SampleTurboModuleArraysBaseAnimal
+
+  #pragma mark - SampleTurboModuleArraysBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleArraysBaseAnimal {
@@ -2975,7 +3257,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - SampleTurboModuleNullableBaseAnimal
+
+  #pragma mark - SampleTurboModuleNullableBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleNullableBaseAnimal {
@@ -3163,7 +3446,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - SampleTurboModuleNullableAndOptionalBaseAnimal
+
+  #pragma mark - SampleTurboModuleNullableAndOptionalBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleNullableAndOptionalBaseAnimal {
@@ -3353,7 +3637,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - SampleTurboModuleOptionalBaseAnimal
+
+  #pragma mark - SampleTurboModuleOptionalBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleOptionalBaseAnimal {
@@ -3543,7 +3828,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeStringTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeStringTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeStringTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
