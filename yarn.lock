@@ -6385,20 +6385,20 @@ react-native-codegen@*:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-codegen@^0.71.3:
-  version "0.71.3"
-  resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.71.3.tgz#75fbc591819050791319ebdb9fe341ee4df5c288"
-  integrity sha512-5AvdHVU1sAaXg05i0dG664ZTaCaIFaY1znV5vNsj+wUu6MGxNEUNbDKk9dxKUkkxOyk2KZOK5uhzWL0p5H5yZQ==
+react-native-codegen@^0.71.4:
+  version "0.71.4"
+  resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.71.4.tgz#082b3d9d137ba2e32da950d07b507753b17dde47"
+  integrity sha512-Jazh/tq3kWOthw5zNt52i0C94tSmJroxwb7/EadaThO/rS92RG1/20RfbSvS29CC4CHNjoMgwGJTEWdFQrExQg==
   dependencies:
     "@babel/parser" "^7.14.0"
     flow-parser "^0.185.0"
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-gradle-plugin@^0.71.14:
-  version "0.71.14"
-  resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.14.tgz#cc399662f04fbfcc0e352d03eae1d3efbd5f635a"
-  integrity sha512-nnLawTZEPPRAKq92UqDkzoGgCBl9aa9zAihFHMwmwzn4WRVdK4O6Cd4XYiyoNOiQzx3Hh9k5WOckHE80C92ivQ==
+react-native-gradle-plugin@^0.71.15:
+  version "0.71.15"
+  resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.15.tgz#9e6b506f30729fe8eb086981702f4e3c891d2b13"
+  integrity sha512-7S3pAuPaQJlhax6EZ4JMsDNpj05TfuzX9gPgWLrFfAIWIFLuJ6aDQYAZy2TEI9QJALPoWrj8LWaqP/DGYh14pw==
 
 react-refresh@^0.4.0:
   version "0.4.0"
