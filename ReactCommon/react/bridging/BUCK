@@ -50,8 +50,7 @@ fb_xplat_cxx_test(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     platforms = (ANDROID, APPLE, CXX),
     deps = [
-        ":bridging",
+        ":testlib",
         "//xplat/hermes/API:HermesAPI",
-        "//xplat/third-party/gmock:gtest",
     ],
 )

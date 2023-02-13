@@ -2,7 +2,6 @@ load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "CXX", "rn_xplat_
 
 rn_xplat_cxx_library(
     name = "callinvoker",
-    srcs = glob(["**/*.cpp"]),
     header_namespace = "",
     exported_headers = subdir_glob(
         [

@@ -14,14 +14,6 @@ APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
     name = "butter",
-    srcs = glob(
-        ["**/*.cpp"],
-        exclude = glob(["tests/**/*.cpp"]),
-    ),
-    headers = glob(
-        ["**/*.h"],
-        exclude = glob(["tests/**/*.h"]),
-    ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
