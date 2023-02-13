@@ -209,7 +209,8 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
     flipper_post_install(installer)
   end
 
-  package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
+  package_path = File.join(Pod::Config.instance.installation_root, react_native_path, "package.json")
+  package = JSON.parse(File.read(package_path))
   version = package['version']
 
   if ReactNativePodsUtils.has_pod(installer, 'hermes-engine') && is_building_hermes_from_source(version, react_native_path)
