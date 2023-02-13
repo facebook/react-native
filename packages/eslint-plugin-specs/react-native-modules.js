@@ -23,9 +23,10 @@ const ERRORS = {
 
 let RNModuleParser;
 let RNParserUtils;
+let RNFlowParser;
 
 function requireModuleParser() {
-  if (RNModuleParser == null || RNParserUtils == null) {
+  if (RNModuleParser == null || RNParserUtils == null || RNFlowParser == null) {
     // If using this externally, we leverage @react-native/codegen as published form
     if (!PACKAGE_USAGE) {
       const config = {
@@ -36,6 +37,7 @@ function requireModuleParser() {
       withBabelRegister(config, () => {
         RNModuleParser = require('@react-native/codegen/src/parsers/flow/modules');
         RNParserUtils = require('@react-native/codegen/src/parsers/utils');
+        RNFlowParser = require('@react-native/codegen/src/parsers/flow/parser');
       });
     } else {
       const config = {
@@ -46,6 +48,7 @@ function requireModuleParser() {
       withBabelRegister(config, () => {
         RNModuleParser = require('@react-native/codegen/lib/parsers/flow/modules');
         RNParserUtils = require('@react-native/codegen/lib/parsers/flow/utils');
+        RNFlowParser = require('@react-native/codegen/lib/parsers/flow/parser');
       });
     }
   }
@@ -53,6 +56,7 @@ function requireModuleParser() {
   return {
     buildModuleSchema: RNModuleParser.buildModuleSchema,
     createParserErrorCapturer: RNParserUtils.createParserErrorCapturer,
+    parser: new RNFlowParser.FlowParser(),
   };
 }
 
@@ -127,17 +131,16 @@ function rule(context) {
         });
       }
 
-      const {buildModuleSchema, createParserErrorCapturer} =
+      const {buildModuleSchema, createParserErrorCapturer, parser} =
         requireModuleParser();
-      const flowParser = require('flow-parser');
 
       const [parsingErrors, tryParse] = createParserErrorCapturer();
 
       const sourceCode = context.getSourceCode().getText();
-      const ast = flowParser.parse(sourceCode, {enums: true});
+      const ast = parser.getAst(sourceCode);
 
       tryParse(() => {
-        buildModuleSchema(hasteModuleName, ast, tryParse);
+        buildModuleSchema(hasteModuleName, ast, tryParse, parser);
       });
 
       parsingErrors.forEach(error => {

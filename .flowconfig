@@ -29,6 +29,8 @@ interface.js
 flow/
 
 [options]
+enums=true
+
 emoji=true
 
 exact_by_default=true
@@ -52,7 +54,7 @@ suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
 experimental.array_literal_providers=true
-inference_mode=constrain_writes
+inference_mode=experimental.lti
 
 [lints]
 sketchy-null-number=warn
@@ -74,4 +76,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.193.0
+^0.199.1

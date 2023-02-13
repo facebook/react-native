@@ -7,7 +7,7 @@
 
 #import <React/RCTInspectorPackagerConnection.h>
 
-#if RCT_DEV
+#if RCT_DEV || RCT_REMOTE_PROFILE
 
 #import <React/RCTDefines.h>
 #import <React/RCTInspector.h>

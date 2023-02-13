@@ -118,18 +118,26 @@ Scheduler::Scheduler(
     uiManager->registerCommitHook(*commitHook);
   }
 
-  if (animationDelegate != nullptr) {
-    animationDelegate->setComponentDescriptorRegistry(
-        componentDescriptorRegistry_);
-  }
-  uiManager_->setAnimationDelegate(animationDelegate);
-
 #ifdef ANDROID
   removeOutstandingSurfacesOnDestruction_ = true;
+  reduceDeleteCreateMutationLayoutAnimation_ = reactNativeConfig_->getBool(
+      "react_fabric:reduce_delete_create_mutation_layout_animation_android");
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
+  reduceDeleteCreateMutationLayoutAnimation_ = true;
 #endif
+
+  CoreFeatures::blockPaintForUseLayoutEffect = reactNativeConfig_->getBool(
+      "react_fabric:block_paint_for_use_layout_effect");
+
+  if (animationDelegate != nullptr) {
+    animationDelegate->setComponentDescriptorRegistry(
+        componentDescriptorRegistry_);
+    animationDelegate->setReduceDeleteCreateMutation(
+        reduceDeleteCreateMutationLayoutAnimation_);
+  }
+  uiManager_->setAnimationDelegate(animationDelegate);
 }
 
 Scheduler::~Scheduler() {
@@ -151,7 +159,7 @@ Scheduler::~Scheduler() {
   // Then, let's verify that the requirement was satisfied.
   auto surfaceIds = std::vector<SurfaceId>{};
   uiManager_->getShadowTreeRegistry().enumerate(
-      [&surfaceIds](ShadowTree const &shadowTree) {
+      [&surfaceIds](ShadowTree const &shadowTree, bool &) {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
@@ -259,7 +267,8 @@ void Scheduler::renderTemplateToSurface(
                         std::make_shared<ShadowNode::ListOfShared>(
                             ShadowNode::ListOfShared{tree}),
                     });
-              });
+              },
+              {/* default commit options */});
         });
   } catch (const std::exception &e) {
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
@@ -293,11 +302,34 @@ void Scheduler::animationTick() const {
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(
-    MountingCoordinator::Shared const &mountingCoordinator) {
+    MountingCoordinator::Shared mountingCoordinator,
+    bool mountSynchronously) {
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_ != nullptr) {
-    delegate_->schedulerDidFinishTransaction(mountingCoordinator);
+    if (CoreFeatures::blockPaintForUseLayoutEffect) {
+      auto weakRuntimeScheduler =
+          contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+              "RuntimeScheduler");
+      auto runtimeScheduler = weakRuntimeScheduler.has_value()
+          ? weakRuntimeScheduler.value().lock()
+          : nullptr;
+      if (runtimeScheduler && !mountSynchronously) {
+        runtimeScheduler->scheduleTask(
+            SchedulerPriority::UserBlockingPriority,
+            [delegate = delegate_,
+             mountingCoordinator =
+                 std::move(mountingCoordinator)](jsi::Runtime &) {
+              delegate->schedulerDidFinishTransaction(
+                  std::move(mountingCoordinator));
+            });
+      } else {
+        delegate_->schedulerDidFinishTransaction(
+            std::move(mountingCoordinator));
+      }
+    } else {
+      delegate_->schedulerDidFinishTransaction(std::move(mountingCoordinator));
+    }
   }
 }
 void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {

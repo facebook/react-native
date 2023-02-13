@@ -16,11 +16,12 @@ const EMPTY_NATIVE_MODULES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
+      enumMap: {},
       spec: {
         properties: [],
       },
-      moduleNames: ['SampleTurboModule'],
+      moduleName: 'SampleTurboModule',
     },
   },
 };
@@ -29,7 +30,8 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -332,7 +334,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
           },
         ],
       },
-      moduleNames: ['SampleTurboModule'],
+      moduleName: 'SampleTurboModule',
     },
   },
 };
@@ -341,7 +343,8 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -357,11 +360,12 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
           },
         ],
       },
-      moduleNames: ['SampleTurboModule'],
+      moduleName: 'SampleTurboModule',
     },
     NativeSampleTurboModule2: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -389,7 +393,7 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
           },
         ],
       },
-      moduleNames: ['SampleTurboModule2'],
+      moduleName: 'SampleTurboModule2',
     },
   },
 };
@@ -398,7 +402,8 @@ const COMPLEX_OBJECTS: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {},
+      aliasMap: {},
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -755,7 +760,7 @@ const COMPLEX_OBJECTS: SchemaType = {
           },
         ],
       },
-      moduleNames: ['SampleTurboModule'],
+      moduleName: 'SampleTurboModule',
     },
   },
 };
@@ -764,7 +769,7 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
   modules: {
     AliasTurboModule: {
       type: 'NativeModule',
-      aliases: {
+      aliasMap: {
         Options: {
           type: 'ObjectTypeAnnotation',
           properties: [
@@ -854,6 +859,7 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
           ],
         },
       },
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -890,7 +896,7 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
           },
         ],
       },
-      moduleNames: ['AliasTurboModule'],
+      moduleName: 'AliasTurboModule',
     },
   },
 };
@@ -899,7 +905,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
   modules: {
     NativeCameraRollManager: {
       type: 'NativeModule',
-      aliases: {
+      aliasMap: {
         PhotoIdentifierImage: {
           type: 'ObjectTypeAnnotation',
           properties: [
@@ -1138,6 +1144,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
           ],
         },
       },
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -1222,11 +1229,11 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
           },
         ],
       },
-      moduleNames: ['CameraRollManager'],
+      moduleName: 'CameraRollManager',
     },
     NativeExceptionsManager: {
       type: 'NativeModule',
-      aliases: {
+      aliasMap: {
         StackFrame: {
           properties: [
             {
@@ -1333,6 +1340,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
           type: 'ObjectTypeAnnotation',
         },
       },
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -1485,7 +1493,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
           },
         ],
       },
-      moduleNames: ['ExceptionsManager'],
+      moduleName: 'ExceptionsManager',
     },
   },
 };
@@ -1494,7 +1502,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {
+      aliasMap: {
         ObjectAlias: {
           type: 'ObjectTypeAnnotation',
           properties: [
@@ -1508,6 +1516,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           ],
         },
       },
+      enumMap: {},
       spec: {
         properties: [
           {
@@ -1638,7 +1647,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           },
         ],
       },
-      moduleNames: ['SampleTurboModuleCxx'],
+      moduleName: 'SampleTurboModuleCxx',
       excludedPlatforms: ['iOS', 'android'],
     },
   },
@@ -1648,11 +1657,12 @@ const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
-      aliases: {},
+      enumMap: {},
+      aliasMap: {},
       spec: {
         properties: [],
       },
-      moduleNames: ['SampleTurboModule'],
+      moduleName: 'SampleTurboModule',
     },
   },
 };

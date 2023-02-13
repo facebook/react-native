@@ -41,10 +41,8 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okio.ByteString;
 
-@ReactModule(name = BlobModule.NAME)
+@ReactModule(name = NativeBlobModuleSpec.NAME)
 public class BlobModule extends NativeBlobModuleSpec {
-
-  public static final String NAME = "BlobModule";
 
   private final Map<String, byte[]> mBlobs = new HashMap<>();
 
@@ -147,11 +145,6 @@ public class BlobModule extends NativeBlobModuleSpec {
   @Override
   public void initialize() {
     BlobCollector.install(getReactApplicationContext(), this);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

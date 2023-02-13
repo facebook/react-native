@@ -27,15 +27,15 @@ import {ViewProps} from '../View/ViewPropTypes';
 
 export type KeyboardType =
   | 'default'
-  | 'email-address'
-  | 'numeric'
-  | 'phone-pad'
   | 'number-pad'
-  | 'decimal-pad';
+  | 'decimal-pad'
+  | 'numeric'
+  | 'email-address'
+  | 'phone-pad'
+  | 'url';
 export type KeyboardTypeIOS =
   | 'ascii-capable'
   | 'numbers-and-punctuation'
-  | 'url'
   | 'name-phone-pad'
   | 'twitter'
   | 'web-search';
@@ -44,6 +44,16 @@ export type KeyboardTypeOptions =
   | KeyboardType
   | KeyboardTypeAndroid
   | KeyboardTypeIOS;
+
+export type InputModeOptions =
+  | 'none'
+  | 'text'
+  | 'decimal'
+  | 'numeric'
+  | 'tel'
+  | 'search'
+  | 'email'
+  | 'url';
 
 export type ReturnKeyType = 'done' | 'go' | 'next' | 'search' | 'send';
 export type ReturnKeyTypeAndroid = 'none' | 'previous';
@@ -587,6 +597,11 @@ export interface TextInputProps
    * The following values work on Android: - visible-password
    */
   keyboardType?: KeyboardTypeOptions | undefined;
+
+  /**
+   * Works like the inputmode attribute in HTML, it determines which keyboard to open, e.g. numeric and has precedence over keyboardType.
+   */
+  inputMode?: InputModeOptions | undefined;
 
   /**
    * Limits the maximum number of characters that can be entered.

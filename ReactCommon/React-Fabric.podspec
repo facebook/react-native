@@ -78,7 +78,6 @@ Pod::Spec.new do |s|
 
   s.subspec "core" do |ss|
     ss.dependency             folly_dep_name, folly_version
-    ss.dependency             "React-jsidynamic", version
     ss.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
     ss.source_files         = "react/renderer/core/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/core/tests"
@@ -172,16 +171,6 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/scrollview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/scrollview/tests"
       sss.header_dir           = "react/renderer/components/scrollview"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
-    end
-
-    ss.subspec "slider" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/slider/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/slider/tests/**/*",
-                                 "react/renderer/components/slider/platform/android"
-      sss.header_dir           = "react/renderer/components/slider"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
     end
 
@@ -303,7 +292,6 @@ Pod::Spec.new do |s|
 
   s.subspec "uimanager" do |ss|
     ss.dependency             folly_dep_name, folly_version
-    ss.dependency             "React-jsidynamic", version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/uimanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/uimanager/tests"

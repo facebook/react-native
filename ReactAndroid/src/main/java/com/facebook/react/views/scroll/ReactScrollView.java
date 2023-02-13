@@ -33,9 +33,11 @@ import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
@@ -45,6 +47,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollEventThrottle;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.HasSmoothScroll;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
@@ -65,7 +68,8 @@ public class ReactScrollView extends ScrollView
         ReactOverflowViewWithInset,
         HasScrollState,
         HasFlingAnimator,
-        HasScrollEventThrottle {
+        HasScrollEventThrottle,
+        HasSmoothScroll {
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -100,6 +104,7 @@ public class ReactScrollView extends ScrollView
   private int mSnapToAlignment = SNAP_ALIGNMENT_DISABLED;
   private @Nullable View mContentView;
   private ReactViewBackgroundManager mReactBackgroundManager;
+  private @Nullable ReadableMap mCurrentContentOffset = null;
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
@@ -109,6 +114,8 @@ public class ReactScrollView extends ScrollView
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private long mLastScrollDispatchTime = 0;
   private int mScrollEventThrottle = 0;
+  private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper =
+      null;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -240,6 +247,20 @@ public class ReactScrollView extends ScrollView
     invalidate();
   }
 
+  public void setMaintainVisibleContentPosition(
+      @Nullable MaintainVisibleScrollPositionHelper.Config config) {
+    if (config != null && mMaintainVisibleContentPositionHelper == null) {
+      mMaintainVisibleContentPositionHelper = new MaintainVisibleScrollPositionHelper(this, false);
+      mMaintainVisibleContentPositionHelper.start();
+    } else if (config == null && mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.stop();
+      mMaintainVisibleContentPositionHelper = null;
+    }
+    if (mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.setConfig(config);
+    }
+  }
+
   @Override
   public @Nullable String getOverflow() {
     return mOverflow;
@@ -265,14 +286,17 @@ public class ReactScrollView extends ScrollView
 
   @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
-    // Call with the present values in order to re-layout if necessary
-    // If a "pending" content offset value has been set, we restore that value.
-    // Upon call to scrollTo, the "pending" values will be re-set.
-    int scrollToX =
-        pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
-    int scrollToY =
-        pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
-    scrollTo(scrollToX, scrollToY);
+    // Apply pending contentOffset in case it was set before the view was laid out.
+    if (isContentReady()) {
+      // If a "pending" content offset value has been set, we restore that value.
+      // Upon call to scrollTo, the "pending" values will be re-set.
+      int scrollToX =
+          pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
+      int scrollToY =
+          pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
+      scrollTo(scrollToX, scrollToY);
+    }
+
     ReactScrollViewHelper.emitLayoutEvent(this);
   }
 
@@ -289,6 +313,17 @@ public class ReactScrollView extends ScrollView
     super.onAttachedToWindow();
     if (mRemoveClippedSubviews) {
       updateClippingRect();
+    }
+    if (mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.start();
+    }
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    if (mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.stop();
     }
   }
 
@@ -1002,6 +1037,23 @@ public class ReactScrollView extends ScrollView
     mContentView = null;
   }
 
+  public void setContentOffset(ReadableMap value) {
+    // When contentOffset={{x:0,y:0}} with lazy load items, setContentOffset
+    // is repeatedly called, causing an unexpected scroll to top behavior.
+    // Avoid updating contentOffset if the value has not changed.
+    if (mCurrentContentOffset == null || !mCurrentContentOffset.equals(value)) {
+      mCurrentContentOffset = value;
+
+      if (value != null) {
+        double x = value.hasKey("x") ? value.getDouble("x") : 0;
+        double y = value.hasKey("y") ? value.getDouble("y") : 0;
+        scrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+      } else {
+        scrollTo(0, 0);
+      }
+    }
+  }
+
   /**
    * Calls `smoothScrollTo` and updates state.
    *
@@ -1024,6 +1076,7 @@ public class ReactScrollView extends ScrollView
    */
   @Override
   public void scrollTo(int x, int y) {
+    mScroller.abortAnimation();
     super.scrollTo(x, y);
     ReactScrollViewHelper.updateFabricScrollState(this);
     setPendingContentOffsets(x, y);
@@ -1071,10 +1124,16 @@ public class ReactScrollView extends ScrollView
       return;
     }
 
-    int currentScrollY = getScrollY();
-    int maxScrollY = getMaxScrollY();
-    if (currentScrollY > maxScrollY) {
-      scrollTo(getScrollX(), maxScrollY);
+    if (mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.updateScrollPosition();
+    }
+
+    if (isShown() && isContentReady()) {
+      int currentScrollY = getScrollY();
+      int maxScrollY = getMaxScrollY();
+      if (currentScrollY > maxScrollY) {
+        scrollTo(getScrollX(), maxScrollY);
+      }
     }
   }
 

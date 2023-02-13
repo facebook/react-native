@@ -3,9 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-class Dir
-
-    @@is_testing = false
+class DirMock < Dir
     @@exist_invocation_params = []
     @@mocked_existing_dirs = []
 
@@ -19,10 +17,6 @@ class Dir
     # To use this, invoke the `is_testing` method before starting your test.
     # Remember to invoke `reset` after the test.
     def self.exist?(path)
-        if !@@is_testing
-            return exists?(path)
-        end
-
         @@exist_invocation_params.push(path)
         return @@mocked_existing_dirs.include?(path)
     end
@@ -49,7 +43,11 @@ class Dir
 
     def self.glob(path)
         @@glob_invocation.push(path)
-        return @@mocked_existing_globs[path]
+        return @@mocked_existing_globs[path] != nil ? @@mocked_existing_globs[path] : []
+    end
+
+    def self.remove_mocked_paths(path)
+        @@mocked_existing_globs = @@mocked_existing_globs.select { |k, v| v != path }
     end
 
     def self.set_pwd(pwd)
@@ -63,16 +61,10 @@ class Dir
         return pwd
     end
 
-    # Turn on the mocking features of the File mock
-    def self.enable_testing_mode!()
-        @@is_testing = true
-    end
-
     # Resets all the settings for the File mock
     def self.reset()
         @@pwd = nil
         @@mocked_existing_dirs = []
-        @@is_testing = false
         @@exist_invocation_params = []
         @@glob_invocation = []
         @@mocked_existing_globs = {}

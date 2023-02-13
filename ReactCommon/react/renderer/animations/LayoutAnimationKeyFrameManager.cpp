@@ -144,6 +144,11 @@ void LayoutAnimationKeyFrameManager::setComponentDescriptorRegistry(
   componentDescriptorRegistry_ = componentDescriptorRegistry;
 }
 
+void LayoutAnimationKeyFrameManager::setReduceDeleteCreateMutation(
+    const bool reduceDeleteCreateMutation) {
+  reduceDeleteCreateMutation_ = reduceDeleteCreateMutation;
+}
+
 bool LayoutAnimationKeyFrameManager::shouldAnimateFrame() const {
   std::lock_guard<std::mutex> lock(currentAnimationMutex_);
   return currentAnimation_ || !inflightAnimations_.empty();
@@ -166,7 +171,6 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     MountingTransaction::Number transactionNumber,
     TransactionTelemetry const &telemetry,
     ShadowViewMutationList mutations) const {
-  simulateImagePropsMemoryAccess(mutations);
   // Current time in milliseconds
   uint64_t now = now_();
 
@@ -732,6 +736,40 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
       auto finalConflictingMutations = ShadowViewMutationList{};
       for (auto &keyFrame : conflictingAnimations) {
+        // Special-case: if the next conflicting animation contain "delete",
+        // while the final mutation has the same tag with "create", we should
+        // remove both the delete and create as they have no effect when
+        // combined in the same frame. The Fabric mount layer assumes no such
+        // combinations in the final mutations either.
+        if (reduceDeleteCreateMutation_) {
+          for (auto itMutation = immediateMutations.begin();
+               itMutation != immediateMutations.end();) {
+            auto &mutation = *itMutation;
+            bool hasCreateMutationDeletedWithSameTag = false;
+            if (mutation.newChildShadowView.tag == keyFrame.tag &&
+                mutation.type == ShadowViewMutation::Create) {
+              for (auto itKeyFrame = keyFrame.finalMutationsForKeyFrame.begin();
+                   itKeyFrame != keyFrame.finalMutationsForKeyFrame.end();) {
+                auto &conflictFinalMutation = *itKeyFrame;
+                if (conflictFinalMutation.type == ShadowViewMutation::Delete) {
+                  itKeyFrame =
+                      keyFrame.finalMutationsForKeyFrame.erase(itKeyFrame);
+                  hasCreateMutationDeletedWithSameTag = true;
+                  break;
+                } else {
+                  itKeyFrame++;
+                }
+              }
+            }
+
+            if (hasCreateMutationDeletedWithSameTag) {
+              itMutation = immediateMutations.erase(itMutation);
+            } else {
+              itMutation++;
+            }
+          }
+        }
+
         // Special-case: if we have some (1) ongoing UPDATE animation,
         // (2) it conflicted with a new MOVE operation (REMOVE+INSERT)
         // without another corresponding UPDATE, we should re-queue the
@@ -1047,8 +1085,6 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     }
   }
 
-  simulateImagePropsMemoryAccess(mutations);
-
   return MountingTransaction{
       surfaceId, transactionNumber, std::move(mutations), telemetry};
 }
@@ -1069,34 +1105,12 @@ void LayoutAnimationKeyFrameManager::setClockNow(
   now_ = std::move(now);
 }
 
-void LayoutAnimationKeyFrameManager::enableSkipInvalidatedKeyFrames() {
-  skipInvalidatedKeyFrames_ = true;
-}
-
-void LayoutAnimationKeyFrameManager::enableCrashOnMissingComponentDescriptor() {
-  crashOnMissingComponentDescriptor_ = true;
-}
-
-void LayoutAnimationKeyFrameManager::enableSimulateImagePropsMemoryAccess() {
-  simulateImagePropsMemoryAccess_ = true;
-}
-
 #pragma mark - Protected
 
 bool LayoutAnimationKeyFrameManager::hasComponentDescriptorForShadowView(
     ShadowView const &shadowView) const {
-  auto hasComponentDescriptor =
-      componentDescriptorRegistry_->hasComponentDescriptorAt(
-          shadowView.componentHandle);
-
-  if (crashOnMissingComponentDescriptor_ && !hasComponentDescriptor) {
-    LOG(FATAL) << "Component descriptor with handle: "
-               << shadowView.componentHandle
-               << " doesn't exist. The component name: "
-               << shadowView.componentName;
-  }
-
-  return hasComponentDescriptor;
+  return componentDescriptorRegistry_->hasComponentDescriptorAt(
+      shadowView.componentHandle);
 }
 
 ComponentDescriptor const &
@@ -1183,9 +1197,6 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     ShadowViewMutation::List &mutationsList,
     bool interrupted,
     const std::string & /*logPrefix*/) const {
-  if (skipInvalidatedKeyFrames_ && keyframe.invalidated) {
-    return;
-  }
   if (!keyframe.finalMutationsForKeyFrame.empty()) {
     // TODO: modularize this segment, it is repeated 2x in KeyFrameManager
     // as well.
@@ -1643,41 +1654,6 @@ void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
       } else {
         it++;
       }
-    }
-  }
-}
-
-void LayoutAnimationKeyFrameManager::simulateImagePropsMemoryAccess(
-    ShadowViewMutationList const &mutations) const {
-  if (!simulateImagePropsMemoryAccess_) {
-    return;
-  }
-  for (auto const &mutation : mutations) {
-    if (mutation.type != ShadowViewMutation::Type::Insert) {
-      continue;
-    }
-    if (strcmp(mutation.newChildShadowView.componentName, "Image") == 0) {
-      auto const &imageProps = *std::static_pointer_cast<ImageProps const>(
-          mutation.newChildShadowView.props);
-      int temp = 0;
-      switch (imageProps.resizeMode) {
-        case ImageResizeMode::Cover:
-          temp = 1;
-          break;
-        case ImageResizeMode::Contain:
-          temp = 2;
-          break;
-        case ImageResizeMode::Stretch:
-          temp = 3;
-          break;
-        case ImageResizeMode::Center:
-          temp = 4;
-          break;
-        case ImageResizeMode::Repeat:
-          temp = 5;
-          break;
-      }
-      (void)temp;
     }
   }
 }

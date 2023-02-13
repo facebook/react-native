@@ -11,12 +11,12 @@ import com.facebook.react.TestReactExtension
 import com.facebook.react.model.ModelCodegenConfig
 import com.facebook.react.model.ModelPackageJson
 import com.facebook.react.tests.createProject
+import com.facebook.react.utils.ProjectUtils.getReactNativeArchitectures
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
 import java.io.File
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -160,5 +160,50 @@ class ProjectUtilsTest {
     val model = ModelPackageJson(null)
 
     assertFalse(project.needsCodegenFromPackageJson(model))
+  }
+
+  @Test
+  fun needsCodegenFromPackageJson_withMissingPackageJson_returnsFalse() {
+    val project = createProject()
+    val extension = TestReactExtension(project)
+
+    assertFalse(project.needsCodegenFromPackageJson(extension))
+  }
+
+  @Test
+  fun getReactNativeArchitectures_withMissingProperty_returnsEmptyList() {
+    val project = createProject()
+    assertTrue(project.getReactNativeArchitectures().isEmpty())
+  }
+
+  @Test
+  fun getReactNativeArchitectures_withEmptyProperty_returnsEmptyList() {
+    val project = createProject()
+    project.extensions.extraProperties.set("reactNativeArchitectures", "")
+    assertTrue(project.getReactNativeArchitectures().isEmpty())
+  }
+
+  @Test
+  fun getReactNativeArchitectures_withSingleArch_returnsSingleton() {
+    val project = createProject()
+    project.extensions.extraProperties.set("reactNativeArchitectures", "x86")
+
+    val archs = project.getReactNativeArchitectures()
+    assertEquals(1, archs.size)
+    assertEquals("x86", archs[0])
+  }
+
+  @Test
+  fun getReactNativeArchitectures_withMultipleArch_returnsList() {
+    val project = createProject()
+    project.extensions.extraProperties.set(
+        "reactNativeArchitectures", "armeabi-v7a,arm64-v8a,x86,x86_64")
+
+    val archs = project.getReactNativeArchitectures()
+    assertEquals(4, archs.size)
+    assertEquals("armeabi-v7a", archs[0])
+    assertEquals("arm64-v8a", archs[1])
+    assertEquals("x86", archs[2])
+    assertEquals("x86_64", archs[3])
   }
 }

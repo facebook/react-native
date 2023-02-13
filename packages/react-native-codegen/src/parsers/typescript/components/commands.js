@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -17,6 +17,7 @@ import type {
 import type {TypeDeclarationMap} from '../../utils';
 const {parseTopLevelType} = require('../parseTopLevelType');
 
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type EventTypeAST = Object;
 
 function buildCommandSchemaInternal(

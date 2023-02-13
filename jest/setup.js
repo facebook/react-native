@@ -12,8 +12,8 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('@react-native/polyfills/Object.es8');
-jest.requireActual('@react-native/polyfills/error-guard');
+jest.requireActual('@react-native/js-polyfills/Object.es8');
+jest.requireActual('@react-native/js-polyfills/error-guard');
 
 global.__DEV__ = true;
 
@@ -25,7 +25,7 @@ global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
 global.window = global;
 
 global.requestAnimationFrame = function (callback) {
-  return setTimeout(callback, 0);
+  return setTimeout(() => callback(jest.now()), 0);
 };
 global.cancelAnimationFrame = function (id) {
   clearTimeout(id);
@@ -164,11 +164,14 @@ jest
     const mockScrollView = jest.requireActual('./mockScrollView');
     return mockScrollView(baseComponent);
   })
-  .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () =>
-    mockComponent(
+  .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () => ({
+    __esModule: true,
+    default: mockComponent(
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',
+      null,
+      true,
     ),
-  )
+  }))
   .mock('../Libraries/AppState/AppState', () => ({
     addEventListener: jest.fn(() => ({
       remove: jest.fn(),
@@ -338,10 +341,10 @@ jest
   .mock('../Libraries/NativeComponent/NativeComponentRegistry', () => {
     return {
       get: jest.fn((name, viewConfigProvider) => {
-        return jest.requireActual('./mockNativeComponent')(name);
+        return jest.requireActual('./mockNativeComponent').default(name);
       }),
       getWithFallback_DEPRECATED: jest.fn((name, viewConfigProvider) => {
-        return jest.requireActual('./mockNativeComponent')(name);
+        return jest.requireActual('./mockNativeComponent').default(name);
       }),
       setRuntimeConfigProvider: jest.fn(),
     };

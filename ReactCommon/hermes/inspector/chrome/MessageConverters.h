@@ -33,7 +33,7 @@ void setHermesLocation(
     const std::vector<std::string> &parsedScripts) {
   hermesLoc.line = chromeLoc.lineNumber + 1;
 
-  if (chromeLoc.columnNumber.hasValue()) {
+  if (chromeLoc.columnNumber.has_value()) {
     if (chromeLoc.columnNumber.value() == 0) {
       // TODO: When CDTP sends a column number of 0, we send Hermes a column
       // number of 1. For some reason, this causes Hermes to not be
@@ -44,9 +44,9 @@ void setHermesLocation(
     }
   }
 
-  if (chromeLoc.url.hasValue()) {
+  if (chromeLoc.url.has_value()) {
     hermesLoc.fileName = stripCachePrevention(chromeLoc.url.value());
-  } else if (chromeLoc.urlRegex.hasValue()) {
+  } else if (chromeLoc.urlRegex.has_value()) {
     const std::regex regex(stripCachePrevention(chromeLoc.urlRegex.value()));
     auto it = parsedScripts.rbegin();
 

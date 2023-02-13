@@ -10,6 +10,7 @@ package com.facebook.react.utils
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.facebook.react.ReactExtension
+import com.facebook.react.utils.ProjectUtils.getReactNativeArchitectures
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import java.io.File
 import org.gradle.api.Project
@@ -48,6 +49,13 @@ internal object NdkConfiguratorUtils {
         }
         if ("-DANDROID_STL" !in cmakeArgs) {
           cmakeArgs.add("-DANDROID_STL=c++_shared")
+        }
+
+        val architectures = project.getReactNativeArchitectures()
+        // abiFilters are split ABI are not compatible each other, so we set the abiFilters
+        // only if the user hasn't enabled the split abi feature.
+        if (architectures.isNotEmpty() && !ext.splits.abi.isEnable) {
+          ext.defaultConfig.ndk.abiFilters.addAll(architectures)
         }
       }
     }
@@ -127,10 +135,10 @@ internal object NdkConfiguratorUtils {
       excludes.add("**/libjsc.so")
       excludes.add("**/libjscexecutor.so")
       includes.add("**/libhermes.so")
-      includes.add("**/libhermes-executor.so")
+      includes.add("**/libhermes_executor.so")
     } else {
       excludes.add("**/libhermes.so")
-      excludes.add("**/libhermes-executor.so")
+      excludes.add("**/libhermes_executor.so")
       includes.add("**/libjsc.so")
       includes.add("**/libjscexecutor.so")
     }

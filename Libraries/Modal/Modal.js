@@ -13,11 +13,11 @@ import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import {VirtualizedListContextResetter} from '../Lists/VirtualizedListContext.js';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import ModalInjection from './ModalInjection';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
+import {VirtualizedListContextResetter} from '@react-native/virtualized-lists';
 
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const View = require('../Components/View/View');
@@ -91,7 +91,7 @@ export type Props = $ReadOnly<{|
    * The `statusBarTranslucent` prop determines whether your modal should go under
    * the system statusbar.
    *
-   * See https://reactnative.dev/docs/modal#transparent
+   * See https://reactnative.dev/docs/modal.html#statusbartranslucent-android
    */
   statusBarTranslucent?: ?boolean,
 

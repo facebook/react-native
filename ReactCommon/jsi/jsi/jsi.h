@@ -336,10 +336,12 @@ class JSI_EXPORT Runtime {
   virtual Value getProperty(const Object&, const String& name) = 0;
   virtual bool hasProperty(const Object&, const PropNameID& name) = 0;
   virtual bool hasProperty(const Object&, const String& name) = 0;
+  virtual void setPropertyValue(
+      const Object&,
+      const PropNameID& name,
+      const Value& value) = 0;
   virtual void
-  setPropertyValue(Object&, const PropNameID& name, const Value& value) = 0;
-  virtual void
-  setPropertyValue(Object&, const String& name, const Value& value) = 0;
+  setPropertyValue(const Object&, const String& name, const Value& value) = 0;
 
   virtual bool isArray(const Object&) const = 0;
   virtual bool isArrayBuffer(const Object&) const = 0;
@@ -349,7 +351,7 @@ class JSI_EXPORT Runtime {
   virtual Array getPropertyNames(const Object&) = 0;
 
   virtual WeakObject createWeakObject(const Object&) = 0;
-  virtual Value lockWeakObject(WeakObject&) = 0;
+  virtual Value lockWeakObject(const WeakObject&) = 0;
 
   virtual Array createArray(size_t length) = 0;
   virtual ArrayBuffer createArrayBuffer(
@@ -358,7 +360,8 @@ class JSI_EXPORT Runtime {
   virtual size_t size(const ArrayBuffer&) = 0;
   virtual uint8_t* data(const ArrayBuffer&) = 0;
   virtual Value getValueAtIndex(const Array&, size_t i) = 0;
-  virtual void setValueAtIndexImpl(Array&, size_t i, const Value& value) = 0;
+  virtual void
+  setValueAtIndexImpl(const Array&, size_t i, const Value& value) = 0;
 
   virtual Function createFunctionFromHostFunction(
       const PropNameID& name,
@@ -666,7 +669,7 @@ class JSI_EXPORT Object : public Pointer {
   }
 
   /// \return the result of `this instanceOf ctor` in JS.
-  bool instanceOf(Runtime& rt, const Function& ctor) {
+  bool instanceOf(Runtime& rt, const Function& ctor) const {
     return rt.instanceOf(*this, ctor);
   }
 
@@ -701,19 +704,19 @@ class JSI_EXPORT Object : public Pointer {
   /// used to make one: nullptr_t, bool, double, int, const char*,
   /// String, or Object.
   template <typename T>
-  void setProperty(Runtime& runtime, const char* name, T&& value);
+  void setProperty(Runtime& runtime, const char* name, T&& value) const;
 
   /// Sets the property value from a Value or anything which can be
   /// used to make one: nullptr_t, bool, double, int, const char*,
   /// String, or Object.
   template <typename T>
-  void setProperty(Runtime& runtime, const String& name, T&& value);
+  void setProperty(Runtime& runtime, const String& name, T&& value) const;
 
   /// Sets the property value from a Value or anything which can be
   /// used to make one: nullptr_t, bool, double, int, const char*,
   /// String, or Object.
   template <typename T>
-  void setProperty(Runtime& runtime, const PropNameID& name, T&& value);
+  void setProperty(Runtime& runtime, const PropNameID& name, T&& value) const;
 
   /// \return true iff JS \c Array.isArray() would return \c true.  If
   /// so, then \c getArray() will succeed.
@@ -832,15 +835,17 @@ class JSI_EXPORT Object : public Pointer {
   Array getPropertyNames(Runtime& runtime) const;
 
  protected:
-  void
-  setPropertyValue(Runtime& runtime, const String& name, const Value& value) {
+  void setPropertyValue(
+      Runtime& runtime,
+      const String& name,
+      const Value& value) const {
     return runtime.setPropertyValue(*this, name, value);
   }
 
   void setPropertyValue(
       Runtime& runtime,
       const PropNameID& name,
-      const Value& value) {
+      const Value& value) const {
     return runtime.setPropertyValue(*this, name, value);
   }
 
@@ -866,7 +871,7 @@ class JSI_EXPORT WeakObject : public Pointer {
   /// otherwise returns \c undefined.  Note that this method has nothing to do
   /// with threads or concurrency.  The name is based on std::weak_ptr::lock()
   /// which serves a similar purpose.
-  Value lock(Runtime& runtime);
+  Value lock(Runtime& runtime) const;
 
   friend class Runtime;
 };
@@ -902,7 +907,7 @@ class JSI_EXPORT Array : public Object {
   /// value behaves as with Object::setProperty().  If \c i is out of
   /// range [ 0..\c length ] throws a JSIException.
   template <typename T>
-  void setValueAtIndex(Runtime& runtime, size_t i, T&& value);
+  void setValueAtIndex(Runtime& runtime, size_t i, T&& value) const;
 
   /// There is no current API for changing the size of an array once
   /// created.  We'll probably need that eventually.
@@ -920,7 +925,8 @@ class JSI_EXPORT Array : public Object {
   friend class Object;
   friend class Value;
 
-  void setValueAtIndexImpl(Runtime& runtime, size_t i, const Value& value) {
+  void setValueAtIndexImpl(Runtime& runtime, size_t i, const Value& value)
+      const {
     return runtime.setValueAtIndexImpl(*this, i, value);
   }
 
@@ -946,7 +952,7 @@ class JSI_EXPORT ArrayBuffer : public Object {
     return runtime.size(*this);
   }
 
-  uint8_t* data(Runtime& runtime) {
+  uint8_t* data(Runtime& runtime) const {
     return runtime.data(*this);
   }
 

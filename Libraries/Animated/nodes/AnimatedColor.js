@@ -18,7 +18,7 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import normalizeColor from '../../StyleSheet/normalizeColor';
 import {processColorObject} from '../../StyleSheet/PlatformColorValueTypes';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
-import AnimatedValue from './AnimatedValue';
+import AnimatedValue, {flushValue} from './AnimatedValue';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
 export type AnimatedColorConfig = $ReadOnly<{
@@ -43,10 +43,11 @@ type RgbaAnimatedValue = {
   ...
 };
 
+export type InputValue = ?(RgbaValue | RgbaAnimatedValue | ColorValue);
+
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 
 const defaultColor: RgbaValue = {r: 0, g: 0, b: 0, a: 1.0};
-let _uniqueId = 1;
 
 /* eslint no-bitwise: 0 */
 function processColor(
@@ -113,22 +114,12 @@ export default class AnimatedColor extends AnimatedWithChildren {
   b: AnimatedValue;
   a: AnimatedValue;
   nativeColor: ?NativeColorValue;
-  _listeners: {
-    [key: string]: {
-      r: string,
-      g: string,
-      b: string,
-      a: string,
-      ...
-    },
-    ...
-  } = {};
 
-  constructor(
-    valueIn?: ?(RgbaValue | RgbaAnimatedValue | ColorValue),
-    config?: ?AnimatedColorConfig,
-  ) {
+  _suspendCallbacks: number = 0;
+
+  constructor(valueIn?: InputValue, config?: ?AnimatedColorConfig) {
     super();
+
     let value: RgbaValue | RgbaAnimatedValue | ColorValue =
       valueIn ?? defaultColor;
     if (isRgbaAnimatedValue(value)) {
@@ -156,7 +147,8 @@ export default class AnimatedColor extends AnimatedWithChildren {
       this.b = new AnimatedValue(initColor.b);
       this.a = new AnimatedValue(initColor.a);
     }
-    if (this.nativeColor || (config && config.useNativeDriver)) {
+
+    if (config?.useNativeDriver) {
       this.__makeNative();
     }
   }
@@ -174,25 +166,27 @@ export default class AnimatedColor extends AnimatedWithChildren {
 
     const processedColor: RgbaValue | NativeColorValue =
       processColor(value) ?? defaultColor;
-    if (isRgbaValue(processedColor)) {
-      // $FlowIgnore[incompatible-type] - Type is verified above
-      const rgbaValue: RgbaValue = processedColor;
-      this.r.setValue(rgbaValue.r);
-      this.g.setValue(rgbaValue.g);
-      this.b.setValue(rgbaValue.b);
-      this.a.setValue(rgbaValue.a);
-      if (this.nativeColor != null) {
-        this.nativeColor = null;
-        shouldUpdateNodeConfig = true;
+    this._withSuspendedCallbacks(() => {
+      if (isRgbaValue(processedColor)) {
+        // $FlowIgnore[incompatible-type] - Type is verified above
+        const rgbaValue: RgbaValue = processedColor;
+        this.r.setValue(rgbaValue.r);
+        this.g.setValue(rgbaValue.g);
+        this.b.setValue(rgbaValue.b);
+        this.a.setValue(rgbaValue.a);
+        if (this.nativeColor != null) {
+          this.nativeColor = null;
+          shouldUpdateNodeConfig = true;
+        }
+      } else {
+        // $FlowIgnore[incompatible-type] - Type is verified above
+        const nativeColor: NativeColorValue = processedColor;
+        if (this.nativeColor !== nativeColor) {
+          this.nativeColor = nativeColor;
+          shouldUpdateNodeConfig = true;
+        }
       }
-    } else {
-      // $FlowIgnore[incompatible-type] - Type is verified above
-      const nativeColor: NativeColorValue = processedColor;
-      if (this.nativeColor !== nativeColor) {
-        this.nativeColor = nativeColor;
-        shouldUpdateNodeConfig = true;
-      }
-    }
+    });
 
     if (this.__isNative) {
       const nativeTag = this.__getNativeTag();
@@ -203,7 +197,12 @@ export default class AnimatedColor extends AnimatedWithChildren {
         );
       }
       NativeAnimatedAPI.unsetWaitingForIdentifier(nativeTag.toString());
+    } else {
+      flushValue(this);
     }
+
+    // $FlowFixMe[incompatible-call]
+    this.__callListeners(this.__getValue());
   }
 
   /**
@@ -238,50 +237,6 @@ export default class AnimatedColor extends AnimatedWithChildren {
     this.g.extractOffset();
     this.b.extractOffset();
     this.a.extractOffset();
-  }
-
-  /**
-   * Adds an asynchronous listener to the value so you can observe updates from
-   * animations.  This is useful because there is no way to synchronously read
-   * the value because it might be driven natively.
-   *
-   * Returns a string that serves as an identifier for the listener.
-   */
-  addListener(callback: ColorListenerCallback): string {
-    const id = String(_uniqueId++);
-    const jointCallback = ({value: number}: any) => {
-      callback(this.__getValue());
-    };
-    this._listeners[id] = {
-      r: this.r.addListener(jointCallback),
-      g: this.g.addListener(jointCallback),
-      b: this.b.addListener(jointCallback),
-      a: this.a.addListener(jointCallback),
-    };
-    return id;
-  }
-
-  /**
-   * Unregister a listener. The `id` param shall match the identifier
-   * previously returned by `addListener()`.
-   */
-  removeListener(id: string): void {
-    this.r.removeListener(this._listeners[id].r);
-    this.g.removeListener(this._listeners[id].g);
-    this.b.removeListener(this._listeners[id].b);
-    this.a.removeListener(this._listeners[id].a);
-    delete this._listeners[id];
-  }
-
-  /**
-   * Remove all registered listeners.
-   */
-  removeAllListeners(): void {
-    this.r.removeAllListeners();
-    this.g.removeAllListeners();
-    this.b.removeAllListeners();
-    this.a.removeAllListeners();
-    this._listeners = {};
   }
 
   /**
@@ -330,6 +285,18 @@ export default class AnimatedColor extends AnimatedWithChildren {
     this.b.__removeChild(this);
     this.a.__removeChild(this);
     super.__detach();
+  }
+
+  _withSuspendedCallbacks(callback: () => void) {
+    this._suspendCallbacks++;
+    callback();
+    this._suspendCallbacks--;
+  }
+
+  __callListeners(value: number): void {
+    if (this._suspendCallbacks === 0) {
+      super.__callListeners(value);
+    }
   }
 
   __makeNative(platformConfig: ?PlatformConfig) {

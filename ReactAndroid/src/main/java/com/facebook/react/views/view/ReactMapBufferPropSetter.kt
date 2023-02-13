@@ -87,6 +87,9 @@ object ReactMapBufferPropSetter {
   private const val EDGE_START = 4
   private const val EDGE_END = 5
   private const val EDGE_ALL = 6
+  private const val EDGE_BLOCK = 7
+  private const val EDGE_BLOCK_END = 8
+  private const val EDGE_BLOCK_START = 9
 
   private const val CORNER_TOP_LEFT = 0
   private const val CORNER_TOP_RIGHT = 1
@@ -97,6 +100,10 @@ object ReactMapBufferPropSetter {
   private const val CORNER_BOTTOM_END = 6
   private const val CORNER_BOTTOM_START = 7
   private const val CORNER_ALL = 8
+  private const val CORNER_END_END = 9
+  private const val CORNER_END_START = 10
+  private const val CORNER_START_END = 11
+  private const val CORNER_START_START = 12
 
   private const val NATIVE_DRAWABLE_KIND = 0
   private const val NATIVE_DRAWABLE_ATTRIBUTE = 1
@@ -345,6 +352,9 @@ object ReactMapBufferPropSetter {
             EDGE_BOTTOM -> 4
             EDGE_START -> 5
             EDGE_END -> 6
+            EDGE_BLOCK -> 7
+            EDGE_BLOCK_END -> 8
+            EDGE_BLOCK_START -> 9
             else -> throw IllegalArgumentException("Unknown key for border color: $key")
           }
       val colorValue = entry.intValue
@@ -365,6 +375,10 @@ object ReactMapBufferPropSetter {
             CORNER_TOP_END -> 6
             CORNER_BOTTOM_START -> 7
             CORNER_BOTTOM_END -> 8
+            CORNER_END_END -> 9
+            CORNER_END_START -> 10
+            CORNER_START_END -> 11
+            CORNER_START_START -> 12
             else -> throw IllegalArgumentException("Unknown key for border style: $key")
           }
       val borderRadius = entry.doubleValue

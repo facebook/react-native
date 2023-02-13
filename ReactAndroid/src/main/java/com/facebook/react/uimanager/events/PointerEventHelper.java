@@ -90,14 +90,6 @@ public class PointerEventHelper {
     return -1;
   }
 
-  public static boolean isPrimary(int pointerId, int primaryPointerId, MotionEvent event) {
-    if (supportsHover(event)) {
-      return true;
-    }
-
-    return pointerId == primaryPointerId;
-  }
-
   public static String getW3CPointerType(final int toolType) {
     // https://www.w3.org/TR/pointerevents3/#dom-pointerevent-pointertype
     switch (toolType) {
@@ -167,8 +159,7 @@ public class PointerEventHelper {
       return true;
     }
 
-    int source = motionEvent.getSource();
-    return source == InputDevice.SOURCE_MOUSE;
+    return motionEvent.isFromSource(InputDevice.SOURCE_MOUSE);
   }
 
   public static boolean isExitEvent(String eventName) {

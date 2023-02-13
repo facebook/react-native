@@ -403,7 +403,11 @@ jsi::Value UIManagerBinding::get(
             auto shadowNodeList =
                 shadowNodeListFromWeakList(weakShadowNodeList);
             if (shadowNodeList) {
-              uiManager->completeSurface(surfaceId, shadowNodeList, {true});
+              uiManager->completeSurface(
+                  surfaceId,
+                  shadowNodeList,
+                  {/* .enableStateReconciliation = */ true,
+                   /* .mountSynchronously = */ false});
             }
           } else {
             auto weakShadowNodeList =
@@ -429,7 +433,11 @@ jsi::Value UIManagerBinding::get(
                   auto strongUIManager = weakUIManager.lock();
                   if (shadowNodeList && strongUIManager) {
                     strongUIManager->completeSurface(
-                        surfaceId, shadowNodeList, {true, shouldYield});
+                        surfaceId,
+                        shadowNodeList,
+                        {/* .enableStateReconciliation = */ true,
+                         /* .mountSynchronously = */ false,
+                         /* .shouldYield = */ shouldYield});
                   }
                 });
           }
@@ -493,10 +501,28 @@ jsi::Value UIManagerBinding::get(
           auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
           if (shadowNode) {
             uiManager->dispatchCommand(
-                shadowNodeFromValue(runtime, arguments[0]),
+                shadowNode,
                 stringFromValue(runtime, arguments[1]),
                 commandArgsFromValue(runtime, arguments[2]));
           }
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "setNativeProps") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &,
+            const jsi::Value *arguments,
+            size_t) -> jsi::Value {
+          uiManager->setNativeProps_DEPRECATED(
+              shadowNodeFromValue(runtime, arguments[0]),
+              RawProps(runtime, arguments[1]));
+
           return jsi::Value::undefined();
         });
   }
@@ -594,7 +620,7 @@ jsi::Value UIManagerBinding::get(
               *shadowNodeFromValue(runtime, arguments[0]),
               nullptr,
               {/* .includeTransform = */ true,
-               /* includeViewportOffset = */ true});
+               /* .includeViewportOffset = */ true});
 
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
@@ -612,6 +638,40 @@ jsi::Value UIManagerBinding::get(
                jsi::Value{runtime, (double)frame.size.width},
                jsi::Value{runtime, (double)frame.size.height}});
           return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "getBoundingClientRect") {
+    // This is similar to `measureInWindow`, except it's explicitly synchronous
+    // (returns the result instead of passing it to a callback).
+    // The behavior is similar to `Element.prototype.getBoundingClientRect` from
+    // Web.
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]),
+              nullptr,
+              {/* .includeTransform = */ true,
+               /* .includeViewportOffset = */ true});
+
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            return jsi::Value::undefined();
+          }
+
+          auto frame = layoutMetrics.frame;
+          return jsi::Array::createWithElements(
+              runtime,
+              jsi::Value{runtime, (double)frame.origin.x},
+              jsi::Value{runtime, (double)frame.origin.y},
+              jsi::Value{runtime, (double)frame.size.width},
+              jsi::Value{runtime, (double)frame.size.height});
         });
   }
 
@@ -673,6 +733,27 @@ jsi::Value UIManagerBinding::get(
 
   if (methodName == "unstable_DiscreteEventPriority") {
     return {serialize(ReactEventPriority::Discrete)};
+  }
+
+  if (methodName == "findShadowNodeByTag_DEPRECATED") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const &,
+            jsi::Value const *arguments,
+            size_t) -> jsi::Value {
+          auto shadowNode = uiManager->findShadowNodeByTag_DEPRECATED(
+              tagFromValue(arguments[0]));
+
+          if (!shadowNode) {
+            return jsi::Value::null();
+          }
+
+          return valueFromShadowNode(runtime, shadowNode);
+        });
   }
 
   return jsi::Value::undefined();

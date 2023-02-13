@@ -8,9 +8,12 @@
  */
 
 import type * as React from 'react';
+import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
+type TaskCanceller = () => void;
+type TaskCancelProvider = () => TaskCanceller;
 
 export type ComponentProvider = () => React.ComponentType<any>;
 
@@ -21,6 +24,15 @@ export type AppConfig = {
   component?: ComponentProvider | undefined;
   run?: Runnable | undefined;
 };
+
+export type ComponentProviderInstrumentationHook = (
+  component: ComponentProvider,
+  scopedPerformanceLogger: IPerformanceLogger,
+) => React.ComponentType<any>;
+
+export type WrapperComponentProvider = (
+  appParameters: any,
+) => React.ComponentType<any>;
 
 /**
  * `AppRegistry` is the JS entry point to running all React Native apps.  App
@@ -38,16 +50,30 @@ export type AppConfig = {
  * `require`d.
  */
 export namespace AppRegistry {
+  export function setWrapperComponentProvider(
+    provider: WrapperComponentProvider,
+  ): void;
+
   export function registerConfig(config: AppConfig[]): void;
 
   export function registerComponent(
     appKey: string,
     getComponentFunc: ComponentProvider,
+    section?: boolean,
   ): string;
 
   export function registerRunnable(appKey: string, func: Runnable): string;
 
+  export function registerSection(
+    appKey: string,
+    component: ComponentProvider,
+  ): void;
+
   export function getAppKeys(): string[];
+
+  export function getSectionKeys(): string[];
+
+  export function getSections(): Record<string, Runnable>;
 
   export function unmountApplicationComponentAtRootTag(rootTag: number): void;
 
@@ -65,4 +91,29 @@ export namespace AppRegistry {
   ): void;
 
   export function getRunnable(appKey: string): Runnable | undefined;
+
+  export function getRegistry(): {sections: string[]; runnables: Runnable[]};
+
+  export function setComponentProviderInstrumentationHook(
+    hook: ComponentProviderInstrumentationHook,
+  ): void;
+
+  export function registerHeadlessTask(
+    taskKey: string,
+    taskProvider: TaskProvider,
+  ): void;
+
+  export function registerCancellableHeadlessTask(
+    taskKey: string,
+    taskProvider: TaskProvider,
+    taskCancelProvider: TaskCancelProvider,
+  ): void;
+
+  export function startHeadlessTask(
+    taskId: number,
+    taskKey: string,
+    data: any,
+  ): void;
+
+  export function cancelHeadlessTask(taskId: number, taskKey: string): void;
 }

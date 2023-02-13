@@ -8,6 +8,7 @@
 #include "UIManager.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
@@ -109,14 +110,33 @@ ShadowNode::Shared UIManager::cloneNode(
       shadowNode.getFamily().getSurfaceId(), *contextContainer_.get()};
 
   auto &componentDescriptor = shadowNode.getComponentDescriptor();
+  auto &family = shadowNode.getFamily();
+  auto props = ShadowNodeFragment::propsPlaceholder();
+
+  if (rawProps != nullptr) {
+    if (family.nativeProps_DEPRECATED != nullptr) {
+      // Values in `rawProps` patch (take precedence over)
+      // `nativeProps_DEPRECATED`. For example, if both `nativeProps_DEPRECATED`
+      // and `rawProps` contain key 'A'. Value from `rawProps` overrides what
+      // was previously in `nativeProps_DEPRECATED`.
+      family.nativeProps_DEPRECATED =
+          std::make_unique<folly::dynamic>(mergeDynamicProps(
+              *family.nativeProps_DEPRECATED, (folly::dynamic)*rawProps));
+
+      props = componentDescriptor.cloneProps(
+          propsParserContext,
+          shadowNode.getProps(),
+          RawProps(*family.nativeProps_DEPRECATED));
+    } else {
+      props = componentDescriptor.cloneProps(
+          propsParserContext, shadowNode.getProps(), *rawProps);
+    }
+  }
+
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       shadowNode,
       {
-          /* .props = */
-          rawProps != nullptr
-              ? componentDescriptor.cloneProps(
-                    propsParserContext, shadowNode.getProps(), *rawProps)
-              : ShadowNodeFragment::propsPlaceholder(),
+          /* .props = */ props,
           /* .children = */ children,
       });
 
@@ -289,34 +309,37 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        shadowTree.commit([&](RootShadowNode const &oldRootShadowNode) {
-          auto isValid = true;
+        shadowTree.commit(
+            [&](RootShadowNode const &oldRootShadowNode) {
+              auto isValid = true;
 
-          auto rootNode = oldRootShadowNode.cloneTree(
-              *family, [&](ShadowNode const &oldShadowNode) {
-                auto newData =
-                    callback(oldShadowNode.getState()->getDataPointer());
+              auto rootNode = oldRootShadowNode.cloneTree(
+                  *family, [&](ShadowNode const &oldShadowNode) {
+                    auto newData =
+                        callback(oldShadowNode.getState()->getDataPointer());
 
-                if (!newData) {
-                  isValid = false;
-                  // Just return something, we will discard it anyway.
-                  return oldShadowNode.clone({});
-                }
+                    if (!newData) {
+                      isValid = false;
+                      // Just return something, we will discard it anyway.
+                      return oldShadowNode.clone({});
+                    }
 
-                auto newState =
-                    componentDescriptor.createState(*family, newData);
+                    auto newState =
+                        componentDescriptor.createState(*family, newData);
 
-                return oldShadowNode.clone({
-                    /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                    /* .children = */
-                    ShadowNodeFragment::childrenPlaceholder(),
-                    /* .state = */ newState,
-                });
-              });
+                    return oldShadowNode.clone({
+                        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                        /* .children = */
+                        ShadowNodeFragment::childrenPlaceholder(),
+                        /* .state = */ newState,
+                    });
+                  });
 
-          return isValid ? std::static_pointer_cast<RootShadowNode>(rootNode)
-                         : nullptr;
-        });
+              return isValid
+                  ? std::static_pointer_cast<RootShadowNode>(rootNode)
+                  : nullptr;
+            },
+            {/* default commit options */});
       });
 }
 
@@ -327,6 +350,48 @@ void UIManager::dispatchCommand(
   if (delegate_ != nullptr) {
     delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
   }
+}
+
+void UIManager::setNativeProps_DEPRECATED(
+    ShadowNode::Shared const &shadowNode,
+    RawProps const &rawProps) const {
+  auto &family = shadowNode->getFamily();
+  if (family.nativeProps_DEPRECATED) {
+    // Values in `rawProps` patch (take precedence over)
+    // `nativeProps_DEPRECATED`. For example, if both `nativeProps_DEPRECATED`
+    // and `rawProps` contain key 'A'. Value from `rawProps` overrides what was
+    // previously in `nativeProps_DEPRECATED`.
+    family.nativeProps_DEPRECATED =
+        std::make_unique<folly::dynamic>(mergeDynamicProps(
+            *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
+  } else {
+    family.nativeProps_DEPRECATED =
+        std::make_unique<folly::dynamic>((folly::dynamic)rawProps);
+  }
+
+  shadowTreeRegistry_.visit(
+      family.getSurfaceId(), [&](ShadowTree const &shadowTree) {
+        shadowTree.commit(
+            [&](RootShadowNode const &oldRootShadowNode) {
+              auto rootNode = oldRootShadowNode.cloneTree(
+                  family, [&](ShadowNode const &oldShadowNode) {
+                    auto &componentDescriptor =
+                        componentDescriptorRegistry_->at(
+                            shadowNode->getComponentHandle());
+                    PropsParserContext propsParserContext{
+                        family.getSurfaceId(), *contextContainer_.get()};
+                    auto props = componentDescriptor.cloneProps(
+                        propsParserContext,
+                        getNewestCloneOfShadowNode(*shadowNode)->getProps(),
+                        rawProps);
+
+                    return oldShadowNode.clone({/* .props = */ props});
+                  });
+
+              return std::static_pointer_cast<RootShadowNode>(rootNode);
+            },
+            {/* default commit options */});
+      });
 }
 
 void UIManager::sendAccessibilityEvent(
@@ -349,6 +414,57 @@ void UIManager::configureNextLayoutAnimation(
         std::move(successCallback),
         std::move(failureCallback));
   }
+}
+
+static ShadowNode::Shared findShadowNodeByTagRecursively(
+    ShadowNode::Shared parentShadowNode,
+    Tag tag) {
+  if (parentShadowNode->getTag() == tag) {
+    return parentShadowNode;
+  }
+
+  for (ShadowNode::Shared const &shadowNode : parentShadowNode->getChildren()) {
+    auto result = findShadowNodeByTagRecursively(shadowNode, tag);
+    if (result) {
+      return result;
+    }
+  }
+
+  return nullptr;
+}
+
+ShadowNode::Shared UIManager::findShadowNodeByTag_DEPRECATED(Tag tag) const {
+  auto shadowNode = ShadowNode::Shared{};
+
+  shadowTreeRegistry_.enumerate([&](ShadowTree const &shadowTree, bool &stop) {
+    RootShadowNode const *rootShadowNode;
+    // The public interface of `ShadowTree` discourages accessing a stored
+    // pointer to a root node because of the possible data race.
+    // To work around this, we ask for a commit and immediately cancel it
+    // returning `nullptr` instead of a new shadow tree.
+    // We don't want to add a way to access a stored pointer to a root node
+    // because this `findShadowNodeByTag` is deprecated. It is only added
+    // to make migration to the new architecture easier.
+    shadowTree.tryCommit(
+        [&](RootShadowNode const &oldRootShadowNode) {
+          rootShadowNode = &oldRootShadowNode;
+          return nullptr;
+        },
+        {/* default commit options */});
+
+    if (rootShadowNode != nullptr) {
+      auto const &children = rootShadowNode->getChildren();
+      if (!children.empty()) {
+        auto const &child = children.front();
+        shadowNode = findShadowNodeByTagRecursively(child, tag);
+        if (shadowNode) {
+          stop = true;
+        }
+      }
+    }
+  });
+
+  return shadowNode;
 }
 
 void UIManager::setComponentDescriptorRegistry(
@@ -416,12 +532,13 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
 }
 
 void UIManager::shadowTreeDidFinishTransaction(
-    ShadowTree const & /*shadowTree*/,
-    MountingCoordinator::Shared const &mountingCoordinator) const {
+    MountingCoordinator::Shared mountingCoordinator,
+    bool mountSynchronously) const {
   SystraceSection s("UIManager::shadowTreeDidFinishTransaction");
 
   if (delegate_ != nullptr) {
-    delegate_->uiManagerDidFinishTransaction(mountingCoordinator);
+    delegate_->uiManagerDidFinishTransaction(
+        std::move(mountingCoordinator), mountSynchronously);
   }
 }
 
@@ -440,7 +557,7 @@ void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
 void UIManager::animationTick() const {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
-    shadowTreeRegistry_.enumerate([](ShadowTree const &shadowTree) {
+    shadowTreeRegistry_.enumerate([](ShadowTree const &shadowTree, bool &) {
       shadowTree.notifyDelegatesOfUpdates();
     });
   }

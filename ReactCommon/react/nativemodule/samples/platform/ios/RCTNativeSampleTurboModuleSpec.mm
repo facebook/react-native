@@ -30,6 +30,16 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getBoo
       .invokeObjCMethod(rt, BooleanKind, "getBool", @selector(getBool:), args, count);
 }
 
+static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getEnum(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count)
+{
+  return static_cast<ObjCTurboModule &>(turboModule)
+      .invokeObjCMethod(rt, NumberKind, "getEnum", @selector(getEnum:), args, count);
+}
+
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber(
     facebook::jsi::Runtime &rt,
     TurboModule &turboModule,
@@ -136,6 +146,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboMo
 {
   methodMap_["voidFunc"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
   methodMap_["getBool"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getBool};
+  methodMap_["getEnum"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getEnum};
   methodMap_["getNumber"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber};
   methodMap_["getString"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getString};
   methodMap_["getArray"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getArray};

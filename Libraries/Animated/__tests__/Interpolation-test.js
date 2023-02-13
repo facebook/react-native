@@ -13,9 +13,21 @@
 import Easing from '../Easing';
 import AnimatedInterpolation from '../nodes/AnimatedInterpolation';
 
+function createInterpolation(config) {
+  let parentValue = null;
+  const interpolation = new AnimatedInterpolation(
+    {__getValue: () => parentValue},
+    config,
+  );
+  return input => {
+    parentValue = input;
+    return interpolation.__getValue();
+  };
+}
+
 describe('Interpolation', () => {
   it('should work with defaults', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [0, 1],
     });
@@ -27,7 +39,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with output range', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [100, 200],
     });
@@ -39,7 +51,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with input range', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [100, 200],
       outputRange: [0, 1],
     });
@@ -51,23 +63,25 @@ describe('Interpolation', () => {
   });
 
   it('should throw for non monotonic input ranges', () => {
-    expect(() =>
-      AnimatedInterpolation.__createInterpolation({
-        inputRange: [0, 2, 1],
-        outputRange: [0, 1, 2],
-      }),
+    expect(
+      () =>
+        new AnimatedInterpolation(null, {
+          inputRange: [0, 2, 1],
+          outputRange: [0, 1, 2],
+        }),
     ).toThrow();
 
-    expect(() =>
-      AnimatedInterpolation.__createInterpolation({
-        inputRange: [0, 1, 2],
-        outputRange: [0, 3, 1],
-      }),
+    expect(
+      () =>
+        new AnimatedInterpolation(null, {
+          inputRange: [0, 1, 2],
+          outputRange: [0, 3, 1],
+        }),
     ).not.toThrow();
   });
 
   it('should work with empty input range', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 10, 10],
       outputRange: [1, 2, 3],
       extrapolate: 'extend',
@@ -81,7 +95,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with empty output range', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [1, 2, 3],
       outputRange: [0, 10, 10],
       extrapolate: 'extend',
@@ -96,7 +110,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with easing', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [0, 1],
       easing: Easing.quad,
@@ -109,7 +123,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with extrapolate', () => {
-    let interpolation = AnimatedInterpolation.__createInterpolation({
+    let interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [0, 1],
       extrapolate: 'extend',
@@ -119,7 +133,7 @@ describe('Interpolation', () => {
     expect(interpolation(-2)).toBe(4);
     expect(interpolation(2)).toBe(4);
 
-    interpolation = AnimatedInterpolation.__createInterpolation({
+    interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [0, 1],
       extrapolate: 'clamp',
@@ -129,7 +143,7 @@ describe('Interpolation', () => {
     expect(interpolation(-2)).toBe(0);
     expect(interpolation(2)).toBe(1);
 
-    interpolation = AnimatedInterpolation.__createInterpolation({
+    interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [0, 1],
       extrapolate: 'identity',
@@ -141,7 +155,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with keyframes with extrapolate', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 10, 100, 1000],
       outputRange: [0, 5, 50, 500],
       extrapolate: true,
@@ -159,7 +173,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with keyframes without extrapolate', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1, 2],
       outputRange: [0.2, 1, 0.2],
       extrapolate: 'clamp',
@@ -169,23 +183,25 @@ describe('Interpolation', () => {
   });
 
   it('should throw for an infinite input range', () => {
-    expect(() =>
-      AnimatedInterpolation.__createInterpolation({
-        inputRange: [-Infinity, Infinity],
-        outputRange: [0, 1],
-      }),
+    expect(
+      () =>
+        new AnimatedInterpolation(null, {
+          inputRange: [-Infinity, Infinity],
+          outputRange: [0, 1],
+        }),
     ).toThrow();
 
-    expect(() =>
-      AnimatedInterpolation.__createInterpolation({
-        inputRange: [-Infinity, 0, Infinity],
-        outputRange: [1, 2, 3],
-      }),
+    expect(
+      () =>
+        new AnimatedInterpolation(null, {
+          inputRange: [-Infinity, 0, Infinity],
+          outputRange: [1, 2, 3],
+        }),
     ).not.toThrow();
   });
 
   it('should work with negative infinite', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [-Infinity, 0],
       outputRange: [-Infinity, 0],
       easing: Easing.quad,
@@ -201,7 +217,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with positive infinite', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [5, Infinity],
       outputRange: [5, Infinity],
       easing: Easing.quad,
@@ -219,7 +235,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with output ranges as string', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['rgba(0, 100, 200, 0)', 'rgba(50, 150, 250, 0.4)'],
     });
@@ -230,7 +246,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with output ranges as short hex string', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['#024', '#9BF'],
     });
@@ -241,7 +257,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with output ranges as long hex string', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['#FF9500', '#87FC70'],
     });
@@ -252,7 +268,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with output ranges with mixed hex and rgba strings', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['rgba(100, 120, 140, .4)', '#87FC70'],
     });
@@ -263,7 +279,7 @@ describe('Interpolation', () => {
   });
 
   it('should work with negative and decimal values in string ranges', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['-100.5deg', '100deg'],
     });
@@ -274,7 +290,7 @@ describe('Interpolation', () => {
   });
 
   it('should crash when chaining an interpolation that returns a string', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [0, 1],
     });
@@ -284,7 +300,7 @@ describe('Interpolation', () => {
   });
 
   it('should support a mix of color patterns', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1, 2],
       outputRange: ['rgba(0, 100, 200, 0)', 'rgb(50, 150, 250)', 'red'],
     });
@@ -297,15 +313,35 @@ describe('Interpolation', () => {
 
   it('should crash when defining output range with different pattern', () => {
     expect(() =>
-      AnimatedInterpolation.__createInterpolation({
+      createInterpolation({
         inputRange: [0, 1],
         outputRange: ['20deg', '30rad'],
       }),
     ).toThrow();
   });
 
+  it('should interpolate values with arbitrary suffixes', () => {
+    const interpolation = createInterpolation({
+      inputRange: [0, 1],
+      outputRange: ['-10foo', '10foo'],
+    });
+
+    expect(interpolation(0)).toBe('-10foo');
+    expect(interpolation(0.5)).toBe('0foo');
+  });
+
+  it('should interpolate numeric values of arbitrary format', () => {
+    const interpolation = createInterpolation({
+      inputRange: [0, 1],
+      outputRange: ['M20,20L20,80L80,80L80,20Z', 'M40,40L33,60L60,60L65,40Z'],
+    });
+
+    expect(interpolation(0)).toBe('M20,20L20,80L80,80L80,20Z');
+    expect(interpolation(0.5)).toBe('M30,30L26.5,70L70,70L72.5,30Z');
+  });
+
   it('should round the alpha channel of a color to the nearest thousandth', () => {
-    const interpolation = AnimatedInterpolation.__createInterpolation({
+    const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)'],
     });

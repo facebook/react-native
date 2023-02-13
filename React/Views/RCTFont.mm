@@ -424,7 +424,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
       isCondensed = isCondensedFont(font);
     } else {
       // Not a valid font or family
-      RCTLogError(@"Unrecognized font family '%@'", familyName);
+      RCTLogInfo(@"Unrecognized font family '%@'", familyName);
       if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
         font = [UIFont systemFontOfSize:fontSize weight:fontWeight];
       } else if (fontWeight > UIFontWeightRegular) {

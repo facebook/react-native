@@ -14,7 +14,7 @@
 # and build a Android application that can be used to run the
 # tests specified in the scripts/ directory.
 #
-FROM reactnativecommunity/react-native-android:6.1
+FROM reactnativecommunity/react-native-android:7.0
 
 LABEL Description="React Native Android Test Image"
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
@@ -33,17 +33,11 @@ ADD React /app/React
 ADD keystores /app/keystores
 ADD packages/react-native-codegen /app/packages/react-native-codegen
 ADD tools /app/tools
-add scripts /app/scripts
+ADD scripts /app/scripts
 
 WORKDIR /app
 
-RUN scripts/download-kotlin-compiler-with-buck.sh
-
-RUN buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
-RUN buck fetch ReactAndroid/src/main/java/com/facebook/react
-RUN buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
-RUN buck fetch ReactAndroid/src/test/...
-RUN buck fetch ReactAndroid/src/androidTest/...
+RUN scripts/buck/buck_fetch.sh
 
 RUN buck build ReactAndroid/src/main/java/com/facebook/react
 RUN buck build ReactAndroid/src/main/java/com/facebook/react/shell

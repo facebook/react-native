@@ -202,6 +202,7 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     // react_native_assert(layoutableChildNode.yogaNode_.isDirty());
   } else {
     // The child is owned by some other node, we need to clone that.
+    // TODO: At this point, React has wrong reference to the node. (T138668036)
     auto clonedChildNode = childNode.clone({});
     auto &layoutableClonedChildNode =
         traitCast<YogaLayoutableShadowNode const &>(*clonedChildNode);
@@ -332,6 +333,21 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   YGStyle result{baseStyle};
 
   // Aliases with precedence
+  if (!props.inset.isUndefined()) {
+    result.position()[YGEdgeAll] = props.inset;
+  }
+  if (!props.insetBlock.isUndefined()) {
+    result.position()[YGEdgeVertical] = props.insetBlock;
+  }
+  if (!props.insetInline.isUndefined()) {
+    result.position()[YGEdgeHorizontal] = props.insetInline;
+  }
+  if (!props.insetInlineEnd.isUndefined()) {
+    result.position()[YGEdgeEnd] = props.insetInlineEnd;
+  }
+  if (!props.insetInlineStart.isUndefined()) {
+    result.position()[YGEdgeStart] = props.insetInlineStart;
+  }
   if (!props.marginInline.isUndefined()) {
     result.margin()[YGEdgeHorizontal] = props.marginInline;
   }
@@ -358,6 +374,12 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   }
 
   // Aliases without precedence
+  if (CompactValue(result.position()[YGEdgeBottom]).isUndefined()) {
+    result.position()[YGEdgeBottom] = props.insetBlockEnd;
+  }
+  if (CompactValue(result.position()[YGEdgeTop]).isUndefined()) {
+    result.position()[YGEdgeTop] = props.insetBlockStart;
+  }
   if (CompactValue(result.margin()[YGEdgeTop]).isUndefined()) {
     result.margin()[YGEdgeTop] = props.marginBlockStart;
   }
@@ -750,6 +772,7 @@ void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
   auto &props = const_cast<ViewProps &>(typedCasting);
 
   // Swap border node values, borderRadii, borderColors and borderStyles.
+
   if (props.borderRadii.topLeft.has_value()) {
     props.borderRadii.topStart = props.borderRadii.topLeft;
     props.borderRadii.topLeft.reset();

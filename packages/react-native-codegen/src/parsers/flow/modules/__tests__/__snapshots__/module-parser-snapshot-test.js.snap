@@ -1,5 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`RN Codegen Flow Parser Fails with error message EMPTY_ENUM_NATIVE_MODULE 1`] = `"Module NativeSampleTurboModule: Failed parsing the enum SomeEnum in NativeSampleTurboModule with the error: Enums should have at least one member and member values can not be mixed- they all must be either blank, number, or string values."`;
+
+exports[`RN Codegen Flow Parser Fails with error message MIXED_VALUES_ENUM_NATIVE_MODULE 1`] = `"Module NativeSampleTurboModule: Failed parsing the enum SomeEnum in NativeSampleTurboModule with the error: Enums should have at least one member and member values can not be mixed- they all must be either blank, number, or string values."`;
+
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
@@ -21,13 +25,12 @@ exports[`RN Codegen Flow Parser can generate fixture ANDROID_ONLY_NATIVE_MODULE 
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': []
       },
-      'moduleNames': [
-        'SampleTurboModuleAndroid'
-      ],
+      'moduleName': 'SampleTurboModuleAndroid',
       'excludedPlatforms': [
         'iOS'
       ]
@@ -41,7 +44,73 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {
+        'Quality': {
+          'name': 'Quality',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'StringTypeAnnotation',
+          'members': [
+            {
+              'name': 'SD',
+              'value': 'SD'
+            },
+            {
+              'name': 'HD',
+              'value': 'HD'
+            }
+          ]
+        },
+        'Resolution': {
+          'name': 'Resolution',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'NumberTypeAnnotation',
+          'members': [
+            {
+              'name': 'Low',
+              'value': 720
+            },
+            {
+              'name': 'High',
+              'value': 1080
+            }
+          ]
+        },
+        'Floppy': {
+          'name': 'Floppy',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'NumberTypeAnnotation',
+          'members': [
+            {
+              'name': 'LowDensity',
+              'value': 0.72
+            },
+            {
+              'name': 'HighDensity',
+              'value': 1.44
+            }
+          ]
+        },
+        'StringOptions': {
+          'name': 'StringOptions',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'StringTypeAnnotation',
+          'members': [
+            {
+              'name': 'One',
+              'value': 'one'
+            },
+            {
+              'name': 'Two',
+              'value': 'two'
+            },
+            {
+              'name': 'Three',
+              'value': 'three'
+            }
+          ]
+        }
+      },
       'spec': {
         'properties': [
           {
@@ -91,6 +160,7 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
                   'name': 'quality',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'Quality',
                     'type': 'EnumDeclaration',
                     'memberType': 'StringTypeAnnotation'
                   }
@@ -99,6 +169,7 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
                   'name': 'resolution',
                   'optional': true,
                   'typeAnnotation': {
+                    'name': 'Resolution',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -107,6 +178,7 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
                   'name': 'floppy',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'Floppy',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -115,6 +187,7 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
                   'name': 'stringOptions',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'StringOptions',
                     'type': 'EnumDeclaration',
                     'memberType': 'StringTypeAnnotation'
                   }
@@ -128,32 +201,14 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'ObjectTypeAnnotation',
-                'properties': [
-                  {
-                    'name': 'b',
-                    'optional': false,
-                    'typeAnnotation': {
-                      'type': 'GenericObjectTypeAnnotation'
-                    }
-                  }
-                ]
+                'type': 'GenericObjectTypeAnnotation'
               },
               'params': [
                 {
                   'name': 'arg',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'ObjectTypeAnnotation',
-                    'properties': [
-                      {
-                        'name': 'a',
-                        'optional': false,
-                        'typeAnnotation': {
-                          'type': 'GenericObjectTypeAnnotation'
-                        }
-                      }
-                    ]
+                    'type': 'GenericObjectTypeAnnotation'
                   }
                 }
               ]
@@ -165,32 +220,14 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'ObjectTypeAnnotation',
-                'properties': [
-                  {
-                    'name': 'key',
-                    'optional': false,
-                    'typeAnnotation': {
-                      'type': 'GenericObjectTypeAnnotation'
-                    }
-                  }
-                ]
+                'type': 'GenericObjectTypeAnnotation'
               },
               'params': [
                 {
                   'name': 'arg',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'ObjectTypeAnnotation',
-                    'properties': [
-                      {
-                        'name': 'key',
-                        'optional': false,
-                        'typeAnnotation': {
-                          'type': 'GenericObjectTypeAnnotation'
-                        }
-                      }
-                    ]
+                    'type': 'GenericObjectTypeAnnotation'
                   }
                 }
               ]
@@ -243,9 +280,7 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModuleCxx'
-      ],
+      'moduleName': 'SampleTurboModuleCxx',
       'excludedPlatforms': [
         'iOS',
         'android'
@@ -260,13 +295,12 @@ exports[`RN Codegen Flow Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': []
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -277,7 +311,73 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {
+        'Quality': {
+          'name': 'Quality',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'StringTypeAnnotation',
+          'members': [
+            {
+              'name': 'SD',
+              'value': 'SD'
+            },
+            {
+              'name': 'HD',
+              'value': 'HD'
+            }
+          ]
+        },
+        'Resolution': {
+          'name': 'Resolution',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'NumberTypeAnnotation',
+          'members': [
+            {
+              'name': 'Low',
+              'value': 720
+            },
+            {
+              'name': 'High',
+              'value': 1080
+            }
+          ]
+        },
+        'Floppy': {
+          'name': 'Floppy',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'NumberTypeAnnotation',
+          'members': [
+            {
+              'name': 'LowDensity',
+              'value': 0.72
+            },
+            {
+              'name': 'HighDensity',
+              'value': 1.44
+            }
+          ]
+        },
+        'StringOptions': {
+          'name': 'StringOptions',
+          'type': 'EnumDeclarationWithMembers',
+          'memberType': 'StringTypeAnnotation',
+          'members': [
+            {
+              'name': 'One',
+              'value': 'one'
+            },
+            {
+              'name': 'Two',
+              'value': 'two'
+            },
+            {
+              'name': 'Three',
+              'value': 'three'
+            }
+          ]
+        }
+      },
       'spec': {
         'properties': [
           {
@@ -293,6 +393,7 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
                   'name': 'quality',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'Quality',
                     'type': 'EnumDeclaration',
                     'memberType': 'StringTypeAnnotation'
                   }
@@ -301,6 +402,7 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
                   'name': 'resolution',
                   'optional': true,
                   'typeAnnotation': {
+                    'name': 'Resolution',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -309,6 +411,7 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
                   'name': 'floppy',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'Floppy',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -317,6 +420,7 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
                   'name': 'stringOptions',
                   'optional': false,
                   'typeAnnotation': {
+                    'name': 'StringOptions',
                     'type': 'EnumDeclaration',
                     'memberType': 'StringTypeAnnotation'
                   }
@@ -326,9 +430,7 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModuleIOS'
-      ],
+      'moduleName': 'SampleTurboModuleIOS',
       'excludedPlatforms': [
         'android'
       ]
@@ -342,7 +444,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'ObjectAlias': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -377,6 +479,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
           ]
         }
       },
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -528,9 +631,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -541,7 +642,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -571,9 +673,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -584,7 +684,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -608,9 +709,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -621,7 +720,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_AR
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -676,9 +776,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_AR
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -689,7 +787,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -770,9 +869,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -783,7 +880,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -832,9 +930,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -845,7 +941,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -893,9 +990,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -906,7 +1001,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1107,9 +1203,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1120,7 +1214,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1213,9 +1308,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1226,7 +1319,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AN
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1269,9 +1363,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AN
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1282,7 +1374,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_A
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'Bar': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1317,6 +1409,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_A
           ]
         }
       },
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1362,9 +1455,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_A
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1375,7 +1466,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1402,9 +1494,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1415,7 +1505,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'DisplayMetricsAndroid': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1429,6 +1519,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
           ]
         }
       },
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1493,9 +1584,215 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {
+        'SomeObj': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'b',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
+      'enumMap': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'getPartialSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ObjectTypeAnnotation',
+                'properties': [
+                  {
+                    'name': 'a',
+                    'optional': true,
+                    'typeAnnotation': {
+                      'type': 'StringTypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'b',
+                    'optional': true,
+                    'typeAnnotation': {
+                      'type': 'BooleanTypeAnnotation'
+                    }
+                  }
+                ]
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'getSomeObjFromPartialSomeObj',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': [
+                {
+                  'name': 'value',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS_COMPLEX 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {
+        'SomeObj': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'b',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            }
+          ]
+        }
+      },
+      'enumMap': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getPartialPartial',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'SomeObj'
+              },
+              'params': [
+                {
+                  'name': 'value1',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  'name': 'value2',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      },
+                      {
+                        'name': 'b',
+                        'optional': true,
+                        'typeAnnotation': {
+                          'type': 'BooleanTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1506,7 +1803,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'SomeObj': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1520,6 +1817,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
           ]
         }
       },
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1567,9 +1865,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1580,7 +1876,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1606,9 +1903,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1619,7 +1914,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_O
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1643,9 +1939,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_O
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1656,7 +1950,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION 1`
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1706,9 +2001,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION 1`
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1719,7 +2012,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_O
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {},
+      'aliasMap': {},
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1743,9 +2037,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_O
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"
@@ -1756,7 +2048,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliases': {
+      'aliasMap': {
         'CustomObject': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -1795,6 +2087,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
           ]
         }
       },
+      'enumMap': {},
       'spec': {
         'properties': [
           {
@@ -1854,23 +2147,25 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
             }
           },
           {
-            'name': 'returnIndex',
+            'name': 'returnUnsupportedIndex',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'PromiseTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'returnSupportedIndex',
             'optional': false,
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
                 'type': 'PromiseTypeAnnotation',
                 'elementType': {
-                  'type': 'ObjectTypeAnnotation',
-                  'properties': [
-                    {
-                      'name': 'key',
-                      'optional': false,
-                      'typeAnnotation': {
-                        'type': 'GenericObjectTypeAnnotation'
-                      }
-                    }
-                  ]
+                  'type': 'GenericObjectTypeAnnotation'
                 }
               },
               'params': []
@@ -1908,9 +2203,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
           }
         ]
       },
-      'moduleNames': [
-        'SampleTurboModule'
-      ]
+      'moduleName': 'SampleTurboModule'
     }
   }
 }"

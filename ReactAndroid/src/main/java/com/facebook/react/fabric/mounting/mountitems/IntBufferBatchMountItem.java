@@ -16,7 +16,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.fabric.CppViewMutationsWrapper;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
@@ -51,7 +50,6 @@ public class IntBufferBatchMountItem implements MountItem {
   static final int INSTRUCTION_UPDATE_PADDING = 512;
   static final int INSTRUCTION_UPDATE_OVERFLOW_INSET = 1024;
   static final int INSTRUCTION_REMOVE_DELETE_TREE = 2048;
-  static final int INSTRUCTION_RUN_CPP_VIEWS = 4096;
 
   private final int mSurfaceId;
   private final int mCommitNumber;
@@ -97,10 +95,6 @@ public class IntBufferBatchMountItem implements MountItem {
 
   private static EventEmitterWrapper castToEventEmitter(Object obj) {
     return obj != null ? (EventEmitterWrapper) obj : null;
-  }
-
-  private static CppViewMutationsWrapper castToCppViewMutationWrapper(Object obj) {
-    return obj != null ? (CppViewMutationsWrapper) obj : null;
   }
 
   @Override
@@ -184,8 +178,6 @@ public class IntBufferBatchMountItem implements MountItem {
         } else if (type == INSTRUCTION_UPDATE_EVENT_EMITTER) {
           surfaceMountingManager.updateEventEmitter(
               mIntBuffer[i++], castToEventEmitter(mObjBuffer[j++]));
-        } else if (type == INSTRUCTION_RUN_CPP_VIEWS) {
-          castToCppViewMutationWrapper(mObjBuffer[j++]).runCppViewMutations();
         } else {
           throw new IllegalArgumentException(
               "Invalid type argument to IntBufferBatchMountItem: " + type + " at index: " + i);
@@ -286,9 +278,6 @@ public class IntBufferBatchMountItem implements MountItem {
           } else if (type == INSTRUCTION_UPDATE_EVENT_EMITTER) {
             j += 1;
             s.append(String.format("UPDATE EVENTEMITTER [%d]\n", mIntBuffer[i++]));
-          } else if (type == INSTRUCTION_RUN_CPP_VIEWS) {
-            j += 1;
-            s.append(String.format("RUN CPP_VIEWS [%d]\n", mIntBuffer[i++]));
           } else {
             FLog.e(TAG, "String so far: " + s.toString());
             throw new IllegalArgumentException(

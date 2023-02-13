@@ -67,12 +67,15 @@ const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
       // $FlowFixMe[unclear-type] Same Flow type as `refreshControl` in ScrollView
       refreshControl: React.Element<any>,
     },
-    forwardedRef,
+    forwardedRef:
+      | {current: Instance | null, ...}
+      | ((Instance | null) => mixed),
   ) => {
     // Split `props` into the animate-able props for the parent (RefreshControl)
     // and child (ScrollView).
     const {intermediatePropsForRefreshControl, intermediatePropsForScrollView} =
       useMemo(() => {
+        // $FlowFixMe[underconstrained-implicit-instantiation]
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         return {
           intermediatePropsForRefreshControl: {style: outer},

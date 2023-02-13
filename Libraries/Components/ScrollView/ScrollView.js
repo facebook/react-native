@@ -46,6 +46,7 @@ import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 import ScrollViewStickyHeader from './ScrollViewStickyHeader';
 import invariant from 'invariant';
 import memoize from 'memoize-one';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 
 if (Platform.OS === 'ios') {
@@ -287,7 +288,6 @@ type IOSProps = $ReadOnly<{|
    * visibility. Occlusion, transforms, and other complexity won't be taken into account as to
    * whether content is "visible" or not.
    *
-   * @platform ios
    */
   maintainVisibleContentPosition?: ?$ReadOnly<{|
     minIndexForVisible: number,
@@ -309,24 +309,6 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   pinchGestureEnabled?: ?boolean,
-  /**
-   * This controls how often the scroll event will be fired while scrolling
-   * (as a time interval in ms). A lower number yields better accuracy for code
-   * that is tracking the scroll position, but can lead to scroll performance
-   * problems due to the volume of information being send over the bridge.
-   *
-   * Values between 0 and 17ms indicate 60fps updates are needed and throttling
-   * will be disabled.
-   *
-   * If you do not need precise scroll position tracking, set this value higher
-   * to limit the information being sent across the bridge.
-   *
-   * The default value is zero, which results in the scroll event being sent only
-   * once each time the view is scrolled.
-   *
-   * @platform ios
-   */
-  scrollEventThrottle?: ?number,
   /**
    * The amount by which the scroll view indicators are inset from the edges
    * of the scroll view. This should normally be set to the same value as
@@ -568,7 +550,6 @@ export type Props = $ReadOnly<{|
    * Note: Vertical pagination is not supported on Android.
    */
   pagingEnabled?: ?boolean,
-
   /**
    * When false, the view cannot be scrolled via touch interaction.
    * The default value is true.
@@ -576,6 +557,22 @@ export type Props = $ReadOnly<{|
    * Note that the view can always be scrolled by calling `scrollTo`.
    */
   scrollEnabled?: ?boolean,
+  /**
+   * This controls how often the scroll event will be fired while scrolling
+   * (as a time interval in ms). A lower number yields better accuracy for code
+   * that is tracking the scroll position, but can lead to scroll performance
+   * problems due to the volume of information being send over the bridge.
+   *
+   * Values between 0 and 17ms indicate 60fps updates are needed and throttling
+   * will be disabled.
+   *
+   * If you do not need precise scroll position tracking, set this value higher
+   * to limit the information being sent across the bridge.
+   *
+   * The default value is zero, which results in the scroll event being sent only
+   * once each time the view is scrolled.
+   */
+  scrollEventThrottle?: ?number,
   /**
    * When true, shows a vertical scroll indicator.
    * The default value is true.
@@ -753,7 +750,7 @@ class ScrollView extends React.Component<Props, State> {
   _becameResponderWhileAnimating: boolean = false;
   _preventNegativeScrollOffset: ?boolean = null;
 
-  _animated = null;
+  _animated: ?boolean = null;
 
   _subscriptionKeyboardWillShow: ?EventSubscription = null;
   _subscriptionKeyboardWillHide: ?EventSubscription = null;
@@ -978,7 +975,7 @@ class ScrollView extends React.Component<Props, State> {
     if (typeof nodeHandle === 'number') {
       UIManager.measureLayout(
         nodeHandle,
-        findNodeHandle(this),
+        nullthrows(findNodeHandle(this)),
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
         this._inputMeasureAndScrollToKeyboard,
@@ -1665,6 +1662,7 @@ class ScrollView extends React.Component<Props, State> {
       this.props.contentContainerStyle,
     ];
     if (__DEV__ && this.props.style !== undefined) {
+      // $FlowFixMe[underconstrained-implicit-instantiation]
       const style = flattenStyle(this.props.style);
       const childLayoutProps = ['alignItems', 'justifyContent'].filter(
         prop => style && style[prop] !== undefined,
@@ -1838,6 +1836,7 @@ class ScrollView extends React.Component<Props, State> {
         // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
         // Note: we should split props.style on the inner and outer props
         // however, the ScrollView still needs the baseStyle to be scrollable
+        // $FlowFixMe[underconstrained-implicit-instantiation]
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         return React.cloneElement(
           refreshControl,

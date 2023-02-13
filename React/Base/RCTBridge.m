@@ -108,28 +108,6 @@ void RCTEnableTurboModuleEagerInit(BOOL enabled)
   turboModuleEagerInitEnabled = enabled;
 }
 
-static BOOL turboModuleSharedMutexInitEnabled = NO;
-BOOL RCTTurboModuleSharedMutexInitEnabled(void)
-{
-  return turboModuleSharedMutexInitEnabled;
-}
-
-void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
-{
-  turboModuleSharedMutexInitEnabled = enabled;
-}
-
-static RCTTurboModuleCleanupMode turboModuleCleanupMode = kRCTGlobalScope;
-RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void)
-{
-  return turboModuleCleanupMode;
-}
-
-void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode)
-{
-  turboModuleCleanupMode = mode;
-}
-
 // Turn off TurboModule delegate locking
 static BOOL turboModuleManagerDelegateLockingDisabled = YES;
 BOOL RCTTurboModuleManagerDelegateLockingDisabled(void)
@@ -140,18 +118,6 @@ BOOL RCTTurboModuleManagerDelegateLockingDisabled(void)
 void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
 {
   turboModuleManagerDelegateLockingDisabled = disabled;
-}
-
-// Turn off TurboModule delegate locking
-static BOOL viewConfigEventValidAttributesDisabled = NO;
-BOOL RCTViewConfigEventValidAttributesDisabled(void)
-{
-  return viewConfigEventValidAttributesDisabled;
-}
-
-void RCTDisableViewConfigEventValidAttributes(BOOL disabled)
-{
-  viewConfigEventValidAttributesDisabled = disabled;
 }
 
 @interface RCTBridge () <RCTReloadListener>

@@ -60,6 +60,21 @@ TEST_F(BridgingTest, numberTest) {
   EXPECT_FLOAT_EQ(
       1.2f, static_cast<float>(bridging::toJs(rt, 1.2f).asNumber()));
   EXPECT_DOUBLE_EQ(1.2, bridging::toJs(rt, 1.2).asNumber());
+
+  EXPECT_EQ(
+      42,
+      static_cast<uint32_t>(
+          bridging::toJs(rt, static_cast<uint32_t>(42)).asNumber()));
+
+  EXPECT_EQ(
+      -42,
+      static_cast<uint32_t>(
+          bridging::toJs(rt, static_cast<uint32_t>(-42)).asNumber()));
+
+  EXPECT_FALSE(
+      -42 ==
+      static_cast<int32_t>(
+          bridging::toJs(rt, static_cast<uint32_t>(-42)).asNumber()));
 }
 
 TEST_F(BridgingTest, stringTest) {

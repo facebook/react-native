@@ -132,6 +132,80 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   top?: DimensionValue,
 
+  /** `inset` is a shorthand that corresponds to the top, right, bottom, and/or left properties.
+   *
+   *  It works similarly to `inset` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset
+   *  for more details of how `inset` affects layout.
+   */
+  inset?: DimensionValue,
+
+  /** `insetBlock` is a shorthand that corresponds to the `insetBlockStart` and `insetBlockEnd` properties.
+   *
+   *  It works similarly to `inset-block` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-block
+   *  for more details of how `inset-block` affects layout.
+   */
+  insetBlock?: DimensionValue,
+
+  /** `insetBlockEnd` is a logical property that sets the length that an
+   *  element is offset in the block direction from its ending edge.
+   *
+   *  It works similarly to `inset-block-end` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-block-end
+   *  for more details of how `inset-block-end` affects layout.
+   */
+  insetBlockEnd?: DimensionValue,
+
+  /** `insetBlockStart` is a logical property that sets the length that an
+   *  element is offset in the block direction from its starting edge.
+   *
+   *  It works similarly to `inset-block-start` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-block-start
+   *  for more details of how `inset-block-start` affects layout.
+   */
+  insetBlockStart?: DimensionValue,
+
+  /** `insetInline` is a shorthand that corresponds to the `insetInlineStart` and `insetInlineEnd` properties.
+   *
+   *  It works similarly to `inset-inline` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-inline
+   *  for more details of how `inset-inline` affects layout.
+   */
+  insetInline?: DimensionValue,
+
+  /** `insetInlineEnd` is a logical property that sets the length that an
+   *  element is offset in the starting inline direction.
+   *
+   *  It works similarly to `inset-inline-end` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-inline-end
+   *  for more details of how `inset-inline-end` affects layout.
+   */
+  insetInlineEnd?: DimensionValue,
+
+  /** `insetInlineStart` is a logical property that sets the length that an
+   *  element is offset in the starting inline direction.
+   *
+   *  It works similarly to `inset-inline-start` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-inline-start
+   *  for more details of how `inset-inline-start` affects layout.
+   */
+  insetInlineStart?: DimensionValue,
+
   /** `minWidth` is the minimum width for this component, in logical pixels.
    *
    *  It works similarly to `min-width` in CSS, but in React Native you
@@ -554,6 +628,19 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  @platform ios
    */
   direction?: 'inherit' | 'ltr' | 'rtl',
+
+  /**
+   * In React Native, gap works the same way it does in CSS.
+   * If there are two or more children in a container, they will be separated from each other
+   * by the value of the gap - but the children will not be separated from the edges of their parent container.
+   * For horizontal gaps, use columnGap, for vertical gaps, use rowGap, and to apply both at the same time, it's gap.
+   * When align-content or justify-content are set to space-between or space-around, the separation
+   * between children may be larger than the gap value.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/gap for more details.
+   */
+  rowGap?: number,
+  columnGap?: number,
+  gap?: number,
 }>;
 
 /**
@@ -590,19 +677,6 @@ export type ____ShadowStyle_InternalCore = $ReadOnly<{
    * @platform ios
    */
   shadowRadius?: number,
-
-  /**
-   * In React Native, gap works the same way it does in CSS.
-   * If there are two or more children in a container, they will be separated from each other
-   * by the value of the gap - but the children will not be separated from the edges of their parent container.
-   * For horizontal gaps, use columnGap, for vertical gaps, use rowGap, and to apply both at the same time, it's gap.
-   * When align-content or justify-content are set to space-between or space-around, the separation
-   * between children may be larger than the gap value.
-   * See https://developer.mozilla.org/en-US/docs/Web/CSS/gap for more details.
-   */
-  rowGap?: number,
-  columnGap?: number,
-  gap?: number,
 }>;
 
 export type ____ShadowStyle_Internal = $ReadOnly<{
@@ -624,11 +698,18 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderRightColor?: ____ColorValue_Internal,
   borderStartColor?: ____ColorValue_Internal,
   borderTopColor?: ____ColorValue_Internal,
+  borderBlockColor?: ____ColorValue_Internal,
+  borderBlockEndColor?: ____ColorValue_Internal,
+  borderBlockStartColor?: ____ColorValue_Internal,
   borderRadius?: number | AnimatedNode,
   borderBottomEndRadius?: number | AnimatedNode,
   borderBottomLeftRadius?: number | AnimatedNode,
   borderBottomRightRadius?: number | AnimatedNode,
   borderBottomStartRadius?: number | AnimatedNode,
+  borderEndEndRadius?: number | AnimatedNode,
+  borderEndStartRadius?: number | AnimatedNode,
+  borderStartEndRadius?: number | AnimatedNode,
+  borderStartStartRadius?: number | AnimatedNode,
   borderTopEndRadius?: number | AnimatedNode,
   borderTopLeftRadius?: number | AnimatedNode,
   borderTopRightRadius?: number | AnimatedNode,

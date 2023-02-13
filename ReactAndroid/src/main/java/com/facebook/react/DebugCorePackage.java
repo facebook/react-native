@@ -33,7 +33,7 @@ public class DebugCorePackage extends TurboReactPackage {
   @Override
   public NativeModule getModule(String name, ReactApplicationContext reactContext) {
     switch (name) {
-      case JSCHeapCapture.TAG:
+      case JSCHeapCapture.NAME:
         return new JSCHeapCapture(reactContext);
       default:
         throw new IllegalArgumentException(

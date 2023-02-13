@@ -39,7 +39,7 @@ class FlipperTests < Test::Unit::TestCase
         # Assert
         check_all_flipper_pods($flipper_default_versions, configurations)
         # the number of times the `pod` function has been invoked to install a dependency
-        assert_equal($podInvocationCount, 22)
+        assert_equal($podInvocationCount, 21)
     end
 
     def test_UseFlipperPods_WithCustomValues_InstallsPods
@@ -52,7 +52,6 @@ class FlipperTests < Test::Unit::TestCase
             "Flipper-Folly" => "2.1.1",
             "Flipper-Glog" => "0.1.2",
             "Flipper-PeerTalk" => "0.0.1",
-            "Flipper-RSocket" => "0.1.4",
             "OpenSSL-Universal" => "2.2.2200",
         }
         configurations = ['Debug', 'CI']
@@ -63,7 +62,7 @@ class FlipperTests < Test::Unit::TestCase
         # Assert
         check_all_flipper_pods(versions, configurations)
         # the number of times the `pod` function has been invoked to install a dependency
-        assert_equal($podInvocationCount, 22)
+        assert_equal($podInvocationCount, 21)
     end
 
     # ================= #
@@ -118,7 +117,6 @@ class FlipperTests < Test::Unit::TestCase
         check_flipper_pod('Flipper-Folly', versions['Flipper-Folly'], configurations)
         check_flipper_pod('Flipper-Glog', versions['Flipper-Glog'], configurations)
         check_flipper_pod('Flipper-PeerTalk', versions['Flipper-PeerTalk'], configurations)
-        check_flipper_pod('Flipper-RSocket', versions['Flipper-RSocket'], configurations)
         check_flipper_pod('OpenSSL-Universal', versions['OpenSSL-Universal'], configurations)
     end
 

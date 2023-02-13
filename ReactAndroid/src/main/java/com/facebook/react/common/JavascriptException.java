@@ -7,12 +7,14 @@
 
 package com.facebook.react.common;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import javax.annotation.Nullable;
 
 /**
  * A JS exception that was propagated to native. In debug mode, these exceptions are normally shown
  * to developers in a redbox.
  */
+@DoNotStrip
 public class JavascriptException extends RuntimeException
     implements HasJavascriptExceptionMetadata {
 

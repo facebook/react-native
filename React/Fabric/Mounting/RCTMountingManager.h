@@ -10,6 +10,7 @@
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTPrimitives.h>
 #import <react/renderer/core/ComponentDescriptor.h>
+#import <react/renderer/core/RawProps.h>
 #import <react/renderer/core/ReactPrimitives.h>
 #import <react/renderer/mounting/MountingCoordinator.h>
 #import <react/renderer/mounting/ShadowView.h>
@@ -47,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Schedule a mounting transaction to be performed on the main thread.
  * Can be called from any thread.
  */
-- (void)scheduleTransaction:(facebook::react::MountingCoordinator::Shared const &)mountingCoordinator;
+- (void)scheduleTransaction:(facebook::react::MountingCoordinator::Shared)mountingCoordinator;
 
 /**
  * Dispatch a command to be performed on the main thread.

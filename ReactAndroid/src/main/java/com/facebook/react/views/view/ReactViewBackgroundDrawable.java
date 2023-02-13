@@ -128,7 +128,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
     TOP_START,
     TOP_END,
     BOTTOM_START,
-    BOTTOM_END
+    BOTTOM_END,
+    END_END,
+    END_START,
+    START_END,
+    START_START
   }
 
   public ReactViewBackgroundDrawable(Context context) {
@@ -271,7 +275,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
   public void setRadius(float radius, int position) {
     if (mBorderCornerRadii == null) {
-      mBorderCornerRadii = new float[8];
+      mBorderCornerRadii = new float[12];
       Arrays.fill(mBorderCornerRadii, YogaConstants.UNDEFINED);
     }
 
@@ -354,6 +358,21 @@ public class ReactViewBackgroundDrawable extends Drawable {
     int colorTop = getBorderColor(Spacing.TOP);
     int colorRight = getBorderColor(Spacing.RIGHT);
     int colorBottom = getBorderColor(Spacing.BOTTOM);
+
+    int colorBlock = getBorderColor(Spacing.BLOCK);
+    int colorBlockStart = getBorderColor(Spacing.BLOCK_START);
+    int colorBlockEnd = getBorderColor(Spacing.BLOCK_END);
+
+    if (isBorderColorDefined(Spacing.BLOCK)) {
+      colorBottom = colorBlock;
+      colorTop = colorBlock;
+    }
+    if (isBorderColorDefined(Spacing.BLOCK_END)) {
+      colorBottom = colorBlockEnd;
+    }
+    if (isBorderColorDefined(Spacing.BLOCK_START)) {
+      colorTop = colorBlockStart;
+    }
 
     if (borderWidth.top > 0
         || borderWidth.bottom > 0
@@ -548,13 +567,19 @@ public class ReactViewBackgroundDrawable extends Drawable {
     int colorRight = getBorderColor(Spacing.RIGHT);
     int colorBottom = getBorderColor(Spacing.BOTTOM);
     int borderColor = getBorderColor(Spacing.ALL);
+    int colorBlock = getBorderColor(Spacing.BLOCK);
+    int colorBlockStart = getBorderColor(Spacing.BLOCK_START);
+    int colorBlockEnd = getBorderColor(Spacing.BLOCK_END);
 
     // Clip border ONLY if its color is non transparent
     if (Color.alpha(colorLeft) != 0
         && Color.alpha(colorTop) != 0
         && Color.alpha(colorRight) != 0
         && Color.alpha(colorBottom) != 0
-        && Color.alpha(borderColor) != 0) {
+        && Color.alpha(borderColor) != 0
+        && Color.alpha(colorBlock) != 0
+        && Color.alpha(colorBlockStart) != 0
+        && Color.alpha(colorBlockEnd) != 0) {
 
       mInnerClipTempRectForBorderRadius.top += borderWidth.top;
       mInnerClipTempRectForBorderRadius.bottom -= borderWidth.bottom;
@@ -581,6 +606,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
     float bottomStartRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_START);
     float bottomEndRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_END);
 
+    float endEndRadius = getBorderRadius(BorderRadiusLocation.END_END);
+    float endStartRadius = getBorderRadius(BorderRadiusLocation.END_START);
+    float startEndRadius = getBorderRadius(BorderRadiusLocation.START_END);
+    float startStartRadius = getBorderRadius(BorderRadiusLocation.START_START);
+
     if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
       if (YogaConstants.isUndefined(topStartRadius)) {
         topStartRadius = topLeftRadius;
@@ -598,20 +628,44 @@ public class ReactViewBackgroundDrawable extends Drawable {
         bottomEndRadius = bottomRightRadius;
       }
 
-      final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
-      final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
-      final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
-      final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
+      final float logicalTopStartRadius =
+          YogaConstants.isUndefined(topStartRadius) ? startStartRadius : topStartRadius;
+      final float logicalTopEndRadius =
+          YogaConstants.isUndefined(topEndRadius) ? startEndRadius : topEndRadius;
+      final float logicalBottomStartRadius =
+          YogaConstants.isUndefined(bottomStartRadius) ? endStartRadius : bottomStartRadius;
+      final float logicalBottomEndRadius =
+          YogaConstants.isUndefined(bottomEndRadius) ? endEndRadius : bottomEndRadius;
+
+      final float directionAwareTopLeftRadius = isRTL ? logicalTopEndRadius : logicalTopStartRadius;
+      final float directionAwareTopRightRadius =
+          isRTL ? logicalTopStartRadius : logicalTopEndRadius;
+      final float directionAwareBottomLeftRadius =
+          isRTL ? logicalBottomEndRadius : logicalBottomStartRadius;
+      final float directionAwareBottomRightRadius =
+          isRTL ? logicalBottomStartRadius : logicalBottomEndRadius;
 
       topLeftRadius = directionAwareTopLeftRadius;
       topRightRadius = directionAwareTopRightRadius;
       bottomLeftRadius = directionAwareBottomLeftRadius;
       bottomRightRadius = directionAwareBottomRightRadius;
     } else {
-      final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
-      final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
-      final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
-      final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
+      final float logicalTopStartRadius =
+          YogaConstants.isUndefined(topStartRadius) ? startStartRadius : topStartRadius;
+      final float logicalTopEndRadius =
+          YogaConstants.isUndefined(topEndRadius) ? startEndRadius : topEndRadius;
+      final float logicalBottomStartRadius =
+          YogaConstants.isUndefined(bottomStartRadius) ? endStartRadius : bottomStartRadius;
+      final float logicalBottomEndRadius =
+          YogaConstants.isUndefined(bottomEndRadius) ? endEndRadius : bottomEndRadius;
+
+      final float directionAwareTopLeftRadius = isRTL ? logicalTopEndRadius : logicalTopStartRadius;
+      final float directionAwareTopRightRadius =
+          isRTL ? logicalTopStartRadius : logicalTopEndRadius;
+      final float directionAwareBottomLeftRadius =
+          isRTL ? logicalBottomEndRadius : logicalBottomStartRadius;
+      final float directionAwareBottomRightRadius =
+          isRTL ? logicalBottomStartRadius : logicalBottomEndRadius;
 
       if (!YogaConstants.isUndefined(directionAwareTopLeftRadius)) {
         topLeftRadius = directionAwareTopLeftRadius;
@@ -1094,6 +1148,21 @@ public class ReactViewBackgroundDrawable extends Drawable {
       int colorTop = getBorderColor(Spacing.TOP);
       int colorRight = getBorderColor(Spacing.RIGHT);
       int colorBottom = getBorderColor(Spacing.BOTTOM);
+
+      int colorBlock = getBorderColor(Spacing.BLOCK);
+      int colorBlockStart = getBorderColor(Spacing.BLOCK_START);
+      int colorBlockEnd = getBorderColor(Spacing.BLOCK_END);
+
+      if (isBorderColorDefined(Spacing.BLOCK)) {
+        colorBottom = colorBlock;
+        colorTop = colorBlock;
+      }
+      if (isBorderColorDefined(Spacing.BLOCK_END)) {
+        colorBottom = colorBlockEnd;
+      }
+      if (isBorderColorDefined(Spacing.BLOCK_START)) {
+        colorTop = colorBlockStart;
+      }
 
       final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
       int colorStart = getBorderColor(Spacing.START);

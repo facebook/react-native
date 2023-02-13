@@ -181,6 +181,7 @@ export function SectionList_scrollable(Props: {
   let startIndex = 0;
   const endIndex = filteredData.length - 1;
   for (let ii = 10; ii <= endIndex + 10; ii += 10) {
+    // $FlowFixMe[incompatible-call]
     filteredSectionData.push({
       key: `${filteredData[startIndex].key} - ${
         filteredData[Math.min(ii - 1, endIndex)].key
@@ -281,10 +282,12 @@ export function SectionList_scrollable(Props: {
         ListHeaderComponent={HeaderComponent}
         ListFooterComponent={FooterComponent}
         // eslint-disable-next-line react/no-unstable-nested-components
+        // $FlowFixMe[missing-local-annot]
         SectionSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
         )}
         // eslint-disable-next-line react/no-unstable-nested-components
+        // $FlowFixMe[missing-local-annot]
         ItemSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
         )}

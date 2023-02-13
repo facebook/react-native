@@ -10,9 +10,28 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema.js';
+import type {
+  UnionTypeAnnotationMemberType,
+  SchemaType,
+  NamedShape,
+  Nullable,
+  NativeModuleParamTypeAnnotation,
+  NativeModuleEnumMembers,
+  NativeModuleEnumMemberType,
+} from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
+
+// $FlowFixMe[untyped-import] Use flow-types for @babel/parser
+const babelParser = require('@babel/parser');
+
+const {buildSchema} = require('../parsers-commons');
+const {Visitor} = require('./Visitor');
+const {buildComponentSchema} = require('./components');
+const {wrapComponentSchema} = require('./components/schema');
+const {buildModuleSchema} = require('./modules');
+
+const fs = require('fs');
 
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
@@ -21,34 +40,20 @@ const {
 class TypeScriptParser implements Parser {
   typeParameterInstantiation: string = 'TSTypeParameterInstantiation';
 
-  getKeyName(propertyOrIndex: $FlowFixMe, hasteModuleName: string): string {
-    switch (propertyOrIndex.type) {
-      case 'TSPropertySignature':
-        return propertyOrIndex.key.name;
-      case 'TSIndexSignature':
-        return propertyOrIndex.parameters[0].name;
-      default:
-        throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-          hasteModuleName,
-          propertyOrIndex,
-          propertyOrIndex.type,
-          this.language(),
-        );
-    }
+  isProperty(property: $FlowFixMe): boolean {
+    return property.type === 'TSPropertySignature';
   }
 
-  getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
-    if (maybeEnumDeclaration.members[0].initializer) {
-      return maybeEnumDeclaration.members[0].initializer.type
-        .replace('NumericLiteral', 'NumberTypeAnnotation')
-        .replace('StringLiteral', 'StringTypeAnnotation');
+  getKeyName(property: $FlowFixMe, hasteModuleName: string): string {
+    if (!this.isProperty(property)) {
+      throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+        hasteModuleName,
+        property,
+        property.type,
+        this.language(),
+      );
     }
-
-    return 'StringTypeAnnotation';
-  }
-
-  isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean {
-    return maybeEnumDeclaration.type === 'TSEnumDeclaration';
+    return property.key.name;
   }
 
   language(): ParserType {
@@ -80,6 +85,112 @@ class TypeScriptParser implements Parser {
     };
 
     return [...new Set(membersTypes.map(remapLiteral))];
+  }
+
+  parseFile(filename: string): SchemaType {
+    const contents = fs.readFileSync(filename, 'utf8');
+
+    return this.parseString(contents, filename);
+  }
+
+  parseString(contents: string, filename: ?string): SchemaType {
+    return buildSchema(
+      contents,
+      filename,
+      wrapComponentSchema,
+      buildComponentSchema,
+      buildModuleSchema,
+      Visitor,
+      this,
+    );
+  }
+
+  parseModuleFixture(filename: string): SchemaType {
+    const contents = fs.readFileSync(filename, 'utf8');
+
+    return this.parseString(contents, 'path/NativeSampleTurboModule.ts');
+  }
+
+  getAst(contents: string): $FlowFixMe {
+    return babelParser.parse(contents, {
+      sourceType: 'module',
+      plugins: ['typescript'],
+    }).program;
+  }
+
+  getFunctionTypeAnnotationParameters(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<$FlowFixMe> {
+    return functionTypeAnnotation.parameters;
+  }
+
+  getFunctionNameFromParameter(
+    parameter: NamedShape<Nullable<NativeModuleParamTypeAnnotation>>,
+  ): $FlowFixMe {
+    return parameter.typeAnnotation;
+  }
+
+  getParameterName(parameter: $FlowFixMe): string {
+    return parameter.name;
+  }
+
+  getParameterTypeAnnotation(parameter: $FlowFixMe): $FlowFixMe {
+    return parameter.typeAnnotation.typeAnnotation;
+  }
+
+  getFunctionTypeAnnotationReturnType(
+    functionTypeAnnotation: $FlowFixMe,
+  ): $FlowFixMe {
+    return functionTypeAnnotation.typeAnnotation.typeAnnotation;
+  }
+
+  parseEnumMembersType(typeAnnotation: $FlowFixMe): NativeModuleEnumMemberType {
+    const enumInitializer = typeAnnotation.members[0]?.initializer;
+    const enumMembersType: ?NativeModuleEnumMemberType =
+      !enumInitializer || enumInitializer.type === 'StringLiteral'
+        ? 'StringTypeAnnotation'
+        : enumInitializer.type === 'NumericLiteral'
+        ? 'NumberTypeAnnotation'
+        : null;
+    if (!enumMembersType) {
+      throw new Error(
+        'Enum values must be either blank, number, or string values.',
+      );
+    }
+    return enumMembersType;
+  }
+
+  validateEnumMembersSupported(
+    typeAnnotation: $FlowFixMe,
+    enumMembersType: NativeModuleEnumMemberType,
+  ): void {
+    if (!typeAnnotation.members || typeAnnotation.members.length === 0) {
+      throw new Error('Enums should have at least one member.');
+    }
+
+    const enumInitializerType =
+      enumMembersType === 'StringTypeAnnotation'
+        ? 'StringLiteral'
+        : enumMembersType === 'NumberTypeAnnotation'
+        ? 'NumericLiteral'
+        : null;
+
+    typeAnnotation.members.forEach(member => {
+      if (
+        (member.initializer?.type ?? 'StringLiteral') !== enumInitializerType
+      ) {
+        throw new Error(
+          'Enum values can not be mixed. They all must be either blank, number, or string values.',
+        );
+      }
+    });
+  }
+
+  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers {
+    return typeAnnotation.members.map(member => ({
+      name: member.id.name,
+      value: member.initializer?.value ?? member.id.name,
+    }));
   }
 }
 module.exports = {

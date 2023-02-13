@@ -10,46 +10,54 @@
 
 'use strict';
 
-type HermesStackLocationNative = {|
-  +type: 'NATIVE',
-|};
+type HermesStackLocationNative = $ReadOnly<{
+  type: 'NATIVE',
+}>;
 
-type HermesStackLocationSource = {|
-  +type: 'SOURCE',
-  +sourceUrl: string,
-  +line1Based: number,
-  +column1Based: number,
-|};
+type HermesStackLocationSource = $ReadOnly<{
+  type: 'SOURCE',
+  sourceUrl: string,
+  line1Based: number,
+  column1Based: number,
+}>;
 
-type HermesStackLocationBytecode = {|
-  +type: 'BYTECODE',
-  +sourceUrl: string,
-  +line1Based: number,
-  +virtualOffset0Based: number,
-|};
+type HermesStackLocationInternalBytecode = $ReadOnly<{
+  type: 'INTERNAL_BYTECODE',
+  sourceUrl: string,
+  line1Based: number,
+  virtualOffset0Based: number,
+}>;
+
+type HermesStackLocationBytecode = $ReadOnly<{
+  type: 'BYTECODE',
+  sourceUrl: string,
+  line1Based: number,
+  virtualOffset0Based: number,
+}>;
 
 type HermesStackLocation =
   | HermesStackLocationNative
   | HermesStackLocationSource
+  | HermesStackLocationInternalBytecode
   | HermesStackLocationBytecode;
 
-type HermesStackEntryFrame = {|
-  +type: 'FRAME',
-  +location: HermesStackLocation,
-  +functionName: string,
-|};
+type HermesStackEntryFrame = $ReadOnly<{
+  type: 'FRAME',
+  location: HermesStackLocation,
+  functionName: string,
+}>;
 
-type HermesStackEntrySkipped = {|
-  +type: 'SKIPPED',
-  +count: number,
-|};
+type HermesStackEntrySkipped = $ReadOnly<{
+  type: 'SKIPPED',
+  count: number,
+}>;
 
 type HermesStackEntry = HermesStackEntryFrame | HermesStackEntrySkipped;
 
-export type HermesParsedStack = {|
-  +message: string,
-  +entries: $ReadOnlyArray<HermesStackEntry>,
-|};
+export type HermesParsedStack = $ReadOnly<{
+  message: string,
+  entries: $ReadOnlyArray<HermesStackEntry>,
+}>;
 
 // Capturing groups:
 // 1. function name
@@ -65,6 +73,11 @@ const RE_FRAME =
 // 1. count of skipped frames
 const RE_SKIPPED = /^ {4}... skipping (\d+) frames$/;
 
+function isInternalBytecodeSourceUrl(sourceUrl: string): boolean {
+  // See https://github.com/facebook/hermes/blob/3332fa020cae0bab751f648db7c94e1d687eeec7/lib/VM/Runtime.cpp#L1100
+  return sourceUrl === 'InternalBytecode.js';
+}
+
 function parseLine(line: string): ?HermesStackEntry {
   const asFrame = line.match(RE_FRAME);
   if (asFrame) {
@@ -75,12 +88,19 @@ function parseLine(line: string): ?HermesStackEntry {
         asFrame[2] === 'native'
           ? {type: 'NATIVE'}
           : asFrame[3] === 'address at '
-          ? {
-              type: 'BYTECODE',
-              sourceUrl: asFrame[4],
-              line1Based: Number.parseInt(asFrame[5], 10),
-              virtualOffset0Based: Number.parseInt(asFrame[6], 10),
-            }
+          ? isInternalBytecodeSourceUrl(asFrame[4])
+            ? {
+                type: 'INTERNAL_BYTECODE',
+                sourceUrl: asFrame[4],
+                line1Based: Number.parseInt(asFrame[5], 10),
+                virtualOffset0Based: Number.parseInt(asFrame[6], 10),
+              }
+            : {
+                type: 'BYTECODE',
+                sourceUrl: asFrame[4],
+                line1Based: Number.parseInt(asFrame[5], 10),
+                virtualOffset0Based: Number.parseInt(asFrame[6], 10),
+              }
           : {
               type: 'SOURCE',
               sourceUrl: asFrame[4],

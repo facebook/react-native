@@ -19,7 +19,7 @@
 namespace facebook {
 namespace react {
 
-enum class PointerEventsMode { Auto, None, BoxNone, BoxOnly };
+enum class PointerEventsMode : uint8_t { Auto, None, BoxNone, BoxOnly };
 
 struct ViewEvents {
   std::bitset<32> bits{};
@@ -79,11 +79,11 @@ inline static bool operator!=(ViewEvents const &lhs, ViewEvents const &rhs) {
   return lhs.bits != rhs.bits;
 }
 
-enum class BackfaceVisibility { Auto, Visible, Hidden };
+enum class BackfaceVisibility : uint8_t { Auto, Visible, Hidden };
 
-enum class BorderCurve { Circular, Continuous };
+enum class BorderCurve : uint8_t { Circular, Continuous };
 
-enum class BorderStyle { Solid, Dotted, Dashed };
+enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
 
 template <typename T>
 struct CascadedRectangleEdges {
@@ -99,6 +99,9 @@ struct CascadedRectangleEdges {
   OptionalT horizontal{};
   OptionalT vertical{};
   OptionalT all{};
+  OptionalT block{};
+  OptionalT blockStart{};
+  OptionalT blockEnd{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
     const auto leadingEdge = isRTL ? end : start;
@@ -111,10 +114,14 @@ struct CascadedRectangleEdges {
     return {
         /* .left = */
         left.value_or(leadingEdge.value_or(horizontalOrAllOrDefault)),
-        /* .top = */ top.value_or(verticalOrAllOrDefault),
+        /* .top = */
+        blockStart.value_or(
+            block.value_or(top.value_or(verticalOrAllOrDefault))),
         /* .right = */
         right.value_or(trailingEdge.value_or(horizontalOrAllOrDefault)),
-        /* .bottom = */ bottom.value_or(verticalOrAllOrDefault),
+        /* .bottom = */
+        blockEnd.value_or(
+            block.value_or(bottom.value_or(verticalOrAllOrDefault))),
     };
   }
 
@@ -128,7 +135,10 @@ struct CascadedRectangleEdges {
                this->end,
                this->horizontal,
                this->vertical,
-               this->all) ==
+               this->all,
+               this->block,
+               this->blockStart,
+               this->blockEnd) ==
         std::tie(
                rhs.left,
                rhs.top,
@@ -138,7 +148,10 @@ struct CascadedRectangleEdges {
                rhs.end,
                rhs.horizontal,
                rhs.vertical,
-               rhs.all);
+               rhs.all,
+               rhs.block,
+               rhs.blockStart,
+               rhs.blockEnd);
   }
 
   bool operator!=(const CascadedRectangleEdges<T> &rhs) const {
@@ -160,12 +173,21 @@ struct CascadedRectangleCorners {
   OptionalT bottomStart{};
   OptionalT bottomEnd{};
   OptionalT all{};
+  OptionalT endEnd{};
+  OptionalT endStart{};
+  OptionalT startEnd{};
+  OptionalT startStart{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
-    const auto topLeading = isRTL ? topEnd : topStart;
-    const auto topTrailing = isRTL ? topStart : topEnd;
-    const auto bottomLeading = isRTL ? bottomEnd : bottomStart;
-    const auto bottomTrailing = isRTL ? bottomStart : bottomEnd;
+    const auto logicalTopStart = topStart ? topStart : startStart;
+    const auto logicalTopEnd = topEnd ? topEnd : startEnd;
+    const auto logicalBottomStart = bottomStart ? bottomStart : endStart;
+    const auto logicalBottomEnd = bottomEnd ? bottomEnd : endEnd;
+
+    const auto topLeading = isRTL ? logicalTopEnd : logicalTopStart;
+    const auto topTrailing = isRTL ? logicalTopStart : logicalTopEnd;
+    const auto bottomLeading = isRTL ? logicalBottomEnd : logicalBottomStart;
+    const auto bottomTrailing = isRTL ? logicalBottomStart : logicalBottomEnd;
 
     return {
         /* .topLeft = */ topLeft.value_or(
@@ -189,7 +211,11 @@ struct CascadedRectangleCorners {
                this->topEnd,
                this->bottomStart,
                this->bottomEnd,
-               this->all) ==
+               this->all,
+               this->endEnd,
+               this->endStart,
+               this->startEnd,
+               this->startStart) ==
         std::tie(
                rhs.topLeft,
                rhs.topRight,
@@ -199,7 +225,11 @@ struct CascadedRectangleCorners {
                rhs.topEnd,
                rhs.bottomStart,
                rhs.bottomEnd,
-               rhs.all);
+               rhs.all,
+               rhs.endEnd,
+               rhs.endStart,
+               rhs.startEnd,
+               rhs.startStart);
   }
 
   bool operator!=(const CascadedRectangleCorners<T> &rhs) const {
@@ -249,15 +279,15 @@ struct BorderMetrics {
 #ifdef ANDROID
 
 struct NativeDrawable {
-  enum class Kind {
+  enum class Kind : uint8_t {
     Ripple,
     ThemeAttr,
   };
 
   struct Ripple {
     std::optional<int32_t> color{};
-    bool borderless{false};
     std::optional<Float> rippleRadius{};
+    bool borderless{false};
 
     bool operator==(const Ripple &rhs) const {
       return std::tie(this->color, this->borderless, this->rippleRadius) ==
@@ -265,9 +295,9 @@ struct NativeDrawable {
     }
   };
 
-  Kind kind;
   std::string themeAttr;
   Ripple ripple;
+  Kind kind;
 
   bool operator==(const NativeDrawable &rhs) const {
     if (this->kind != rhs.kind)

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -123,6 +123,11 @@ function getTypeAnnotationForArray<+T>(
         type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
+    case 'DimensionValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'DimensionPrimitive',
+      };
     case 'Stringish':
       return {
         type: 'StringTypeAnnotation',
@@ -196,7 +201,7 @@ function flattenProperties(
         );
       }
     })
-    .reduce((acc, item) => {
+    .reduce((acc: Array<PropAST>, item) => {
       if (Array.isArray(item)) {
         item.forEach(prop => {
           verifyPropNotAlreadyDefined(acc, prop);
@@ -302,6 +307,11 @@ function getTypeAnnotation<+T>(
       return {
         type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
+      };
+    case 'DimensionValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'DimensionPrimitive',
       };
     case 'Int32':
       return {

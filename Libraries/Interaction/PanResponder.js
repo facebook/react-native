@@ -11,7 +11,6 @@
 'use strict';
 
 import type {PressEvent} from '../Types/CoreEventTypes';
-import type {PanResponderType} from './PanResponder.flow.js';
 
 const InteractionManager = require('./InteractionManager');
 const TouchHistoryMath = require('./TouchHistoryMath');
@@ -227,7 +226,7 @@ type PanResponderConfig = $ReadOnly<{|
   onShouldBlockNativeResponder?: ?ActiveCallback,
 |}>;
 
-const PanResponder: PanResponderType = {
+const PanResponder = {
   /**
    *
    * A graphical explanation of the touch data flow:
@@ -580,4 +579,4 @@ export type PanResponderInstance = $Call<
   PanResponderConfig,
 >;
 
-module.exports = PanResponder;
+export default PanResponder;

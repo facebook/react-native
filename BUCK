@@ -352,7 +352,6 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTView.h": RCTVIEWS_PATH + "RCTView.h",
     "React/RCTViewManager.h": RCTVIEWS_PATH + "RCTViewManager.h",
     "React/RCTViewUtils.h": RCTVIEWS_PATH + "RCTViewUtils.h",
-    "React/RCTWeakProxy.h": RCTBASE_PATH + "RCTWeakProxy.h",
     "React/RCTWrapperViewController.h": RCTVIEWS_PATH + "RCTWrapperViewController.h",
     "React/UIView+React.h": RCTVIEWS_PATH + "UIView+React.h",
 }
@@ -522,7 +521,6 @@ rn_apple_xplat_cxx_library(
         react_fabric_component_plugin_provider("ScrollView", "RCTScrollViewCls"),
         react_fabric_component_plugin_provider("PullToRefreshView", "RCTPullToRefreshViewCls"),
         react_fabric_component_plugin_provider("ActivityIndicatorView", "RCTActivityIndicatorViewCls"),
-        react_fabric_component_plugin_provider("Slider", "RCTSliderCls"),
         react_fabric_component_plugin_provider("Switch", "RCTSwitchCls"),
         react_fabric_component_plugin_provider("UnimplementedNativeView", "RCTUnimplementedNativeViewCls"),
         react_fabric_component_plugin_provider("Paragraph", "RCTParagraphCls"),
@@ -563,7 +561,6 @@ rn_apple_xplat_cxx_library(
     exported_deps = [
         react_native_xplat_target("react/renderer/animations:animations"),
         react_native_xplat_target("react/renderer/components/scrollview:scrollview"),
-        react_native_xplat_target("react/renderer/components/slider:slider"),
         react_native_xplat_target("react/renderer/components/safeareaview:safeareaview"),
         react_native_xplat_target("react/renderer/components/modal:modal"),
         react_native_xplat_target("react/renderer/components/unimplementedview:unimplementedview"),
@@ -592,6 +589,7 @@ rn_apple_library(
     autoglob = False,
     complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
+    disable_infer_precompiled_header = True,
     extension_api_only = True,
     frameworks = [
         "Foundation",
@@ -725,6 +723,8 @@ rn_library(
             "Libraries/**/*.js",
             "Libraries/NewAppScreen/**/*.png",
             "Libraries/LogBox/**/*.png",
+            "packages/virtualized-lists/**/*.js",
+            "packages/virtualized-lists/**/*.json",
         ],
         exclude = [
             "**/__*__/**",
@@ -743,6 +743,7 @@ rn_library(
         "//xplat/js:node_modules__base64_19js",
         "//xplat/js:node_modules__deprecated_19react_19native_19prop_19types",
         "//xplat/js:node_modules__event_19target_19shim",
+        "//xplat/js:node_modules__flow_19enums_19runtime",
         "//xplat/js:node_modules__invariant",
         "//xplat/js:node_modules__memoize_19one",
         "//xplat/js:node_modules__nullthrows",
@@ -1476,5 +1477,7 @@ rn_apple_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         ":FBReactNativeSpecJSI",
+        react_native_xplat_target("react/renderer/core:core"),
+        react_native_xplat_target("cxxreact:bridge"),
     ],
 )

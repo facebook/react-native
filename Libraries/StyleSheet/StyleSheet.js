@@ -23,8 +23,9 @@ import type {
   ____ViewStyleProp_Internal,
 } from './StyleSheetTypes';
 
+import PixelRatio from '../Utilities/PixelRatio';
+
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-const PixelRatio = require('../Utilities/PixelRatio');
 const flatten = require('./flattenStyle');
 
 /**

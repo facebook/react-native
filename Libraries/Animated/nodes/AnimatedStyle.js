@@ -20,6 +20,7 @@ import AnimatedTransform from './AnimatedTransform';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
 function createAnimatedStyle(inputStyle: any): Object {
+  // $FlowFixMe[underconstrained-implicit-instantiation]
   const style = flattenStyle(inputStyle);
   const animatedStyles: any = {};
   for (const key in style) {
@@ -36,6 +37,7 @@ function createAnimatedStyle(inputStyle: any): Object {
 }
 
 function createStyleWithAnimatedTransform(inputStyle: any): Object {
+  // $FlowFixMe[underconstrained-implicit-instantiation]
   let style = flattenStyle(inputStyle) || ({}: {[string]: any});
 
   if (style.transform) {

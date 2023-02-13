@@ -98,6 +98,10 @@ class Blob {
           // $FlowFixMe[reassign-const]
           end = this.size + end;
         }
+        if (end > this.size) {
+          // $FlowFixMe[reassign-const]
+          end = this.size;
+        }
         size = end - start;
       }
     }
@@ -105,6 +109,12 @@ class Blob {
       blobId: this.data.blobId,
       offset,
       size,
+      /* Since `blob.slice()` creates a new view onto the same binary
+       * data as the original blob, we should re-use the same collector
+       * object so that the underlying resource gets deallocated when
+       * the last view into the data is released, not the first.
+       */
+      __collector: this.data.__collector,
     });
   }
 

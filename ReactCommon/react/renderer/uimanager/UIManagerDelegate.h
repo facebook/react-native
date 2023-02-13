@@ -23,7 +23,8 @@ class UIManagerDelegate {
    * For this moment the tree is already laid out and sealed.
    */
   virtual void uiManagerDidFinishTransaction(
-      MountingCoordinator::Shared const &mountingCoordinator) = 0;
+      MountingCoordinator::Shared mountingCoordinator,
+      bool mountSynchronously) = 0;
 
   /*
    * Called each time when UIManager constructs a new Shadow Node. Receiver

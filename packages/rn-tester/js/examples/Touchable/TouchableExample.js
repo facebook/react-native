@@ -540,9 +540,10 @@ const TouchableTouchSoundDisabled = () => {
   );
 };
 
+// $FlowFixMe[missing-local-annot]
 function TouchableOnFocus<T: React.AbstractComponent<any, any>>() {
   const ref = useRef<?React.ElementRef<T> | {focus: Function}>(null);
-  const [isFocused, setIsFocused] = useState(false);
+  const [isFocused, setIsFocused] = useState<string | boolean>(false);
   const [focusStatus, setFocusStatus] = useState(
     'This touchable is not focused.',
   );

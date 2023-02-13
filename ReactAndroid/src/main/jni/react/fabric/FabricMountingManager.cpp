@@ -6,7 +6,6 @@
  */
 
 #include "FabricMountingManager.h"
-#include "CppViewMutationsWrapper.h"
 #include "EventEmitterWrapper.h"
 #include "StateWrapperImpl.h"
 
@@ -39,11 +38,10 @@ static bool getFeatureFlagValue(const char *name) {
 
 FabricMountingManager::FabricMountingManager(
     std::shared_ptr<const ReactNativeConfig> &config,
-    std::shared_ptr<const CppComponentRegistry> &cppComponentRegistry,
     global_ref<jobject> &javaUIManager)
     : javaUIManager_(javaUIManager),
-      cppComponentRegistry_(cppComponentRegistry),
-      useOverflowInset_(getFeatureFlagValue("useOverflowInset")) {
+      reduceDeleteCreateMutation_(
+          getFeatureFlagValue("reduceDeleteCreateMutation")) {
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
 }
 
@@ -77,8 +75,6 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
       return 7; // tag, parentTag, x, y, w, h, DisplayType
     case CppMountItem::Type::UpdateOverflowInset:
       return 5; // tag, left, top, right, bottom
-    case CppMountItem::Type::RunCPPMutations:
-      return 1;
     case CppMountItem::Undefined:
     case CppMountItem::Multiple:
       return -1;
@@ -267,7 +263,7 @@ local_ref<jobject> FabricMountingManager::getProps(
 }
 
 void FabricMountingManager::executeMount(
-    MountingCoordinator::Shared const &mountingCoordinator) {
+    MountingCoordinator::Shared mountingCoordinator) {
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
 
   SystraceSection s(
@@ -317,31 +313,35 @@ void FabricMountingManager::executeMount(
       auto &index = mutation.index;
 
       bool isVirtual = mutation.mutatedViewIsVirtual();
-
-      // Detect if the mutation instruction belongs to C++ view managers
-      if (cppComponentRegistry_) {
-        auto componentName = newChildShadowView.componentName
-            ? newChildShadowView.componentName
-            : oldChildShadowView.componentName;
-        auto name = std::string(componentName);
-        if (cppComponentRegistry_->containsComponentManager(name)) {
-          // is this thread safe?
-          cppViewMutations.push_back(mutation);
-
-          // This is a hack that could be avoided by using Portals
-          // Only execute mutations instructions for Root C++ ViewManagers
-          // because Root C++ Components have a Android view counterpart.
-          if (!cppComponentRegistry_->isRootComponent(name)) {
-            continue;
-          }
-        }
-      }
-
       switch (mutationType) {
         case ShadowViewMutation::Create: {
-          bool allocationCheck =
+          bool shouldCreateView =
               !allocatedViewTags.contains(newChildShadowView.tag);
-          bool shouldCreateView = allocationCheck;
+          if (reduceDeleteCreateMutation_) {
+            // Detect DELETE...CREATE situation on the same node and do NOT push
+            // back to the mount items. This is an edge case that may happen
+            // when for example animation runs while commit happened, and we
+            // want to filter them out here to capture all possible sources of
+            // such mutations. The re-ordering logic here assumes no
+            // DELETE...CREATE in the mutations, as we will re-order mutations
+            // and batch all DELETE instructions in the end.
+            auto it = std::remove_if(
+                cppDeleteMountItems.begin(),
+                cppDeleteMountItems.end(),
+                [&](auto &deletedMountItem) -> bool {
+                  return deletedMountItem.oldChildShadowView.tag ==
+                      newChildShadowView.tag;
+                });
+            bool hasDeletedViewsWithSameTag = it != cppDeleteMountItems.end();
+            cppDeleteMountItems.erase(it, cppDeleteMountItems.end());
+
+            if (hasDeletedViewsWithSameTag) {
+              shouldCreateView = false;
+              LOG(ERROR)
+                  << "XIN: Detect DELETE...CREATE on the same tag from mutations in the same batch. The DELETE and CREATE mutations are removed before sending to the native platforms";
+            }
+          }
+
           if (shouldCreateView) {
             cppCommonMountItems.push_back(
                 CppMountItem::CreateMountItem(newChildShadowView));
@@ -403,8 +403,7 @@ void FabricMountingManager::executeMount(
             // children of the current view. The layout of current view may not
             // change, and we separate this part from layout mount items to not
             // pack too much data there.
-            if (useOverflowInset_ &&
-                (oldChildShadowView.layoutMetrics.overflowInset !=
+            if ((oldChildShadowView.layoutMetrics.overflowInset !=
                  newChildShadowView.layoutMetrics.overflowInset)) {
               cppUpdateOverflowInsetMountItems.push_back(
                   CppMountItem::UpdateOverflowInsetMountItem(
@@ -460,9 +459,8 @@ void FabricMountingManager::executeMount(
             // children of the current view. The layout of current view may not
             // change, and we separate this part from layout mount items to not
             // pack too much data there.
-            if (useOverflowInset_ &&
-                newChildShadowView.layoutMetrics.overflowInset !=
-                    EdgeInsets::ZERO) {
+            if (newChildShadowView.layoutMetrics.overflowInset !=
+                EdgeInsets::ZERO) {
               cppUpdateOverflowInsetMountItems.push_back(
                   CppMountItem::UpdateOverflowInsetMountItem(
                       newChildShadowView));
@@ -819,36 +817,6 @@ void FabricMountingManager::executeMount(
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
       intBufferPosition += 1;
     }
-  }
-
-  if (cppViewMutations.size() > 0) {
-    writeIntBufferTypePreamble(
-        CppMountItem::Type::RunCPPMutations,
-        1,
-        env,
-        intBufferArray,
-        intBufferPosition);
-
-    // TODO review this logic and memory mamangement
-    // this might not be necessary:
-    // temp[0] = 1234;
-    // env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
-    // intBufferPosition += 1;
-
-    // Do not hold a reference to javaCppMutations from the C++ side.
-    auto javaCppMutations = CppViewMutationsWrapper::newObjectJavaArgs();
-    CppViewMutationsWrapper *cppViewMutationsWrapper = cthis(javaCppMutations);
-
-    // TODO move this to init methods
-    cppViewMutationsWrapper->cppComponentRegistry = cppComponentRegistry_;
-    // TODO is moving the cppViewMutations safe / thread safe?
-    // cppViewMutations will be accessed from the UI Thread in a near future
-    // can they dissapear?
-    cppViewMutationsWrapper->cppViewMutations =
-        std::make_shared<std::vector<facebook::react::ShadowViewMutation>>(
-            std::move(cppViewMutations));
-
-    (*objBufferArray)[objBufferPosition++] = javaCppMutations.get();
   }
 
   // If there are no items, we pass a nullptr instead of passing the object

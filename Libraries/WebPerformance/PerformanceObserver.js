@@ -12,57 +12,50 @@ import type {
   RawPerformanceEntry,
   RawPerformanceEntryType,
 } from './NativePerformanceObserver';
+import type {PerformanceEntryType} from './PerformanceEntry';
 
 import warnOnce from '../Utilities/warnOnce';
-import NativePerformanceObserver from './NativePerformanceObserver';
-
-export type HighResTimeStamp = number;
-// TODO: Extend once new types (such as event) are supported.
-// TODO: Get rid of the "undefined" once there is at least one type supported.
-export type PerformanceEntryType = 'undefined';
-
-export class PerformanceEntry {
-  name: string;
-  entryType: PerformanceEntryType;
-  startTime: HighResTimeStamp;
-  duration: number;
-
-  constructor(init: {
-    name: string,
-    entryType: PerformanceEntryType,
-    startTime: HighResTimeStamp,
-    duration: number,
-  }) {
-    this.name = init.name;
-    this.entryType = init.entryType;
-    this.startTime = init.startTime;
-    this.duration = init.duration;
-  }
-
-  // $FlowIgnore: Flow(unclear-type)
-  toJSON(): Object {
-    return {
-      name: this.name,
-      entryType: this.entryType,
-      startTime: this.startTime,
-      duration: this.duration,
-    };
-  }
-}
+import NativePerformanceObserver, {
+  RawPerformanceEntryTypeValues,
+} from './NativePerformanceObserver';
+import {PerformanceEntry} from './PerformanceEntry';
+import {PerformanceEventTiming} from './PerformanceEventTiming';
 
 function rawToPerformanceEntryType(
   type: RawPerformanceEntryType,
 ): PerformanceEntryType {
-  return 'undefined';
+  switch (type) {
+    case RawPerformanceEntryTypeValues.MARK:
+      return 'mark';
+    case RawPerformanceEntryTypeValues.MEASURE:
+      return 'measure';
+    case RawPerformanceEntryTypeValues.EVENT:
+      return 'event';
+    default:
+      throw new TypeError(
+        `unexpected performance entry type received: ${type}`,
+      );
+  }
 }
 
 function rawToPerformanceEntry(entry: RawPerformanceEntry): PerformanceEntry {
-  return new PerformanceEntry({
-    name: entry.name,
-    entryType: rawToPerformanceEntryType(entry.entryType),
-    startTime: entry.startTime,
-    duration: entry.duration,
-  });
+  if (entry.entryType === RawPerformanceEntryTypeValues.EVENT) {
+    return new PerformanceEventTiming({
+      name: entry.name,
+      startTime: entry.startTime,
+      duration: entry.duration,
+      processingStart: entry.processingStart,
+      processingEnd: entry.processingEnd,
+      interactionId: entry.interactionId,
+    });
+  } else {
+    return new PerformanceEntry({
+      name: entry.name,
+      entryType: rawToPerformanceEntryType(entry.entryType),
+      startTime: entry.startTime,
+      duration: entry.duration,
+    });
+  }
 }
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
@@ -99,6 +92,8 @@ export class PerformanceObserverEntryList {
 export type PerformanceObserverCallback = (
   list: PerformanceObserverEntryList,
   observer: PerformanceObserver,
+  // The number of buffered entries which got dropped from the buffer due to the buffer being full:
+  droppedEntryCount?: number,
 ) => void;
 
 export type PerformanceObserverInit =
@@ -109,11 +104,39 @@ export type PerformanceObserverInit =
       type: PerformanceEntryType,
     };
 
-let _observedEntryTypeRefCount: Map<PerformanceEntryType, number> = new Map();
+type PerformanceObserverConfig = {|
+  callback: PerformanceObserverCallback,
+  entryTypes: $ReadOnlySet<PerformanceEntryType>,
+|};
 
-let _observers: Set<PerformanceObserver> = new Set();
+const observerCountPerEntryType: Map<PerformanceEntryType, number> = new Map();
+const registeredObservers: Map<PerformanceObserver, PerformanceObserverConfig> =
+  new Map();
+let isOnPerformanceEntryCallbackSet: boolean = false;
 
-let _onPerformanceEntryCallbackIsSet: boolean = false;
+// This is a callback that gets scheduled and periodically called from the native side
+const onPerformanceEntry = () => {
+  if (!NativePerformanceObserver) {
+    return;
+  }
+  const entryResult = NativePerformanceObserver.popPendingEntries();
+  const rawEntries = entryResult?.entries ?? [];
+  const droppedEntriesCount = entryResult?.droppedEntriesCount;
+  if (rawEntries.length === 0) {
+    return;
+  }
+  const entries = rawEntries.map(rawToPerformanceEntry);
+  for (const [observer, observerConfig] of registeredObservers.entries()) {
+    const entriesForObserver: PerformanceEntryList = entries.filter(
+      entry => observerConfig.entryTypes.has(entry.entryType) !== -1,
+    );
+    observerConfig.callback(
+      new PerformanceObserverEntryList(entriesForObserver),
+      observer,
+      droppedEntriesCount,
+    );
+  }
+};
 
 function warnNoNativePerformanceObserver() {
   warnOnce(
@@ -144,38 +167,68 @@ function warnNoNativePerformanceObserver() {
  */
 export default class PerformanceObserver {
   _callback: PerformanceObserverCallback;
-  _entryTypes: $ReadOnlySet<PerformanceEntryType>;
+  _type: 'single' | 'multiple' | void;
 
   constructor(callback: PerformanceObserverCallback) {
     this._callback = callback;
   }
 
-  observe(options: PerformanceObserverInit) {
+  observe(options: PerformanceObserverInit): void {
     if (!NativePerformanceObserver) {
       warnNoNativePerformanceObserver();
       return;
     }
-    if (!_onPerformanceEntryCallbackIsSet) {
+
+    this._validateObserveOptions(options);
+
+    let requestedEntryTypes;
+
+    if (options.entryTypes) {
+      this._type = 'multiple';
+      requestedEntryTypes = new Set(options.entryTypes);
+    } else {
+      this._type = 'single';
+      requestedEntryTypes = new Set([options.type]);
+    }
+
+    // The same observer may receive multiple calls to "observe", so we need
+    // to check what is new on this call vs. previous ones.
+    const currentEntryTypes = registeredObservers.get(this)?.entryTypes;
+    const nextEntryTypes = currentEntryTypes
+      ? union(requestedEntryTypes, currentEntryTypes)
+      : requestedEntryTypes;
+
+    // This `observe` call is a no-op because there are no new things to observe.
+    if (currentEntryTypes && currentEntryTypes.size === nextEntryTypes.size) {
+      return;
+    }
+
+    registeredObservers.set(this, {
+      callback: this._callback,
+      entryTypes: nextEntryTypes,
+    });
+
+    if (!isOnPerformanceEntryCallbackSet) {
       NativePerformanceObserver.setOnPerformanceEntryCallback(
         onPerformanceEntry,
       );
-      _onPerformanceEntryCallbackIsSet = true;
+      isOnPerformanceEntryCallbackSet = true;
     }
-    if (options.entryTypes) {
-      this._entryTypes = new Set(options.entryTypes);
-    } else {
-      this._entryTypes = new Set([options.type]);
-    }
-    this._entryTypes.forEach(type => {
-      if (!_observedEntryTypeRefCount.has(type)) {
+
+    // We only need to start listenening to new entry types being observed in
+    // this observer.
+    const newEntryTypes = currentEntryTypes
+      ? difference(requestedEntryTypes, currentEntryTypes)
+      : requestedEntryTypes;
+    for (const type of newEntryTypes) {
+      if (!observerCountPerEntryType.has(type)) {
         NativePerformanceObserver.startReporting(type);
       }
-      _observedEntryTypeRefCount.set(
+      observerCountPerEntryType.set(
         type,
-        (_observedEntryTypeRefCount.get(type) ?? 0) + 1,
+        (observerCountPerEntryType.get(type) ?? 0) + 1,
       );
-    });
-    _observers.add(this);
+    }
   }
 
   disconnect(): void {
@@ -183,41 +236,68 @@ export default class PerformanceObserver {
       warnNoNativePerformanceObserver();
       return;
     }
-    this._entryTypes.forEach(type => {
-      const entryTypeRefCount = _observedEntryTypeRefCount.get(type) ?? 0;
-      if (entryTypeRefCount === 1) {
-        _observedEntryTypeRefCount.delete(type);
+
+    const observerConfig = registeredObservers.get(this);
+    if (!observerConfig) {
+      return;
+    }
+
+    // Disconnect this observer
+    for (const type of observerConfig.entryTypes) {
+      const numberOfObserversForThisType =
+        observerCountPerEntryType.get(type) ?? 0;
+      if (numberOfObserversForThisType === 1) {
+        observerCountPerEntryType.delete(type);
         NativePerformanceObserver.stopReporting(type);
-      } else if (entryTypeRefCount !== 0) {
-        _observedEntryTypeRefCount.set(type, entryTypeRefCount - 1);
+      } else if (numberOfObserversForThisType !== 0) {
+        observerCountPerEntryType.set(type, numberOfObserversForThisType - 1);
       }
-    });
-    _observers.delete(this);
-    if (_observers.size === 0) {
+    }
+
+    // Disconnect all observers if this was the last one
+    registeredObservers.delete(this);
+    if (registeredObservers.size === 0) {
       NativePerformanceObserver.setOnPerformanceEntryCallback(undefined);
-      _onPerformanceEntryCallbackIsSet = false;
+      isOnPerformanceEntryCallbackSet = false;
+    }
+  }
+
+  _validateObserveOptions(options: PerformanceObserverInit): void {
+    const {type, entryTypes} = options;
+
+    if (!type && !entryTypes) {
+      throw new TypeError(
+        "Failed to execute 'observe' on 'PerformanceObserver': An observe() call must not include both entryTypes and type arguments.",
+      );
+    }
+
+    if (entryTypes && type) {
+      throw new TypeError(
+        "Failed to execute 'observe' on 'PerformanceObserver': An observe() call must include either entryTypes or type arguments.",
+      );
+    }
+
+    if (this._type === 'multiple' && type) {
+      throw new Error(
+        "Failed to execute 'observe' on 'PerformanceObserver': This observer has performed observe({entryTypes:...}, therefore it cannot perform observe({type:...})",
+      );
+    }
+
+    if (this._type === 'single' && entryTypes) {
+      throw new Error(
+        "Failed to execute 'observe' on 'PerformanceObserver': This PerformanceObserver has performed observe({type:...}, therefore it cannot perform observe({entryTypes:...})",
+      );
     }
   }
 
   static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
-    // TODO: add types once they are fully supported
-    Object.freeze([]);
+    Object.freeze(['mark', 'measure', 'event']);
 }
 
-// This is a callback that gets scheduled and periodically called from the native side
-function onPerformanceEntry() {
-  if (!NativePerformanceObserver) {
-    return;
-  }
-  const rawEntries = NativePerformanceObserver.getPendingEntries();
-  const entries = rawEntries.map(rawToPerformanceEntry);
-  _observers.forEach(observer => {
-    const entriesForObserver: PerformanceEntryList = entries.filter(entry =>
-      observer._entryTypes.has(entry.entryType),
-    );
-    observer._callback(
-      new PerformanceObserverEntryList(entriesForObserver),
-      observer,
-    );
-  });
+function union<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {
+  return new Set([...a, ...b]);
+}
+
+function difference<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {
+  return new Set([...a].filter(x => !b.has(x)));
 }

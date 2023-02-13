@@ -238,11 +238,11 @@ module.exports = {
       .map((hasteModuleName: string) => {
         const nativeModule = nativeModules[hasteModuleName];
         const {
-          aliases,
+          aliasMap,
           spec: {properties},
-          moduleNames,
+          moduleName,
         } = nativeModule;
-        const resolveAlias = createAliasResolver(aliases);
+        const resolveAlias = createAliasResolver(aliasMap);
         const hostFunctions = properties.map(property =>
           serializePropertyIntoHostFunction(
             hasteModuleName,
@@ -254,8 +254,7 @@ module.exports = {
         return ModuleTemplate({
           hasteModuleName,
           hostFunctions,
-          // TODO: What happens when there are more than one NativeModule requires?
-          moduleName: moduleNames[0],
+          moduleName,
           methods: properties.map(
             ({name: propertyName, typeAnnotation: nullableTypeAnnotation}) => {
               const [{params}] = unwrapNullable(nullableTypeAnnotation);

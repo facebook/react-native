@@ -40,6 +40,7 @@ const PANGRAMS = {
 export default function TextLegend(): React.Node {
   const [language, setLanguage] = React.useState('english');
   const [alignment, setAlignment] = React.useState('left');
+  // $FlowFixMe[missing-empty-array-annot]
   const [textMetrics, setTextMetrics] = React.useState([]);
   const [fontSize, setFontSize] = React.useState(50);
   return (

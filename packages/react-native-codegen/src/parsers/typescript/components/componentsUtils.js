@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -227,6 +227,11 @@ function getCommonTypeAnnotation<T>(
       return {
         type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
+      };
+    case 'DimensionValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'DimensionPrimitive',
       };
     case 'TSUnionType':
       return getUnionOfLiterals(
@@ -498,9 +503,9 @@ function flattenProperties(
       }
     })
     .filter(Boolean)
-    .reduce((acc, item) => {
+    .reduce((acc: Array<PropAST>, item) => {
       if (Array.isArray(item)) {
-        item.forEach(prop => {
+        item.forEach((prop: PropAST) => {
           verifyPropNotAlreadyDefined(acc, prop);
         });
         return acc.concat(item);
