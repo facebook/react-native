@@ -8,26 +8,17 @@
  * @flow strict
  */
 
-import type {
-  RawPerformanceEntry,
-  RawPerformanceEntryType,
-} from './NativePerformanceObserver';
+import type {RawPerformanceEntry} from './NativePerformanceObserver';
 import type {PerformanceEntryType} from './PerformanceEntry';
 
+import {RawPerformanceEntryType} from './NativePerformanceObserver';
 import {PerformanceEntry} from './PerformanceEntry';
 import {PerformanceEventTiming} from './PerformanceEventTiming';
-
-export const RawPerformanceEntryTypeValues = {
-  UNDEFINED: 0,
-  MARK: 1,
-  MEASURE: 2,
-  EVENT: 3,
-};
 
 export function rawToPerformanceEntry(
   entry: RawPerformanceEntry,
 ): PerformanceEntry {
-  if (entry.entryType === RawPerformanceEntryTypeValues.EVENT) {
+  if (entry.entryType === RawPerformanceEntryType.EVENT) {
     return new PerformanceEventTiming({
       name: entry.name,
       startTime: entry.startTime,
@@ -50,15 +41,15 @@ export function rawToPerformanceEntryType(
   type: RawPerformanceEntryType,
 ): PerformanceEntryType {
   switch (type) {
-    case RawPerformanceEntryTypeValues.MARK:
+    case RawPerformanceEntryType.MARK:
       return 'mark';
-    case RawPerformanceEntryTypeValues.MEASURE:
+    case RawPerformanceEntryType.MEASURE:
       return 'measure';
-    case RawPerformanceEntryTypeValues.EVENT:
+    case RawPerformanceEntryType.EVENT:
       return 'event';
     default:
       throw new TypeError(
-        `rawToPerformanceEntryType: unexpected performance entry type received: ${type}`,
+        'rawToPerformanceEntryType: unexpected RawPerformanceEntryType received',
       );
   }
 }
@@ -68,11 +59,11 @@ export function performanceEntryTypeToRaw(
 ): RawPerformanceEntryType {
   switch (type) {
     case 'mark':
-      return RawPerformanceEntryTypeValues.MARK;
+      return RawPerformanceEntryType.MARK;
     case 'measure':
-      return RawPerformanceEntryTypeValues.MEASURE;
+      return RawPerformanceEntryType.MEASURE;
     case 'event':
-      return RawPerformanceEntryTypeValues.EVENT;
+      return RawPerformanceEntryType.EVENT;
     default:
       // Verify exhaustive check with Flow
       (type: empty);

@@ -22,16 +22,24 @@ NativePerformanceObserver::~NativePerformanceObserver() {
 
 void NativePerformanceObserver::startReporting(
     jsi::Runtime &rt,
-    int32_t entryType) {
+    PerformanceEntryType entryType) {
   PerformanceEntryReporter::getInstance().startReporting(
       static_cast<PerformanceEntryType>(entryType));
 }
 
 void NativePerformanceObserver::stopReporting(
     jsi::Runtime &rt,
-    int32_t entryType) {
+    PerformanceEntryType entryType) {
   PerformanceEntryReporter::getInstance().stopReporting(
       static_cast<PerformanceEntryType>(entryType));
+}
+
+void NativePerformanceObserver::setDurationThreshold(
+    jsi::Runtime &rt,
+    PerformanceEntryType entryType,
+    double durationThreshold) {
+  PerformanceEntryReporter::getInstance().setDurationThreshold(
+      static_cast<PerformanceEntryType>(entryType), durationThreshold);
 }
 
 GetPendingEntriesResult NativePerformanceObserver::popPendingEntries(
@@ -49,14 +57,6 @@ void NativePerformanceObserver::logRawEntry(
     jsi::Runtime &rt,
     RawPerformanceEntry entry) {
   PerformanceEntryReporter::getInstance().logEntry(entry);
-}
-
-void NativePerformanceObserver::setDurationThreshold(
-    jsi::Runtime &rt,
-    int32_t entryType,
-    double durationThreshold) {
-  PerformanceEntryReporter::getInstance().setDurationThreshold(
-      static_cast<PerformanceEntryType>(entryType), durationThreshold);
 }
 
 std::vector<std::pair<std::string, uint32_t>>

@@ -11,11 +11,10 @@
 import type {
   GetPendingEntriesResult,
   RawPerformanceEntry,
-  RawPerformanceEntryType,
   Spec as NativePerformanceObserver,
 } from '../NativePerformanceObserver';
 
-import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
+import {RawPerformanceEntryType} from '../NativePerformanceObserver';
 
 const reportingType: Set<RawPerformanceEntryType> = new Set();
 const durationThresholds: Map<RawPerformanceEntryType, number> = new Map();
@@ -58,7 +57,7 @@ export const NativePerformanceObserverMock: NativePerformanceObserver = {
       entries.push(entry);
       onPerformanceEntryCallback?.();
     }
-    if (entry.entryType === RawPerformanceEntryTypeValues.EVENT) {
+    if (entry.entryType === RawPerformanceEntryType.EVENT) {
       eventCounts.set(entry.name, (eventCounts.get(entry.name) ?? 0) + 1);
     }
   },

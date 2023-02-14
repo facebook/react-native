@@ -18,9 +18,12 @@ class PerformanceEntryReporter;
 
 #pragma mark - Structs
 
+using PerformanceEntryType =
+    NativePerformanceObserverCxxRawPerformanceEntryType;
+
 using RawPerformanceEntry = NativePerformanceObserverCxxBaseRawPerformanceEntry<
     std::string,
-    int32_t,
+    PerformanceEntryType,
     double,
     double,
     // For "event" entries only:
@@ -32,7 +35,7 @@ template <>
 struct Bridging<RawPerformanceEntry>
     : NativePerformanceObserverCxxBaseRawPerformanceEntryBridging<
           std::string,
-          int32_t,
+          PerformanceEntryType,
           double,
           double,
           std::optional<double>,
@@ -59,9 +62,9 @@ class NativePerformanceObserver
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
   ~NativePerformanceObserver();
 
-  void startReporting(jsi::Runtime &rt, int32_t entryType);
+  void startReporting(jsi::Runtime &rt, PerformanceEntryType entryType);
 
-  void stopReporting(jsi::Runtime &rt, int32_t entryType);
+  void stopReporting(jsi::Runtime &rt, PerformanceEntryType entryType);
 
   GetPendingEntriesResult popPendingEntries(jsi::Runtime &rt);
 
@@ -73,7 +76,7 @@ class NativePerformanceObserver
 
   void setDurationThreshold(
       jsi::Runtime &rt,
-      int32_t entryType,
+      PerformanceEntryType entryType,
       double durationThreshold);
 
   std::vector<std::pair<std::string, uint32_t>> getEventCounts(

@@ -12,7 +12,13 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
-export type RawPerformanceEntryType = number;
+export enum RawPerformanceEntryType {
+  UNDEFINED = 0,
+  MARK = 1,
+  MEASURE = 2,
+  EVENT = 3,
+  _COUNT = 4,
+}
 
 export type RawPerformanceEntry = {|
   name: string,

@@ -31,7 +31,7 @@ void PerformanceEntryReporter::setReportingCallback(
 }
 
 void PerformanceEntryReporter::startReporting(PerformanceEntryType entryType) {
-  int entryTypeIdx = static_cast<int>(entryType);
+  size_t entryTypeIdx = static_cast<size_t>(entryType);
   reportingType_[entryTypeIdx] = true;
   durationThreshold_[entryTypeIdx] = DEFAULT_DURATION_THRESHOLD;
 }
@@ -39,11 +39,11 @@ void PerformanceEntryReporter::startReporting(PerformanceEntryType entryType) {
 void PerformanceEntryReporter::setDurationThreshold(
     PerformanceEntryType entryType,
     double durationThreshold) {
-  durationThreshold_[static_cast<int>(entryType)] = durationThreshold;
+  durationThreshold_[static_cast<size_t>(entryType)] = durationThreshold;
 }
 
 void PerformanceEntryReporter::stopReporting(PerformanceEntryType entryType) {
-  reportingType_[static_cast<int>(entryType)] = false;
+  reportingType_[static_cast<size_t>(entryType)] = false;
 }
 
 GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
@@ -56,12 +56,11 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
 }
 
 void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
-  const auto entryType = static_cast<PerformanceEntryType>(entry.entryType);
-  if (entryType == PerformanceEntryType::EVENT) {
+  if (entry.entryType == PerformanceEntryType::EVENT) {
     eventCounts_[entry.name]++;
   }
 
-  if (!isReportingType(entryType)) {
+  if (!isReportingType(entry.entryType)) {
     return;
   }
 
@@ -113,7 +112,7 @@ void PerformanceEntryReporter::mark(
 
   logEntry(
       {name,
-       static_cast<int>(PerformanceEntryType::MARK),
+       PerformanceEntryType::MARK,
        startTime,
        duration,
        std::nullopt,
@@ -127,13 +126,13 @@ void PerformanceEntryReporter::clearMarks(
     PerformanceMark mark{{*markName, 0}};
     marksRegistry_.erase(&mark);
     clearEntries([&markName](const RawPerformanceEntry &entry) {
-      return entry.entryType == static_cast<int>(PerformanceEntryType::MARK) &&
+      return entry.entryType == PerformanceEntryType::MARK &&
           entry.name == markName;
     });
   } else {
     marksRegistry_.clear();
     clearEntries([](const RawPerformanceEntry &entry) {
-      return entry.entryType == static_cast<int>(PerformanceEntryType::MARK);
+      return entry.entryType == PerformanceEntryType::MARK;
     });
   }
 }
@@ -150,7 +149,7 @@ void PerformanceEntryReporter::measure(
   double durationVal = duration ? *duration : endTimeVal - startTimeVal;
   logEntry(
       {name,
-       static_cast<int>(PerformanceEntryType::MEASURE),
+       PerformanceEntryType::MEASURE,
        startTimeVal,
        durationVal,
        std::nullopt,
@@ -162,14 +161,13 @@ void PerformanceEntryReporter::clearMeasures(
     const std::optional<std::string> &measureName) {
   if (measureName) {
     clearEntries([&measureName](const RawPerformanceEntry &entry) {
-      return entry.entryType ==
-          static_cast<int>(PerformanceEntryType::MEASURE) &&
+      return entry.entryType == PerformanceEntryType::MEASURE &&
           entry.name == measureName;
     });
   } else {
     marksRegistry_.clear();
     clearEntries([](const RawPerformanceEntry &entry) {
-      return entry.entryType == static_cast<int>(PerformanceEntryType::MEASURE);
+      return entry.entryType == PerformanceEntryType::MEASURE;
     });
   }
 }
@@ -194,7 +192,7 @@ void PerformanceEntryReporter::event(
     uint32_t interactionId) {
   logEntry(
       {std::move(name),
-       static_cast<int>(PerformanceEntryType::EVENT),
+       PerformanceEntryType::EVENT,
        startTime,
        duration,
        processingStart,

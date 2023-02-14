@@ -46,14 +46,6 @@ constexpr size_t MARKS_BUFFER_SIZE = 1024;
 
 constexpr double DEFAULT_DURATION_THRESHOLD = 0.0;
 
-enum class PerformanceEntryType {
-  UNDEFINED = 0,
-  MARK = 1,
-  MEASURE = 2,
-  EVENT = 3,
-  _COUNT = 4,
-};
-
 class PerformanceEntryReporter : public EventLogger {
  public:
   PerformanceEntryReporter(PerformanceEntryReporter const &) = delete;
