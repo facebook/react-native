@@ -35,6 +35,11 @@ export interface Spec extends TurboModule {
   +stopReporting: (entryType: RawPerformanceEntryType) => void;
   +popPendingEntries: () => GetPendingEntriesResult;
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
+  +logRawEntry: (entry: RawPerformanceEntry) => void;
+  +setDurationThreshold: (
+    entryType: RawPerformanceEntryType,
+    durationThreshold: number,
+  ) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

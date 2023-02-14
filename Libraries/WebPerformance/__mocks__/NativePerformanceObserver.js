@@ -16,6 +16,7 @@ import type {
 } from '../NativePerformanceObserver';
 
 const reportingType: Set<RawPerformanceEntryType> = new Set();
+const durationThresholds: Map<RawPerformanceEntryType, number> = new Map();
 let entries: Array<RawPerformanceEntry> = [];
 let onPerformanceEntryCallback: ?() => void;
 
@@ -26,6 +27,7 @@ export const NativePerformanceObserverMock: NativePerformanceObserver = {
 
   stopReporting: (entryType: RawPerformanceEntryType) => {
     reportingType.delete(entryType);
+    durationThresholds.delete(entryType);
   },
 
   popPendingEntries: (): GetPendingEntriesResult => {
@@ -43,9 +45,23 @@ export const NativePerformanceObserverMock: NativePerformanceObserver = {
 
   logRawEntry: (entry: RawPerformanceEntry) => {
     if (reportingType.has(entry.entryType)) {
+      const durationThreshold = durationThresholds.get(entry.entryType);
+      if (
+        durationThreshold !== undefined &&
+        entry.duration < durationThreshold
+      ) {
+        return;
+      }
       entries.push(entry);
       onPerformanceEntryCallback?.();
     }
+  },
+
+  setDurationThreshold: (
+    entryType: RawPerformanceEntryType,
+    durationThreshold: number,
+  ) => {
+    durationThresholds.set(entryType, durationThreshold);
   },
 };
 

@@ -71,6 +71,11 @@ class NativePerformanceObserver
 
   void logRawEntry(jsi::Runtime &rt, RawPerformanceEntry entry);
 
+  void setDurationThreshold(
+      jsi::Runtime &rt,
+      int32_t entryType,
+      double durationThreshold);
+
  private:
 };
 
