@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- (codegen) Add missing C++ include for prop conversion of complex array type ([92fc32aa](https://github.com/facebook/react-native/commit/92fc32aa053ac8401ad8c9f55dcfa1e48ae8fc1d) by [@rshest](https://github.com/rshest))
+
 #### Android specific
 
 - Fixed jscexecutor crash on Android which is caused from NDK incompatibility ([a232decbb1](https://github.com/facebook/react-native/commit/a232decbb1252ade0247a352f887ca4d97ee273c) by [@Kudo](https://github.com/Kudo))
