@@ -47,29 +47,42 @@ module.exports = async (github, context, label) => {
 
   switch (label) {
     case 'Type: Invalid':
+      await addComment(
+        `| :warning: | Issue is Invalid |\n` +
+          `| --- | --- |\n` +
+          `| :information_source: | This issue doesn't match any of the expected types for this repository - closing. |`,
+      );
       await closeIssue();
       return;
     case 'Type: Question':
       await addComment(
-        `We are using GitHub issues exclusively to track bugs in React Native. GitHub may not be the ideal place to ask a question, but you can try asking over on [Stack Overflow](http://stackoverflow.com/questions/tagged/react-native), or on [Reactiflux](https://www.reactiflux.com/).`,
+        `| :warning: | Issue is a Question |\n` +
+          `| --- | --- |\n` +
+          `| :information_source: | We are using GitHub issues exclusively to track bugs in React Native. GitHub may not be the ideal place to ask a question, but you can try asking over on [Stack Overflow](http://stackoverflow.com/questions/tagged/react-native), or on [Reactiflux](https://www.reactiflux.com/). |`,
       );
       await closeIssue();
       return;
     case 'Type: Docs':
       await addComment(
-        `Please report documentation issues in the [react-native-website](https://github.com/facebook/react-native-website/issues) repository.`,
+        `| :warning: | Documentation Issue |\n` +
+          `| --- | --- |\n` +
+          `| :information_source: | Please report documentation issues in the [react-native-website](https://github.com/facebook/react-native-website/issues) repository. |`,
       );
       await closeIssue();
       return;
     case 'Resolution: For Stack Overflow':
       await addComment(
-        `We are using GitHub issues exclusively to track bugs in the core React Native library. Please try asking over on [Stack Overflow](http://stackoverflow.com/questions/tagged/react-native) as it is better suited for this type of question.`,
+        `| :warning: | Issue is a Question |\n` +
+          `| --- | --- |\n` +
+          `| :information_source: | We are using GitHub issues exclusively to track bugs in the core React Native library. Please try asking over on [Stack Overflow](http://stackoverflow.com/questions/tagged/react-native) as it is better suited for this type of question. |`,
       );
       await closeIssue();
       return;
     case 'Type: Expo':
       await addComment(
-        `It looks like your issue is related to Expo and not React Native core. Please open your issue in [Expo's repository](https://github.com/expo/expo/issues/new). If you are able to create a repro that showcases that this issue is also happening in React Native vanilla, we will be happy to re-open.`,
+        `| :warning: | Issue is Related to Expo |\n` +
+          `| --- | --- |\n` +
+          `| :information_source: | It looks like your issue is related to Expo and not React Native core. Please open your issue in [Expo's repository](https://github.com/expo/expo/issues/new). If you are able to create a repro that showcases that this issue is also happening in React Native vanilla, we will be happy to re-open. |`,
       );
       await closeIssue();
       return;
@@ -91,15 +104,14 @@ module.exports = async (github, context, label) => {
       return;
     case 'Needs: Verify on Latest Version':
       await addComment(
-        `| :warning: | Using Old Version |\n` +
+        `| :warning: | Newer Version of React Native is Available! |\n` +
           `| --- | --- |\n` +
-          `| :information_source: | It looks like you are using an older version of React Native. Please [upgrade](https://reactnative.dev/docs/upgrading) to the latest version, and verify if the issue persists. If it does not, please let us know so we can close out this issue. This helps us ensure we are looking at issues that still exist in the current release. |`,
+          `| :information_source: | You are on a supported minor version, but it looks like there's a newer patch available. Please [upgrade](https://reactnative.dev/docs/upgrading) to the highest patch for your minor or latest and verify if the issue persists (alternatively, create a new project and repro the issue in it). If it does not repro, please let us know so we can close out this issue. This helps us ensure we are looking at issues that still exist in the most recent releases. |`,
       );
-      await requestAuthorFeedback();
       return;
     case 'Needs: Version Info':
       await addComment(
-        `| :warning: | Update Version Info |\n` +
+        `| :warning: | Add or Reformat Version Info |\n` +
           `| --- | --- |\n` +
           `| :information_source: | We could not find or parse the version number of React Native in your issue report. Please use the template, and report your version including major, minor, and patch numbers - e.g. 0.70.2 |`,
       );
@@ -115,7 +127,9 @@ module.exports = async (github, context, label) => {
       return;
     case 'Type: Unsupported Version':
       await addComment(
-        `It looks like your issue or the example you provided uses an [unsupported version of React Native](https://github.com/reactwg/react-native-releases/blob/main/README.md#releases-support-policy). Due to the amount of issues we receive, we're currently accepting only new issues against one of the supported versions. Please open your issue on [StackOverflow](https://stackoverflow.com/questions/tagged/react-native) to get further community support.`,
+        `| :warning: | Unsupported Version of React Native |\n` +
+          `| --- | --- |\n` +
+          `| :information_source: | It looks like your issue or the example you provided uses an [unsupported version of React Native](https://github.com/reactwg/react-native-releases/blob/main/README.md#releases-support-policy). Due to the number of issues we receive, we're currently only accepting new issues against one of the supported versions. Please [upgrade](https://reactnative.dev/docs/upgrading) to latest and verify if the issue persists (alternatively, create a new project and repro the issue in it). If you cannot upgrade, please open your issue on [StackOverflow](https://stackoverflow.com/questions/tagged/react-native) to get further community support. |`,
       );
       await requestAuthorFeedback();
       return;

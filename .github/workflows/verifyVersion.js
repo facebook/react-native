@@ -15,18 +15,12 @@ module.exports = async (github, context) => {
     return;
   }
 
-  // Extract RN version number from the issue body, if it exists
-  const getReactNativeVersionIfExists = issue => {
-    if (!issue || !issue.body) return;
-    const rnVersionRegex =
-      /React Native Version[\r\n]+[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}/;
-    const rnVersionMatch = issue.body.match(rnVersionRegex);
-    if (!rnVersionMatch || !rnVersionMatch[0]) return;
-    return rnVersionMatch[0];
-  };
-  const issueVersion = parseVersionFromString(
-    getReactNativeVersionIfExists(issue),
-  );
+  const issueVersionUnparsed =
+    getReactNativeVersionFromIssueBodyIfExists(issue);
+  const issueVersion = parseVersionFromString(issueVersionUnparsed);
+
+  // Nightly versions are always supported
+  if (reportedVersionIsNightly(issueVersionUnparsed, issueVersion)) return;
 
   if (!issueVersion) {
     return 'Needs: Version Info';
@@ -48,50 +42,69 @@ module.exports = async (github, context) => {
   ).data;
   const latestVersion = parseVersionFromString(latestRelease.name);
 
-  if (!isVersionSupported(issueVersion, latestVersion, recentReleases)) {
+  if (!isVersionSupported(issueVersion, latestVersion)) {
+    return 'Type: Unsupported Version';
+  }
+
+  // We want to encourage users to repro the issue on the highest available patch for the given minor.
+  const latestPatchForVersion = getLatestPatchForVersion(
+    issueVersion,
+    recentReleases,
+  );
+  if (latestPatchForVersion > issueVersion.patch) {
     return 'Needs: Verify on Latest Version';
   }
 };
 
-// We support N-2 minor versions. We also want to match the highest available patch for the given minor.
-// E.g. the latest release is 0.71.2. 0.71.0 -> Please upgrade. 0.69.8 -> OK. 0.69.7 -> Please upgrade.
-// releaseNames is expected to be an array sorted in the order of release recency.
-function isVersionSupported(actualVersion, latestVersion, releaseNames) {
-  // Assumes that releases are sorted in the order of recency (i.e. most recent releases are earlier in the list)
-  // This enables us to stop looking as soon as we find the first release with a matching major/minor version, since
-  // we know it's the most recent release, therefore the highest patch available.
-  const getLatestPatchForVersion = (version, releases) => {
-    for (releaseName of releases) {
-      const release = parseVersionFromString(releaseName);
-      if (release.major == version.major && release.minor == version.minor) {
-        return release.patch;
-      }
+// We support N-2 minor versions, and the latest major.
+function isVersionSupported(actualVersion, latestVersion) {
+  return;
+  actualVersion.major >= latestVersion.major &&
+    actualVersion.minor >= latestVersion.minor - 2;
+}
+
+// Assumes that releases are sorted in the order of recency (i.e. most recent releases are earlier in the list)
+// This enables us to stop looking as soon as we find the first release with a matching major/minor version, since
+// we know it's the most recent release, therefore the highest patch available.
+function getLatestPatchForVersion(version, releases) {
+  for (releaseName of releases) {
+    const release = parseVersionFromString(releaseName);
+    if (
+      release &&
+      release.major == version.major &&
+      release.minor == version.minor
+    ) {
+      return release.patch;
     }
-  };
-
-  // Very old version; user should upgrade to latest
-  if (
-    actualVersion.major != latestVersion.major ||
-    actualVersion.minor < latestVersion.minor - 2
-  ) {
-    return false;
   }
+}
 
-  // Supported minor, verify that the patch is also supported
-  // For now, we treat all prerelease versions as supported as long as they are on the same patch
-  const latestPatchForVersion = getLatestPatchForVersion(
-    actualVersion,
-    releaseNames,
-  );
-  return actualVersion.patch == latestPatchForVersion;
+function getReactNativeVersionFromIssueBodyIfExists(issue) {
+  if (!issue || !issue.body) return;
+  const rnVersionRegex = /React Native Version[\r\n]+(?<version>.+)[\r\n]*/;
+  const rnVersionMatch = issue.body.match(rnVersionRegex);
+  if (!rnVersionMatch || !rnVersionMatch.groups.version) return;
+  return rnVersionMatch.groups.version;
+}
+
+function reportedVersionIsNightly(unparsedVersionString, version) {
+  if (!unparsedVersionString && !version) return false;
+  const nightlyRegex = /nightly/i;
+  const nightlyMatch = unparsedVersionString.match(nightlyRegex);
+
+  const versionIsZero =
+    version.major == 0 && version.minor == 0 && version.patch == 0;
+  const versionIsNightly = nightlyMatch && nightlyMatch[0];
+  return versionIsZero || versionIsNightly;
 }
 
 function parseVersionFromString(version) {
   if (!version) return;
   // This will match the standard x.x.x semver format, as well as the non-standard prerelease x.x.x-rc.x
   const semverRegex =
-    /(?<major>[0-9]{1,2})\.(?<minor>[0-9]{1,2})\.(?<patch>[0-9]{1,2})(-[rR]{1}[cC]{1}\.(?<prerelease>[0-9]{1,2}))?/;
+    /(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(-[rR]{1}[cC]{1}\.(?<prerelease>\d+))?/;
   const versionMatch = version.match(semverRegex);
+  if (!versionMatch) return;
   const {major, minor, patch, prerelease} = versionMatch.groups;
   return {
     major: parseInt(major),

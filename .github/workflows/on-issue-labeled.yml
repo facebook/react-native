@@ -21,7 +21,6 @@ jobs:
           script: |
             const verifyVersion = require('./.github/workflows/verifyVersion.js')
             const labelToAdd = await verifyVersion(github, context);
-            console.log(labelToAdd);
 
             if(labelToAdd) {
               await github.rest.issues.addLabels({
