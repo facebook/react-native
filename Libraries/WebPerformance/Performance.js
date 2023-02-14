@@ -8,9 +8,11 @@
  * @flow strict
  */
 
+import type {EventCounts} from './EventCounts';
 import type {HighResTimeStamp} from './PerformanceEntry';
 
 import warnOnce from '../Utilities/warnOnce';
+import {EventCountsProxy} from './EventCounts';
 import NativePerformance from './NativePerformance';
 import {PerformanceEntry} from './PerformanceEntry';
 
@@ -83,9 +85,11 @@ function warnNoNativePerformance() {
 /**
  * Partial implementation of the Performance interface for RN,
  * corresponding to the standard in
- *  https://www.w3.org/TR/user-timing/#extensions-performance-interface
+ * https://www.w3.org/TR/user-timing/#extensions-performance-interface
  */
 export default class Performance {
+  eventCounts: EventCounts = EventCountsProxy;
+
   mark(
     markName: string,
     markOptions?: PerformanceMarkOptions,

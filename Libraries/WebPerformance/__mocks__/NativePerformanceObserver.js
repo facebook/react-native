@@ -15,8 +15,11 @@ import type {
   Spec as NativePerformanceObserver,
 } from '../NativePerformanceObserver';
 
+import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
+
 const reportingType: Set<RawPerformanceEntryType> = new Set();
 const durationThresholds: Map<RawPerformanceEntryType, number> = new Map();
+const eventCounts: Map<string, number> = new Map();
 let entries: Array<RawPerformanceEntry> = [];
 let onPerformanceEntryCallback: ?() => void;
 
@@ -55,6 +58,9 @@ export const NativePerformanceObserverMock: NativePerformanceObserver = {
       entries.push(entry);
       onPerformanceEntryCallback?.();
     }
+    if (entry.entryType === RawPerformanceEntryTypeValues.EVENT) {
+      eventCounts.set(entry.name, (eventCounts.get(entry.name) ?? 0) + 1);
+    }
   },
 
   setDurationThreshold: (
@@ -62,6 +68,10 @@ export const NativePerformanceObserverMock: NativePerformanceObserver = {
     durationThreshold: number,
   ) => {
     durationThresholds.set(entryType, durationThreshold);
+  },
+
+  getEventCounts: (): $ReadOnlyArray<[string, number]> => {
+    return Array.from(eventCounts.entries());
   },
 };
 

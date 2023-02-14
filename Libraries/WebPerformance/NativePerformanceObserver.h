@@ -76,6 +76,9 @@ class NativePerformanceObserver
       int32_t entryType,
       double durationThreshold);
 
+  std::vector<std::pair<std::string, uint32_t>> getEventCounts(
+      jsi::Runtime &rt);
+
  private:
 };
 
