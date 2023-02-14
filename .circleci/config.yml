@@ -568,6 +568,8 @@ jobs:
       - checkout_code_with_cache
       - setup_artifacts
       - setup_ruby
+      - brew_install:
+          package: xcbeautify
       - run:
           name: Run Ruby Tests
           command: |
