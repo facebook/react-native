@@ -1207,6 +1207,11 @@ jobs:
         description: The Hermes build type. Must be one of "Debug", "Release".
         type: enum
         enum: ["Debug", "Release"]
+      target:
+        default: "iphoneos"
+        description: "The target to build. Allowed values: iphoneos, iphonesimulator, catalyst, macos"
+        type: enum
+        enum: ["iphoneos", "iphonesimulator", "catalyst", "macos"]
     executor: reactnativeios
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -1244,16 +1249,100 @@ jobs:
             - with_hermesc_span:
                 flavor: << parameters.flavor >>
                 steps:
+                  - when:
+                      condition:
+                        equal: ["macos", << parameters.target >> ]
+                      steps:
+                        - run:
+                            name: Build the Hermes Mac frameworks
+                            command: |
+                              cd ./sdks/hermes || exit 1
+                              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
+                  - when:
+                      condition:
+                        not:
+                          equal: ["macos", << parameters.target >> ]
+                      steps:
+                        - run:
+                            name: Build the Hermes iOS frameworks
+                            command: |
+                              cd ./sdks/hermes || exit 1
+                              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh << parameters.target >>
+            - when:
+                condition:
+                  equal: [ "macos", << parameters.target >> ]
+                steps:
+                  - persist_to_workspace:
+                      root: ~/react-native/sdks/hermes
+                      paths:
+                        - destroot
+                        - build_macosx
+            - when:
+                condition:
+                  not:
+                    equal: [ "macos", << parameters.target >> ]
+                steps:
+                  - persist_to_workspace:
+                      root: ~/react-native/sdks/hermes
+                      paths:
+                        - destroot/Library
+                        - build_macosx/Library
+
+
+
+  package_hermes_macos:
+    parameters:
+      flavor:
+        default: "Debug"
+        description: The Hermes build type. Must be one of "Debug", "Release".
+        type: enum
+        enum: ["Debug", "Release"]
+    executor: reactnativeios
+    environment:
+      - HERMES_WS_DIR: *hermes_workspace_root
+      - HERMES_TARBALL_ARTIFACTS_DIR: *hermes_tarball_artifacts_dir
+      - HERMES_OSXBIN_ARTIFACTS_DIR: *hermes_osxbin_artifacts_dir
+    steps:
+      - checkout_code_with_cache
+      - run_yarn
+      - *attach_hermes_workspace
+      - run:
+          name: "Move destroot to the proper folder"
+          command: |
+            mkdir -p ~/react-native/sdks/hermes/destroot
+            mkdir -p ~/react-native/sdks/hermes/build_macosx
+            cp -R /tmp/hermes/destroot ~/react-native/sdks/hermes
+            cp -R /tmp/hermes/build_macosx ~/react-native/sdks/hermes
+      - get_react_native_version
+      - when:
+          condition:
+            equal: [ << parameters.flavor >>, "Debug"]
+          steps:
+            - restore_cache:
+                keys:
+                  - *hermes_workspace_debug_cache_key
+      - when:
+          condition:
+            equal: [ << parameters.flavor >>, "Release"]
+          steps:
+            - restore_cache:
+                keys:
+                  - *hermes_workspace_release_cache_key
+      - brew_install:
+          package: cmake
+      - with_hermes_tarball_cache_span:
+          flavor: << parameters.flavor >>
+          steps:
+            - with_hermesc_span:
+                flavor: << parameters.flavor >>
+                steps:
                   - run:
-                      name: Build the Hermes Mac frameworks
+                      name: "Create XCFramework"
                       command: |
+                        mkdir -p ./sdks/hermes/utils
+                        cp -R ./sdks/hermes-engine/utils ./sdks/hermes
                         cd ./sdks/hermes || exit 1
-                        BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
-                  - run:
-                      name: Build the Hermes iOS frameworks
-                      command: |
-                        cd ./sdks/hermes || exit 1
-                        BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh
+                        BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "build_framework"
             - run:
                 name: Package the Hermes Apple frameworks
                 command: |
@@ -1298,6 +1387,7 @@ jobs:
                 paths:
                   - hermes-runtime-darwin
                   - osx-bin
+
 
   build_hermesc_windows:
     executor:
@@ -1601,6 +1691,13 @@ workflows:
           matrix:
             parameters:
               flavor: ["Debug", "Release"]
+              target: ["iphoneos", "iphonesimulator", "catalyst", "macos"]
+      - package_hermes_macos:
+          requires:
+            - build_hermes_macos
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
       - build_hermesc_windows:
           requires:
             - prepare_hermes_workspace
@@ -1609,7 +1706,7 @@ workflows:
           release_type: "dry-run"
           requires:
             - build_hermesc_linux
-            - build_hermes_macos
+            - package_hermes_macos
             - build_hermesc_windows
       - test_js:
           run_disabled_tests: false
@@ -1778,7 +1875,7 @@ workflows:
                 use_frameworks: "DynamicFrameworks"
       - test_ios_rntester:
           requires:
-            - build_hermes_macos
+            - package_hermes_macos
           matrix:
             parameters:
               architecture: ["NewArch", "OldArch"]
@@ -1786,7 +1883,7 @@ workflows:
       - test_ios:
           run_unit_tests: true
           requires:
-            - build_hermes_macos
+            - package_hermes_macos
           matrix:
             parameters:
               jsengine: ["Hermes", "JSC"]
@@ -1829,6 +1926,13 @@ workflows:
           matrix:
             parameters:
               flavor: ["Debug", "Release"]
+              target: ["iphoneos", "iphonesimulator", "catalyst", "macos"]
+      - package_hermes_macos:
+          requires:
+            - build_hermes_macos
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
       - build_hermesc_windows:
           filters: *only_release_tags
           requires:
@@ -1840,7 +1944,7 @@ workflows:
           filters: *only_release_tags
           requires:
             - build_hermesc_linux
-            - build_hermes_macos
+            - package_hermes_macos
             - build_hermesc_windows
 
   package_and_publish_release_dryrun:
@@ -1866,6 +1970,13 @@ workflows:
           matrix:
             parameters:
               flavor: ["Debug", "Release"]
+              target: ["iphoneos", "iphonesimulator", "catalyst", "macos"]
+      - package_hermes_macos:
+          requires:
+            - build_hermes_macos
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
       - build_hermesc_windows:
           requires:
             - prepare_hermes_workspace
@@ -1874,7 +1985,7 @@ workflows:
           release_type: "dry-run"
           requires:
             - build_hermesc_linux
-            - build_hermes_macos
+            - package_hermes_macos
             - build_hermesc_windows
 
   analysis:
@@ -1906,6 +2017,13 @@ workflows:
           matrix:
             parameters:
               flavor: ["Debug", "Release"]
+              target: ["iphoneos", "iphonesimulator", "catalyst", "macos"]
+      - package_hermes_macos:
+          requires:
+            - build_hermes_macos
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
       - build_hermesc_windows:
           requires:
             - prepare_hermes_workspace
@@ -1913,7 +2031,7 @@ workflows:
           release_type: "nightly"
           requires:
             - build_hermesc_linux
-            - build_hermes_macos
+            - package_hermes_macos
             - build_hermesc_windows
 
   publish_bumped_packages:
