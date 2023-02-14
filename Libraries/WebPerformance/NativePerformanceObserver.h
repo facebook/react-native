@@ -69,6 +69,8 @@ class NativePerformanceObserver
       jsi::Runtime &rt,
       std::optional<AsyncCallback<>> callback);
 
+  void logRawEntry(jsi::Runtime &rt, RawPerformanceEntry entry);
+
  private:
 };
 
