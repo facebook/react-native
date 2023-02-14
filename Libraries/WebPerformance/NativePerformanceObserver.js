@@ -40,6 +40,7 @@ export interface Spec extends TurboModule {
     entryType: RawPerformanceEntryType,
     durationThreshold: number,
   ) => void;
+  +getEventCounts: () => $ReadOnlyArray<[string, number]>;
 }
 
 export default (TurboModuleRegistry.get<Spec>(
