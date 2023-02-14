@@ -189,6 +189,7 @@ int32_t gConfigInstanceCount = 0;
 
 YOGA_EXPORT WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   const YGNodeRef node = new YGNode{config};
+  YGAssert(config != nullptr, "Tried to construct YGNode with null config");
   YGAssertWithConfig(
       config, node != nullptr, "Could not allocate memory for node");
   Event::publish<Event::NodeAllocation>(node, {config});
@@ -4301,14 +4302,6 @@ YOGA_EXPORT void YGConfigSetExperimentalFeatureEnabled(
 YOGA_EXPORT bool YGConfigIsExperimentalFeatureEnabled(
     const YGConfigRef config,
     const YGExperimentalFeature feature) {
-  // S323291 + T145030974 + T145292944: Node config should never be null, but
-  // Yoga has a private API used by RN to set config which does not check, and
-  // we crash here where config is null. Add a null check as temporary
-  // remediation
-  if (config == nullptr) {
-    return false;
-  }
-
   return config->experimentalFeatures[feature];
 }
 
