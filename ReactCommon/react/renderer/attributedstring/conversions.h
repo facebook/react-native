@@ -9,7 +9,7 @@
 
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
-#include <react/debug/react_native_assert.h>
+#include <react/debug/react_native_expect.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
@@ -60,7 +60,7 @@ inline std::string toString(const DynamicTypeRamp &dynamicTypeRamp) {
   }
 
   LOG(ERROR) << "Unsupported DynamicTypeRamp value";
-  react_native_assert(false);
+  react_native_expect(false);
 
   // Sane default in case of parsing errors
   return "body";
@@ -70,7 +70,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     DynamicTypeRamp &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "caption2") {
@@ -98,14 +98,14 @@ inline void fromRawValue(
     } else {
       // sane default
       LOG(ERROR) << "Unsupported DynamicTypeRamp value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       result = DynamicTypeRamp::Body;
     }
     return;
   }
 
   LOG(ERROR) << "Unsupported DynamicTypeRamp type";
-  react_native_assert(false);
+  react_native_expect(false);
 
   // Sane default in case of parsing errors
   result = DynamicTypeRamp::Body;
@@ -124,7 +124,7 @@ inline std::string toString(const EllipsizeMode &ellipsisMode) {
   }
 
   LOG(ERROR) << "Unsupported EllipsizeMode value";
-  react_native_assert(false);
+  react_native_expect(false);
 
   // Sane default in case of parsing errors
   return "tail";
@@ -134,7 +134,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     EllipsizeMode &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "clip") {
@@ -148,14 +148,14 @@ inline void fromRawValue(
     } else {
       // sane default
       LOG(ERROR) << "Unsupported EllipsizeMode value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       result = EllipsizeMode::Tail;
     }
     return;
   }
 
   LOG(ERROR) << "Unsupported EllipsizeMode type";
-  react_native_assert(false);
+  react_native_expect(false);
 
   // Sane default in case of parsing errors
   result = EllipsizeMode::Tail;
@@ -172,7 +172,7 @@ inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
   }
 
   LOG(ERROR) << "Unsupported TextBreakStrategy value";
-  react_native_assert(false);
+  react_native_expect(false);
   return "highQuality";
 }
 
@@ -180,7 +180,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     TextBreakStrategy &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "simple") {
@@ -192,14 +192,14 @@ inline void fromRawValue(
     } else {
       // sane default
       LOG(ERROR) << "Unsupported TextBreakStrategy value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       result = TextBreakStrategy::HighQuality;
     }
     return;
   }
 
   LOG(ERROR) << "Unsupported TextBreakStrategy type";
-  react_native_assert(false);
+  react_native_expect(false);
   result = TextBreakStrategy::HighQuality;
 }
 
@@ -207,7 +207,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     FontWeight &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "normal") {
@@ -236,7 +236,7 @@ inline void fromRawValue(
       result = FontWeight::Weight900;
     } else {
       LOG(ERROR) << "Unsupported FontWeight value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       // sane default for prod
       result = FontWeight::Regular;
     }
@@ -244,7 +244,7 @@ inline void fromRawValue(
   }
 
   LOG(ERROR) << "Unsupported FontWeight type";
-  react_native_assert(false);
+  react_native_expect(false);
   result = FontWeight::Regular;
 }
 
@@ -256,7 +256,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     FontStyle &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "normal") {
@@ -267,7 +267,7 @@ inline void fromRawValue(
       result = FontStyle::Oblique;
     } else {
       LOG(ERROR) << "Unsupported FontStyle value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       // sane default for prod
       result = FontStyle::Normal;
     }
@@ -275,7 +275,7 @@ inline void fromRawValue(
   }
 
   LOG(ERROR) << "Unsupported FontStyle type";
-  react_native_assert(false);
+  react_native_expect(false);
   // sane default for prod
   result = FontStyle::Normal;
 }
@@ -291,7 +291,7 @@ inline std::string toString(const FontStyle &fontStyle) {
   }
 
   LOG(ERROR) << "Unsupported FontStyle value";
-  react_native_assert(false);
+  react_native_expect(false);
   // sane default for prod
   return "normal";
 }
@@ -300,7 +300,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     FontVariant &result) {
-  react_native_assert(value.hasType<std::vector<std::string>>());
+  react_native_expect(value.hasType<std::vector<std::string>>());
   result = FontVariant::Default;
   if (value.hasType<std::vector<std::string>>()) {
     auto items = std::vector<std::string>{value};
@@ -318,7 +318,7 @@ inline void fromRawValue(
             (FontVariant)((int)result | (int)FontVariant::ProportionalNums);
       } else {
         LOG(ERROR) << "Unsupported FontVariant value: " << item;
-        react_native_assert(false);
+        react_native_expect(false);
       }
       continue;
     }
@@ -357,7 +357,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     TextTransform &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "none") {
@@ -372,7 +372,7 @@ inline void fromRawValue(
       result = TextTransform::Unset;
     } else {
       LOG(ERROR) << "Unsupported TextTransform value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       // sane default for prod
       result = TextTransform::None;
     }
@@ -380,7 +380,7 @@ inline void fromRawValue(
   }
 
   LOG(ERROR) << "Unsupported TextTransform type";
-  react_native_assert(false);
+  react_native_expect(false);
   // sane default for prod
   result = TextTransform::None;
 }
@@ -400,7 +400,7 @@ inline std::string toString(const TextTransform &textTransform) {
   }
 
   LOG(ERROR) << "Unsupported TextTransform value";
-  react_native_assert(false);
+  react_native_expect(false);
   // sane default for prod
   return "none";
 }
@@ -409,7 +409,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     TextAlignment &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "auto") {
@@ -424,7 +424,7 @@ inline void fromRawValue(
       result = TextAlignment::Justified;
     } else {
       LOG(ERROR) << "Unsupported TextAlignment value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       // sane default for prod
       result = TextAlignment::Natural;
     }
@@ -459,7 +459,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     WritingDirection &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "natural" || string == "auto") {
@@ -470,7 +470,7 @@ inline void fromRawValue(
       result = WritingDirection::RightToLeft;
     } else {
       LOG(ERROR) << "Unsupported WritingDirection value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       // sane default for prod
       result = WritingDirection::Natural;
     }
@@ -501,7 +501,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     LineBreakStrategy &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "none") {
@@ -514,7 +514,7 @@ inline void fromRawValue(
       result = LineBreakStrategy::Standard;
     } else {
       LOG(ERROR) << "Unsupported LineBreakStrategy value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       // sane default for prod
       result = LineBreakStrategy::None;
     }
@@ -547,7 +547,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     TextDecorationLineType &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "none") {
@@ -564,7 +564,7 @@ inline void fromRawValue(
       result = TextDecorationLineType::UnderlineStrikethrough;
     } else {
       LOG(ERROR) << "Unsupported TextDecorationLineType value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       // sane default for prod
       result = TextDecorationLineType::None;
     }
@@ -590,7 +590,7 @@ inline std::string toString(
   }
 
   LOG(ERROR) << "Unsupported TextDecorationLineType value";
-  react_native_assert(false);
+  react_native_expect(false);
   // sane default for prod
   return "none";
 }
@@ -599,7 +599,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     TextDecorationStyle &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "solid") {
@@ -612,7 +612,7 @@ inline void fromRawValue(
       result = TextDecorationStyle::Dashed;
     } else {
       LOG(ERROR) << "Unsupported TextDecorationStyle value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       // sane default for prod
       result = TextDecorationStyle::Solid;
     }
@@ -637,7 +637,7 @@ inline std::string toString(const TextDecorationStyle &textDecorationStyle) {
   }
 
   LOG(ERROR) << "Unsupported TextDecorationStyle value";
-  react_native_assert(false);
+  react_native_expect(false);
   // sane default for prod
   return "solid";
 }
@@ -703,7 +703,7 @@ inline std::string toString(const AccessibilityRole &accessibilityRole) {
   }
 
   LOG(ERROR) << "Unsupported AccessibilityRole value";
-  react_native_assert(false);
+  react_native_expect(false);
   // sane default for prod
   return "none";
 }
@@ -712,7 +712,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     AccessibilityRole &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "none") {
@@ -773,7 +773,7 @@ inline void fromRawValue(
       result = AccessibilityRole::Toolbar;
     } else {
       LOG(ERROR) << "Unsupported AccessibilityRole value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       // sane default for prod
       result = AccessibilityRole::None;
     }
@@ -781,7 +781,7 @@ inline void fromRawValue(
   }
 
   LOG(ERROR) << "Unsupported AccessibilityRole type";
-  react_native_assert(false);
+  react_native_expect(false);
   // sane default for prod
   result = AccessibilityRole::None;
 }
@@ -797,7 +797,7 @@ inline std::string toString(const HyphenationFrequency &hyphenationFrequency) {
   }
 
   LOG(ERROR) << "Unsupported HyphenationFrequency value";
-  react_native_assert(false);
+  react_native_expect(false);
   return "none";
 }
 
@@ -805,7 +805,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     HyphenationFrequency &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "none") {
@@ -817,14 +817,14 @@ inline void fromRawValue(
     } else {
       // sane default
       LOG(ERROR) << "Unsupported HyphenationFrequency value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
       result = HyphenationFrequency::None;
     }
     return;
   }
 
   LOG(ERROR) << "Unsupported HyphenationFrequency type";
-  react_native_assert(false);
+  react_native_expect(false);
   result = HyphenationFrequency::None;
 }
 
