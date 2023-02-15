@@ -173,7 +173,7 @@ RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
  * avoid repeating the same boilerplate for every error message.
  */
 #define RCTLogConvertError(json, typeName) \
-  RCTLogError(@"JSON value '%@' of type %@ cannot be converted to %@", json, [json classForCoder], typeName)
+  RCTLogInfo(@"JSON value '%@' of type %@ cannot be converted to %@", json, [json classForCoder], typeName)
 
 /**
  * This macro is used for creating simple converter functions that just call

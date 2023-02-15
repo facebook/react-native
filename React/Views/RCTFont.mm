@@ -332,7 +332,7 @@ typedef NSDictionary RCTFontVariantDescriptor;
   });
   RCTFontVariantDescriptor *value = mapping[json];
   if (RCT_DEBUG && !value && [json description].length > 0) {
-    RCTLogError(
+    RCTLogInfo(
         @"Invalid RCTFontVariantDescriptor '%@'. should be one of: %@",
         json,
         [[mapping allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]);
