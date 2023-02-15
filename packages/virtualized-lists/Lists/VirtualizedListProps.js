@@ -112,7 +112,7 @@ type OptionalProps = {|
    * which will update the `highlighted` prop, but you can also add custom props with
    * `separators.updateProps`.
    */
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
+  ItemSeparatorComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
    * Takes an item from `data` and renders it into the list. Example usage:
    *
