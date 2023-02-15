@@ -300,8 +300,8 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     FontVariant &result) {
-  react_native_expect(value.hasType<std::vector<std::string>>());
   result = FontVariant::Default;
+  react_native_expect(value.hasType<std::vector<std::string>>());
   if (value.hasType<std::vector<std::string>>()) {
     auto items = std::vector<std::string>{value};
     for (const auto &item : items) {
