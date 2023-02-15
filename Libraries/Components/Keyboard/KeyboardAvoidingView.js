@@ -23,6 +23,7 @@ import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 import AccessibilityInfo from '../AccessibilityInfo/AccessibilityInfo';
 import View from '../View/View';
 import Keyboard from './Keyboard';
+import Dimensions from '../../Utilities/Dimensions'
 import * as React from 'react';
 
 type Props = $ReadOnly<{|
@@ -100,9 +101,11 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       );
     }
 
+    const deviceY = Dimensions.get('screen').height
+
     // Calculate the displacement needed for the view such that it
     // no longer overlaps with the keyboard
-    return Math.max(frame.y + frame.height - keyboardY, 0);
+    return Math.max(frame.y + deviceY - keyboardY, 0);
   }
 
   _onKeyboardChange = (event: ?KeyboardEvent) => {
