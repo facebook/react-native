@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/debug/react_native_expect.h>
 #include <react/renderer/components/iostextinput/primitives.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
@@ -158,16 +159,16 @@ inline void fromRawValue(
         result.end = pair.second;
       } else {
         LOG(ERROR) << "Unsupported Selection map key: " << pair.first;
-        react_native_assert(false);
+        react_native_expect(false);
       }
     }
     return;
   }
 
-  react_native_assert(value.hasType<std::vector<int>>());
+  react_native_expect(value.hasType<std::vector<int>>());
   if (value.hasType<std::vector<int>>()) {
     auto array = (std::vector<int>)value;
-    react_native_assert(array.size() == 2);
+    react_native_expect(array.size() == 2);
     if (array.size() >= 2) {
       result = {array.at(0), array.at(1)};
     } else {

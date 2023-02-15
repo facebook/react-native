@@ -9,7 +9,7 @@
 
 #include <butter/map.h>
 #include <glog/logging.h>
-#include <react/debug/react_native_assert.h>
+#include <react/debug/react_native_expect.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/Color.h>
@@ -41,7 +41,7 @@ inline void fromRawValue(
   } else if (value.hasType<std::vector<float>>()) {
     auto items = (std::vector<float>)value;
     auto length = items.size();
-    react_native_assert(length == 3 || length == 4);
+    react_native_expect(length == 3 || length == 4);
     colorComponents.red = items.at(0);
     colorComponents.green = items.at(1);
     colorComponents.blue = items.at(2);
@@ -86,10 +86,10 @@ inline void fromRawValue(
     return;
   }
 
-  react_native_assert(value.hasType<std::vector<Float>>());
+  react_native_expect(value.hasType<std::vector<Float>>());
   if (value.hasType<std::vector<Float>>()) {
     auto array = (std::vector<Float>)value;
-    react_native_assert(array.size() == 2);
+    react_native_expect(array.size() == 2);
     if (array.size() >= 2) {
       result = {array.at(0), array.at(1)};
     } else {
@@ -114,16 +114,16 @@ inline void fromRawValue(
         result.height = pair.second;
       } else {
         LOG(ERROR) << "Unsupported Size map key: " << pair.first;
-        react_native_assert(false);
+        react_native_expect(false);
       }
     }
     return;
   }
 
-  react_native_assert(value.hasType<std::vector<Float>>());
+  react_native_expect(value.hasType<std::vector<Float>>());
   if (value.hasType<std::vector<Float>>()) {
     auto array = (std::vector<Float>)value;
-    react_native_assert(array.size() == 2);
+    react_native_expect(array.size() == 2);
     if (array.size() >= 2) {
       result = {array.at(0), array.at(1)};
     } else {
@@ -158,16 +158,16 @@ inline void fromRawValue(
         result.right = pair.second;
       } else {
         LOG(ERROR) << "Unsupported EdgeInsets map key: " << pair.first;
-        react_native_assert(false);
+        react_native_expect(false);
       }
     }
     return;
   }
 
-  react_native_assert(value.hasType<std::vector<Float>>());
+  react_native_expect(value.hasType<std::vector<Float>>());
   if (value.hasType<std::vector<Float>>()) {
     auto array = (std::vector<Float>)value;
-    react_native_assert(array.size() == 4);
+    react_native_expect(array.size() == 4);
     if (array.size() >= 4) {
       result = {array.at(0), array.at(1), array.at(2), array.at(3)};
     } else {
@@ -202,16 +202,16 @@ inline void fromRawValue(
         result.bottomRight = pair.second;
       } else {
         LOG(ERROR) << "Unsupported CornerInsets map key: " << pair.first;
-        react_native_assert(false);
+        react_native_expect(false);
       }
     }
     return;
   }
 
-  react_native_assert(value.hasType<std::vector<Float>>());
+  react_native_expect(value.hasType<std::vector<Float>>());
   if (value.hasType<std::vector<Float>>()) {
     auto array = (std::vector<Float>)value;
-    react_native_assert(array.size() == 4);
+    react_native_expect(array.size() == 4);
     if (array.size() >= 4) {
       result = {array.at(0), array.at(1), array.at(2), array.at(3)};
     } else {
