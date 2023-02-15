@@ -13,9 +13,10 @@ import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
@@ -267,7 +268,8 @@ public class TextAttributeProps {
       } else if ("center".equals(textAlignPropValue)) {
         textAlignment = Gravity.CENTER_HORIZONTAL;
       } else {
-        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlignPropValue);
+        FLog.w(ReactConstants.TAG, "Invalid textAlign: " + textAlignPropValue);
+        textAlignment = Gravity.NO_GRAVITY;
       }
     }
     return textAlignment;
@@ -563,8 +565,8 @@ public class TextAttributeProps {
     } else if ("ltr".equals(layoutDirection)) {
       androidLayoutDirection = LayoutDirection.LTR;
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid layoutDirection: " + layoutDirection);
+      FLog.w(ReactConstants.TAG, "Invalid layoutDirection: " + layoutDirection);
+      androidLayoutDirection = UNSET;
     }
     return androidLayoutDirection;
   }
@@ -595,7 +597,8 @@ public class TextAttributeProps {
     } else if ("capitalize".equals(textTransform)) {
       mTextTransform = TextTransform.CAPITALIZE;
     } else {
-      throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
+      FLog.w(ReactConstants.TAG, "Invalid textTransform: " + textTransform);
+      mTextTransform = TextTransform.NONE;
     }
   }
 
