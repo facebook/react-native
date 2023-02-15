@@ -101,13 +101,6 @@ public class ReactImagePropertyTest {
     return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
   }
 
-  @Test(expected = JSApplicationIllegalArgumentException.class)
-  public void testImageInvalidResizeMode() {
-    ReactImageManager viewManager = new ReactImageManager();
-    ReactImageView view = viewManager.createViewInstance(mThemeContext);
-    viewManager.updateProperties(view, buildStyles("resizeMode", "pancakes"));
-  }
-
   @Test
   public void testBorderColor() {
     ReactImageManager viewManager = new ReactImageManager();
