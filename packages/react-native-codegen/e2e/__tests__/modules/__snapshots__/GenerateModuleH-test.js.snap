@@ -193,7 +193,7 @@ enum NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
-  static NativeEnumTurboModuleStatusRegularEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+  static NativeEnumTurboModuleStatusRegularEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"Active\\") {
       return NativeEnumTurboModuleStatusRegularEnum::Active;
@@ -206,7 +206,7 @@ struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusRegularEnum value) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusRegularEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
     if (value == NativeEnumTurboModuleStatusRegularEnum::Active) {
       return bridging::toJs(rt, \\"Active\\");
     } else if (value == NativeEnumTurboModuleStatusRegularEnum::Paused) {
@@ -225,7 +225,7 @@ enum NativeEnumTurboModuleStatusStrEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
-  static NativeEnumTurboModuleStatusStrEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+  static NativeEnumTurboModuleStatusStrEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"active\\") {
       return NativeEnumTurboModuleStatusStrEnum::Active;
@@ -238,7 +238,7 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusStrEnum value) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusStrEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
     if (value == NativeEnumTurboModuleStatusStrEnum::Active) {
       return bridging::toJs(rt, \\"active\\");
     } else if (value == NativeEnumTurboModuleStatusStrEnum::Paused) {
@@ -257,8 +257,8 @@ enum NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
-  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, int32_t value) {
-    
+  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    double value = (double)rawValue.asNumber();
     if (value == 2) {
       return NativeEnumTurboModuleStatusNumEnum::Active;
     } else if (value == 1) {
@@ -270,7 +270,7 @@ struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
     if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
       return bridging::toJs(rt, 2);
     } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
@@ -289,8 +289,8 @@ enum NativeEnumTurboModuleStatusFractionEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
-  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, float value) {
-    
+  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    double value = (double)rawValue.asNumber();
     if (value == 0.2f) {
       return NativeEnumTurboModuleStatusFractionEnum::Active;
     } else if (value == 0.1f) {
@@ -302,7 +302,7 @@ struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
     if (value == NativeEnumTurboModuleStatusFractionEnum::Active) {
       return bridging::toJs(rt, 0.2f);
     } else if (value == NativeEnumTurboModuleStatusFractionEnum::Paused) {
@@ -2136,7 +2136,7 @@ enum NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
-  static NativeEnumTurboModuleStatusRegularEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+  static NativeEnumTurboModuleStatusRegularEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"Active\\") {
       return NativeEnumTurboModuleStatusRegularEnum::Active;
@@ -2149,7 +2149,7 @@ struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusRegularEnum value) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusRegularEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
     if (value == NativeEnumTurboModuleStatusRegularEnum::Active) {
       return bridging::toJs(rt, \\"Active\\");
     } else if (value == NativeEnumTurboModuleStatusRegularEnum::Paused) {
@@ -2168,7 +2168,7 @@ enum NativeEnumTurboModuleStatusStrEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
-  static NativeEnumTurboModuleStatusStrEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+  static NativeEnumTurboModuleStatusStrEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"active\\") {
       return NativeEnumTurboModuleStatusStrEnum::Active;
@@ -2181,7 +2181,7 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusStrEnum value) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusStrEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
     if (value == NativeEnumTurboModuleStatusStrEnum::Active) {
       return bridging::toJs(rt, \\"active\\");
     } else if (value == NativeEnumTurboModuleStatusStrEnum::Paused) {
@@ -2200,8 +2200,8 @@ enum NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
-  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, int32_t value) {
-    
+  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    double value = (double)rawValue.asNumber();
     if (value == 2) {
       return NativeEnumTurboModuleStatusNumEnum::Active;
     } else if (value == 1) {
@@ -2213,7 +2213,7 @@ struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
     if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
       return bridging::toJs(rt, 2);
     } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
@@ -2232,8 +2232,8 @@ enum NativeEnumTurboModuleStatusFractionEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
-  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, float value) {
-    
+  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    double value = (double)rawValue.asNumber();
     if (value == 0.2f) {
       return NativeEnumTurboModuleStatusFractionEnum::Active;
     } else if (value == 0.1f) {
@@ -2245,7 +2245,7 @@ struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
     if (value == NativeEnumTurboModuleStatusFractionEnum::Active) {
       return bridging::toJs(rt, 0.2f);
     } else if (value == NativeEnumTurboModuleStatusFractionEnum::Paused) {

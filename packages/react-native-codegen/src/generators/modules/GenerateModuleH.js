@@ -318,18 +318,18 @@ const EnumTemplate = ({
   toCases: string,
   nativeEnumMemberType: NativeEnumMemberValueType,
 }) => {
-  const fromValue =
+  const [fromValue, fromValueConversion, toValue] =
     nativeEnumMemberType === 'std::string'
-      ? 'const jsi::String &rawValue'
-      : `${nativeEnumMemberType} value`;
-
-  const fromValueConvertion =
-    nativeEnumMemberType === 'std::string'
-      ? 'std::string value = rawValue.utf8(rt);'
-      : '';
-
-  const toValue =
-    nativeEnumMemberType === 'std::string' ? 'jsi::String' : 'jsi::Value';
+      ? [
+          'const jsi::String &rawValue',
+          'std::string value = rawValue.utf8(rt);',
+          'jsi::String',
+        ]
+      : [
+          'const jsi::Value &rawValue',
+          'double value = (double)rawValue.asNumber();',
+          'jsi::Value',
+        ];
 
   return `
 #pragma mark - ${enumName}
@@ -338,12 +338,12 @@ enum ${enumName} { ${values} };
 
 template <>
 struct Bridging<${enumName}> {
-  static ${enumName} fromJs(jsi::Runtime &rt, ${fromValue}) {
-    ${fromValueConvertion}
+  static ${enumName} fromJs(jsi::Runtime &rt, ${fromValue}, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    ${fromValueConversion}
     ${fromCases}
   }
 
-  static ${toValue} toJs(jsi::Runtime &rt, ${enumName} value) {
+  static ${toValue} toJs(jsi::Runtime &rt, ${enumName} value, const std::shared_ptr<CallInvoker> &jsInvoker) {
     ${toCases}
   }
 };`;
