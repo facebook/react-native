@@ -58,9 +58,10 @@ module.exports = async (github, context) => {
 
 // We support N-2 minor versions, and the latest major.
 function isVersionSupported(actualVersion, latestVersion) {
-  return;
-  actualVersion.major >= latestVersion.major &&
-    actualVersion.minor >= latestVersion.minor - 2;
+  return (
+    actualVersion.major >= latestVersion.major &&
+    actualVersion.minor >= latestVersion.minor - 2
+  );
 }
 
 // Assumes that releases are sorted in the order of recency (i.e. most recent releases are earlier in the list)
