@@ -13,6 +13,7 @@
 import type {HighResTimeStamp} from './PerformanceEntry';
 
 import warnOnce from '../Utilities/warnOnce';
+import EventCounts from './EventCounts';
 import MemoryInfo from './MemoryInfo';
 import NativePerformance from './NativePerformance';
 import {PerformanceEntry} from './PerformanceEntry';
@@ -86,9 +87,11 @@ function warnNoNativePerformance() {
 /**
  * Partial implementation of the Performance interface for RN,
  * corresponding to the standard in
- *  https://www.w3.org/TR/user-timing/#extensions-performance-interface
+ * https://www.w3.org/TR/user-timing/#extensions-performance-interface
  */
 export default class Performance {
+  eventCounts: EventCounts = new EventCounts();
+
   // Get the current JS memory information.
   get memory(): MemoryInfo {
     if (NativePerformance?.getSimpleMemoryInfo) {
