@@ -91,6 +91,8 @@ tasks.register("downloadAll") {
   dependsOn(":ReactAndroid:androidDependencies")
   dependsOn(":ReactAndroid:hermes-engine:dependencies")
   dependsOn(":ReactAndroid:hermes-engine:androidDependencies")
+  dependsOn(":packages:rn-tester:android:app:dependencies")
+  dependsOn(":packages:rn-tester:android:app:androidDependencies")
 }
 
 tasks.register("publishAllInsideNpmPackage") {
