@@ -6,15 +6,15 @@
  */
 
 #import "RCTAppDelegate.h"
-#import <React/RCTAppSetupUtils.h>
 #import <React/RCTRootView.h>
+#import "RCTAppSetupUtils.h"
 
 #if RCT_NEW_ARCH_ENABLED
 #import <RCTFabric/RCTFabricSurfaceHostingProxyRootView.h>
+#import <RCTFabric/RCTSurfacePresenter.h>
+#import <RCTFabric/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTCxxBridgeDelegate.h>
-#import <React/RCTSurfacePresenter.h>
-#import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <react/config/ReactNativeConfig.h>
 
