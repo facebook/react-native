@@ -24,6 +24,7 @@ is_new_arch_enabled = ENV[new_arch_enabled_flag] == "1"
 other_cflags = "$(inherited) -DRN_FABRIC_ENABLED " + folly_flags + (is_new_arch_enabled ? " -D"+"RCT_NEW_ARCH_ENABLED" : "")
 
 use_hermes = ENV['USE_HERMES'] == '1'
+use_frameworks = ENV['USE_FRAMEWORKS'] != nil
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/ReactCommon",
@@ -37,6 +38,12 @@ header_search_paths = [
 ].concat(use_hermes ? [
   "$(PODS_ROOT)/Headers/Public/React-hermes",
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
+] : []).concat(use_frameworks ? [
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios"
 ] : []).map{|p| "\"#{p}\""}.join(" ")
 
 Pod::Spec.new do |s|
