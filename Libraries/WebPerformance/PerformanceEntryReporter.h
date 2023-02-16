@@ -102,6 +102,10 @@ class PerformanceEntryReporter : public EventLogger {
   void onEventDispatch(EventTag tag) override;
   void onEventEnd(EventTag tag) override;
 
+  const std::unordered_map<std::string, uint32_t> &getEventCounts() const {
+    return eventCounts_;
+  }
+
  private:
   PerformanceEntryReporter() {}
 
@@ -117,6 +121,7 @@ class PerformanceEntryReporter : public EventLogger {
   std::vector<RawPerformanceEntry> entries_;
   std::mutex entriesMutex_;
   std::array<bool, (size_t)PerformanceEntryType::_COUNT> reportingType_{false};
+  std::unordered_map<std::string, uint32_t> eventCounts_;
 
   // Mark registry for "measure" lookup
   PerformanceMarkRegistryType marksRegistry_;

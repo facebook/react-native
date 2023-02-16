@@ -51,4 +51,12 @@ void NativePerformanceObserver::logRawEntry(
   PerformanceEntryReporter::getInstance().logEntry(entry);
 }
 
+std::vector<std::pair<std::string, uint32_t>>
+NativePerformanceObserver::getEventCounts(jsi::Runtime &rt) {
+  const auto &eventCounts =
+      PerformanceEntryReporter::getInstance().getEventCounts();
+  return std::vector<std::pair<std::string, uint32_t>>(
+      eventCounts.begin(), eventCounts.end());
+}
+
 } // namespace facebook::react

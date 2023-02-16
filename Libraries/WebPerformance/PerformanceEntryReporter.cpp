@@ -47,7 +47,12 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
 }
 
 void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
-  if (!isReportingType(static_cast<PerformanceEntryType>(entry.entryType))) {
+  const auto entryType = static_cast<PerformanceEntryType>(entry.entryType);
+  if (entryType == PerformanceEntryType::EVENT) {
+    eventCounts_[entry.name]++;
+  }
+
+  if (!isReportingType(entryType)) {
     return;
   }
 

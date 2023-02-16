@@ -98,7 +98,7 @@ const onPerformanceEntry = () => {
   }
 };
 
-function warnNoNativePerformanceObserver() {
+export function warnNoNativePerformanceObserver() {
   warnOnce(
     'missing-native-performance-observer',
     'Missing native implementation of PerformanceObserver',

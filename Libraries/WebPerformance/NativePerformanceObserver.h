@@ -71,6 +71,9 @@ class NativePerformanceObserver
 
   void logRawEntry(jsi::Runtime &rt, RawPerformanceEntry entry);
 
+  std::vector<std::pair<std::string, uint32_t>> getEventCounts(
+      jsi::Runtime &rt);
+
  private:
 };
 
