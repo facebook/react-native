@@ -166,7 +166,9 @@ commands:
       - run:
           name: Install Bundler for the current version of Ruby
           command: |
+            bundle env
             gem install bundler
+            bundle env
       - run:
           name: Bundle Install
           command: |
