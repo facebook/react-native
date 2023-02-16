@@ -18,7 +18,7 @@ namespace react {
 template <typename T>
 using LazyVector = FB::LazyVector<T, id>;
 }
-}
+} // namespace facebook
 
 template <typename ContainerT>
 NSArray *RCTConvertVecToArray(const ContainerT &vec, id (^convertor)(typename ContainerT::value_type element))

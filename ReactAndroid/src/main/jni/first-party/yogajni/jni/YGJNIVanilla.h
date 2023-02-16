@@ -8,5 +8,5 @@
 #include "jni.h"
 
 namespace YGJNIVanilla {
-void registerNatives(JNIEnv* env);
+void registerNatives(JNIEnv *env);
 };

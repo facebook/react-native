@@ -18,19 +18,19 @@ namespace vanillajni {
  * does not gets cleared before jni call completion
  */
 class YogaJniException : public std::exception {
-public:
+ public:
   YogaJniException();
   ~YogaJniException() override;
 
   explicit YogaJniException(jthrowable throwable);
 
-  YogaJniException(YogaJniException&& rhs);
+  YogaJniException(YogaJniException &&rhs);
 
-  YogaJniException(const YogaJniException& other);
+  YogaJniException(const YogaJniException &other);
 
   ScopedLocalRef<jthrowable> getThrowable() const noexcept;
 
-private:
+ private:
   ScopedGlobalRef<jthrowable> throwable_;
 };
 } // namespace vanillajni

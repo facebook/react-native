@@ -91,10 +91,11 @@ function reportedVersionIsNightly(unparsedVersionString, version) {
   if (!unparsedVersionString && !version) return false;
   const nightlyRegex = /nightly/i;
   const nightlyMatch = unparsedVersionString.match(nightlyRegex);
+  const versionIsNightly = nightlyMatch && nightlyMatch[0];
 
   const versionIsZero =
-    version.major == 0 && version.minor == 0 && version.patch == 0;
-  const versionIsNightly = nightlyMatch && nightlyMatch[0];
+    version && version.major == 0 && version.minor == 0 && version.patch == 0;
+
   return versionIsZero || versionIsNightly;
 }
 

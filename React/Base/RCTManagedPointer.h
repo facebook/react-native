@@ -34,7 +34,7 @@ RCTManagedPointer *managedPointer(P initializer)
   return [[RCTManagedPointer alloc] initWithPointer:std::move(ptr)];
 }
 
-}
-}
+} // namespace react
+} // namespace facebook
 
 #endif

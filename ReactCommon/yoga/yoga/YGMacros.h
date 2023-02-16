@@ -50,7 +50,8 @@ constexpr int count(); // can't use `= delete` due to a defect in clang < 3.9
 
 namespace detail {
 template <int... xs>
-constexpr int n() {
+constexpr int n()
+{
   return sizeof...(xs);
 }
 } // namespace detail
@@ -62,7 +63,7 @@ constexpr int n() {
 
 #define YG_ENUM_DECL(NAME, ...)                               \
   typedef YG_ENUM_BEGIN(NAME){__VA_ARGS__} YG_ENUM_END(NAME); \
-  WIN_EXPORT const char* NAME##ToString(NAME);
+  WIN_EXPORT const char *NAME##ToString(NAME);
 
 #ifdef __cplusplus
 #define YG_ENUM_SEQ_DECL(NAME, ...)  \
@@ -72,7 +73,8 @@ constexpr int n() {
   namespace yoga {                   \
   namespace enums {                  \
   template <>                        \
-  constexpr int count<NAME>() {      \
+  constexpr int count<NAME>()        \
+  {                                  \
     return detail::n<__VA_ARGS__>(); \
   }                                  \
   }                                  \

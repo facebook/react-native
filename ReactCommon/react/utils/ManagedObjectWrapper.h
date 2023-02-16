@@ -35,7 +35,7 @@ namespace detail {
  */
 void wrappedManagedObjectDeleter(void *cfPointer) noexcept;
 
-}
+} // namespace detail
 
 /*
  * `wrapManagedObject` and `unwrapManagedObject` are wrapper functions that

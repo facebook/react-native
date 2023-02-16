@@ -38,5 +38,5 @@ class NSDataBigString : public JSBigString {
   size_t m_length;
 };
 
-}
-}
+} // namespace react
+} // namespace facebook

@@ -43,5 +43,5 @@ class DispatchMessageQueueThread : public MessageQueueThread {
   RCTModuleData *moduleData_;
 };
 
-}
-}
+} // namespace react
+} // namespace facebook

@@ -27,15 +27,15 @@ class JSITestBase : public ::testing::TestWithParam<RuntimeFactory> {
  public:
   JSITestBase() : factory(GetParam()), runtime(factory()), rt(*runtime) {}
 
-  Value eval(const char* code) {
+  Value eval(const char *code) {
     return rt.global().getPropertyAsFunction(rt, "eval").call(rt, code);
   }
 
-  Function function(const std::string& code) {
+  Function function(const std::string &code) {
     return eval(("(" + code + ")").c_str()).getObject(rt).getFunction(rt);
   }
 
-  bool checkValue(const Value& value, const std::string& jsValue) {
+  bool checkValue(const Value &value, const std::string &jsValue) {
     return function("function(value) { return value == " + jsValue + "; }")
         .call(rt, std::move(value))
         .getBool();
@@ -43,7 +43,7 @@ class JSITestBase : public ::testing::TestWithParam<RuntimeFactory> {
 
   RuntimeFactory factory;
   std::unique_ptr<Runtime> runtime;
-  Runtime& rt;
+  Runtime &rt;
 };
 } // namespace jsi
 } // namespace facebook
