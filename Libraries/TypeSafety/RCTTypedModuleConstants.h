@@ -45,5 +45,5 @@ ModuleConstants<T> typedConstants(typename T::Builder::Input &&value)
   return [_RCTTypedModuleConstants newWithUnsafeDictionary:builder.buildUnsafeRawValue()];
 }
 
-} // namespace react
-} // namespace facebook
+}
+}
