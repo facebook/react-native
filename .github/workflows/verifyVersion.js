@@ -29,15 +29,15 @@ module.exports = async (github, context) => {
   // Ensure the version matches one we support
   const recentReleases = (
     await github.rest.repos.listReleases({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
+      owner: 'facebook',
+      repo: 'react-native',
     })
   ).data.map(release => release.name);
 
   const latestRelease = (
     await github.rest.repos.getLatestRelease({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
+      owner: 'facebook',
+      repo: 'react-native',
     })
   ).data;
   const latestVersion = parseVersionFromString(latestRelease.name);
