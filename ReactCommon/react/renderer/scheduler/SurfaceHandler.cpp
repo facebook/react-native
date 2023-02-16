@@ -9,7 +9,6 @@
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/debug/SystraceSection.h>
-#include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/uimanager/UIManager.h>
 
 namespace facebook::react {
@@ -239,10 +238,12 @@ void SurfaceHandler::constraintLayout(
 
     react_native_assert(
         link_.shadowTree && "`link_.shadowTree` must not be null.");
-    link_.shadowTree->commit([&](RootShadowNode const &oldRootShadowNode) {
-      return oldRootShadowNode.clone(
-          propsParserContext, layoutConstraints, layoutContext);
-    });
+    link_.shadowTree->commit(
+        [&](RootShadowNode const &oldRootShadowNode) {
+          return oldRootShadowNode.clone(
+              propsParserContext, layoutConstraints, layoutContext);
+        },
+        {/* default commit options */});
   }
 }
 
@@ -286,7 +287,8 @@ void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
           [&](RootShadowNode const & /*oldRootShadowNode*/) {
             return std::static_pointer_cast<RootShadowNode>(
                 revision.rootShadowNode->ShadowNode::clone({}));
-          });
+          },
+          {/* default commit options */});
       break;
   }
 }

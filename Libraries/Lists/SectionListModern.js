@@ -12,14 +12,14 @@
 
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {
-  Props as VirtualizedSectionListProps,
   ScrollToLocationParamsType,
   SectionBase as _SectionBase,
-} from './VirtualizedSectionList';
+  VirtualizedSectionListProps,
+} from '@react-native/virtualized-lists';
 import type {AbstractComponent, Element, ElementRef} from 'react';
 
 import Platform from '../Utilities/Platform';
-import VirtualizedSectionList from './VirtualizedSectionList';
+import {VirtualizedSectionList} from '@react-native/virtualized-lists';
 import React, {forwardRef, useImperativeHandle, useRef} from 'react';
 
 type Item = any;

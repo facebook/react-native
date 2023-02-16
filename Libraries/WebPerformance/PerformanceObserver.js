@@ -8,55 +8,15 @@
  * @flow strict
  */
 
-import type {
-  RawPerformanceEntry,
-  RawPerformanceEntryType,
-} from './NativePerformanceObserver';
 import type {PerformanceEntryType} from './PerformanceEntry';
 
 import warnOnce from '../Utilities/warnOnce';
-import NativePerformanceObserver, {
-  RawPerformanceEntryTypeValues,
-} from './NativePerformanceObserver';
+import NativePerformanceObserver from './NativePerformanceObserver';
 import {PerformanceEntry} from './PerformanceEntry';
-import {PerformanceEventTiming} from './PerformanceEventTiming';
-
-function rawToPerformanceEntryType(
-  type: RawPerformanceEntryType,
-): PerformanceEntryType {
-  switch (type) {
-    case RawPerformanceEntryTypeValues.MARK:
-      return 'mark';
-    case RawPerformanceEntryTypeValues.MEASURE:
-      return 'measure';
-    case RawPerformanceEntryTypeValues.EVENT:
-      return 'event';
-    default:
-      throw new TypeError(
-        `unexpected performance entry type received: ${type}`,
-      );
-  }
-}
-
-function rawToPerformanceEntry(entry: RawPerformanceEntry): PerformanceEntry {
-  if (entry.entryType === RawPerformanceEntryTypeValues.EVENT) {
-    return new PerformanceEventTiming({
-      name: entry.name,
-      startTime: entry.startTime,
-      duration: entry.duration,
-      processingStart: entry.processingStart,
-      processingEnd: entry.processingEnd,
-      interactionId: entry.interactionId,
-    });
-  } else {
-    return new PerformanceEntry({
-      name: entry.name,
-      entryType: rawToPerformanceEntryType(entry.entryType),
-      startTime: entry.startTime,
-      duration: entry.duration,
-    });
-  }
-}
+import {
+  performanceEntryTypeToRaw,
+  rawToPerformanceEntry,
+} from './RawPerformanceEntry';
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
 
@@ -222,7 +182,9 @@ export default class PerformanceObserver {
       : requestedEntryTypes;
     for (const type of newEntryTypes) {
       if (!observerCountPerEntryType.has(type)) {
-        NativePerformanceObserver.startReporting(type);
+        NativePerformanceObserver.startReporting(
+          performanceEntryTypeToRaw(type),
+        );
       }
       observerCountPerEntryType.set(
         type,
@@ -248,7 +210,9 @@ export default class PerformanceObserver {
         observerCountPerEntryType.get(type) ?? 0;
       if (numberOfObserversForThisType === 1) {
         observerCountPerEntryType.delete(type);
-        NativePerformanceObserver.stopReporting(type);
+        NativePerformanceObserver.stopReporting(
+          performanceEntryTypeToRaw(type),
+        );
       } else if (numberOfObserversForThisType !== 0) {
         observerCountPerEntryType.set(type, numberOfObserversForThisType - 1);
       }

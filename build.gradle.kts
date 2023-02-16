@@ -5,7 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-plugins { id("io.github.gradle-nexus.publish-plugin") version "1.1.0" }
+plugins {
+  id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+  id("com.android.library") version "7.4.1" apply false
+  id("com.android.application") version "7.4.1" apply false
+  id("de.undercouch.download") version "5.0.1" apply false
+  kotlin("android") version "1.6.10" apply false
+}
 
 val reactAndroidProperties = java.util.Properties()
 
@@ -25,19 +31,6 @@ group = "com.facebook.react"
 
 val ndkPath by extra(System.getenv("ANDROID_NDK"))
 val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION"))
-
-buildscript {
-  repositories {
-    google()
-    mavenCentral()
-    gradlePluginPortal()
-  }
-  dependencies {
-    classpath("com.android.tools.build:gradle:7.3.1")
-    classpath("de.undercouch:gradle-download-task:5.0.1")
-  }
-}
-
 val sonatypeUsername = findProperty("SONATYPE_USERNAME")?.toString()
 val sonatypePassword = findProperty("SONATYPE_PASSWORD")?.toString()
 
@@ -52,14 +45,8 @@ nexusPublishing {
 
 allprojects {
   repositories {
-    maven { url = uri("$rootDir/node_modules/jsc-android/dist") }
-    maven { url = uri("$rootDir/android") }
     google()
-    mavenCentral {
-      // We don't want to fetch react-native from Maven Central as there are
-      // older versions over there.
-      content { excludeGroup("com.facebook.react") }
-    }
+    mavenCentral()
   }
 }
 

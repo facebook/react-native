@@ -5,17 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-buildscript {
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.hasProperty("kotlinVersion") ? rootProject.ext.kotlinVersion : KOTLIN_VERSION}"
-    }
-}
-
 plugins {
     id("com.android.library")
     id("com.facebook.react")
     id("de.undercouch.download")
     id("maven-publish")
+    id("org.jetbrains.kotlin.android")
 }
 
 import com.facebook.react.tasks.internal.*
@@ -116,6 +111,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
                     new Pair("../ReactCommon/react/renderer/graphics/platform/cxx/", ""),
                 ]
+            ),
+            new PrefabPreprocessingEntry(
+                "rrc_root",
+                new Pair("../ReactCommon/react/renderer/components/root/", "react/renderer/components/root/")
             ),
             new PrefabPreprocessingEntry(
                 "rrc_view",
@@ -243,6 +242,7 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
 }
 
@@ -257,6 +257,7 @@ task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Down
     src("https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz"))
 }
 
@@ -273,6 +274,7 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
 }
 
@@ -289,6 +291,7 @@ task downloadFmt(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/fmtlib/fmt/archive/${FMT_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz"))
 }
 
@@ -305,6 +308,7 @@ task downloadLibevent(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable/libevent-${LIBEVENT_VERSION}-stable.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "libevent-${LIBEVENT_VERSION}.tar.gz"))
 }
 
@@ -320,6 +324,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
 }
 
@@ -416,6 +421,7 @@ task installArchives {
 android {
     buildToolsVersion = "33.0.0"
     compileSdkVersion 33
+    namespace "com.facebook.react"
 
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
@@ -469,6 +475,7 @@ android {
                     "react_render_core",
                     "react_render_graphics",
                     "rrc_image",
+                    "rrc_root",
                     "rrc_view",
                     "jsi",
                     "glog",
@@ -564,6 +571,9 @@ android {
         }
         rrc_image {
             headers(new File(prefabHeadersDir, "rrc_image").absolutePath)
+        }
+        rrc_root {
+            headers(new File(prefabHeadersDir, "rrc_root").absolutePath)
         }
         rrc_view {
             headers(new File(prefabHeadersDir, "rrc_view").absolutePath)
@@ -666,12 +676,7 @@ react {
     // TODO: The library name is chosen for parity with Fabric components & iOS
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
-    root = file("..")
     jsRootDir = file("../Libraries")
-    reactNativeDir = file("$projectDir/..")
-    // We search for the codegen in either one of the `node_modules` folder or in the
-    // root packages folder (that's for when we build from source without calling `yarn install`).
-    codegenDir = file(findNodeModulePath(projectDir, "@react-native/codegen") ?: "../packages/react-native-codegen/")
 }
 
 apply plugin: "org.jetbrains.kotlin.android"

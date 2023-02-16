@@ -94,7 +94,7 @@ class Binding : public jni::HybridClass<Binding>,
   void unregisterSurface(SurfaceHandlerBinding *surfaceHandler);
 
   void schedulerDidFinishTransaction(
-      MountingCoordinator::Shared const &mountingCoordinator) override;
+      MountingCoordinator::Shared mountingCoordinator) override;
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,

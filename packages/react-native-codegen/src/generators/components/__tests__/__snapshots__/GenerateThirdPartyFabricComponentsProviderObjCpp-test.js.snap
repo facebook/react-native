@@ -44,6 +44,8 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
     {\\"InsetsPropNativeComponent\\", InsetsPropNativeComponentCls}, // INSETS_PROP
 
+    {\\"DimensionPropNativeComponent\\", DimensionPropNativeComponentCls}, // DIMENSION_PROP
+
     {\\"ArrayPropsNativeComponent\\", ArrayPropsNativeComponentCls}, // ARRAY_PROPS
 
     {\\"ArrayPropsNativeComponent\\", ArrayPropsNativeComponentCls}, // ARRAY_PROPS_WITH_NESTED_OBJECT

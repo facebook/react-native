@@ -484,14 +484,14 @@ std::shared_ptr<FabricMountingManager> Binding::verifyMountingManager(
 }
 
 void Binding::schedulerDidFinishTransaction(
-    MountingCoordinator::Shared const &mountingCoordinator) {
+    MountingCoordinator::Shared mountingCoordinator) {
   auto mountingManager =
       verifyMountingManager("Binding::schedulerDidFinishTransaction");
   if (!mountingManager) {
     return;
   }
 
-  mountingManager->executeMount(mountingCoordinator);
+  mountingManager->executeMount(std::move(mountingCoordinator));
 }
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(

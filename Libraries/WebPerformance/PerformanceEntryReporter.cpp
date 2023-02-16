@@ -206,7 +206,7 @@ void PerformanceEntryReporter::scheduleFlushBuffer() {
 struct StrKey {
   uint32_t key;
   constexpr StrKey(const char *s)
-      : key(folly::hash::fnv32_buf(s, std::strlen(s))) {}
+      : key(folly::hash::fnv32_buf(s, sizeof(s) - 1)) {}
 
   constexpr bool operator==(const StrKey &rhs) const {
     return key == rhs.key;

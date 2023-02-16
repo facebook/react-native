@@ -356,7 +356,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 #pragma mark - RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
+- (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared)mountingCoordinator
 {
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }

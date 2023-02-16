@@ -182,3 +182,22 @@ jobs:
               repo: context.repo.repo,
               labels: ['Needs: Author Feedback']
             })
+  type-expo:
+    runs-on: ubuntu-latest
+    if: "${{ contains(github.event.label.name, 'Type: Expo') }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `It looks like your issue is related to Expo and not React Native core. Please open your issue on an [Expo's repository](https://github.com/expo/expo/issues/new). If you are able to create a repro that showcases that this issue is also happening in React Native vanilla, we will be happy to re-open.`,
+            })
+            await github.rest.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "closed",
+            })

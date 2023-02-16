@@ -14,7 +14,6 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.fabric.FabricSoLoader;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 
@@ -56,8 +55,7 @@ public class EventEmitterWrapper {
     if (!isValid()) {
       return;
     }
-    NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
-    invokeEvent(eventName, payload, eventCategory);
+    invokeEvent(eventName, (NativeMap) params, eventCategory);
   }
 
   /**
@@ -72,8 +70,7 @@ public class EventEmitterWrapper {
     if (!isValid()) {
       return;
     }
-    NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
-    invokeUniqueEvent(eventName, payload, customCoalesceKey);
+    invokeUniqueEvent(eventName, (NativeMap) params, customCoalesceKey);
   }
 
   public synchronized void destroy() {

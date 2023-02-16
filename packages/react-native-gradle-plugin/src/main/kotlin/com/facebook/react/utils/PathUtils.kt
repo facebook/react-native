@@ -11,8 +11,10 @@ package com.facebook.react.utils
 
 import com.facebook.react.ReactExtension
 import com.facebook.react.model.ModelPackageJson
+import com.facebook.react.utils.Os.cliPath
 import java.io.File
 import org.gradle.api.Project
+import org.gradle.api.file.DirectoryProperty
 
 /**
  * Computes the entry file for React Native. The Algo follows this order:
@@ -130,7 +132,7 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
   val builtHermesc =
       getBuiltHermescFile(projectRoot, System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR"))
   if (builtHermesc.exists()) {
-    return builtHermesc.absolutePath
+    return builtHermesc.cliPath(projectRoot)
   }
 
   // 3. If the react-native contains a pre-built hermesc, use it.
@@ -142,7 +144,7 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
 
   val prebuiltHermes = File(projectRoot, prebuiltHermesPath)
   if (prebuiltHermes.exists()) {
-    return prebuiltHermes.absolutePath
+    return prebuiltHermes.cliPath(projectRoot)
   }
 
   error(
@@ -188,13 +190,13 @@ internal fun projectPathToLibraryName(projectPath: String): String =
  * Gradle module (generally the case for library projects) or we fallback to looking into the `root`
  * folder of a React Native project (generally the case for app projects).
  */
-internal fun findPackageJsonFile(project: Project, extension: ReactExtension): File? {
+internal fun findPackageJsonFile(project: Project, rootProperty: DirectoryProperty): File? {
   val inParent = project.file("../package.json")
   if (inParent.exists()) {
     return inParent
   }
 
-  val fromExtension = extension.root.file("package.json").orNull?.asFile
+  val fromExtension = rootProperty.file("package.json").orNull?.asFile
   if (fromExtension?.exists() == true) {
     return fromExtension
   }
@@ -206,12 +208,15 @@ internal fun findPackageJsonFile(project: Project, extension: ReactExtension): F
  * Function to look for the `package.json` and parse it. It returns a [ModelPackageJson] if found or
  * null others.
  *
- * Please note that this function access the [ReactExtension] field properties and calls .get() on
- * them, so calling this during apply() of the ReactPlugin is not recommended. It should be invoked
- * inside lazy lambdas or at execution time.
+ * Please note that this function access the [DirectoryProperty] parameter and calls .get() on them,
+ * so calling this during apply() of the ReactPlugin is not recommended. It should be invoked inside
+ * lazy lambdas or at execution time.
  */
-internal fun readPackageJsonFile(project: Project, extension: ReactExtension): ModelPackageJson? {
-  val packageJson = findPackageJsonFile(project, extension)
+internal fun readPackageJsonFile(
+    project: Project,
+    rootProperty: DirectoryProperty
+): ModelPackageJson? {
+  val packageJson = findPackageJsonFile(project, rootProperty)
   return packageJson?.let { JsonUtils.fromCodegenJson(it) }
 }
 

@@ -85,6 +85,15 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderEndColor: {
             process: require('../../StyleSheet/processColor').default,
           },
+          borderBlockColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
+          borderBlockEndColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
+          borderBlockStartColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
 
           focusable: true,
           overflow: true,

@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import com.facebook.yoga.YogaValue;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
@@ -69,14 +70,13 @@ public class ReactPropertyProcessor extends AbstractProcessor {
   private static final Map<TypeName, String> DEFAULT_TYPES;
   private static final Set<TypeName> BOXED_PRIMITIVES;
 
-  private static final TypeName PROPS_TYPE =
-      ClassName.get("com.facebook.react.uimanager", "ReactStylesDiffMap");
   private static final TypeName OBJECT_TYPE = TypeName.get(Object.class);
   private static final TypeName STRING_TYPE = TypeName.get(String.class);
   private static final TypeName READABLE_MAP_TYPE = TypeName.get(ReadableMap.class);
   private static final TypeName READABLE_ARRAY_TYPE = TypeName.get(ReadableArray.class);
   private static final TypeName DYNAMIC_TYPE = TypeName.get(Dynamic.class);
   private static final TypeName DYNAMIC_FROM_OBJECT_TYPE = TypeName.get(DynamicFromObject.class);
+  private static final TypeName YOGA_VALUE_TYPE = TypeName.get(YogaValue.class);
 
   private static final TypeName VIEW_MANAGER_TYPE =
       ClassName.get("com.facebook.react.uimanager", "ViewManager");
@@ -120,6 +120,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     DEFAULT_TYPES.put(READABLE_ARRAY_TYPE, "Array");
     DEFAULT_TYPES.put(READABLE_MAP_TYPE, "Map");
     DEFAULT_TYPES.put(DYNAMIC_TYPE, "Dynamic");
+    DEFAULT_TYPES.put(YOGA_VALUE_TYPE, "YogaValue");
 
     BOXED_PRIMITIVES = new HashSet<>();
     BOXED_PRIMITIVES.add(TypeName.BOOLEAN.box());
@@ -362,13 +363,20 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       ClassInfo classInfo, PropertyInfo info, CodeBlock.Builder builder) {
     TypeName propertyType = info.propertyType;
     if (propertyType.equals(STRING_TYPE)) {
-      return builder.add("($L)value", STRING_TYPE);
+      return builder.add("value instanceof $L ? ($L)value : null", STRING_TYPE, STRING_TYPE);
     } else if (propertyType.equals(READABLE_ARRAY_TYPE)) {
-      return builder.add("($L)value", READABLE_ARRAY_TYPE); // TODO: use real type but needs import
+      return builder.add(
+          "value instanceof $L ? ($L)value : null",
+          READABLE_ARRAY_TYPE,
+          READABLE_ARRAY_TYPE); // TODO: use real type but needs import
     } else if (propertyType.equals(READABLE_MAP_TYPE)) {
-      return builder.add("($L)value", READABLE_MAP_TYPE);
+      return builder.add(
+          "value instanceof $L ? ($L)value : null", READABLE_MAP_TYPE, READABLE_MAP_TYPE);
     } else if (propertyType.equals(DYNAMIC_TYPE)) {
       return builder.add("new $L(value)", DYNAMIC_FROM_OBJECT_TYPE);
+    } else if (propertyType.equals(YOGA_VALUE_TYPE)) {
+      return builder.add(
+          "$T.getDimension(value)", com.facebook.react.bridge.DimensionPropConverter.class);
     }
 
     if (BOXED_PRIMITIVES.contains(propertyType)) {
@@ -376,40 +384,46 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     }
 
     if (propertyType.equals(TypeName.BOOLEAN)) {
-      return builder.add("value == null ? $L : (boolean) value", info.mProperty.defaultBoolean());
+      return builder.add(
+          "!(value instanceof Boolean) ? $L : (boolean)value", info.mProperty.defaultBoolean());
     }
     if (propertyType.equals(TypeName.DOUBLE)) {
       double defaultDouble = info.mProperty.defaultDouble();
       if (Double.isNaN(defaultDouble)) {
-        return builder.add("value == null ? $T.NaN : (double) value", Double.class);
+        return builder.add("!(value instanceof Double) ? $T.NaN : (double)value", Double.class);
       } else {
-        return builder.add("value == null ? $Lf : (double) value", defaultDouble);
+        return builder.add("!(value instanceof Double) ? $Lf : (double)value", defaultDouble);
       }
     }
     if (propertyType.equals(TypeName.FLOAT)) {
       float defaultFloat = info.mProperty.defaultFloat();
       if (Float.isNaN(defaultFloat)) {
-        return builder.add("value == null ? $T.NaN : ((Double)value).floatValue()", Float.class);
+        return builder.add(
+            "!(value instanceof Double) ? $T.NaN : ((Double)value).floatValue()", Float.class);
       } else {
-        return builder.add("value == null ? $Lf : ((Double)value).floatValue()", defaultFloat);
+        return builder.add(
+            "!(value instanceof Double) ? $Lf : ((Double)value).floatValue()", defaultFloat);
       }
     }
     if ("Color".equals(info.mProperty.customType())) {
       switch (classInfo.getType()) {
         case VIEW_MANAGER:
           return builder.add(
-              "value == null ? $L : $T.getColor(value, view.getContext())",
+              "value == null ? $L : $T.getColor(value, view.getContext(), $L)",
               info.mProperty.defaultInt(),
-              com.facebook.react.bridge.ColorPropConverter.class);
+              com.facebook.react.bridge.ColorPropConverter.class,
+              info.mProperty.defaultInt());
         case SHADOW_NODE:
           return builder.add(
-              "value == null ? $L : $T.getColor(value, node.getThemedContext())",
+              "value == null ? $L : $T.getColor(value, node.getThemedContext(), $L)",
               info.mProperty.defaultInt(),
-              com.facebook.react.bridge.ColorPropConverter.class);
+              com.facebook.react.bridge.ColorPropConverter.class,
+              info.mProperty.defaultInt());
       }
     } else if (propertyType.equals(TypeName.INT)) {
       return builder.add(
-          "value == null ? $L : ((Double)value).intValue()", info.mProperty.defaultInt());
+          "!(value instanceof Double) ? $L : ((Double)value).intValue()",
+          info.mProperty.defaultInt());
     }
 
     throw new IllegalArgumentException();
@@ -420,7 +434,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     CodeBlock.Builder builder = CodeBlock.builder();
     for (PropertyInfo propertyInfo : properties) {
       try {
-        String typeName = getPropertypTypeName(propertyInfo.mProperty, propertyInfo.propertyType);
+        String typeName = getPropertyTypeName(propertyInfo.mProperty, propertyInfo.propertyType);
         builder.addStatement("props.put($S, $S)", propertyInfo.mProperty.name(), typeName);
       } catch (IllegalArgumentException e) {
         throw new ReactPropertyException(e.getMessage(), propertyInfo);
@@ -430,7 +444,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     return builder.build();
   }
 
-  private static String getPropertypTypeName(Property property, TypeName propertyType) {
+  private static String getPropertyTypeName(Property property, TypeName propertyType) {
     String defaultType = DEFAULT_TYPES.get(propertyType);
     String useDefaultType =
         property instanceof RegularProperty

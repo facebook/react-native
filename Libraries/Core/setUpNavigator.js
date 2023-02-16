@@ -12,10 +12,11 @@
 
 const {polyfillObjectProperty} = require('../Utilities/PolyfillFunctions');
 
-let navigator = global.navigator;
+const navigator = global.navigator;
 if (navigator === undefined) {
-  global.navigator = navigator = {};
+  // $FlowExpectedError[cannot-write] The global isn't writable anywhere but here, where we define it.
+  global.navigator = {product: 'ReactNative'};
+} else {
+  // see https://github.com/facebook/react-native/issues/10881
+  polyfillObjectProperty(navigator, 'product', () => 'ReactNative');
 }
-
-// see https://github.com/facebook/react-native/issues/10881
-polyfillObjectProperty(navigator, 'product', () => 'ReactNative');

@@ -8,9 +8,12 @@
  * @flow strict
  */
 
+// flowlint unsafe-getters-setters:off
+
 import type {HighResTimeStamp} from './PerformanceEntry';
 
 import warnOnce from '../Utilities/warnOnce';
+import MemoryInfo from './MemoryInfo';
 import NativePerformance from './NativePerformance';
 import {PerformanceEntry} from './PerformanceEntry';
 
@@ -86,6 +89,33 @@ function warnNoNativePerformance() {
  *  https://www.w3.org/TR/user-timing/#extensions-performance-interface
  */
 export default class Performance {
+  // Get the current JS memory information.
+  get memory(): MemoryInfo {
+    if (NativePerformance?.getSimpleMemoryInfo) {
+      // JSI API implementations may have different variants of names for the JS
+      // heap information we need here. We will parse the result based on our
+      // guess of the implementation for now.
+      const memoryInfo = NativePerformance.getSimpleMemoryInfo();
+      if (memoryInfo.hasOwnProperty('hermes_heapSize')) {
+        // We got memory information from Hermes
+        const {hermes_heapSize, hermes_allocatedBytes} = memoryInfo;
+        const totalJSHeapSize = Number(hermes_heapSize);
+        const usedJSHeapSize = Number(hermes_allocatedBytes);
+
+        return new MemoryInfo({
+          jsHeapSizeLimit: null, // We don't know the heap size limit from Hermes.
+          totalJSHeapSize: isNaN(totalJSHeapSize) ? null : totalJSHeapSize,
+          usedJSHeapSize: isNaN(usedJSHeapSize) ? null : usedJSHeapSize,
+        });
+      } else {
+        // JSC and V8 has no native implementations for memory information in JSI::Instrumentation
+        return new MemoryInfo();
+      }
+    }
+
+    return new MemoryInfo();
+  }
+
   mark(
     markName: string,
     markOptions?: PerformanceMarkOptions,

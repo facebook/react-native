@@ -19,8 +19,19 @@ declare var global: {
   // setUpGlobals
   +window: typeof global,
   +self: typeof global,
+  +process: {
+    +env: {
+      +NODE_ENV: 'development' | 'production',
+    },
+    +argv?: $ReadOnlyArray<string>,
+  },
 
-  // setXHR
+  // setUpPerformance
+  +performance: {
+    +now: () => number,
+  },
+
+  // setUpXHR
   +XMLHttpRequest: typeof XMLHttpRequest,
   +FormData: typeof FormData,
   +fetch: typeof fetch,
@@ -39,17 +50,27 @@ declare var global: {
   // setUpAlert
   +alert: typeof alert,
 
+  // setUpNavigator
+  +navigator: {
+    +product: 'ReactNative',
+    +appName?: ?string,
+    ...
+  },
+
   // setUpTimers
-  +clearInterval: typeof clearInterval,
-  +clearTimeout: typeof clearTimeout,
   +setInterval: typeof setInterval,
+  +clearInterval: typeof clearInterval,
   +setTimeout: typeof setTimeout,
+  +clearTimeout: typeof clearTimeout,
   +requestAnimationFrame: typeof requestAnimationFrame,
   +cancelAnimationFrame: typeof cancelAnimationFrame,
   +requestIdleCallback: typeof requestIdleCallback,
   +cancelIdleCallback: typeof cancelIdleCallback,
-  +setTimeout: typeof setTimeout,
   +queueMicrotask: typeof queueMicrotask,
+  +setImmediate: typeof setImmediate,
+  +clearImmediate: typeof clearImmediate,
+
+  // Polyfills
   +console: typeof console,
 
   // JavaScript environments specific
@@ -58,6 +79,10 @@ declare var global: {
   // Internal-specific
   +__DEV__?: boolean,
   +RN$Bridgeless?: boolean,
+
+  // setupDOM
+  +DOMRect: typeof DOMRect,
+  +DOMRectReadOnly: typeof DOMRectReadOnly,
 
   // Undeclared properties are implicitly `any`.
   [string | symbol]: any,

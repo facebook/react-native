@@ -281,7 +281,7 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
   // initial revision never contains any commits so mounting it here is
   // incorrect
   if (commitMode == CommitMode::Normal && revision.number != INITIAL_REVISION) {
-    mount(revision);
+    mount(revision, true);
   }
 }
 
@@ -402,7 +402,7 @@ CommitStatus ShadowTree::tryCommit(
   emitLayoutEvents(affectedLayoutableNodes);
 
   if (commitMode == CommitMode::Normal) {
-    mount(newRevision);
+    mount(newRevision, commitOptions.mountSynchronously);
   }
 
   return CommitStatus::Succeeded;
@@ -413,9 +413,12 @@ ShadowTreeRevision ShadowTree::getCurrentRevision() const {
   return currentRevision_;
 }
 
-void ShadowTree::mount(ShadowTreeRevision const &revision) const {
+void ShadowTree::mount(
+    ShadowTreeRevision const &revision,
+    bool mountSynchronously) const {
   mountingCoordinator_->push(revision);
-  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
+  delegate_.shadowTreeDidFinishTransaction(
+      mountingCoordinator_, mountSynchronously);
 }
 
 void ShadowTree::commitEmptyTree() const {
@@ -427,7 +430,8 @@ void ShadowTree::commitEmptyTree() const {
                 /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                 /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
             });
-      });
+      },
+      {/* default commit options */});
 }
 
 void ShadowTree::emitLayoutEvents(
@@ -457,7 +461,7 @@ void ShadowTree::emitLayoutEvents(
 }
 
 void ShadowTree::notifyDelegatesOfUpdates() const {
-  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
+  delegate_.shadowTreeDidFinishTransaction(mountingCoordinator_, true);
 }
 
 } // namespace facebook::react

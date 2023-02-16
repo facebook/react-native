@@ -9,6 +9,7 @@
  */
 
 import type {
+  DimensionValue,
   EdgeInsetsValue,
   PointValue,
 } from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
@@ -35,8 +36,10 @@ type NativeProps = $ReadOnly<{|
   srcs?: $ReadOnlyArray<ImageSource>,
   points?: $ReadOnlyArray<PointValue>,
   edgeInsets?: $ReadOnlyArray<EdgeInsetsValue>,
+  dimensions?: $ReadOnlyArray<DimensionValue>,
   sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
   object?: $ReadOnlyArray<$ReadOnly<{|prop: string|}>>,
+  arrayOfObjects?: $ReadOnlyArray<$ReadOnly<{|prop1: Float, prop2: Int32|}>>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(

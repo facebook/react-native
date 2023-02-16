@@ -39,6 +39,19 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance>,
       std::optional<std::string> endMark);
   void clearMeasures(jsi::Runtime &rt, std::optional<std::string> measureName);
 
+  // To align with web API, we will make sure to return three properties
+  // (jsHeapSizeLimit, totalJSHeapSize, usedJSHeapSize) + anything needed from
+  // the VM side.
+  // `jsHeapSizeLimit`: The maximum size of the heap, in bytes, that
+  // is available to the context.
+  // `totalJSHeapSize`: The total allocated heap size, in bytes.
+  // `usedJSHeapSize`: The currently active segment of JS heap, in
+  // bytes.
+  //
+  // Note that we use int64_t here and it's ok to lose precision in JS doubles
+  // for heap size information, as double's 2^53 sig bytes is large enough.
+  std::unordered_map<std::string, double> getSimpleMemoryInfo(jsi::Runtime &rt);
+
  private:
 };
 

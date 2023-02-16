@@ -34,10 +34,6 @@ references:
     attach_workspace:
       at: *hermes_workspace_root
 
-  main_only: &main_only
-    filters:
-      branches:
-        only: main
   main_or_stable_only: &main_or_stable_only
     filters:
       branches:
@@ -115,7 +111,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:6.2
+      - image: reactnativecommunity/react-native-android:7.0
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
@@ -452,24 +448,9 @@ jobs:
     steps:
       - checkout
       - run_yarn
-
-
-      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
-      - run:
-          name: Install additional GitHub bot dependencies
-          # TEMP: Added workaround from https://github.com/nodesource/distributions/issues/1266#issuecomment-932583579
-          command: |
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt update && apt install -y shellcheck jq
-            apt-get -y install openssl ca-certificates
-            update-ca-certificates
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt update && apt install -y shellcheck jq
-
       - run:
           name: Run linters against modified files (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" yarn lint-ci
-          when: always
 
   # -------------------------
   #    JOBS: Analyze Code
@@ -587,6 +568,8 @@ jobs:
       - checkout_code_with_cache
       - setup_artifacts
       - setup_ruby
+      - brew_install:
+          package: xcbeautify
       - run:
           name: Run Ruby Tests
           command: |
@@ -700,7 +683,7 @@ jobs:
 
       - run:
           name: Download Dependencies Using Buck
-          command: ./scripts/circleci/buck_fetch.sh
+          command: ./scripts/buck/buck_fetch.sh
 
       - run:
           name: Build & Test React Native using Buck
@@ -772,6 +755,18 @@ jobs:
             - run: echo "Failing tests may be moved here temporarily."
             - run_e2e:
                 platform: android
+
+  # -------------------------
+  #    JOBS: Test Android Docker Image
+  # -------------------------
+  test_android_docker_image:
+    machine:
+      image: ubuntu-2004:202010-01
+    steps:
+      - checkout
+      - run:
+          name: Try to build React Native inside the Docker Container
+          command: npm run docker-build-android
 
   # -------------------------
   #    JOBS: Test Android Template
@@ -857,7 +852,7 @@ jobs:
         default: "StaticLibraries"
         description: Which kind of option we want to use for `use_frameworks!`
         type: enum
-        enum: ["StaticLibraries", "StaticFrameworks"] #TODO: Add "DynamicFrameworks"
+        enum: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -910,6 +905,8 @@ jobs:
 
             if [[ << parameters.use_frameworks >> == "StaticFrameworks" ]]; then
               export USE_FRAMEWORKS=static
+            elif [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
+              export USE_FRAMEWORKS=dynamic
             fi
 
             bundle exec pod install
@@ -1456,9 +1453,7 @@ jobs:
       - download_gradle_dependencies
 
       # START: Stables and nightlies
-      # This conditional step sets up the necessary credentials for publishing react-native to npm,
-      # and for interacting with GitHub as the react-native-bot account. Important: these steps
-      # should not be allowed to run on commits from pull requests.
+      # This conditional step sets up the necessary credentials for publishing react-native to npm.
       - when:
           condition:
             or:
@@ -1544,9 +1539,10 @@ jobs:
             echo "Nightly build run"
 
   find_and_publish_bumped_packages:
-    executor: reactnativeandroid
+    executor: nodelts
     steps:
       - checkout
+      - run_yarn
       - run:
           name: Set NPM auth token
           command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
@@ -1559,7 +1555,7 @@ jobs:
 #        PIPELINE PARAMETERS
 # -------------------------
 parameters:
-  run_package_release_workflow_only:
+  run_release_workflow:
     default: false
     type: boolean
 
@@ -1571,18 +1567,32 @@ parameters:
     default: "9999"
     type: string
 
+  run_nightly_workflow:
+    default: false
+    type: boolean
+
 # -------------------------
-#        WORK FLOWS
+#        WORKFLOWS
 #
-#  When creating a new workflow, make sure to include condition `unless: << pipeline.parameters.run_package_release_workflow_only >>`
+#  When creating a new workflow, make sure to include condition:
+#
+#  when:
+#    and:
+#      - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+#      - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
+#
 #  It's setup this way so we can trigger a release via a POST
 #  See limitations: https://support.circleci.com/hc/en-us/articles/360050351292-How-to-trigger-a-workflow-via-CircleCI-API-v2
 # -------------------------
+
 workflows:
   version: 2
 
   tests:
-    unless: << pipeline.parameters.run_package_release_workflow_only >>
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       - prepare_hermes_workspace
       - build_hermesc_linux:
@@ -1608,6 +1618,7 @@ workflows:
           run_disabled_tests: false
       - test_android:
           run_disabled_tests: false
+      - test_android_docker_image
       - test_android_template:
           requires:
             - build_npm_package
@@ -1626,7 +1637,7 @@ workflows:
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
               flipper: ["WithFlipper", "WithoutFlipper"]
-              use_frameworks: [ "StaticLibraries", "StaticFrameworks" ] #TODO: make it works with DynamicFrameworks
+              use_frameworks: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
             exclude:
               - architecture: "NewArch"
                 flavor: "Release"
@@ -1641,8 +1652,18 @@ workflows:
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
                 flipper: "WithoutFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
@@ -1656,8 +1677,18 @@ workflows:
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
                 flipper: "WithoutFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
               - architecture: "OldArch"
                 flavor: "Release"
                 jsengine: "Hermes"
@@ -1670,6 +1701,11 @@ workflows:
                 use_frameworks: "StaticFrameworks"
               - architecture: "OldArch"
                 flavor: "Release"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "OldArch"
+                flavor: "Release"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticLibraries"
@@ -1678,6 +1714,11 @@ workflows:
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "OldArch"
+                flavor: "Release"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Debug"
                 jsengine: "Hermes"
@@ -1708,6 +1749,36 @@ workflows:
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithoutFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "OldArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
+              - architecture: "OldArch"
+                flavor: "Debug"
+                jsengine: "JSC"
+                flipper: "WithFlipper"
+                use_frameworks: "DynamicFrameworks"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
@@ -1737,16 +1808,16 @@ workflows:
 
   # This workflow should only be triggered by release script
   package_release:
-    when: << pipeline.parameters.run_package_release_workflow_only >>
+    when: << pipeline.parameters.run_release_workflow >>
     jobs:
-      # This job will trigger publish_release workflow
+      # This job will push a tag that will trigger the publish_release workflow
       - prepare_package_for_release:
           name: prepare_package_for_release
           version: << pipeline.parameters.release_version >>
           latest : << pipeline.parameters.release_latest >>
 
+  # This job will run only when a tag is published due to all the jobs being filtered.
   publish_release:
-    unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
       - prepare_hermes_workspace:
           filters: *only_release_tags
@@ -1768,7 +1839,6 @@ workflows:
       # This job will trigger when a version tag is pushed (by package_release)
       - build_npm_package:
           name: build_and_publish_npm_package
-          context: react-native-bot
           release_type: "release"
           filters: *only_release_tags
           requires:
@@ -1777,6 +1847,10 @@ workflows:
             - build_hermesc_windows
 
   package_and_publish_release_dryrun:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       - prepare_package_for_release:
           name: prepare_package_for_release
@@ -1800,7 +1874,6 @@ workflows:
             - prepare_hermes_workspace
       - build_npm_package:
           name: build_and_publish_npm_package
-          context: react-native-bot
           release_type: "dry-run"
           requires:
             - build_hermesc_linux
@@ -1808,7 +1881,10 @@ workflows:
             - build_hermesc_windows
 
   analysis:
-    unless: << pipeline.parameters.run_package_release_workflow_only >>
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       # Run lints on every commit
       - analyze_code
@@ -1820,14 +1896,9 @@ workflows:
       - js_coverage
 
   nightly:
-    unless: << pipeline.parameters.run_package_release_workflow_only >>
-    triggers:
-      - schedule:
-          <<: *main_only
-          cron: "0 20 * * *"
+    when: << pipeline.parameters.run_nightly_workflow >>
     jobs:
       - nightly_job
-
       - prepare_hermes_workspace
       - build_hermesc_linux:
           requires:
@@ -1849,6 +1920,10 @@ workflows:
             - build_hermesc_windows
 
   publish_bumped_packages:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       - find_and_publish_bumped_packages:
           <<: *main_or_stable_only

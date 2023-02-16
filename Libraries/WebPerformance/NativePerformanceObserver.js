@@ -12,13 +12,6 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
-export const RawPerformanceEntryTypeValues = {
-  UNDEFINED: 0,
-  MARK: 1,
-  MEASURE: 2,
-  EVENT: 3,
-};
-
 export type RawPerformanceEntryType = number;
 
 export type RawPerformanceEntry = {|
@@ -38,8 +31,8 @@ export type GetPendingEntriesResult = {|
 |};
 
 export interface Spec extends TurboModule {
-  +startReporting: (entryType: string) => void;
-  +stopReporting: (entryType: string) => void;
+  +startReporting: (entryType: RawPerformanceEntryType) => void;
+  +stopReporting: (entryType: RawPerformanceEntryType) => void;
   +popPendingEntries: () => GetPendingEntriesResult;
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
 }

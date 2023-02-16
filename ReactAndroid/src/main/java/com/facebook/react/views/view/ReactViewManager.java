@@ -13,12 +13,14 @@ import android.os.Build;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
@@ -47,6 +49,9 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
     Spacing.BOTTOM,
     Spacing.START,
     Spacing.END,
+    Spacing.BLOCK,
+    Spacing.BLOCK_END,
+    Spacing.BLOCK_START
   };
   private static final int CMD_HOTSPOT_UPDATE = 1;
   private static final int CMD_SET_PRESSED = 2;
@@ -149,9 +154,6 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   @ReactProp(name = "hitSlop")
   public void setHitSlop(final ReactViewGroup view, Dynamic hitSlop) {
     switch (hitSlop.getType()) {
-      case Null:
-        view.setHitSlopRect(null);
-        break;
       case Map:
         ReadableMap hitSlopMap = hitSlop.asMap();
         view.setHitSlopRect(
@@ -174,8 +176,11 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         view.setHitSlopRect(new Rect(hitSlopValue, hitSlopValue, hitSlopValue, hitSlopValue));
         break;
       default:
-        throw new JSApplicationIllegalArgumentException(
-            "Invalid type for 'hitSlop' value " + hitSlop.getType());
+        FLog.w(ReactConstants.TAG, "Invalid type for 'hitSlop' value " + hitSlop.getType());
+        /* falls through */
+      case Null:
+        view.setHitSlopRect(null);
+        break;
     }
   }
 
@@ -238,7 +243,10 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         ViewProps.BORDER_TOP_COLOR,
         ViewProps.BORDER_BOTTOM_COLOR,
         ViewProps.BORDER_START_COLOR,
-        ViewProps.BORDER_END_COLOR
+        ViewProps.BORDER_END_COLOR,
+        ViewProps.BORDER_BLOCK_COLOR,
+        ViewProps.BORDER_BLOCK_END_COLOR,
+        ViewProps.BORDER_BLOCK_START_COLOR
       },
       customType = "Color")
   public void setBorderColor(ReactViewGroup view, int index, Integer color) {

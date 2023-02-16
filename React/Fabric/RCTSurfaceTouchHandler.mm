@@ -592,7 +592,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   for (UITouch *touch in touches) {
     auto iterator = _activeTouches.find(touch);
-    assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
+    RCTAssert(iterator != _activeTouches.end(), @"Inconsistency between local and UIKit touch registries");
     if (iterator == _activeTouches.end()) {
       continue;
     }
@@ -605,7 +605,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   for (UITouch *touch in touches) {
     auto iterator = _activeTouches.find(touch);
-    assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
+    RCTAssert(iterator != _activeTouches.end(), @"Inconsistency between local and UIKit touch registries");
     if (iterator == _activeTouches.end()) {
       continue;
     }
@@ -640,7 +640,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   for (UITouch *touch in touches) {
     auto iterator = _activeTouches.find(touch);
-    assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
+    RCTAssert(iterator != _activeTouches.end(), @"Inconsistency between local and UIKit touch registries");
     if (iterator == _activeTouches.end()) {
       continue;
     }

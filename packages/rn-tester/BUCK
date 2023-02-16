@@ -75,6 +75,7 @@ rn_library(
     skip_processors = True,
     visibility = ["PUBLIC"],
     deps = [
+        "//xplat/js:node_modules__flow_19enums_19runtime",
         "//xplat/js:node_modules__nullthrows",
         "//xplat/js/RKJSModules/Libraries/Core:Core",
         "//xplat/js/RKJSModules/vendor/react:react",

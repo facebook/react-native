@@ -44,4 +44,5 @@ Pod::Spec.new do |s|
   s.dependency "React-RCTImage", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
+  s.dependency 'React-RCTBlob'
 end
