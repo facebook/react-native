@@ -393,8 +393,8 @@ CommitStatus ShadowTree::tryCommit(
     telemetry.didCommit();
     telemetry.setRevisionNumber(static_cast<int>(newRevisionNumber));
 
-    newRevision =
-        ShadowTreeRevision{newRootShadowNode, newRevisionNumber, telemetry};
+    newRevision = ShadowTreeRevision{
+        std::move(newRootShadowNode), newRevisionNumber, telemetry};
 
     currentRevision_ = newRevision;
   }
@@ -402,7 +402,7 @@ CommitStatus ShadowTree::tryCommit(
   emitLayoutEvents(affectedLayoutableNodes);
 
   if (commitMode == CommitMode::Normal) {
-    mount(newRevision, commitOptions.mountSynchronously);
+    mount(std::move(newRevision), commitOptions.mountSynchronously);
   }
 
   return CommitStatus::Succeeded;
@@ -413,10 +413,9 @@ ShadowTreeRevision ShadowTree::getCurrentRevision() const {
   return currentRevision_;
 }
 
-void ShadowTree::mount(
-    ShadowTreeRevision const &revision,
-    bool mountSynchronously) const {
-  mountingCoordinator_->push(revision);
+void ShadowTree::mount(ShadowTreeRevision revision, bool mountSynchronously)
+    const {
+  mountingCoordinator_->push(std::move(revision));
   delegate_.shadowTreeDidFinishTransaction(
       mountingCoordinator_, mountSynchronously);
 }
