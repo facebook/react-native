@@ -9,8 +9,9 @@
 # @parameter react_native_path: relative path to react-native
 def setup_fabric!(react_native_path: "../node_modules/react-native")
     pod 'React-Fabric', :path => "#{react_native_path}/ReactCommon"
-    pod 'React-rncore', :path => "#{react_native_path}/ReactCommon"
     pod 'React-graphics', :path => "#{react_native_path}/ReactCommon/react/renderer/graphics"
     pod 'React-RCTFabric', :path => "#{react_native_path}/React", :modular_headers => true
     pod 'RCT-Folly/Fabric', :podspec => "#{react_native_path}/third-party-podspecs/RCT-Folly.podspec"
+
+    pod 'React-rncore', :path => "#{react_native_path}/ReactCommon" unless ENV['RCT_NEW_ARCH_ENABLED'] == "1"
 end
