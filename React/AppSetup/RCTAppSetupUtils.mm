@@ -20,7 +20,7 @@
 #import <React/RCTNetworking.h>
 
 // Fabric
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <RCTFabric/RCTFabricSurfaceHostingProxyRootView.h>
 #endif
 
 #ifdef FB_SONARKIT_ENABLED

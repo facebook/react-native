@@ -10,12 +10,12 @@
 #import <cxxreact/MessageQueueThread.h>
 #import <jsi/jsi.h>
 
+#import <RCTFabric/RCTSurfacePresenter.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTConstants.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageLoaderWithAttributionProtocol.h>
-#import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterStub.h>
 
 #import <ReactCommon/RuntimeExecutor.h>

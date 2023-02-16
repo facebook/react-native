@@ -7,7 +7,7 @@
 
 #import "RCTTextInputUtils.h"
 
-#import <React/RCTConversions.h>
+#import <RCTFabric/RCTConversions.h>
 
 using namespace facebook::react;
 

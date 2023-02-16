@@ -7,10 +7,10 @@
 
 #import "RCTImageComponentView.h"
 
+#import <RCTFabric/RCTConversions.h>
+#import <RCTFabric/RCTImageResponseObserverProxy.h>
 #import <React/RCTAssert.h>
-#import <React/RCTConversions.h>
 #import <React/RCTImageBlurUtils.h>
-#import <React/RCTImageResponseObserverProxy.h>
 #import <react/renderer/components/image/ImageComponentDescriptor.h>
 #import <react/renderer/components/image/ImageEventEmitter.h>
 #import <react/renderer/components/image/ImageProps.h>

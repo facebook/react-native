@@ -14,7 +14,7 @@
 #import <react/renderer/components/unimplementedview/UnimplementedViewComponentDescriptor.h>
 #import <react/renderer/components/unimplementedview/UnimplementedViewShadowNode.h>
 
-#import <React/RCTConversions.h>
+#import <RCTFabric/RCTConversions.h>
 
 #import "RCTFabricComponentsPlugins.h"
 

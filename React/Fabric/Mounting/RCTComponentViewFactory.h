@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTComponentViewDescriptor.h>
-#import <React/RCTComponentViewProtocol.h>
+#import <RCTFabric/RCTComponentViewDescriptor.h>
+#import <RCTFabric/RCTComponentViewProtocol.h>
 #import <jsi/jsi.h>
 #import <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 

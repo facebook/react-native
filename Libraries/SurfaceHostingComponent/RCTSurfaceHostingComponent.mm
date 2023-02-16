@@ -11,7 +11,7 @@
 #import <UIKit/UIKit.h>
 
 #import <ComponentKit/CKComponentSubclass.h>
-#import <React/RCTFabricSurface.h>
+#import <RCTFabric/RCTFabricSurface.h>
 #import <React/RCTSurface.h>
 #import <React/RCTSurfaceView.h>
 

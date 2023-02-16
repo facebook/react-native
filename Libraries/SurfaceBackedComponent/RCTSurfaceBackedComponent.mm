@@ -11,8 +11,8 @@
 
 #import <ComponentKit/CKComponentSubclass.h>
 #import <ComponentKit/CKOverlayLayoutComponent.h>
+#import <RCTFabric/RCTFabricSurface.h>
 #import <RCTSurfaceHostingComponent/RCTSurfaceHostingComponent.h>
-#import <React/RCTFabricSurface.h>
 #import <React/RCTSurface.h>
 
 #import "RCTSurfaceBackedComponentState.h"

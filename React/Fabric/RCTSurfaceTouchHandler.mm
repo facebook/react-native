@@ -7,9 +7,9 @@
 
 #import "RCTSurfaceTouchHandler.h"
 
-#import <React/RCTReactTaggedView.h>
+#import <RCTFabric/RCTReactTaggedView.h>
+#import <RCTFabric/RCTViewComponentView.h>
 #import <React/RCTUtils.h>
-#import <React/RCTViewComponentView.h>
 
 #import "RCTConversions.h"
 #import "RCTTouchableComponentViewProtocol.h"

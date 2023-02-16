@@ -7,11 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <RCTFabric/RCTGenericDelegateSplitter.h>
+#import <RCTFabric/RCTMountingTransactionObserving.h>
+#import <RCTFabric/RCTViewComponentView.h>
 #import <React/RCTDefines.h>
-#import <React/RCTGenericDelegateSplitter.h>
-#import <React/RCTMountingTransactionObserving.h>
 #import <React/RCTScrollableProtocol.h>
-#import <React/RCTViewComponentView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTGenericDelegateSplitter.h>
-#import <React/RCTViewComponentView.h>
+#import <RCTFabric/RCTGenericDelegateSplitter.h>
+#import <RCTFabric/RCTViewComponentView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

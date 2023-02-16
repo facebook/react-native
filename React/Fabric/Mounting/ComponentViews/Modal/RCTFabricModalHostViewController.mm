@@ -7,8 +7,8 @@
 
 #import "RCTFabricModalHostViewController.h"
 
+#import <RCTFabric/RCTSurfaceTouchHandler.h>
 #import <React/RCTLog.h>
-#import <React/RCTSurfaceTouchHandler.h>
 
 @implementation RCTFabricModalHostViewController {
   CGRect _lastViewBounds;

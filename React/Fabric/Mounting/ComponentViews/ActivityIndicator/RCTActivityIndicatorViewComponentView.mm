@@ -7,7 +7,7 @@
 
 #import "RCTActivityIndicatorViewComponentView.h"
 
-#import <React/RCTConversions.h>
+#import <RCTFabric/RCTConversions.h>
 
 #import <react/renderer/components/rncore/ComponentDescriptors.h>
 #import <react/renderer/components/rncore/EventEmitters.h>

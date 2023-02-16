@@ -12,9 +12,9 @@
 #import <react/renderer/components/rncore/Props.h>
 #import <react/renderer/components/rncore/RCTComponentViewHelpers.h>
 
-#import <React/RCTConversions.h>
+#import <RCTFabric/RCTConversions.h>
+#import <RCTFabric/RCTScrollViewComponentView.h>
 #import <React/RCTRefreshableProtocol.h>
-#import <React/RCTScrollViewComponentView.h>
 
 #import "RCTFabricComponentsPlugins.h"
 

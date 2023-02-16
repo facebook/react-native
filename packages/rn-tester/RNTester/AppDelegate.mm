@@ -43,7 +43,7 @@
 #endif
 
 #ifdef RN_FABRIC_ENABLED
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <RCTFabric/RCTFabricSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 

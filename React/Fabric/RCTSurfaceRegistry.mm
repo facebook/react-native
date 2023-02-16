@@ -10,7 +10,7 @@
 #import <mutex>
 #import <shared_mutex>
 
-#import <React/RCTFabricSurface.h>
+#import <RCTFabric/RCTFabricSurface.h>
 
 using namespace facebook;
 

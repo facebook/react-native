@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTComponentViewDescriptor.h>
+#import <RCTFabric/RCTComponentViewDescriptor.h>
 #import "RCTMountingTransactionObserverCoordinator.h"
 
 #import <butter/map.h>

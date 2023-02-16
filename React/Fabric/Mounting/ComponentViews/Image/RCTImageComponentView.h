@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTImageResponseDelegate.h>
+#import <RCTFabric/RCTImageResponseDelegate.h>
+#import <RCTFabric/RCTViewComponentView.h>
 #import <React/RCTUIImageViewAnimated.h>
-#import <React/RCTViewComponentView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

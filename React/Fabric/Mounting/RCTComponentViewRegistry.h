@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTComponentViewDescriptor.h>
-#import <React/RCTComponentViewFactory.h>
-#import <React/RCTComponentViewProtocol.h>
+#import <RCTFabric/RCTComponentViewDescriptor.h>
+#import <RCTFabric/RCTComponentViewFactory.h>
+#import <RCTFabric/RCTComponentViewProtocol.h>
 #import <react/renderer/core/ReactPrimitives.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <RCTFabric/RCTViewComponentView.h>
 #import <React/RCTComponentViewRegistry.h>
-#import <React/RCTViewComponentView.h>
 #import <XCTest/XCTest.h>
 
 @interface RCTComponentViewRegistryTests : XCTestCase

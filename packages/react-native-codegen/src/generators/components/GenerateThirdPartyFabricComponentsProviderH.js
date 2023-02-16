@@ -28,7 +28,7 @@ const FileTemplate = ({lookupFuncs}: {lookupFuncs: string}) => `
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type-c-linkage"
 
-#import <React/RCTComponentViewProtocol.h>
+#import <RCTFabric/RCTComponentViewProtocol.h>
 
 #ifdef __cplusplus
 extern "C" {

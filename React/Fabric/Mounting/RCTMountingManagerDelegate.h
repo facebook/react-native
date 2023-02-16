@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTPrimitives.h>
+#import <RCTFabric/RCTPrimitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

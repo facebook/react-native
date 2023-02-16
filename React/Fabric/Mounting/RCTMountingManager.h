@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTMountingManagerDelegate.h>
-#import <React/RCTPrimitives.h>
+#import <RCTFabric/RCTMountingManagerDelegate.h>
+#import <RCTFabric/RCTPrimitives.h>
 #import <react/renderer/core/ComponentDescriptor.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/core/ReactPrimitives.h>

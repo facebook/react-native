@@ -7,9 +7,9 @@
 
 #import "RCTInputAccessoryComponentView.h"
 
+#import <RCTFabric/RCTConversions.h>
+#import <RCTFabric/RCTSurfaceTouchHandler.h>
 #import <React/RCTBackedTextInputViewProtocol.h>
-#import <React/RCTConversions.h>
-#import <React/RCTSurfaceTouchHandler.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/inputaccessory/InputAccessoryComponentDescriptor.h>

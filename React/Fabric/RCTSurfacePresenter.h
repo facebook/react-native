@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTPrimitives.h>
+#import <RCTFabric/RCTPrimitives.h>
 #import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTSurfaceStage.h>
 #import <ReactCommon/RuntimeExecutor.h>

@@ -10,9 +10,9 @@
 #import <React/RCTRootView.h>
 
 #if RCT_NEW_ARCH_ENABLED
+#import <RCTFabric/RCTFabricSurfaceHostingProxyRootView.h>
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTCxxBridgeDelegate.h>
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>

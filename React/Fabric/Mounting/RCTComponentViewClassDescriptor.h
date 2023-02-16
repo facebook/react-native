@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTComponentViewProtocol.h>
+#import <RCTFabric/RCTComponentViewProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

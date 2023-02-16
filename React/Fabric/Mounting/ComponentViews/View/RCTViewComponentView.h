@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTComponentViewProtocol.h>
+#import <RCTFabric/RCTComponentViewProtocol.h>
+#import <RCTFabric/RCTTouchableComponentViewProtocol.h>
+#import <RCTFabric/UIView+ComponentViewProtocol.h>
 #import <React/RCTConstants.h>
-#import <React/RCTTouchableComponentViewProtocol.h>
-#import <React/UIView+ComponentViewProtocol.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
 #import <react/renderer/core/EventEmitter.h>

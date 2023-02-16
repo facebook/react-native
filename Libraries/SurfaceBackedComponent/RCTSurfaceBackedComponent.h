@@ -7,8 +7,8 @@
 
 #import <ComponentKit/CKComponent.h>
 #import <ComponentKit/CKCompositeComponent.h>
+#import <RCTFabric/RCTSurfacePresenter.h>
 #import <RCTSurfaceHostingComponent/RCTSurfaceHostingComponentOptions.h>
-#import <React/RCTSurfacePresenter.h>
 
 @class RCTBridge;
 
