@@ -59,4 +59,12 @@ NativePerformanceObserver::getEventCounts(jsi::Runtime &rt) {
       eventCounts.begin(), eventCounts.end());
 }
 
+void NativePerformanceObserver::setDurationThreshold(
+    jsi::Runtime &rt,
+    int32_t entryType,
+    double durationThreshold) {
+  PerformanceEntryReporter::getInstance().setDurationThreshold(
+      static_cast<PerformanceEntryType>(entryType), durationThreshold);
+}
+
 } // namespace facebook::react

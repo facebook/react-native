@@ -19,6 +19,7 @@ import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
 
 const reportingType: Set<RawPerformanceEntryType> = new Set();
 const eventCounts: Map<string, number> = new Map();
+const durationThresholds: Map<RawPerformanceEntryType, number> = new Map();
 let entries: Array<RawPerformanceEntry> = [];
 let onPerformanceEntryCallback: ?() => void;
 
@@ -29,6 +30,7 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
 
   stopReporting: (entryType: RawPerformanceEntryType) => {
     reportingType.delete(entryType);
+    durationThresholds.delete(entryType);
   },
 
   popPendingEntries: (): GetPendingEntriesResult => {
@@ -46,6 +48,13 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
 
   logRawEntry: (entry: RawPerformanceEntry) => {
     if (reportingType.has(entry.entryType)) {
+      const durationThreshold = durationThresholds.get(entry.entryType);
+      if (
+        durationThreshold !== undefined &&
+        entry.duration < durationThreshold
+      ) {
+        return;
+      }
       entries.push(entry);
       // $FlowFixMe[incompatible-call]
       global.queueMicrotask(() => {
@@ -60,6 +69,13 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
 
   getEventCounts: (): $ReadOnlyArray<[string, number]> => {
     return Array.from(eventCounts.entries());
+  },
+
+  setDurationThreshold: (
+    entryType: RawPerformanceEntryType,
+    durationThreshold: number,
+  ) => {
+    durationThresholds.set(entryType, durationThreshold);
   },
 };
 

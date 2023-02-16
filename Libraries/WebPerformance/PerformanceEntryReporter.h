@@ -44,6 +44,8 @@ using PerformanceMarkRegistryType = std::
 // memory for the sake of the "Performance.measure" mark name lookup
 constexpr size_t MARKS_BUFFER_SIZE = 1024;
 
+constexpr double DEFAULT_DURATION_THRESHOLD = 0.0;
+
 enum class PerformanceEntryType {
   UNDEFINED = 0,
   MARK = 1,
@@ -66,6 +68,9 @@ class PerformanceEntryReporter : public EventLogger {
   void setReportingCallback(std::optional<AsyncCallback<>> callback);
   void startReporting(PerformanceEntryType entryType);
   void stopReporting(PerformanceEntryType entryType);
+  void setDurationThreshold(
+      PerformanceEntryType entryType,
+      double durationThreshold);
 
   GetPendingEntriesResult popPendingEntries();
   void logEntry(const RawPerformanceEntry &entry);
@@ -122,6 +127,8 @@ class PerformanceEntryReporter : public EventLogger {
   std::mutex entriesMutex_;
   std::array<bool, (size_t)PerformanceEntryType::_COUNT> reportingType_{false};
   std::unordered_map<std::string, uint32_t> eventCounts_;
+  std::array<double, (size_t)PerformanceEntryType::_COUNT> durationThreshold_{
+      DEFAULT_DURATION_THRESHOLD};
 
   // Mark registry for "measure" lookup
   PerformanceMarkRegistryType marksRegistry_;

@@ -37,6 +37,10 @@ export interface Spec extends TurboModule {
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
   +logRawEntry: (entry: RawPerformanceEntry) => void;
   +getEventCounts: () => $ReadOnlyArray<[string, number]>;
+  +setDurationThreshold: (
+    entryType: RawPerformanceEntryType,
+    durationThreshold: number,
+  ) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>(
