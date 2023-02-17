@@ -268,6 +268,14 @@ export interface ImagePropsBase
    * See https://reactnative.dev/docs/image#width
    */
   width?: number | undefined;
+
+  /**
+   * Adds the CORS related header to the request.
+   * Similar to crossorigin from HTML.
+   *
+   * See https://reactnative.dev/docs/image#crossorigin
+   */
+  crossOrigin?: 'anonymous' | 'use-credentials',
 }
 
 export interface ImageProps extends ImagePropsBase {
