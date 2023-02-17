@@ -25,9 +25,11 @@ import org.gradle.api.file.DirectoryProperty
  *
  * @param config The [ReactExtension] configured for this project
  */
-internal fun detectedEntryFile(config: ReactExtension): File =
+internal fun detectedEntryFile(config: ReactExtension, envVariableOverride: String? = null): File =
     detectEntryFile(
-        entryFile = config.entryFile.orNull?.asFile, reactRoot = config.root.get().asFile)
+        entryFile = config.entryFile.orNull?.asFile,
+        reactRoot = config.root.get().asFile,
+        envVariableOverride = envVariableOverride)
 
 /**
  * Computes the CLI file for React Native. The Algo follows this order:
@@ -54,9 +56,13 @@ internal fun detectedCliFile(config: ReactExtension): File =
 internal fun detectedHermesCommand(config: ReactExtension): String =
     detectOSAwareHermesCommand(config.root.get().asFile, config.hermesCommand.get())
 
-private fun detectEntryFile(entryFile: File?, reactRoot: File): File =
+private fun detectEntryFile(
+    entryFile: File?,
+    reactRoot: File,
+    envVariableOverride: String? = null
+): File =
     when {
-      System.getenv("ENTRY_FILE") != null -> File(System.getenv("ENTRY_FILE"))
+      envVariableOverride != null -> File(reactRoot, envVariableOverride)
       entryFile != null -> entryFile
       File(reactRoot, "index.android.js").exists() -> File(reactRoot, "index.android.js")
       else -> File(reactRoot, "index.js")
