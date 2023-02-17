@@ -5,8 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <memory>
+
 #include "NativePerformanceObserver.h"
 #include "PerformanceEntryReporter.h"
+
+#include "Plugins.h"
+
+std::shared_ptr<facebook::react::TurboModule>
+NativePerformanceObserverModuleProvider(
+    std::shared_ptr<facebook::react::CallInvoker> jsInvoker) {
+  return std::make_shared<facebook::react::NativePerformanceObserver>(
+      std::move(jsInvoker));
+}
 
 namespace facebook::react {
 
