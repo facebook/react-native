@@ -254,6 +254,20 @@ export interface ImagePropsBase
    * See https://reactnative.dev/docs/image#alt
    */
   alt?: string | undefined;
+
+  /**
+   * Height of the image component.
+   *
+   * See https://reactnative.dev/docs/image#height
+   */
+  height?: number | undefined;
+
+  /**
+   * Width of the image component.
+   *
+   * See https://reactnative.dev/docs/image#width
+   */
+  width?: number | undefined;
 }
 
 export interface ImageProps extends ImagePropsBase {
