@@ -218,7 +218,7 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"
-  NewArchitectureHelper.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
+  NewArchitectureHelper.modify_flags_for_new_architecture(installer, is_new_arch_enabled, is_release: ENV['PRODUCTION'] == "1")
 
   Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
 end
