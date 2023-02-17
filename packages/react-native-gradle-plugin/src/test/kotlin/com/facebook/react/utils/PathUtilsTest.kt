@@ -58,6 +58,20 @@ class PathUtilsTest {
   }
 
   @Test
+  fun detectedEntryFile_withEnvironmentVariable() {
+    val extension = TestReactExtension(ProjectBuilder.builder().build())
+    val expected = tempFolder.newFile("./fromenv.index.js")
+    // As we can't override env variable for tests, we're going to emulate them here.
+    val envVariable = "./fromenv.index.js"
+
+    extension.root.set(tempFolder.root)
+
+    val actual = detectedEntryFile(extension, envVariable)
+
+    assertEquals(expected, actual)
+  }
+
+  @Test
   fun detectedCliPath_withCliPathFromExtensionAndFileExists_returnsIt() {
     val project = ProjectBuilder.builder().build()
     val cliFile = tempFolder.newFile("cli.js").apply { createNewFile() }
