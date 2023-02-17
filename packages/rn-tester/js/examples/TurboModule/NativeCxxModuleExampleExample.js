@@ -165,6 +165,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
           </TouchableOpacity>
         </View>
         <FlatList
+          // $FlowFixMe[incompatible-type]
           data={Object.keys(this._tests)}
           keyExtractor={item => item}
           renderItem={({item}: {item: Examples, ...}) => (
