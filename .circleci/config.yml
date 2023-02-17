@@ -593,6 +593,11 @@ jobs:
       - run:
           name: "Brew: Tap wix/brew"
           command: brew tap wix/brew
+      - run:
+          # Python 3.10 already exists in the environment, this is a workaround for:
+          # https://github.com/actions/setup-python/issues/577
+          name: "Unlink environment's Python 3.10"
+          command: brew unlink python@3.10
       - brew_install:
           package: applesimutils watchman
 
