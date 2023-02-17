@@ -203,7 +203,7 @@ commands:
     steps:
       - run:
           name: "Brew: Install << parameters.package >>"
-          command: brew install << parameters.package >> >/dev/null
+          command: brew install << parameters.package >>
 
   with_rntester_pods_cache_span:
     parameters:
@@ -592,7 +592,7 @@ jobs:
 
       - run:
           name: "Brew: Tap wix/brew"
-          command: brew tap wix/brew >/dev/null
+          command: brew tap wix/brew
       - brew_install:
           package: applesimutils watchman
 
