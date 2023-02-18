@@ -234,6 +234,13 @@ export interface ImagePropsBase
   src?: string | undefined,
 
   /**
+   * Similar to srcset from HTML.
+   *
+   * See https://reactnative.dev/docs/image#srcset
+   */
+  srcSet?: string | undefined,
+
+  /**
    * similarly to `source`, this property represents the resource used to render
    * the loading indicator for the image, displayed until image is ready to be
    * displayed, typically after when it got downloaded from network.
