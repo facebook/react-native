@@ -159,6 +159,9 @@ commands:
 
   setup_ruby:
     steps:
+      - run:
+          name: Install Ruby (if not already installed by default)
+          command: "[ -d ~/.rbenv/versions/3.1.3 ] || rbenv install 3.1.3"
       - restore_cache:
           key: *gems_cache_key
       - macos/switch-ruby:
