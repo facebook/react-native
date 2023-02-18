@@ -12,7 +12,7 @@ import {Constructor} from '../../types/private/Utilities';
 import {AccessibilityProps} from '../Components/View/ViewAccessibility';
 import {Insets} from '../../types/public/Insets';
 import {NativeMethods} from '../../types/public/ReactNativeTypes';
-import {StyleProp} from '../StyleSheet/StyleSheet';
+import {ColorValue, StyleProp} from '../StyleSheet/StyleSheet';
 import {ImageStyle, ViewStyle} from '../StyleSheet/StyleSheetTypes';
 import {LayoutChangeEvent, NativeSyntheticEvent} from '../Types/CoreEventTypes';
 import {ImageResizeMode} from './ImageResizeMode';
@@ -276,6 +276,13 @@ export interface ImagePropsBase
    * See https://reactnative.dev/docs/image#crossorigin
    */
   crossOrigin?: 'anonymous' | 'use-credentials';
+
+  /**
+   * Changes the color of all the non-transparent pixels to the tintColor.
+   *
+   * See https://reactnative.dev/docs/image#tintcolor
+   */
+  tintColor?: ColorValue | undefined,
 }
 
 export interface ImageProps extends ImagePropsBase {
