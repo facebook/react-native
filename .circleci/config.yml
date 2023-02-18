@@ -954,6 +954,7 @@ jobs:
         enum: ["NewArch", "OldArch"]
     steps:
       - checkout_code_with_cache
+      - setup_ruby
       - run_yarn
       - *attach_hermes_workspace
 
