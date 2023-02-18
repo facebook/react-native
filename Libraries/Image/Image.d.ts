@@ -283,6 +283,21 @@ export interface ImagePropsBase
    * See https://reactnative.dev/docs/image#tintcolor
    */
   tintColor?: ColorValue | undefined,
+
+  /**
+   * A string indicating which referrer to use when fetching the resource.
+   * Similar to referrerpolicy from HTML.
+   *
+   * See https://reactnative.dev/docs/image#referrerpolicy
+   */
+  referrerPolicy?: 'no-referrer'
+    | 'no-referrer-when-downgrade'
+    | 'origin'
+    | 'origin-when-cross-origin'
+    | 'same-origin' | 'strict-origin'
+    | 'strict-origin-when-cross-origin'
+    | 'unsafe-url'
+    | undefined,
 }
 
 export interface ImageProps extends ImagePropsBase {
