@@ -226,6 +226,14 @@ export interface ImagePropsBase
   source: ImageSourcePropType;
 
   /**
+   * A string representing the resource identifier for the image. Similar to
+   * src from HTML.
+   *
+   * See https://reactnative.dev/docs/image#src
+   */
+  src?: string | undefined,
+
+  /**
    * similarly to `source`, this property represents the resource used to render
    * the loading indicator for the image, displayed until image is ready to be
    * displayed, typically after when it got downloaded from network.
