@@ -39,6 +39,7 @@ if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\""
 end
 
 Pod::Spec.new do |s|
@@ -66,6 +67,7 @@ Pod::Spec.new do |s|
   s.dependency "React-Core", version
   s.dependency "React-Fabric", version
   s.dependency "React-RCTImage", version
+  s.dependency "React-ImageManager"
   s.dependency "RCT-Folly/Fabric", folly_version
 
   s.test_spec 'Tests' do |test_spec|

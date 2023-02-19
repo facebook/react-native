@@ -133,6 +133,7 @@ class CodegenUtils
         if fabric_enabled
           spec[:'dependencies'].merge!({
             'React-graphics': [],
+            'React-Fabric': [],
           });
         end
 
@@ -145,6 +146,7 @@ class CodegenUtils
             'React-jsc': [],
           });
         end
+
 
         unless ENV['RCT_NEW_ARCH_ENABLED'] == "1"
           spec[:dependencies].merge!({

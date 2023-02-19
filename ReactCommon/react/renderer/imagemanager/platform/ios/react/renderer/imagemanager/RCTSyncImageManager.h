@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTImageManagerProtocol.h>
+#import "RCTImageManagerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
