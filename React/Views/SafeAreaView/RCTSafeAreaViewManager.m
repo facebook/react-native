@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if !TARGET_OS_OSX // [macOS]
 #import "RCTSafeAreaViewManager.h"
 
 #import "RCTSafeAreaShadowView.h"
@@ -26,3 +27,4 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+#endif // [macOS]

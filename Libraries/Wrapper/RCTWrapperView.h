@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 typedef CGSize (^RCTWrapperMeasureBlock)(CGSize minimumSize, CGSize maximumSize);
 
@@ -13,9 +13,9 @@ typedef CGSize (^RCTWrapperMeasureBlock)(CGSize minimumSize, CGSize maximumSize)
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTWrapperView : UIView
+@interface RCTWrapperView : RCTPlatformView // [macOS]
 
-@property (nonatomic, retain, nullable) UIView *contentView;
+@property (nonatomic, retain, nullable) RCTPlatformView *contentView; // [macOS]
 @property (nonatomic, readonly) RCTWrapperMeasureBlock measureBlock;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
@@ -26,10 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
 
-- (void)addSubview:(UIView *)view NS_UNAVAILABLE;
-- (void)insertSubview:(UIView *)view atIndex:(NSInteger)index NS_UNAVAILABLE;
-- (void)insertSubview:(UIView *)view aboveSubview:(UIView *)siblingSubview NS_UNAVAILABLE;
-- (void)insertSubview:(UIView *)view belowSubview:(UIView *)siblingSubview NS_UNAVAILABLE;
+- (void)addSubview:(RCTPlatformView *)view NS_UNAVAILABLE; // [macOS]
+- (void)insertSubview:(RCTPlatformView *)view atIndex:(NSInteger)index NS_UNAVAILABLE; // [macOS]
+- (void)insertSubview:(RCTPlatformView *)view aboveSubview:(RCTPlatformView *)siblingSubview NS_UNAVAILABLE; // [macOS]
+- (void)insertSubview:(RCTPlatformView *)view belowSubview:(RCTPlatformView *)siblingSubview NS_UNAVAILABLE; // [macOS]
 
 @end
 

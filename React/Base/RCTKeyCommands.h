@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if !TARGET_OS_OSX // [macOS]
 #import <UIKit/UIKit.h>
 
 @interface RCTKeyCommands : NSObject
@@ -29,3 +30,4 @@
 - (BOOL)isKeyCommandRegisteredForInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags;
 
 @end
+#endif // [macOS]

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if !TARGET_OS_OSX // [macOS]
 #import "RCTWrapperViewController.h"
 
 #import <UIKit/UIScrollView.h>
@@ -81,3 +82,4 @@ static BOOL RCTFindScrollViewAndRefreshContentInsetInView(UIView *view)
 }
 
 @end
+#endif

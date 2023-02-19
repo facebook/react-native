@@ -8,7 +8,7 @@
 #import "RCTSurfaceHostingComponent.h"
 #import "RCTSurfaceHostingComponent+Internal.h"
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <ComponentKit/CKComponentSubclass.h>
 #import <React/RCTFabricSurface.h>

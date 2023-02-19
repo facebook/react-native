@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // [macOS]
+#if !TARGET_OS_OSX // [macOS]
+#import <UIKit/UIKit.h>
 
 #import <React/RCTInvalidating.h>
 #import <React/RCTModalHostViewManager.h>
@@ -54,3 +55,4 @@
                     animated:(BOOL)animated;
 
 @end
+#endif // [macOS]

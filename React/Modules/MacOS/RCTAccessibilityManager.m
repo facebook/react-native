@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+ // [macOS]
+ #if TARGET_OS_OSX
+
 #import "RCTAccessibilityManager.h"
 
 #import "RCTBridge.h"
@@ -158,3 +161,4 @@ RCT_EXPORT_METHOD(setAccessibilityFocus:(nonnull NSNumber *)reactTag)
 }
 
 @end
+ #endif

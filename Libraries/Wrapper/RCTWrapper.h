@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <RCTWrapper/RCTWrapperView.h>
 #import <RCTWrapper/RCTWrapperViewControllerHostingView.h>
@@ -30,7 +30,7 @@
                                                 \
       RCT_EXPORT_MODULE()                       \
                                                 \
-      - (UIView *)view                          \
+      - (RCTPlatformView *)view /* [macOS]*/    \
   {                                             \
     RCTWrapperView *wrapperView = [super view]; \
     wrapperView.contentView = [ClassName new];  \
@@ -56,7 +56,7 @@
                                                                                                                        \
       RCT_EXPORT_MODULE()                                                                                              \
                                                                                                                        \
-      - (UIView *)view                                                                                                 \
+      - (RCTPlatformView *)view /* [macOS] */                                                                          \
   {                                                                                                                    \
     RCTWrapperViewControllerHostingView *contentViewControllerHostingView = [RCTWrapperViewControllerHostingView new]; \
     contentViewControllerHostingView.contentViewController = [[ClassName alloc] initWithNibName:nil bundle:nil];       \

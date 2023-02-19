@@ -7,7 +7,7 @@
 
 #import "RCTSurfaceBackedComponent.h"
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <ComponentKit/CKComponentSubclass.h>
 #import <ComponentKit/CKOverlayLayoutComponent.h>

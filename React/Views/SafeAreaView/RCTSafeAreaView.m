@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if !TARGET_OS_OSX // [macOS]
 #import "RCTSafeAreaView.h"
 
 #import <React/RCTBridge.h>
@@ -70,3 +71,4 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 }
 
 @end
+#endif // [macOS]

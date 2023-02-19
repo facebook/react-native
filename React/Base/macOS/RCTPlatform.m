@@ -6,6 +6,7 @@
  */
 
 // [macOS]
+#if TARGET_OS_OSX
 
 #import "RCTPlatform.h"
 
@@ -38,3 +39,4 @@ Class RCTPlatformCls(void) {
 }
 
 @end
+#endif

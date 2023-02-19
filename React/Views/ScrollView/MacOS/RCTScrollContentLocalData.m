@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// [macOS]
+
+#if TARGET_OS_OSX
 #import "RCTScrollContentLocalData.h"
 
 @implementation RCTScrollContentLocalData
@@ -20,3 +23,4 @@
 }
 
 @end
+#endif

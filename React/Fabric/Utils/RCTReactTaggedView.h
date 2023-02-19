@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,14 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
  * changed from the one provided at initalization time (i.e. recycled).
  */
 @interface RCTReactTaggedView : NSObject {
-  UIView *_view;
+  RCTPlatformView *_view; // [macOS]
   NSInteger _tag;
 }
 
-+ (RCTReactTaggedView *)wrap:(UIView *)view;
++ (RCTReactTaggedView *)wrap:(RCTPlatformView *)view; // [macOS]
 
-- (instancetype)initWithView:(UIView *)view;
-- (nullable UIView *)view;
+- (instancetype)initWithView:(RCTPlatformView *)view; // [macOS]
+- (nullable RCTPlatformView *)view; // [macOS]
 - (NSInteger)tag;
 
 - (BOOL)isEqual:(id)other;

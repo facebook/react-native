@@ -5,13 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 @class RCTBridge;
 
 NS_ASSUME_NONNULL_BEGIN
 
+#if !TARGET_OS_OSX // [macOS]
 @interface RCTWrapperReactRootViewController : UIViewController
+#else
+@interface RCTWrapperReactRootViewController : NSViewController
+#endif // [macOS]
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 

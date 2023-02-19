@@ -80,21 +80,7 @@ Pod::Spec.new do |s|
                                 "React/Fabric/**/*",
                                 "React/FBReactNativeSpec/**/*",
                                 "React/Tests/**/*",
-                                "React/CxxBridge/HermesExecutorFactory.*" # [macOS]
-
-    # [macOS
-    ss.ios.exclude_files      = "**/macOS/*",
-                                "React/Inspector/**/*" # [macOS]: don't exclude on macOS for hermes support
-    ss.osx.exclude_files      = "React/Modules/RCTRedBoxExtraDataViewController.{h,m}",
-                                "React/Modules/RCTAccessibilityManager.m",
-                                "React/Profiler/{RCTFPSGraph,RCTPerfMonitor}.*",
-                                "React/Profiler/RCTProfileTrampoline-{arm,i386}.S",
-                                "React/Base/RCTKeyCommands.*",
-                                "React/Base/RCTTV*.*",
-                                "React/Views/{RCTModal*,RCTMasked*,RCTTV*,RCTWrapperViewController}.*",
-                                "React/Views/RefreshControl/*",
-                                "React/Views/SafeAreaView/*"
-    # macOS]
+                                "React/Inspector/**/*"
     ss.private_header_files   = "React/Cxx*/*.h"
   end
 

@@ -7,6 +7,8 @@
 
 // [macOS]
 
+#if TARGET_OS_OSX
+
 #import <React/RCTUIKit.h>
 
 #import <React/RCTAssert.h>
@@ -766,3 +768,5 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
 }
 
 @end
+
+#endif
