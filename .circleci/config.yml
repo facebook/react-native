@@ -954,7 +954,6 @@ jobs:
         enum: ["NewArch", "OldArch"]
     steps:
       - checkout_code_with_cache
-      - setup_ruby
       - run_yarn
       - *attach_hermes_workspace
 
@@ -982,9 +981,10 @@ jobs:
                     export USE_HERMES=0
                   fi
 
-                  ls -l
-                  pwd
-                  rbenv versions
+                  bundle env
+                  gem install bundler
+                  bundle env
+                  bundle check || bundle install --path vendor/bundle --clean
                   cd packages/rn-tester && bundle exec pod install
 
       - run:
