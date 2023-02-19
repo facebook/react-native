@@ -38,15 +38,17 @@ class NewArchitectureHelper
         end
     end
 
-    def self.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
+    def self.modify_flags_for_new_architecture(installer, is_new_arch_enabled, is_release: false)
         unless is_new_arch_enabled
             return
         end
-
+        ndebug_flag = (is_release ? " -DNDEBUG" : "")
         # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
-                config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
+                config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags + ndebug_flag
+                config_file.attributes['OTHER_CFLAGS'] = "$(inherited)" + ndebug_flag
+
                 xcconfig_path = aggregate_target.xcconfig_path(config_name)
                 config_file.save_as(xcconfig_path)
             end
@@ -58,6 +60,12 @@ class NewArchitectureHelper
                 target_installation_result.native_target.build_configurations.each do |config|
                     config.build_settings['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
                 end
+            end
+
+            target_installation_result.native_target.build_configurations.each do |config|
+                current_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : ""
+                config.build_settings['OTHER_CPLUSPLUSFLAGS'] = current_flags + ndebug_flag
+                config.build_settings['OTHER_CFLAGS'] = "$(inherited)" + ndebug_flag
             end
         end
     end
