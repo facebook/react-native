@@ -134,6 +134,7 @@ class CodegenUtils
         if fabric_enabled
           spec[:'dependencies'].merge!({
             'React-graphics': [],
+            'React-Fabric': [],
           });
         end
 

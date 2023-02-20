@@ -25,13 +25,16 @@ const RN_ROOT = path.join(__dirname, '../..');
 const CODEGEN_DEPENDENCY_NAME = '@react-native/codegen';
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
 const CODEGEN_NPM_PATH = `${RN_ROOT}/../${CODEGEN_DEPENDENCY_NAME}`;
-const CORE_LIBRARIES = new Set(['rncore', 'FBReactNativeSpec']);
+const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
+  rncore: path.join(RN_ROOT, 'ReactCommon'),
+  FBReactNativeSpec: null,
+};
 const REACT_NATIVE_DEPENDENCY_NAME = 'react-native';
 
 // HELPERS
 
 function isReactNativeCoreLibrary(libraryName) {
-  return CORE_LIBRARIES.has(libraryName);
+  return libraryName in CORE_LIBRARIES_WITH_OUTPUT_FOLDER;
 }
 
 function executeNodeScript(node, script) {
@@ -273,7 +276,6 @@ function handleInAppLibraries(
 }
 
 // CodeGen
-
 function getCodeGenCliPath() {
   let codegenCliPath;
   if (fs.existsSync(CODEGEN_REPO_PATH)) {
@@ -345,8 +347,10 @@ function generateCode(iosOutputDir, library, tmpDir, node, pathToSchema) {
   );
 
   // Finally, copy artifacts to the final output directory.
-  fs.mkdirSync(iosOutputDir, {recursive: true});
-  execSync(`cp -R ${tmpOutputDir}/* ${iosOutputDir}`);
+  const outputDir =
+    CORE_LIBRARIES_WITH_OUTPUT_FOLDER[library.config.name] ?? iosOutputDir;
+  fs.mkdirSync(outputDir, {recursive: true});
+  execSync(`cp -R ${tmpOutputDir}/* ${outputDir}`);
   console.log(`[Codegen] Generated artifacts: ${iosOutputDir}`);
 }
 

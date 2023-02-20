@@ -42,21 +42,17 @@ class FabricTest < Test::Unit::TestCase
         setup_fabric!(:react_native_path => prefix, new_arch_enabled: true)
 
         # Assert
-        check_installed_pods(prefix, install_rncore: false)
+        check_installed_pods(prefix)
     end
 
-    def check_installed_pods(prefix, install_rncore: true)
-        assert_equal($podInvocationCount, install_rncore ? 5 : 4)
+    def check_installed_pods(prefix)
+        assert_equal($podInvocationCount, 5)
 
         check_pod("React-Fabric", :path => "#{prefix}/ReactCommon")
         check_pod("React-graphics", :path => "#{prefix}/ReactCommon/react/renderer/graphics")
         check_pod("React-RCTFabric", :path => "#{prefix}/React", :modular_headers => true)
         check_pod("RCT-Folly/Fabric", :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec")
-        if install_rncore
-            check_pod("React-rncore", :path => "#{prefix}/ReactCommon")
-        else
-            assert_nil($podInvocation["React-rncore"])
-        end
+        check_pod("React-ImageManager", :path => "#{prefix}/ReactCommon/react/renderer/imagemanager/platform/ios")
     end
 
     def check_pod(name, path: nil, modular_headers: nil, podspec: nil)

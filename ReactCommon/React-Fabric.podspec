@@ -81,7 +81,7 @@ Pod::Spec.new do |s|
     header_search_path = [
       "\"$(PODS_ROOT)/boost\"",
       "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
-      "\"$(PODS_ROOT)/RCT-Folly\""
+      "\"$(PODS_ROOT)/RCT-Folly\"",
     ]
 
     if ENV['USE_FRAMEWORKS']
@@ -161,13 +161,19 @@ Pod::Spec.new do |s|
       sss.header_dir           = "react/renderer/components/modal"
     end
 
+    ss.subspec "rncore" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "react/renderer/components/rncore/**/*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/components/rncore"
+    end
+
     ss.subspec "root" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/root/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/root/tests"
       sss.header_dir           = "react/renderer/components/root"
-
     end
 
     ss.subspec "safeareaview" do |sss|
@@ -243,13 +249,9 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "imagemanager" do |ss|
-    ss.dependency             "React-RCTImage", version
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/imagemanager/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "react/renderer/imagemanager/tests",
-                              "react/renderer/imagemanager/platform/android",
-                              "react/renderer/imagemanager/platform/cxx"
+    ss.source_files         = "react/renderer/imagemanager/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/renderer/imagemanager"
   end
 
