@@ -54,12 +54,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   NSDictionary *initProps = [self prepareInitialProps];
   UIView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
 
-  if (@available(iOS 13.0, *)) {
-    rootView.backgroundColor = [UIColor systemBackgroundColor];
-  } else {
-    rootView.backgroundColor = [UIColor whiteColor];
-  }
-
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   rootViewController.view = rootView;
@@ -101,7 +95,14 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #if RCT_NEW_ARCH_ENABLED
   enableFabric = self.fabricEnabled;
 #endif
-  return RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
+  UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
+  if (@available(iOS 13.0, *)) {
+    rootView.backgroundColor = [UIColor systemBackgroundColor];
+  } else {
+    rootView.backgroundColor = [UIColor whiteColor];
+  }
+
+  return rootView;
 }
 
 - (UIViewController *)createRootViewController
