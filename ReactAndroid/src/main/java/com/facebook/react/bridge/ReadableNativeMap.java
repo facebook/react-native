@@ -40,11 +40,12 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   }
 
   private void ensureKeysAreImported() {
+    if (mKeys != null) {
+      return;
+    }
     synchronized (this) {
-      if (mKeys == null) {
-        mKeys = Assertions.assertNotNull(importKeys());
-        mJniCallCounter++;
-      }
+      mKeys = Assertions.assertNotNull(importKeys());
+      mJniCallCounter++;
     }
   }
 
@@ -52,8 +53,8 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     if (mLocalMap != null) {
       return mLocalMap;
     }
-    ensureKeysAreImported();
     synchronized (this) {
+      ensureKeysAreImported();
       if (mLocalMap == null) {
         Object[] values = Assertions.assertNotNull(importValues());
         mJniCallCounter++;
@@ -75,9 +76,8 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     if (mLocalTypeMap != null) {
       return mLocalTypeMap;
     }
-    ensureKeysAreImported();
     synchronized (this) {
-      // check that no other thread has already updated
+      ensureKeysAreImported();
       if (mLocalTypeMap == null) {
         Object[] types = Assertions.assertNotNull(importTypes());
         mJniCallCounter++;
@@ -190,9 +190,10 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public @NonNull Iterator<Map.Entry<String, Object>> getEntryIterator() {
-    ensureKeysAreImported();
-    final String[] iteratorKeys = mKeys;
     synchronized (this) {
+      ensureKeysAreImported();
+
+      final String[] iteratorKeys = mKeys;
       final Object[] iteratorValues = Assertions.assertNotNull(importValues());
 
       return new Iterator<Map.Entry<String, Object>>() {
