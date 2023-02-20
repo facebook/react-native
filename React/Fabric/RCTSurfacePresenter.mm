@@ -8,6 +8,7 @@
 #import "RCTSurfacePresenter.h"
 
 #import <mutex>
+#import <shared_mutex>
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
@@ -83,7 +84,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   RuntimeExecutor _runtimeExecutor; // Protected by `_schedulerLifeCycleMutex`.
   std::optional<RuntimeExecutor> _bridgelessBindingsExecutor; // Only used for installing bindings.
 
-  butter::shared_mutex _observerListMutex;
+  std::shared_mutex _observerListMutex;
   std::vector<__weak id<RCTSurfacePresenterObserver>> _observers; // Protected by `_observerListMutex`.
 }
 
@@ -390,13 +391,13 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
 {
-  std::unique_lock<butter::shared_mutex> lock(_observerListMutex);
+  std::unique_lock lock(_observerListMutex);
   _observers.push_back(observer);
 }
 
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer
 {
-  std::unique_lock<butter::shared_mutex> lock(_observerListMutex);
+  std::unique_lock lock(_observerListMutex);
   std::vector<__weak id<RCTSurfacePresenterObserver>>::const_iterator it =
       std::find(_observers.begin(), _observers.end(), observer);
   if (it != _observers.end()) {
@@ -412,7 +413,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
   NSArray<id<RCTSurfacePresenterObserver>> *observersCopy;
   {
-    std::shared_lock<butter::shared_mutex> lock(_observerListMutex);
+    std::shared_lock lock(_observerListMutex);
     observersCopy = [self _getObservers];
   }
 
@@ -429,7 +430,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
   NSArray<id<RCTSurfacePresenterObserver>> *observersCopy;
   {
-    std::shared_lock<butter::shared_mutex> lock(_observerListMutex);
+    std::shared_lock lock(_observerListMutex);
     observersCopy = [self _getObservers];
   }
 

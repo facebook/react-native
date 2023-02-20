@@ -16,7 +16,7 @@ import android.view.Gravity;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;
@@ -65,7 +65,8 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     } else if (ellipsizeMode.equals("clip")) {
       view.setEllipsizeLocation(null);
     } else {
-      throw new JSApplicationIllegalArgumentException("Invalid ellipsizeMode: " + ellipsizeMode);
+      FLog.w(ReactConstants.TAG, "Invalid ellipsizeMode: " + ellipsizeMode);
+      view.setEllipsizeLocation(TextUtils.TruncateAt.END);
     }
   }
 
@@ -85,8 +86,8 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     } else if ("center".equals(textAlignVertical)) {
       view.setGravityVertical(Gravity.CENTER_VERTICAL);
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid textAlignVertical: " + textAlignVertical);
+      FLog.w(ReactConstants.TAG, "Invalid textAlignVertical: " + textAlignVertical);
+      view.setGravityVertical(Gravity.NO_GRAVITY);
     }
   }
 
@@ -118,8 +119,8 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     } else if (frequency.equals("normal")) {
       view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid android_hyphenationFrequency: " + frequency);
+      FLog.w(ReactConstants.TAG, "Invalid android_hyphenationFrequency: " + frequency);
+      view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
     }
   }
 

@@ -13,8 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
@@ -146,8 +147,8 @@ public class ReactProgressBarViewManager
 
   /* package */ static int getStyleFromString(@Nullable String styleStr) {
     if (styleStr == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "ProgressBar needs to have a style, null received");
+      FLog.w(ReactConstants.TAG, "ProgressBar needs to have a style, null received");
+      return android.R.attr.progressBarStyle;
     } else if (styleStr.equals("Horizontal")) {
       return android.R.attr.progressBarStyleHorizontal;
     } else if (styleStr.equals("Small")) {
@@ -163,7 +164,8 @@ public class ReactProgressBarViewManager
     } else if (styleStr.equals("Normal")) {
       return android.R.attr.progressBarStyle;
     } else {
-      throw new JSApplicationIllegalArgumentException("Unknown ProgressBar style: " + styleStr);
+      FLog.w(ReactConstants.TAG, "Unknown ProgressBar style: " + styleStr);
+      return android.R.attr.progressBarStyle;
     }
   }
 

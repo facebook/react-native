@@ -33,7 +33,7 @@ SurfaceId MountingCoordinator::getSurfaceId() const {
   return surfaceId_;
 }
 
-void MountingCoordinator::push(ShadowTreeRevision const &revision) const {
+void MountingCoordinator::push(ShadowTreeRevision revision) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -41,7 +41,7 @@ void MountingCoordinator::push(ShadowTreeRevision const &revision) const {
         !lastRevision_.has_value() || revision.number != lastRevision_->number);
 
     if (!lastRevision_.has_value() || lastRevision_->number < revision.number) {
-      lastRevision_ = revision;
+      lastRevision_ = std::move(revision);
     }
   }
 

@@ -203,7 +203,7 @@ commands:
     steps:
       - run:
           name: "Brew: Install << parameters.package >>"
-          command: brew install << parameters.package >> >/dev/null
+          command: brew install << parameters.package >>
 
   with_rntester_pods_cache_span:
     parameters:
@@ -568,6 +568,8 @@ jobs:
       - checkout_code_with_cache
       - setup_artifacts
       - setup_ruby
+      - brew_install:
+          package: xcbeautify
       - run:
           name: Run Ruby Tests
           command: |
@@ -590,7 +592,12 @@ jobs:
 
       - run:
           name: "Brew: Tap wix/brew"
-          command: brew tap wix/brew >/dev/null
+          command: brew tap wix/brew
+      - run:
+          # Python 3.10 already exists in the environment, this is a workaround for:
+          # https://github.com/actions/setup-python/issues/577
+          name: "Unlink environment's Python 3.10"
+          command: brew unlink python@3.10
       - brew_install:
           package: applesimutils watchman
 
@@ -1537,9 +1544,10 @@ jobs:
             echo "Nightly build run"
 
   find_and_publish_bumped_packages:
-    executor: reactnativeandroid
+    executor: nodelts
     steps:
       - checkout
+      - run_yarn
       - run:
           name: Set NPM auth token
           command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
