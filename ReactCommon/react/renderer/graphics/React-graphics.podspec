@@ -21,6 +21,13 @@ folly_version = '2021.07.22.00'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
+  source_files = "**/*.{m,mm,cpp,h}"
+  header_search_paths = [
+    "\"$(PODS_ROOT)/boost\"",
+    "\"$(PODS_TARGET_SRCROOT)/../../../\"",
+    "\"$(PODS_ROOT)/RCT-Folly\"",
+  ]
+
   s.name                   = "React-graphics"
   s.version                = version
   s.summary                = "Fabric for React Native."
@@ -30,13 +37,21 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "12.4" }
   s.source                 = source
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.source_files           = "**/*.{m,mm,cpp,h}"
+  s.source_files           = source_files
   s.exclude_files          = "tests",
                              "platform/android",
                              "platform/cxx"
   s.header_dir             = "react/renderer/graphics"
-  s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO", "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_TARGET_SRCROOT)/../../../\" \"$(PODS_ROOT)/RCT-Folly\"" }
 
+  if ENV['USE_FRAMEWORKS']
+    s.module_name            = "React_graphics"
+    s.header_mappings_dir  = "../../.."
+    header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
+  end
+
+  s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO", "HEADER_SEARCH_PATHS" => header_search_paths.join(" ") }
+
+  s.dependency "glog"
   s.dependency "RCT-Folly/Fabric", folly_version
   s.dependency "React-Core/Default", version
 end

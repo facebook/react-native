@@ -21,6 +21,26 @@ folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2021.07.22.00'
 boost_compiler_flags = '-Wno-documentation'
 
+header_search_paths = [
+  "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
+  "\"$(PODS_ROOT)/boost\"",
+  "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/RCT-Folly\"",
+  "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
+  "\"$(PODS_ROOT)/Headers/Public/React-Codegen\"",
+  "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"",
+
+]
+
+if ENV['USE_FRAMEWORKS']
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/textlayoutmanager/platform/ios\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/textinput/iostextinput\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
+end
+
 Pod::Spec.new do |s|
   s.name                   = "React-RCTFabric"
   s.version                = version
@@ -37,9 +57,11 @@ Pod::Spec.new do |s|
   s.header_dir             = "React"
   s.module_name            = "RCTFabric"
   s.framework              = "JavaScriptCore"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\" \"$(PODS_ROOT)/Headers/Public/React-Codegen\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"" }
-  s.xcconfig               = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/RCT-Folly\"", "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-                               "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags  }
+  s.pod_target_xcconfig    = {
+    "HEADER_SEARCH_PATHS" => header_search_paths,
+    "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags,
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
+  }
 
   s.dependency "React-Core", version
   s.dependency "React-Fabric", version
