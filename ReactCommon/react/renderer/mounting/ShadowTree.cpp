@@ -351,6 +351,10 @@ CommitStatus ShadowTree::tryCommit(
     }
   }
 
+  // Run commit hooks.
+  newRootShadowNode = delegate_.shadowTreeWillCommit(
+      *this, oldRootShadowNode, newRootShadowNode);
+
   // Layout nodes.
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
   affectedLayoutableNodes.reserve(1024);
@@ -373,9 +377,6 @@ CommitStatus ShadowTree::tryCommit(
     }
 
     auto newRevisionNumber = oldRevision.number + 1;
-
-    newRootShadowNode = delegate_.shadowTreeWillCommit(
-        *this, oldRootShadowNode, newRootShadowNode);
 
     if (!newRootShadowNode ||
         (commitOptions.shouldYield && commitOptions.shouldYield())) {
