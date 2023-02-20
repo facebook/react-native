@@ -25,11 +25,32 @@ abstract class PrivateReactExtension @Inject constructor(project: Project) {
 
   private val objects = project.objects
 
-  val root: DirectoryProperty = objects.directoryProperty()
+  val root: DirectoryProperty =
+      objects
+          .directoryProperty()
+          .convention(
+              // This is the default for the project root if the users hasn't specified anything.
+              // If the project is called "react-native-github"
+              //   - We're inside the Github Repo -> root is defined by RN Tester (so no default
+              // needed)
+              //   - We're inside an includedBuild as we're performing a build from source
+              //     (then we're inside `node_modules/react-native`, so default should be ../../)
+              // If the project is called in any other name
+              //   - We're inside a user project, so inside the ./android folder. Default should be
+              // ../
+              // User can always override this default by setting a `root =` inside the template.
+              if (project.rootProject.name == "react-native-github") {
+                project.rootProject.layout.projectDirectory.dir("../../")
+              } else {
+                project.rootProject.layout.projectDirectory.dir("../")
+              })
 
-  val reactNativeDir: DirectoryProperty = objects.directoryProperty()
+  val reactNativeDir: DirectoryProperty =
+      objects.directoryProperty().convention(root.dir("node_modules/react-native"))
 
-  val nodeExecutableAndArgs: ListProperty<String> = objects.listProperty(String::class.java)
+  val nodeExecutableAndArgs: ListProperty<String> =
+      objects.listProperty(String::class.java).convention(listOf("node"))
 
-  val codegenDir: DirectoryProperty = objects.directoryProperty()
+  val codegenDir: DirectoryProperty =
+      objects.directoryProperty().convention(root.dir("node_modules/@react-native/codegen"))
 }
