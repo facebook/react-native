@@ -604,12 +604,12 @@ jobs:
       - run:
           name: "Brew: Tap wix/brew"
           command: brew tap wix/brew
-      - run:
-          # Python 3.11 already exists in the environment, this is a workaround for:
-          # https://github.com/actions/setup-python/issues/577
-          name: "Unlink environment's Python 3.11"
-          command: |
-            brew unlink python@3.11
+      # - run:
+      #     # Python 3.11 already exists in the environment, this is a workaround for:
+      #     # https://github.com/actions/setup-python/issues/577
+      #     name: "Unlink environment's Python 3.11"
+      #     command: |
+      #       brew unlink python@3.11
       - brew_install:
           package: applesimutils watchman
 
@@ -981,11 +981,11 @@ jobs:
                     export USE_HERMES=0
                   fi
 
-                  bundle env
+                  cd packages/rn-tester
                   gem install bundler
                   bundle env
                   bundle check || bundle install --path vendor/bundle --clean
-                  cd packages/rn-tester && bundle exec pod install
+                  bundle exec pod install
 
       - run:
           name: Build RNTester
