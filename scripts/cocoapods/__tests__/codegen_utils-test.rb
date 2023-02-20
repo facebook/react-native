@@ -118,6 +118,25 @@ class CodegenUtilsTests < Test::Unit::TestCase
         assert_equal(Pod::UI.collected_messages, ["[Codegen] Adding script_phases to React-Codegen."])
     end
 
+    def testGetReactCodegenSpec_whenUseFrameworksAndNewArch_generatesAPodspec
+        # Arrange
+        ENV["USE_FRAMEWORKS"] = "static"
+        FileMock.files_to_read('package.json' => '{ "version": "99.98.97"}')
+
+        # Act
+        podspec = CodegenUtils.new().get_react_codegen_spec(
+            'package.json',
+            :fabric_enabled => true,
+            :hermes_enabled => true,
+            :script_phases => nil,
+            :file_manager => FileMock
+        )
+
+        # Assert
+        assert_equal(podspec, get_podspec_when_use_frameworks())
+        assert_equal(Pod::UI.collected_messages, [])
+    end
+
     # =============================== #
     # Test - GetCodegenConfigFromFile #
     # =============================== #
@@ -503,7 +522,9 @@ class CodegenUtilsTests < Test::Unit::TestCase
             'ios' => '11.0',
           },
           'source_files' => "**/*.{h,mm,cpp}",
-          'pod_target_xcconfig' => { "HEADER_SEARCH_PATHS" =>
+          'pod_target_xcconfig' => {
+            "FRAMEWORK_SEARCH_PATHS" => [],
+            "HEADER_SEARCH_PATHS" =>
             [
               "\"$(PODS_ROOT)/boost\"",
               "\"$(PODS_ROOT)/RCT-Folly\"",
@@ -514,15 +535,16 @@ class CodegenUtilsTests < Test::Unit::TestCase
           },
           'dependencies': {
             "FBReactNativeSpec":  [],
-            "React-jsiexecutor":  [],
             "RCT-Folly": [],
             "RCTRequired": [],
             "RCTTypeSafety": [],
             "React-Core": [],
             "React-jsi": [],
-            "hermes-engine": [],
+            "React-jsiexecutor": [],
+            "React-rncore": [],
             "ReactCommon/turbomodule/bridging": [],
-            "ReactCommon/turbomodule/core": []
+            "ReactCommon/turbomodule/core": [],
+            "hermes-engine": [],
           }
         }
     end
@@ -536,6 +558,19 @@ class CodegenUtilsTests < Test::Unit::TestCase
         })
 
         specs[:'script_phases'] = script_phases
+
+        return specs
+    end
+
+    def get_podspec_when_use_frameworks
+        specs = get_podspec_no_fabric_no_script()
+
+        specs["pod_target_xcconfig"]["FRAMEWORK_SEARCH_PATHS"].concat(["\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric\""])
+        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios\"")
+
+        specs[:dependencies].merge!({
+            'React-graphics': [],
+        })
 
         return specs
     end

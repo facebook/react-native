@@ -185,4 +185,30 @@ class ReactNativePodsUtils
             ENV['USE_FRAMEWORKS'] = nil
         end
     end
+
+    def self.update_search_paths(installer)
+        return if ENV['USE_FRAMEWORKS'] == nil
+
+        projects = installer.aggregate_targets
+            .map{ |t| t.user_project }
+            .uniq{ |p| p.path }
+            .push(installer.pods_project)
+
+        projects.each do |project|
+            project.build_configurations.each do |config|
+                header_search_paths = config.build_settings["HEADER_SEARCH_PATHS"] ||= "$(inherited)"
+
+                if !header_search_paths.include?("${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios")
+                    header_search_paths << " ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios"
+                    header_search_paths << " ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core"
+                    header_search_paths << " ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples/platform/ios"
+                    header_search_paths << " ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples"
+                end
+
+                config.build_settings["HEADER_SEARCH_PATHS"] = header_search_paths
+            end
+
+            project.save()
+        end
+    end
 end
