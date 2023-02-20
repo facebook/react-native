@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": "github:facebook/react-native",
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "types": "types",
   "jest-junit": {
