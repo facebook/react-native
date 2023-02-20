@@ -26,7 +26,7 @@ import type {
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
 import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
-import type {ComponentSchemaBuilderConfig} from './flow/components/schema';
+import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {
   getConfigType,
