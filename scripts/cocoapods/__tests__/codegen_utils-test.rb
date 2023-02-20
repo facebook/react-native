@@ -555,6 +555,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs[:dependencies].merge!({
             'React-graphics': [],
             'React-rncore':  [],
+            'React-Fabric': [],
         })
 
         specs[:'script_phases'] = script_phases
@@ -570,6 +571,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
         specs[:dependencies].merge!({
             'React-graphics': [],
+            'React-Fabric': [],
         })
 
         return specs

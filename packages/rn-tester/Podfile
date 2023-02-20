@@ -19,7 +19,7 @@ end
 def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   project 'RNTesterPods.xcodeproj'
 
-  fabric_enabled = true
+  fabric_enabled = ENV['USE_FRAMEWORKS'] == 'dynamic' ? false : true
 
   # Hermes is now enabled by default.
   # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).

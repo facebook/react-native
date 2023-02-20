@@ -99,7 +99,7 @@ def use_react_native! (
   pod 'React-RCTText', :path => "#{prefix}/Libraries/Text"
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
-
+  pod 'React-rncore', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
 
   if hermes_enabled
@@ -311,9 +311,9 @@ def use_react_native_codegen!(spec, options={})
     # The final generated files will be created when this script is invoked at Xcode build time.
     :script => get_script_phases_no_codegen_discovery(
       react_native_path: react_native_path,
-      codegen_output_dir: $CODEGEN_OUTPUT_DIR,
-      codegen_module_dir: $CODEGEN_MODULE_DIR,
-      codegen_component_dir: $CODEGEN_COMPONENT_DIR,
+      codegen_output_dir: output_dir,
+      codegen_module_dir: output_dir_module,
+      codegen_component_dir: output_dir_component,
       library_name: library_name,
       library_type: library_type,
       js_srcs_pattern: js_srcs_pattern,
