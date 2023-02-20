@@ -6,8 +6,8 @@
  */
 
 #import "RCTAppDelegate.h"
-#import <React/RCTAppSetupUtils.h>
 #import <React/RCTRootView.h>
+#import "RCTAppSetupUtils.h"
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
