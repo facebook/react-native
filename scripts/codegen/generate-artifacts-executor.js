@@ -401,6 +401,8 @@ function createComponentProvider(
     fs.closeSync(fd);
     console.log(`Generated schema list: ${schemaListTmpPath}`);
 
+    const outputDir = path.join(RN_ROOT, 'React', 'Fabric');
+
     // Generate FabricComponentProvider.
     // Only for iOS at this moment.
     executeNodeScript(
@@ -409,9 +411,9 @@ function createComponentProvider(
         RN_ROOT,
         'scripts',
         'generate-provider-cli.js',
-      )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${iosOutputDir}`,
+      )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${outputDir}`,
     );
-    console.log(`Generated provider in: ${iosOutputDir}`);
+    console.log(`Generated provider in: ${outputDir}`);
   }
 }
 

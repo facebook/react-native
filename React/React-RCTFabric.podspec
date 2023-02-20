@@ -40,6 +40,7 @@ if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""
 end
 
 Pod::Spec.new do |s|
@@ -62,7 +63,9 @@ Pod::Spec.new do |s|
     "HEADER_SEARCH_PATHS" => header_search_paths,
     "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags,
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
-  }
+  }.merge!(ENV['USE_FRAMEWORKS'] != nil ? {
+    "PUBLIC_HEADERS_FOLDER_PATH" => "$(CONTENTS_FOLDER_PATH)/Headers/React"
+  }: {})
 
   s.dependency "React-Core", version
   s.dependency "React-Fabric", version

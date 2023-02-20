@@ -68,7 +68,7 @@ def use_react_native! (
   # that has invoked the `use_react_native!` function.
   ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
 
-  CodegenUtils.clean_up_build_folder(app_path, ios_folder, $CODEGEN_OUTPUT_DIR)
+  CodegenUtils.clean_up_build_folder(path, app_path, ios_folder, $CODEGEN_OUTPUT_DIR)
 
   # We are relying on this flag also in third parties libraries to proper install dependencies.
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
@@ -139,7 +139,7 @@ def use_react_native! (
   pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
 
   if fabric_enabled
-    checkAndGenerateEmptyThirdPartyProvider!(prefix, new_arch_enabled, $CODEGEN_OUTPUT_DIR)
+    checkAndGenerateEmptyThirdPartyProvider!(prefix, new_arch_enabled)
     setup_fabric!(:react_native_path => prefix, new_arch_enabled: new_arch_enabled)
   else
     relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
