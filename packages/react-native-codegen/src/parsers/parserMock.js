@@ -21,6 +21,7 @@ import type {
   NativeModuleEnumMemberType,
   NativeModuleEnumMembers,
 } from '../CodegenSchema';
+import type {TypeDeclarationMap} from './utils';
 
 import type {TypeDeclarationMap} from './utils';
 
@@ -176,5 +177,9 @@ export class MockedParser implements Parser {
     types: TypeDeclarationMap,
   ): $FlowFixMe {
     return types[typeAnnotation.typeParameters.params[0].id.name];
+  }
+
+  getTypes(ast: $FlowFixMe): TypeDeclarationMap {
+    return {};
   }
 }

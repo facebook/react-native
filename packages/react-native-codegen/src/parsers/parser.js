@@ -169,4 +169,9 @@ export interface Parser {
     typeAnnotation: $FlowFixMe,
     types: TypeDeclarationMap,
   ): $FlowFixMe;
+
+  /**
+   * Given the AST, returns the TypeDeclarationMap
+   */
+  getTypes(ast: $FlowFixMe): TypeDeclarationMap;
 }
