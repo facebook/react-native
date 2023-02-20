@@ -168,10 +168,7 @@ commands:
           version: "3.1.3"
       - run:
           name: Install Bundler for the current version of Ruby
-          command: |
-            bundle env
-            gem install bundler
-            bundle env
+          command: gem install bundler
       - run:
           name: Bundle Install
           command: |
@@ -604,12 +601,7 @@ jobs:
       - run:
           name: "Brew: Tap wix/brew"
           command: brew tap wix/brew
-      # - run:
-      #     # Python 3.11 already exists in the environment, this is a workaround for:
-      #     # https://github.com/actions/setup-python/issues/577
-      #     name: "Unlink environment's Python 3.11"
-      #     command: |
-      #       brew unlink python@3.11
+
       - brew_install:
           package: applesimutils watchman
 
@@ -983,7 +975,6 @@ jobs:
 
                   cd packages/rn-tester
                   gem install bundler
-                  bundle env
                   bundle check || bundle install --path vendor/bundle --clean
                   bundle exec pod install
 
