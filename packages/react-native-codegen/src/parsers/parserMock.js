@@ -23,8 +23,6 @@ import type {
 } from '../CodegenSchema';
 import type {TypeDeclarationMap} from './utils';
 
-import type {TypeDeclarationMap} from './utils';
-
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 const {
