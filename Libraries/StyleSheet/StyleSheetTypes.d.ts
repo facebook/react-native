@@ -363,4 +363,5 @@ export interface ImageStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   overlayColor?: ColorValue | undefined;
   tintColor?: ColorValue | undefined;
   opacity?: number | undefined;
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | undefined;
 }
