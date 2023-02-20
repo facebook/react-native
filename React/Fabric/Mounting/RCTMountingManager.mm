@@ -22,10 +22,10 @@
 #import <react/renderer/debug/SystraceSection.h>
 #import <react/renderer/mounting/TelemetryController.h>
 
-#import "RCTComponentViewProtocol.h"
-#import "RCTComponentViewRegistry.h"
-#import "RCTConversions.h"
-#import "RCTMountingTransactionObserverCoordinator.h"
+#import <React/RCTComponentViewProtocol.h>
+#import <React/RCTComponentViewRegistry.h>
+#import <React/RCTConversions.h>
+#import <React/RCTMountingTransactionObserverCoordinator.h>
 
 using namespace facebook::react;
 

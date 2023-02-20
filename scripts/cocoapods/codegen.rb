@@ -34,18 +34,17 @@ def build_codegen!(react_native_path, relative_installation_root, dir_manager: D
 # Parameters:
 # - react_native_path: path to the react native framework
 # - new_arch_enabled: whether the New Architecture is enabled or not
-# - codegen_output_dir: the output directory for the codegen
 # - dir_manager: a class that implements the `Dir` interface. Defaults to `Dir`, the Dependency can be injected for testing purposes.
 # - file_manager: a class that implements the `File` interface. Defaults to `File`, the Dependency can be injected for testing purposes.
-def checkAndGenerateEmptyThirdPartyProvider!(react_native_path, new_arch_enabled, codegen_output_dir, dir_manager: Dir, file_manager: File)
+def checkAndGenerateEmptyThirdPartyProvider!(react_native_path, new_arch_enabled, dir_manager: Dir, file_manager: File)
     return if new_arch_enabled
 
     relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
 
-    output_dir = "#{relative_installation_root}/#{codegen_output_dir}"
+    output_dir = "#{react_native_path}/React/Fabric"
 
     provider_h_path = "#{output_dir}/RCTThirdPartyFabricComponentsProvider.h"
-    provider_cpp_path ="#{output_dir}/RCTThirdPartyFabricComponentsProvider.cpp"
+    provider_cpp_path ="#{output_dir}/RCTThirdPartyFabricComponentsProvider.mm"
 
     if(!file_manager.exist?(provider_h_path) || !file_manager.exist?(provider_cpp_path))
         # build codegen

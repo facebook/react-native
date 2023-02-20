@@ -23,19 +23,19 @@
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTFabricComponentPlugin/RCTFabricPluginProvider.h>
 #else
-#import "RCTFabricComponentsPlugins.h"
+#import <React/RCTFabricComponentsPlugins.h>
 #endif
 
-#import "RCTComponentViewClassDescriptor.h"
-#import "RCTFabricComponentsPlugins.h"
-#import "RCTImageComponentView.h"
-#import "RCTLegacyViewManagerInteropComponentView.h"
-#import "RCTMountingTransactionObserving.h"
-#import "RCTParagraphComponentView.h"
-#import "RCTRootComponentView.h"
-#import "RCTTextInputComponentView.h"
-#import "RCTUnimplementedViewComponentView.h"
-#import "RCTViewComponentView.h"
+#import <React/RCTComponentViewClassDescriptor.h>
+#import <React/RCTFabricComponentsPlugins.h>
+#import <React/RCTImageComponentView.h>
+#import <React/RCTLegacyViewManagerInteropComponentView.h>
+#import <React/RCTMountingTransactionObserving.h>
+#import <React/RCTParagraphComponentView.h>
+#import <React/RCTRootComponentView.h>
+#import <React/RCTTextInputComponentView.h>
+#import <React/RCTUnimplementedViewComponentView.h>
+#import <React/RCTViewComponentView.h>
 
 #import <objc/runtime.h>
 

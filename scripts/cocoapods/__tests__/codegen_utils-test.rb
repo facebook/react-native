@@ -417,9 +417,10 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.set_cleanup_done(false)
         codegen_dir = "build/generated/ios"
         ios_folder = '.'
+        rn_path = '../node_modules/react-native'
 
         # Act
-        CodegenUtils.clean_up_build_folder(@base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
+        CodegenUtils.clean_up_build_folder(rn_path, @base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)
@@ -440,17 +441,23 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "#{codegen_path}/react/components/MyComponent/ShadowNode.h",
             "#{codegen_path}/react/components/MyComponent/ShadowNode.mm",
         ]
+        rn_path = '../node_modules/react-native'
+
         DirMock.mocked_existing_dirs(codegen_path)
         DirMock.mocked_existing_globs(globs, "#{codegen_path}/*")
 
         # Act
-        CodegenUtils.clean_up_build_folder(@base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
+        CodegenUtils.clean_up_build_folder(rn_path, @base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(DirMock.exist_invocation_params, [codegen_path, codegen_path])
         assert_equal(DirMock.glob_invocation, ["#{codegen_path}/*", "#{codegen_path}/*"])
-        assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 1)
-        assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [globs])
+        assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 3)
+        assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [
+            globs,
+            "#{rn_path}/React/Fabric/RCTThirdPartyFabricComponentsProvider.h",
+            "#{rn_path}/React/Fabric/RCTThirdPartyFabricComponentsProvider.mm",
+        ])
         assert_equal(CodegenUtils.cleanup_done(), true)
     end
 
@@ -566,8 +573,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
     def get_podspec_when_use_frameworks
         specs = get_podspec_no_fabric_no_script()
 
-        specs["pod_target_xcconfig"]["FRAMEWORK_SEARCH_PATHS"].concat(["\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric\""])
-        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios\"")
+        specs["pod_target_xcconfig"]["FRAMEWORK_SEARCH_PATHS"].concat([])
+        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"")
 
         specs[:dependencies].merge!({
             'React-graphics': [],

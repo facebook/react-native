@@ -95,10 +95,9 @@ class CodegenUtils
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
-            "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios\""
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"",
           ])
-
-          framework_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric\""
         end
 
         spec = {
@@ -127,7 +126,7 @@ class CodegenUtils
             "React-Core": [],
             "React-jsi": [],
             "ReactCommon/turbomodule/bridging": [],
-            "ReactCommon/turbomodule/core": []
+            "ReactCommon/turbomodule/core": [],
           }
         }
 
@@ -339,7 +338,7 @@ class CodegenUtils
       return @@CLEANUP_DONE
     end
 
-    def self.clean_up_build_folder(app_path, ios_folder, codegen_dir, dir_manager: Dir, file_manager: File)
+    def self.clean_up_build_folder(rn_path, app_path, ios_folder, codegen_dir, dir_manager: Dir, file_manager: File)
       return if CodegenUtils.cleanup_done()
       CodegenUtils.set_cleanup_done(true)
 
@@ -347,6 +346,9 @@ class CodegenUtils
       return if !dir_manager.exist?(codegen_path)
 
       FileUtils.rm_rf(dir_manager.glob("#{codegen_path}/*"))
+      base_provider_path = file_manager.join(rn_path, 'React', 'Fabric', 'RCTThirdPartyFabricComponentsProvider')
+      FileUtils.rm_rf("#{base_provider_path}.h")
+      FileUtils.rm_rf("#{base_provider_path}.mm")
       CodegenUtils.assert_codegen_folder_is_empty(app_path, ios_folder, codegen_dir, dir_manager: dir_manager, file_manager: file_manager)
     end
 
