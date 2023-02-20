@@ -533,7 +533,74 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(Pod::UI.collected_messages, ["Framework build type is dynamic framework"])
         assert_equal(ENV['USE_FRAMEWORKS'], 'dynamic')
     end
+
+    # ============================ #
+    # Test - Update Search Paths   #
+    # ============================ #
+    def test_updateSearchPaths_whenUseFrameworks_addsSearchPaths
+        # Arrange
+        ENV['USE_FRAMEWORKS'] = 'static'
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
+        user_project_mock = UserProjectMock.new("a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                first_target,
+                second_target
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.update_search_paths(installer)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
+            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples"
+            assert_equal(expected_search_path, received_search_path)
+        end
+    end
+
+    def test_updateSearchPaths_whenNotUseFrameworks_addsSearchPaths
+        # Arrange
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
+        user_project_mock = UserProjectMock.new("a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                first_target,
+                second_target
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.update_search_paths(installer)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_nil(config.build_settings["HEADER_SEARCH_PATHS"])
+        end
+    end
 end
+
+
+# ===== #
+# UTILS #
+# ===== #
 
 def prepare_empty_user_project_mock
     return UserProjectMock.new("a/path", [
