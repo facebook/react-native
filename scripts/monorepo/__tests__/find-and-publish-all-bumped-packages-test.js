@@ -9,7 +9,7 @@
 
 const {spawnSync} = require('child_process');
 
-const {BUMP_COMMIT_MESSAGE} = require('../constants');
+const {PUBLISH_PACKAGES_TAG} = require('../constants');
 const forEachPackage = require('../for-each-package');
 const findAndPublishAllBumpedPackages = require('../find-and-publish-all-bumped-packages');
 
@@ -31,7 +31,7 @@ describe('findAndPublishAllBumpedPackages', () => {
     }));
 
     spawnSync.mockImplementationOnce(() => ({
-      stdout: BUMP_COMMIT_MESSAGE,
+      stdout: `This is my commit message\n\n${PUBLISH_PACKAGES_TAG}`,
     }));
 
     expect(() => findAndPublishAllBumpedPackages()).toThrow(
