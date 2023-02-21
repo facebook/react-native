@@ -6,7 +6,7 @@
 # Default versions of Flipper and related dependencies.
 # Update this map to bump the dependencies.
 $flipper_default_versions = {
-    'Flipper' => '0.174.0',
+    'Flipper' => '0.182.0',
     'Flipper-Boost-iOSX' => '1.76.0.1.11',
     'Flipper-DoubleConversion' => '3.2.0.1',
     'Flipper-Fmt' => '7.1.7',
