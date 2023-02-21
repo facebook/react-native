@@ -332,7 +332,7 @@ typedef NSDictionary RCTFontVariantDescriptor;
   });
   RCTFontVariantDescriptor *value = mapping[json];
   if (RCT_DEBUG && !value && [json description].length > 0) {
-    RCTLogError(
+    RCTLogInfo(
         @"Invalid RCTFontVariantDescriptor '%@'. should be one of: %@",
         json,
         [[mapping allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]);
@@ -424,7 +424,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
       isCondensed = isCondensedFont(font);
     } else {
       // Not a valid font or family
-      RCTLogError(@"Unrecognized font family '%@'", familyName);
+      RCTLogInfo(@"Unrecognized font family '%@'", familyName);
       if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
         font = [UIFont systemFontOfSize:fontSize weight:fontWeight];
       } else if (fontWeight > UIFontWeightRegular) {

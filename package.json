@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": "github:facebook/react-native",
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "types": "types",
   "jest-junit": {
@@ -16,9 +16,11 @@
   },
   "files": [
     "android",
+    "build.gradle.kts",
     "cli.js",
     "flow",
     "flow-typed",
+    "gradle.properties",
     "index.js",
     "interface.js",
     "jest-preset.js",
@@ -61,6 +63,7 @@
     "sdks/.hermesversion",
     "sdks/hermes-engine",
     "sdks/hermesc",
+    "settings.gradle.kts",
     "template.config.js",
     "template",
     "!template/node_modules",
@@ -115,15 +118,16 @@
     "@react-native-community/cli-platform-android": "10.0.0",
     "@react-native-community/cli-platform-ios": "10.0.0",
     "@react-native/assets-registry": "^0.72.0",
-    "@react-native/gradle-plugin": "^0.72.2",
-    "@react-native/js-polyfills": "^0.72.0",
+    "@react-native/gradle-plugin": "^0.72.3",
+    "@react-native/js-polyfills": "^0.72.1",
     "@react-native/normalize-colors": "^0.72.0",
-    "@react-native/virtualized-lists": "0.72.0",
+    "@react-native/virtualized-lists": "^0.72.1",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
     "deprecated-react-native-prop-types": "^4.0.0",
     "event-target-shim": "^5.0.1",
+    "flow-enums-runtime": "^0.0.5",
     "invariant": "^2.2.4",
     "jest-environment-node": "^29.2.1",
     "jsc-android": "^250231.0.0",
@@ -135,7 +139,7 @@
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.3.0",
-    "react-devtools-core": "^4.26.1",
+    "react-devtools-core": "^4.27.2",
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "^16.15.0",
     "regenerator-runtime": "^0.13.2",
@@ -146,7 +150,7 @@
     "ws": "^6.2.2"
   },
   "devDependencies": {
-    "flow-bin": "^0.199.1",
+    "flow-bin": "^0.200.0",
     "hermes-eslint": "0.8.0",
     "mock-fs": "^5.1.4",
     "react": "18.2.0",

@@ -21,13 +21,15 @@
   },
   "dependencies": {
     "invariant": "^2.2.4",
-    "nullthrows": "^1.1.1"
+    "nullthrows": "^1.1.1",
+    "flow-enums-runtime": "^0.0.5"
   },
   "peerDependencies": {
     "react": "18.2.0",
     "react-native": "*"
   },
   "devDependencies": {
+    "babel-plugin-transform-flow-enums":"^0.0.2",
     "connect": "^3.6.5",
     "ws": "^6.2.2"
   },

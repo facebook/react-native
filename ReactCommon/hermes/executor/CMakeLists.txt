@@ -28,4 +28,10 @@ if(${CMAKE_BUILD_TYPE} MATCHES Debug)
                 PRIVATE
                 -DHERMES_ENABLE_DEBUGGER=1
         )
+else()
+        target_compile_options(
+                hermes_executor_common
+                PRIVATE
+                -DNDEBUG
+        )
 endif()

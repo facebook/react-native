@@ -33,8 +33,22 @@ ConstantsStruct NativeCxxModuleExample::getConstants(jsi::Runtime &rt) {
   return ConstantsStruct{true, 69, "react-native"};
 }
 
-int32_t NativeCxxModuleExample::getEnum(jsi::Runtime &rt, int32_t arg) {
+CustomEnumInt NativeCxxModuleExample::getCustomEnum(
+    jsi::Runtime &rt,
+    CustomEnumInt arg) {
   return arg;
+}
+
+NativeCxxModuleExampleCxxEnumFloat NativeCxxModuleExample::getNumEnum(
+    jsi::Runtime &rt,
+    NativeCxxModuleExampleCxxEnumInt arg) {
+  return NativeCxxModuleExampleCxxEnumFloat::FB;
+}
+
+NativeCxxModuleExampleCxxEnumStr NativeCxxModuleExample::getStrEnum(
+    jsi::Runtime &rt,
+    NativeCxxModuleExampleCxxEnumNone arg) {
+  return NativeCxxModuleExampleCxxEnumStr::SB;
 }
 
 std::map<std::string, std::optional<int32_t>> NativeCxxModuleExample::getMap(

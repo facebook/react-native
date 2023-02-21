@@ -8,9 +8,9 @@
 #pragma once
 
 #include <memory>
+#include <shared_mutex>
 
 #include <butter/map.h>
-#include <butter/mutex.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/core/ComponentDescriptor.h>
@@ -81,7 +81,7 @@ class ComponentDescriptorRegistry {
    */
   void add(ComponentDescriptorProvider componentDescriptorProvider) const;
 
-  mutable butter::shared_mutex mutex_;
+  mutable std::shared_mutex mutex_;
   mutable butter::map<ComponentHandle, SharedComponentDescriptor>
       _registryByHandle;
   mutable butter::map<std::string, SharedComponentDescriptor> _registryByName;

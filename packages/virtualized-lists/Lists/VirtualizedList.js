@@ -84,7 +84,7 @@ function horizontalOrDefault(horizontal: ?boolean) {
   return horizontal ?? false;
 }
 
-// initialNumToRenderOrDefault(this.props.initialNumToRenderOrDefault)
+// initialNumToRenderOrDefault(this.props.initialNumToRender)
 function initialNumToRenderOrDefault(initialNumToRender: ?number) {
   return initialNumToRender ?? 10;
 }

@@ -11,17 +11,7 @@
 'use strict';
 import type {NamedShape, PropTypeAnnotation} from '../../CodegenSchema';
 
-function upperCaseFirst(inString: string): string {
-  if (inString.length === 0) {
-    return inString;
-  }
-
-  return inString[0].toUpperCase() + inString.slice(1);
-}
-
-function toSafeCppString(input: string): string {
-  return input.split('-').map(upperCaseFirst).join('');
-}
+const {getEnumName, toSafeCppString} = require('../Utils');
 
 function toIntEnumValueName(propName: string, value: number): string {
   return `${toSafeCppString(propName)}${value}`;
@@ -124,11 +114,6 @@ function generateStructName(
   return `${componentName}${additional}Struct`;
 }
 
-function getEnumName(componentName: string, propName: string): string {
-  const uppercasedPropName = toSafeCppString(propName);
-  return `${componentName}${uppercasedPropName}`;
-}
-
 function getEnumMaskName(enumName: string): string {
   return `${enumName}Mask`;
 }
@@ -224,10 +209,8 @@ function convertDefaultTypeToString(
 module.exports = {
   convertDefaultTypeToString,
   getCppTypeForAnnotation,
-  getEnumName,
   getEnumMaskName,
   getImports,
-  toSafeCppString,
   toIntEnumValueName,
   generateStructName,
   generateEventStructName,

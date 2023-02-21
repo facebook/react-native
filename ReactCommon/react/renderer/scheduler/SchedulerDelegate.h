@@ -26,7 +26,7 @@ class SchedulerDelegate {
    * to construct a new one.
    */
   virtual void schedulerDidFinishTransaction(
-      MountingCoordinator::Shared const &mountingCoordinator) = 0;
+      MountingCoordinator::Shared mountingCoordinator) = 0;
 
   /*
    * Called right after a new ShadowNode was created.

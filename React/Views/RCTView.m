@@ -212,7 +212,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     case RCTPointerEventsBoxNone:
       return hitSubview;
     default:
-      RCTLogError(@"Invalid pointer-events specified %lld on %@", (long long)_pointerEvents, self);
+      RCTLogInfo(@"Invalid pointer-events specified %lld on %@", (long long)_pointerEvents, self);
       return hitSubview ?: hitView;
   }
 }

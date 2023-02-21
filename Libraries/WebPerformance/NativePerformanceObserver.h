@@ -59,15 +59,25 @@ class NativePerformanceObserver
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
   ~NativePerformanceObserver();
 
-  void startReporting(jsi::Runtime &rt, std::string entryType);
+  void startReporting(jsi::Runtime &rt, int32_t entryType);
 
-  void stopReporting(jsi::Runtime &rt, std::string entryType);
+  void stopReporting(jsi::Runtime &rt, int32_t entryType);
 
   GetPendingEntriesResult popPendingEntries(jsi::Runtime &rt);
 
   void setOnPerformanceEntryCallback(
       jsi::Runtime &rt,
       std::optional<AsyncCallback<>> callback);
+
+  void logRawEntry(jsi::Runtime &rt, RawPerformanceEntry entry);
+
+  std::vector<std::pair<std::string, uint32_t>> getEventCounts(
+      jsi::Runtime &rt);
+
+  void setDurationThreshold(
+      jsi::Runtime &rt,
+      int32_t entryType,
+      double durationThreshold);
 
  private:
 };

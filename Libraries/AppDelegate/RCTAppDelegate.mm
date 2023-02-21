@@ -54,12 +54,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   NSDictionary *initProps = [self prepareInitialProps];
   UIView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
 
-  if (@available(iOS 13.0, *)) {
-    rootView.backgroundColor = [UIColor systemBackgroundColor];
-  } else {
-    rootView.backgroundColor = [UIColor whiteColor];
-  }
-
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   rootViewController.view = rootView;
@@ -75,19 +69,14 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return nil;
 }
 
-- (BOOL)concurrentRootEnabled
-{
-  [NSException raise:@"concurrentRootEnabled not implemented"
-              format:@"Subclasses must implement a valid concurrentRootEnabled method"];
-  return true;
-}
-
 - (NSDictionary *)prepareInitialProps
 {
   NSMutableDictionary *initProps = self.initialProps ? [self.initialProps mutableCopy] : [NSMutableDictionary new];
 
 #ifdef RCT_NEW_ARCH_ENABLED
-  initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);
+  // Hardcoding the Concurrent Root as it it not recommended to
+  // have the concurrentRoot turned off when Fabric is enabled.
+  initProps[kRNConcurrentRoot] = @([self fabricEnabled]);
 #endif
 
   return initProps;
@@ -106,7 +95,14 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #if RCT_NEW_ARCH_ENABLED
   enableFabric = self.fabricEnabled;
 #endif
-  return RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
+  UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
+  if (@available(iOS 13.0, *)) {
+    rootView.backgroundColor = [UIColor systemBackgroundColor];
+  } else {
+    rootView.backgroundColor = [UIColor whiteColor];
+  }
+
+  return rootView;
 }
 
 - (UIViewController *)createRootViewController

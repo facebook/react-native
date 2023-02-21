@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridgeModule.h>
-#import <React/RCTConvert.h>
 #import <React/RCTEventEmitter.h>
 
 RCT_EXTERN void RCTEnableAppearancePreference(BOOL enabled);

@@ -19,7 +19,8 @@ Map {
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -80,7 +81,8 @@ Map {
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -202,7 +204,95 @@ Map {
 namespace facebook {
 namespace react {
 
-#pragma mark - SampleTurboModuleCxxBaseObjectAlias
+
+#pragma mark - SampleTurboModuleCxxNumEnum
+
+enum SampleTurboModuleCxxNumEnum { ONE, TWO };
+
+template <>
+struct Bridging<SampleTurboModuleCxxNumEnum> {
+  static SampleTurboModuleCxxNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    double value = (double)rawValue.asNumber();
+    if (value == 1) {
+      return SampleTurboModuleCxxNumEnum::ONE;
+    } else if (value == 2) {
+      return SampleTurboModuleCxxNumEnum::TWO;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleCxxNumEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    if (value == SampleTurboModuleCxxNumEnum::ONE) {
+      return bridging::toJs(rt, 1);
+    } else if (value == SampleTurboModuleCxxNumEnum::TWO) {
+      return bridging::toJs(rt, 2);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
+#pragma mark - SampleTurboModuleCxxFloatEnum
+
+enum SampleTurboModuleCxxFloatEnum { POINT_ZERO, POINT_ONE, POINT_TWO };
+
+template <>
+struct Bridging<SampleTurboModuleCxxFloatEnum> {
+  static SampleTurboModuleCxxFloatEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    double value = (double)rawValue.asNumber();
+    if (value == 0.0f) {
+      return SampleTurboModuleCxxFloatEnum::POINT_ZERO;
+    } else if (value == 0.1f) {
+      return SampleTurboModuleCxxFloatEnum::POINT_ONE;
+    } else if (value == 0.2f) {
+      return SampleTurboModuleCxxFloatEnum::POINT_TWO;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleCxxFloatEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    if (value == SampleTurboModuleCxxFloatEnum::POINT_ZERO) {
+      return bridging::toJs(rt, 0.0f);
+    } else if (value == SampleTurboModuleCxxFloatEnum::POINT_ONE) {
+      return bridging::toJs(rt, 0.1f);
+    } else if (value == SampleTurboModuleCxxFloatEnum::POINT_TWO) {
+      return bridging::toJs(rt, 0.2f);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
+#pragma mark - SampleTurboModuleCxxStringEnum
+
+enum SampleTurboModuleCxxStringEnum { HELLO, GoodBye };
+
+template <>
+struct Bridging<SampleTurboModuleCxxStringEnum> {
+  static SampleTurboModuleCxxStringEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    std::string value = rawValue.utf8(rt);
+    if (value == \\"hello\\") {
+      return SampleTurboModuleCxxStringEnum::HELLO;
+    } else if (value == \\"goodbye\\") {
+      return SampleTurboModuleCxxStringEnum::GoodBye;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleCxxStringEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    if (value == SampleTurboModuleCxxStringEnum::HELLO) {
+      return bridging::toJs(rt, \\"hello\\");
+    } else if (value == SampleTurboModuleCxxStringEnum::GoodBye) {
+      return bridging::toJs(rt, \\"goodbye\\");
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+  #pragma mark - SampleTurboModuleCxxBaseObjectAlias
 
 template <typename P0>
 struct SampleTurboModuleCxxBaseObjectAlias {
@@ -246,8 +336,9 @@ protected:
 public:
   virtual jsi::Value getMixed(jsi::Runtime &rt, jsi::Value arg) = 0;
   virtual std::optional<double> getNullableNumberFromNullableAlias(jsi::Runtime &rt, std::optional<jsi::Object> a) = 0;
-  virtual jsi::String getEnums(jsi::Runtime &rt, double enumInt, double enumFloat, jsi::String enumString) = 0;
+  virtual jsi::String getEnums(jsi::Runtime &rt, int enumInt, double enumFloat, jsi::String enumString) = 0;
   virtual jsi::Object getUnion(jsi::Runtime &rt, double chooseInt, double chooseFloat, jsi::Object chooseObject, jsi::String chooseString) = 0;
+  virtual int getEnumReturn(jsi::Runtime &rt) = 0;
 
 };
 
@@ -285,7 +376,7 @@ private:
       return bridging::callFromJs<std::optional<double>>(
           rt, &T::getNullableNumberFromNullableAlias, jsInvoker_, instance_, std::move(a));
     }
-    jsi::String getEnums(jsi::Runtime &rt, double enumInt, double enumFloat, jsi::String enumString) override {
+    jsi::String getEnums(jsi::Runtime &rt, int enumInt, double enumFloat, jsi::String enumString) override {
       static_assert(
           bridging::getParameterCount(&T::getEnums) == 4,
           \\"Expected getEnums(...) to have 4 parameters\\");
@@ -300,6 +391,14 @@ private:
 
       return bridging::callFromJs<jsi::Object>(
           rt, &T::getUnion, jsInvoker_, instance_, std::move(chooseInt), std::move(chooseFloat), std::move(chooseObject), std::move(chooseString));
+    }
+    int getEnumReturn(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::getEnumReturn) == 1,
+          \\"Expected getEnumReturn(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<int>(
+          rt, &T::getEnumReturn, jsInvoker_, instance_);
     }
 
   private:
@@ -334,7 +433,8 @@ Map {
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -395,7 +495,8 @@ Map {
 namespace facebook {
 namespace react {
 
-#pragma mark - AliasTurboModuleBaseOptions
+
+  #pragma mark - AliasTurboModuleBaseOptions
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct AliasTurboModuleBaseOptions {
@@ -539,7 +640,8 @@ Map {
 namespace facebook {
 namespace react {
 
-#pragma mark - CameraRollManagerBasePhotoIdentifierImage
+
+  #pragma mark - CameraRollManagerBasePhotoIdentifierImage
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5>
 struct CameraRollManagerBasePhotoIdentifierImage {
@@ -846,7 +948,8 @@ private:
   Delegate delegate_;
 };
 
-#pragma mark - ExceptionsManagerBaseStackFrame
+
+  #pragma mark - ExceptionsManagerBaseStackFrame
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct ExceptionsManagerBaseStackFrame {
@@ -1099,7 +1202,95 @@ Map {
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+
+#pragma mark - SampleTurboModuleNumEnum
+
+enum SampleTurboModuleNumEnum { ONE, TWO };
+
+template <>
+struct Bridging<SampleTurboModuleNumEnum> {
+  static SampleTurboModuleNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    double value = (double)rawValue.asNumber();
+    if (value == 1) {
+      return SampleTurboModuleNumEnum::ONE;
+    } else if (value == 2) {
+      return SampleTurboModuleNumEnum::TWO;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleNumEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    if (value == SampleTurboModuleNumEnum::ONE) {
+      return bridging::toJs(rt, 1);
+    } else if (value == SampleTurboModuleNumEnum::TWO) {
+      return bridging::toJs(rt, 2);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
+#pragma mark - SampleTurboModuleFloatEnum
+
+enum SampleTurboModuleFloatEnum { POINT_ZERO, POINT_ONE, POINT_TWO };
+
+template <>
+struct Bridging<SampleTurboModuleFloatEnum> {
+  static SampleTurboModuleFloatEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    double value = (double)rawValue.asNumber();
+    if (value == 0.0f) {
+      return SampleTurboModuleFloatEnum::POINT_ZERO;
+    } else if (value == 0.1f) {
+      return SampleTurboModuleFloatEnum::POINT_ONE;
+    } else if (value == 0.2f) {
+      return SampleTurboModuleFloatEnum::POINT_TWO;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleFloatEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    if (value == SampleTurboModuleFloatEnum::POINT_ZERO) {
+      return bridging::toJs(rt, 0.0f);
+    } else if (value == SampleTurboModuleFloatEnum::POINT_ONE) {
+      return bridging::toJs(rt, 0.1f);
+    } else if (value == SampleTurboModuleFloatEnum::POINT_TWO) {
+      return bridging::toJs(rt, 0.2f);
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+
+#pragma mark - SampleTurboModuleStringEnum
+
+enum SampleTurboModuleStringEnum { HELLO, GoodBye };
+
+template <>
+struct Bridging<SampleTurboModuleStringEnum> {
+  static SampleTurboModuleStringEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    std::string value = rawValue.utf8(rt);
+    if (value == \\"hello\\") {
+      return SampleTurboModuleStringEnum::HELLO;
+    } else if (value == \\"goodbye\\") {
+      return SampleTurboModuleStringEnum::GoodBye;
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+    }
+  }
+
+  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleStringEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    if (value == SampleTurboModuleStringEnum::HELLO) {
+      return bridging::toJs(rt, \\"hello\\");
+    } else if (value == SampleTurboModuleStringEnum::GoodBye) {
+      return bridging::toJs(rt, \\"goodbye\\");
+    } else {
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+    }
+  }
+};
+  class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -1113,10 +1304,11 @@ public:
   virtual jsi::Object getObject(jsi::Runtime &rt, jsi::Object arg) = 0;
   virtual double getRootTag(jsi::Runtime &rt, double arg) = 0;
   virtual jsi::Object getValue(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) = 0;
+  virtual int getEnumReturn(jsi::Runtime &rt) = 0;
   virtual void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) = 0;
   virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;
   virtual jsi::Value getValueWithOptionalArg(jsi::Runtime &rt, std::optional<jsi::Object> parameter) = 0;
-  virtual jsi::String getEnums(jsi::Runtime &rt, double enumInt, double enumFloat, jsi::String enumString) = 0;
+  virtual jsi::String getEnums(jsi::Runtime &rt, int enumInt, double enumFloat, jsi::String enumString) = 0;
 
 };
 
@@ -1210,6 +1402,14 @@ private:
       return bridging::callFromJs<jsi::Object>(
           rt, &T::getValue, jsInvoker_, instance_, std::move(x), std::move(y), std::move(z));
     }
+    int getEnumReturn(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::getEnumReturn) == 1,
+          \\"Expected getEnumReturn(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<int>(
+          rt, &T::getEnumReturn, jsInvoker_, instance_);
+    }
     void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) override {
       static_assert(
           bridging::getParameterCount(&T::getValueWithCallback) == 2,
@@ -1234,7 +1434,7 @@ private:
       return bridging::callFromJs<jsi::Value>(
           rt, &T::getValueWithOptionalArg, jsInvoker_, instance_, std::move(parameter));
     }
-    jsi::String getEnums(jsi::Runtime &rt, double enumInt, double enumFloat, jsi::String enumString) override {
+    jsi::String getEnums(jsi::Runtime &rt, int enumInt, double enumFloat, jsi::String enumString) override {
       static_assert(
           bridging::getParameterCount(&T::getEnums) == 4,
           \\"Expected getEnums(...) to have 4 parameters\\");
@@ -1275,7 +1475,8 @@ Map {
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -1318,7 +1519,8 @@ private:
   Delegate delegate_;
 };
 
-class JSI_EXPORT NativeSampleTurboModule2CxxSpecJSI : public TurboModule {
+
+  class JSI_EXPORT NativeSampleTurboModule2CxxSpecJSI : public TurboModule {
 protected:
   NativeSampleTurboModule2CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
