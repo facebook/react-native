@@ -51,7 +51,7 @@ jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
 
 // Thread-safe getter
 std::shared_ptr<Scheduler> Binding::getScheduler() {
-  std::shared_lock<butter::shared_mutex> lock(installMutex_);
+  std::shared_lock lock(installMutex_);
   return scheduler_;
 }
 
@@ -132,7 +132,7 @@ void Binding::startSurface(
 
   {
     SystraceSection s2("FabricUIManagerBinding::startSurface::surfaceId::lock");
-    std::unique_lock<butter::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
     SystraceSection s3("FabricUIManagerBinding::startSurface::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
@@ -202,7 +202,7 @@ void Binding::startSurfaceWithConstraints(
   {
     SystraceSection s2(
         "FabricUIManagerBinding::startSurfaceWithConstraints::surfaceId::lock");
-    std::unique_lock<butter::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
     SystraceSection s3(
         "FabricUIManagerBinding::startSurfaceWithConstraints::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
@@ -246,7 +246,7 @@ void Binding::stopSurface(jint surfaceId) {
   }
 
   {
-    std::unique_lock<butter::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
 
     auto iterator = surfaceHandlerRegistry_.find(surfaceId);
 
@@ -338,7 +338,7 @@ void Binding::setConstraints(
       isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   {
-    std::shared_lock<butter::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    std::shared_lock lock(surfaceHandlerRegistryMutex_);
 
     auto iterator = surfaceHandlerRegistry_.find(surfaceId);
 
@@ -377,7 +377,7 @@ void Binding::installFabricUIManager(
 
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
   // at the same time
-  std::unique_lock<butter::shared_mutex> lock(installMutex_);
+  std::unique_lock lock(installMutex_);
 
   auto globalJavaUiManager = make_global(javaUIManager);
   mountingManager_ =
@@ -467,7 +467,7 @@ void Binding::uninstallFabricUIManager() {
                  << this << ").";
   }
 
-  std::unique_lock<butter::shared_mutex> lock(installMutex_);
+  std::unique_lock lock(installMutex_);
   animationDriver_ = nullptr;
   scheduler_ = nullptr;
   mountingManager_ = nullptr;
@@ -476,7 +476,7 @@ void Binding::uninstallFabricUIManager() {
 
 std::shared_ptr<FabricMountingManager> Binding::verifyMountingManager(
     std::string const &hint) {
-  std::shared_lock<butter::shared_mutex> lock(installMutex_);
+  std::shared_lock lock(installMutex_);
   if (!mountingManager_) {
     LOG(ERROR) << hint << " mounting manager disappeared.";
   }

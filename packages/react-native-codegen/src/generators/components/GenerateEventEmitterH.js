@@ -14,10 +14,9 @@ const nullthrows = require('nullthrows');
 
 const {
   getCppTypeForAnnotation,
-  toSafeCppString,
   generateEventStructName,
 } = require('./CppHelpers');
-const {indent} = require('../Utils');
+const {indent, toSafeCppString} = require('../Utils');
 
 import type {
   ComponentShape,

@@ -111,6 +111,42 @@ class NewArchitectureTests < Test::Unit::TestCase
         assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
     end
 
+    def test_modifyFlagsForNewArch_whenOnNewArchAndIsRelease_updateFlags
+        # Arrange
+        first_xcconfig = prepare_xcconfig("First")
+        second_xcconfig = prepare_xcconfig("Second")
+        react_core_debug_config = prepare_CXX_Flags_build_configuration("Debug")
+        react_core_release_config = prepare_CXX_Flags_build_configuration("Release")
+        yoga_debug_config = prepare_CXX_Flags_build_configuration("Debug")
+        yoga_release_config = prepare_CXX_Flags_build_configuration("Release")
+
+        installer = prepare_installer_for_cpp_flags(
+            [ first_xcconfig, second_xcconfig ],
+            {
+                "React-Core" => [ react_core_debug_config, react_core_release_config ],
+                "Yoga" => [ yoga_debug_config, yoga_release_config ],
+            }
+        )
+        # Act
+        NewArchitectureHelper.modify_flags_for_new_architecture(installer, true, is_release: true)
+
+        # Assert
+        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DNDEBUG")
+        assert_equal(first_xcconfig.attributes["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(first_xcconfig.save_as_invocation, ["a/path/First.xcconfig"])
+        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DNDEBUG")
+        assert_equal(second_xcconfig.attributes["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(second_xcconfig.save_as_invocation, ["a/path/Second.xcconfig"])
+        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DNDEBUG")
+        assert_equal(react_core_debug_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DNDEBUG")
+        assert_equal(react_core_release_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(yoga_debug_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(yoga_release_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+    end
+
     # =================================== #
     # Test - install Modules Dependencies #
     # =================================== #

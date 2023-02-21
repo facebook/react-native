@@ -6,7 +6,7 @@
  *
  * @noformat
  * @flow strict-local
- * @generated SignedSource<<7b69bfde64e35b7f706c2f6b9ef91e7c>>
+ * @generated SignedSource<<47ba85d7f43c9b591d6804827322d00e>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -25,13 +25,13 @@ const customBubblingEventTypes: {
       skipBubbling?: ?boolean,
     }>,
   }>,
-  ...,
+  ...
 } = {};
 const customDirectEventTypes: {
   [eventName: string]: $ReadOnly<{
     registrationName: string,
   }>,
-  ...,
+  ...
 } = {};
 
 exports.customBubblingEventTypes = customBubblingEventTypes;
@@ -78,7 +78,7 @@ function processEventTypes(viewConfig: ViewConfig): void {
  * A callback is provided to load the view config from UIManager.
  * The callback is deferred until the view is actually rendered.
  */
-exports.register = function(name: string, callback: () => ViewConfig): string {
+exports.register = function (name: string, callback: () => ViewConfig): string {
   invariant(
     !viewConfigCallbacks.has(name),
     'Tried to register two views with the same name %s',
@@ -99,7 +99,7 @@ exports.register = function(name: string, callback: () => ViewConfig): string {
  * If this is the first time the view has been used,
  * This configuration will be lazy-loaded from UIManager.
  */
-exports.get = function(name: string): ViewConfig {
+exports.get = function (name: string): ViewConfig {
   let viewConfig;
   if (!viewConfigs.has(name)) {
     const callback = viewConfigCallbacks.get(name);

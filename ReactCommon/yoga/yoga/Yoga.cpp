@@ -189,6 +189,7 @@ int32_t gConfigInstanceCount = 0;
 
 YOGA_EXPORT WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   const YGNodeRef node = new YGNode{config};
+  YGAssert(config != nullptr, "Tried to construct YGNode with null config");
   YGAssertWithConfig(
       config, node != nullptr, "Could not allocate memory for node");
   Event::publish<Event::NodeAllocation>(node, {config});

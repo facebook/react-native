@@ -10,7 +10,7 @@
 #include "FabricMountingManager.h"
 
 #include <memory>
-#include <mutex>
+#include <shared_mutex>
 
 #include <fbjni/fbjni.h>
 #include <react/jni/JRuntimeExecutor.h>
@@ -123,7 +123,7 @@ class Binding : public jni::HybridClass<Binding>,
   void uninstallFabricUIManager();
 
   // Private member variables
-  butter::shared_mutex installMutex_;
+  std::shared_mutex installMutex_;
   std::shared_ptr<FabricMountingManager> mountingManager_;
   std::shared_ptr<Scheduler> scheduler_;
 
@@ -139,7 +139,7 @@ class Binding : public jni::HybridClass<Binding>,
   BackgroundExecutor backgroundExecutor_;
 
   butter::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
-  butter::shared_mutex
+  std::shared_mutex
       surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
 
   float pointScaleFactor_ = 1;

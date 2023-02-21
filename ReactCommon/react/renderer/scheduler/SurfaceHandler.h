@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <shared_mutex>
 
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -195,13 +196,13 @@ class SurfaceHandler {
   /*
    * `link_` and `linkMutex_` pair.
    */
-  mutable butter::shared_mutex linkMutex_;
+  mutable std::shared_mutex linkMutex_;
   mutable Link link_;
 
   /*
    * `parameters_` and `parametersMutex_` pair.
    */
-  mutable butter::shared_mutex parametersMutex_;
+  mutable std::shared_mutex parametersMutex_;
   mutable Parameters parameters_;
 };
 

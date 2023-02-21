@@ -27,7 +27,27 @@ function indent(nice: string, spaces: number): string {
     .join('\n');
 }
 
+function toPascalCase(inString: string): string {
+  if (inString.length === 0) {
+    return inString;
+  }
+
+  return inString[0].toUpperCase() + inString.slice(1);
+}
+
+function toSafeCppString(input: string): string {
+  return input.split('-').map(toPascalCase).join('');
+}
+
+function getEnumName(moduleName: string, origEnumName: string): string {
+  const uppercasedPropName = toSafeCppString(origEnumName);
+  return `${moduleName}${uppercasedPropName}`;
+}
+
 module.exports = {
   capitalize,
   indent,
+  toPascalCase,
+  toSafeCppString,
+  getEnumName,
 };

@@ -192,8 +192,8 @@ AccessibilityProps::AccessibilityProps(
     AccessibilityTraits traits;
     std::string roleString;
     if (rawPropValue == nullptr || !rawPropValue->hasValue()) {
-      traits = AccessibilityTraits::None;
-      roleString = "";
+      traits = sourceProps.accessibilityTraits;
+      roleString = sourceProps.accessibilityRole;
     } else {
       fromRawValue(context, *rawPropValue, traits);
       fromRawValue(context, *rawPropValue, roleString);

@@ -31,8 +31,17 @@ void PerformanceEntryReporter::setReportingCallback(
 }
 
 void PerformanceEntryReporter::startReporting(PerformanceEntryType entryType) {
-  reportingType_[static_cast<int>(entryType)] = true;
+  int entryTypeIdx = static_cast<int>(entryType);
+  reportingType_[entryTypeIdx] = true;
+  durationThreshold_[entryTypeIdx] = DEFAULT_DURATION_THRESHOLD;
 }
+
+void PerformanceEntryReporter::setDurationThreshold(
+    PerformanceEntryType entryType,
+    double durationThreshold) {
+  durationThreshold_[static_cast<int>(entryType)] = durationThreshold;
+}
+
 void PerformanceEntryReporter::stopReporting(PerformanceEntryType entryType) {
   reportingType_[static_cast<int>(entryType)] = false;
 }
@@ -47,7 +56,17 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
 }
 
 void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
-  if (!isReportingType(static_cast<PerformanceEntryType>(entry.entryType))) {
+  const auto entryType = static_cast<PerformanceEntryType>(entry.entryType);
+  if (entryType == PerformanceEntryType::EVENT) {
+    eventCounts_[entry.name]++;
+  }
+
+  if (!isReportingType(entryType)) {
+    return;
+  }
+
+  if (entry.duration < durationThreshold_[entry.entryType]) {
+    // The entries duration is lower than the desired reporting threshold, skip
     return;
   }
 

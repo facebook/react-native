@@ -28,5 +28,8 @@
     "prettier": "^2.4.1",
     "react-test-renderer": "18.2.0",
     "typescript": "4.8.4"
+  },
+  "engines": {
+    "node": ">=16"
   }
 }
