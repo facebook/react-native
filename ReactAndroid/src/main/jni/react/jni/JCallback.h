@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include <butter/function.h>
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 
@@ -45,7 +46,7 @@ class JCxxCallbackImpl : public jni::HybridClass<JCxxCallbackImpl, JCallback> {
  private:
   friend HybridBase;
 
-  using Callback = std::function<void(folly::dynamic)>;
+  using Callback = butter::function<void(folly::dynamic)>;
   JCxxCallbackImpl(Callback callback) : callback_(std::move(callback)) {}
 
   void invoke(NativeArray *arguments) {
