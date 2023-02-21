@@ -195,6 +195,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
       final String[] iteratorKeys = mKeys;
       final Object[] iteratorValues = Assertions.assertNotNull(importValues());
+      mJniCallCounter++;
 
       return new Iterator<Map.Entry<String, Object>>() {
         int currentIndex = 0;
@@ -288,23 +289,5 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
       }
     }
     return hashMap;
-  }
-
-  private static class ReadableNativeMapKeySetIterator implements ReadableMapKeySetIterator {
-    private final Iterator<String> mIterator;
-
-    public ReadableNativeMapKeySetIterator(ReadableNativeMap readableNativeMap) {
-      mIterator = readableNativeMap.getLocalMap().keySet().iterator();
-    }
-
-    @Override
-    public boolean hasNextKey() {
-      return mIterator.hasNext();
-    }
-
-    @Override
-    public String nextKey() {
-      return mIterator.next();
-    }
   }
 }
