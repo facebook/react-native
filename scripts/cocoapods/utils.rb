@@ -131,6 +131,28 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.apply_flags_for_fabric(installer, fabric_enabled: false)
+        return if !fabric_enabled
+
+        fabric_flag = "-DRN_FABRIC_ENABLED"
+        projects = installer.aggregate_targets
+            .map{ |t| t.user_project }
+            .uniq{ |p| p.path }
+            .push(installer.pods_project)
+
+        projects.each do |project|
+            project.build_configurations.each do |config|
+                cflags = config.build_settings["OTHER_CFLAGS"] ? config.build_settings["OTHER_CFLAGS"] : "$(inherited)"
+
+                if !cflags.include?(fabric_flag)
+                    cflags = "#{cflags} #{fabric_flag}"
+                end
+                config.build_settings["OTHER_CFLAGS"] = cflags
+            end
+            project.save()
+        end
+    end
+
     private
 
     def self.fix_library_search_path(config)

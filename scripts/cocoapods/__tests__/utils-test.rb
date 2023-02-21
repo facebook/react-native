@@ -597,6 +597,68 @@ class UtilsTests < Test::Unit::TestCase
     end
 end
 
+# ============================= #
+# Test - Apply Flags For Fabric #
+# ============================= #
+def test_applyFlagsForFabric_whenFabricEnabled_addsTheFlag
+    # Arrange
+    first_target = prepare_target("FirstTarget")
+    second_target = prepare_target("SecondTarget")
+    third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
+    user_project_mock = UserProjectMock.new("a/path", [
+            prepare_config("Debug"),
+            prepare_config("Release"),
+        ],
+        :native_targets => [
+            first_target,
+            second_target
+        ]
+    )
+    pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
+    installer = InstallerMock.new(pods_projects_mock, [
+        AggregatedProjectMock.new(user_project_mock)
+    ])
+
+    # Act
+    ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: true)
+
+    # Assert
+    user_project_mock.build_configurations.each do |config|
+        received_cflags = config.build_settings["OTHER_CFLAGS"]
+        expected_cflags = "$(inherited) -DRN_FABRIC_ENABLED"
+        assert_equal(received_cflags, expected_cflags)
+    end
+
+end
+
+def test_applyFlagsForFabric_whenFabricDisabled_doNothing
+    # Arrange
+    first_target = prepare_target("FirstTarget")
+    second_target = prepare_target("SecondTarget")
+    third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
+    user_project_mock = UserProjectMock.new("a/path", [
+            prepare_config("Debug"),
+            prepare_config("Release"),
+        ],
+        :native_targets => [
+            first_target,
+            second_target
+        ]
+    )
+    pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
+    installer = InstallerMock.new(pods_projects_mock, [
+        AggregatedProjectMock.new(user_project_mock)
+    ])
+
+    # Act
+    ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: false)
+
+    # Assert
+    user_project_mock.build_configurations.each do |config|
+        assert_nil(config.build_settings["OTHER_CFLAGS"])
+    end
+end
+
 
 # ===== #
 # UTILS #
