@@ -424,6 +424,10 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getValue\\", @selector(getValue:y:z:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getEnumReturn(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getEnumReturn\\", @selector(getEnumReturn), args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"getValueWithCallback\\", @selector(getValueWithCallback:), args, count);
     }
@@ -469,6 +473,9 @@ namespace facebook {
         
         
         methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleSpecJSI_getValue};
+        
+        
+        methodMap_[\\"getEnumReturn\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_getEnumReturn};
         
         
         methodMap_[\\"getValueWithCallback\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback};

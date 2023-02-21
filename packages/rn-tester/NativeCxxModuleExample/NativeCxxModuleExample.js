@@ -13,8 +13,23 @@ import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import {TurboModuleRegistry} from 'react-native';
 
 export enum EnumInt {
-  A = 23,
-  B = 42,
+  IA = 23,
+  IB = 42,
+}
+
+export enum EnumFloat {
+  FA = 1.23,
+  FB = 4.56,
+}
+
+export enum EnumNone {
+  NA,
+  NB,
+}
+
+export enum EnumStr {
+  SA = 's---a',
+  SB = 's---b',
 }
 
 export type UnionFloat = 1.44 | 2.88 | 5.76;
@@ -43,7 +58,9 @@ export interface Spec extends TurboModule {
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
   +getConstants: () => ConstantsStruct;
-  +getEnum: (arg: EnumInt) => EnumInt;
+  +getCustomEnum: (arg: EnumInt) => EnumInt;
+  +getNumEnum: (arg: EnumInt) => EnumFloat;
+  +getStrEnum: (arg: EnumNone) => EnumStr;
   +getMap: (arg: {[key: string]: ?number}) => {[key: string]: ?number};
   +getNumber: (arg: number) => number;
   +getObject: (arg: ObjectStruct) => ObjectStruct;

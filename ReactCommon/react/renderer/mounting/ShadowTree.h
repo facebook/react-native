@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <butter/mutex.h>
 #include <memory>
 
 #include <react/renderer/components/root/RootComponentDescriptor.h>
@@ -135,14 +134,14 @@ class ShadowTree final {
  private:
   constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
 
-  void mount(ShadowTreeRevision const &revision, bool mountSynchronously) const;
+  void mount(ShadowTreeRevision revision, bool mountSynchronously) const;
 
   void emitLayoutEvents(
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
   SurfaceId const surfaceId_;
   ShadowTreeDelegate const &delegate_;
-  mutable butter::shared_mutex commitMutex_;
+  mutable std::shared_mutex commitMutex_;
   mutable CommitMode commitMode_{
       CommitMode::Normal}; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.

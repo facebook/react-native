@@ -17,10 +17,11 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -460,7 +461,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       } else if ("center".equals(textAlign)) {
         mTextAlign = Gravity.CENTER_HORIZONTAL;
       } else {
-        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+        FLog.w(ReactConstants.TAG, "Invalid textAlign: " + textAlign);
+        mTextAlign = Gravity.NO_GRAVITY;
       }
     }
     markUpdated();
@@ -572,8 +574,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     } else if ("balanced".equals(textBreakStrategy)) {
       mTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid textBreakStrategy: " + textBreakStrategy);
+      FLog.w(ReactConstants.TAG, "Invalid textBreakStrategy: " + textBreakStrategy);
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
     }
 
     markUpdated();
@@ -629,7 +631,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     } else if ("capitalize".equals(textTransform)) {
       mTextAttributes.setTextTransform(TextTransform.CAPITALIZE);
     } else {
-      throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
+      FLog.w(ReactConstants.TAG, "Invalid textTransform: " + textTransform);
+      mTextAttributes.setTextTransform(TextTransform.UNSET);
     }
     markUpdated();
   }

@@ -11,6 +11,7 @@
 #include <jsi/jsi.h>
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <shared_mutex>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/RawValue.h>
@@ -203,7 +204,7 @@ class UIManager final : public ShadowTreeDelegate {
   BackgroundExecutor const backgroundExecutor_{};
   ContextContainer::Shared contextContainer_;
 
-  mutable butter::shared_mutex commitHookMutex_;
+  mutable std::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook const *> commitHooks_;
 
   std::unique_ptr<LeakChecker> leakChecker_;

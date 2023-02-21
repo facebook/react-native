@@ -724,13 +724,13 @@ static inline void fromRawValue(
   auto map = (butter::map<std::string, RawValue>)rawValue;
 
   auto typeIterator = map.find("type");
-  react_native_assert(
+  react_native_expect(
       typeIterator != map.end() && typeIterator->second.hasType<std::string>());
   std::string type = (std::string)typeIterator->second;
 
   if (type == "ThemeAttrAndroid") {
     auto attrIterator = map.find("attribute");
-    react_native_assert(
+    react_native_expect(
         attrIterator != map.end() &&
         attrIterator->second.hasType<std::string>());
 
@@ -761,7 +761,7 @@ static inline void fromRawValue(
     };
   } else {
     LOG(ERROR) << "Unknown native drawable type: " << type;
-    react_native_assert(false);
+    react_native_expect(false);
   }
 }
 

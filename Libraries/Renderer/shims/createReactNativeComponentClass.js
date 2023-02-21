@@ -6,7 +6,7 @@
  *
  * @noformat
  * @flow strict-local
- * @generated SignedSource<<7d3d4090dadea2daa09d92e5e66f6e5d>>
+ * @generated SignedSource<<e5e369f149ed8206141b7a3c2855bb85>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -26,7 +26,7 @@ const {register} = ReactNativeViewConfigRegistry;
  * @param {string} config iOS View configuration.
  * @private
  */
-const createReactNativeComponentClass = function(
+const createReactNativeComponentClass = function (
   name: string,
   callback: () => ViewConfig,
 ): string {

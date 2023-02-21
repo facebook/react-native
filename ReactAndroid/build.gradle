@@ -5,17 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-buildscript {
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.hasProperty("kotlinVersion") ? rootProject.ext.kotlinVersion : KOTLIN_VERSION}"
-    }
-}
-
 plugins {
     id("com.android.library")
     id("com.facebook.react")
     id("de.undercouch.download")
     id("maven-publish")
+    id("org.jetbrains.kotlin.android")
 }
 
 import com.facebook.react.tasks.internal.*
@@ -116,6 +111,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
                     new Pair("../ReactCommon/react/renderer/graphics/platform/cxx/", ""),
                 ]
+            ),
+            new PrefabPreprocessingEntry(
+                "rrc_root",
+                new Pair("../ReactCommon/react/renderer/components/root/", "react/renderer/components/root/")
             ),
             new PrefabPreprocessingEntry(
                 "rrc_view",
@@ -422,6 +421,7 @@ task installArchives {
 android {
     buildToolsVersion = "33.0.0"
     compileSdkVersion 33
+    namespace "com.facebook.react"
 
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
@@ -475,6 +475,7 @@ android {
                     "react_render_core",
                     "react_render_graphics",
                     "rrc_image",
+                    "rrc_root",
                     "rrc_view",
                     "jsi",
                     "glog",
@@ -571,6 +572,9 @@ android {
         rrc_image {
             headers(new File(prefabHeadersDir, "rrc_image").absolutePath)
         }
+        rrc_root {
+            headers(new File(prefabHeadersDir, "rrc_root").absolutePath)
+        }
         rrc_view {
             headers(new File(prefabHeadersDir, "rrc_view").absolutePath)
         }
@@ -666,18 +670,19 @@ dependencies {
     androidTestImplementation("androidx.test:runner:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("androidx.test:rules:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
+
+    // This compileOnly dependency is needed to be able to update the offline
+    // mirror from a non-linux machine, while still executing inside a Linux CI
+    // as we declare a dependency on aap2 @linux so we're sure the linux artifact
+    // gets downloaded at some point.
+    compileOnly("com.android.tools.build:aapt2:7.4.1-8841542:linux")
 }
 
 react {
     // TODO: The library name is chosen for parity with Fabric components & iOS
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
-    root = file("..")
     jsRootDir = file("../Libraries")
-    reactNativeDir = file("$projectDir/..")
-    // We search for the codegen in either one of the `node_modules` folder or in the
-    // root packages folder (that's for when we build from source without calling `yarn install`).
-    codegenDir = file(findNodeModulePath(projectDir, "@react-native/codegen") ?: "../packages/react-native-codegen/")
 }
 
 apply plugin: "org.jetbrains.kotlin.android"

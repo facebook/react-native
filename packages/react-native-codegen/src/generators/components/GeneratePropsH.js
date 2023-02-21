@@ -19,11 +19,11 @@ const {
 const {
   convertDefaultTypeToString,
   getEnumMaskName,
-  getEnumName,
-  toSafeCppString,
   generateStructName,
   toIntEnumValueName,
 } = require('./CppHelpers.js');
+
+const {getEnumName, toSafeCppString} = require('../Utils');
 
 import type {
   ExtendsPropsShape,

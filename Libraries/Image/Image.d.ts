@@ -254,6 +254,28 @@ export interface ImagePropsBase
    * See https://reactnative.dev/docs/image#alt
    */
   alt?: string | undefined;
+
+  /**
+   * Height of the image component.
+   *
+   * See https://reactnative.dev/docs/image#height
+   */
+  height?: number | undefined;
+
+  /**
+   * Width of the image component.
+   *
+   * See https://reactnative.dev/docs/image#width
+   */
+  width?: number | undefined;
+
+  /**
+   * Adds the CORS related header to the request.
+   * Similar to crossorigin from HTML.
+   *
+   * See https://reactnative.dev/docs/image#crossorigin
+   */
+  crossOrigin?: 'anonymous' | 'use-credentials';
 }
 
 export interface ImageProps extends ImagePropsBase {
