@@ -18,7 +18,7 @@ import type {
   ExtendsPropsShape,
   SchemaType,
   OptionsShape,
-} from '../../../CodegenSchema.js';
+} from '../CodegenSchema.js';
 
 export type ComponentSchemaBuilderConfig = $ReadOnly<{
   filename: string,

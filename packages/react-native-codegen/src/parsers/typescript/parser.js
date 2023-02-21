@@ -28,7 +28,7 @@ const babelParser = require('@babel/parser');
 const {buildSchema} = require('../parsers-commons');
 const {Visitor} = require('./Visitor');
 const {buildComponentSchema} = require('./components');
-const {wrapComponentSchema} = require('./components/schema');
+const {wrapComponentSchema} = require('../schema.js');
 const {buildModuleSchema} = require('./modules');
 
 const fs = require('fs');
