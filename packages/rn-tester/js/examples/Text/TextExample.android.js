@@ -230,6 +230,10 @@ class NestedTextVerticalAlign extends React.Component<
     });
   };
 
+  _resetVerticalAlign = () => {
+    this.setState({textAlignVerticalIndex: 0});
+  };
+
   _increaseFont = () => {
     this.setState(prevState => {
       return {
@@ -251,7 +255,7 @@ class NestedTextVerticalAlign extends React.Component<
     const textAlignVertical =
       textAlignVerticalOptions[textAlignVerticalIndex % 3];
     const textAlignVerticalOppositeSideIndex =
-      textAlignVerticalIndex === 0 ? 0 : textAlignVerticalIndex + 2;
+      textAlignVerticalIndex === 0 ? 0 : (textAlignVerticalIndex + 2) % 3;
     return (
       <>
         <RNTesterBlock title="lineHeight and verticalAlign">
@@ -268,7 +272,7 @@ class NestedTextVerticalAlign extends React.Component<
             title="change vertical align"
           />
           <Button
-            onPress={() => this.setState({textAlignVerticalIndex: 0})}
+            onPress={this._resetVerticalAlign}
             title="set vertical align CENTER"
           />
           <Button onPress={this._increaseFont} title="increase font" />
@@ -294,17 +298,13 @@ class NestedTextVerticalAlign extends React.Component<
                   fontSize: 8,
                   textAlignVertical:
                     textAlignVerticalOptions[
-                      textAlignVerticalOppositeSideIndex % 3
+                      textAlignVerticalOppositeSideIndex
                     ],
                   lineHeight: 100,
                   backgroundColor: 'red',
                 }}>
                 span aligned
-                {
-                  textAlignVerticalOptions[
-                    textAlignVerticalOppositeSideIndex % 3
-                  ]
-                }
+                {textAlignVerticalOptions[textAlignVerticalOppositeSideIndex]}
               </Text>
               <Text
                 style={{

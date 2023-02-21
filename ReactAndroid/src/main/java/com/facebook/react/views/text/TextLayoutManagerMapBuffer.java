@@ -163,7 +163,7 @@ public class TextLayoutManagerMapBuffer {
         if (textAttributes.mFontStyle != UNSET
             || textAttributes.mFontWeight != UNSET
             || textAttributes.mFontFamily != null
-            || textAttributes.mTextAlignVertical != null) {
+            || textAttributes.mTextAlignVertical != "center-child") {
           CustomStyleSpan.TextAlignVertical textAlignVertical =
               CustomStyleSpan.TextAlignVertical.CENTER;
           if (textAttributes.mTextAlignVertical == "top-child") {

@@ -43,7 +43,6 @@ public class ReactTextViewManager
   private static final short TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
 
   @VisibleForTesting public static final String REACT_CLASS = "RCTText";
-  private static final String TAG = "ReactTextViewManager";
 
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
 

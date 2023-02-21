@@ -305,7 +305,7 @@ void BaseTextProps::setProp(
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, backgroundColor, "backgroundColor");
     REBUILD_FIELD_SWITCH_CASE(
-        defaults, value, textAttributes, backgroundColor, "textAlignVertical");
+        defaults, value, textAttributes, textAlignVertical, "textAlignVertical");
   }
 }
 
